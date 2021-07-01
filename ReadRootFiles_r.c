@@ -16,17 +16,19 @@ void load_files(const char *dirname, std::vector<string>* names){
 
 typedef struct data{
     int __experiment__;
+    int __run__;
     int __event__;
     int __candidate__;
     int __ncandidates__;
 
-    int event_info[12];
-    // 0: upsilon_experiment, 1: upsilon_event, 2: upsilon_candidate, 3: upsilon_ncandidates
-    // 4: Bsig_experiment, 5: Bsig_event, 6: Bsig_candidate, 7: Bsig_ncandidates
-    // 8: Btag_experiment, 9: Btag_event, 10: Btag_candidate, 11: Btag_ncandidates
+    int event_info[15];
+    // 0: upsilon_experiment, 1: upsilon_run, 2: upsilon_event, 3: upsilon_candidate, 4: upsilon_ncandidates
+    // 5: Bsig_experiment, 6: Bsig_run, 7: Bsig_event, 8: Bsig_candidate, 9: Bsig_ncandidates
+    // 10: Btag_experiment, 11: Btag_run, 12: Btag_event, 13: Btag_candidate, 14: Btag_ncandidates
 
-    double Upsilon_info[1];
-    //0: Upsilon_isSignal;
+    double Upsilon_info[5];
+    // 0: Upsilon_isSignal; 1: number of ECL clusters in ROE(cleanMask), 2: number of KLM clusters in ROE
+    // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask)
 
     double Bsig_info[7];
     // 0: Bsig_isSignal, 1: Bsig_E, 2: Bsig_E_CMS, 3: Bsig_E_Recoil, 4: Bsig_dmID
@@ -41,10 +43,11 @@ bool event_info_is_valid(std::queue<Data> TotalData_){
     while(!TotalData_.empty()){
         Data temp_data = TotalData_.front();
         TotalData_.pop();
-        if(temp_data.event_info[0] != temp_data.event_info[4] || temp_data.event_info[0] != temp_data.event_info[8] || temp_data.event_info[4] != temp_data.event_info[8]) return false;
-        if(temp_data.event_info[1] != temp_data.event_info[5] || temp_data.event_info[1] != temp_data.event_info[9] || temp_data.event_info[5] != temp_data.event_info[9]) return false;
-        if(temp_data.event_info[2] != temp_data.event_info[6] || temp_data.event_info[2] != temp_data.event_info[10] || temp_data.event_info[6] != temp_data.event_info[10]) return false;
-        if(temp_data.event_info[3] != temp_data.event_info[7] || temp_data.event_info[3] != temp_data.event_info[11] || temp_data.event_info[7] != temp_data.event_info[11]) return false;
+        if(temp_data.event_info[0] != temp_data.event_info[5] || temp_data.event_info[0] != temp_data.event_info[10] || temp_data.event_info[5] != temp_data.event_info[10]) return false;
+        if(temp_data.event_info[1] != temp_data.event_info[6] || temp_data.event_info[1] != temp_data.event_info[11] || temp_data.event_info[6] != temp_data.event_info[11]) return false;
+        if(temp_data.event_info[2] != temp_data.event_info[7] || temp_data.event_info[2] != temp_data.event_info[12] || temp_data.event_info[7] != temp_data.event_info[12]) return false;
+        if(temp_data.event_info[3] != temp_data.event_info[8] || temp_data.event_info[3] != temp_data.event_info[13] || temp_data.event_info[8] != temp_data.event_info[13]) return false;
+        if(temp_data.event_info[4] != temp_data.event_info[9] || temp_data.event_info[4] != temp_data.event_info[14] || temp_data.event_info[9] != temp_data.event_info[14]) return false;
     }
     return true;
 }
@@ -207,11 +210,12 @@ void BCS(std::queue<Data>* TotalData_, int index, bool select_highest = true){
         std::vector<Data> temp;
         Data initial_data = TotalData_->front();
         int experiment_ = initial_data.event_info[0];
-        int event_ = initial_data.event_info[1];
-        int ncandidates_ = initial_data.event_info[3];
+        int run_ = initial_data.event_info[1];
+        int event_ = initial_data.event_info[2];
+        int ncandidates_ = initial_data.event_info[4];
         while(true){ // I suppose that the order of data exists
             Data temp_data = TotalData_->front();
-            if(temp_data.event_info[0] == experiment_ && temp_data.event_info[1] == event_ && temp_data.event_info[3] == ncandidates_){
+            if(temp_data.event_info[0] == experiment_ && temp_data.event_info[1] == run_ && temp_data.event_info[2] == event_ && temp_data.event_info[4] == ncandidates_){
                 TotalData_->pop();
                 temp.push_back(temp_data);
             }
@@ -249,6 +253,7 @@ void BCS(std::queue<Data>* TotalData_, int index, bool select_highest = true){
 bool IsBCSValid(std::queue<Data> TotalData_){
     typedef struct labels{
         int __experiment__;
+        int __run__;
         int __event__;
         int __ncandidates__;
     } Labels;
@@ -259,12 +264,13 @@ bool IsBCSValid(std::queue<Data> TotalData_){
         Data temp = TotalData_.front();
         TotalData_.pop();
         for(unsigned int i=0; i<label_list.size(); i++){
-            if(label_list.at(i).__experiment__ == temp.event_info[0] && label_list.at(i).__event__ == temp.event_info[1] && label_list.at(i).__ncandidates__ == temp.event_info[3]) return false;
+            if(label_list.at(i).__experiment__ == temp.event_info[0] && label_list.at(i).__run__ == temp.event_info[1] && label_list.at(i).__event__ == temp.event_info[2] && label_list.at(i).__ncandidates__ == temp.event_info[4]) return false;
         }
         Labels temp_Labels;
         temp_Labels.__experiment__ = temp.event_info[0];
-        temp_Labels.__event__ = temp.event_info[1];
-        temp_Labels.__ncandidates__ = temp.event_info[3];
+        temp_Labels.__run__ = temp.event_info[1];
+        temp_Labels.__event__ = temp.event_info[2];
+        temp_Labels.__ncandidates__ = temp.event_info[4];
         label_list.push_back(temp_Labels);
     }
     return true;
@@ -280,15 +286,6 @@ void ReadRootFiles_r(){
     std::queue<Data> TotalData;
     Data temp = {0};
 
-    int Bsig_experiment;
-    int Bsig_event;
-    int Bsig_candidate;
-    int Bsig_ncandidates;
-    int Btag_experiment;
-    int Btag_event;
-    int Btag_candidate;
-    int Btag_ncandidates;
-
     unsigned int totalnum_entry = 0;
     for(unsigned int i = 0; i<names.size(); i++){
         TFile *input_file = new TFile( (dirname+std::string("/")+names.at(i)).c_str(),"read");
@@ -298,20 +295,27 @@ void ReadRootFiles_r(){
 
         // get event_info
         tree_upsilon->SetBranchAddress("__experiment__", &temp.event_info[0]);
-        tree_upsilon->SetBranchAddress("__event__", &temp.event_info[1]);
-        tree_upsilon->SetBranchAddress("__candidate__", &temp.event_info[2]);
-        tree_upsilon->SetBranchAddress("__ncandidates__", &temp.event_info[3]);
-        tree_Bsig->SetBranchAddress("__experiment__", &temp.event_info[4]);
-        tree_Bsig->SetBranchAddress("__event__", &temp.event_info[5]);
-        tree_Bsig->SetBranchAddress("__candidate__", &temp.event_info[6]);
-        tree_Bsig->SetBranchAddress("__ncandidates__", &temp.event_info[7]);
-        tree_Btag->SetBranchAddress("__experiment__", &temp.event_info[8]);
-        tree_Btag->SetBranchAddress("__event__", &temp.event_info[9]);
-        tree_Btag->SetBranchAddress("__candidate__", &temp.event_info[10]);
-        tree_Btag->SetBranchAddress("__ncandidates__", &temp.event_info[11]);
+        tree_upsilon->SetBranchAddress("__run__", &temp.event_info[1]);
+        tree_upsilon->SetBranchAddress("__event__", &temp.event_info[2]);
+        tree_upsilon->SetBranchAddress("__candidate__", &temp.event_info[3]);
+        tree_upsilon->SetBranchAddress("__ncandidates__", &temp.event_info[4]);
+        tree_Bsig->SetBranchAddress("__experiment__", &temp.event_info[5]);
+        tree_Bsig->SetBranchAddress("__run__", &temp.event_info[6]);
+        tree_Bsig->SetBranchAddress("__event__", &temp.event_info[7]);
+        tree_Bsig->SetBranchAddress("__candidate__", &temp.event_info[8]);
+        tree_Bsig->SetBranchAddress("__ncandidates__", &temp.event_info[9]);
+        tree_Btag->SetBranchAddress("__experiment__", &temp.event_info[10]);
+        tree_Btag->SetBranchAddress("__run__", &temp.event_info[11]);
+        tree_Btag->SetBranchAddress("__event__", &temp.event_info[12]);
+        tree_Btag->SetBranchAddress("__candidate__", &temp.event_info[13]);
+        tree_Btag->SetBranchAddress("__ncandidates__", &temp.event_info[14]);
 
         // get Upsilon_info
         tree_upsilon->SetBranchAddress("isSignal", &temp.Upsilon_info[0]);
+        tree_upsilon->SetBranchAddress("nROE_ECLClusters__bocleanMask__bc",&temp.Upsilon_info[1]);
+        tree_upsilon->SetBranchAddress("nROE_KLMClusters",&temp.Upsilon_info[2]);
+        tree_upsilon->SetBranchAddress("roeE__bocleanMask__bc",&temp.Upsilon_info[3]);
+        tree_upsilon->SetBranchAddress("nROE_Tracks__bocleanMask__bc",&temp.Upsilon_info[4]);
 
         // get Bsig_info
         tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[0]);
@@ -354,13 +358,13 @@ void ReadRootFiles_r(){
     // draw deltaE and Mbc of Btag
     {
         TH1F* temp_hist1 = new TH1F("deltaE_total","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
-        TH1F* temp_hist2 = new TH1F("deltaE_Btag_isSig=1","#DeltaE of B_{tag} when isSignal=1;#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
+        TH1F* temp_hist2 = new TH1F("deltaE_Btag_isSig=1","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
         TH1F* temp_hist3 = new TH1F("deltaE_Btag_isSig!=1","#DeltaE of B_{tag} when isSignal!=1;#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
         TH1F* temp_hist4 = new TH1F("Mbc_total","Mbc of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.3);
-        TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag} when isSignal=1;M_{bc} [GeV];Num of candidate",100,5.1,5.4);
-        TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag} when isSignal!=1;M_{bc} [GeV];Num of candidate",100,5.1,5.4);
-        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag} when isSignal=1;M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
-        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag} when isSignal!=1;M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
+        TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.4);
+        TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.4);
+        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
+        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
 
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
@@ -433,13 +437,13 @@ void ReadRootFiles_r(){
 
     {
         TH1F* temp_hist1 = new TH1F("deltaE_total","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
-        TH1F* temp_hist2 = new TH1F("deltaE_Btag_isSig=1","#DeltaE of B_{tag} when isSignal=1;#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
-        TH1F* temp_hist3 = new TH1F("deltaE_Btag_isSig!=1","#DeltaE of B_{tag} when isSignal!=1;#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
+        TH1F* temp_hist2 = new TH1F("deltaE_Btag_isSig=1","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
+        TH1F* temp_hist3 = new TH1F("deltaE_Btag_isSig!=1","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
         TH1F* temp_hist4 = new TH1F("Mbc_total","Mbc of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.3);
-        TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag} when isSignal=1;M_{bc} [GeV];Num of candidate",100,5.1,5.4);
-        TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag} when isSignal!=1;M_{bc} [GeV];Num of candidate",100,5.1,5.4);
-        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag} when isSignal=1;M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
-        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag} when isSignal!=1;M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
+        TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.4);
+        TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.4);
+        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
+        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
 
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
@@ -512,13 +516,13 @@ void ReadRootFiles_r(){
 
     {
         TH1F* temp_hist1 = new TH1F("deltaE_total","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
-        TH1F* temp_hist2 = new TH1F("deltaE_Btag_isSig=1","#DeltaE of B_{tag} when isSignal=1;#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
-        TH1F* temp_hist3 = new TH1F("deltaE_Btag_isSig!=1","#DeltaE of B_{tag} when isSignal!=1;#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
+        TH1F* temp_hist2 = new TH1F("deltaE_Btag_isSig=1","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
+        TH1F* temp_hist3 = new TH1F("deltaE_Btag_isSig!=1","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
         TH1F* temp_hist4 = new TH1F("Mbc_total","Mbc of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.3);
-        TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag} when isSignal=1;M_{bc} [GeV];Num of candidate",100,5.1,5.4);
-        TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag} when isSignal!=1;M_{bc} [GeV];Num of candidate",100,5.1,5.4);
-        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag} when isSignal=1;M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
-        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag} when isSignal!=1;M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
+        TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.4);
+        TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.4);
+        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
+        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
 
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
@@ -618,14 +622,14 @@ void ReadRootFiles_r(){
     printf("6. number of candidate: %d\n",TotalData.size());
 
     {
-        TH1F* temp_hist1 = new TH1F("deltaE_total","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-0.12,0.12);
-        TH1F* temp_hist2 = new TH1F("deltaE_Btag_isSig=1","#DeltaE of B_{tag} when isSignal=1;#DeltaE [GeV];Num of candidate",100,-0.12, 0.12);
-        TH1F* temp_hist3 = new TH1F("deltaE_Btag_isSig!=1","#DeltaE of B_{tag} when isSignal!=1;#DeltaE [GeV];Num of candidate",100,-0.12, 0.12);
-        TH1F* temp_hist4 = new TH1F("Mbc_total","Mbc of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.29);
-        TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag} when isSignal=1;M_{bc} [GeV];Num of candidate",100,5.26,5.29);
-        TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag} when isSignal!=1;M_{bc} [GeV];Num of candidate",100,5.26,5.29);
-        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag} when isSignal=1;M_{bc} [GeV];#DeltaE [GeV]",1000,5.26,5.29,1000,-0.12,0.12);
-        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag} when isSignal!=1;M_{bc} [GeV];#DeltaE [GeV]",1000,5.26,5.29,1000,-0.12,0.12);
+        TH1F* temp_hist1 = new TH1F("deltaE_total","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-0.15,0.15);
+        TH1F* temp_hist2 = new TH1F("deltaE_Btag_isSig=1","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-0.15, 0.15);
+        TH1F* temp_hist3 = new TH1F("deltaE_Btag_isSig!=1","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-0.15, 0.15);
+        TH1F* temp_hist4 = new TH1F("Mbc_total","Mbc of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.30);
+        TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.30);
+        TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.30);
+        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.26,5.30,1000,-0.15,0.15);
+        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.26,5.30,1000,-0.15,0.15);
 
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
@@ -714,14 +718,14 @@ void ReadRootFiles_r(){
     BCS(&TotalData, 6, true);
 
     {
-        TH1F* temp_hist1 = new TH1F("deltaE_total","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-0.12,0.12);
-        TH1F* temp_hist2 = new TH1F("deltaE_Btag_isSig=1","#DeltaE of B_{tag} when isSignal=1;#DeltaE [GeV];Num of candidate",100,-0.12, 0.12);
-        TH1F* temp_hist3 = new TH1F("deltaE_Btag_isSig!=1","#DeltaE of B_{tag} when isSignal!=1;#DeltaE [GeV];Num of candidate",100,-0.12, 0.12);
-        TH1F* temp_hist4 = new TH1F("Mbc_total","Mbc of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.29);
-        TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag} when isSignal=1;M_{bc} [GeV];Num of candidate",100,5.26,5.29);
-        TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag} when isSignal!=1;M_{bc} [GeV];Num of candidate",100,5.26,5.29);
-        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag} when isSignal=1;M_{bc} [GeV];#DeltaE [GeV]",1000,5.26,5.29,1000,-0.12,0.12);
-        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag} when isSignal!=1;M_{bc} [GeV];#DeltaE [GeV]",1000,5.26,5.29,1000,-0.12,0.12);
+        TH1F* temp_hist1 = new TH1F("deltaE_total","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-0.15,0.15);
+        TH1F* temp_hist2 = new TH1F("deltaE_Btag_isSig=1","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-0.15, 0.15);
+        TH1F* temp_hist3 = new TH1F("deltaE_Btag_isSig!=1","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-0.15, 0.15);
+        TH1F* temp_hist4 = new TH1F("Mbc_total","Mbc of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.30);
+        TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.30);
+        TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.30);
+        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.26,5.30,1000,-0.15,0.15);
+        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.26,5.30,1000,-0.15,0.15);
 
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
@@ -806,5 +810,112 @@ void ReadRootFiles_r(){
         temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SetLogy(); c_temp->SaveAs("SignalProbability_distribution_after_BCS.png");
         delete temp_hist1; delete temp_hist2; delete c_temp;
     }
+
+    {
+        TH1F* temp_hist1 = new TH1F("nROE_ECLcluster_Upsilon_correct","number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt",14,-0.5,13.5);
+        TH1F* temp_hist2 = new TH1F("nROE_ECLcluster_Upsilon_non-correct","number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt",14,-0.5,13.5);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            if(temp_data.Upsilon_info[0] > 0.9 && temp_data.Upsilon_info[0] < 1.1) temp_hist1->Fill(temp_data.Upsilon_info[1]);
+            else { temp_hist2->Fill(temp_data.Upsilon_info[1]); }
+        }
+        temp_hist1->SetStats(false);
+        temp_hist1->SetLineColor(kBlue);
+        temp_hist1->SetLineWidth(2);
+        temp_hist1->SetFillColor(kBlue);
+        temp_hist1->SetFillStyle(3013);
+        temp_hist2->SetStats(false);
+        temp_hist2->SetLineColor(kRed);
+        temp_hist2->SetLineWidth(2);
+        temp_hist2->SetFillColor(kRed);
+        temp_hist2->SetFillStyle(3007);
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SaveAs("nROE_ECLcluster_distribution_after_BCS.png");
+        delete temp_hist1; delete temp_hist2; delete c_temp;
+    }
+
+    {
+        TH1F* temp_hist1 = new TH1F("nROE_KLMcluster_Upsilon_correct","number of KLM clusters in ROE of #Upsilon(4S);number of KLM clusters;evt",14,-0.5,13.5);
+        TH1F* temp_hist2 = new TH1F("nROE_KLMcluster_Upsilon_non-correct","number of KLM clusters in ROE of #Upsilon(4S);number of KLM clusters;evt",14,-0.5,13.5);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            if(temp_data.Upsilon_info[0] > 0.9 && temp_data.Upsilon_info[0] < 1.1) temp_hist1->Fill(temp_data.Upsilon_info[2]);
+            else { temp_hist2->Fill(temp_data.Upsilon_info[2]); }
+        }
+        temp_hist1->SetStats(false);
+        temp_hist1->SetLineColor(kBlue);
+        temp_hist1->SetLineWidth(2);
+        temp_hist1->SetFillColor(kBlue);
+        temp_hist1->SetFillStyle(3013);
+        temp_hist2->SetStats(false);
+        temp_hist2->SetLineColor(kRed);
+        temp_hist2->SetLineWidth(2);
+        temp_hist2->SetFillColor(kRed);
+        temp_hist2->SetFillStyle(3007);
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SaveAs("nROE_KLMcluster_distribution_after_BCS.png");
+        delete temp_hist1; delete temp_hist2; delete c_temp;
+    }
+
+    {
+        TH1F* temp_hist1 = new TH1F("nROE_energy_Upsilon_correct","energy of ROE of #Upsilon(4S);energy of ROE [GeV];evt",50,-0.5,3);
+        TH1F* temp_hist2 = new TH1F("nROE_energy_Upsilon_non-correct","energy of ROE of #Upsilon(4S);energy of ROE;evt",50,-0.5,3);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            if(temp_data.Upsilon_info[0] > 0.9 && temp_data.Upsilon_info[0] < 1.1) temp_hist1->Fill(temp_data.Upsilon_info[3]);
+            else { temp_hist2->Fill(temp_data.Upsilon_info[3]); }
+        }
+        temp_hist1->SetStats(false);
+        temp_hist1->SetLineColor(kBlue);
+        temp_hist1->SetLineWidth(2);
+        temp_hist1->SetFillColor(kBlue);
+        temp_hist1->SetFillStyle(3013);
+        temp_hist2->SetStats(false);
+        temp_hist2->SetLineColor(kRed);
+        temp_hist2->SetLineWidth(2);
+        temp_hist2->SetFillColor(kRed);
+        temp_hist2->SetFillStyle(3007);
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SaveAs("ROE_energy_distribution_after_BCS.png");
+        delete temp_hist1; delete temp_hist2; delete c_temp;
+    }
+
+    {
+        TH1F* temp_hist1 = new TH1F("nROE_track_Upsilon_correct","number of tracks in ROE of #Upsilon(4S);number of tracks;evt",14,-0.5,13.5);
+        TH1F* temp_hist2 = new TH1F("nROE_track_Upsilon_non-correct","number of tracks in ROE of #Upsilon(4S);number of tracks;evt",14,-0.5,13.5);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            if(temp_data.Upsilon_info[0] > 0.9 && temp_data.Upsilon_info[0] < 1.1) temp_hist1->Fill(temp_data.Upsilon_info[4]);
+            else { temp_hist2->Fill(temp_data.Upsilon_info[4]); }
+        }
+        temp_hist1->SetStats(false);
+        temp_hist1->SetLineColor(kBlue);
+        temp_hist1->SetLineWidth(2);
+        temp_hist1->SetFillColor(kBlue);
+        temp_hist1->SetFillStyle(3013);
+        temp_hist2->SetStats(false);
+        temp_hist2->SetLineColor(kRed);
+        temp_hist2->SetLineWidth(2);
+        temp_hist2->SetFillColor(kRed);
+        temp_hist2->SetFillStyle(3007);
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SaveAs("nROE_tracks_distribution_after_BCS.png");
+        delete temp_hist1; delete temp_hist2; delete c_temp;
+    }
+    // 0: Upsilon_isSignal; 1: number of ECL clusters in ROE(cleanMask), 2: number of KLM clusters in ROE
+    //     // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask)
+    //
 
 }
