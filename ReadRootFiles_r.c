@@ -276,10 +276,39 @@ bool IsBCSValid(std::queue<Data> TotalData_){
     return true;
 }
 
+void PrintInformation(std::queue<Data> TotalData_){
+
+    int N_Btag_isSignal_1 = 0;
+    int N_Btag_isSignal_not1 = 0;
+
+    int N_Bsig_isSignal_1 = 0;
+    int N_Bsig_isSignal_not1 = 0;
+
+    int N_Upsilon_isSignal_1 = 0;
+    int N_Upsilon_isSignal_not1 = 0;
+
+    while(!TotalData_.empty()){
+        Data temp = TotalData_.front();
+        TotalData_.pop();
+        if(temp.Upsilon_info[0] > 0.9 && temp.Upsilon_info[0] < 1.1) N_Upsilon_isSignal_1++;
+        else {N_Upsilon_isSignal_not1++;}
+        if(temp.Bsig_info[0] > 0.9 && temp.Bsig_info[0] < 1.1) N_Bsig_isSignal_1++;
+        else {N_Bsig_isSignal_not1++;}
+        if(temp.Btag_info[0] > 0.9 && temp.Btag_info[0] < 1.1) N_Btag_isSignal_1++;
+        else {N_Btag_isSignal_not1++;}
+    }
+    printf("Number of B_tag isSignal = 1: %d\n", N_Btag_isSignal_1);
+    printf("Number of B_tag isSignal != 1: %d\n", N_Btag_isSignal_not1);
+    printf("Number of B_sig isSignal = 1: %d\n", N_Bsig_isSignal_1);
+    printf("Number of B_sig isSignal != 1: %d\n", N_Bsig_isSignal_not1);
+    printf("Number of Upsilon isSignal = 1: %d\n", N_Upsilon_isSignal_1);
+    printf("Number of Upsilon isSignal != 1: %d\n", N_Upsilon_isSignal_not1);
+}
+
 void ReadRootFiles_r(){
 
     std::vector<string> names;
-    const char* dirname = "/home/jwpark/Ntuple19";
+    const char* dirname = "/home/jwpark/Ntuple20";
 
     load_files(dirname, &names);
 
@@ -359,12 +388,12 @@ void ReadRootFiles_r(){
     {
         TH1F* temp_hist1 = new TH1F("deltaE_total","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
         TH1F* temp_hist2 = new TH1F("deltaE_Btag_isSig=1","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
-        TH1F* temp_hist3 = new TH1F("deltaE_Btag_isSig!=1","#DeltaE of B_{tag} when isSignal!=1;#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
+        TH1F* temp_hist3 = new TH1F("deltaE_Btag_isSig!=1","#DeltaE of B_{tag};#DeltaE [GeV];Num of candidate",100,-1.0,1.0);
         TH1F* temp_hist4 = new TH1F("Mbc_total","Mbc of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.3);
         TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.4);
         TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.4);
-        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
-        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
+        TGraph* temp_MbcVSdeltaE_Btag_isSig_one = new TGraph();
+        TGraph* temp_MbcVSdeltaE_Btag_isSig_isnot_one = new TGraph();
 
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
@@ -375,14 +404,14 @@ void ReadRootFiles_r(){
                 temp_hist2->Fill(temp_data.Btag_info[3]);
                 temp_hist4->Fill(temp_data.Btag_info[2]);
                 temp_hist5->Fill(temp_data.Btag_info[2]);
-                temp_hist7->Fill(temp_data.Btag_info[2], temp_data.Btag_info[3]);
+                temp_MbcVSdeltaE_Btag_isSig_one->SetPoint(temp_MbcVSdeltaE_Btag_isSig_one->GetN(),temp_data.Btag_info[2], temp_data.Btag_info[3]);
             }
             else {
                 temp_hist1->Fill(temp_data.Btag_info[3]);
                 temp_hist3->Fill(temp_data.Btag_info[3]);
                 temp_hist4->Fill(temp_data.Btag_info[2]);
                 temp_hist6->Fill(temp_data.Btag_info[2]);
-                temp_hist8->Fill(temp_data.Btag_info[2], temp_data.Btag_info[3]);
+                temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetPoint(temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetN(),temp_data.Btag_info[2], temp_data.Btag_info[3]);
             }
         }
         temp_hist2->SetStats(false);
@@ -405,21 +434,24 @@ void ReadRootFiles_r(){
         temp_hist6->SetLineWidth(2);
         temp_hist6->SetFillColor(kRed);
         temp_hist6->SetFillStyle(3007);
-        temp_hist7->SetMarkerColor(1);
-        temp_hist7->SetMarkerStyle(20);
-        temp_hist7->SetMarkerSize(0.4);
-        temp_hist8->SetStats(false);
-        temp_hist8->SetMarkerColor(2);
-        temp_hist8->SetMarkerStyle(20);
-        temp_hist8->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerColor(1);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerStyle(20);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetTitle("M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]");
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerColor(2);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerStyle(20);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetTitle("M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]");
 
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
         temp_hist1->Draw("Hist"); c_temp->SaveAs("deltaE_total.png");
         temp_hist3->Draw("Hist"); temp_hist2->Draw("SAME"); c_temp->SetLogy(); c_temp->SaveAs("deltaE_total_classified.png"); c_temp->SetLogy(0);
         temp_hist4->Draw("Hist"); c_temp->SaveAs("Mbc_total.png");
         temp_hist6->Draw("Hist"); temp_hist5->Draw("SAME"); c_temp->SetLogy(); c_temp->SaveAs("Mbc_total_classified.png"); c_temp->SetLogy(0);
-        temp_hist8->Draw("Hist"); temp_hist7->Draw("SAME"); c_temp->SaveAs("MbcVSdeltaE.png");
-        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete temp_hist4; delete temp_hist5; delete temp_hist6; delete temp_hist7; delete temp_hist8; delete c_temp;
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->Draw("AP"); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetXaxis()->SetLimits(5.1,5.4); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetHistogram()->SetMaximum(1.0); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetHistogram()->SetMinimum(-1.0);
+        temp_MbcVSdeltaE_Btag_isSig_one->Draw("P");
+        c_temp->SaveAs("MbcVSdeltaE.png");
+        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete temp_hist4; delete temp_hist5; delete temp_hist6; delete temp_MbcVSdeltaE_Btag_isSig_one; delete temp_MbcVSdeltaE_Btag_isSig_isnot_one; delete c_temp;
     }
     printf("1. number of candidate: %d\n",TotalData.size());
 
@@ -442,8 +474,8 @@ void ReadRootFiles_r(){
         TH1F* temp_hist4 = new TH1F("Mbc_total","Mbc of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.3);
         TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.4);
         TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.4);
-        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
-        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
+        TGraph* temp_MbcVSdeltaE_Btag_isSig_one = new TGraph();
+        TGraph* temp_MbcVSdeltaE_Btag_isSig_isnot_one = new TGraph();
 
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
@@ -454,14 +486,14 @@ void ReadRootFiles_r(){
                 temp_hist2->Fill(temp_data.Btag_info[3]);
                 temp_hist4->Fill(temp_data.Btag_info[2]);
                 temp_hist5->Fill(temp_data.Btag_info[2]);
-                temp_hist7->Fill(temp_data.Btag_info[2], temp_data.Btag_info[3]);
+                temp_MbcVSdeltaE_Btag_isSig_one->SetPoint(temp_MbcVSdeltaE_Btag_isSig_one->GetN(),temp_data.Btag_info[2], temp_data.Btag_info[3]);
             }
             else {
                 temp_hist1->Fill(temp_data.Btag_info[3]);
                 temp_hist3->Fill(temp_data.Btag_info[3]);
                 temp_hist4->Fill(temp_data.Btag_info[2]);
                 temp_hist6->Fill(temp_data.Btag_info[2]);
-                temp_hist8->Fill(temp_data.Btag_info[2], temp_data.Btag_info[3]);
+                temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetPoint(temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetN(),temp_data.Btag_info[2], temp_data.Btag_info[3]);
             }
         }
         temp_hist2->SetStats(false);
@@ -484,21 +516,23 @@ void ReadRootFiles_r(){
         temp_hist6->SetLineWidth(2);
         temp_hist6->SetFillColor(kRed);
         temp_hist6->SetFillStyle(3007);
-        temp_hist7->SetMarkerColor(1);
-        temp_hist7->SetMarkerStyle(20);
-        temp_hist7->SetMarkerSize(0.4);
-        temp_hist8->SetStats(false);
-        temp_hist8->SetMarkerColor(2);
-        temp_hist8->SetMarkerStyle(20);
-        temp_hist8->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerColor(1);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerStyle(20);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetTitle("M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]");
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerColor(2);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerStyle(20);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetTitle("M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]");
 
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
         temp_hist1->Draw("Hist"); c_temp->SaveAs("deltaE_total_afterMbc_cut.png");
         temp_hist3->Draw("Hist"); temp_hist2->Draw("SAME"); c_temp->SetLogy(); c_temp->SaveAs("deltaE_total_classified_afterMbc_cut.png"); c_temp->SetLogy(0);
         temp_hist4->Draw("Hist"); c_temp->SaveAs("Mbc_total_afterMbc_cut.png");
-        temp_hist6->Draw("Hist"); temp_hist5->Draw("SAME"); c_temp->SetLogy(); c_temp->SaveAs("Mbc_total_classified_afterMbc_cut.png"); c_temp->SetLogy(0);
-        temp_hist8->Draw("Hist"); temp_hist7->Draw("SAME"); c_temp->SaveAs("MbcVSdeltaE_afterMbc_cut.png");
-        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete temp_hist4; delete temp_hist5; delete temp_hist6; delete temp_hist7; delete temp_hist8; delete c_temp;
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->Draw("AP"); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetXaxis()->SetLimits(5.1,5.4); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetHistogram()->SetMaximum(1.0); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetHistogram()->SetMinimum(-1.0);
+        temp_MbcVSdeltaE_Btag_isSig_one->Draw("P");
+        c_temp->SaveAs("MbcVSdeltaE_afterMbc_cut.png");
+        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete temp_hist4; delete temp_hist5; delete temp_hist6; delete temp_MbcVSdeltaE_Btag_isSig_one; delete temp_MbcVSdeltaE_Btag_isSig_isnot_one; delete c_temp;
     }
     printf("3. number of candidate: %d\n",TotalData.size());
 
@@ -521,8 +555,8 @@ void ReadRootFiles_r(){
         TH1F* temp_hist4 = new TH1F("Mbc_total","Mbc of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.3);
         TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.4);
         TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.1,5.4);
-        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
-        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.1,5.4,1000,-1.0,1.0);
+        TGraph* temp_MbcVSdeltaE_Btag_isSig_one = new TGraph();
+        TGraph* temp_MbcVSdeltaE_Btag_isSig_isnot_one = new TGraph();
 
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
@@ -533,14 +567,14 @@ void ReadRootFiles_r(){
                 temp_hist2->Fill(temp_data.Btag_info[3]);
                 temp_hist4->Fill(temp_data.Btag_info[2]);
                 temp_hist5->Fill(temp_data.Btag_info[2]);
-                temp_hist7->Fill(temp_data.Btag_info[2], temp_data.Btag_info[3]);
+                temp_MbcVSdeltaE_Btag_isSig_one->SetPoint(temp_MbcVSdeltaE_Btag_isSig_one->GetN(),temp_data.Btag_info[2], temp_data.Btag_info[3]);
             }
             else {
                 temp_hist1->Fill(temp_data.Btag_info[3]);
                 temp_hist3->Fill(temp_data.Btag_info[3]);
                 temp_hist4->Fill(temp_data.Btag_info[2]);
                 temp_hist6->Fill(temp_data.Btag_info[2]);
-                temp_hist8->Fill(temp_data.Btag_info[2], temp_data.Btag_info[3]);
+                temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetPoint(temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetN(),temp_data.Btag_info[2], temp_data.Btag_info[3]);
             }
         }
         temp_hist2->SetStats(false);
@@ -563,21 +597,24 @@ void ReadRootFiles_r(){
         temp_hist6->SetLineWidth(2);
         temp_hist6->SetFillColor(kRed);
         temp_hist6->SetFillStyle(3007);
-        temp_hist7->SetMarkerColor(1);
-        temp_hist7->SetMarkerStyle(20);
-        temp_hist7->SetMarkerSize(0.4);
-        temp_hist8->SetStats(false);
-        temp_hist8->SetMarkerColor(2);
-        temp_hist8->SetMarkerStyle(20);
-        temp_hist8->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerColor(1);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerStyle(20);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetTitle("M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]");
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerColor(2);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerStyle(20);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetTitle("M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]");
 
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
         temp_hist1->Draw("Hist"); c_temp->SaveAs("deltaE_total_afterMbc_cut_after_deltaE_cut.png");
         temp_hist3->Draw("Hist"); temp_hist2->Draw("SAME"); c_temp->SetLogy(); c_temp->SaveAs("deltaE_total_classified_afterMbc_cut_after_deltaE_cut.png"); c_temp->SetLogy(0);
         temp_hist4->Draw("Hist"); c_temp->SaveAs("Mbc_total_afterMbc_cut_after_deltaE_cut.png");
         temp_hist6->Draw("Hist"); temp_hist5->Draw("SAME"); c_temp->SetLogy(); c_temp->SaveAs("Mbc_total_classified_afterMbc_cut_after_deltaE_cut.png"); c_temp->SetLogy(0);
-        temp_hist8->Draw("Hist"); temp_hist7->Draw("SAME"); c_temp->SaveAs("MbcVSdeltaE_afterMbc_cut_after_deltaE_cut.png");
-        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete temp_hist4; delete temp_hist5; delete temp_hist6; delete temp_hist7; delete temp_hist8; delete c_temp;
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->Draw("AP"); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetXaxis()->SetLimits(5.1,5.4); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetHistogram()->SetMaximum(1.0); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetHistogram()->SetMinimum(-1.0);
+        temp_MbcVSdeltaE_Btag_isSig_one->Draw("P");
+        c_temp->SaveAs("MbcVSdeltaE_afterMbc_cut_after_deltaE_cut.png");
+        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete temp_hist4; delete temp_hist5; delete temp_hist6; delete temp_MbcVSdeltaE_Btag_isSig_one; delete temp_MbcVSdeltaE_Btag_isSig_isnot_one; delete c_temp;
     }
     printf("5. number of candidate: %d\n",TotalData.size());
 
@@ -628,8 +665,8 @@ void ReadRootFiles_r(){
         TH1F* temp_hist4 = new TH1F("Mbc_total","Mbc of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.30);
         TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.30);
         TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.30);
-        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.26,5.30,1000,-0.15,0.15);
-        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.26,5.30,1000,-0.15,0.15);
+        TGraph* temp_MbcVSdeltaE_Btag_isSig_one = new TGraph();
+        TGraph* temp_MbcVSdeltaE_Btag_isSig_isnot_one = new TGraph();
 
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
@@ -640,14 +677,14 @@ void ReadRootFiles_r(){
                 temp_hist2->Fill(temp_data.Btag_info[3]);
                 temp_hist4->Fill(temp_data.Btag_info[2]);
                 temp_hist5->Fill(temp_data.Btag_info[2]);
-                temp_hist7->Fill(temp_data.Btag_info[2], temp_data.Btag_info[3]);
+                temp_MbcVSdeltaE_Btag_isSig_one->SetPoint(temp_MbcVSdeltaE_Btag_isSig_one->GetN(),temp_data.Btag_info[2], temp_data.Btag_info[3]);
             }
             else {
                 temp_hist1->Fill(temp_data.Btag_info[3]);
                 temp_hist3->Fill(temp_data.Btag_info[3]);
                 temp_hist4->Fill(temp_data.Btag_info[2]);
                 temp_hist6->Fill(temp_data.Btag_info[2]);
-                temp_hist8->Fill(temp_data.Btag_info[2], temp_data.Btag_info[3]);
+                temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetPoint(temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetN(),temp_data.Btag_info[2], temp_data.Btag_info[3]);
             }
         }
         temp_hist2->SetStats(false);
@@ -670,21 +707,24 @@ void ReadRootFiles_r(){
         temp_hist6->SetLineWidth(2);
         temp_hist6->SetFillColor(kRed);
         temp_hist6->SetFillStyle(3007);
-        temp_hist7->SetMarkerColor(1);
-        temp_hist7->SetMarkerStyle(20);
-        temp_hist7->SetMarkerSize(0.4);
-        temp_hist8->SetStats(false);
-        temp_hist8->SetMarkerColor(2);
-        temp_hist8->SetMarkerStyle(20);
-        temp_hist8->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerColor(1);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerStyle(20);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetTitle("M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]");
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerColor(2);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerStyle(20);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetTitle("M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]");
 
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
         temp_hist1->Draw("Hist"); c_temp->SaveAs("deltaE_total_afterMbc_cut_after_deltaE_cut_after_atc_cut.png");
         temp_hist3->Draw("Hist"); temp_hist2->Draw("SAME"); c_temp->SetLogy(); c_temp->SaveAs("deltaE_total_classified_afterMbc_cut_after_deltaE_cut_after_atc_cut.png"); c_temp->SetLogy(0);
         temp_hist4->Draw("Hist"); c_temp->SaveAs("Mbc_total_afterMbc_cut_after_deltaE_cut_after_atc_cut.png");
         temp_hist6->Draw("Hist"); temp_hist5->Draw("SAME"); c_temp->SetLogy(); c_temp->SaveAs("Mbc_total_classified_afterMbc_cut_after_deltaE_cut_after_atc_cut.png"); c_temp->SetLogy(0);
-        temp_hist8->Draw("Hist"); temp_hist7->Draw("SAME"); c_temp->SaveAs("MbcVSdeltaE_afterMbc_cut_after_deltaE_cut_after_atc_cut.png");
-        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete temp_hist4; delete temp_hist5; delete temp_hist6; delete temp_hist7; delete temp_hist8; delete c_temp;
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->Draw("AP"); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetXaxis()->SetLimits(5.26,5.30); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetHistogram()->SetMaximum(0.15); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetHistogram()->SetMinimum(-0.15);
+        temp_MbcVSdeltaE_Btag_isSig_one->Draw("P");
+        c_temp->SaveAs("MbcVSdeltaE_afterMbc_cut_after_deltaE_cut_after_atc_cut.png");
+        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete temp_hist4; delete temp_hist5; delete temp_hist6; delete temp_MbcVSdeltaE_Btag_isSig_one; delete temp_MbcVSdeltaE_Btag_isSig_isnot_one; delete c_temp;
     }
     printf("7. number of candidate: %d\n",TotalData.size());
 
@@ -724,8 +764,8 @@ void ReadRootFiles_r(){
         TH1F* temp_hist4 = new TH1F("Mbc_total","Mbc of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.30);
         TH1F* temp_hist5 = new TH1F("Mbc_Btag_isSig=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.30);
         TH1F* temp_hist6 = new TH1F("Mbc_Btag_isSig!=1","M_{bc} of B_{tag};M_{bc} [GeV];Num of candidate",100,5.26,5.30);
-        TH2F* temp_hist7 = new TH2F("MbcVSdeltaE_Btag_isSig=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.26,5.30,1000,-0.15,0.15);
-        TH2F* temp_hist8 = new TH2F("MbcVSdeltaE_Btag_isSig!=1", "M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]",1000,5.26,5.30,1000,-0.15,0.15);
+        TGraph* temp_MbcVSdeltaE_Btag_isSig_one = new TGraph();
+        TGraph* temp_MbcVSdeltaE_Btag_isSig_isnot_one = new TGraph();
 
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
@@ -736,14 +776,14 @@ void ReadRootFiles_r(){
                 temp_hist2->Fill(temp_data.Btag_info[3]);
                 temp_hist4->Fill(temp_data.Btag_info[2]);
                 temp_hist5->Fill(temp_data.Btag_info[2]);
-                temp_hist7->Fill(temp_data.Btag_info[2], temp_data.Btag_info[3]);
+                temp_MbcVSdeltaE_Btag_isSig_one->SetPoint(temp_MbcVSdeltaE_Btag_isSig_one->GetN(),temp_data.Btag_info[2], temp_data.Btag_info[3]);
             }
             else {
                 temp_hist1->Fill(temp_data.Btag_info[3]);
                 temp_hist3->Fill(temp_data.Btag_info[3]);
                 temp_hist4->Fill(temp_data.Btag_info[2]);
                 temp_hist6->Fill(temp_data.Btag_info[2]);
-                temp_hist8->Fill(temp_data.Btag_info[2], temp_data.Btag_info[3]);
+                temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetPoint(temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetN(),temp_data.Btag_info[2], temp_data.Btag_info[3]);
             }
         }
         temp_hist2->SetStats(false);
@@ -766,21 +806,24 @@ void ReadRootFiles_r(){
         temp_hist6->SetLineWidth(2);
         temp_hist6->SetFillColor(kRed);
         temp_hist6->SetFillStyle(3007);
-        temp_hist7->SetMarkerColor(1);
-        temp_hist7->SetMarkerStyle(20);
-        temp_hist7->SetMarkerSize(0.4);
-        temp_hist8->SetStats(false);
-        temp_hist8->SetMarkerColor(2);
-        temp_hist8->SetMarkerStyle(20);
-        temp_hist8->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerColor(1);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerStyle(20);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_one->SetTitle("M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]");
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerColor(2);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerStyle(20);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetMarkerSize(0.4);
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->SetTitle("M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]");
 
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
         temp_hist1->Draw("Hist"); c_temp->SaveAs("deltaE_total_afterMbc_cut_after_deltaE_cut_after_atc_cut_after_BCS.png");
         temp_hist3->Draw("Hist"); temp_hist2->Draw("SAME"); c_temp->SetLogy(); c_temp->SaveAs("deltaE_total_classified_afterMbc_cut_after_deltaE_cut_after_atc_cut_after_BCS.png"); c_temp->SetLogy(0);
         temp_hist4->Draw("Hist"); c_temp->SaveAs("Mbc_total_afterMbc_cut_after_deltaE_cut_after_atc_cut_after_BCS.png");
         temp_hist6->Draw("Hist"); temp_hist5->Draw("SAME"); c_temp->SetLogy(); c_temp->SaveAs("Mbc_total_classified_afterMbc_cut_after_deltaE_cut_after_atc_cut_after_BCS.png"); c_temp->SetLogy(0);
-        temp_hist8->Draw("Hist"); temp_hist7->Draw("SAME"); c_temp->SaveAs("MbcVSdeltaE_afterMbc_cut_after_deltaE_cut_after_atc_cut_after_BCS.png");
-        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete temp_hist4; delete temp_hist5; delete temp_hist6; delete temp_hist7; delete temp_hist8; delete c_temp;
+        temp_MbcVSdeltaE_Btag_isSig_isnot_one->Draw("AP"); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetXaxis()->SetLimits(5.26,5.30); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetHistogram()->SetMaximum(0.15); temp_MbcVSdeltaE_Btag_isSig_isnot_one->GetHistogram()->SetMinimum(-0.15);
+        temp_MbcVSdeltaE_Btag_isSig_one->Draw("P");
+        c_temp->SaveAs("MbcVSdeltaE_afterMbc_cut_after_deltaE_cut_after_atc_cut_after_BCS.png");
+        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete temp_hist4; delete temp_hist5; delete temp_hist6; delete temp_MbcVSdeltaE_Btag_isSig_one; delete temp_MbcVSdeltaE_Btag_isSig_isnot_one; delete c_temp;
     }
     printf("8. number of candidate: %d\n",TotalData.size());
     if(IsBCSValid(TotalData) == false) {printf("error!\n"); return;}
@@ -864,8 +907,8 @@ void ReadRootFiles_r(){
     }
 
     {
-        TH1F* temp_hist1 = new TH1F("nROE_energy_Upsilon_correct","energy of ROE of #Upsilon(4S);energy of ROE [GeV];evt",50,-0.5,3);
-        TH1F* temp_hist2 = new TH1F("nROE_energy_Upsilon_non-correct","energy of ROE of #Upsilon(4S);energy of ROE;evt",50,-0.5,3);
+        TH1F* temp_hist1 = new TH1F("nROE_energy_Upsilon_correct","energy of ROE of #Upsilon(4S);energy of ROE [GeV];evt",50,0,3);
+        TH1F* temp_hist2 = new TH1F("nROE_energy_Upsilon_non-correct","energy of ROE of #Upsilon(4S);energy of ROE;evt",50,0,3);
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
             Data temp_data = temp_queue.front();
@@ -914,8 +957,61 @@ void ReadRootFiles_r(){
         temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SaveAs("nROE_tracks_distribution_after_BCS.png");
         delete temp_hist1; delete temp_hist2; delete c_temp;
     }
-    // 0: Upsilon_isSignal; 1: number of ECL clusters in ROE(cleanMask), 2: number of KLM clusters in ROE
-    //     // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask)
-    //
 
+    {
+        TH1F* temp_hist = new TH1F("Bsig_E_LAB","energy of B_{sig} at LAB frame;energy [GeV];evt",50,-0.5,6);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Bsig_info[1]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("Bsig_E_LAB_after_BCS.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    {
+        TH1F* temp_hist = new TH1F("Bsig_E_CMS","energy of B_{sig} at CMS frame;energy [GeV];evt",50,-0.5,6);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Bsig_info[2]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("Bsig_E_CMS_after_BCS.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    {
+        TH1F* temp_hist = new TH1F("Bsig_E_RecoilRest","energy of B_{sig} at rest frame of recoil system;energy [GeV];evt",50,-0.5,6);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Bsig_info[3]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("Bsig_E_recoil_after_BCS.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    {
+        TH1F* temp_hist = new TH1F("Btag_dmID","decay ID of B_{tag};decay ID;evt",74,-0.5,36.5);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Btag_info[1]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("Btag_dmID_after_BCS.png");
+        delete temp_hist; delete c_temp;
+    }
+    PrintInformation(TotalData);
 }
