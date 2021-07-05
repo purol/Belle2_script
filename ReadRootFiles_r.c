@@ -284,7 +284,7 @@ void Draw_Mbc_deltaE_Btag_projection(std::queue<Data> TotalData_, int index){
 
 void BCS(std::queue<Data>* TotalData_, int index, bool select_highest = true){
 
-    printf("===== BCS =====");
+    printf("===== BCS =====\n");
 
     std::queue<Data> new_container;
 
@@ -390,8 +390,9 @@ void PrintInformation(std::queue<Data> TotalData_){
         else {N_Btag_isSignal_not1++;}
 
         for(unsigned int i=0; i<label_list.size(); i++){
-            if(label_list.at(i).__experiment__ == temp.event_info[0] && label_list.at(i).__run__ == temp.event_info[1] && label_list.at(i).__event__ == temp.event_info[2] && label_list.at(i).__ncandidates__ == temp.event_info[4]) { N_event++; }
+            if(label_list.at(i).__experiment__ == temp.event_info[0] && label_list.at(i).__run__ == temp.event_info[1] && label_list.at(i).__event__ == temp.event_info[2] && label_list.at(i).__ncandidates__ == temp.event_info[4]) { }
             else {
+                N_event++;
                 Labels temp_Labels;
                 temp_Labels.__experiment__ = temp.event_info[0];
                 temp_Labels.__run__ = temp.event_info[1];
@@ -403,7 +404,7 @@ void PrintInformation(std::queue<Data> TotalData_){
 
     }
     printf("Number of event: %d\n", N_event);
-    printf("Number of candidate: %d", N_candidate);
+    printf("Number of candidate: %d\n", N_candidate);
     printf("Number of B_tag isSignal = 1: %d\n", N_Btag_isSignal_1);
     printf("Number of B_tag isSignal != 1: %d\n", N_Btag_isSignal_not1);
     printf("Number of B_sig isSignal = 1: %d\n", N_Bsig_isSignal_1);
@@ -494,7 +495,7 @@ void ReadRootFiles_r(){
 
     // cut Mbc > 5.2
     {
-        printf("====== Mbc > 5.2 GeV =====");
+        printf("====== Mbc > 5.2 GeV =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
@@ -510,7 +511,7 @@ void ReadRootFiles_r(){
 
     // cut abs(deltaE) < 0.5
     {
-        printf("===== abs(deltaE) < 0.5 =====");
+        printf("===== abs(deltaE) < 0.5 =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
@@ -556,7 +557,7 @@ void ReadRootFiles_r(){
 
     // cut: atcPID(3,2) > 0.6 for daughter of Bsig
     {
-        printf("===== atcPID(3,2) of Bsig > 0.6 =====");
+        printf("===== atcPID(3,2) of Bsig > 0.6 =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
@@ -608,7 +609,7 @@ void ReadRootFiles_r(){
 
     // Mbc > 5.27 cut
     {
-        printf("====== Mbc > 5.27 GeV =====");
+        printf("====== Mbc > 5.27 GeV =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
@@ -624,7 +625,7 @@ void ReadRootFiles_r(){
 
     // abs(deltaE) < 0.1 cut
     {
-        printf("===== abs(deltaE) < 0.1 =====");
+        printf("===== abs(deltaE) < 0.1 =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
