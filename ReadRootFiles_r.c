@@ -284,6 +284,8 @@ void Draw_Mbc_deltaE_Btag_projection(std::queue<Data> TotalData_, int index){
 
 void BCS(std::queue<Data>* TotalData_, int index, bool select_highest = true){
 
+    printf("===== BCS =====");
+
     std::queue<Data> new_container;
 
     while(!TotalData_->empty()){
@@ -357,6 +359,13 @@ bool IsBCSValid(std::queue<Data> TotalData_){
 }
 
 void PrintInformation(std::queue<Data> TotalData_){
+    typedef struct labels{
+        int __experiment__;
+        int __run__;
+        int __event__;
+        int __ncandidates__;
+    } Labels;
+    std::vector<Labels> label_list;
 
     int N_Btag_isSignal_1 = 0;
     int N_Btag_isSignal_not1 = 0;
@@ -367,6 +376,9 @@ void PrintInformation(std::queue<Data> TotalData_){
     int N_Upsilon_isSignal_1 = 0;
     int N_Upsilon_isSignal_not1 = 0;
 
+    int N_candidate = TotalData_.size();
+    int N_event = 0;
+
     while(!TotalData_.empty()){
         Data temp = TotalData_.front();
         TotalData_.pop();
@@ -376,7 +388,22 @@ void PrintInformation(std::queue<Data> TotalData_){
         else {N_Bsig_isSignal_not1++;}
         if(temp.Btag_info[0] > 0.9 && temp.Btag_info[0] < 1.1) N_Btag_isSignal_1++;
         else {N_Btag_isSignal_not1++;}
+
+        for(unsigned int i=0; i<label_list.size(); i++){
+            if(label_list.at(i).__experiment__ == temp.event_info[0] && label_list.at(i).__run__ == temp.event_info[1] && label_list.at(i).__event__ == temp.event_info[2] && label_list.at(i).__ncandidates__ == temp.event_info[4]) { N_event++; }
+            else {
+                Labels temp_Labels;
+                temp_Labels.__experiment__ = temp.event_info[0];
+                temp_Labels.__run__ = temp.event_info[1];
+                temp_Labels.__event__ = temp.event_info[2];
+                temp_Labels.__ncandidates__ = temp.event_info[4];
+                label_list.push_back(temp_Labels);
+            }
+        }
+
     }
+    printf("Number of event: %d\n", N_event);
+    printf("Number of candidate: %d", N_candidate);
     printf("Number of B_tag isSignal = 1: %d\n", N_Btag_isSignal_1);
     printf("Number of B_tag isSignal != 1: %d\n", N_Btag_isSignal_not1);
     printf("Number of B_sig isSignal = 1: %d\n", N_Bsig_isSignal_1);
@@ -460,39 +487,41 @@ void ReadRootFiles_r(){
     if(event_info_is_valid(TotalData) == false) { printf("error!\n"); return; }
     printf("Total %d entries\n", totalnum_entry);
 
+    PrintInformation(TotalData);
+
     // draw deltaE and Mbc of Btag
     Draw_Mbc_deltaE_Btag_projection(TotalData, 0);
-    printf("1. number of candidate: %d\n",TotalData.size());
 
-    // cut Mbc > 5.27
+    // cut Mbc > 5.2
     {
+        printf("====== Mbc > 5.2 GeV =====");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
             TotalData.pop();
-            if(temp_data.Btag_info[2] > 5.27) temp_queue.push(temp_data);
+            if(temp_data.Btag_info[2] > 5.2) temp_queue.push(temp_data);
         }
         TotalData = temp_queue;
     }
-    printf("2. number of candidate: %d\n",TotalData.size());
+
+    PrintInformation(TotalData);
 
     Draw_Mbc_deltaE_Btag_projection(TotalData, 1);
-    printf("3. number of candidate: %d\n", TotalData.size());
 
-    // cut abs(deltaE) < 0.1
+    // cut abs(deltaE) < 0.5
     {
+        printf("===== abs(deltaE) < 0.5 =====");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
             TotalData.pop();
-            if(temp_data.Btag_info[3] > -0.1 && temp_data.Btag_info[3] < 0.1) temp_queue.push(temp_data);
+            if(temp_data.Btag_info[3] > -0.5 && temp_data.Btag_info[3] < 0.5) temp_queue.push(temp_data);
         }
         TotalData = temp_queue;
     }
-    printf("4. number of candidate: %d\n",TotalData.size());
+    PrintInformation(TotalData);
 
     Draw_Mbc_deltaE_Btag_projection(TotalData, 2);
-    printf("5. number of candidate: %d\n",TotalData.size());
 
     // draw atcPIDBelle_3_2 distribution with respect to mcPDG
     {
@@ -527,6 +556,7 @@ void ReadRootFiles_r(){
 
     // cut: atcPID(3,2) > 0.6 for daughter of Bsig
     {
+        printf("===== atcPID(3,2) of Bsig > 0.6 =====");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
@@ -535,10 +565,10 @@ void ReadRootFiles_r(){
         }
         TotalData = temp_queue;
     }
-    printf("6. number of candidate: %d\n",TotalData.size());
+
+    PrintInformation(TotalData);
 
     Draw_Mbc_deltaE_Btag_projection(TotalData, 3);
-    printf("7. number of candidate: %d\n",TotalData.size());
 
     { 
         TH1F* temp_hist1 = new TH1F("SignalProbability_Btag_correct","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
@@ -573,8 +603,39 @@ void ReadRootFiles_r(){
     BCS(&TotalData, 6, true);
 
     Draw_Mbc_deltaE_Btag_projection(TotalData, 4);
-    printf("8. number of candidate: %d\n",TotalData.size());
+    PrintInformation(TotalData);
     if(IsBCSValid(TotalData) == false) {printf("error!\n"); return;}
+
+    // Mbc > 5.27 cut
+    {
+        printf("====== Mbc > 5.27 GeV =====");
+        std::queue<Data> temp_queue;
+        while(!TotalData.empty()){
+            Data temp_data = TotalData.front();
+            TotalData.pop();
+            if(temp_data.Btag_info[2] > 5.27) temp_queue.push(temp_data);
+        }
+        TotalData = temp_queue;
+    }
+
+    PrintInformation(TotalData);
+
+    Draw_Mbc_deltaE_Btag_projection(TotalData, 5);
+
+    // abs(deltaE) < 0.1 cut
+    {
+        printf("===== abs(deltaE) < 0.1 =====");
+        std::queue<Data> temp_queue;
+        while(!TotalData.empty()){
+            Data temp_data = TotalData.front();
+            TotalData.pop();
+            if(temp_data.Btag_info[3] > -0.1 && temp_data.Btag_info[3] < 0.1) temp_queue.push(temp_data);
+        }
+        TotalData = temp_queue;
+    }
+    PrintInformation(TotalData);
+
+    Draw_Mbc_deltaE_Btag_projection(TotalData, 6);
 
     {
         TH1F* temp_hist1 = new TH1F("SignalProbability_Btag_correct","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
@@ -764,5 +825,4 @@ void ReadRootFiles_r(){
         temp_hist->Draw("Hist"); c_temp->SaveAs("Btag_dmID_after_BCS.png");
         delete temp_hist; delete c_temp;
     }
-    PrintInformation(TotalData);
 }
