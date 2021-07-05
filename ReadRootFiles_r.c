@@ -389,17 +389,18 @@ void PrintInformation(std::queue<Data> TotalData_){
         if(temp.Btag_info[0] > 0.9 && temp.Btag_info[0] < 1.1) N_Btag_isSignal_1++;
         else {N_Btag_isSignal_not1++;}
 
+        bool overlap = false;
         for(unsigned int i=0; i<label_list.size(); i++){
-            if(label_list.at(i).__experiment__ == temp.event_info[0] && label_list.at(i).__run__ == temp.event_info[1] && label_list.at(i).__event__ == temp.event_info[2] && label_list.at(i).__ncandidates__ == temp.event_info[4]) { }
-            else {
-                N_event++;
-                Labels temp_Labels;
-                temp_Labels.__experiment__ = temp.event_info[0];
-                temp_Labels.__run__ = temp.event_info[1];
-                temp_Labels.__event__ = temp.event_info[2];
-                temp_Labels.__ncandidates__ = temp.event_info[4];
-                label_list.push_back(temp_Labels);
-            }
+            if(label_list.at(i).__experiment__ == temp.event_info[0] && label_list.at(i).__run__ == temp.event_info[1] && label_list.at(i).__event__ == temp.event_info[2] && label_list.at(i).__ncandidates__ == temp.event_info[4]) { overlap = true; }
+        }
+        if(overlap == false){
+            N_event++;
+            Labels temp_Labels;
+            temp_Labels.__experiment__ = temp.event_info[0];
+            temp_Labels.__run__ = temp.event_info[1];
+            temp_Labels.__event__ = temp.event_info[2];
+            temp_Labels.__ncandidates__ = temp.event_info[4];
+            label_list.push_back(temp_Labels);
         }
 
     }
