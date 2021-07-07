@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # usage: basf2 MakeNtuple_multi.py "./20210402/evt-0.mdst"
-# last: 2021-07-05-0
+# last: 2021-07-06-1
 
 import os
 import sys
@@ -65,14 +65,14 @@ if monitoring:
 # fill particle list
 ma.fillParticleList(decayString="K+:mychargedKaon", cut="atcPIDBelle(3,2)>0.6",path=my_path)
 ma.fillParticleList(decayString="K+:all", cut="", path=my_path)
-ma.fillParticleList(decayString="pi+:all", cut="", path=my_path)
-ma.fillParticleList(decayString="gamma:all", cut="", path=my_path)
+#ma.fillParticleList(decayString="pi+:all", cut="", path=my_path)
+#ma.fillParticleList(decayString="gamma:all", cut="", path=my_path)
 
-ma.reconstructDecay("pi0:all -> gamma:all gamma:all", cut="", path = my_path)
+#ma.reconstructDecay("pi0:all -> gamma:all gamma:all", cut="", path = my_path)
 
-ma.reconstructDecay("K_S0:ch0 -> pi+:all pi-:all", cut ="", dmID=0, path=my_path)
-ma.reconstructDecay("K_S0:ch1 -> pi0:all pi0:all", cut ="", dmID=1, path=my_path)
-ma.copyLists(outputListName="K_S0:myKaonShort", inputListNames=["K_S0:ch0", "K_S0:ch1"], path=my_path)
+#ma.reconstructDecay("K_S0:ch0 -> pi+:all pi-:all", cut ="", dmID=0, path=my_path)
+#ma.reconstructDecay("K_S0:ch1 -> pi0:all pi0:all", cut ="", dmID=1, path=my_path)
+#ma.copyLists(outputListName="K_S0:myKaonShort", inputListNames=["K_S0:ch0", "K_S0:ch1"], path=my_path)
 
 # ==============================
 # FEI
@@ -106,15 +106,15 @@ cleanMask = ("cleanMask",track_selection, cluster_selection)
 ma.reconstructDecay("B+:sig_ch0 -> K+:all ?nu", cut="", dmID=0, path = my_path)
 # B0 -> K0 nu nu & K0 -> K0S
 # K0S -> pi+ pi- or pi0 pi0
-ma.reconstructDecay("B0:neutral_sig_ch0 -> K_S0:myKaonShort ?nu", cut="", dmID=0, path=my_path)
+#ma.reconstructDecay("B0:neutral_sig_ch0 -> K_S0:myKaonShort ?nu", cut="", dmID=0, path=my_path)
 
 # To Do: add other decay modes
 ma.copyLists(outputListName="B+:sig", inputListNames=["B+:sig_ch0"], path=my_path)
-ma.copyLists(outputListName="B0:neutral_sig", inputListNames=["B0:neutral_sig_ch0"],path=my_path)
+#ma.copyLists(outputListName="B0:neutral_sig", inputListNames=["B0:neutral_sig_ch0"],path=my_path)
 
 # Upsilon(4S) -> Btag K
 ma.reconstructDecay("Upsilon(4S):withoutneutrino_charged -> B+:generic B-:sig",cut ="", dmID = 0, path=my_path)
-ma.reconstructDecay("Upsilon(4S):withoutneutrino_neutral -> B0:generic anti-B0:neutral_sig",cut ="", dmID = 1, path=my_path)
+#ma.reconstructDecay("Upsilon(4S):withoutneutrino_neutral -> B0:generic anti-B0:neutral_sig",cut ="", dmID = 1, path=my_path)
 #ma.copyLists(outputListName="Upsilon(4S):withoutneutrino", inputListNames=["Upsilon(4S):withoutneutrino_charged", "Upsilon(4S):withoutneutrino_neutral"], path=my_path)
 ma.copyLists(outputListName="Upsilon(4S):withoutneutrino", inputListNames=["Upsilon(4S):withoutneutrino_charged"], path=my_path)
 ma.buildRestOfEvent("Upsilon(4S):withoutneutrino", path=my_path)
@@ -131,15 +131,15 @@ ma.rankByHighest(particleList="Upsilon(4S):withoutneutrino", variable="SignalPro
 # --- MC truth ---
 ma.looseMCTruth(list_name = "B+:generic", path = my_path)
 ma.looseMCTruth(list_name = "B+:sig", path = my_path)
-ma.looseMCTruth(list_name = "B0:generic", path = my_path)
-ma.looseMCTruth(list_name = "B0:neutral_sig", path = my_path)
+#ma.looseMCTruth(list_name = "B0:generic", path = my_path)
+#ma.looseMCTruth(list_name = "B0:neutral_sig", path = my_path)
 ma.looseMCTruth(list_name = "Upsilon(4S):withoutneutrino", path = my_path)
 
 # --- decay string ---
 my_path.add_module('ParticleMCDecayString', listName="B+:generic", fileName=name+'hashmap_Btag.root')
 my_path.add_module('ParticleMCDecayString', listName="B+:sig", fileName=name+'hashmap_Bsig.root')
-my_path.add_module('ParticleMCDecayString', listName="B0:generic", fileName=name+'hashmap_Btag_neutral.root')
-my_path.add_module('ParticleMCDecayString', listName="B0:neutral_sig", fileName=name+'hashmap_Bsig_neutral.root')
+#my_path.add_module('ParticleMCDecayString', listName="B0:generic", fileName=name+'hashmap_Btag_neutral.root')
+#my_path.add_module('ParticleMCDecayString', listName="B0:neutral_sig", fileName=name+'hashmap_Bsig_neutral.root')
 my_path.add_module('ParticleMCDecayString', listName='Upsilon(4S):withoutneutrino', fileName=name+'hashmap_Upsilon.root')
 
 # get variables
@@ -154,9 +154,9 @@ othervar = ["PDG", "extraInfo(decayModeID)"]
 
 Btag_vars = vu.create_aliases(list_of_variables = Kinematics + Btag_cut + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["extraInfo(SignalProbability)"], wrapper = "daughter(0,{variable})",prefix="Btag")
 
-Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["daughter(0, atcPIDBelle(3,2))", "daughter(0, mcPDG)", "daughter(0, genParticleID)"], wrapper = "daughter(1,{variable})", prefix="Bsig")
+Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["daughter(0, atcPIDBelle(3,2))", "daughter(0, dr)", "daughter(0, dz)", "daughter(0, mcPDG)", "daughter(0, genParticleID)"], wrapper = "daughter(1,{variable})", prefix="Bsig")
 
-U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + mcvar + decayhash + othervar + ["extraInfo(Upsilon_rank)", "nROE_ECLClusters(cleanMask)", "nROE_KLMClusters", "roeE(cleanMask)", "roeMC_E", "nROE_Tracks(cleanMask)", "weMissE(cleanMask,0)", "weMissE(cleanMask,5)"]
+U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + mcvar + decayhash + othervar + ["extraInfo(Upsilon_rank)", "nROE_ECLClusters(cleanMask)", "nROE_KLMClusters", "roeE(cleanMask)", "roeMC_E", "nROE_Tracks(cleanMask)", "weMissE(cleanMask,0)", "weMissE(cleanMask,5)", "roeEextra(cleanMask)"]
 
 output_file = name+"_Ntuple.root"
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Btag_vars,filename=output_file,treename="Btag",path=my_path)
