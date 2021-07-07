@@ -26,18 +26,21 @@ typedef struct data{
     // 5: Bsig_experiment, 6: Bsig_run, 7: Bsig_event, 8: Bsig_candidate, 9: Bsig_ncandidates
     // 10: Btag_experiment, 11: Btag_run, 12: Btag_event, 13: Btag_candidate, 14: Btag_ncandidates
 
-    double Upsilon_info[5];
+    double Upsilon_info[8];
     // 0: Upsilon_isSignal; 1: number of ECL clusters in ROE(cleanMask), 2: number of KLM clusters in ROE
-    // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask)
+    // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask), 5: roeEextra(cleanMask)
+    // 6: nROE_NeutralECLClusters(cleanMask), 7: roeNeextra(cleanMask)
 
-    double Bsig_info[10];
+    double Bsig_info[12];
     // 0: Bsig_isSignal, 1: Bsig_E, 2: Bsig_E_CMS, 3: Bsig_E_Recoil, 4: Bsig_dmID
     // 5: Bsig_first_daughter's_actPID(3,2) 6: Bsig_first_daughter's_mcPDG
     // 7: Bsig_p, 8: Bsig_p_CMS, 9: Bsig_p_Recoil
+    // 10: Kaon dr, 11: Kaon dz
 
     double Btag_info[7];
     // 0: Btag_isSignal, 1:Btag_dmID, 2: Btag_Mbc, 3: Btag_deltaE
     // 4: Btag_E, 5: Btag_E_CMS, 6: Btag_signalprobability
+
 } Data; 
 
 bool event_info_is_valid(std::queue<Data> TotalData_){
@@ -137,7 +140,7 @@ void Draw_Bsig_info(std::queue<Data> TotalData_, int index, const char* arg1, co
         temp_hist->Fill(temp_data);
     }
     temp_hist->Draw("Hist");
-    temp_c->SaveAs( ("Bsig_" + std::to_string(index) + ".png").c_str() );
+    temp_c->SaveAs( ("Bsig_"+ std::string(arg1) + "_"  + std::to_string(index) + ".png").c_str() );
     delete temp_hist;
     delete temp_c;
 
@@ -197,7 +200,7 @@ void Draw_Btag_info(std::queue<Data> TotalData_, int index, const char* arg1, co
         temp_hist->Fill(temp_data);
     }
     temp_hist->Draw("Hist");
-    temp_c->SaveAs( ("Btag_" + std::to_string(index) + ".png").c_str() );
+    temp_c->SaveAs( ("Btag_" + std::string(arg1) + "_" + std::to_string(index) + ".png").c_str() );
     delete temp_hist;
     delete temp_c;
 
@@ -252,7 +255,7 @@ void Draw_Mbc_deltaE_Btag_projection(std::queue<Data> TotalData_, int index){
     projX = temp_hist1->ProjectionX();
     projY = temp_hist1->ProjectionY();
 
-    auto c_temp = new TCanvas("c1", "c1",1000,1000);
+    auto c_temp = new TCanvas("c1", "c1",1000,1000); c_temp->cd();
     gStyle->SetOptStat(0);
 
     TPad *center_pad = new TPad("center_pad", "center_pad",0.0,0.0,0.6,0.6);
@@ -417,7 +420,7 @@ void PrintInformation(std::queue<Data> TotalData_){
 void ReadRootFiles_r(){
 
     std::vector<string> names;
-    const char* dirname = "/media/sf_virtualbox_folder/20210629/Ntuple20";
+    const char* dirname = "/media/sf_virtualbox_folder/20210629/Ntuple25";
 
     load_files(dirname, &names);
 
@@ -454,6 +457,9 @@ void ReadRootFiles_r(){
         tree_upsilon->SetBranchAddress("nROE_KLMClusters",&temp.Upsilon_info[2]);
         tree_upsilon->SetBranchAddress("roeE__bocleanMask__bc",&temp.Upsilon_info[3]);
         tree_upsilon->SetBranchAddress("nROE_Tracks__bocleanMask__bc",&temp.Upsilon_info[4]);
+        tree_upsilon->SetBranchAddress("roeEextra__bocleanMask__bc",&temp.Upsilon_info[5]);
+        tree_upsilon->SetBranchAddress("nROE_NeutralECLClusters__bocleanMask__bc",&temp.Upsilon_info[6]);
+        tree_upsilon->SetBranchAddress("roeNeextra__bocleanMask__bc",&temp.Upsilon_info[7]);
 
         // get Bsig_info
         tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[0]);
@@ -466,6 +472,8 @@ void ReadRootFiles_r(){
         tree_Bsig->SetBranchAddress("Bsig_p", &temp.Bsig_info[7]);
         tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_p", &temp.Bsig_info[8]);
         tree_upsilon->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp.Bsig_info[9]);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_dr", &temp.Bsig_info[10]);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_dz", &temp.Bsig_info[11]);
 
         // get Btag_info
         tree_Btag->SetBranchAddress("Btag_isSignal", &temp.Btag_info[0]);
@@ -571,6 +579,90 @@ void ReadRootFiles_r(){
     PrintInformation(TotalData);
 
     Draw_Mbc_deltaE_Btag_projection(TotalData, 3);
+
+    { // print dr of Kaon
+        TH1F* temp_hist = new TH1F("dr_Kaon_from_Bsig","dr of Kaon from B_{sig};dr [cm];candidates",100,-0.1,0.3);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Bsig_info[10]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("dr_Kaon_after_actPID_cut.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    // dr < 0.1 cm cut
+    {
+        printf("====== dr < 0.1 cm =====\n");
+        std::queue<Data> temp_queue;
+        while(!TotalData.empty()){
+            Data temp_data = TotalData.front();
+            TotalData.pop();
+            if(temp_data.Bsig_info[10] < 0.1) temp_queue.push(temp_data);
+        }
+        TotalData = temp_queue;
+    }
+
+    PrintInformation(TotalData);
+
+
+    { // print dz of Kaon
+        TH1F* temp_hist = new TH1F("dz_Kaon_from_Bsig","dz of Kaon from B_{sig};dz [cm];candidates",100,-5,5);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Bsig_info[11]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("dz_Kaon_after_dr_cut.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    // abs(dz) < 2 cm cut
+    {
+        printf("====== abs(dz) < 2 cm =====\n");
+        std::queue<Data> temp_queue;
+        while(!TotalData.empty()){
+            Data temp_data = TotalData.front();
+            TotalData.pop();
+            if(temp_data.Bsig_info[11] < 2 && temp_data.Bsig_info[11] > -2) temp_queue.push(temp_data);
+        }
+        TotalData = temp_queue;
+    }
+
+    PrintInformation(TotalData);
+
+    { // print energy in ROE(cleanMask)
+        TH1F* temp_hist = new TH1F("ROE_E_Upsilon","Energy in ROE of #Upsilon(4S);energy [GeV];candidates",100,-0.1, 8);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[3]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("ROE_E_after_dz_cut.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    { // E_ROE < 4 cut
+        printf("====== E_ROE < 4 GeV =====\n");
+        std::queue<Data> temp_queue;
+        while(!TotalData.empty()){
+            Data temp_data = TotalData.front();
+            TotalData.pop();
+            if(temp_data.Upsilon_info[3] < 4) temp_queue.push(temp_data);
+        }
+        TotalData = temp_queue;
+    }
+
+    PrintInformation(TotalData);
 
     { 
         TH1F* temp_hist1 = new TH1F("SignalProbability_Btag_correct","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
