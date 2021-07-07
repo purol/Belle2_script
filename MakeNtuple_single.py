@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # usage: basf2 MakeNtuple_multi.py "./20210402/evt-0.mdst"
-# last: 2021-07-06-1
+# last: 2021-07-07-0
 
 import os
 import sys
@@ -156,7 +156,7 @@ Btag_vars = vu.create_aliases(list_of_variables = Kinematics + Btag_cut + Kinema
 
 Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["daughter(0, atcPIDBelle(3,2))", "daughter(0, dr)", "daughter(0, dz)", "daughter(0, mcPDG)", "daughter(0, genParticleID)"], wrapper = "daughter(1,{variable})", prefix="Bsig")
 
-U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + mcvar + decayhash + othervar + ["extraInfo(Upsilon_rank)", "nROE_ECLClusters(cleanMask)", "nROE_KLMClusters", "roeE(cleanMask)", "roeMC_E", "nROE_Tracks(cleanMask)", "weMissE(cleanMask,0)", "weMissE(cleanMask,5)", "roeEextra(cleanMask)"]
+U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + mcvar + decayhash + othervar + ["extraInfo(Upsilon_rank)", "nROE_ECLClusters(cleanMask)", "nROE_NeutralECLClusters(cleanMask)", "nROE_KLMClusters", "roeE(cleanMask)", "roeMC_E", "nROE_Tracks(cleanMask)", "weMissE(cleanMask,0)", "weMissE(cleanMask,5)", "roeEextra(cleanMask)", "roeNeextra(cleanMask)"]
 
 output_file = name+"_Ntuple.root"
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Btag_vars,filename=output_file,treename="Btag",path=my_path)
