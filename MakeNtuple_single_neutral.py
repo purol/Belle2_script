@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # usage: basf2 MakeNtuple_multi.py "./20210402/evt-0.mdst"
-# last: 2021-07-07-1
+# last: 2021-07-07-2
 
 import os
 import sys
@@ -64,12 +64,12 @@ if monitoring:
 
 # fill particle list
 ma.fillParticleList(decayString="pi+:all", cut="", path=my_path)
-ma.fillParticleList(decayString="gamma:all", cut="", path=my_path)
 
 gamma_cut = '[[E > 0.10 and formula(theta/3.14*180) < 31.4] or \
                       [E > 0.05 and formula(theta/3.14*180) > 31.4 and formula(theta/3.14*180) < 130.7] or \
                       [E > 0.15 and formula(theta/3.14*180) > 130.7]]'
-ma.reconstructDecay("pi0:all -> gamma:all gamma:all", cut=gamma_cut, path = my_path)
+ma.fillParticleList(decayString="gamma:mygamma", cut=gamma_cut, path=my_path)
+ma.reconstructDecay("pi0:all -> gamma:mygamma gamma:mygamma", cut="", path = my_path)
 
 ma.reconstructDecay("K_S0:ch0 -> pi+:all pi-:all", cut ="", dmID=0, path=my_path)
 ma.reconstructDecay("K_S0:ch1 -> pi0:all pi0:all", cut ="", dmID=1, path=my_path)
@@ -154,7 +154,7 @@ output_file = name+"_Ntuple.root"
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Btag_vars,filename=output_file,treename="Btag",path=my_path)
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Bsig_vars,filename=output_file,treename="Bsig",path=my_path)
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=U_vars,filename=output_file,treename="Upsilon",path=my_path)    
-ma.variablesToNtuple(decayString="gamma:all",variables=["E", "theta", "clusterE9E21"],filename=output_file,treename="Gamma",path=my_path)
+ma.variablesToNtuple(decayString="gamma:mygamma",variables=["E", "theta", "clusterE9E21"],filename=output_file,treename="Gamma",path=my_path)
 
 # progress
 my_path.add_module('Progress')
