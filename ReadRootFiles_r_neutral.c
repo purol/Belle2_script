@@ -31,15 +31,11 @@ typedef struct data{
     // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask), 5: roeEextra(cleanMask)
     // 6: nROE_NeutralECLClusters(cleanMask), 7: roeNeextra(cleanMask)
 
-    double Bsig_info[15];
+    double Bsig_info[11];
     // 0: Bsig_isSignal, 1: Bsig_E, 2: Bsig_E_CMS, 3: Bsig_E_Recoil, 4: Bsig_dmID
     // 5: Bsig_first_daughter's_dmID 6: Bsig_first_daughter's_mcPDG
     // 7: Bsig_p, 8: Bsig_p_CMS, 9: Bsig_p_Recoil
-    // 10: Bsig_first_daughter's_first_daughter's_atcPID(3,2) for pi+-
-    // 11: Bsig_first_daughter's_second_daughter's_atcPID(3,2) for pi+-
-    // 12: Bsig_first_daughter's_first_daughter's_M for pi0
-    // 13: Bsig_first_daughter's_second_daughter's_M for pi0
-    // 14: Bsig_first_daughter's_M for K_S0
+    // 10: goodBelleKshort of K_S0 from Bsig
 
     double Btag_info[7];
     // 0: Btag_isSignal, 1:Btag_dmID, 2: Btag_Mbc, 3: Btag_deltaE
@@ -476,11 +472,7 @@ void ReadRootFiles_r_neutral(){
         tree_Bsig->SetBranchAddress("Bsig_p", &temp.Bsig_info[7]);
         tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_p", &temp.Bsig_info[8]);
         tree_upsilon->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp.Bsig_info[9]);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_daughter_0_atcPIDBelle_3_2", &temp.Bsig_info[10]);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_daughter_1_atcPIDBelle_3_2", &temp.Bsig_info[11]);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_daughter_0_M", &temp.Bsig_info[12]);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_daughter_1_M", &temp.Bsig_info[13]);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_M", &temp.Bsig_info[14]);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_goodBelleKshort", &temp.Bsig_info[10]);
 
         // get Btag_info
         tree_Btag->SetBranchAddress("Btag_isSignal", &temp.Btag_info[0]);
@@ -540,35 +532,29 @@ void ReadRootFiles_r_neutral(){
 
     Draw_Mbc_deltaE_Btag_projection(TotalData, 2);
 
-    // draw atcPIDBelle_3_2 distribution for K_S0 -> pi+ pi-
+    // draw goodBelleKshort
     {
-        TH1F* temp_hist1 = new TH1F("atcPID(3,2)_K_S0_daughters","atcPID(3,2) of daughters of K_{S}^{0} when reconstruction is K_{S}^{0} #rightarrow #pi^{+} #pi^{-};atcPID(3,2);Num",100,-0.1,1.1);
+        TH1F* temp_hist1 = new TH1F("goodBelleKshort_K_S0","goodBelleKshort of daughter of B_{sig};goodBelleKshort;Num",100,-0.1,1.1);
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
             Data temp_data = temp_queue.front();
             temp_queue.pop();
-            if (temp_data.Bsig_info[5] > -0.1 && temp_data.Bsig_info[5] < 0.1) {
-                temp_hist1->Fill(temp_data.Bsig_info[10]);
-                temp_hist1->Fill(temp_data.Bsig_info[11]);
-            }
+            temp_hist1->Fill(temp_data.Bsig_info[10]);
         }
         
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
-        temp_hist1->Draw("Hist"); c_temp->SaveAs("atcPID_distribution_d_pi.png");
+        temp_hist1->Draw("Hist"); c_temp->SaveAs("goodBelleKshort_distribution.png");
         delete temp_hist1; delete c_temp;
     }
 
-    // cut: atcPID(3,2) > 0.6 for daughter of Bsig
+    // cut: goodBelleKshort > 0.6 for daughter of Bsig
     {
-        printf("===== atcPID(3,2) of daughters of K_S0 when K_S0 -> pi+ pi- > 0.6 =====\n");
+        printf("===== goodBelleKshort of daughters of Bsig > 0.6 =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
             TotalData.pop();
-            if (temp_data.Bsig_info[5] > -0.1 && temp_data.Bsig_info[5] < 0.1) {
-                if (temp_data.Bsig_info[10] > 0.6 && temp_data.Bsig_info[11] > 0.6) temp_queue.push(temp_data);
-            }
-            else temp_queue.push(temp_data);
+            if (temp_data.Bsig_info[10] > 0.6) temp_queue.push(temp_data);
         }
         TotalData = temp_queue;
     }
