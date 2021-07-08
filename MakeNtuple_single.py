@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # usage: basf2 MakeNtuple_multi.py "./20210402/evt-0.mdst"
-# last: 2021-07-07-0
+# last: 2021-07-08-0
 
 import os
 import sys
@@ -42,9 +42,12 @@ else:
     monitoring = False
 
 fName = sys.argv[1]
+destination = sys.argv[2]
 
 if not fName.endswith(".mdst"): sys.exit(1)
-else: name, ext = os.path.splitext(fName)
+else:
+    basename = os.path.basename(fName)
+    name = os.path.splitext(basename)[0]
 print("=================="+fName+" is conducted=================")
 
 
@@ -136,11 +139,11 @@ ma.looseMCTruth(list_name = "B+:sig", path = my_path)
 ma.looseMCTruth(list_name = "Upsilon(4S):withoutneutrino", path = my_path)
 
 # --- decay string ---
-my_path.add_module('ParticleMCDecayString', listName="B+:generic", fileName=name+'hashmap_Btag.root')
-my_path.add_module('ParticleMCDecayString', listName="B+:sig", fileName=name+'hashmap_Bsig.root')
+my_path.add_module('ParticleMCDecayString', listName="B+:generic", fileName=destination + "/" + name+'hashmap_Btag.root')
+my_path.add_module('ParticleMCDecayString', listName="B+:sig", fileName=destination + "/" + name+'hashmap_Bsig.root')
 #my_path.add_module('ParticleMCDecayString', listName="B0:generic", fileName=name+'hashmap_Btag_neutral.root')
 #my_path.add_module('ParticleMCDecayString', listName="B0:neutral_sig", fileName=name+'hashmap_Bsig_neutral.root')
-my_path.add_module('ParticleMCDecayString', listName='Upsilon(4S):withoutneutrino', fileName=name+'hashmap_Upsilon.root')
+my_path.add_module('ParticleMCDecayString', listName='Upsilon(4S):withoutneutrino', fileName=destination + "/" + name+'hashmap_Upsilon.root')
 
 # get variables
 Kinematics = ["E", "InvM", "p", "phi", "theta"]
@@ -158,7 +161,7 @@ Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + 
 
 U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + mcvar + decayhash + othervar + ["extraInfo(Upsilon_rank)", "nROE_ECLClusters(cleanMask)", "nROE_NeutralECLClusters(cleanMask)", "nROE_KLMClusters", "roeE(cleanMask)", "roeMC_E", "nROE_Tracks(cleanMask)", "weMissE(cleanMask,0)", "weMissE(cleanMask,5)", "roeEextra(cleanMask)", "roeNeextra(cleanMask)"]
 
-output_file = name+"_Ntuple.root"
+output_file = destination + "/" + name+"_Ntuple.root"
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Btag_vars,filename=output_file,treename="Btag",path=my_path)
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Bsig_vars,filename=output_file,treename="Bsig",path=my_path)
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=U_vars,filename=output_file,treename="Upsilon",path=my_path)    
