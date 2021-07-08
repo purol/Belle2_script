@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # usage: basf2 MakeNtuple_multi.py "./20210402/evt-0.mdst"
-# last: 2021-07-07-2
+# last: 2021-07-08-0
 
 import os
 import sys
@@ -69,10 +69,12 @@ gamma_cut = '[[E > 0.10 and formula(theta/3.14*180) < 31.4] or \
                       [E > 0.05 and formula(theta/3.14*180) > 31.4 and formula(theta/3.14*180) < 130.7] or \
                       [E > 0.15 and formula(theta/3.14*180) > 130.7]]'
 ma.fillParticleList(decayString="gamma:mygamma", cut=gamma_cut, path=my_path)
-ma.reconstructDecay("pi0:all -> gamma:mygamma gamma:mygamma", cut="", path = my_path)
+
+pi0_cut = "M > 0.1 and M < 0.16"
+ma.reconstructDecay("pi0:mypionzero -> gamma:mygamma gamma:mygamma", cut=pi0_cut, path = my_path)
 
 ma.reconstructDecay("K_S0:ch0 -> pi+:all pi-:all", cut ="", dmID=0, path=my_path)
-ma.reconstructDecay("K_S0:ch1 -> pi0:all pi0:all", cut ="", dmID=1, path=my_path)
+ma.reconstructDecay("K_S0:ch1 -> pi0:mypionzero pi0:mypionzero", cut ="", dmID=1, path=my_path)
 ma.copyLists(outputListName="K_S0:myKaonShort", inputListNames=["K_S0:ch0", "K_S0:ch1"], path=my_path)
 
 # ==============================
@@ -146,7 +148,7 @@ othervar = ["PDG", "extraInfo(decayModeID)"]
 
 Btag_vars = vu.create_aliases(list_of_variables = Kinematics + Btag_cut + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["extraInfo(SignalProbability)"], wrapper = "daughter(0,{variable})",prefix="Btag")
 
-Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["daughter(0, extraInfo(decayModeID))", "daughter(0, M)", "daughter(0, InvM)", "daughter(0, dr)", "daughter(0, dz)", "daughter(0, mcPDG)", "daughter(0, genParticleID)"], wrapper = "daughter(1,{variable})", prefix="Bsig")
+Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["daughter(0, extraInfo(decayModeID))", "daughter(0, M)", "daughter(0, InvM)", "daughter(0, dr)", "daughter(0, dz)", "daughter(0, mcPDG)", "daughter(0, genParticleID)", "daughter(0, daughter(0, InvM))", "daughter(0, daughter(1, InvM))", "daughter(0, daughter(0, M))", "daughter(0, daughter(1, M))", "daughter(0, daughter(0, atcPIDBelle(3,2)))", "daughter(0, daughter(1, atcPIDBelle(3,2)))", "daughter(0, daughter(0, clusterE9E21))", "daughter(0, daughter(1, clusterE9E21))"], wrapper = "daughter(1,{variable})", prefix="Bsig")
 
 U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + mcvar + decayhash + othervar + ["extraInfo(Upsilon_rank)", "nROE_ECLClusters(cleanMask)", "nROE_NeutralECLClusters(cleanMask)", "nROE_KLMClusters", "roeE(cleanMask)", "roeMC_E", "nROE_Tracks(cleanMask)", "weMissE(cleanMask,0)", "weMissE(cleanMask,5)", "roeEextra(cleanMask)", "roeNeextra(cleanMask)"]
 
