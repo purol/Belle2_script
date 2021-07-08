@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # usage: basf2 MakeNtuple_multi.py "./20210402/evt-0.mdst"
-# last: 2021-07-08-0
+# last: 2021-07-08-3
 
 import os
 import sys
@@ -42,6 +42,7 @@ else:
     monitoring = False
 
 fName = sys.argv[1]
+destination = sys.argv[2]
 
 if not fName.endswith(".mdst"): sys.exit(1)
 else:
@@ -65,19 +66,6 @@ if monitoring:
     addNeutralsConversionMonitors(path=my_path)
 
 # fill particle list
-ma.fillParticleList(decayString="pi+:all", cut="", path=my_path)
-
-gamma_cut = '[[E > 0.10 and formula(theta/3.14*180) < 31.4] or \
-                      [E > 0.05 and formula(theta/3.14*180) > 31.4 and formula(theta/3.14*180) < 130.7] or \
-                      [E > 0.15 and formula(theta/3.14*180) > 130.7]]'
-ma.fillParticleList(decayString="gamma:mygamma", cut=gamma_cut, path=my_path)
-
-pi0_cut = "M > 0.1 and M < 0.16"
-ma.reconstructDecay("pi0:mypionzero -> gamma:mygamma gamma:mygamma", cut=pi0_cut, path = my_path)
-
-ma.reconstructDecay("K_S0:ch0 -> pi+:all pi-:all", cut ="", dmID=0, path=my_path)
-ma.reconstructDecay("K_S0:ch1 -> pi0:mypionzero pi0:mypionzero", cut ="", dmID=1, path=my_path)
-ma.copyLists(outputListName="K_S0:myKaonShort", inputListNames=["K_S0:ch0", "K_S0:ch1"], path=my_path)
 
 # ==============================
 # FEI
@@ -109,7 +97,7 @@ cleanMask = ("cleanMask",track_selection, cluster_selection)
 # signal side
 # B0 -> K0 nu nu & K0 -> K0S
 # K0S -> pi+ pi- or pi0 pi0
-ma.reconstructDecay("B0:neutral_sig_ch0 -> K_S0:myKaonShort ?nu", cut="", dmID=0, path=my_path)
+ma.reconstructDecay("B0:neutral_sig_ch0 -> K_S0:mdst ?nu", cut="", dmID=0, path=my_path)
 
 # To Do: add other decay modes
 ma.copyLists(outputListName="B0:neutral_sig", inputListNames=["B0:neutral_sig_ch0"],path=my_path)
@@ -150,7 +138,7 @@ othervar = ["PDG", "extraInfo(decayModeID)"]
 
 Btag_vars = vu.create_aliases(list_of_variables = Kinematics + Btag_cut + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["extraInfo(SignalProbability)"], wrapper = "daughter(0,{variable})",prefix="Btag")
 
-Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["daughter(0, extraInfo(decayModeID))", "daughter(0, M)", "daughter(0, InvM)", "daughter(0, dr)", "daughter(0, dz)", "daughter(0, mcPDG)", "daughter(0, genParticleID)", "daughter(0, daughter(0, InvM))", "daughter(0, daughter(1, InvM))", "daughter(0, daughter(0, M))", "daughter(0, daughter(1, M))", "daughter(0, daughter(0, atcPIDBelle(3,2)))", "daughter(0, daughter(1, atcPIDBelle(3,2)))", "daughter(0, daughter(0, clusterE9E21))", "daughter(0, daughter(1, clusterE9E21))"], wrapper = "daughter(1,{variable})", prefix="Bsig")
+Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["daughter(0, extraInfo(decayModeID))", "daughter(0, M)", "daughter(0, InvM)", "daughter(0, dr)", "daughter(0, dz)", "daughter(0, mcPDG)", "daughter(0, genParticleID)", "daughter(0, goodBelleKshort)"], wrapper = "daughter(1,{variable})", prefix="Bsig")
 
 U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + mcvar + decayhash + othervar + ["extraInfo(Upsilon_rank)", "nROE_ECLClusters(cleanMask)", "nROE_NeutralECLClusters(cleanMask)", "nROE_KLMClusters", "roeE(cleanMask)", "roeMC_E", "nROE_Tracks(cleanMask)", "weMissE(cleanMask,0)", "weMissE(cleanMask,5)", "roeEextra(cleanMask)", "roeNeextra(cleanMask)"]
 
@@ -158,7 +146,6 @@ output_file = destination + "/" + name+"_Ntuple.root"
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Btag_vars,filename=output_file,treename="Btag",path=my_path)
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Bsig_vars,filename=output_file,treename="Bsig",path=my_path)
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=U_vars,filename=output_file,treename="Upsilon",path=my_path)    
-ma.variablesToNtuple(decayString="gamma:mygamma",variables=["E", "theta", "clusterE9E21"],filename=output_file,treename="Gamma",path=my_path)
 
 # progress
 my_path.add_module('Progress')
