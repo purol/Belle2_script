@@ -31,11 +31,10 @@ typedef struct data{
     // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask), 5: roeEextra(cleanMask)
     // 6: nROE_NeutralECLClusters(cleanMask), 7: roeNeextra(cleanMask)
 
-    double Bsig_info[11];
+    double Bsig_info[10];
     // 0: Bsig_isSignal, 1: Bsig_E, 2: Bsig_E_CMS, 3: Bsig_E_Recoil, 4: Bsig_dmID
-    // 5: Bsig_first_daughter's_dmID 6: Bsig_first_daughter's_mcPDG
+    // 5: goodBelleKshort of K_S0 from Bsig, 6: Bsig_first_daughter's_mcPDG
     // 7: Bsig_p, 8: Bsig_p_CMS, 9: Bsig_p_Recoil
-    // 10: goodBelleKshort of K_S0 from Bsig
 
     double Btag_info[7];
     // 0: Btag_isSignal, 1:Btag_dmID, 2: Btag_Mbc, 3: Btag_deltaE
@@ -292,19 +291,18 @@ void BCS(std::queue<Data>* TotalData_, int index, bool select_highest = true){
     std::queue<Data> new_container;
 
     while(!TotalData_->empty()){
+        std::queue<Data> temp_Data;
         std::vector<Data> temp;
         Data initial_data = TotalData_->front();
         int experiment_ = initial_data.event_info[0];
         int run_ = initial_data.event_info[1];
         int event_ = initial_data.event_info[2];
         int ncandidates_ = initial_data.event_info[4];
-        while(true){ // I suppose that the order of data exists
+        while(!TotalData_->empty()){ // I do not suppose that the order of data exists
             Data temp_data = TotalData_->front();
-            if(temp_data.event_info[0] == experiment_ && temp_data.event_info[1] == run_ && temp_data.event_info[2] == event_ && temp_data.event_info[4] == ncandidates_){
-                TotalData_->pop();
-                temp.push_back(temp_data);
-            }
-            else break;
+            TotalData_->pop();
+            if(temp_data.event_info[0] == experiment_ && temp_data.event_info[1] == run_ && temp_data.event_info[2] == event_ && temp_data.event_info[4] == ncandidates_) temp.push_back(temp_data);
+            else temp_Data.push(temp_data);
         }
 
         if(select_highest == true){
@@ -325,9 +323,8 @@ void BCS(std::queue<Data>* TotalData_, int index, bool select_highest = true){
             if(best_candidate_index == -1) { printf("error!\n"); exit(1); }
             new_container.push(temp[best_candidate_index]);
         }
-
+        *TotalData_ = temp_Data;
     }
-    while(!TotalData_->empty()) TotalData_->pop();
     while(!new_container.empty()){
         Data temp_data = new_container.front();
         new_container.pop();
@@ -420,7 +417,7 @@ void PrintInformation(std::queue<Data> TotalData_){
 void ReadRootFiles_r_neutral(){
 
     std::vector<string> names;
-    const char* dirname = "/media/sf_virtualbox_folder/20210629/Ntuple25";
+    const char* dirname = "/media/sf_virtualbox_folder/20210709/Neutral_Ntuple7";
 
     load_files(dirname, &names);
 
@@ -467,12 +464,11 @@ void ReadRootFiles_r_neutral(){
         tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_E", &temp.Bsig_info[2]);
         tree_upsilon->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc", &temp.Bsig_info[3]);
         tree_Bsig->SetBranchAddress("Bsig_extraInfo_decayModeID", &temp.Bsig_info[4]);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_atcPIDBelle_3_2", &temp.Bsig_info[5]);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_goodBelleKshort", &temp.Bsig_info[5]);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_mcPDG", &temp.Bsig_info[6]);
         tree_Bsig->SetBranchAddress("Bsig_p", &temp.Bsig_info[7]);
         tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_p", &temp.Bsig_info[8]);
         tree_upsilon->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp.Bsig_info[9]);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_goodBelleKshort", &temp.Bsig_info[10]);
 
         // get Btag_info
         tree_Btag->SetBranchAddress("Btag_isSignal", &temp.Btag_info[0]);
@@ -539,7 +535,7 @@ void ReadRootFiles_r_neutral(){
         while(!temp_queue.empty()){
             Data temp_data = temp_queue.front();
             temp_queue.pop();
-            temp_hist1->Fill(temp_data.Bsig_info[10]);
+            temp_hist1->Fill(temp_data.Bsig_info[5]);
         }
         
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
@@ -547,20 +543,142 @@ void ReadRootFiles_r_neutral(){
         delete temp_hist1; delete c_temp;
     }
 
-    // cut: goodBelleKshort > 0.6 for daughter of Bsig
+    // cut: goodBelleKshort = 1 for daughter of Bsig
     {
-        printf("===== goodBelleKshort of daughters of Bsig > 0.6 =====\n");
+        printf("===== goodBelleKshort of daughters of Bsig = 1 =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
             TotalData.pop();
-            if (temp_data.Bsig_info[10] > 0.6) temp_queue.push(temp_data);
+            if (temp_data.Bsig_info[5] > 0.9 && temp_data.Bsig_info[5] < 1.1) temp_queue.push(temp_data);
         }
         TotalData = temp_queue;
     }
 
     PrintInformation(TotalData);
 
+    { // print energy in ROE(cleanMask)
+        TH1F* temp_hist = new TH1F("ROE_E_Upsilon","Energy in ROE of #Upsilon(4S);energy [GeV];candidates",100,-0.1, 8);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[3]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("ROE_E_after_dz_cut.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    { // E_ROE < 4 cut
+        printf("====== E_ROE < 4 GeV =====\n");
+        std::queue<Data> temp_queue;
+        while(!TotalData.empty()){
+            Data temp_data = TotalData.front();
+            TotalData.pop();
+            if(temp_data.Upsilon_info[3] < 4) temp_queue.push(temp_data);
+        }
+        TotalData = temp_queue;
+    }
+
+    PrintInformation(TotalData);
+
+    {
+        TH1F* temp_hist1 = new TH1F("SignalProbability_Btag_correct","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
+        TH1F* temp_hist2 = new TH1F("SignalProbability_Btag_non-correct","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
+        TH1F* temp_hist3 = new TH1F("SignalProbability_Btag","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            if(temp_data.Btag_info[0] > 0.9 && temp_data.Btag_info[0] < 1.1) temp_hist1->Fill(TMath::Log10(temp_data.Btag_info[6]));
+            else { temp_hist2->Fill(TMath::Log10(temp_data.Btag_info[6])); }
+            temp_hist3->Fill(TMath::Log10(temp_data.Btag_info[6]));
+        }
+        temp_hist1->SetStats(false);
+        temp_hist1->SetLineColor(kBlue);
+        temp_hist1->SetLineWidth(2);
+        temp_hist1->SetFillColor(kBlue);
+        temp_hist1->SetFillStyle(3013);
+        temp_hist2->SetStats(false);
+        temp_hist2->SetLineColor(kRed);
+        temp_hist2->SetLineWidth(2);
+        temp_hist2->SetFillColor(kRed);
+        temp_hist2->SetFillStyle(3007);
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SaveAs("SignalProbability_distribution_before_BCS.png");
+        temp_hist3->Draw("Hist"); c_temp->SaveAs("SignalProbability_distribution_total_before_BCS.png");
+        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete c_temp;
+    }
+
+    // BCS
+    BCS(&TotalData, 6, true);
+
+    {
+        TH1F* temp_hist1 = new TH1F("SignalProbability_Btag_correct","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
+        TH1F* temp_hist2 = new TH1F("SignalProbability_Btag_non-correct","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
+        TH1F* temp_hist3 = new TH1F("SignalProbability_Btag","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            if(temp_data.Btag_info[0] > 0.9 && temp_data.Btag_info[0] < 1.1) temp_hist1->Fill(TMath::Log10(temp_data.Btag_info[6]));
+            else { temp_hist2->Fill(TMath::Log10(temp_data.Btag_info[6])); }
+            temp_hist3->Fill(TMath::Log10(temp_data.Btag_info[6]));
+        }
+        temp_hist1->SetStats(false);
+        temp_hist1->SetLineColor(kBlue);
+        temp_hist1->SetLineWidth(2);
+        temp_hist1->SetFillColor(kBlue);
+        temp_hist1->SetFillStyle(3013);
+        temp_hist2->SetStats(false);
+        temp_hist2->SetLineColor(kRed);
+        temp_hist2->SetLineWidth(2);
+        temp_hist2->SetFillColor(kRed);
+        temp_hist2->SetFillStyle(3007);
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SaveAs("SignalProbability_distribution_after_BCS.png");
+        temp_hist3->Draw("Hist"); c_temp->SaveAs("SignalProbability_distribution_total_after_BCS.png");
+        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete c_temp;
+    }
+
+
     Draw_Mbc_deltaE_Btag_projection(TotalData, 3);
+    PrintInformation(TotalData);
+    if(IsBCSValid(TotalData) == false) {printf("error!\n"); return;}
+
+    // Mbc > 5.27 cut
+    {
+        printf("====== Mbc > 5.27 GeV =====\n");
+        std::queue<Data> temp_queue;
+        while(!TotalData.empty()){
+            Data temp_data = TotalData.front();
+            TotalData.pop();
+            if(temp_data.Btag_info[2] > 5.27) temp_queue.push(temp_data);
+        }
+        TotalData = temp_queue;
+    }
+
+    PrintInformation(TotalData);
+
+    Draw_Mbc_deltaE_Btag_projection(TotalData, 4);
+
+    // abs(deltaE) < 0.1 cut
+    {
+        printf("===== abs(deltaE) < 0.1 =====\n");
+        std::queue<Data> temp_queue;
+        while(!TotalData.empty()){
+            Data temp_data = TotalData.front();
+            TotalData.pop();
+            if(temp_data.Btag_info[3] > -0.1 && temp_data.Btag_info[3] < 0.1) temp_queue.push(temp_data);
+        }
+        TotalData = temp_queue;
+    }
+    PrintInformation(TotalData);
+
+    Draw_Mbc_deltaE_Btag_projection(TotalData, 5);
 
 }
