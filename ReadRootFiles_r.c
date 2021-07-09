@@ -696,6 +696,35 @@ void ReadRootFiles_r(){
     // BCS
     BCS(&TotalData, 6, true);
 
+    {
+        TH1F* temp_hist1 = new TH1F("SignalProbability_Btag_correct","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
+        TH1F* temp_hist2 = new TH1F("SignalProbability_Btag_non-correct","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
+        TH1F* temp_hist3 = new TH1F("SignalProbability_Btag","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            if(temp_data.Btag_info[0] > 0.9 && temp_data.Btag_info[0] < 1.1) temp_hist1->Fill(TMath::Log10(temp_data.Btag_info[6]));
+            else { temp_hist2->Fill(TMath::Log10(temp_data.Btag_info[6])); }
+            temp_hist3->Fill(TMath::Log10(temp_data.Btag_info[6]));
+        }
+        temp_hist1->SetStats(false);
+        temp_hist1->SetLineColor(kBlue);
+        temp_hist1->SetLineWidth(2);
+        temp_hist1->SetFillColor(kBlue);
+        temp_hist1->SetFillStyle(3013);
+        temp_hist2->SetStats(false);
+        temp_hist2->SetLineColor(kRed);
+        temp_hist2->SetLineWidth(2);
+        temp_hist2->SetFillColor(kRed);
+        temp_hist2->SetFillStyle(3007);
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SaveAs("SignalProbability_distribution_after_BCS.png");
+        temp_hist3->Draw("Hist"); c_temp->SaveAs("SignalProbability_distribution_total_after_BCS.png");
+        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete c_temp;
+    }
+
     Draw_Mbc_deltaE_Btag_projection(TotalData, 4);
     PrintInformation(TotalData);
     if(IsBCSValid(TotalData) == false) {printf("error!\n"); return;}
@@ -730,35 +759,6 @@ void ReadRootFiles_r(){
     PrintInformation(TotalData);
 
     Draw_Mbc_deltaE_Btag_projection(TotalData, 6);
-
-    {
-        TH1F* temp_hist1 = new TH1F("SignalProbability_Btag_correct","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
-        TH1F* temp_hist2 = new TH1F("SignalProbability_Btag_non-correct","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
-        TH1F* temp_hist3 = new TH1F("SignalProbability_Btag","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
-        std::queue<Data> temp_queue = TotalData;
-        while(!temp_queue.empty()){
-            Data temp_data = temp_queue.front();
-            temp_queue.pop();
-            if(temp_data.Btag_info[0] > 0.9 && temp_data.Btag_info[0] < 1.1) temp_hist1->Fill(TMath::Log10(temp_data.Btag_info[6]));
-            else { temp_hist2->Fill(TMath::Log10(temp_data.Btag_info[6])); }
-            temp_hist3->Fill(TMath::Log10(temp_data.Btag_info[6]));
-        }
-        temp_hist1->SetStats(false);
-        temp_hist1->SetLineColor(kBlue);
-        temp_hist1->SetLineWidth(2);
-        temp_hist1->SetFillColor(kBlue);
-        temp_hist1->SetFillStyle(3013);
-        temp_hist2->SetStats(false);
-        temp_hist2->SetLineColor(kRed);
-        temp_hist2->SetLineWidth(2);
-        temp_hist2->SetFillColor(kRed);
-        temp_hist2->SetFillStyle(3007);
-
-        TCanvas* c_temp = new TCanvas("c","",1500,1200);
-        temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SaveAs("SignalProbability_distribution_after_BCS.png");
-        temp_hist3->Draw("Hist"); c_temp->SaveAs("SignalProbability_distribution_total_after_BCS.png");
-        delete temp_hist1; delete temp_hist2; delete temp_hist3; delete c_temp;
-    }
 
     {
         TH1F* temp_hist1 = new TH1F("nROE_ECLcluster_Upsilon_correct","number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt",14,-0.5,13.5);
