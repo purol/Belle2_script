@@ -284,7 +284,7 @@ void Draw_Mbc_deltaE_Btag_projection(std::queue<Data> TotalData_, int index){
     delete temp_hist1; delete projX; delete projY; delete c_temp;
 }
 
-void BCS(std::queue<Data>* TotalData_, int index, bool select_highest = true){
+void BCS_deprecated(std::queue<Data>* TotalData_, int index, bool select_highest = true){
 
     printf("===== BCS =====\n");
 
@@ -332,6 +332,56 @@ void BCS(std::queue<Data>* TotalData_, int index, bool select_highest = true){
     }
 }
 
+void BCS(std::queue<Data>* TotalData_, int index, bool select_highest = true){
+
+    printf("===== BCS =====\n");
+
+    std::queue<Data> new_container;
+
+    while(!TotalData_->empty()){
+        std::vector<Data> temp;
+        Data initial_data = TotalData_->front();
+        int experiment_ = initial_data.event_info[0];
+        int run_ = initial_data.event_info[1];
+        int event_ = initial_data.event_info[2];
+        int ncandidates_ = initial_data.event_info[4];
+        while(true){ // I suppose that the order of data exists
+            Data temp_data = TotalData_->front();
+            if(temp_data.event_info[0] == experiment_ && temp_data.event_info[1] == run_ && temp_data.event_info[2] == event_ && temp_data.event_info[4] == ncandidates_) {
+                TotalData_->pop();
+                temp.push_back(temp_data);
+            }
+            else break;
+        }
+
+        if(select_highest == true){
+            double max = -std::numeric_limits<double>::max();
+            int best_candidate_index = -1;
+            for(unsigned int i = 0; i<temp.size();i++){
+                if(temp.at(i).Btag_info[index] > max) { max = temp.at(i).Btag_info[index]; best_candidate_index = i; }
+            }
+            if(best_candidate_index == -1) { printf("error!\n"); exit(1); }
+            new_container.push(temp[best_candidate_index]);
+        }
+        else if(select_highest == false){
+            double min = std::numeric_limits<double>::max();
+            int best_candidate_index = -1;
+            for(unsigned int i = 0; i<temp.size();i++){
+                if(temp.at(i).Btag_info[index] < min) { min = temp.at(i).Btag_info[index]; best_candidate_index = i; }
+            }
+            if(best_candidate_index == -1) { printf("error!\n"); exit(1); }
+            new_container.push(temp[best_candidate_index]);
+        }
+    }
+    while(!TotalData_->empty()) TotalData_->pop();
+    while(!new_container.empty()){
+        Data temp_data = new_container.front();
+        new_container.pop();
+        TotalData_->push(temp_data);
+    }
+}
+
+
 bool IsBCSValid(std::queue<Data> TotalData_){
     typedef struct labels{
         int __experiment__;
@@ -346,7 +396,10 @@ bool IsBCSValid(std::queue<Data> TotalData_){
         Data temp = TotalData_.front();
         TotalData_.pop();
         for(unsigned int i=0; i<label_list.size(); i++){
-            if(label_list.at(i).__experiment__ == temp.event_info[0] && label_list.at(i).__run__ == temp.event_info[1] && label_list.at(i).__event__ == temp.event_info[2] && label_list.at(i).__ncandidates__ == temp.event_info[4]) return false;
+            if(label_list.at(i).__experiment__ == temp.event_info[0] && label_list.at(i).__run__ == temp.event_info[1] && label_list.at(i).__event__ == temp.event_info[2] && label_list.at(i).__ncandidates__ == temp.event_info[4]) {
+              printf("BCS valid check produce an error!: %d %d %d %d\n", label_list.at(i).__experiment__, label_list.at(i).__run__, label_list.at(i).__event__, label_list.at(i).__ncandidates__);
+              return false;
+            }
         }
         Labels temp_Labels;
         temp_Labels.__experiment__ = temp.event_info[0];
@@ -357,6 +410,8 @@ bool IsBCSValid(std::queue<Data> TotalData_){
     }
     return true;
 }
+
+
 
 void PrintInformation(std::queue<Data> TotalData_){
     typedef struct labels{
@@ -412,6 +467,14 @@ void PrintInformation(std::queue<Data> TotalData_){
     printf("Number of B_sig isSignal != 1: %d\n", N_Bsig_isSignal_not1);
     printf("Number of Upsilon isSignal = 1: %d\n", N_Upsilon_isSignal_1);
     printf("Number of Upsilon isSignal != 1: %d\n", N_Upsilon_isSignal_not1);
+}
+
+void PrintEvtNumber(std::queue<Data> TotalData_){
+    while(!TotalData_.empty()){
+        Data temp = TotalData_.front();
+        TotalData_.pop();
+        printf("%d %d %d %d %d\n", temp.event_info[0], temp.event_info[1], temp.event_info[2], temp.event_info[3], temp.event_info[4]);
+    }
 }
 
 void ReadRootFiles_r_neutral(){
@@ -648,7 +711,7 @@ void ReadRootFiles_r_neutral(){
 
     Draw_Mbc_deltaE_Btag_projection(TotalData, 3);
     PrintInformation(TotalData);
-    if(IsBCSValid(TotalData) == false) {printf("error!\n"); return;}
+    //if(IsBCSValid(TotalData) == false) {printf("error!\n"); return;}
 
     // Mbc > 5.27 cut
     {
