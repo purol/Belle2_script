@@ -420,7 +420,7 @@ void PrintInformation(std::queue<Data> TotalData_){
 void ReadRootFiles_r(){
 
     std::vector<string> names;
-    const char* dirname = "/media/sf_virtualbox_folder/20210629/Ntuple25";
+    const char* dirname = "/media/sf_virtualbox_folder/20210629/Ntuple27";
 
     load_files(dirname, &names);
 
@@ -594,14 +594,14 @@ void ReadRootFiles_r(){
         delete temp_hist; delete c_temp;
     }
 
-    // dr < 0.1 cm cut
+    // dr < 0.2 cm cut
     {
-        printf("====== dr < 0.1 cm =====\n");
+        printf("====== dr < 0.2 cm =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
             TotalData.pop();
-            if(temp_data.Bsig_info[10] < 0.1) temp_queue.push(temp_data);
+            if(temp_data.Bsig_info[10] < 0.2) temp_queue.push(temp_data);
         }
         TotalData = temp_queue;
     }
@@ -623,14 +623,14 @@ void ReadRootFiles_r(){
         delete temp_hist; delete c_temp;
     }
 
-    // abs(dz) < 2 cm cut
+    // abs(dz) < 5 cm cut
     {
-        printf("====== abs(dz) < 2 cm =====\n");
+        printf("====== abs(dz) < 5 cm =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
             TotalData.pop();
-            if(temp_data.Bsig_info[11] < 2 && temp_data.Bsig_info[11] > -2) temp_queue.push(temp_data);
+            if(temp_data.Bsig_info[11] < 5 && temp_data.Bsig_info[11] > -5) temp_queue.push(temp_data);
         }
         TotalData = temp_queue;
     }
@@ -651,8 +651,8 @@ void ReadRootFiles_r(){
         delete temp_hist; delete c_temp;
     }
 
-    { // E_ROE < 4 cut
-        printf("====== E_ROE < 4 GeV =====\n");
+    { // E_ROE < 1.5 cut
+        printf("====== E_ROE < 1.5 GeV =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
