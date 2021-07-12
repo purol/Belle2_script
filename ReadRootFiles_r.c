@@ -761,107 +761,59 @@ void ReadRootFiles_r(){
     Draw_Mbc_deltaE_Btag_projection(TotalData, 6);
 
     {
-        TH1F* temp_hist1 = new TH1F("nROE_ECLcluster_Upsilon_correct","number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt",14,-0.5,13.5);
-        TH1F* temp_hist2 = new TH1F("nROE_ECLcluster_Upsilon_non-correct","number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt",14,-0.5,13.5);
+        TH1F* temp_hist = new TH1F("nROE_ECLcluster_Upsilon","number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt",14,-0.5,13.5);
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
             Data temp_data = temp_queue.front();
             temp_queue.pop();
-            if(temp_data.Upsilon_info[0] > 0.9 && temp_data.Upsilon_info[0] < 1.1) temp_hist1->Fill(temp_data.Upsilon_info[1]);
-            else { temp_hist2->Fill(temp_data.Upsilon_info[1]); }
+            temp_hist->Fill(temp_data.Upsilon_info[1]);
         }
-        temp_hist1->SetStats(false);
-        temp_hist1->SetLineColor(kBlue);
-        temp_hist1->SetLineWidth(2);
-        temp_hist1->SetFillColor(kBlue);
-        temp_hist1->SetFillStyle(3013);
-        temp_hist2->SetStats(false);
-        temp_hist2->SetLineColor(kRed);
-        temp_hist2->SetLineWidth(2);
-        temp_hist2->SetFillColor(kRed);
-        temp_hist2->SetFillStyle(3007);
 
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
-        temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SaveAs("nROE_ECLcluster_distribution_after_BCS.png");
-        delete temp_hist1; delete temp_hist2; delete c_temp;
+        temp_hist->Draw("Hist"); c_temp->SaveAs("nROE_ECLcluster_distribution_after_BCS.png");
+        delete temp_hist; delete c_temp;
     }
 
     {
-        TH1F* temp_hist1 = new TH1F("nROE_KLMcluster_Upsilon_correct","number of KLM clusters in ROE of #Upsilon(4S);number of KLM clusters;evt",14,-0.5,13.5);
-        TH1F* temp_hist2 = new TH1F("nROE_KLMcluster_Upsilon_non-correct","number of KLM clusters in ROE of #Upsilon(4S);number of KLM clusters;evt",14,-0.5,13.5);
+        TH1F* temp_hist = new TH1F("nROE_KLMcluster_Upsilon","number of KLM clusters in ROE of #Upsilon(4S);number of KLM clusters;evt",14,-0.5,13.5);
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
             Data temp_data = temp_queue.front();
             temp_queue.pop();
-            if(temp_data.Upsilon_info[0] > 0.9 && temp_data.Upsilon_info[0] < 1.1) temp_hist1->Fill(temp_data.Upsilon_info[2]);
-            else { temp_hist2->Fill(temp_data.Upsilon_info[2]); }
+            temp_hist->Fill(temp_data.Upsilon_info[2]);
         }
-        temp_hist1->SetStats(false);
-        temp_hist1->SetLineColor(kBlue);
-        temp_hist1->SetLineWidth(2);
-        temp_hist1->SetFillColor(kBlue);
-        temp_hist1->SetFillStyle(3013);
-        temp_hist2->SetStats(false);
-        temp_hist2->SetLineColor(kRed);
-        temp_hist2->SetLineWidth(2);
-        temp_hist2->SetFillColor(kRed);
-        temp_hist2->SetFillStyle(3007);
 
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
-        temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SaveAs("nROE_KLMcluster_distribution_after_BCS.png");
-        delete temp_hist1; delete temp_hist2; delete c_temp;
+        temp_hist->Draw("Hist"); c_temp->SaveAs("nROE_KLMcluster_distribution_after_BCS.png");
+        delete temp_hist; delete c_temp;
     }
 
     {
-        TH1F* temp_hist1 = new TH1F("nROE_energy_Upsilon_correct","energy of ROE of #Upsilon(4S);energy of ROE [GeV];evt",50,0,3);
-        TH1F* temp_hist2 = new TH1F("nROE_energy_Upsilon_non-correct","energy of ROE of #Upsilon(4S);energy of ROE;evt",50,0,3);
+        TH1F* temp_hist = new TH1F("nROE_energy_Upsilon","energy of ROE of #Upsilon(4S);energy of ROE [GeV];evt",50,0,3);
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
             Data temp_data = temp_queue.front();
             temp_queue.pop();
-            if(temp_data.Upsilon_info[0] > 0.9 && temp_data.Upsilon_info[0] < 1.1) temp_hist1->Fill(temp_data.Upsilon_info[3]);
-            else { temp_hist2->Fill(temp_data.Upsilon_info[3]); }
+            temp_hist->Fill(temp_data.Upsilon_info[3]);
         }
-        temp_hist1->SetStats(false);
-        temp_hist1->SetLineColor(kBlue);
-        temp_hist1->SetLineWidth(2);
-        temp_hist1->SetFillColor(kBlue);
-        temp_hist1->SetFillStyle(3013);
-        temp_hist2->SetStats(false);
-        temp_hist2->SetLineColor(kRed);
-        temp_hist2->SetLineWidth(2);
-        temp_hist2->SetFillColor(kRed);
-        temp_hist2->SetFillStyle(3007);
 
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
-        temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SaveAs("ROE_energy_distribution_after_BCS.png");
-        delete temp_hist1; delete temp_hist2; delete c_temp;
+        temp_hist->Draw("Hist"); c_temp->SaveAs("ROE_energy_distribution_after_BCS.png");
+        delete temp_hist; delete c_temp;
     }
 
     {
-        TH1F* temp_hist1 = new TH1F("nROE_track_Upsilon_correct","number of tracks in ROE of #Upsilon(4S);number of tracks;evt",14,-0.5,13.5);
-        TH1F* temp_hist2 = new TH1F("nROE_track_Upsilon_non-correct","number of tracks in ROE of #Upsilon(4S);number of tracks;evt",14,-0.5,13.5);
+        TH1F* temp_hist = new TH1F("nROE_track_Upsilon","number of tracks in ROE of #Upsilon(4S);number of tracks;evt",14,-0.5,13.5);
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
             Data temp_data = temp_queue.front();
             temp_queue.pop();
-            if(temp_data.Upsilon_info[0] > 0.9 && temp_data.Upsilon_info[0] < 1.1) temp_hist1->Fill(temp_data.Upsilon_info[4]);
-            else { temp_hist2->Fill(temp_data.Upsilon_info[4]); }
+            temp_hist->Fill(temp_data.Upsilon_info[4]);
         }
-        temp_hist1->SetStats(false);
-        temp_hist1->SetLineColor(kBlue);
-        temp_hist1->SetLineWidth(2);
-        temp_hist1->SetFillColor(kBlue);
-        temp_hist1->SetFillStyle(3013);
-        temp_hist2->SetStats(false);
-        temp_hist2->SetLineColor(kRed);
-        temp_hist2->SetLineWidth(2);
-        temp_hist2->SetFillColor(kRed);
-        temp_hist2->SetFillStyle(3007);
 
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
-        temp_hist2->Draw("Hist"); temp_hist1->Draw("SAME"); c_temp->SaveAs("nROE_tracks_distribution_after_BCS.png");
-        delete temp_hist1; delete temp_hist2; delete c_temp;
+        temp_hist->Draw("Hist"); c_temp->SaveAs("nROE_tracks_distribution_after_BCS.png");
+        delete temp_hist; delete c_temp;
     }
 
     {
