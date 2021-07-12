@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # usage: basf2 MakeNtuple_multi.py "./20210402/evt-0.mdst"
-# last: 2021-07-12-0
+# last: 2021-07-12-1
 
 import os
 import sys
@@ -127,7 +127,7 @@ my_path.add_module('ParticleMCDecayString', listName="B0:neutral_sig", fileName=
 my_path.add_module('ParticleMCDecayString', listName='Upsilon(4S):withoutneutrino', fileName=destination + "/" + name+'hashmap_Upsilon.root')
 
 # get variables
-Kinematics = ["E", "InvM", "p", "phi", "theta"]
+Kinematics = ["E", "InvM", "M", "p", "phi", "theta"]
 Kinematics_CMS = ["useCMSFrame(E)", "useCMSFrame(p)", "useCMSFrame(phi)", "useCMSFrame(theta)"]
 Kinematics_RecoilRestFrame = ["useTagSideRecoilRestFrame(daughter(1,E),0)", "useTagSideRecoilRestFrame(daughter(1,p),0)", "useTagSideRecoilRestFrame(daughter(1,phi),0)", "useTagSideRecoilRestFrame(daughter(1,theta),0)"]
 Btag_cut = ["Mbc", "deltaE"]
