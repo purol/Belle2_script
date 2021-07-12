@@ -634,13 +634,13 @@ void ReadRootFiles_r_neutral(){
         delete temp_hist; delete c_temp;
     }
 
-    { // E_ROE < 4 cut
-        printf("====== E_ROE < 4 GeV =====\n");
+    { // E_ROE < 1.5 cut
+        printf("====== E_ROE < 1.5 GeV =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
             TotalData.pop();
-            if(temp_data.Upsilon_info[3] < 4) temp_queue.push(temp_data);
+            if(temp_data.Upsilon_info[3] < 1.5) temp_queue.push(temp_data);
         }
         TotalData = temp_queue;
     }
