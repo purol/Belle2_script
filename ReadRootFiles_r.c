@@ -598,14 +598,14 @@ void ReadRootFiles_r(){
         delete temp_hist; delete c_temp;
     }
 
-    // dr < 0.2 cm cut
+    // dr < 2 cm cut
     {
-        printf("====== dr < 0.2 cm =====\n");
+        printf("====== dr < 2 cm =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
             TotalData.pop();
-            if(temp_data.Bsig_info[10] < 0.2) temp_queue.push(temp_data);
+            if(temp_data.Bsig_info[10] < 2) temp_queue.push(temp_data);
         }
         TotalData = temp_queue;
     }
@@ -627,14 +627,14 @@ void ReadRootFiles_r(){
         delete temp_hist; delete c_temp;
     }
 
-    // abs(dz) < 5 cm cut
+    // abs(dz) < 4 cm cut
     {
-        printf("====== abs(dz) < 5 cm =====\n");
+        printf("====== abs(dz) < 4 cm =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
             TotalData.pop();
-            if(temp_data.Bsig_info[11] < 5 && temp_data.Bsig_info[11] > -5) temp_queue.push(temp_data);
+            if(temp_data.Bsig_info[11] < 4 && temp_data.Bsig_info[11] > -4) temp_queue.push(temp_data);
         }
         TotalData = temp_queue;
     }
