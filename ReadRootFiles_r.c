@@ -26,10 +26,11 @@ typedef struct data{
     // 5: Bsig_experiment, 6: Bsig_run, 7: Bsig_event, 8: Bsig_candidate, 9: Bsig_ncandidates
     // 10: Btag_experiment, 11: Btag_run, 12: Btag_event, 13: Btag_candidate, 14: Btag_ncandidates
 
-    double Upsilon_info[8];
+    double Upsilon_info[11];
     // 0: Upsilon_isSignal; 1: number of ECL clusters in ROE(cleanMask), 2: number of KLM clusters in ROE
     // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask), 5: roeEextra(cleanMask)
-    // 6: nROE_NeutralECLClusters(cleanMask), 7: roeNeextra(cleanMask)
+    // 6: nROE_NeutralECLClusters(cleanMask), 7: roeNeextra(cleanMask), 8: energy in ROE(cleanMask) at CMS
+    // 9: roeExtra(cleanMask) at CMS, 10: roeNeextra(cleanMask) at CMS
 
     double Bsig_info[12];
     // 0: Bsig_isSignal, 1: Bsig_E, 2: Bsig_E_CMS, 3: Bsig_E_Recoil, 4: Bsig_dmID
@@ -420,7 +421,7 @@ void PrintInformation(std::queue<Data> TotalData_){
 void ReadRootFiles_r(){
 
     std::vector<string> names;
-    const char* dirname = "/media/sf_virtualbox_folder/20210629/Ntuple27";
+    const char* dirname = "/home/jwpark/storage/GEN_CHG/Ntuple";
 
     load_files(dirname, &names);
 
@@ -460,6 +461,9 @@ void ReadRootFiles_r(){
         tree_upsilon->SetBranchAddress("roeEextra__bocleanMask__bc",&temp.Upsilon_info[5]);
         tree_upsilon->SetBranchAddress("nROE_NeutralECLClusters__bocleanMask__bc",&temp.Upsilon_info[6]);
         tree_upsilon->SetBranchAddress("roeNeextra__bocleanMask__bc",&temp.Upsilon_info[7]);
+        tree_upsilon->SetBranchAddress("useCMSFrame__boroeE__bocleanMask__bc__bc",&temp.Upsilon_info[8]);
+        tree_upsilon->SetBranchAddress("useCMSFrame__boroeEextra__bocleanMask__bc__bc",&temp.Upsilon_info[9]);
+        tree_upsilon->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc",&temp.Upsilon_info[10]);
 
         // get Bsig_info
         tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[0]);
@@ -657,7 +661,7 @@ void ReadRootFiles_r(){
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
             TotalData.pop();
-            if(temp_data.Upsilon_info[3] < 4) temp_queue.push(temp_data);
+            if(temp_data.Upsilon_info[3] < 1.5) temp_queue.push(temp_data);
         }
         TotalData = temp_queue;
     }
@@ -815,6 +819,21 @@ void ReadRootFiles_r(){
         temp_hist->Draw("Hist"); c_temp->SaveAs("nROE_tracks_distribution_after_BCS.png");
         delete temp_hist; delete c_temp;
     }
+
+    {
+        TH1F* temp_hist = new TH1F("ROE_Eextra","ROE Eextra of #Upsilon(4S);number of tracks;evt",100,-0.5,5.5);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[5]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("ROE_Eextra_after_BCS.png");
+        delete temp_hist; delete c_temp;
+    }
+
 
     {
         TH1F* temp_hist = new TH1F("Bsig_p_LAB","momentum of B_{sig} at LAB frame;p [GeV];evt",50,-0.5,6);
