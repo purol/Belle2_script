@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # usage: basf2 MakeNtuple_multi.py "./20210402/evt-0.mdst"
-# last: 2021-07-12-1
+# last: 2021-07-14-1
 
 import os
 import sys
@@ -25,6 +25,8 @@ os.environ['USE_GRAND_REPROCESS_DATA'] = '1'
 os.environ['PGUSER'] = 'g0db'
 
 debug = False
+
+basf2.set_debug_level(10)
 
 #basf2.conditions.prepend_globaltag("analysis_tools_light-2104-poseidon data_reprocessing_proc9 online")
 basf2.conditions.prepend_globaltag(ma.getAnalysisGlobaltag())
@@ -101,7 +103,8 @@ cluster_selection = '[[E > 0.10 and formula(theta/3.14*180) < 31.4] or \
                      abs(clusterTiming) < 20'
 cleanMask = ("cleanMask",track_selection, cluster_selection)
 # ma.buildRestOfEvent("B+:generic",inputParticlelists=["K+:mychargedKaon"],path=my_path)
-# ma.appendROEMasks("B+:generic",[cleanMask],path=my_path)
+ma.appendROEMasks("B+:generic",[cleanMask],path=my_path)
+ma.buildContinuumSuppression(list_name="B+:generic",roe_mask = "cleanMask", path=my_path)
 # To Do: background suppresion using ROE
 
 # signal side
@@ -154,12 +157,14 @@ mcvar = ["mcPDG", "mcE", "mcP", "mcPhi", "mcTheta", "genParticleID", "isSignal",
 loosemcvar = ["extraInfo(looseMCMotherPDG)", "extraInfo(looseMCWrongDaughterN)", "extraInfo(looseMCWrongDaughterPDG)", "extraInfo(looseMCWrongDaughterBiB)"]
 decayhash = ['extraInfo(DecayHash)', 'extraInfo(DecayHashExtended)']
 othervar = ["PDG", "extraInfo(decayModeID)"]
+continuumsup_vars = ["R2", "thrustBm", "thrustOm", "cosTBTO", "cosTBz", "KSFWVariables(et)", "KSFWVariables(mm2)", "KSFWVariables(hso00)", "KSFWVariables(hso02)", "KSFWVariables(hso04)", "KSFWVariables(hso10)", "KSFWVariables(hso12)", "KSFWVariables(hso14)", "KSFWVariables(hso20)", "KSFWVariables(hso22)", "KSFWVariables(hso24)", "CleoConeCS(1)", "CleoConeCS(2)", "CleoConeCS(3)", "CleoConeCS(4)", "CleoConeCS(5)", "CleoConeCS(6)", "CleoConeCS(7)", "CleoConeCS(8)", "CleoConeCS(9)"]
 
-Btag_vars = vu.create_aliases(list_of_variables = Kinematics + Btag_cut + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["extraInfo(SignalProbability)"], wrapper = "daughter(0,{variable})",prefix="Btag")
+Btag_vars = vu.create_aliases(list_of_variables = Kinematics + Btag_cut + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + continuumsup_vars + ["extraInfo(SignalProbability)"], wrapper = "daughter(0,{variable})",prefix="Btag")
 
-Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["daughter(0, atcPIDBelle(3,2))", "daughter(0, dr)", "daughter(0, dz)", "daughter(0, mcPDG)", "daughter(0, genParticleID)"], wrapper = "daughter(1,{variable})", prefix="Bsig")
+Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["daughter(0, atcPIDBelle(3,2))", "daughter(0, eIDBelle)", "daughter(0, muIDBelle)", "daughter(0, dr)", "daughter(0, dz)", "daughter(0, mcPDG)", "daughter(0, genParticleID)"], wrapper = "daughter(1,{variable})", prefix="Bsig")
 
 U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + mcvar + decayhash + othervar + ["extraInfo(Upsilon_rank)", "nROE_ECLClusters(cleanMask)", "nROE_NeutralECLClusters(cleanMask)", "nROE_KLMClusters", "roeE(cleanMask)", "roeMC_E", "nROE_Tracks(cleanMask)", "weMissE(cleanMask,0)", "weMissE(cleanMask,5)", "roeEextra(cleanMask)", "roeNeextra(cleanMask)", "useCMSFrame(roeE(cleanMask))", "useCMSFrame(roeEextra(cleanMask))", "useCMSFrame(roeNeextra(cleanMask))"]
+
 
 output_file = destination + "/" + name+"_Ntuple.root"
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Btag_vars,filename=output_file,treename="Btag",path=my_path)
@@ -167,9 +172,7 @@ ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Bsig_va
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=U_vars,filename=output_file,treename="Upsilon",path=my_path)    
 
 # progress
-my_path.add_module('Progress')
-    
 basf2.process(my_path)
-    
+
 # Print call statistics
 print(basf2.statistics)
