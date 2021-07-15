@@ -714,13 +714,40 @@ void ReadRootFiles_r(){
         delete temp_hist; delete c_temp;
     }
 
-    { // E_ROE < 1.5 cut
-        printf("====== E_ROE < 1.5 GeV =====\n");
+    { // E_ROE < 1 cut
+        printf("====== E_ROE < 1 GeV =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
             TotalData.pop();
-            if(temp_data.Upsilon_info[3] < 1.5) temp_queue.push(temp_data);
+            if(temp_data.Upsilon_info[3] < 1) temp_queue.push(temp_data);
+        }
+        TotalData = temp_queue;
+    }
+
+    PrintInformation(TotalData);
+
+    { // print ntrack
+        TH1F* temp_hist = new TH1F("nROE_track_Upsilon","number of tracks in ROE of #Upsilon(4S);number of tracks;evt",100,-0.5,13.5);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[4]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("nROE_tracks_distribution_after_E_ROE_cut.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    { // ntrack = 0 cut
+        printf("====== ntrack = 0 =====\n");
+        std::queue<Data> temp_queue;
+        while(!TotalData.empty()){
+            Data temp_data = TotalData.front();
+            TotalData.pop();
+            if(temp_data.Upsilon_info[4] < 0.5) temp_queue.push(temp_data);
         }
         TotalData = temp_queue;
     }
