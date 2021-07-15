@@ -31,10 +31,10 @@ typedef struct data{
     // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask), 5: roeEextra(cleanMask)
     // 6: nROE_NeutralECLClusters(cleanMask), 7: roeNeextra(cleanMask)
 
-    double Bsig_info[10];
+    double Bsig_info[11];
     // 0: Bsig_isSignal, 1: Bsig_E, 2: Bsig_E_CMS, 3: Bsig_E_Recoil, 4: Bsig_dmID
     // 5: goodBelleKshort of K_S0 from Bsig, 6: Bsig_first_daughter's_mcPDG
-    // 7: Bsig_p, 8: Bsig_p_CMS, 9: Bsig_p_Recoil
+    // 7: Bsig_p, 8: Bsig_p_CMS, 9: Bsig_p_Recoil, 10: Bsig_M
 
     double Btag_info[7];
     // 0: Btag_isSignal, 1:Btag_dmID, 2: Btag_Mbc, 3: Btag_deltaE
@@ -480,7 +480,7 @@ void PrintEvtNumber(std::queue<Data> TotalData_){
 void ReadRootFiles_r_neutral(){
 
     std::vector<string> names;
-    const char* dirname = "/media/sf_virtualbox_folder/20210709/Neutral_Ntuple7";
+    const char* dirname = "/media/sf_virtualbox_folder/20210709/Neutral_Ntuple8";
 
     load_files(dirname, &names);
 
@@ -532,6 +532,7 @@ void ReadRootFiles_r_neutral(){
         tree_Bsig->SetBranchAddress("Bsig_p", &temp.Bsig_info[7]);
         tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_p", &temp.Bsig_info[8]);
         tree_upsilon->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp.Bsig_info[9]);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_M", &temp.Bsig_info[10]);
 
         // get Btag_info
         tree_Btag->SetBranchAddress("Btag_isSignal", &temp.Btag_info[0]);
@@ -743,5 +744,75 @@ void ReadRootFiles_r_neutral(){
     PrintInformation(TotalData);
 
     Draw_Mbc_deltaE_Btag_projection(TotalData, 5);
+
+    {
+        TH1F* temp_hist = new TH1F("M_Bsig", "Mass of reconstructed B_{sig};mass [GeV];evt", 100, 0.4714, 0.4715);
+        std::queue<Data> temp_queue = TotalData;
+        while (!temp_queue.empty()) {
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp.Bsig_info[10]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c", "", 1500, 1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("M_Bsig_after_BCS.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    {
+        TH1F* temp_hist = new TH1F("nROE_ECLcluster_Upsilon", "number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt", 14, -0.5, 13.5);
+        std::queue<Data> temp_queue = TotalData;
+        while (!temp_queue.empty()) {
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[1]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c", "", 1500, 1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("nROE_ECLcluster_distribution_after_BCS.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    {
+        TH1F* temp_hist = new TH1F("nROE_KLMcluster_Upsilon", "number of KLM clusters in ROE of #Upsilon(4S);number of KLM clusters;evt", 14, -0.5, 13.5);
+        std::queue<Data> temp_queue = TotalData;
+        while (!temp_queue.empty()) {
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[2]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c", "", 1500, 1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("nROE_KLMcluster_distribution_after_BCS.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    {
+        TH1F* temp_hist = new TH1F("nROE_energy_Upsilon", "energy of ROE of #Upsilon(4S);energy of ROE [GeV];evt", 50, 0, 3);
+        std::queue<Data> temp_queue = TotalData;
+        while (!temp_queue.empty()) {
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[3]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c", "", 1500, 1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("ROE_energy_distribution_after_BCS.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    {
+        TH1F* temp_hist = new TH1F("nROE_track_Upsilon", "number of tracks in ROE of #Upsilon(4S);number of tracks;evt", 14, -0.5, 13.5);
+        std::queue<Data> temp_queue = TotalData;
+        while (!temp_queue.empty()) {
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[4]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c", "", 1500, 1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("nROE_tracks_distribution_after_BCS.png");
+        delete temp_hist; delete c_temp;
+    }
 
 }
