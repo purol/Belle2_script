@@ -32,11 +32,12 @@ typedef struct data{
     // 6: nROE_NeutralECLClusters(cleanMask), 7: roeNeextra(cleanMask), 8: energy in ROE(cleanMask) at CMS
     // 9: roeExtra(cleanMask) at CMS, 10: roeNeextra(cleanMask) at CMS
 
-    double Bsig_info[12];
+    double Bsig_info[14];
     // 0: Bsig_isSignal, 1: Bsig_E, 2: Bsig_E_CMS, 3: Bsig_E_Recoil, 4: Bsig_dmID
     // 5: Bsig_first_daughter's_actPID(3,2) 6: Bsig_first_daughter's_mcPDG
     // 7: Bsig_p, 8: Bsig_p_CMS, 9: Bsig_p_Recoil
-    // 10: Kaon dr, 11: Kaon dz
+    // 10: Kaon dr, 11: Kaon dz, 12: Bsig_first_daughter's eIDBelle
+    // 13: Bsig_first_daughter's_muIDBelle
 
     double Btag_info[7];
     // 0: Btag_isSignal, 1:Btag_dmID, 2: Btag_Mbc, 3: Btag_deltaE
@@ -421,7 +422,7 @@ void PrintInformation(std::queue<Data> TotalData_){
 void ReadRootFiles_r(){
 
     std::vector<string> names;
-    const char* dirname = "/home/jwpark/storage/GEN_CHG/Ntuple";
+    const char* dirname = "/home/jwpark/storage/Ntuple28";
 
     load_files(dirname, &names);
 
@@ -478,8 +479,10 @@ void ReadRootFiles_r(){
         tree_upsilon->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp.Bsig_info[9]);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_dr", &temp.Bsig_info[10]);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_dz", &temp.Bsig_info[11]);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_eIDBelle", &temp.Bsig_info[12]);
+	tree_Bsig->SetBranchAddress("Bsig_daughter_0_muIDBelle", &temp.Bsig_info[13]);
 
-        // get Btag_info
+	// get Btag_info
         tree_Btag->SetBranchAddress("Btag_isSignal", &temp.Btag_info[0]);
         tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[1]);
         tree_Btag->SetBranchAddress("Btag_Mbc", &temp.Btag_info[2]);
@@ -585,7 +588,7 @@ void ReadRootFiles_r(){
     Draw_Mbc_deltaE_Btag_projection(TotalData, 3);
 
     { // print dr of Kaon
-        TH1F* temp_hist = new TH1F("dr_Kaon_from_Bsig","dr of Kaon from B_{sig};dr [cm];candidates",100,-0.1,0.3);
+        TH1F* temp_hist = new TH1F("dr_Kaon_from_Bsig","dr of Kaon from B_{sig};dr [cm];candidates",100,-0.1,3.5);
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
             Data temp_data = temp_queue.front();
@@ -614,7 +617,7 @@ void ReadRootFiles_r(){
 
 
     { // print dz of Kaon
-        TH1F* temp_hist = new TH1F("dz_Kaon_from_Bsig","dz of Kaon from B_{sig};dz [cm];candidates",100,-5,5);
+        TH1F* temp_hist = new TH1F("dz_Kaon_from_Bsig","dz of Kaon from B_{sig};dz [cm];candidates",100,-6,6);
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
             Data temp_data = temp_queue.front();
@@ -635,6 +638,62 @@ void ReadRootFiles_r(){
             Data temp_data = TotalData.front();
             TotalData.pop();
             if(temp_data.Bsig_info[11] < 4 && temp_data.Bsig_info[11] > -4) temp_queue.push(temp_data);
+        }
+        TotalData = temp_queue;
+    }
+
+    PrintInformation(TotalData);
+
+    { // print eIDBelle of Kaon
+        TH1F* temp_hist = new TH1F("eIDBelle_Bsig_first_daughter","eIDBelle of Kaon from B_{sig};eIDBelle;candidates",100,0,1);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Bsig_info[12]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("eIDBelle_Kaon_after_dz_cut.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    // eIDBelle < 0.9 cm cut
+    {
+        printf("====== eIDBelle < 0.9 =====\n");
+        std::queue<Data> temp_queue;
+        while(!TotalData.empty()){
+            Data temp_data = TotalData.front();
+            TotalData.pop();
+            if(temp_data.Bsig_info[12] < 0.9) temp_queue.push(temp_data);
+        }
+        TotalData = temp_queue;
+    }
+
+    PrintInformation(TotalData);
+
+    { // print muIDBelle of Kaon
+        TH1F* temp_hist = new TH1F("muIDBelle_Bsig_first_daughter","muIDBelle of Kaon from B_{sig};muIDBelle;candidates",100,0,1);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Bsig_info[13]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("muIDBelle_Kaon_after_dz_cut.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    // myIDBelle < 0.9 cm cut
+    {
+        printf("====== myIDBelle < 0.9 =====\n");
+        std::queue<Data> temp_queue;
+        while(!TotalData.empty()){
+            Data temp_data = TotalData.front();
+            TotalData.pop();
+            if(temp_data.Bsig_info[13] < 0.9) temp_queue.push(temp_data);
         }
         TotalData = temp_queue;
     }
