@@ -102,7 +102,7 @@ cluster_selection = '[[E > 0.10 and formula(theta/3.14*180) < 31.4] or \
                       [E > 0.15 and formula(theta/3.14*180) > 130.7]] and \
                      abs(clusterTiming) < 20'
 cleanMask = ("cleanMask",track_selection, cluster_selection)
-# ma.buildRestOfEvent("B+:generic",inputParticlelists=["K+:mychargedKaon"],path=my_path)
+ma.buildRestOfEvent("B+:generic",path=my_path)
 ma.appendROEMasks("B+:generic",[cleanMask],path=my_path)
 ma.buildContinuumSuppression(list_name="B+:generic",roe_mask = "cleanMask", path=my_path)
 # To Do: background suppresion using ROE
