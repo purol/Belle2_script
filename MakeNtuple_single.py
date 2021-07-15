@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # usage: basf2 MakeNtuple_multi.py "./20210402/evt-0.mdst"
-# last: 2021-07-14-1
+# last: 2021-07-15-0
 
 import os
 import sys
@@ -68,8 +68,10 @@ if monitoring:
     addNeutralsConversionMonitors(path=my_path)
 
 # fill particle list
-ma.fillParticleList(decayString="K+:mychargedKaon", cut="atcPIDBelle(3,2)>0.6",path=my_path)
+ma.fillParticleList(decayString="K+:mychargedKaon", cut="atcPIDBelle(3,2)>0.6 and eIDBelle < 0.9 and muIDBelle < 0.9 and dr < 2 and dz < 4",path=my_path)
 ma.fillParticleList(decayString="K+:all", cut="", path=my_path)
+ma.cutAndCopyList('K_S0:good', 'K_S0:mdst', cut='goodBelleKshort', path=my_path)
+ma.cutAndCopyList("pi0:good", "pi0:mdst", cut="", path=my_path)
 #ma.fillParticleList(decayString="pi+:all", cut="", path=my_path)
 #ma.fillParticleList(decayString="gamma:all", cut="", path=my_path)
 
@@ -96,7 +98,7 @@ if debug:
 # ma.applyCuts("B+:generic","Mbc>5.27 and abs(deltaE)<0.1", path=my_path)
 
 # tag side
-track_selection = "abs(d0) < 10.0 and abs(z0) < 20.0"
+track_selection = "dr < 2 and dz < 4"
 cluster_selection = '[[E > 0.10 and formula(theta/3.14*180) < 31.4] or \
                       [E > 0.05 and formula(theta/3.14*180) > 31.4 and formula(theta/3.14*180) < 130.7] or \
                       [E > 0.15 and formula(theta/3.14*180) > 130.7]] and \
@@ -123,7 +125,7 @@ ma.reconstructDecay("Upsilon(4S):withoutneutrino_charged -> B+:generic B-:sig",c
 #ma.reconstructDecay("Upsilon(4S):withoutneutrino_neutral -> B0:generic anti-B0:neutral_sig",cut ="", dmID = 1, path=my_path)
 #ma.copyLists(outputListName="Upsilon(4S):withoutneutrino", inputListNames=["Upsilon(4S):withoutneutrino_charged", "Upsilon(4S):withoutneutrino_neutral"], path=my_path)
 ma.copyLists(outputListName="Upsilon(4S):withoutneutrino", inputListNames=["Upsilon(4S):withoutneutrino_charged"], path=my_path)
-ma.buildRestOfEvent("Upsilon(4S):withoutneutrino", path=my_path)
+ma.buildRestOfEvent("Upsilon(4S):withoutneutrino", inputParticlelists=["K+:mychargedKaon", "K_S0:good", "pi0:good"], path=my_path)
     
 # apply cut: no charged track, E, cluster on ROE
 ma.appendROEMasks("Upsilon(4S):withoutneutrino",[cleanMask],path=my_path)
@@ -163,7 +165,7 @@ Btag_vars = vu.create_aliases(list_of_variables = Kinematics + Btag_cut + Kinema
 
 Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["daughter(0, atcPIDBelle(3,2))", "daughter(0, eIDBelle)", "daughter(0, muIDBelle)", "daughter(0, dr)", "daughter(0, dz)", "daughter(0, mcPDG)", "daughter(0, genParticleID)"], wrapper = "daughter(1,{variable})", prefix="Bsig")
 
-U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + mcvar + decayhash + othervar + ["extraInfo(Upsilon_rank)", "nROE_ECLClusters(cleanMask)", "nROE_NeutralECLClusters(cleanMask)", "nROE_KLMClusters", "roeE(cleanMask)", "roeMC_E", "nROE_Tracks(cleanMask)", "weMissE(cleanMask,0)", "weMissE(cleanMask,5)", "roeEextra(cleanMask)", "roeNeextra(cleanMask)", "useCMSFrame(roeE(cleanMask))", "useCMSFrame(roeEextra(cleanMask))", "useCMSFrame(roeNeextra(cleanMask))"]
+U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + mcvar + decayhash + othervar + ["extraInfo(Upsilon_rank)", "nROE_ECLClusters(cleanMask)", "nROE_NeutralECLClusters(cleanMask)", "nROE_KLMClusters", "roeE(cleanMask)", "roeMC_E", "nROE_Tracks(cleanMask)", "weMissE(cleanMask,0)", "weMissE(cleanMask,5)", "roeEextra(cleanMask)", "roeNeextra(cleanMask)", "useCMSFrame(roeE(cleanMask))", "useCMSFrame(roeEextra(cleanMask))", "useCMSFrame(roeNeextra(cleanMask))", "nROE_ParticlesInList(K+:mychargedKaon)", "nROE_ParticlesInList(K_S0:good)", "nROE_ParticlesInList(pi0:good)"]
 
 
 output_file = destination + "/" + name+"_Ntuple.root"
