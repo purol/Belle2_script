@@ -540,6 +540,20 @@ void ReadRootFiles_r(){
 
     Draw_Mbc_deltaE_Btag_projection(TotalData, 2);
 
+    { // draw signalprobability 
+        TH1F* temp_hist1 = new TH1F("SignalProbability_Btag","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist1->Fill(TMath::Log10(temp_data.Btag_info[6]));
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist1->Draw("Hist"); c_temp->SaveAs("SignalProbability_distribution_total_after_deltaE_cut.png");
+        delete temp_hist1; delete c_temp;
+    }
+
     // draw atcPIDBelle_3_2 distribution with respect to mcPDG
     {
         TH1F* temp_hist1 = new TH1F("atcPID(3,2)_Kaon","atcPID(3,2) of daughter of B_{sig};atcPID(3,2);Num of candidate",100,-0.1,1.1);
