@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # usage: basf2 MakeNtuple_multi.py "./20210402/evt-0.mdst"
-# last: 2021-07-15-0
+# last: 2021-07-17-0
 
 import os
 import sys
@@ -71,7 +71,8 @@ if monitoring:
 ma.fillParticleList(decayString="K+:mychargedKaon", cut="atcPIDBelle(3,2)>0.6 and eIDBelle < 0.9 and muIDBelle < 0.9 and dr < 2 and dz < 4",path=my_path)
 ma.fillParticleList(decayString="K+:all", cut="", path=my_path)
 ma.cutAndCopyList('K_S0:good', 'K_S0:mdst', cut='goodBelleKshort', path=my_path)
-ma.cutAndCopyList("pi0:good", "pi0:mdst", cut="", path=my_path)
+ma.cutAndCopyList("pi0:good", "pi0:mdst", cut="M>0.118 and M<0.15", path=my_path)
+ma.cutAndCopyList("gamma:good", "gamma:mdst", cut="E>0.05",path=my_path)
 #ma.fillParticleList(decayString="pi+:all", cut="", path=my_path)
 #ma.fillParticleList(decayString="gamma:all", cut="", path=my_path)
 
@@ -125,7 +126,7 @@ ma.reconstructDecay("Upsilon(4S):withoutneutrino_charged -> B+:generic B-:sig",c
 #ma.reconstructDecay("Upsilon(4S):withoutneutrino_neutral -> B0:generic anti-B0:neutral_sig",cut ="", dmID = 1, path=my_path)
 #ma.copyLists(outputListName="Upsilon(4S):withoutneutrino", inputListNames=["Upsilon(4S):withoutneutrino_charged", "Upsilon(4S):withoutneutrino_neutral"], path=my_path)
 ma.copyLists(outputListName="Upsilon(4S):withoutneutrino", inputListNames=["Upsilon(4S):withoutneutrino_charged"], path=my_path)
-ma.buildRestOfEvent("Upsilon(4S):withoutneutrino", inputParticlelists=["K+:mychargedKaon", "K_S0:good", "pi0:good"], path=my_path)
+ma.buildRestOfEvent("Upsilon(4S):withoutneutrino", inputParticlelists=["K_S0:good", "pi0:good", "gamma:good"], path=my_path)
     
 # apply cut: no charged track, E, cluster on ROE
 ma.appendROEMasks("Upsilon(4S):withoutneutrino",[cleanMask],path=my_path)
@@ -165,7 +166,7 @@ Btag_vars = vu.create_aliases(list_of_variables = Kinematics + Btag_cut + Kinema
 
 Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + mcvar + loosemcvar + decayhash + othervar + ["daughter(0, atcPIDBelle(3,2))", "daughter(0, eIDBelle)", "daughter(0, muIDBelle)", "daughter(0, dr)", "daughter(0, dz)", "daughter(0, mcPDG)", "daughter(0, genParticleID)"], wrapper = "daughter(1,{variable})", prefix="Bsig")
 
-U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + mcvar + decayhash + othervar + ["extraInfo(Upsilon_rank)", "nROE_ECLClusters(cleanMask)", "nROE_NeutralECLClusters(cleanMask)", "nROE_KLMClusters", "roeE(cleanMask)", "roeMC_E", "nROE_Tracks(cleanMask)", "weMissE(cleanMask,0)", "weMissE(cleanMask,5)", "roeEextra(cleanMask)", "roeNeextra(cleanMask)", "useCMSFrame(roeE(cleanMask))", "useCMSFrame(roeEextra(cleanMask))", "useCMSFrame(roeNeextra(cleanMask))", "nROE_ParticlesInList(K+:mychargedKaon)", "nROE_ParticlesInList(K_S0:good)", "nROE_ParticlesInList(pi0:good)"]
+U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + mcvar + decayhash + othervar + ["extraInfo(Upsilon_rank)", "nROE_ECLClusters(cleanMask)", "nROE_NeutralECLClusters(cleanMask)", "nROE_KLMClusters", "roeE(cleanMask)", "roeMC_E", "nROE_Tracks(cleanMask)", "weMissE(cleanMask,0)", "weMissE(cleanMask,5)", "roeEextra(cleanMask)", "roeNeextra(cleanMask)", "useCMSFrame(roeE(cleanMask))", "useCMSFrame(roeEextra(cleanMask))", "useCMSFrame(roeNeextra(cleanMask))", "nROE_ParticlesInList(gamma:good)", "nROE_ParticlesInList(K_S0:good)", "nROE_ParticlesInList(pi0:good)"]
 
 
 output_file = destination + "/" + name+"_Ntuple.root"
