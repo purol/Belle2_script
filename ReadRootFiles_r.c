@@ -26,11 +26,12 @@ typedef struct data{
     // 5: Bsig_experiment, 6: Bsig_run, 7: Bsig_event, 8: Bsig_candidate, 9: Bsig_ncandidates
     // 10: Btag_experiment, 11: Btag_run, 12: Btag_event, 13: Btag_candidate, 14: Btag_ncandidates
 
-    double Upsilon_info[12];
+    double Upsilon_info[14];
     // 0: Upsilon_isSignal; 1: number of ECL clusters in ROE(cleanMask), 2: number of KLM clusters in ROE
     // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask), 5: roeEextra(cleanMask)
     // 6: nROE_NeutralECLClusters(cleanMask), 7: roeNeextra(cleanMask), 8: energy in ROE(cleanMask) at CMS
     // 9: roeExtra(cleanMask) at CMS, 10: roeNeextra(cleanMask) at CMS, 11: nROE_K_S0
+    // 12: nROE_gamma, 13: nROE_pi0, 
 
     double Bsig_info[14];
     // 0: Bsig_isSignal, 1: Bsig_E, 2: Bsig_E_CMS, 3: Bsig_E_Recoil, 4: Bsig_dmID
@@ -237,22 +238,15 @@ void Draw_Mbc_deltaE_Btag(std::queue<Data> TotalData_, int index, bool SetLogy =
 }
 
 void Draw_Mbc_deltaE_Btag_projection(std::queue<Data> TotalData_, int index){
-    TH2F* temp_hist1 = new TH2F("MbcVSdeltaE",";;", 100,5.2,5.3,100,-0.5,0.5);
+    TH2F* temp_hist1 = new TH2F("MbcVSdeltaE",";;", 500,5.2,5.3,500,-0.5,0.5);
     TH1D* projX;
     TH1D* projY;
-    TGraph* temp_MbcVSdeltaE_Btag = new TGraph();
 
     while(!TotalData_.empty()){
         Data temp_data = TotalData_.front();
         TotalData_.pop();
         temp_hist1->Fill(temp_data.Btag_info[2], temp_data.Btag_info[3]);
-        temp_MbcVSdeltaE_Btag->SetPoint(temp_MbcVSdeltaE_Btag->GetN(), temp_data.Btag_info[2], temp_data.Btag_info[3]);
     }
-
-    temp_MbcVSdeltaE_Btag->SetMarkerColor(1);
-    temp_MbcVSdeltaE_Btag->SetMarkerStyle(20);
-    temp_MbcVSdeltaE_Btag->SetMarkerSize(0.1);
-    temp_MbcVSdeltaE_Btag->SetTitle("M_{bc} vs #DeltaE of B_{tag};M_{bc} [GeV];#DeltaE [GeV]");
 
     projX = temp_hist1->ProjectionX();
     projY = temp_hist1->ProjectionY();
@@ -271,7 +265,7 @@ void Draw_Mbc_deltaE_Btag_projection(std::queue<Data> TotalData_, int index){
 
     center_pad->cd();
     gStyle->SetPalette(1);
-    temp_MbcVSdeltaE_Btag->Draw("AP"); temp_MbcVSdeltaE_Btag->GetXaxis()->SetLimits(5.2,5.3); temp_MbcVSdeltaE_Btag->GetHistogram()->SetMaximum(0.5); temp_MbcVSdeltaE_Btag->GetHistogram()->SetMinimum(-0.5);
+    temp_hist1->Draw("Hist");
 
     top_pad->cd();
     projX->SetFillColor(33);
@@ -422,7 +416,7 @@ void PrintInformation(std::queue<Data> TotalData_){
 void ReadRootFiles_r(){
 
     std::vector<string> names;
-    const char* dirname = "/home/jwpark/storage/Ntuple28";
+    const char* dirname = "/home/jwpark/storage/Ntuple32";
 
     load_files(dirname, &names);
 
@@ -466,6 +460,8 @@ void ReadRootFiles_r(){
         tree_upsilon->SetBranchAddress("useCMSFrame__boroeEextra__bocleanMask__bc__bc",&temp.Upsilon_info[9]);
         tree_upsilon->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc",&temp.Upsilon_info[10]);
         tree_upsilon->SetBranchAddress("nROE_ParticlesInList__boK_S0__clgood__bc",&temp.Upsilon_info[11]);
+        tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bogamma__clgoodBelle__bc",&temp.Upsilon_info[12]);
+        tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bopi0__clgood__bc",&temp.Upsilon_info[13]);
 
         // get Bsig_info
         tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[0]);
@@ -539,9 +535,7 @@ void ReadRootFiles_r(){
     }
     PrintInformation(TotalData);
 
-    Draw_Mbc_deltaE_Btag_projection(TotalData, 2);
-
-    { // draw signalprobability 
+    {
         TH1F* temp_hist1 = new TH1F("SignalProbability_Btag","SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate",100,-10,0);
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
@@ -551,9 +545,24 @@ void ReadRootFiles_r(){
         }
 
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
-        temp_hist1->Draw("Hist"); c_temp->SaveAs("SignalProbability_distribution_total_after_deltaE_cut.png");
+        temp_hist1->Draw("Hist"); c_temp->SaveAs("SignalProbability_distribution_after_loose_deltaE_cut.png");
         delete temp_hist1; delete c_temp;
     }
+
+    // cut SignalProbability > 0.001
+    {
+        printf("===== SignalProbability > 0.001 =====\n");
+        std::queue<Data> temp_queue;
+        while(!TotalData.empty()){
+            Data temp_data = TotalData.front();
+            TotalData.pop();
+            if(temp_data.Btag_info[6] > 0.001) temp_queue.push(temp_data);
+        }
+        TotalData = temp_queue;
+    }
+    PrintInformation(TotalData);
+
+    Draw_Mbc_deltaE_Btag_projection(TotalData, 2);
 
     // draw atcPIDBelle_3_2 distribution with respect to mcPDG
     {
@@ -701,9 +710,9 @@ void ReadRootFiles_r(){
         delete temp_hist; delete c_temp;
     }
 
-    // myIDBelle < 0.9 cm cut
+    // muIDBelle < 0.9 cm cut
     {
-        printf("====== myIDBelle < 0.9 =====\n");
+        printf("====== muIDBelle < 0.9 =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
@@ -716,7 +725,7 @@ void ReadRootFiles_r(){
     PrintInformation(TotalData);
 
     { // print energy in ROE(cleanMask)
-        TH1F* temp_hist = new TH1F("ROE_E_Upsilon","Energy in ROE of #Upsilon(4S);energy [GeV];candidates",100,-0.1, 8);
+        TH1F* temp_hist = new TH1F("ROE_E_Upsilon","Energy in ROE of #Upsilon(4S) at LAB;energy [GeV];candidates",100,-0.1, 8);
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
             Data temp_data = temp_queue.front();
@@ -725,7 +734,49 @@ void ReadRootFiles_r(){
         }
 
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
-        temp_hist->Draw("Hist"); c_temp->SaveAs("ROE_E_after_dz_cut.png");
+        temp_hist->Draw("Hist"); c_temp->SaveAs("ROE_E_after_muIDBelle_cut.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    { // print energy in ROE(cleanMask) at CMS
+        TH1F* temp_hist = new TH1F("ROE_E_Upsilon_CMS","Energy in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates",100,-0.1, 8);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[8]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("ROE_E_CMS_after_muIDBelle_cut.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    { // print energy in ECLC clusters in ROE at CMS (cleanMask)
+        TH1F* temp_hist = new TH1F("ROE_ECLC_Upsilon","Energy in ECLClusters in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates",100,-0.1, 8);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[9]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("ROE_ECLC_after_muIDBelle_cut.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    { // print energy in ECLC clusters in ROE at CMS (cleanMask)
+        TH1F* temp_hist = new TH1F("ROE_NECLC_Upsilon","Energy in neutral ECLClusters in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates",100,-0.1, 8);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[10]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("ROE_NECLC_after_muIDBelle_cut.png");
         delete temp_hist; delete c_temp;
     }
 
@@ -935,6 +986,19 @@ void ReadRootFiles_r(){
         delete temp_hist; delete c_temp;
     }
 
+    { // print energy in ECLC clusters in ROE at CMS (cleanMask)
+        TH1F* temp_hist = new TH1F("ROE_NECLC_Upsilon","Energy in neutral ECLClusters in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates",100,-0.1, 8);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[10]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("ROE_CECLC_after_BCS.png");
+        delete temp_hist; delete c_temp;
+    }
 
     {
         TH1F* temp_hist = new TH1F("Bsig_p_LAB","momentum of B_{sig} at LAB frame;p [GeV];evt",50,-0.5,6);
@@ -1003,6 +1067,34 @@ void ReadRootFiles_r(){
 
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
         temp_hist->Draw("Hist"); c_temp->SaveAs("nROE_K_S0_after_BCS.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    {
+        TH1F* temp_hist = new TH1F("nROE_gamma","number of goodBelle gamma candidates in ROE of #Upsilon(4S);number of goodBelle gamma candidates in ROE;evt",100,-0.5,8.5);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[12]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("nROE_gamma_after_BCS.png");
+        delete temp_hist; delete c_temp;
+    }
+
+    {
+        TH1F* temp_hist = new TH1F("nROE_pi0","number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates in ROE;evt",100,-0.5,8.5);
+        std::queue<Data> temp_queue = TotalData;
+        while(!temp_queue.empty()){
+            Data temp_data = temp_queue.front();
+            temp_queue.pop();
+            temp_hist->Fill(temp_data.Upsilon_info[13]);
+        }
+
+        TCanvas* c_temp = new TCanvas("c","",1500,1200);
+        temp_hist->Draw("Hist"); c_temp->SaveAs("nROE_pi0_after_BCS.png");
         delete temp_hist; delete c_temp;
     }
 
