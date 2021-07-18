@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # usage: basf2 MakeNtuple_multi.py "./20210402/evt-0.mdst"
-# last: 2021-07-18-0
+# last: 2021-07-18-1
 
 import os
 import sys
@@ -17,6 +17,7 @@ from b2biiConversion import convertBelleMdstToBelleIIMdst
 from b2biiMonitors import addBeamParamsConversionMonitors
 from b2biiMonitors import addTrackConversionMonitors
 from b2biiMonitors import addNeutralsConversionMonitors
+import stdPhotons
 
 import fei
 from glob import glob
@@ -68,6 +69,8 @@ if monitoring:
     addNeutralsConversionMonitors(path=my_path)
 
 # fill particle list
+stdPhotons.loadStdGoodBellePhoton(path=my_path)
+
 ma.fillParticleList(decayString="K+:mychargedKaon", cut="atcPIDBelle(3,2)>0.6 and eIDBelle < 0.9 and muIDBelle < 0.9 and dr < 2 and dz < 4",path=my_path)
 ma.fillParticleList(decayString="K+:all", cut="", path=my_path)
 ma.cutAndCopyList('K_S0:good', 'K_S0:mdst', cut='goodBelleKshort', path=my_path)
