@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # usage: basf2 MakeNtuple_multi.py "./20210402/evt-0.mdst"
-# last: 2021-07-12-1
+# last: 2021-07-18-1
 
 import os
 import sys
@@ -84,7 +84,7 @@ if debug:
 # ma.applyCuts("B+:generic","Mbc>5.27 and abs(deltaE)<0.1", path=my_path)
 
 # tag side
-track_selection = "abs(d0) < 10.0 and abs(z0) < 20.0"
+track_selection = "dr < 2 and dz < 4"
 cluster_selection = '[[E > 0.10 and formula(theta/3.14*180) < 31.4] or \
                       [E > 0.05 and formula(theta/3.14*180) > 31.4 and formula(theta/3.14*180) < 130.7] or \
                       [E > 0.15 and formula(theta/3.14*180) > 130.7]] and \
@@ -103,8 +103,10 @@ ma.reconstructDecay("B0:neutral_sig_ch0 -> K_S0:mdst ?nu", cut="", dmID=0, path=
 ma.copyLists(outputListName="B0:neutral_sig", inputListNames=["B0:neutral_sig_ch0"],path=my_path)
 
 # Upsilon(4S) -> Btag K
-ma.reconstructDecay("Upsilon(4S):withoutneutrino_neutral -> B0:generic anti-B0:neutral_sig",cut ="", dmID = 1, path=my_path)
-ma.copyLists(outputListName="Upsilon(4S):withoutneutrino", inputListNames=["Upsilon(4S):withoutneutrino_neutral"], path=my_path)
+ma.reconstructDecay("Upsilon(4S):withoutneutrino_neutral_opposite_cp -> B0:generic anti-B0:neutral_sig",cut ="", dmID = 1, path=my_path)
+ma.reconstructDecay("Upsilon(4S):withoutneutrino_neutral_same_cp -> B0:generic B0:neutral_sig",cut ="", dmID = 2, path=my_path)
+#ma.copyLists(outputListName="Upsilon(4S):withoutneutrino", inputListNames=["Upsilon(4S):withoutneutrino_neutral_opposite_cp", "Upsilon(4S):withoutneutrino_neutral_same_cp"], path=my_path)
+ma.copyLists(outputListName="Upsilon(4S):withoutneutrino", inputListNames=["Upsilon(4S):withoutneutrino_neutral_opposite_cp", "Upsilon(4S):withoutneutrino_neutral_same_cp"], path=my_path)
 ma.buildRestOfEvent("Upsilon(4S):withoutneutrino", path=my_path)
     
 # apply cut: no charged track, E, cluster on ROE
