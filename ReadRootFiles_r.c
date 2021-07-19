@@ -26,12 +26,12 @@ typedef struct data{
     // 5: Bsig_experiment, 6: Bsig_run, 7: Bsig_event, 8: Bsig_candidate, 9: Bsig_ncandidates
     // 10: Btag_experiment, 11: Btag_run, 12: Btag_event, 13: Btag_candidate, 14: Btag_ncandidates
 
-    double Upsilon_info[14];
+    double Upsilon_info[13];
     // 0: Upsilon_isSignal; 1: number of ECL clusters in ROE(cleanMask), 2: number of KLM clusters in ROE
     // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask), 5: roeEextra(cleanMask)
     // 6: nROE_NeutralECLClusters(cleanMask), 7: roeNeextra(cleanMask), 8: energy in ROE(cleanMask) at CMS
     // 9: roeExtra(cleanMask) at CMS, 10: roeNeextra(cleanMask) at CMS, 11: nROE_K_S0
-    // 12: nROE_gamma, 13: nROE_pi0, 
+    // 12: nROE_pi0, 
 
     double Bsig_info[14];
     // 0: Bsig_isSignal, 1: Bsig_E, 2: Bsig_E_CMS, 3: Bsig_E_Recoil, 4: Bsig_dmID
@@ -460,8 +460,7 @@ void ReadRootFiles_r(){
         tree_upsilon->SetBranchAddress("useCMSFrame__boroeEextra__bocleanMask__bc__bc",&temp.Upsilon_info[9]);
         tree_upsilon->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc",&temp.Upsilon_info[10]);
         tree_upsilon->SetBranchAddress("nROE_ParticlesInList__boK_S0__clgood__bc",&temp.Upsilon_info[11]);
-        tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bogamma__clgoodBelle__bc",&temp.Upsilon_info[12]);
-        tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bopi0__clgood__bc",&temp.Upsilon_info[13]);
+        tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bopi0__clgood__bc",&temp.Upsilon_info[12]);
 
         // get Bsig_info
         tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[0]);
@@ -549,14 +548,14 @@ void ReadRootFiles_r(){
         delete temp_hist1; delete c_temp;
     }
 
-    // cut SignalProbability > 0.001
+    // cut SignalProbability > 0.01
     {
-        printf("===== SignalProbability > 0.001 =====\n");
+        printf("===== SignalProbability > 0.01 =====\n");
         std::queue<Data> temp_queue;
         while(!TotalData.empty()){
             Data temp_data = TotalData.front();
             TotalData.pop();
-            if(temp_data.Btag_info[6] > 0.001) temp_queue.push(temp_data);
+            if(temp_data.Btag_info[6] > 0.01) temp_queue.push(temp_data);
         }
         TotalData = temp_queue;
     }
@@ -1071,26 +1070,12 @@ void ReadRootFiles_r(){
     }
 
     {
-        TH1F* temp_hist = new TH1F("nROE_gamma","number of goodBelle gamma candidates in ROE of #Upsilon(4S);number of goodBelle gamma candidates in ROE;evt",100,-0.5,8.5);
-        std::queue<Data> temp_queue = TotalData;
-        while(!temp_queue.empty()){
-            Data temp_data = temp_queue.front();
-            temp_queue.pop();
-            temp_hist->Fill(temp_data.Upsilon_info[12]);
-        }
-
-        TCanvas* c_temp = new TCanvas("c","",1500,1200);
-        temp_hist->Draw("Hist"); c_temp->SaveAs("nROE_gamma_after_BCS.png");
-        delete temp_hist; delete c_temp;
-    }
-
-    {
         TH1F* temp_hist = new TH1F("nROE_pi0","number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates in ROE;evt",100,-0.5,8.5);
         std::queue<Data> temp_queue = TotalData;
         while(!temp_queue.empty()){
             Data temp_data = temp_queue.front();
             temp_queue.pop();
-            temp_hist->Fill(temp_data.Upsilon_info[13]);
+            temp_hist->Fill(temp_data.Upsilon_info[12]);
         }
 
         TCanvas* c_temp = new TCanvas("c","",1500,1200);
