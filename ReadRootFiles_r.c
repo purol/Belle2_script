@@ -476,7 +476,7 @@ void ReadRootFiles_r(){
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_dr", &temp.Bsig_info[10]);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_dz", &temp.Bsig_info[11]);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_eIDBelle", &temp.Bsig_info[12]);
-	tree_Bsig->SetBranchAddress("Bsig_daughter_0_muIDBelle", &temp.Bsig_info[13]);
+	    tree_Bsig->SetBranchAddress("Bsig_daughter_0_muIDBelle", &temp.Bsig_info[13]);
 
 	// get Btag_info
         tree_Btag->SetBranchAddress("Btag_isSignal", &temp.Btag_info[0]);
@@ -496,6 +496,7 @@ void ReadRootFiles_r(){
             tree_Btag->GetEntry(j);
             TotalData.push(temp);
         }
+        delete input_file;
     }
     if(event_info_is_valid(TotalData) == false) { printf("error!\n"); return; }
     printf("Total %d entries\n", totalnum_entry);
