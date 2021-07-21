@@ -81,12 +81,16 @@ public:
         DebugOn = 0,
         DebugOff
     };
+    enum ValueOption {
+        Linear = 0,
+        Log
+    };
 
     Loader();
     void initialize();
     void GetData(TFile* input_file);
     bool event_info_is_valid();
-    void DrawTH1F(TH1F* hist, int i, Loader::Variable variable);
+    void DrawTH1F(TH1F* hist, int i, Loader::Variable variable, Loader::ValueOption dr = Loader::Linear);
     void DrawTH2F(TH2F* hist, int i, int j, Loader::Variable variable_1, Loader::Variable variable_2);
     void PrintInformation(std::string title);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value);
@@ -208,7 +212,7 @@ bool Loader::event_info_is_valid() {
     return true;
 }
 
-void Loader::DrawTH1F(TH1F* hist, int i, Loader::Variable variable) {
+void Loader::DrawTH1F(TH1F* hist, int i, Loader::Variable variable, Loader::ValueOption dr = Loader::Linear) {
     if (TH1Fs.size() == current_TH1F) { // allocate new hist
         TH1Fs.push_back(hist);
     }
@@ -225,9 +229,21 @@ void Loader::DrawTH1F(TH1F* hist, int i, Loader::Variable variable) {
     while (!temp_queue.empty()) {
         Data temp_data = temp_queue.front();
         temp_queue.pop();
-        if(variable == Loader::Upsilon) temp_hist->Fill(temp_data.Upsilon_info[i]);
-        else if(variable == Loader::Bsig) temp_hist->Fill(temp_data.Bsig_info[i]);
-        else if(variable == Loader::Btag) temp_hist->Fill(temp_data.Btag_info[i]);
+        if (variable == Loader::Upsilon) {
+            if(dr == Loader::Linear) temp_hist->Fill(temp_data.Upsilon_info[i]);
+            else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Upsilon_info[i]));
+            else { printf("ERROR!\n"); exit(1); }
+        }
+        else if(variable == Loader::Bsig) {
+            if (dr == Loader::Linear) temp_hist->Fill(temp_data.Bsig_info[i]);
+            else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Bsig_info[i]));
+            else { printf("ERROR!\n"); exit(1); }
+        }
+        else if(variable == Loader::Btag) {
+            if (dr == Loader::Linear) temp_hist->Fill(temp_data.Btag_info[i]);
+            else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Btag_info[i]));
+            else { printf("ERROR!\n"); exit(1); }
+        }
         else {
             printf("ERROR!\n");
             exit(1);
@@ -548,7 +564,7 @@ void Loader::End() {
 
         c_temp->SaveAs((std::string(TH2Fs.at(i)->GetName()) + ".png").c_str());
 
-        delete projX; delete projY; delete c_temp; delete center_pad; delete right_pad; delete top_pad;
+        delete projX; delete projY; delete c_temp;
     }
 }
 
@@ -570,7 +586,7 @@ void ReadRootFiles_r_sp(){
         if (loader.event_info_is_valid() == false) { printf("error!\n"); return; }
 
         loader.PrintInformation(std::string("========== inital =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_initial", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 500, 5.2, 5.3, 500, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F(new TH2F("MbcVSdeltaE_initial", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
 
         loader.Cut(Loader::Btag,2,Loader::larger_than,5.2);
         loader.PrintInformation(std::string("========== Mbc > 5.2 =========="));
@@ -578,17 +594,17 @@ void ReadRootFiles_r_sp(){
         loader.Cut(Loader::Btag, 3, Loader::larger_than, -0.5);
         loader.Cut(Loader::Btag, 3, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== abs(deltaE) < 0.5 =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_loose_MbcDeltaE_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 500, 5.2, 5.3, 500, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_loose_MbcDeltaE_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
 
-        loader.DrawTH1F(new TH1F("SignalProbability_Btag_after_loose_MbcDeltaE_cut", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0), 6, Loader::Btag);
+        loader.DrawTH1F(new TH1F("SignalProbability_Btag_after_loose_MbcDeltaE_cut", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0), 6, Loader::Btag, Loader::Log);
         loader.Cut(Loader::Btag, 6, Loader::larger_than, 0.01);
         loader.PrintInformation(std::string("========== SignalProbability > 0.01 =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_SignalProbability_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 500, 5.2, 5.3, 500, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_SignalProbability_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
 
         loader.DrawTH1F(new TH1F("atcPID(3,2)", "atcPID(3,2) of daughter of B_{sig};atcPID(3,2);Num of candidate", 100, -0.1, 1.1), 5, Loader::Bsig);
         loader.Cut(Loader::Bsig, 5, Loader::larger_than, 0.6);
         loader.PrintInformation(std::string("========== atcPID(3,2) > 0.6 =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_atcPID_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 500, 5.2, 5.3, 500, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_atcPID_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
 
         loader.DrawTH1F(new TH1F("dr_Kaon_from_Bsig", "dr of Kaon from B_{sig};dr [cm];candidates", 100, -0.1, 3.5), 10, Loader::Bsig);
         loader.Cut(Loader::Bsig, 10, Loader::smaller_than, 2);
@@ -618,24 +634,24 @@ void ReadRootFiles_r_sp(){
         loader.Cut(Loader::Upsilon, 4, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== ntrack = 0 =========="));
 
-        loader.DrawTH1F(new TH1F("SignalProbability_Btag_before_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0), 6, Loader::Btag);
+        loader.DrawTH1F(new TH1F("SignalProbability_Btag_before_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0), 6, Loader::Btag, Loader::Log);
         loader.BCS(Loader::Btag, 6, Loader::Highest);
         if (loader.IsBCSValid() == false) {
             printf("ERROR!\n");
             exit(1);
         }
-        loader.DrawTH1F(new TH1F("SignalProbability_Btag_after_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0), 6, Loader::Btag);
+        loader.DrawTH1F(new TH1F("SignalProbability_Btag_after_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0), 6, Loader::Btag, Loader::Log);
         loader.PrintInformation(std::string("========== BCS =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_BCS", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 500, 5.2, 5.3, 500, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_BCS", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
 
         loader.Cut(Loader::Btag, 2, Loader::larger_than, 5.27);
         loader.PrintInformation(std::string("========== Mbc > 5.27 =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 500, 5.2, 5.3, 500, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
 
         loader.Cut(Loader::Btag, 3, Loader::larger_than, -0.1);
         loader.Cut(Loader::Btag, 3, Loader::smaller_than, 0.1);
         loader.PrintInformation(std::string("========== abs(deltaE) < 0.1 =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 500, 5.2, 5.3, 500, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
 
         loader.DrawTH1F(new TH1F("nROE_ECLcluster_Upsilon", "number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt", 14, -0.5, 13.5), 1, Loader::Upsilon);
         loader.DrawTH1F(new TH1F("nROE_KLMcluster_Upsilon", "number of KLM clusters in ROE of #Upsilon(4S);number of KLM clusters;evt", 14, -0.5, 13.5), 2, Loader::Upsilon);
