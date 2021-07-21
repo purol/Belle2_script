@@ -50,7 +50,7 @@ class Loader {
 private:
     std::queue<Data> TotalData;
     std::vector<TH1F*> TH1Fs;
-    sdt::vector<TH2F*> TH2Fs;
+    std::vector<TH2F*> TH2Fs;
     int current_TH1F;
     int current_TH2F;
 
@@ -85,7 +85,7 @@ public:
     Loader();
     void initialize();
     void GetData(TFile* input_file);
-    void event_info_is_valid();
+    bool event_info_is_valid();
     void DrawTH1F(TH1F* hist, int i, Loader::Variable variable);
     void DrawTH2F(TH2F* hist, int i, int j, Loader::Variable variable_1, Loader::Variable variable_2);
     void PrintInformation(std::string title);
@@ -190,7 +190,7 @@ bool Loader::event_info_is_valid() {
     std::queue<Data> temp_queue;
     while (!TotalData.empty()) {
         Data temp_data = TotalData.front();
-        TotalData_.pop();
+        TotalData.pop();
         if (temp_data.event_info[0] != temp_data.event_info[5] || temp_data.event_info[0] != temp_data.event_info[10] || temp_data.event_info[5] != temp_data.event_info[10]) return false;
         if (temp_data.event_info[1] != temp_data.event_info[6] || temp_data.event_info[1] != temp_data.event_info[11] || temp_data.event_info[6] != temp_data.event_info[11]) return false;
         if (temp_data.event_info[2] != temp_data.event_info[7] || temp_data.event_info[2] != temp_data.event_info[12] || temp_data.event_info[7] != temp_data.event_info[12]) return false;
@@ -480,6 +480,7 @@ bool Loader::IsBCSValid() {
     } Labels;
 
     std::vector<Labels> label_list;
+    std::queue<Data> TotalData_;
 
     TotalData_ = TotalData;
     while (!TotalData_.empty()) {
@@ -499,19 +500,19 @@ bool Loader::IsBCSValid() {
 }
 
 void Loader::End() {
-    for (int i = 0; i < N_events.size()) {
-        printf("%s\n", titles.at(i));
+    for (int i = 0; i < N_events.size();i++) {
+        printf("%s\n", titles.at(i).c_str());
         printf("Number of event: %d\n", N_events.at(i));
         printf("Number of candidate: %d\n", N_candidates.at(i));
     }
 
-    for (int i = 0; i < TH1Fs.size()) {
+    for (int i = 0; i < TH1Fs.size();i++) {
         TCanvas* c_temp = new TCanvas("c", "", 1500, 1200); c_temp->cd();
-        TH1Fs.at(i)->Draw("Hist"); c_temp->SaveAs((TH1Fs.at(i)->GetName() + ".png").c_str());
+        TH1Fs.at(i)->Draw("Hist"); c_temp->SaveAs((std::string(TH1Fs.at(i)->GetName()) + ".png").c_str());
         delete c_temp;
     }
 
-    for (int i = 0; i < TH2Fs.size()) {
+    for (int i = 0; i < TH2Fs.size();i++) {
         TH1D* projX;
         TH1D* projY;
 
@@ -543,7 +544,7 @@ void Loader::End() {
         projY->Draw("hbar");
         gPad->RedrawAxis();
 
-        c_temp->SaveAs((TH2Fs.at(i)->GetName() + ".png").c_str());
+        c_temp->SaveAs((std::string(TH2Fs.at(i)->GetName()) + ".png").c_str());
 
         delete projX; delete projY; delete c_temp; delete center_pad; delete right_pad; delete top_pad;
     }
@@ -562,7 +563,7 @@ void ReadRootFiles_r_sp(){
         loader.initialize();
 
         TFile *input_file = new TFile( (dirname+std::string("/")+names.at(i)).c_str(),"read");
-        printf("%s (%d/%d)\n",("Read "+names.at(i) + "... ").c_str(), i, names.size());
+        printf("%s (%d/%zu)\n",("Read "+names.at(i) + "... ").c_str(), i, names.size());
         loader.GetData(input_file);
         if (loader.event_info_is_valid() == false) { printf("error!\n"); return; }
 
