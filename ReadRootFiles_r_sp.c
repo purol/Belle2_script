@@ -318,6 +318,7 @@ void Loader::PrintInformation(std::string title) {
 
     if (N_events.size() == current_N_event && N_candidates.size() == current_N_candidate && N_events.size() == N_candidates.size()) { // allocate new int
         N_events.push_back(0);
+        N_candidates.push_back(0);
         titles.push_back(title);
     }
     else if (N_events.size() > current_N_event && N_candidates.size() > current_N_candidate && N_events.size() == N_candidates.size() && current_N_event == current_N_candidate) { // use what I have
