@@ -496,7 +496,7 @@ void ReadRootFiles_r(){
             tree_Btag->GetEntry(j);
             TotalData.push(temp);
         }
-        delete input_file;
+        input_file->Close();
     }
     if(event_info_is_valid(TotalData) == false) { printf("error!\n"); return; }
     printf("Total %d entries\n", totalnum_entry);

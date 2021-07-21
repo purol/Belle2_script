@@ -184,6 +184,7 @@ void Loader::GetData(TFile* input_file) {
         tree_Btag->GetEntry(j);
         TotalData.push(temp);
     }
+    input_file->Close();
 }
 
 bool Loader::event_info_is_valid() {
@@ -606,14 +607,14 @@ void ReadRootFiles_r_sp(){
         loader.Cut(Loader::Bsig, 13, Loader::smaller_than, 0.9);
         loader.PrintInformation(std::string("========== muIDBelle < 0.9 =========="));
 
-        loader.DrawTH1F(new TH1F("ROE_E_Upsilon", "Energy in ROE of #Upsilon(4S) at LAB;energy [GeV];candidates", 100, -0.1, 8), 3, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("ROE_E_Upsilon_CMS", "Energy in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates", 100, -0.1, 8), 8, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("ROE_ECLC_Upsilon", "Energy in ECLClusters in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates", 100, -0.1, 8), 9, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("ROE_NECLC_Upsilon", "Energy in neutral ECLClusters in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates", 100, -0.1, 8), 10, Loader::Upsilon);
+        loader.DrawTH1F(new TH1F("ROE_E_Upsilon_after_muIDBelle_cut", "Energy in ROE of #Upsilon(4S) at LAB;energy [GeV];candidates", 100, -0.1, 8), 3, Loader::Upsilon);
+        loader.DrawTH1F(new TH1F("ROE_E_Upsilon_CMS_after_muIDBelle_cut", "Energy in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates", 100, -0.1, 8), 8, Loader::Upsilon);
+        loader.DrawTH1F(new TH1F("ROE_ECLC_Upsilon_after_muIDBelle_cut", "Energy in ECLClusters in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates", 100, -0.1, 8), 9, Loader::Upsilon);
+        loader.DrawTH1F(new TH1F("ROE_NECLC_Upsilon_after_muIDBelle_cut", "Energy in neutral ECLClusters in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates", 100, -0.1, 8), 10, Loader::Upsilon);
         loader.Cut(Loader::Upsilon, 3, Loader::smaller_than, 1);
         loader.PrintInformation(std::string("========== E_ROE < 1 GeV =========="));
 
-        loader.DrawTH1F(new TH1F("nROE_track_Upsilon", "number of tracks in ROE of #Upsilon(4S);number of tracks;evt", 100, -0.5, 13.5), 4, Loader::Upsilon);
+        loader.DrawTH1F(new TH1F("nROE_track_Upsilon_after_E_ROE_cut", "number of tracks in ROE of #Upsilon(4S);number of tracks;evt", 100, -0.5, 13.5), 4, Loader::Upsilon);
         loader.Cut(Loader::Upsilon, 4, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== ntrack = 0 =========="));
 
@@ -649,7 +650,6 @@ void ReadRootFiles_r_sp(){
         loader.DrawTH1F(new TH1F("nROE_K_S0", "number of K_S0:good candidates in ROE of #Upsilon(4S);number of good K_{S}^{0} candidates in ROE;evt", 100, -0.5, 5.5), 11, Loader::Upsilon);
         loader.DrawTH1F(new TH1F("nROE_pi0", "number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates in ROE;evt", 100, -0.5, 8.5), 12, Loader::Upsilon);
 
-        delete input_file;
     }
     loader.End();
 }
