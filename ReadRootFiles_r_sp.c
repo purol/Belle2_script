@@ -1,3 +1,5 @@
+# define N_Needed_info 25
+
 void load_files(const char *dirname, std::vector<string>* names){
    TSystemDirectory dir(dirname, dirname);
    TList *files = dir.GetListOfFiles();
@@ -44,6 +46,16 @@ typedef struct data{
     // 0: Btag_isSignal, 1:Btag_dmID, 2: Btag_Mbc, 3: Btag_deltaE
     // 4: Btag_E, 5: Btag_E_CMS, 6: Btag_signalprobability
 
+    double Needed_info[N_Needed_info];
+    // 0: R2, 1: thrustBm, 2: thrustOm. 3: cosTBTO
+    // 4: cosTBz, 5: KSFWVariables(et), 6: KSFWVariables(mm2)
+    // 7: KSFWVariables(hso00), 8: KSFWVariables(hso02), 9: KSFWVariables(hso04)
+    // 10: KSFWVariables(hso10), 11: KSFWVariables(hso12), 12: KSFWVariables(hso14)
+    // 13: KSFWVariables(hso20), 14: KSFWVariables(hso22), 15: KSFWVariables(hso24)
+    // 16: CleoConeCS(1), 17: CleoConeCS(2), 18: CleoConeCS(3)
+    // 19: CleoConeCS(4), 20: CleoConeCS(5), 21: CleoConeCS(6)
+    // 22: CleoConeCS(7), 23: CleoConeCS(8), 24:CleoConeCS(9)
+
 } Data; 
 
 class Loader {
@@ -59,6 +71,12 @@ private:
     std::vector<std::string> titles;
     int current_N_event;
     int current_N_candidate;
+
+    std::vector<TFile*> files;
+    std::vector<TTree*> trees;
+    int current_file;
+
+    double DataToTree[N_Needed_info];
 
 public:
     enum Variable
@@ -97,6 +115,7 @@ public:
     void BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit);
     bool IsBCSValid();
     void End();
+    void PrintRootFile(std::string output_name);
 };
 
 Loader::Loader() {
@@ -106,6 +125,7 @@ Loader::Loader() {
     current_TH2F = 0;
     current_N_event = 0;
     current_N_candidate = 0;
+    current_file = 0;
 }
 
 void Loader::initialize() {
@@ -115,6 +135,7 @@ void Loader::initialize() {
     current_TH2F = 0;
     current_N_event = 0;
     current_N_candidate = 0;
+    current_file = 0;
 }
 
 void Loader::GetData(TFile* input_file) {
@@ -180,6 +201,33 @@ void Loader::GetData(TFile* input_file) {
     tree_Btag->SetBranchAddress("Btag_E", &temp.Btag_info[4]);
     tree_Btag->SetBranchAddress("Btag_useCMSFrame_E", &temp.Btag_info[5]);
     tree_Btag->SetBranchAddress("Btag_extraInfo_SignalProbability", &temp.Btag_info[6]);
+
+    // other information I need
+    tree_Btag->SetBranchAddress("Btag_R2", &temp.Needed_info[0]);
+    tree_Btag->SetBranchAddress("Btag_thrustBm", &temp.Needed_info[1]);
+    tree_Btag->SetBranchAddress("Btag_thrustOm", &temp.Needed_info[2]);
+    tree_Btag->SetBranchAddress("Btag_cosTBTO", &temp.Needed_info[3]);
+    tree_Btag->SetBranchAddress("Btag_cosTBz", &temp.Needed_info[4]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_et", &temp.Needed_info[5]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_mm2", &temp.Needed_info[6]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso00", &temp.Needed_info[7]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso02", &temp.Needed_info[8]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso04", &temp.Needed_info[9]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso10", &temp.Needed_info[10]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso12", &temp.Needed_info[11]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso14", &temp.Needed_info[12]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso20", &temp.Needed_info[13]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso22", &temp.Needed_info[14]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso24", &temp.Needed_info[15]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_1", &temp.Needed_info[16]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_2", &temp.Needed_info[17]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_3", &temp.Needed_info[18]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_4", &temp.Needed_info[19]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_5", &temp.Needed_info[20]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_6", &temp.Needed_info[21]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_7", &temp.Needed_info[22]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_8", &temp.Needed_info[23]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_9", &temp.Needed_info[24]);
 
     printf("%lld entries...\n", tree_upsilon->GetEntries());
     for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -566,6 +614,71 @@ void Loader::End() {
 
         delete projX; delete projY; delete c_temp;
     }
+
+    for (int i = 0; i < files.size(); i++) {
+        TFile* temp_file = files.at(i);
+        TTree* temp_tree = trees.at(i);
+        temp_file->cd();
+        temp_tree->Write();
+        temp_file->Close();
+    }
+}
+
+void Loader::PrintRootFile(std::string output_name) {
+    if (files.size() == current_file && trees.size() == current_file) { // allocate new TFile and TTree
+        TFile* file = new TFile(output_name.c_str(), "recreate");
+        file->cd();
+        TTree* tree = new TTree("data", "data");
+        tree->Branch("R2", &DataToTree[0]);
+        tree->Branch("thrustBm", &DataToTree[1]);
+        tree->Branch("thrustOm", &DataToTree[2]);
+        tree->Branch("cosTBTO", &DataToTree[3]);
+        tree->Branch("cosTBz", &DataToTree[4]);
+        tree->Branch("KSFWVariables_et", &DataToTree[5]);
+        tree->Branch("KSFWVariables_mm2", &DataToTree[6]);
+        tree->Branch("KSFWVariables_hso00", &DataToTree[7]);
+        tree->Branch("KSFWVariables_hso02", &DataToTree[8]);
+        tree->Branch("KSFWVariables_hso04", &DataToTree[9]);
+        tree->Branch("KSFWVariables_hso10", &DataToTree[10]);
+        tree->Branch("KSFWVariables_hso12", &DataToTree[11]);
+        tree->Branch("KSFWVariables_hso14", &DataToTree[12]);
+        tree->Branch("KSFWVariables_hso20", &DataToTree[13]);
+        tree->Branch("KSFWVariables_hso22", &DataToTree[14]);
+        tree->Branch("KSFWVariables_hso24", &DataToTree[15]);
+        tree->Branch("CleoConeCS_1", &DataToTree[16]);
+        tree->Branch("CleoConeCS_2", &DataToTree[17]);
+        tree->Branch("CleoConeCS_3", &DataToTree[18]);
+        tree->Branch("CleoConeCS_4", &DataToTree[19]);
+        tree->Branch("CleoConeCS_5", &DataToTree[20]);
+        tree->Branch("CleoConeCS_6", &DataToTree[21]);
+        tree->Branch("CleoConeCS_7", &DataToTree[22]);
+        tree->Branch("CleoConeCS_8", &DataToTree[23]);
+        tree->Branch("CleoConeCS_9", &DataToTree[24]);
+        files.push_back(file);
+        trees.push_back(tree);
+    }
+    else if (files.size() > current_file && trees.size() > current_file && files.size() == trees.size()) { // use what I have
+    }
+    else { // error
+        printf("ERROR!\n");
+        exit(1);
+    }
+
+    TFile* temp_file = files.at(current_file);
+    temp_file->cd();
+    TTree* temp_tree = trees.at(current_file);
+    std::queue<Data> temp_queue = TotalData;
+    while (!temp_queue.empty()) {
+        Data temp = temp_queue.front();
+        temp_queue.pop();
+
+        for (int i = 0; i < N_Needed_info; i++) {
+            DataToTree[i] = temp.Needed_info[i];
+        }
+        temp_tree->Fill();
+    }
+
+    current_file++;
 }
 
 void ReadRootFiles_r_sp(){
@@ -666,6 +779,7 @@ void ReadRootFiles_r_sp(){
         loader.DrawTH1F(new TH1F("nROE_K_S0", "number of K_S0:good candidates in ROE of #Upsilon(4S);number of good K_{S}^{0} candidates in ROE;evt", 100, -0.5, 5.5), 11, Loader::Upsilon);
         loader.DrawTH1F(new TH1F("nROE_pi0", "number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates in ROE;evt", 100, -0.5, 8.5), 12, Loader::Upsilon);
 
+        loader.PrintRootFile(std::string("output.root"));
     }
     loader.End();
 }
