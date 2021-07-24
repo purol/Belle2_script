@@ -68,8 +68,6 @@ if monitoring:
     addNeutralsConversionMonitors(path=my_path)
 
 # fill particle list
-stdPhotons.loadStdGoodBellePhoton(path=my_path)
-
 ma.fillParticleList(decayString="K+:mychargedKaon", cut="atcPIDBelle(3,2)>0.6 and eIDBelle < 0.9 and muIDBelle < 0.9 and dr < 2 and dz < 4",path=my_path)
 ma.fillParticleList(decayString="K+:all", cut="", path=my_path)
 ma.cutAndCopyList('K_S0:good', 'K_S0:mdst', cut='goodBelleKshort', path=my_path)
