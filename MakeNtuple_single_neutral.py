@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # usage: basf2 MakeNtuple_multi.py "./20210402/evt-0.mdst"
-# last: 2021-07-18-1
+# last: 2021-08-04
 
 import os
 import sys
@@ -84,7 +84,7 @@ if debug:
 # ma.applyCuts("B+:generic","Mbc>5.27 and abs(deltaE)<0.1", path=my_path)
 
 # tag side
-track_selection = "dr < 2 and dz < 4"
+track_selection = "dr < 2 and abs(dz) < 4"
 cluster_selection = '[[E > 0.10 and formula(theta/3.14*180) < 31.4] or \
                       [E > 0.05 and formula(theta/3.14*180) > 31.4 and formula(theta/3.14*180) < 130.7] or \
                       [E > 0.15 and formula(theta/3.14*180) > 130.7]] and \
