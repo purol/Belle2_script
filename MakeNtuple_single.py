@@ -68,7 +68,7 @@ if monitoring:
     addNeutralsConversionMonitors(path=my_path)
 
 # fill particle list
-ma.fillParticleList(decayString="K+:mychargedKaon", cut="atcPIDBelle(3,2)>0.6 and eIDBelle < 0.9 and muIDBelle < 0.9 and dr < 2 and dz < 4",path=my_path)
+ma.fillParticleList(decayString="K+:mychargedKaon", cut="atcPIDBelle(3,2)>0.6 and eIDBelle < 0.9 and muIDBelle < 0.9 and dr < 2 and abs(dz) < 4",path=my_path)
 ma.fillParticleList(decayString="K+:all", cut="", path=my_path)
 ma.cutAndCopyList('K_S0:good', 'K_S0:mdst', cut='goodBelleKshort', path=my_path)
 ma.cutAndCopyList("pi0:good", "pi0:mdst", cut="M>0.118 and M<0.15 and daughter(0,clusterE9E21)>0.95 and daughter(1,clusterE9E21)>0.95 and abs(formula((daughter(0,E)-daughter(1,E))/(daughter(0,E)+daughter(1,E))))<0.9", path=my_path)
