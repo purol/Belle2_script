@@ -72,6 +72,14 @@ private:
     int current_N_event;
     int current_N_candidate;
 
+    std::vector<int> experiment_indices;
+    std::vector<int> run_indices;
+    std::vector<int> event_indices;
+    std::vector<int> candidate_indices;
+    std::vector<int> ncandidates_indices;
+    int current_N_experiment_index;
+    bool DebugIsOn;
+
     std::vector<TFile*> files;
     std::vector<TTree*> trees;
     int current_file;
@@ -116,6 +124,7 @@ public:
     bool IsBCSValid();
     void End();
     void PrintRootFile(std::string output_name);
+    void PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequality inq, double value);
 };
 
 Loader::Loader() {
@@ -126,6 +135,8 @@ Loader::Loader() {
     current_N_event = 0;
     current_N_candidate = 0;
     current_file = 0;
+    current_N_experiment_index = 0;
+    DebugIsOn = false;
 }
 
 void Loader::initialize() {
@@ -136,6 +147,8 @@ void Loader::initialize() {
     current_N_event = 0;
     current_N_candidate = 0;
     current_file = 0;
+    current_N_experiment_index = 0;
+    DebugIsOn = false;
 }
 
 void Loader::GetData(TFile* input_file) {
@@ -443,6 +456,74 @@ void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, doubl
     TotalData = temp_queue;
 }
 
+void Loader::PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequality inq, double value) {
+    if (current_N_experiment_index > 0) { // allocate new int
+        printf("The number of PrintDebugLogIf should not be larger than 1\n");
+        printf("Only first PrintDebugLogIf is accepted\n");
+        return;
+    }
+
+    while (!temp_queue.empty()) {
+        Data temp_data = temp_queue.front();
+        temp_queue.pop();
+        if (variable == Loader::Upsilon) {
+            if (inq == Loader::larger_than && temp_data.Upsilon_info[i] > value) {
+                experiment_indices.push_back(temp_data.__experiment__);
+                run_indices.push_back(temp_data.__run__);
+                event_indices.push_back(temp_data.__event__);
+                candidate_indices.push_back(temp_data.__candidate__);
+                ncandidates_indices.push_back(temp_data.__ncandidates__);
+            }
+            else if (inq == Loader::smaller_than && temp_data.Upsilon_info[i] < value) {
+                experiment_indices.push_back(temp_data.__experiment__);
+                run_indices.push_back(temp_data.__run__);
+                event_indices.push_back(temp_data.__event__);
+                candidate_indices.push_back(temp_data.__candidate__);
+                ncandidates_indices.push_back(temp_data.__ncandidates__);
+            }
+        }
+        else if (variable == Loader::Bsig) {
+            if (inq == Loader::larger_than && temp_data.Bsig_info[i] > value) {
+                experiment_indices.push_back(temp_data.__experiment__);
+                run_indices.push_back(temp_data.__run__);
+                event_indices.push_back(temp_data.__event__);
+                candidate_indices.push_back(temp_data.__candidate__);
+                ncandidates_indices.push_back(temp_data.__ncandidates__);
+            }
+            else if (inq == Loader::smaller_than && temp_data.Bsig_info[i] < value) {
+                experiment_indices.push_back(temp_data.__experiment__);
+                run_indices.push_back(temp_data.__run__);
+                event_indices.push_back(temp_data.__event__);
+                candidate_indices.push_back(temp_data.__candidate__);
+                ncandidates_indices.push_back(temp_data.__ncandidates__);
+            }
+        }
+        else if (variable == Loader::Btag) {
+            if (inq == Loader::larger_than && temp_data.Btag_info[i] > value) {
+                experiment_indices.push_back(temp_data.__experiment__);
+                run_indices.push_back(temp_data.__run__);
+                event_indices.push_back(temp_data.__event__);
+                candidate_indices.push_back(temp_data.__candidate__);
+                ncandidates_indices.push_back(temp_data.__ncandidates__);
+            }
+            else if (inq == Loader::smaller_than && temp_data.Btag_info[i] < value) {
+                experiment_indices.push_back(temp_data.__experiment__);
+                run_indices.push_back(temp_data.__run__);
+                event_indices.push_back(temp_data.__event__);
+                candidate_indices.push_back(temp_data.__candidate__);
+                ncandidates_indices.push_back(temp_data.__ncandidates__);
+            }
+        }
+        else {
+            printf("ERROR!\n");
+            exit(1);
+        }
+    }
+
+    DebugIsOn = true;
+    current_N_experiment_index++;
+}
+
 void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit) {
     std::queue<Data> new_container;
 
@@ -622,6 +703,21 @@ void Loader::End() {
         temp_tree->Write();
         temp_file->Close();
     }
+
+    if (DebugIsOn == true) {
+        printf("========== Debug Log start ==========");
+        printf("---------------------\n");
+        for (int i = 0; i < experiment_indices.size(); i++) {
+            printf("experiment num: %d\n", experiment_indices.at(i));
+            printf("run num: %d\n", run_indices.at(i));
+            printf("event num: %d\n", event_indices.at(i));
+            printf("candidate num: %d\n", candidate_indices.at(i));
+            printf("number of candidate: %d\n", ncandidates_indices.at(i));
+            printf("---------------------\n");
+        }
+        printf("========== Debug Log end ==========");
+    }
+
 }
 
 void Loader::PrintRootFile(std::string output_name) {
