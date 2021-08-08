@@ -463,6 +463,9 @@ void Loader::PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequalit
         return;
     }
 
+    std::queue<Data> temp_queue;
+    temp_queue = TotalData;
+
     while (!temp_queue.empty()) {
         Data temp_data = temp_queue.front();
         temp_queue.pop();
