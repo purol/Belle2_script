@@ -32,7 +32,8 @@ typedef struct data{
     // 0: Upsilon_isSignal; 1: number of ECL clusters in ROE(cleanMask), 2: number of KLM clusters in ROE
     // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask), 5: roeEextra(cleanMask)
     // 6: nROE_NeutralECLClusters(cleanMask), 7: roeNeextra(cleanMask), 8: energy in ROE(cleanMask) at CMS
-    // 9: roeExtra(cleanMask) at CMS, 10: roeNeextra(cleanMask) at CMS, 11: nROE_pi0, 
+    // 9: roeExtra(cleanMask) at CMS, 10: roeNeextra(cleanMask) at CMS, 11: nROE_K_S0,
+    // 12: nROE_pi0
 
     double Bsig_info[14];
     // 0: Bsig_isSignal, 1: Bsig_E, 2: Bsig_E_CMS, 3: Bsig_E_Recoil, 4: Bsig_dmID
@@ -186,7 +187,8 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("useCMSFrame__boroeE__bocleanMask__bc__bc", &temp.Upsilon_info[8]);
     tree_upsilon->SetBranchAddress("useCMSFrame__boroeEextra__bocleanMask__bc__bc", &temp.Upsilon_info[9]);
     tree_upsilon->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp.Upsilon_info[10]);
-    tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bopi0__clgood__bc", &temp.Upsilon_info[11]);
+    tree_upsilon->SetBranchAddress("nROE_ParticlesInList__boK_S0__clgood__bc", &temp.Upsilon_info[11]);
+    tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bopi0__clgood__bc", &temp.Upsilon_info[12]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[0]);
@@ -873,7 +875,8 @@ void ReadRootFiles_r_sp(){
         loader.DrawTH1F(new TH1F("Bsig_p_CMS", "momentum of B_{sig} at CMS frame;p [GeV];evt", 50, -0.5, 6), 8, Loader::Bsig);
         loader.DrawTH1F(new TH1F("Bsig_p_RecoilRest", "momentum of B_{sig} at rest frame of recoil system;p [GeV];evt", 50, -0.5, 6), 9, Loader::Bsig);
         loader.DrawTH1F(new TH1F("Btag_dmID", "decay ID of B_{tag};decay ID;evt", 74, -0.5, 36.5), 1, Loader::Btag);
-        loader.DrawTH1F(new TH1F("nROE_pi0", "number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates in ROE;evt", 100, -0.5, 8.5), 11, Loader::Upsilon);
+        loader.DrawTH1F(new TH1F("nROE_K_S0", "number of K_S0:good candidates in ROE of #Upsilon(4S);number of good K_{S}^{0} candidates in ROE;evt", 100, -0.5, 5.5), 11, Loader::Upsilon);
+        loader.DrawTH1F(new TH1F("nROE_pi0", "number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates in ROE;evt", 100, -0.5, 8.5), 12, Loader::Upsilon);
 
         loader.PrintRootFile(std::string("output.root"));
     }
