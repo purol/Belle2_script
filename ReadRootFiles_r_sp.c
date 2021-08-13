@@ -28,19 +28,20 @@ typedef struct data{
     // 5: Bsig_experiment, 6: Bsig_run, 7: Bsig_event, 8: Bsig_candidate, 9: Bsig_ncandidates
     // 10: Btag_experiment, 11: Btag_run, 12: Btag_event, 13: Btag_candidate, 14: Btag_ncandidates
 
-    double Upsilon_info[13];
+    double Upsilon_info[14];
     // 0: Upsilon_isSignal; 1: number of ECL clusters in ROE(cleanMask), 2: number of KLM clusters in ROE
     // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask), 5: roeEextra(cleanMask)
     // 6: nROE_NeutralECLClusters(cleanMask), 7: roeNeextra(cleanMask), 8: energy in ROE(cleanMask) at CMS
     // 9: roeExtra(cleanMask) at CMS, 10: roeNeextra(cleanMask) at CMS, 11: nROE_K_S0,
-    // 12: nROE_pi0
+    // 12: nROE_pi0, 13: missing momentum of event theta
 
-    double Bsig_info[14];
+    double Bsig_info[16];
     // 0: Bsig_isSignal, 1: Bsig_E, 2: Bsig_E_CMS, 3: Bsig_E_Recoil, 4: Bsig_dmID
     // 5: Bsig_first_daughter's_actPID(3,2) 6: Bsig_first_daughter's_mcPDG
     // 7: Bsig_p, 8: Bsig_p_CMS, 9: Bsig_p_Recoil
     // 10: Kaon dr, 11: Kaon dz, 12: Bsig_first_daughter's eIDBelle
-    // 13: Bsig_first_daughter's_muIDBelle
+    // 13: Bsig_first_daughter's_muIDBelle, 14: M
+    // 15: dM of daughter
 
     double Btag_info[7];
     // 0: Btag_isSignal, 1:Btag_dmID, 2: Btag_Mbc, 3: Btag_deltaE
@@ -189,6 +190,7 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp.Upsilon_info[10]);
     tree_upsilon->SetBranchAddress("nROE_ParticlesInList__boK_S0__clgood__bc", &temp.Upsilon_info[11]);
     tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bopi0__clgood__bc", &temp.Upsilon_info[12]);
+    tree_upsilon->SetBranchAddress("missingMomentumOfEvent_theta", &temp.Upsilon_info[13]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[0]);
@@ -205,6 +207,8 @@ void Loader::GetData(TFile* input_file) {
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_dz", &temp.Bsig_info[11]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_eIDBelle", &temp.Bsig_info[12]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_muIDBelle", &temp.Bsig_info[13]);
+    tree_Bsig->SetBranchAddress("Bsig_M", &temp.Bsig_info[14]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_dM", &temp.Bsig_info[15]);
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_isSignal", &temp.Btag_info[0]);
@@ -877,6 +881,7 @@ void ReadRootFiles_r_sp(){
         loader.DrawTH1F(new TH1F("Btag_dmID", "decay ID of B_{tag};decay ID;evt", 74, -0.5, 36.5), 1, Loader::Btag);
         loader.DrawTH1F(new TH1F("nROE_K_S0", "number of K_S0:good candidates in ROE of #Upsilon(4S);number of good K_{S}^{0} candidates in ROE;evt", 100, -0.5, 5.5), 11, Loader::Upsilon);
         loader.DrawTH1F(new TH1F("nROE_pi0", "number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates in ROE;evt", 100, -0.5, 8.5), 12, Loader::Upsilon);
+        loader.DrawTH1F(new TH1F("theta_missing_momentum", "#theta of missing momentum;#theta [rad];evt", 50, 0, 3.2), 13, Loader::Upsilon);
 
         loader.PrintRootFile(std::string("output.root"));
     }
