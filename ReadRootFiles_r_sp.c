@@ -583,7 +583,7 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
         Data temp_data = temp_queue.front();
         temp_queue.pop();
 
-        Loader::DecayMode decaymodeid = Loader::MAX_NUM_DECAYMODE
+        Loader::DecayMode decaymodeid = Loader::MAX_NUM_DECAYMODE;
         for (int i = 0; i < MAX_NUM_DECAYMODE; i++) {
             if (TrueIfDecayModeMatch(temp_data, static_cast<Loader::DecayMode>(i) )) {
                 decaymodeid = static_cast<Loader::DecayMode>(i);
