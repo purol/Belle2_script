@@ -63,6 +63,44 @@ typedef struct data{
 } Data; 
 
 class Loader {
+public:
+    enum Variable
+    {
+        Upsilon = 0,
+        Bsig,
+        Btag
+    };
+    enum Inequality
+    {
+        larger_than = 0,
+        smaller_than
+    };
+    enum BCS_criterion {
+        Highest = 0,
+        Lowest
+    };
+    enum Debug
+    {
+        DebugOn = 0,
+        DebugOff
+    };
+    enum ValueOption {
+        Linear = 0,
+        Log
+    };
+    enum DecayMode {
+        B2Kcharged = 0,
+        B2Kstarcharged_ch0,
+        B2Kstarcharged_ch1,
+        B02K_S0,
+        B02Kstarneutral,
+        MAX_NUM_DECAYMODE
+    };
+    enum Qualifier {
+        when = 0,
+        except
+    };
+
 private:
     std::queue<Data> TotalData;
     std::vector<TH1F*> TH1Fs;
@@ -97,43 +135,6 @@ private:
     bool TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode);
 
 public:
-    enum Variable
-    {
-        Upsilon = 0,
-        Bsig,
-        Btag
-    };
-    enum Inequality
-    {
-        larger_than = 0,
-        smaller_than
-    };
-    enum BCS_criterion {
-        Highest = 0,
-        Lowest
-    };
-    enum Debug
-    {
-        DebugOn = 0,
-        DebugOff
-    };
-    enum ValueOption {
-        Linear = 0,
-        Log
-    };
-    enum DecayMode {
-        B2Kcharged=0,
-        B2Kstarcharged_ch0,
-        B2Kstarcharged_ch1,
-        B02K_S0,
-        B02Kstarneutral,
-        MAX_NUM_DECAYMODE
-    };
-    enum Qualifier {
-        when = 0,
-        except
-    };
-
     Loader();
     void initialize();
     void GetData(TFile* input_file);
@@ -1071,7 +1072,7 @@ bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > -0.5 && temp_data.Bsig_decayID < 0.5) return true;
         return false;
         break;
-    case Loader::B2Kstarchaged_ch0:
+    case Loader::B2Kstarcharged_ch0:
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 0.5 && temp_data.Bsig_decayID < 1.5) return true;
         return false;
         break;
@@ -1137,7 +1138,7 @@ void ReadRootFiles_r_sp(){
         loader.PrintInformation(std::string("========== atcPID(3,2) > 0.6 =========="));
         loader.DrawTH2F("MbcVSdeltaE_after_atcPID_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
 
-        loader.DrawTH1F("dr_Kaon_from_Bsig", "dr of Kaon from B_{sig};dr [cm];candidates", 100, -0.1, 3.5, Loader::Bsig);
+        loader.DrawTH1F("dr_Kaon_from_Bsig", "dr of Kaon from B_{sig};dr [cm];candidates", 100, -0.1, 3.5, Loader::Bsig, 10);
         loader.Cut(Loader::Bsig, 10, Loader::smaller_than, 2);
         loader.PrintInformation(std::string("========== dr < 2 cm =========="));
 
