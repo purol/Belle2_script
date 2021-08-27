@@ -583,14 +583,14 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
         Data temp_data = temp_queue.front();
         temp_queue.pop();
 
-        int decaymodeid = -1;
+        Loader::DecayMode decaymodeid = Loader::MAX_NUM_DECAYMODE
         for (int i = 0; i < MAX_NUM_DECAYMODE; i++) {
-            if (TrueIfDecayModeMatch(temp_data, i)) {
-                decaymodeid = i;
+            if (TrueIfDecayModeMatch(temp_data, static_cast<Loader::DecayMode>(i) )) {
+                decaymodeid = static_cast<Loader::DecayMode>(i);
                 break;
             }
         }
-        if (decaymodeid == -1) {
+        if (decaymodeid == Loader::MAX_NUM_DECAYMODE) {
             printf("ERROR!\n");
             exit(1);
         }
@@ -1002,11 +1002,10 @@ void Loader::End() {
         TCanvas* c_temp = new TCanvas("c", "", 1500, 1200); c_temp->cd();
         gStyle->SetPalette(kOcean);
 
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) THStacks.at(i)->Add(TH1Fs_THStack[j]->at(i));
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) THStacks.at(i)->Add(TH1Fs_THStack[j].at(i));
         THStacks.at(i)->Draw("pfc nostack"); c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + ".png").c_str());
         delete c_temp;
     }
-
 }
 
 void Loader::PrintRootFile(std::string output_name) {
