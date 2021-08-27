@@ -23,6 +23,9 @@ typedef struct data{
     int __candidate__;
     int __ncandidates__;
 
+    double Upsilon_decayID;
+    double Bsig_decayID;
+
     int event_info[15];
     // 0: upsilon_experiment, 1: upsilon_run, 2: upsilon_event, 3: upsilon_candidate, 4: upsilon_ncandidates
     // 5: Bsig_experiment, 6: Bsig_run, 7: Bsig_event, 8: Bsig_candidate, 9: Bsig_ncandidates
@@ -85,7 +88,13 @@ private:
     std::vector<TTree*> trees;
     int current_file;
 
+    std::vector<THStack*> THStacks;
+    std::vector<TH1F*> TH1Fs_THStack[Loader::MAX_NUM_DECAYMODE];
+    int current_THStack;
+
     double DataToTree[N_Needed_info];
+
+    bool TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode);
 
 public:
     enum Variable
@@ -112,15 +121,31 @@ public:
         Linear = 0,
         Log
     };
+    enum DecayMode {
+        B2Kcharged=0,
+        B2Kstarcharged_ch0,
+        B2Kstarcharged_ch1,
+        B02K_S0,
+        B02Kstarneutral,
+        MAX_NUM_DECAYMODE
+    };
+    enum Qualifier {
+        when = 0,
+        except
+    };
 
     Loader();
     void initialize();
     void GetData(TFile* input_file);
     bool event_info_is_valid();
-    void DrawTH1F(TH1F* hist, int i, Loader::Variable variable, Loader::ValueOption dr = Loader::Linear);
-    void DrawTH2F(TH2F* hist, int i, int j, Loader::Variable variable_1, Loader::Variable variable_2);
+    void DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear);
+    void DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::Qualifier qualifier, Loader::DecayMode decaymode, Loader::ValueOption dr = Loader::Linear);
+    void DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j);
+    void DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
+    void DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear);
     void PrintInformation(std::string title);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value);
+    void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit);
     bool IsBCSValid();
     void End();
@@ -138,6 +163,7 @@ Loader::Loader() {
     current_file = 0;
     current_N_experiment_index = 0;
     DebugIsOn = false;
+    current_THStack = 0;
 }
 
 void Loader::initialize() {
@@ -150,6 +176,7 @@ void Loader::initialize() {
     current_file = 0;
     current_N_experiment_index = 0;
     DebugIsOn = false;
+    current_THStack = 0;
 }
 
 void Loader::GetData(TFile* input_file) {
@@ -175,6 +202,10 @@ void Loader::GetData(TFile* input_file) {
     tree_Btag->SetBranchAddress("__event__", &temp.event_info[12]);
     tree_Btag->SetBranchAddress("__candidate__", &temp.event_info[13]);
     tree_Btag->SetBranchAddress("__ncandidates__", &temp.event_info[14]);
+
+    // get decaymodeID
+    tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &temp.Upsilon_decayID);
+    tree_Bsig->SetBranchAddress("Bsig_extraInfo_decayModeID", &temp.Bsig_decayID);
 
     // get Upsilon_info
     tree_upsilon->SetBranchAddress("isSignal", &temp.Upsilon_info[0]);
@@ -277,12 +308,12 @@ bool Loader::event_info_is_valid() {
     return true;
 }
 
-void Loader::DrawTH1F(TH1F* hist, int i, Loader::Variable variable, Loader::ValueOption dr = Loader::Linear) {
+void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear) {
     if (TH1Fs.size() == current_TH1F) { // allocate new hist
+        TH1F* hist = new TH1F(name, title, nbins, x_low, x_high);
         TH1Fs.push_back(hist);
     }
     else if (TH1Fs.size() > current_TH1F) { // use what I have
-        delete hist;
     }
     else { // error
         printf("ERROR!\n");
@@ -318,12 +349,65 @@ void Loader::DrawTH1F(TH1F* hist, int i, Loader::Variable variable, Loader::Valu
     current_TH1F++;
 }
 
-void Loader::DrawTH2F(TH2F* hist, int i, int j, Loader::Variable variable_1, Loader::Variable variable_2) {
+void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::Qualifier qualifier, Loader::DecayMode decaymode, Loader::ValueOption dr = Loader::Linear) {
+    if (TH1Fs.size() == current_TH1F) { // allocate new hist
+        TH1F* hist = new TH1F(name, title, nbins, x_low, x_high);
+        TH1Fs.push_back(hist);
+    }
+    else if (TH1Fs.size() > current_TH1F) { // use what I have
+    }
+    else { // error
+        printf("ERROR!\n");
+        exit(1);
+    }
+
+    TH1F* temp_hist = TH1Fs.at(current_TH1F);
+    std::queue<Data> temp_queue = TotalData;
+    while (!temp_queue.empty()) {
+        Data temp_data = temp_queue.front();
+        temp_queue.pop();
+
+        if (qualifier == Loader::when) {
+            if (!TrueIfDecayModeMatch(temp_data, decaymode)) continue;
+        }
+        else if (qualifier == Loader::except) {
+            if (TrueIfDecayModeMatch(temp_data, decaymode)) continue;
+        }
+        else {
+            printf("ERROR!\n");
+            exit(1);
+        }
+
+        if (variable == Loader::Upsilon) {
+            if (dr == Loader::Linear) temp_hist->Fill(temp_data.Upsilon_info[i]);
+            else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Upsilon_info[i]));
+            else { printf("ERROR!\n"); exit(1); }
+        }
+        else if (variable == Loader::Bsig) {
+            if (dr == Loader::Linear) temp_hist->Fill(temp_data.Bsig_info[i]);
+            else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Bsig_info[i]));
+            else { printf("ERROR!\n"); exit(1); }
+        }
+        else if (variable == Loader::Btag) {
+            if (dr == Loader::Linear) temp_hist->Fill(temp_data.Btag_info[i]);
+            else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Btag_info[i]));
+            else { printf("ERROR!\n"); exit(1); }
+        }
+        else {
+            printf("ERROR!\n");
+            exit(1);
+        }
+    }
+
+    current_TH1F++;
+}
+
+void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j) {
     if (TH2Fs.size() == current_TH2F) { // allocate new hist
+        TH2F* hist = new TH2F(name, title, nbinsx, xlow, xup, nbinsy, ylow, yup);
         TH2Fs.push_back(hist);
     }
     else if (TH2Fs.size() > current_TH2F) { // use what I have
-        delete hist;
     }
     else { // error
         printf("ERROR!\n");
@@ -389,6 +473,151 @@ void Loader::DrawTH2F(TH2F* hist, int i, int j, Loader::Variable variable_1, Loa
     current_TH2F++;
 }
 
+void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j, Loader::Qualifier qualifier, Loader::DecayMode decaymode) {
+    if (TH2Fs.size() == current_TH2F) { // allocate new hist
+        TH2F* hist = new TH2F(name, title, nbinsx, xlow, xup, nbinsy, ylow, yup);
+        TH2Fs.push_back(hist);
+    }
+    else if (TH2Fs.size() > current_TH2F) { // use what I have
+    }
+    else { // error
+        printf("ERROR!\n");
+        exit(1);
+    }
+
+    TH2F* temp_hist = TH2Fs.at(current_TH2F);
+    std::queue<Data> temp_queue = TotalData;
+    while (!temp_queue.empty()) {
+        Data temp_data = temp_queue.front();
+        temp_queue.pop();
+
+        if (qualifier == Loader::when) {
+            if (!TrueIfDecayModeMatch(temp_data, decaymode)) continue;
+        }
+        else if (qualifier == Loader::except) {
+            if (TrueIfDecayModeMatch(temp_data, decaymode)) continue;
+        }
+        else {
+            printf("ERROR!\n");
+            exit(1);
+        }
+
+        if (variable_1 == Loader::Upsilon) {
+            if (variable_2 == Loader::Upsilon) {
+                temp_hist->Fill(temp_data.Upsilon_info[i], temp_data.Upsilon_info[j]);
+            }
+            else if (variable_2 == Loader::Bsig) {
+                temp_hist->Fill(temp_data.Upsilon_info[i], temp_data.Bsig_info[j]);
+            }
+            else if (variable_2 == Loader::Btag) {
+                temp_hist->Fill(temp_data.Upsilon_info[i], temp_data.Btag_info[j]);
+            }
+            else {
+                printf("ERROR!\n");
+                exit(1);
+            }
+        }
+        else if (variable_1 == Loader::Bsig) {
+            if (variable_2 == Loader::Upsilon) {
+                temp_hist->Fill(temp_data.Bsig_info[i], temp_data.Upsilon_info[j]);
+            }
+            else if (variable_2 == Loader::Bsig) {
+                temp_hist->Fill(temp_data.Bsig_info[i], temp_data.Bsig_info[j]);
+            }
+            else if (variable_2 == Loader::Btag) {
+                temp_hist->Fill(temp_data.Bsig_info[i], temp_data.Btag_info[j]);
+            }
+            else {
+                printf("ERROR!\n");
+                exit(1);
+            }
+        }
+        else if (variable_1 == Loader::Btag) {
+            if (variable_2 == Loader::Upsilon) {
+                temp_hist->Fill(temp_data.Btag_info[i], temp_data.Upsilon_info[j]);
+            }
+            else if (variable_2 == Loader::Bsig) {
+                temp_hist->Fill(temp_data.Btag_info[i], temp_data.Bsig_info[j]);
+            }
+            else if (variable_2 == Loader::Btag) {
+                temp_hist->Fill(temp_data.Btag_info[i], temp_data.Btag_info[j]);
+            }
+            else {
+                printf("ERROR!\n");
+                exit(1);
+            }
+        }
+        else {
+            printf("ERROR!\n");
+            exit(1);
+        }
+    }
+
+    current_TH2F++;
+}
+
+void Loader::DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear) {
+    if (THStacks.size() == current_THStack) { // allocate new thstacks
+        THStack* stack = new THStack(name, title);
+        THStacks.push_back(stack);
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            TH1F* hist = new TH1F((std::string(name) + std::string("_") + std::to_string(i)).c_str(), title, nbins, x_low, x_high);
+            TH1Fs_THStack[i].push_back(hist);
+        }
+    }
+    else if (THStacks.size() > current_THStack) { // use what I have
+    }
+    else { // error
+        printf("ERROR!\n");
+        exit(1);
+    }
+
+    TH1F* temp_hist[Loader::MAX_NUM_DECAYMODE];
+    for (int i = 0; i < MAX_NUM_DECAYMODE;i++) {
+        temp_hist[i] = TH1Fs_THStack[i].at(current_THStack);
+    }
+
+    std::queue<Data> temp_queue = TotalData;
+    while (!temp_queue.empty()) {
+        Data temp_data = temp_queue.front();
+        temp_queue.pop();
+
+        int decaymodeid = -1;
+        for (int i = 0; i < MAX_NUM_DECAYMODE; i++) {
+            if (TrueIfDecayModeMatch(temp_data, i)) {
+                decaymodeid = i;
+                break;
+            }
+        }
+        if (decaymodeid == -1) {
+            printf("ERROR!\n");
+            exit(1);
+        }
+
+        if (variable == Loader::Upsilon) {
+            if (dr == Loader::Linear) temp_hist[decaymodeid]->Fill(temp_data.Upsilon_info[i]);
+            else if (dr == Loader::Log) temp_hist[decaymodeid]->Fill(TMath::Log10(temp_data.Upsilon_info[i]));
+            else { printf("ERROR!\n"); exit(1); }
+        }
+        else if (variable == Loader::Bsig) {
+            if (dr == Loader::Linear) temp_hist[decaymodeid]->Fill(temp_data.Bsig_info[i]);
+            else if (dr == Loader::Log) temp_hist[decaymodeid]->Fill(TMath::Log10(temp_data.Bsig_info[i]));
+            else { printf("ERROR!\n"); exit(1); }
+        }
+        else if (variable == Loader::Btag) {
+            if (dr == Loader::Linear) temp_hist[decaymodeid]->Fill(temp_data.Btag_info[i]);
+            else if (dr == Loader::Log) temp_hist[decaymodeid]->Fill(TMath::Log10(temp_data.Btag_info[i]));
+            else { printf("ERROR!\n"); exit(1); }
+        }
+        else {
+            printf("ERROR!\n");
+            exit(1);
+        }
+    }
+
+    current_THStack++;
+}
+
 void Loader::PrintInformation(std::string title) {
     typedef struct labels {
         int __experiment__;
@@ -442,6 +671,49 @@ void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, doubl
         TotalData.pop();
         if (variable == Loader::Upsilon) {
             if(inq == Loader::larger_than && temp_data.Upsilon_info[i] > value) temp_queue.push(temp_data);
+            else if (inq == Loader::smaller_than && temp_data.Upsilon_info[i] < value) temp_queue.push(temp_data);
+        }
+        else if (variable == Loader::Bsig) {
+            if (inq == Loader::larger_than && temp_data.Bsig_info[i] > value) temp_queue.push(temp_data);
+            else if (inq == Loader::smaller_than && temp_data.Bsig_info[i] < value) temp_queue.push(temp_data);
+        }
+        else if (variable == Loader::Btag) {
+            if (inq == Loader::larger_than && temp_data.Btag_info[i] > value) temp_queue.push(temp_data);
+            else if (inq == Loader::smaller_than && temp_data.Btag_info[i] < value) temp_queue.push(temp_data);
+        }
+        else {
+            printf("ERROR!\n");
+            exit(1);
+        }
+    }
+    TotalData = temp_queue;
+}
+
+void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::DecayMode decaymode) {
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+
+        if (qualifier == Loader::when) {
+            if (!TrueIfDecayModeMatch(temp_data, decaymode)) {
+                temp_queue.push(temp_data);
+                continue;
+            }
+        }
+        else if (qualifier == Loader::except) {
+            if (TrueIfDecayModeMatch(temp_data, decaymode)) {
+                temp_queue.push(temp_data);
+                continue;
+            }
+        }
+        else {
+            printf("ERROR!\n");
+            exit(1);
+        }
+
+        if (variable == Loader::Upsilon) {
+            if (inq == Loader::larger_than && temp_data.Upsilon_info[i] > value) temp_queue.push(temp_data);
             else if (inq == Loader::smaller_than && temp_data.Upsilon_info[i] < value) temp_queue.push(temp_data);
         }
         else if (variable == Loader::Bsig) {
@@ -725,6 +997,15 @@ void Loader::End() {
         printf("========== Debug Log end ==========");
     }
 
+    for (int i = 0; i < THStacks.size(); i++) {
+        TCanvas* c_temp = new TCanvas("c", "", 1500, 1200); c_temp->cd();
+        gStyle->SetPalette(kOcean);
+
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) THStacks.at(i)->Add(TH1Fs_THStack[j]->at(i));
+        THStacks.at(i)->Draw("pfc nostack"); c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + ".png").c_str());
+        delete c_temp;
+    }
+
 }
 
 void Loader::PrintRootFile(std::string output_name) {
@@ -784,6 +1065,40 @@ void Loader::PrintRootFile(std::string output_name) {
     current_file++;
 }
 
+bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
+    switch (decaymode) {
+    case Loader::B2Kcharged:
+        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > -0.5 && temp_data.Bsig_decayID < 0.5) return true;
+        return false;
+        break;
+    case Loader::B2Kstarchaged_ch0:
+        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 0.5 && temp_data.Bsig_decayID < 1.5) return true;
+        return false;
+        break;
+    case Loader::B2Kstarcharged_ch1:
+        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 1.5 && temp_data.Bsig_decayID < 2.5) return true;
+        return false;
+        break;
+    case Loader::B02K_S0:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 2.5 && temp_data.Bsig_decayID > -0.5 && temp_data.Bsig_decayID < 0.5) return true;
+        return false;
+        break;
+
+    case Loader::B02Kstarneutral:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 2.5 && temp_data.Bsig_decayID > 0.5 && temp_data.Bsig_decayID < 1.5) return true;
+        return false;
+        break;
+    default:
+        printf("ERROR!\n");
+        exit(1);
+        break;
+    }
+
+    printf("ERROR!\n");
+    exit(1);
+    return false;
+}
+
 void ReadRootFiles_r_sp(){
 
     std::vector<string> names;
@@ -802,7 +1117,7 @@ void ReadRootFiles_r_sp(){
         if (loader.event_info_is_valid() == false) { printf("error!\n"); return; }
 
         loader.PrintInformation(std::string("========== inital =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_initial", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F("MbcVSdeltaE_initial", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
 
         loader.Cut(Loader::Btag,2,Loader::larger_than,5.2);
         loader.PrintInformation(std::string("========== Mbc > 5.2 =========="));
@@ -810,78 +1125,75 @@ void ReadRootFiles_r_sp(){
         loader.Cut(Loader::Btag, 3, Loader::larger_than, -0.5);
         loader.Cut(Loader::Btag, 3, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== abs(deltaE) < 0.5 =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_loose_MbcDeltaE_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F("MbcVSdeltaE_after_loose_MbcDeltaE_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
 
-        loader.DrawTH1F(new TH1F("SignalProbability_Btag_after_loose_MbcDeltaE_cut", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0), 6, Loader::Btag, Loader::Log);
+        loader.DrawTH1F("SignalProbability_Btag_after_loose_MbcDeltaE_cut", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 6, Loader::Log);
         loader.Cut(Loader::Btag, 6, Loader::larger_than, 0.01);
         loader.PrintInformation(std::string("========== SignalProbability > 0.01 =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_SignalProbability_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F("MbcVSdeltaE_after_SignalProbability_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
 
-        loader.DrawTH1F(new TH1F("atcPID(3,2)", "atcPID(3,2) of daughter of B_{sig};atcPID(3,2);Num of candidate", 100, -0.1, 1.1), 5, Loader::Bsig);
+        loader.DrawTH1F("atcPID(3,2)", "atcPID(3,2) of daughter of B_{sig};atcPID(3,2);Num of candidate", 100, -0.1, 1.1, Loader::Bsig, 5);
         loader.Cut(Loader::Bsig, 5, Loader::larger_than, 0.6);
         loader.PrintInformation(std::string("========== atcPID(3,2) > 0.6 =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_atcPID_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F("MbcVSdeltaE_after_atcPID_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
 
-        loader.DrawTH1F(new TH1F("dr_Kaon_from_Bsig", "dr of Kaon from B_{sig};dr [cm];candidates", 100, -0.1, 3.5), 10, Loader::Bsig);
+        loader.DrawTH1F("dr_Kaon_from_Bsig", "dr of Kaon from B_{sig};dr [cm];candidates", 100, -0.1, 3.5, Loader::Bsig);
         loader.Cut(Loader::Bsig, 10, Loader::smaller_than, 2);
         loader.PrintInformation(std::string("========== dr < 2 cm =========="));
 
-        loader.DrawTH1F(new TH1F("dz_Kaon_from_Bsig", "dz of Kaon from B_{sig};dz [cm];candidates", 100, -6, 6), 11, Loader::Bsig);
+        loader.DrawTH1F("dz_Kaon_from_Bsig", "dz of Kaon from B_{sig};dz [cm];candidates", 100, -6, 6, Loader::Bsig, 11);
         loader.Cut(Loader::Bsig, 11, Loader::smaller_than, 4);
         loader.Cut(Loader::Bsig, 11, Loader::larger_than, -4);
         loader.PrintInformation(std::string("========== abs(dz) < 4 cm =========="));
 
-        loader.DrawTH1F(new TH1F("eIDBelle_Bsig_first_daughter", "eIDBelle of Kaon from B_{sig};eIDBelle;candidates", 100, 0, 1), 12, Loader::Bsig);
+        loader.DrawTH1F("eIDBelle_Bsig_first_daughter", "eIDBelle of Kaon from B_{sig};eIDBelle;candidates", 100, 0, 1, Loader::Bsig, 12);
         loader.Cut(Loader::Bsig, 12, Loader::smaller_than, 0.9);
         loader.PrintInformation(std::string("========== eIDBelle < 0.9 =========="));
 
-        loader.DrawTH1F(new TH1F("muIDBelle_Bsig_first_daughter", "muIDBelle of Kaon from B_{sig};muIDBelle;candidates", 100, 0, 1), 13, Loader::Bsig);
+        loader.DrawTH1F("muIDBelle_Bsig_first_daughter", "muIDBelle of Kaon from B_{sig};muIDBelle;candidates", 100, 0, 1, Loader::Bsig, 13);
         loader.Cut(Loader::Bsig, 13, Loader::smaller_than, 0.9);
         loader.PrintInformation(std::string("========== muIDBelle < 0.9 =========="));
 
-        loader.DrawTH1F(new TH1F("ROE_E_Upsilon_after_muIDBelle_cut", "Energy in ROE of #Upsilon(4S) at LAB;energy [GeV];candidates", 100, -0.1, 8), 3, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("ROE_E_Upsilon_CMS_after_muIDBelle_cut", "Energy in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates", 100, -0.1, 8), 8, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("ROE_ECLC_Upsilon_after_muIDBelle_cut", "Energy in ECLClusters in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates", 100, -0.1, 8), 9, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("ROE_NECLC_Upsilon_after_muIDBelle_cut", "Energy in neutral ECLClusters in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates", 100, -0.1, 8), 10, Loader::Upsilon);
-        loader.Cut(Loader::Upsilon, 3, Loader::smaller_than, 1);
-        loader.PrintInformation(std::string("========== E_ROE < 1 GeV =========="));
+        loader.DrawTH1F("ROE_Eecl_Upsilon_after_muIDBelle_cut", "E_ecl in ROE of #Upsilon(4S);E_{ecl} [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 5);
+        loader.Cut(Loader::Upsilon, 5, Loader::smaller_than, 1.2);
+        loader.PrintInformation(std::string("========== E_ecl < 1.2 GeV =========="));
 
-        loader.DrawTH1F(new TH1F("nROE_track_Upsilon_after_E_ROE_cut", "number of tracks in ROE of #Upsilon(4S);number of tracks;evt", 100, -0.5, 13.5), 4, Loader::Upsilon);
+        loader.DrawTH1F("nROE_track_Upsilon_after_E_ROE_cut", "number of tracks in ROE of #Upsilon(4S);number of tracks;evt", 100, -0.5, 13.5, Loader::Upsilon, 4);
         loader.Cut(Loader::Upsilon, 4, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== ntrack = 0 =========="));
 
-        loader.DrawTH1F(new TH1F("SignalProbability_Btag_before_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0), 6, Loader::Btag, Loader::Log);
+        loader.DrawTH1F("SignalProbability_Btag_before_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 6, Loader::Log);
         loader.BCS(Loader::Btag, 6, Loader::Highest);
         if (loader.IsBCSValid() == false) {
             printf("ERROR!\n");
             exit(1);
         }
-        loader.DrawTH1F(new TH1F("SignalProbability_Btag_after_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0), 6, Loader::Btag, Loader::Log);
+        loader.DrawTH1F("SignalProbability_Btag_after_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 6, Loader::Log);
         loader.PrintInformation(std::string("========== BCS =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_BCS", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F("MbcVSdeltaE_after_BCS", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
 
         loader.Cut(Loader::Btag, 2, Loader::larger_than, 5.27);
         loader.PrintInformation(std::string("========== Mbc > 5.27 =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
 
         loader.Cut(Loader::Btag, 3, Loader::larger_than, -0.1);
         loader.Cut(Loader::Btag, 3, Loader::smaller_than, 0.1);
         loader.PrintInformation(std::string("========== abs(deltaE) < 0.1 =========="));
-        loader.DrawTH2F(new TH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5), 2, 3, Loader::Btag, Loader::Btag);
+        loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
 
-        loader.DrawTH1F(new TH1F("nROE_ECLcluster_Upsilon", "number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt", 14, -0.5, 13.5), 1, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("nROE_KLMcluster_Upsilon", "number of KLM clusters in ROE of #Upsilon(4S);number of KLM clusters;evt", 14, -0.5, 13.5), 2, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("nROE_energy_Upsilon", "energy of ROE of #Upsilon(4S);energy of ROE [GeV];evt", 50, 0, 3), 3, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("nROE_track_Upsilon", "number of tracks in ROE of #Upsilon(4S);number of tracks;evt", 14, -0.5, 13.5), 4, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("ROE_Eextra", "ROE Eextra of #Upsilon(4S);number of tracks;evt", 100, -0.5, 5.5), 5, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("ROE_NECLC_Upsilon", "Energy in neutral ECLClusters in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates", 100, -0.1, 8), 10, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("Bsig_p_LAB", "momentum of B_{sig} at LAB frame;p [GeV];evt", 50, -0.5, 6), 7, Loader::Bsig);
-        loader.DrawTH1F(new TH1F("Bsig_p_CMS", "momentum of B_{sig} at CMS frame;p [GeV];evt", 50, -0.5, 6), 8, Loader::Bsig);
-        loader.DrawTH1F(new TH1F("Bsig_p_RecoilRest", "momentum of B_{sig} at rest frame of recoil system;p [GeV];evt", 50, -0.5, 6), 9, Loader::Bsig);
-        loader.DrawTH1F(new TH1F("Btag_dmID", "decay ID of B_{tag};decay ID;evt", 74, -0.5, 36.5), 1, Loader::Btag);
-        loader.DrawTH1F(new TH1F("nROE_K_S0", "number of K_S0:good candidates in ROE of #Upsilon(4S);number of good K_{S}^{0} candidates in ROE;evt", 100, -0.5, 5.5), 11, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("nROE_pi0", "number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates in ROE;evt", 100, -0.5, 8.5), 12, Loader::Upsilon);
-        loader.DrawTH1F(new TH1F("theta_missing_momentum", "#theta of missing momentum;#theta [rad];evt", 50, 0, 3.2), 13, Loader::Upsilon);
+        loader.DrawTH1F("nROE_ECLcluster_Upsilon", "number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt", 14, -0.5, 13.5, Loader::Upsilon, 1);
+        loader.DrawTH1F("nROE_KLMcluster_Upsilon", "number of KLM clusters in ROE of #Upsilon(4S);number of KLM clusters;evt", 14, -0.5, 13.5, Loader::Upsilon, 2);
+        loader.DrawTH1F("nROE_energy_Upsilon", "energy of ROE of #Upsilon(4S);energy of ROE [GeV];evt", 50, 0, 3, Loader::Upsilon, 3);
+        loader.DrawTH1F("nROE_track_Upsilon", "number of tracks in ROE of #Upsilon(4S);number of tracks;evt", 14, -0.5, 13.5, Loader::Upsilon, 4);
+        loader.DrawTH1F("ROE_Eextra", "ROE Eextra of #Upsilon(4S);number of tracks;evt", 100, -0.5, 5.5, Loader::Upsilon, 5);
+        loader.DrawTH1F("ROE_NECLC_Upsilon", "Energy in neutral ECLClusters in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 10);
+        loader.DrawTH1F("Bsig_p_LAB", "momentum of B_{sig} at LAB frame;p [GeV];evt", 50, -0.5, 6, Loader::Bsig, 7);
+        loader.DrawTH1F("Bsig_p_CMS", "momentum of B_{sig} at CMS frame;p [GeV];evt", 50, -0.5, 6, Loader::Bsig, 8);
+        loader.DrawTH1F("Bsig_p_RecoilRest", "momentum of B_{sig} at rest frame of recoil system;p [GeV];evt", 50, -0.5, 6, Loader::Bsig, 9);
+        loader.DrawTH1F("Btag_dmID", "decay ID of B_{tag};decay ID;evt", 74, -0.5, 36.5, Loader::Btag, 1);
+        loader.DrawTH1F("nROE_K_S0", "number of K_S0:good candidates in ROE of #Upsilon(4S);number of good K_{S}^{0} candidates in ROE;evt", 100, -0.5, 5.5, Loader::Upsilon, 11);
+        loader.DrawTH1F("nROE_pi0", "number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates in ROE;evt", 100, -0.5, 8.5, Loader::Upsilon, 12);
+        loader.DrawTH1F("theta_missing_momentum", "#theta of missing momentum;#theta [rad];evt", 50, 0, 3.2, Loader::Upsilon, 13);
 
         loader.PrintRootFile(std::string("output.root"));
     }
