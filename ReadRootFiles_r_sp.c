@@ -1003,7 +1003,7 @@ void Loader::End() {
         gStyle->SetPalette(kOcean);
 
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) THStacks.at(i)->Add(TH1Fs_THStack[j].at(i));
-        THStacks.at(i)->Draw("pfc nostack"); c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + ".png").c_str());
+        THStacks.at(i)->Draw("pfc"); c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + ".png").c_str());
         delete c_temp;
     }
 }
