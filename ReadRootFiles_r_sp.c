@@ -1,3 +1,6 @@
+// last update: 2021-09-06-00
+// for Belle2 data
+
 # define N_Needed_info 25
 
 void load_files(const char *dirname, std::vector<string>* names){
@@ -31,24 +34,22 @@ typedef struct data{
     // 5: Bsig_experiment, 6: Bsig_run, 7: Bsig_event, 8: Bsig_candidate, 9: Bsig_ncandidates
     // 10: Btag_experiment, 11: Btag_run, 12: Btag_event, 13: Btag_candidate, 14: Btag_ncandidates
 
-    double Upsilon_info[14];
-    // 0: Upsilon_isSignal; 1: number of ECL clusters in ROE(cleanMask), 2: number of KLM clusters in ROE
-    // 3: energy in ROE(cleanMask), 4: number of tracks in ROE(cleanMask), 5: roeEextra(cleanMask)
-    // 6: nROE_NeutralECLClusters(cleanMask), 7: roeNeextra(cleanMask), 8: energy in ROE(cleanMask) at CMS
-    // 9: roeExtra(cleanMask) at CMS, 10: roeNeextra(cleanMask) at CMS, 11: nROE_K_S0,
-    // 12: nROE_pi0, 13: missing momentum of event theta
+    double Upsilon_info[13];
+    // 0: number of ECL clusters in ROE(cleanMask), 1: number of KLM clusters in ROE
+    // 2: number of tracks in ROE(cleanMask), 3: roeEextra(cleanMask)
+    // 4: nROE_NeutralECLClusters(cleanMask), 5: nROE_K_S0, 6: nROE_pi0
+    // 7: missing momentum of event theta, 8: missing momentum, 9: missing mass^2
+    // 10: visible energy, 11: missing energy at CMS, 12: number of remaining tracks
 
-    double Bsig_info[16];
-    // 0: Bsig_isSignal, 1: Bsig_E, 2: Bsig_E_CMS, 3: Bsig_E_Recoil, 4: Bsig_dmID
-    // 5: Bsig_first_daughter's_actPID(3,2) 6: Bsig_first_daughter's_mcPDG
-    // 7: Bsig_p, 8: Bsig_p_CMS, 9: Bsig_p_Recoil
-    // 10: Kaon dr, 11: Kaon dz, 12: Bsig_first_daughter's eIDBelle
-    // 13: Bsig_first_daughter's_muIDBelle, 14: M
-    // 15: dM of daughter
+    double Bsig_info[7];
+    // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
+    // 3: Bsig_p, 4: Bsig_p_CMS, 5: Bsig_p_Recoil
+    // 6: M
 
     double Btag_info[7];
-    // 0: Btag_isSignal, 1:Btag_dmID, 2: Btag_Mbc, 3: Btag_deltaE
-    // 4: Btag_E, 5: Btag_E_CMS, 6: Btag_signalprobability
+    // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
+    // 3: Btag_E, 4: Btag_E_CMS, 5: Btag_signalprobability
+    // 6: chiProb
 
     double Needed_info[N_Needed_info];
     // 0: R2, 1: thrustBm, 2: thrustOm. 3: cosTBTO
@@ -89,11 +90,11 @@ public:
         Log
     };
     enum DecayMode {
-        B2Kcharged = 0,
-        B2Kstarcharged_ch0,
-        B2Kstarcharged_ch1,
-        B02K_S0,
-        B02Kstarneutral,
+        B2Kc = 0,
+        B2KcPi0,
+        B2Ks0Pic,
+        B2KcPicPic,
+        B2Ks0PicPi0,
         MAX_NUM_DECAYMODE
     };
     enum Qualifier {
@@ -209,47 +210,37 @@ void Loader::GetData(TFile* input_file) {
     tree_Bsig->SetBranchAddress("Bsig_extraInfo_decayModeID", &temp.Bsig_decayID);
 
     // get Upsilon_info
-    tree_upsilon->SetBranchAddress("isSignal", &temp.Upsilon_info[0]);
-    tree_upsilon->SetBranchAddress("nROE_ECLClusters__bocleanMask__bc", &temp.Upsilon_info[1]);
-    tree_upsilon->SetBranchAddress("nROE_KLMClusters", &temp.Upsilon_info[2]);
-    tree_upsilon->SetBranchAddress("roeE__bocleanMask__bc", &temp.Upsilon_info[3]);
-    tree_upsilon->SetBranchAddress("nROE_Tracks__bocleanMask__bc", &temp.Upsilon_info[4]);
-    tree_upsilon->SetBranchAddress("roeEextra__bocleanMask__bc", &temp.Upsilon_info[5]);
-    tree_upsilon->SetBranchAddress("nROE_NeutralECLClusters__bocleanMask__bc", &temp.Upsilon_info[6]);
-    tree_upsilon->SetBranchAddress("roeNeextra__bocleanMask__bc", &temp.Upsilon_info[7]);
-    tree_upsilon->SetBranchAddress("useCMSFrame__boroeE__bocleanMask__bc__bc", &temp.Upsilon_info[8]);
-    tree_upsilon->SetBranchAddress("useCMSFrame__boroeEextra__bocleanMask__bc__bc", &temp.Upsilon_info[9]);
-    tree_upsilon->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp.Upsilon_info[10]);
-    tree_upsilon->SetBranchAddress("nROE_ParticlesInList__boK_S0__clgood__bc", &temp.Upsilon_info[11]);
-    tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bopi0__clgood__bc", &temp.Upsilon_info[12]);
-    tree_upsilon->SetBranchAddress("missingMomentumOfEvent_theta", &temp.Upsilon_info[13]);
+    tree_upsilon->SetBranchAddress("nROE_ECLClusters__bocleanMask__bc", &temp.Upsilon_info[0]);
+    tree_upsilon->SetBranchAddress("nROE_KLMClusters", &temp.Upsilon_info[1]);
+    tree_upsilon->SetBranchAddress("nROE_Tracks__bocleanMask__bc", &temp.Upsilon_info[2]);
+    tree_upsilon->SetBranchAddress("roeEextra__bocleanMask__bc", &temp.Upsilon_info[3]);
+    tree_upsilon->SetBranchAddress("nROE_NeutralECLClusters__bocleanMask__bc", &temp.Upsilon_info[4]);
+    tree_upsilon->SetBranchAddress("nROE_ParticlesInList__boK_S0__clgood__bc", &temp.Upsilon_info[5]);
+    tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bopi0__clgood__bc", &temp.Upsilon_info[6]);
+    tree_upsilon->SetBranchAddress("missingMomentumOfEvent_theta", &temp.Upsilon_info[7]);
+    tree_upsilon->SetBranchAddress("missingMomentumOfEvent", &temp.Upsilon_info[8]);
+    tree_upsilon->SetBranchAddress("missingMass2OfEvent", &temp.Upsilon_info[9]);
+    tree_upsilon->SetBranchAddress("visibleEnergyOfEventCMS", &temp.Upsilon_info[10]);
+    tree_upsilon->SetBranchAddress("missingEnergyOfEventCMS", &temp.Upsilon_info[11]);
+    tree_upsilon->SetBranchAddress("nRemainingTracksInEvent", &temp.Upsilon_info[12]);
 
     // get Bsig_info
-    tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[0]);
-    tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[1]);
-    tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_E", &temp.Bsig_info[2]);
-    tree_upsilon->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc", &temp.Bsig_info[3]);
-    tree_Bsig->SetBranchAddress("Bsig_extraInfo_decayModeID", &temp.Bsig_info[4]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_atcPIDBelle_3_2", &temp.Bsig_info[5]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_mcPDG", &temp.Bsig_info[6]);
-    tree_Bsig->SetBranchAddress("Bsig_p", &temp.Bsig_info[7]);
-    tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_p", &temp.Bsig_info[8]);
-    tree_upsilon->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp.Bsig_info[9]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_dr", &temp.Bsig_info[10]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_dz", &temp.Bsig_info[11]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_eIDBelle", &temp.Bsig_info[12]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_muIDBelle", &temp.Bsig_info[13]);
-    tree_Bsig->SetBranchAddress("Bsig_M", &temp.Bsig_info[14]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_dM", &temp.Bsig_info[15]);
+    tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
+    tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_E", &temp.Bsig_info[1]);
+    tree_upsilon->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc", &temp.Bsig_info[2]);
+    tree_Bsig->SetBranchAddress("Bsig_p", &temp.Bsig_info[3]);
+    tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_p", &temp.Bsig_info[4]);
+    tree_upsilon->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp.Bsig_info[5]);
+    tree_Bsig->SetBranchAddress("Bsig_M", &temp.Bsig_info[6]);
 
     // get Btag_info
-    tree_Btag->SetBranchAddress("Btag_isSignal", &temp.Btag_info[0]);
-    tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[1]);
-    tree_Btag->SetBranchAddress("Btag_Mbc", &temp.Btag_info[2]);
-    tree_Btag->SetBranchAddress("Btag_deltaE", &temp.Btag_info[3]);
-    tree_Btag->SetBranchAddress("Btag_E", &temp.Btag_info[4]);
-    tree_Btag->SetBranchAddress("Btag_useCMSFrame_E", &temp.Btag_info[5]);
-    tree_Btag->SetBranchAddress("Btag_extraInfo_SignalProbability", &temp.Btag_info[6]);
+    tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
+    tree_Btag->SetBranchAddress("Btag_Mbc", &temp.Btag_info[1]);
+    tree_Btag->SetBranchAddress("Btag_deltaE", &temp.Btag_info[2]);
+    tree_Btag->SetBranchAddress("Btag_E", &temp.Btag_info[3]);
+    tree_Btag->SetBranchAddress("Btag_useCMSFrame_E", &temp.Btag_info[4]);
+    tree_Btag->SetBranchAddress("Btag_extraInfo_SignalProbability", &temp.Btag_info[5]);
+    tree_Btag->SetBranchAddress("Btag_chiProb", &temp.Btag_info[6]);
 
     // other information I need
     tree_Btag->SetBranchAddress("Btag_R2", &temp.Needed_info[0]);
@@ -1067,25 +1058,24 @@ void Loader::PrintRootFile(std::string output_name) {
 
 bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
     switch (decaymode) {
-    case Loader::B2Kcharged:
+    case Loader::B2Kc:
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > -0.5 && temp_data.Bsig_decayID < 0.5) return true;
         return false;
         break;
-    case Loader::B2Kstarcharged_ch0:
+    case Loader::B2KcPi0:
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 0.5 && temp_data.Bsig_decayID < 1.5) return true;
         return false;
         break;
-    case Loader::B2Kstarcharged_ch1:
+    case Loader::B2Ks0Pic:
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 1.5 && temp_data.Bsig_decayID < 2.5) return true;
         return false;
         break;
-    case Loader::B02K_S0:
-        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 2.5 && temp_data.Bsig_decayID > -0.5 && temp_data.Bsig_decayID < 0.5) return true;
+    case Loader::B2KcPicPic:
+        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 2.5 && temp_data.Bsig_decayID < 3.5) return true;
         return false;
         break;
-
-    case Loader::B02Kstarneutral:
-        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 2.5 && temp_data.Bsig_decayID > 0.5 && temp_data.Bsig_decayID < 1.5) return true;
+    case Loader::B2Ks0PicPi0:
+        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 3.5 && temp_data.Bsig_decayID < 4.5) return true;
         return false;
         break;
     default:
@@ -1117,83 +1107,60 @@ void ReadRootFiles_r_sp(){
         if (loader.event_info_is_valid() == false) { printf("error!\n"); return; }
 
         loader.PrintInformation(std::string("========== inital =========="));
-        loader.DrawTH2F("MbcVSdeltaE_initial", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
+        loader.DrawTH2F("MbcVSdeltaE_initial", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 1, Loader::Btag, 2);
 
-        loader.Cut(Loader::Btag,2,Loader::larger_than,5.2);
+        loader.Cut(Loader::Btag,1,Loader::larger_than,5.2);
         loader.PrintInformation(std::string("========== Mbc > 5.2 =========="));
 
-        loader.Cut(Loader::Btag, 3, Loader::larger_than, -0.5);
-        loader.Cut(Loader::Btag, 3, Loader::smaller_than, 0.5);
+        loader.Cut(Loader::Btag, 2, Loader::larger_than, -0.5);
+        loader.Cut(Loader::Btag, 2, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== abs(deltaE) < 0.5 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_loose_MbcDeltaE_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
+        loader.DrawTH2F("MbcVSdeltaE_after_loose_MbcDeltaE_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 1, Loader::Btag, 2);
 
-        loader.DrawTH1F("SignalProbability_Btag_after_loose_MbcDeltaE_cut", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 6, Loader::Log);
-        loader.Cut(Loader::Btag, 6, Loader::larger_than, 0.01);
+        loader.DrawTH1F("SignalProbability_Btag_after_loose_MbcDeltaE_cut", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
+        loader.Cut(Loader::Btag, 5, Loader::larger_than, 0.01);
         loader.PrintInformation(std::string("========== SignalProbability > 0.01 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_SignalProbability_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
+        loader.DrawTH2F("MbcVSdeltaE_after_SignalProbability_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 1, Loader::Btag, 2);
 
-        loader.DrawTH1F("atcPID(3,2)", "atcPID(3,2) of daughter of B_{sig};atcPID(3,2);Num of candidate", 100, -0.1, 1.1, Loader::Bsig, 5);
-        loader.Cut(Loader::Bsig, 5, Loader::larger_than, 0.6);
-        loader.PrintInformation(std::string("========== atcPID(3,2) > 0.6 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_atcPID_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
-
-        loader.DrawTH1F("dr_Kaon_from_Bsig", "dr of Kaon from B_{sig};dr [cm];candidates", 100, -0.1, 3.5, Loader::Bsig, 10);
-        loader.Cut(Loader::Bsig, 10, Loader::smaller_than, 2);
-        loader.PrintInformation(std::string("========== dr < 2 cm =========="));
-
-        loader.DrawTH1F("dz_Kaon_from_Bsig", "dz of Kaon from B_{sig};dz [cm];candidates", 100, -6, 6, Loader::Bsig, 11);
-        loader.Cut(Loader::Bsig, 11, Loader::smaller_than, 4);
-        loader.Cut(Loader::Bsig, 11, Loader::larger_than, -4);
-        loader.PrintInformation(std::string("========== abs(dz) < 4 cm =========="));
-
-        loader.DrawTH1F("eIDBelle_Bsig_first_daughter", "eIDBelle of Kaon from B_{sig};eIDBelle;candidates", 100, 0, 1, Loader::Bsig, 12);
-        loader.Cut(Loader::Bsig, 12, Loader::smaller_than, 0.9);
-        loader.PrintInformation(std::string("========== eIDBelle < 0.9 =========="));
-
-        loader.DrawTH1F("muIDBelle_Bsig_first_daughter", "muIDBelle of Kaon from B_{sig};muIDBelle;candidates", 100, 0, 1, Loader::Bsig, 13);
-        loader.Cut(Loader::Bsig, 13, Loader::smaller_than, 0.9);
-        loader.PrintInformation(std::string("========== muIDBelle < 0.9 =========="));
-
-        loader.DrawTH1F("ROE_Eecl_Upsilon_after_muIDBelle_cut", "E_ecl in ROE of #Upsilon(4S);E_{ecl} [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 5);
-        loader.Cut(Loader::Upsilon, 5, Loader::smaller_than, 1.2);
+        loader.DrawTH1F("ROE_Eecl_Upsilon_after_SignalProbability_cut", "E_ecl in ROE of #Upsilon(4S);E_{ecl} [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 3);
+        loader.Cut(Loader::Upsilon, 3, Loader::smaller_than, 1.2);
         loader.PrintInformation(std::string("========== E_ecl < 1.2 GeV =========="));
 
-        loader.DrawTH1F("nROE_track_Upsilon_after_E_ROE_cut", "number of tracks in ROE of #Upsilon(4S);number of tracks;evt", 100, -0.5, 13.5, Loader::Upsilon, 4);
-        loader.Cut(Loader::Upsilon, 4, Loader::smaller_than, 0.5);
-        loader.PrintInformation(std::string("========== ntrack = 0 =========="));
+        loader.DrawTH1F("nROE_track_Upsilon_after_E_ROE_cut", "number of raw tracks in ROE of #Upsilon(4S);number of raw tracks;evt", 100, -0.5, 13.5, Loader::Upsilon, 12);
+        loader.Cut(Loader::Upsilon, 12, Loader::smaller_than, 0.5);
+        loader.PrintInformation(std::string("========== nRawtrack = 0 =========="));
 
-        loader.DrawTH1F("SignalProbability_Btag_before_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 6, Loader::Log);
-        loader.BCS(Loader::Btag, 6, Loader::Highest);
+        loader.DrawTH1F("nROE_pi0_after_ntrack_cut", "number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates;evt", 100, -0.5, 13.5, Loader::Upsilon, 6);
+        loader.Cut(Loader::Upsilon, 6, Loader::smaller_than, 0.5);
+        loader.PrintInformation(std::string("========== npi0 = 0 =========="));
+
+        loader.DrawTH1F("SignalProbability_Btag_before_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
+        loader.BCS(Loader::Btag, 5, Loader::Highest);
         if (loader.IsBCSValid() == false) {
             printf("ERROR!\n");
             exit(1);
         }
-        loader.DrawTH1F("SignalProbability_Btag_after_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 6, Loader::Log);
+        loader.DrawTH1F("SignalProbability_Btag_after_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
         loader.PrintInformation(std::string("========== BCS =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_BCS", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
+        loader.DrawTH2F("MbcVSdeltaE_after_BCS", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 1, Loader::Btag, 2);
 
-        loader.Cut(Loader::Btag, 2, Loader::larger_than, 5.27);
+        loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
         loader.PrintInformation(std::string("========== Mbc > 5.27 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
+        loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 1, Loader::Btag, 2);
 
-        loader.Cut(Loader::Btag, 3, Loader::larger_than, -0.1);
-        loader.Cut(Loader::Btag, 3, Loader::smaller_than, 0.1);
+        loader.Cut(Loader::Btag, 2, Loader::larger_than, -0.1);
+        loader.Cut(Loader::Btag, 2, Loader::smaller_than, 0.1);
         loader.PrintInformation(std::string("========== abs(deltaE) < 0.1 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 2, Loader::Btag, 3);
+        loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 1, Loader::Btag, 2);
 
-        loader.DrawTH1F("nROE_ECLcluster_Upsilon", "number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt", 14, -0.5, 13.5, Loader::Upsilon, 1);
-        loader.DrawTH1F("nROE_KLMcluster_Upsilon", "number of KLM clusters in ROE of #Upsilon(4S);number of KLM clusters;evt", 14, -0.5, 13.5, Loader::Upsilon, 2);
-        loader.DrawTH1F("nROE_energy_Upsilon", "energy of ROE of #Upsilon(4S);energy of ROE [GeV];evt", 50, 0, 3, Loader::Upsilon, 3);
-        loader.DrawTH1F("nROE_track_Upsilon", "number of tracks in ROE of #Upsilon(4S);number of tracks;evt", 14, -0.5, 13.5, Loader::Upsilon, 4);
-        loader.DrawTH1F("ROE_Eextra", "ROE Eextra of #Upsilon(4S);number of tracks;evt", 100, -0.5, 5.5, Loader::Upsilon, 5);
-        loader.DrawTH1F("ROE_NECLC_Upsilon", "Energy in neutral ECLClusters in ROE of #Upsilon(4S) at CMS;energy [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 10);
-        loader.DrawTH1F("Bsig_p_LAB", "momentum of B_{sig} at LAB frame;p [GeV];evt", 50, -0.5, 6, Loader::Bsig, 7);
-        loader.DrawTH1F("Bsig_p_CMS", "momentum of B_{sig} at CMS frame;p [GeV];evt", 50, -0.5, 6, Loader::Bsig, 8);
-        loader.DrawTH1F("Bsig_p_RecoilRest", "momentum of B_{sig} at rest frame of recoil system;p [GeV];evt", 50, -0.5, 6, Loader::Bsig, 9);
-        loader.DrawTH1F("Btag_dmID", "decay ID of B_{tag};decay ID;evt", 74, -0.5, 36.5, Loader::Btag, 1);
-        loader.DrawTH1F("nROE_K_S0", "number of K_S0:good candidates in ROE of #Upsilon(4S);number of good K_{S}^{0} candidates in ROE;evt", 100, -0.5, 5.5, Loader::Upsilon, 11);
-        loader.DrawTH1F("nROE_pi0", "number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates in ROE;evt", 100, -0.5, 8.5, Loader::Upsilon, 12);
-        loader.DrawTH1F("theta_missing_momentum", "#theta of missing momentum;#theta [rad];evt", 50, 0, 3.2, Loader::Upsilon, 13);
+        loader.DrawTH1F("nROE_ECLcluster_Upsilon", "number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt", 14, -0.5, 13.5, Loader::Upsilon, 0);
+        loader.DrawTH1F("nROE_KLMcluster_Upsilon", "number of KLM clusters in ROE of #Upsilon(4S);number of KLM clusters;evt", 14, -0.5, 13.5, Loader::Upsilon, 1);
+        loader.DrawTH1F("Bsig_p_LAB", "momentum of B_{sig} at LAB frame;p [GeV];evt", 50, -0.5, 6, Loader::Bsig, 3);
+        loader.DrawTH1F("Bsig_p_CMS", "momentum of B_{sig} at CMS frame;p [GeV];evt", 50, -0.5, 6, Loader::Bsig, 4);
+        loader.DrawTH1F("Bsig_p_RecoilRest", "momentum of B_{sig} at rest frame of recoil system;p [GeV];evt", 50, -0.5, 6, Loader::Bsig, 5);
+        loader.DrawTH1F("Btag_dmID", "decay ID of B_{tag};decay ID;evt", 74, -0.5, 36.5, Loader::Btag, 0);
+        loader.DrawTH1F("nROE_K_S0", "number of K_S0:good candidates in ROE of #Upsilon(4S);number of good K_{S}^{0} candidates in ROE;evt", 100, -0.5, 5.5, Loader::Upsilon, 5);
+        loader.DrawTH1F("theta_missing_momentum", "#theta of missing momentum;#theta [rad];evt", 50, 0, 3.2, Loader::Upsilon, 7);
 
         loader.PrintRootFile(std::string("output.root"));
     }
