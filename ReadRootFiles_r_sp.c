@@ -215,8 +215,8 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("nROE_Tracks__bocleanMask__bc", &temp.Upsilon_info[2]);
     tree_upsilon->SetBranchAddress("roeEextra__bocleanMask__bc", &temp.Upsilon_info[3]);
     tree_upsilon->SetBranchAddress("nROE_NeutralECLClusters__bocleanMask__bc", &temp.Upsilon_info[4]);
-    tree_upsilon->SetBranchAddress("nROE_ParticlesInList__boK_S0__clgood__bc", &temp.Upsilon_info[5]);
-    tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bopi0__clgood__bc", &temp.Upsilon_info[6]);
+    tree_upsilon->SetBranchAddress("nROE_ParticlesInList__boK_S0__clmyKaonshort__bc", &temp.Upsilon_info[5]);
+    tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bopi0__clmyneutralPion__bc", &temp.Upsilon_info[6]);
     tree_upsilon->SetBranchAddress("missingMomentumOfEvent_theta", &temp.Upsilon_info[7]);
     tree_upsilon->SetBranchAddress("missingMomentumOfEvent", &temp.Upsilon_info[8]);
     tree_upsilon->SetBranchAddress("missingMass2OfEvent", &temp.Upsilon_info[9]);
@@ -1159,7 +1159,7 @@ void ReadRootFiles_r_sp(){
         loader.DrawTH1F("Bsig_p_CMS", "momentum of B_{sig} at CMS frame;p [GeV];evt", 50, -0.5, 6, Loader::Bsig, 4);
         loader.DrawTH1F("Bsig_p_RecoilRest", "momentum of B_{sig} at rest frame of recoil system;p [GeV];evt", 50, -0.5, 6, Loader::Bsig, 5);
         loader.DrawTH1F("Btag_dmID", "decay ID of B_{tag};decay ID;evt", 74, -0.5, 36.5, Loader::Btag, 0);
-        loader.DrawTH1F("nROE_K_S0", "number of K_S0:good candidates in ROE of #Upsilon(4S);number of good K_{S}^{0} candidates in ROE;evt", 100, -0.5, 5.5, Loader::Upsilon, 5);
+        loader.DrawTH1F("nROE_K_S0", "number of K_S0 candidates in ROE of #Upsilon(4S);number of K_{S}^{0} candidates in ROE;evt", 100, -0.5, 5.5, Loader::Upsilon, 5);
         loader.DrawTH1F("theta_missing_momentum", "#theta of missing momentum;#theta [rad];evt", 50, 0, 3.2, Loader::Upsilon, 7);
 
         loader.PrintRootFile(std::string("output.root"));
