@@ -100,7 +100,7 @@ void Loader::GetData(TFile* input_file) {
 
     printf("%lld entries...\n", tree_KaonS0->GetEntries());
     for (unsigned int j = 0; j < tree_KaonS0->GetEntries(); j++) { // Fill
-        tree_Gamma->GetEntry(j);
+        tree_KaonS0->GetEntry(j);
         TotalData.push(temp);
     }
     input_file->Close();
