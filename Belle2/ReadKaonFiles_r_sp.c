@@ -232,7 +232,7 @@ void Loader::End() {
 
 }
 
-void ReadDecayFiles_r_sp(){
+void ReadKaonFiles_r_sp(){
 
     std::vector<string> names;
     const char* dirname = "/home/jwpark/storage/B02Xsnunu_decay_modes/output";
