@@ -45,6 +45,8 @@ public:
 
 private:
     std::queue<Data> TotalData;
+    std::vector<TH1F*> TH1Fs;
+    int current_TH1F;
 
     std::vector<int> N_events;
     std::vector<int> N_candidates;
@@ -66,6 +68,7 @@ public:
 Loader::Loader() {
     std::queue<Data> empty;
     std::swap(TotalData, empty);
+    current_TH1F = 0;
     current_N_event = 0;
     current_N_candidate = 0;
 }
@@ -73,6 +76,7 @@ Loader::Loader() {
 void Loader::initialize() {
     std::queue<Data> empty;
     std::swap(TotalData, empty);
+    current_TH1F = 0;
     current_N_event = 0;
     current_N_candidate = 0;
 }
