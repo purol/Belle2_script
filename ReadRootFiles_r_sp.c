@@ -208,7 +208,7 @@ void Loader::GetData(TFile* input_file) {
 
     // get decaymodeID
     tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &temp.Upsilon_decayID);
-    tree_Bsig->SetBranchAddress("Bsig_extraInfo_decayModeID", &temp.Bsig_decayID);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &temp.Bsig_decayID);
 
     // get Upsilon_info
     tree_upsilon->SetBranchAddress("nROE_ECLClusters__bocleanMask__bc", &temp.Upsilon_info[0]);
