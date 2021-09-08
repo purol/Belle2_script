@@ -1,4 +1,4 @@
-// last update: 2021-09-06-00
+// last update: 2021-09-08-00
 // for Belle2 data
 
 # define N_Needed_info 25
@@ -111,6 +111,7 @@ private:
 
     std::vector<int> N_events;
     std::vector<int> N_candidates;
+    std::vector<int> N_candidates_modes[Loader::MAX_NUM_DECAYMODE];
     std::vector<std::string> titles;
     int current_N_event;
     int current_N_candidate;
@@ -623,6 +624,7 @@ void Loader::PrintInformation(std::string title) {
         N_events.push_back(0);
         N_candidates.push_back(0);
         titles.push_back(title);
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) N_candidates_modes[i].push_back(0);
     }
     else if (N_events.size() > current_N_event && N_candidates.size() > current_N_candidate && N_events.size() == N_candidates.size() && current_N_event == current_N_candidate) { // use what I have
     }
@@ -649,6 +651,20 @@ void Loader::PrintInformation(std::string title) {
             temp_Labels.__ncandidates__ = temp.__ncandidates__;
             label_list.push_back(temp_Labels);
         }
+
+        Loader::DecayMode decaymodeid = Loader::MAX_NUM_DECAYMODE;
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            if (TrueIfDecayModeMatch(temp, static_cast<Loader::DecayMode>(i))) {
+                decaymodeid = static_cast<Loader::DecayMode>(i);
+                break;
+            }
+        }
+        if (decaymodeid == Loader::MAX_NUM_DECAYMODE) {
+            printf("ERROR!\n");
+            exit(1);
+        }
+        N_candidates_modes[decaymodeid].at(current_N_candidate)++;
+
     }
     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size();
 
@@ -922,6 +938,7 @@ void Loader::End() {
         printf("%s\n", titles.at(i).c_str());
         printf("Number of event: %d\n", N_events.at(i));
         printf("Number of candidate: %d\n", N_candidates.at(i));
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %d\n", j, N_candidates_modes[j].at(i));
     }
 
     for (int i = 0; i < TH1Fs.size();i++) {
