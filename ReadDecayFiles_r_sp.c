@@ -289,20 +289,6 @@ void Loader::End() {
 }
 
 double Loader::Mxs(Data data) {
-    // get Upsilon_info
-    tree_Xs->SetBranchAddress("daughter__bo0__cm__spnDaughters__bc", &temp.Tree[0]);
-    tree_Xs->SetBranchAddress("daughter__bo0__cm__spPDG__bc", &temp.Tree[1]);
-    tree_Xs->SetBranchAddress("daughter__bo0__cm__spdaughter__bo0__cmPDG__bc__bc", &temp.Tree[2]);
-    tree_Xs->SetBranchAddress("daughter__bo0__cm__spdaughter__bo1__cmPDG__bc__bc", &temp.Tree[3]);
-    tree_Xs->SetBranchAddress("daughter__bo0__cm__spdaughter__bo2__cmPDG__bc__bc", &temp.Tree[4]);
-    tree_Xs->SetBranchAddress("daughter__bo0__cm__spdaughter__bo0__cmM__bc__bc", &temp.Tree[5]);
-    tree_Xs->SetBranchAddress("daughter__bo1__cm__spnDaughters__bc", &temp.Tree[6]);
-    tree_Xs->SetBranchAddress("daughter__bo1__cm__spPDG__bc", &temp.Tree[7]);
-    tree_Xs->SetBranchAddress("daughter__bo1__cm__spdaughter__bo0__cmPDG__bc__bc", &temp.Tree[8]);
-    tree_Xs->SetBranchAddress("daughter__bo1__cm__spdaughter__bo1__cmPDG__bc__bc", &temp.Tree[9]);
-    tree_Xs->SetBranchAddress("daughter__bo1__cm__spdaughter__bo2__cmPDG__bc__bc", &temp.Tree[10]);
-    tree_Xs->SetBranchAddress("daughter__bo1__cm__spdaughter__bo0__cmM__bc__bc", &temp.Tree[11]);
-
     if (data.Tree[0] > 2.5 && data.Tree[0] < 3.5) { // Ndaughter of B == 3 
         if (AreTheyNeutrinosAndConj(data.Tree[2], data.Tree[3]) || AreTheyNeutrinosAndConj(data.Tree[2], data.Tree[4]) || AreTheyNeutrinosAndConj(data.Tree[4], data.Tree[3])) { // check B-> ? nu nubar
             if (AreTheyBmesonAndXs(data.Tree[1], data.Tree[2])) { // check B->Xs ? ?
@@ -365,17 +351,17 @@ bool Loader::AreTheyBmesonAndXs(double Bpdg, double Xspdg) {
 }
 
 Loader::DecayMode PrintDecayClassification(Data data) {
-    if (temp.Decay[0] > 0 || temp.Decay[4] > 0 || temp.Decay[19] > 0 || temp.Decay[23] > 0) return Loader::K; // B+->K+ / Xsu->K+ / B0->K0 / Xsd->K0
-    else if (temp.Decay[1] > 0 || temp.Decay[6] > 0 || temp.Decay[20] > 0 || temp.Decay[24] > 0) return Loader::K1Pi_wo_Pi0; // B+->K*+->K0 pi+ / Xsu->K0 pi+ / B0->K*0->K+ pi- / Xsd->K+ pi-
-    else if (temp.Decay[2] > 0 || temp.Decay[5] > 0 || temp.Decay[21] > 0 || temp.Decay[25] > 0) return Loader::K1Pi_w_1Pi0; // B+->K*+->K+ pi0 / Xsu->K+ pi0 / B0->K*0->K0 pi0 / Xsd->K0 pi0
-    else if (temp.Decay[7] > 0 || temp.Decay[27] > 0) return Loader::K2Pi_wo_Pi0; // Xsu->K+ pi- pi+ / Xsd->K0 pi+ pi-
-    else if (temp.Decay[8] > 0 || temp.Decay[26] > 0) return Loader::K2Pi_w_1Pi0; // Xsu->K0 pi+ K0 / Xsd->K+ pi- pi0
-    else if (temp.Decay[10] > 0 || temp.Decay[28] > 0) return Loader::K3Pi_wo_Pi0; // Xsu->K0 pi+ pi- pi+ / Xsd->K+ pi- pi+ pi-
-    else if (temp.Decay[9] > 0 || temp.Decay[29] > 0) return Loader::K3Pi_w_1Pi0; // Xsu->K+ pi- pi+ pi0 / Xsd->K0 pi+ pi- pi0
-    else if (temp.Decay[11] > 0 || temp.Decay[31] > 0) return Loader::K4Pi_wo_Pi0; // Xsu->K+ pi- pi+ pi- pi+ / Xsd->K0 pi+ pi- pi+ pi-
-    else if (temp.Decay[12] > 0 || temp.Decay[30] > 0) return Loader::K4Pi_w_1Pi0; // Xsu->K0 pi+ pi- pi+ pi0 / Xsd->K+ pi- pi+ pi- pi0
-    else if (temp.Decay[13] > 0 || temp.Decay[14] > 0 || temp.Decay[15] > 0 || temp.Decay[32] > 0 || temp.Decay[33] > 0 || temp.Decay[34] > 0) return Loader::K_w_2pi0_w_atmost_4Pi;
-    else if (temp.Decay[16] > 0 || temp.Decay[17] > 0 || temp.Decay[18] > 0 || temp.Decay[35] > 0 || temp.Decay[36] > 0 || temp.Decay[37] > 0) return Loader::_3K_w_atmost_1Pi;
+    if (data.Decay[0] > 0 || data.Decay[4] > 0 || data.Decay[19] > 0 || data.Decay[23] > 0) return Loader::K; // B+->K+ / Xsu->K+ / B0->K0 / Xsd->K0
+    else if (data.Decay[1] > 0 || data.Decay[6] > 0 || data.Decay[20] > 0 || data.Decay[24] > 0) return Loader::K1Pi_wo_Pi0; // B+->K*+->K0 pi+ / Xsu->K0 pi+ / B0->K*0->K+ pi- / Xsd->K+ pi-
+    else if (data.Decay[2] > 0 || data.Decay[5] > 0 || data.Decay[21] > 0 || data.Decay[25] > 0) return Loader::K1Pi_w_1Pi0; // B+->K*+->K+ pi0 / Xsu->K+ pi0 / B0->K*0->K0 pi0 / Xsd->K0 pi0
+    else if (data.Decay[7] > 0 || data.Decay[27] > 0) return Loader::K2Pi_wo_Pi0; // Xsu->K+ pi- pi+ / Xsd->K0 pi+ pi-
+    else if (data.Decay[8] > 0 || data.Decay[26] > 0) return Loader::K2Pi_w_1Pi0; // Xsu->K0 pi+ K0 / Xsd->K+ pi- pi0
+    else if (data.Decay[10] > 0 || data.Decay[28] > 0) return Loader::K3Pi_wo_Pi0; // Xsu->K0 pi+ pi- pi+ / Xsd->K+ pi- pi+ pi-
+    else if (data.Decay[9] > 0 || data.Decay[29] > 0) return Loader::K3Pi_w_1Pi0; // Xsu->K+ pi- pi+ pi0 / Xsd->K0 pi+ pi- pi0
+    else if (data.Decay[11] > 0 || data.Decay[31] > 0) return Loader::K4Pi_wo_Pi0; // Xsu->K+ pi- pi+ pi- pi+ / Xsd->K0 pi+ pi- pi+ pi-
+    else if (data.Decay[12] > 0 || data.Decay[30] > 0) return Loader::K4Pi_w_1Pi0; // Xsu->K0 pi+ pi- pi+ pi0 / Xsd->K+ pi- pi+ pi- pi0
+    else if (data.Decay[13] > 0 || data.Decay[14] > 0 || data.Decay[15] > 0 || data.Decay[32] > 0 || data.Decay[33] > 0 || data.Decay[34] > 0) return Loader::K_w_2pi0_w_atmost_4Pi;
+    else if (data.Decay[16] > 0 || data.Decay[17] > 0 || data.Decay[18] > 0 || data.Decay[35] > 0 || data.Decay[36] > 0 || data.Decay[37] > 0) return Loader::_3K_w_atmost_1Pi;
     return Loader::others;
 }
 
