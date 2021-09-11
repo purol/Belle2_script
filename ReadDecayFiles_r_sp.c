@@ -274,7 +274,7 @@ void Loader::End() {
 
     for (int i = 0; i < THStacks.size(); i++) {
         TCanvas* c_temp = new TCanvas("c", "", 1500, 1200); c_temp->cd();
-        gStyle->SetPalette(kOcean);
+        gStyle->SetPalette(kColorPrintableOnGrey);
 
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) {
 		THStacks.at(i)->Add(TH1Fs_THStack[j].at(i));
@@ -282,8 +282,9 @@ void Loader::End() {
 		c_temp->SaveAs( (std::string(TH1Fs_THStack[j].at(i)->GetName()) + ".png").c_str() );
 	}
         THStacks.at(i)->Draw("pfc"); 
-	//gPad->BuildLegend();
-	c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + ".png").c_str());
+        c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + ".png").c_str());
+	gPad->BuildLegend();
+	c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + "_legend.png").c_str());
         delete c_temp;
     }
 }
