@@ -350,7 +350,7 @@ bool Loader::AreTheyBmesonAndXs(double Bpdg, double Xspdg) {
     return false;
 }
 
-Loader::DecayMode PrintDecayClassification(Data data) {
+Loader::DecayMode Loader::PrintDecayClassification(Data data) {
     if (data.Decay[0] > 0 || data.Decay[4] > 0 || data.Decay[19] > 0 || data.Decay[23] > 0) return Loader::K; // B+->K+ / Xsu->K+ / B0->K0 / Xsd->K0
     else if (data.Decay[1] > 0 || data.Decay[6] > 0 || data.Decay[20] > 0 || data.Decay[24] > 0) return Loader::K1Pi_wo_Pi0; // B+->K*+->K0 pi+ / Xsu->K0 pi+ / B0->K*0->K+ pi- / Xsd->K+ pi-
     else if (data.Decay[2] > 0 || data.Decay[5] > 0 || data.Decay[21] > 0 || data.Decay[25] > 0) return Loader::K1Pi_w_1Pi0; // B+->K*+->K+ pi0 / Xsu->K+ pi0 / B0->K*0->K0 pi0 / Xsd->K0 pi0
