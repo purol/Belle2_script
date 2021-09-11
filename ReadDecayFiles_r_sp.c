@@ -41,7 +41,7 @@ public:
         K4Pi_wo_Pi0,
         K4Pi_w_1Pi0,
         K_w_2pi0_w_atmost_4Pi,
-        3K_w_atmost_1Pi,
+        _3K_w_atmost_1Pi,
         others,
         MAX_NUM_DECAYMODE
     };
@@ -205,14 +205,14 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
         Data temp_data = temp_queue.front();
         temp_queue.pop();
 
-        if (temp_data.N_B_ch_total > 1.5) { // error
+        if (temp_data.Decay[0] + temp_data.Decay[1] + temp_data.Decay[2] + temp_data.Decay[3] + temp_data.Decay[19] + temp_data.Decay[20] + temp_data.Decay[21] + temp_data.Decay[22] > 1.5) { // error
             printf("ERROR!\n");
             exit(1);
         }
 
         int decaymodeid = PrintDecayClassification(temp_data);
 
-        temp_hist[decaymodeid]->Fill(temp_data.Mxs);
+        temp_hist[decaymodeid]->Fill(Mxs(temp_data));
     }
 
     current_THStack++;
@@ -375,7 +375,7 @@ Loader::DecayMode PrintDecayClassification(Data data) {
     else if (temp.Decay[11] > 0 || temp.Decay[31] > 0) return Loader::K4Pi_wo_Pi0; // Xsu->K+ pi- pi+ pi- pi+ / Xsd->K0 pi+ pi- pi+ pi-
     else if (temp.Decay[12] > 0 || temp.Decay[30] > 0) return Loader::K4Pi_w_1Pi0; // Xsu->K0 pi+ pi- pi+ pi0 / Xsd->K+ pi- pi+ pi- pi0
     else if (temp.Decay[13] > 0 || temp.Decay[14] > 0 || temp.Decay[15] > 0 || temp.Decay[32] > 0 || temp.Decay[33] > 0 || temp.Decay[34] > 0) return Loader::K_w_2pi0_w_atmost_4Pi;
-    else if (temp.Decay[16] > 0 || temp.Decay[17] > 0 || temp.Decay[18] > 0 || temp.Decay[35] > 0 || temp.Decay[36] > 0 || temp.Decay[37] > 0) return Loader::3K_w_atmost_1Pi;
+    else if (temp.Decay[16] > 0 || temp.Decay[17] > 0 || temp.Decay[18] > 0 || temp.Decay[35] > 0 || temp.Decay[36] > 0 || temp.Decay[37] > 0) return Loader::_3K_w_atmost_1Pi;
     return Loader::others;
 }
 
