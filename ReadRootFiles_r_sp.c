@@ -95,6 +95,11 @@ public:
         B2Ks0Pic,
         B2KcPicPic,
         B2Ks0PicPi0,
+	B02Ks0,
+	B02KcPic,
+	B02Ks0Pi0,
+	B02KcPicPi0,
+	B02Ks0PicPic,
         MAX_NUM_DECAYMODE
     };
     enum Qualifier {
@@ -1095,6 +1100,26 @@ bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 3.5 && temp_data.Bsig_decayID < 4.5) return true;
         return false;
         break;
+    case Loader::B02Ks0:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > -0.5 && temp_data.Bsig_decayID < 0.5) return true;
+        return false;
+        break;
+    case Loader::B02KcPic:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 0.5 && temp_data.Bsig_decayID < 1.5) return true;
+        return false;
+        break;
+    case Loader::B02Ks0Pi0:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 1.5 && temp_data.Bsig_decayID < 2.5) return true;
+        return false;
+        break;
+    case Loader::B02KcPicPi0:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 2.5 && temp_data.Bsig_decayID < 3.5) return true;
+        return false;
+        break;
+    case Loader::B02Ks0PicPic:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 3.5 && temp_data.Bsig_decayID < 4.5) return true;
+        return false;
+        break;
     default:
         printf("ERROR!\n");
         exit(1);
@@ -1109,7 +1134,7 @@ bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
 void ReadRootFiles_r_sp(){
 
     std::vector<string> names;
-    const char* dirname = "/home/jwpark/storage/Ntuple32";
+    const char* dirname = "/home/jwpark/storage/B2Xsnunu_1/GEN_SIG/output/Ntuple";
 
     load_files(dirname, &names);
 
@@ -1151,6 +1176,16 @@ void ReadRootFiles_r_sp(){
         loader.Cut(Loader::Upsilon, 6, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== npi0 = 0 =========="));
 
+        loader.DrawTH1F("momentum_Bsig_after_missingmomentumtheta_cut", "momentum of B_{sig} at CMS;momentum [GeV];evt", 100, 0, 3.2, Loader::Bsig, 4);
+        loader.Cut(Loader::Bsig, 4, Loader::smaller_than, 2.96);
+        loader.Cut(Loader::Bsig, 4, Loader::larger_than, 1.6);
+	loader.PrintInformation(std::string("========== 1.6 < momentum of signal side < 2.96 =========="));
+
+        loader.DrawTH1F("missing_momentum_theta_after_BCS", "#theta_{missing};#theta_{missing} [rad];evt", 100, 0, 3.2, Loader::Upsilon, 7);
+        loader.Cut(Loader::Upsilon, 7, Loader::smaller_than, 2.618);
+        loader.Cut(Loader::Upsilon, 7, Loader::larger_than, 0.297);
+	loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="));
+
         loader.DrawTH1F("SignalProbability_Btag_before_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
         loader.BCS(Loader::Btag, 5, Loader::Highest);
         if (loader.IsBCSValid() == false) {
@@ -1178,6 +1213,7 @@ void ReadRootFiles_r_sp(){
         loader.DrawTH1F("Btag_dmID", "decay ID of B_{tag};decay ID;evt", 74, -0.5, 36.5, Loader::Btag, 0);
         loader.DrawTH1F("nROE_K_S0", "number of K_S0 candidates in ROE of #Upsilon(4S);number of K_{S}^{0} candidates in ROE;evt", 100, -0.5, 5.5, Loader::Upsilon, 5);
         loader.DrawTH1F("theta_missing_momentum", "#theta of missing momentum;#theta [rad];evt", 50, 0, 3.2, Loader::Upsilon, 7);
+        loader.DrawTH1F("M_Xs", "mass of X_{s};M_{Xs} [GeV];evt", 100, 0, 3.5, Loader::Bsig, 6);
 
         loader.PrintRootFile(std::string("output.root"));
     }
