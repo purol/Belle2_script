@@ -1403,7 +1403,7 @@ void Loader::PrintConfusionMatrix() {
                 break;
             }
         }
-        if (decaymodeid == Loader::MAX_NUM_DECAYMODE) {
+        if (decaymodeid == Loader::MAX_NUM_DECAYMODE_MC) {
             printf("ERROR!\n");
             exit(1);
         }
@@ -1423,18 +1423,18 @@ void Loader::PrintConfusionMatrix() {
 
     for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // normalization
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
-            Confusion[i][j] = Confusion[i][j] / Sum_Each_Reco[i];
+            if(Sum_Each_Reco[i] != 0) Confusion[i][j] = Confusion[i][j] / Sum_Each_Reco[i];
         }
     }
 
     printf("=============== confusion matrix ===============\n");
-        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // normalization
-            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
-                printf("%f ", Confusion[i][j]);
-            }
-            printf("\n");
+    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // normalization
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
+            printf("%f ", Confusion[i][j]);
         }
-        printf("=============== confusion matrix ===============\n");
+        printf("\n");
+    }
+    printf("=============== confusion matrix ===============\n");
 }
 
 void ReadRootFiles_r_sp_withMC(){
