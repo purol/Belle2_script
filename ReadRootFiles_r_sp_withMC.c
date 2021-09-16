@@ -323,41 +323,41 @@ void Loader::GetData(TFile* input_file) {
     tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &temp.Decay[0]);
     tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &temp.Decay[1]);
     tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &temp.Decay[2]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clcomb__bc", &temp.Decay[3]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch1__bc", &temp.Decay[4]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch2__bc", &temp.Decay[5]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch3__bc", &temp.Decay[6]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch4__bc", &temp.Decay[7]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch5__bc", &temp.Decay[8]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch6__bc", &temp.Decay[9]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch7__bc", &temp.Decay[10]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch8__bc", &temp.Decay[11]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch9__bc", &temp.Decay[12]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch10__bc", &temp.Decay[13]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch11__bc", &temp.Decay[14]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch12__bc", &temp.Decay[15]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch13__bc", &temp.Decay[16]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch14__bc", &temp.Decay[17]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch15__bc", &temp.Decay[18]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &temp.Decay[3]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch1__bc", &temp.Decay[4]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch2__bc", &temp.Decay[5]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch3__bc", &temp.Decay[6]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch4__bc", &temp.Decay[7]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch5__bc", &temp.Decay[8]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch6__bc", &temp.Decay[9]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch7__bc", &temp.Decay[10]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch8__bc", &temp.Decay[11]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch9__bc", &temp.Decay[12]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch10__bc", &temp.Decay[13]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch11__bc", &temp.Decay[14]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch12__bc", &temp.Decay[15]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch13__bc", &temp.Decay[16]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch14__bc", &temp.Decay[17]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch15__bc", &temp.Decay[18]);
     tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &temp.Decay[19]);
     tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &temp.Decay[20]);
     tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &temp.Decay[21]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clcomb__bc", &temp.Decay[22]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch16__bc", &temp.Decay[23]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch17__bc", &temp.Decay[24]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch18__bc", &temp.Decay[25]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch19__bc", &temp.Decay[26]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch20__bc", &temp.Decay[27]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch21__bc", &temp.Decay[28]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch22__bc", &temp.Decay[29]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch23__bc", &temp.Decay[30]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch24__bc", &temp.Decay[31]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch25__bc", &temp.Decay[32]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch26__bc", &temp.Decay[33]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch27__bc", &temp.Decay[34]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch28__bc", &temp.Decay[35]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch29__bc", &temp.Decay[36]);
-    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch30__bc", &temp.Decay[37]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &temp.Decay[22]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch16__bc", &temp.Decay[23]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch17__bc", &temp.Decay[24]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch18__bc", &temp.Decay[25]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch19__bc", &temp.Decay[26]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch20__bc", &temp.Decay[27]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch21__bc", &temp.Decay[28]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch22__bc", &temp.Decay[29]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch23__bc", &temp.Decay[30]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch24__bc", &temp.Decay[31]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch25__bc", &temp.Decay[32]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch26__bc", &temp.Decay[33]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch27__bc", &temp.Decay[34]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &temp.Decay[35]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &temp.Decay[36]);
+    tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &temp.Decay[37]);
 
     printf("%lld entries...\n", tree_upsilon->GetEntries());
     for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1257,7 +1257,7 @@ bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
     return false;
 }
 
-bool TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymodeMC) {
+bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymodeMC) {
     switch (decaymodeMC) {
     case Loader::Xsu2Kc_MC:
         if (temp_data.Decay[0] > 0) return true;
@@ -1355,7 +1355,7 @@ bool TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymodeMC) {
         if (temp_data.Decay[37] > 0) return true;
         return false;
         break;
-    case other:
+    case Loader::other:
         return true;
         break;
     default:
@@ -1427,17 +1427,17 @@ void Loader::PrintConfusionMatrix() {
         }
     }
 
-    printf("=============== confusion matrix ===============\n")
+    printf("=============== confusion matrix ===============\n");
         for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // normalization
             for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
                 printf("%f ", Confusion[i][j]);
             }
             printf("\n");
         }
-    printf("=============== confusion matrix ===============\n")
+        printf("=============== confusion matrix ===============\n");
 }
 
-void ReadRootFiles_r_sp(){
+void ReadRootFiles_r_sp_withMC(){
 
     std::vector<string> names;
     const char* dirname = "/home/jwpark/storage/B2Xsnunu_1/GEN_SIG/output/Ntuple";

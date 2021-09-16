@@ -322,7 +322,7 @@ bool Loader::AreTheyNeutrinosAndConj(double pdg1, double pdg2) {
 }
 
 bool Loader::AreTheyBmesonAndXs(double Bpdg, double Xspdg) {
-    if (Bpdg * Xspdg < 0) return false;
+    //if (Bpdg * Xspdg < 0) return false; <- it is not proper for B->K0 nu nubar
 
     if (std::fabs(Bpdg) > 520.5 && std::fabs(Bpdg) < 521.5) { // B+/B- -> Xsu/Xsubar
         if (std::fabs(Xspdg) > 30352.5 && std::fabs(Xspdg) < 30353.5) { // Xs is non-resonant
