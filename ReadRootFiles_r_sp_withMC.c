@@ -1448,7 +1448,7 @@ void Loader::PrintConfusionMatrix() {
                 break;
             }
         }
-        if (decaymodeid == Loader::MAX_NUM_DECAYMODE_MC) {
+        if (decaymodeid_MC == Loader::MAX_NUM_DECAYMODE_MC) {
             printf("ERROR!\n");
             exit(1);
         }
