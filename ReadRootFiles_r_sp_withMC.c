@@ -377,6 +377,7 @@ void Loader::GetData(TFile* input_file) {
         tree_upsilon->GetEntry(j);
         tree_Bsig->GetEntry(j);
         tree_Btag->GetEntry(j);
+        tree_Xs->GetEntry(j);
         TotalData.push(temp);
     }
     input_file->Close();
