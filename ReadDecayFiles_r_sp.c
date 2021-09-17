@@ -307,6 +307,19 @@ double Loader::Mxs(Data data) {
     }
 
     printf("ERROR! Cannot find B->Xs nu nubar decay!\n");
+    printf("This may originate from the number of daughter! Condition wrt the num of daughter is removed and search again!\n");
+
+    if (AreTheyNeutrinosAndConj(data.Tree[8], data.Tree[9]) || AreTheyNeutrinosAndConj(data.Tree[8], data.Tree[10]) || AreTheyNeutrinosAndConj(data.Tree[10], data.Tree[9])) { // check B-> ? nu nubar
+        if (AreTheyBmesonAndXs(data.Tree[7], data.Tree[8])) { // check B->Xs ? ?
+            return data.Tree[11];
+        }
+    }
+    if (AreTheyNeutrinosAndConj(data.Tree[2], data.Tree[3]) || AreTheyNeutrinosAndConj(data.Tree[2], data.Tree[4]) || AreTheyNeutrinosAndConj(data.Tree[4], data.Tree[3])) { // check B-> ? nu nubar
+        if (AreTheyBmesonAndXs(data.Tree[1], data.Tree[2])) { // check B->Xs ? ?
+            return data.Tree[5];
+        }
+    }
+    printf("ERROR! Again, cannot find B->Xs nu nubar decay!\n");
     exit(1);
     return -1;
 }
@@ -322,7 +335,8 @@ bool Loader::AreTheyNeutrinosAndConj(double pdg1, double pdg2) {
 }
 
 bool Loader::AreTheyBmesonAndXs(double Bpdg, double Xspdg) {
-    //if (Bpdg * Xspdg < 0) return false; <- it is not proper for B->K0 nu nubar
+    if (std::fabs(Xspdg) > 310.5 && std::fabs(Xspdg) < 311.5 && std::fabs(Bpdg) > 510.5 && std::fabs(Bpdg) < 511.5) return true; // B0/B0bar -> K0 nu nubar
+    if (Bpdg * Xspdg < 0) return false; // it is not proper for B->K0 nu nubar
 
     if (std::fabs(Bpdg) > 520.5 && std::fabs(Bpdg) < 521.5) { // B+/B- -> Xsu/Xsubar
         if (std::fabs(Xspdg) > 30352.5 && std::fabs(Xspdg) < 30353.5) { // Xs is non-resonant
