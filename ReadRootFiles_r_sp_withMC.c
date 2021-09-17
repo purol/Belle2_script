@@ -178,6 +178,10 @@ private:
     std::vector<TH1F*> TH1Fs_THStack[Loader::MAX_NUM_DECAYMODE];
     int current_THStack;
 
+    int current_Confusion_matrix;
+    double Confusion[Loader::MAX_NUM_DECAYMODE][Loader::MAX_NUM_DECAYMODE_MC]; // [reco][MC truth]
+    bool Confusion_matrixIsOn;
+
     double DataToTree[N_Needed_info];
 
     bool TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode);
@@ -215,6 +219,13 @@ Loader::Loader() {
     current_N_experiment_index = 0;
     DebugIsOn = false;
     current_THStack = 0;
+    current_Confusion_matrix = 0;
+    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // initialization
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
+            Confusion[i][j] = 0;
+        }
+    }
+    Confusion_matrixIsOn = false;
 }
 
 void Loader::initialize() {
@@ -228,6 +239,8 @@ void Loader::initialize() {
     current_N_experiment_index = 0;
     DebugIsOn = false;
     current_THStack = 0;
+    current_Confusion_matrix = 0;
+    Confusion_matrixIsOn = false;
 }
 
 void Loader::GetData(TFile* input_file) {
@@ -1030,7 +1043,41 @@ void Loader::End() {
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %d\n", j, N_candidates_modes[j].at(i));
     }
 
-    PrintConfusionMatrix();
+    if (Confusion_matrixIsOn == true) {
+        printf("--------------- confusion matrix ---------------\n");
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
+                printf("%f ", Confusion[i][j]);
+            }
+            printf("\n");
+        }
+        printf("--------------- confusion matrix ---------------\n");
+
+        double Sum_Each_Reco[Loader::MAX_NUM_DECAYMODE];
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) Sum_Each_Reco[i] = 0;
+
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
+                Sum_Each_Reco[i] = Sum_Each_Reco[i] + Confusion[i][j];
+            }
+        }
+
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // normalization
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
+                if (Sum_Each_Reco[i] != 0) Confusion[i][j] = Confusion[i][j] / Sum_Each_Reco[i];
+            }
+        }
+
+        printf("--------------- normalized confusion matrix ---------------\n");
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
+                printf("%f ", Confusion[i][j]);
+            }
+            printf("\n");
+        }
+        printf("--------------- normalized confusion matrix ---------------\n");
+
+    }
 
     for (int i = 0; i < TH1Fs.size();i++) {
         TCanvas* c_temp = new TCanvas("c", "", 1500, 1200); c_temp->cd();
@@ -1370,12 +1417,10 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
 }
 
 void Loader::PrintConfusionMatrix() {
-
-    double Confusion[Loader::MAX_NUM_DECAYMODE][Loader::MAX_NUM_DECAYMODE_MC]; // [reco][MC truth]
-    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // initialization
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
-            Confusion[i][j] = 0;
-        }
+    if (current_Confusion_matrix > 0) { // allocate new int
+        printf("The number of PrintConfusionMatrix should not be larger than 1\n");
+        printf("Only first PrintConfusionMatrix is accepted\n");
+        return;
     }
 
     std::queue<Data> temp_queue = TotalData;
@@ -1412,29 +1457,8 @@ void Loader::PrintConfusionMatrix() {
 
     }
 
-    double Sum_Each_Reco[Loader::MAX_NUM_DECAYMODE];
-    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) Sum_Each_Reco[i] = 0;
-
-    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { 
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
-            Sum_Each_Reco[i] = Sum_Each_Reco[i] + Confusion[i][j];
-        }
-    }
-
-    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // normalization
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
-            if(Sum_Each_Reco[i] != 0) Confusion[i][j] = Confusion[i][j] / Sum_Each_Reco[i];
-        }
-    }
-
-    printf("=============== confusion matrix ===============\n");
-    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // normalization
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
-            printf("%f ", Confusion[i][j]);
-        }
-        printf("\n");
-    }
-    printf("=============== confusion matrix ===============\n");
+    Confusion_matrixIsOn = true;
+    current_Confusion_matrix++;
 }
 
 void ReadRootFiles_r_sp_withMC(){
@@ -1485,12 +1509,12 @@ void ReadRootFiles_r_sp_withMC(){
         loader.DrawTH1F("momentum_Bsig_after_missingmomentumtheta_cut", "momentum of B_{sig} at CMS;momentum [GeV];evt", 100, 0, 3.2, Loader::Bsig, 4);
         loader.Cut(Loader::Bsig, 4, Loader::smaller_than, 2.96);
         loader.Cut(Loader::Bsig, 4, Loader::larger_than, 1.6);
-	loader.PrintInformation(std::string("========== 1.6 < momentum of signal side < 2.96 =========="));
+	    loader.PrintInformation(std::string("========== 1.6 < momentum of signal side < 2.96 =========="));
 
         loader.DrawTH1F("missing_momentum_theta_after_BCS", "#theta_{missing};#theta_{missing} [rad];evt", 100, 0, 3.2, Loader::Upsilon, 7);
         loader.Cut(Loader::Upsilon, 7, Loader::smaller_than, 2.618);
         loader.Cut(Loader::Upsilon, 7, Loader::larger_than, 0.297);
-	loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="));
+	    loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="));
 
         loader.DrawTH1F("SignalProbability_Btag_before_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
         loader.BCS(Loader::Btag, 5, Loader::Highest);
@@ -1521,6 +1545,7 @@ void ReadRootFiles_r_sp_withMC(){
         loader.DrawTH1F("theta_missing_momentum", "#theta of missing momentum;#theta [rad];evt", 50, 0, 3.2, Loader::Upsilon, 7);
         loader.DrawTH1F("M_Xs", "mass of X_{s};M_{Xs} [GeV];evt", 100, 0, 3.5, Loader::Bsig, 6);
 
+        loader.PrintConfusionMatrix();
         loader.PrintRootFile(std::string("output.root"));
     }
     loader.End();
