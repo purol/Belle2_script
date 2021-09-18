@@ -1,7 +1,7 @@
 // last update: 2021-09-13-00
 // for Belle2 data
 
-# define N_Needed_info 25
+# define N_Needed_info 29
 # define N_decay 38 // five decay mode + others
 
 void load_files(const char *dirname, std::vector<string>* names){
@@ -35,22 +35,21 @@ typedef struct data{
     // 5: Bsig_experiment, 6: Bsig_run, 7: Bsig_event, 8: Bsig_candidate, 9: Bsig_ncandidates
     // 10: Btag_experiment, 11: Btag_run, 12: Btag_event, 13: Btag_candidate, 14: Btag_ncandidates
 
-    double Upsilon_info[13];
+    double Upsilon_info[11];
     // 0: number of ECL clusters in ROE(cleanMask), 1: number of KLM clusters in ROE
     // 2: number of tracks in ROE(cleanMask), 3: roeEextra(cleanMask)
     // 4: nROE_NeutralECLClusters(cleanMask), 5: nROE_K_S0, 6: nROE_pi0
-    // 7: missing momentum of event theta, 8: missing momentum, 9: missing mass^2
-    // 10: visible energy, 11: missing energy at CMS, 12: number of remaining tracks
+    // 7: missing momentum of event theta, 8: missing momentum
+    // 9: missing energy at CMS, 10: number of remaining tracks
 
     double Bsig_info[7];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
     // 3: Bsig_p, 4: Bsig_p_CMS, 5: Bsig_p_Recoil
     // 6: M
 
-    double Btag_info[7];
+    double Btag_info[6];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
     // 3: Btag_E, 4: Btag_E_CMS, 5: Btag_signalprobability
-    // 6: chiProb
 
     double Needed_info[N_Needed_info];
     // 0: R2, 1: thrustBm, 2: thrustOm. 3: cosTBTO
@@ -61,6 +60,8 @@ typedef struct data{
     // 16: CleoConeCS(1), 17: CleoConeCS(2), 18: CleoConeCS(3)
     // 19: CleoConeCS(4), 20: CleoConeCS(5), 21: CleoConeCS(6)
     // 22: CleoConeCS(7), 23: CleoConeCS(8), 24:CleoConeCS(9)
+    // 25: missing mass^2, 26: visible energy, 27: theta_CMS_of_tag
+    // 28: chiProb_tag
 
     double Decay[N_decay]; // MC level info
 
@@ -282,10 +283,8 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bopi0__clmyneutralPion__bc", &temp.Upsilon_info[6]);
     tree_upsilon->SetBranchAddress("missingMomentumOfEvent_theta", &temp.Upsilon_info[7]);
     tree_upsilon->SetBranchAddress("missingMomentumOfEvent", &temp.Upsilon_info[8]);
-    tree_upsilon->SetBranchAddress("missingMass2OfEvent", &temp.Upsilon_info[9]);
-    tree_upsilon->SetBranchAddress("visibleEnergyOfEventCMS", &temp.Upsilon_info[10]);
-    tree_upsilon->SetBranchAddress("missingEnergyOfEventCMS", &temp.Upsilon_info[11]);
-    tree_upsilon->SetBranchAddress("nRemainingTracksInEvent", &temp.Upsilon_info[12]);
+    tree_upsilon->SetBranchAddress("missingEnergyOfEventCMS", &temp.Upsilon_info[9]);
+    tree_upsilon->SetBranchAddress("nRemainingTracksInEvent", &temp.Upsilon_info[10]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
@@ -303,7 +302,6 @@ void Loader::GetData(TFile* input_file) {
     tree_Btag->SetBranchAddress("Btag_E", &temp.Btag_info[3]);
     tree_Btag->SetBranchAddress("Btag_useCMSFrame_E", &temp.Btag_info[4]);
     tree_Btag->SetBranchAddress("Btag_extraInfo_SignalProbability", &temp.Btag_info[5]);
-    tree_Btag->SetBranchAddress("Btag_chiProb", &temp.Btag_info[6]);
 
     // other information I need
     tree_Btag->SetBranchAddress("Btag_R2", &temp.Needed_info[0]);
@@ -331,6 +329,10 @@ void Loader::GetData(TFile* input_file) {
     tree_Btag->SetBranchAddress("Btag_CleoConeCS_7", &temp.Needed_info[22]);
     tree_Btag->SetBranchAddress("Btag_CleoConeCS_8", &temp.Needed_info[23]);
     tree_Btag->SetBranchAddress("Btag_CleoConeCS_9", &temp.Needed_info[24]);
+    tree_upsilon->SetBranchAddress("missingMass2OfEvent", &temp.Needed_info[25]);
+    tree_upsilon->SetBranchAddress("visibleEnergyOfEventCMS", &temp.Needed_info[26]);
+    tree_Btag->SetBranchAddress("Btag_useCMSFrame_theta", &temp.Needed_info[27]);
+    tree_Btag->SetBranchAddress("Btag_chiProb", &temp.Needed_info[28]);
 
     // decay mode (MC level)
     tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &temp.Decay[0]);
@@ -1480,27 +1482,27 @@ void ReadRootFiles_r_sp_withMC(){
         if (loader.event_info_is_valid() == false) { printf("error!\n"); return; }
 
         loader.PrintInformation(std::string("========== inital =========="));
-        loader.DrawTH2F("MbcVSdeltaE_initial", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 1, Loader::Btag, 2);
+        loader.DrawTH2F("MbcVSdeltaE_initial", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
-        loader.Cut(Loader::Btag,1,Loader::larger_than,5.2);
+        loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.2);
         loader.PrintInformation(std::string("========== Mbc > 5.2 =========="));
 
         loader.Cut(Loader::Btag, 2, Loader::larger_than, -0.5);
         loader.Cut(Loader::Btag, 2, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== abs(deltaE) < 0.5 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_loose_MbcDeltaE_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 1, Loader::Btag, 2);
+        loader.DrawTH2F("MbcVSdeltaE_after_loose_MbcDeltaE_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         loader.DrawTH1F("SignalProbability_Btag_after_loose_MbcDeltaE_cut", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
         loader.Cut(Loader::Btag, 5, Loader::larger_than, 0.01);
         loader.PrintInformation(std::string("========== SignalProbability > 0.01 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_SignalProbability_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 1, Loader::Btag, 2);
+        loader.DrawTH2F("MbcVSdeltaE_after_SignalProbability_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         loader.DrawTH1F("ROE_Eecl_Upsilon_after_SignalProbability_cut", "E_ecl in ROE of #Upsilon(4S);E_{ecl} [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 3);
         loader.Cut(Loader::Upsilon, 3, Loader::smaller_than, 1.2);
         loader.PrintInformation(std::string("========== E_ecl < 1.2 GeV =========="));
 
-        loader.DrawTH1F("nROE_track_Upsilon_after_E_ROE_cut", "number of raw tracks in ROE of #Upsilon(4S);number of raw tracks;evt", 100, -0.5, 13.5, Loader::Upsilon, 12);
-        loader.Cut(Loader::Upsilon, 12, Loader::smaller_than, 0.5);
+        loader.DrawTH1F("nROE_track_Upsilon_after_E_ROE_cut", "number of raw tracks in ROE of #Upsilon(4S);number of raw tracks;evt", 100, -0.5, 13.5, Loader::Upsilon, 10);
+        loader.Cut(Loader::Upsilon, 10, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== nRawtrack = 0 =========="));
 
         loader.DrawTH1F("nROE_pi0_after_ntrack_cut", "number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates;evt", 100, -0.5, 13.5, Loader::Upsilon, 6);
@@ -1510,12 +1512,12 @@ void ReadRootFiles_r_sp_withMC(){
         loader.DrawTH1F("momentum_Bsig_after_missingmomentumtheta_cut", "momentum of B_{sig} at CMS;momentum [GeV];evt", 100, 0, 3.2, Loader::Bsig, 4);
         loader.Cut(Loader::Bsig, 4, Loader::smaller_than, 2.96);
         loader.Cut(Loader::Bsig, 4, Loader::larger_than, 1.6);
-	    loader.PrintInformation(std::string("========== 1.6 < momentum of signal side < 2.96 =========="));
+        loader.PrintInformation(std::string("========== 1.6 < momentum of signal side < 2.96 =========="));
 
         loader.DrawTH1F("missing_momentum_theta_after_BCS", "#theta_{missing};#theta_{missing} [rad];evt", 100, 0, 3.2, Loader::Upsilon, 7);
         loader.Cut(Loader::Upsilon, 7, Loader::smaller_than, 2.618);
         loader.Cut(Loader::Upsilon, 7, Loader::larger_than, 0.297);
-	    loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="));
+        loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="));
 
         loader.DrawTH1F("SignalProbability_Btag_before_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
         loader.BCS(Loader::Btag, 5, Loader::Highest);
@@ -1525,16 +1527,16 @@ void ReadRootFiles_r_sp_withMC(){
         }
         loader.DrawTH1F("SignalProbability_Btag_after_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
         loader.PrintInformation(std::string("========== BCS =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_BCS", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 1, Loader::Btag, 2);
+        loader.DrawTH2F("MbcVSdeltaE_after_BCS", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
         loader.PrintInformation(std::string("========== Mbc > 5.27 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 1, Loader::Btag, 2);
+        loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         loader.Cut(Loader::Btag, 2, Loader::larger_than, -0.1);
         loader.Cut(Loader::Btag, 2, Loader::smaller_than, 0.1);
         loader.PrintInformation(std::string("========== abs(deltaE) < 0.1 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.2, 5.3, 100, -0.5, 0.5, Loader::Btag, 1, Loader::Btag, 2);
+        loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         loader.DrawTH1F("nROE_ECLcluster_Upsilon", "number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt", 14, -0.5, 13.5, Loader::Upsilon, 0);
         loader.DrawTH1F("nROE_KLMcluster_Upsilon", "number of KLM clusters in ROE of #Upsilon(4S);number of KLM clusters;evt", 14, -0.5, 13.5, Loader::Upsilon, 1);
