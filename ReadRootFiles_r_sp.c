@@ -1086,8 +1086,8 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Btag->Branch("__ncandidates__", &EventDataToTree[14]);
 
         // get decaymodeID
-        tree_upsilon->Branch("extraInfo__bodecayModeID__bc", &temp.Upsilon_decayIDToTree);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_decayModeID", &temp.Bsig_decayIDToTree);
+        tree_upsilon->Branch("extraInfo__bodecayModeID__bc", &Upsilon_decayIDToTree);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_decayIDToTree);
 
         // get Upsilon_info
         tree_upsilon->Branch("nROE_ECLClusters__bocleanMask__bc", &UpsilonDataToTree[0]);
