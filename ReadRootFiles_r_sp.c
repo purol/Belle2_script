@@ -1,7 +1,11 @@
-// last update: 2021-09-18-00
+// last update: 2021-09-21-00
 // for Belle2 data
 
 # define N_Needed_info 29
+# define N_event_info 15
+# define N_Upsilon_info 11
+# define N_Bsig_info 7
+# define N_Btag_info 6
 
 void load_files(const char *dirname, std::vector<string>* names){
    TSystemDirectory dir(dirname, dirname);
@@ -29,24 +33,24 @@ typedef struct data{
     double Upsilon_decayID;
     double Bsig_decayID;
 
-    int event_info[15];
+    int event_info[N_event_info];
     // 0: upsilon_experiment, 1: upsilon_run, 2: upsilon_event, 3: upsilon_candidate, 4: upsilon_ncandidates
     // 5: Bsig_experiment, 6: Bsig_run, 7: Bsig_event, 8: Bsig_candidate, 9: Bsig_ncandidates
     // 10: Btag_experiment, 11: Btag_run, 12: Btag_event, 13: Btag_candidate, 14: Btag_ncandidates
 
-    double Upsilon_info[11];
+    double Upsilon_info[N_Upsilon_info];
     // 0: number of ECL clusters in ROE(cleanMask), 1: number of KLM clusters in ROE
     // 2: number of tracks in ROE(cleanMask), 3: roeEextra(cleanMask)
     // 4: nROE_NeutralECLClusters(cleanMask), 5: nROE_K_S0, 6: nROE_pi0
     // 7: missing momentum of event theta, 8: missing momentum
     // 9: missing energy at CMS, 10: number of remaining tracks
 
-    double Bsig_info[7];
+    double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
     // 3: Bsig_p, 4: Bsig_p_CMS, 5: Bsig_p_Recoil
     // 6: M
 
-    double Btag_info[6];
+    double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
     // 3: Btag_E, 4: Btag_E_CMS, 5: Btag_signalprobability
 
@@ -151,14 +155,22 @@ private:
     bool DebugIsOn;
 
     std::vector<TFile*> files;
-    std::vector<TTree*> trees;
+    std::vector<TTree*> trees_upsilon;
+    std::vector<TTree*> trees_Bsig;
+    std::vector<TTree*> trees_Btag;
     int current_file;
 
     std::vector<THStack*> THStacks;
     std::vector<TH1F*> TH1Fs_THStack[Loader::MAX_NUM_DECAYMODE];
     int current_THStack;
 
+    int EventDataToTree[N_event_info];
+    double UpsilonDataToTree[N_Upsilon_info];
+    double BsigDataToTree[N_Bsig_info];
+    double BtagDataToTree[N_Btag_info];
     double DataToTree[N_Needed_info];
+    double Upsilon_decayIDToTree;
+    double Bsig_decayIDToTree;
 
     bool TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode);
 
@@ -1013,9 +1025,13 @@ void Loader::End() {
 
     for (int i = 0; i < files.size(); i++) {
         TFile* temp_file = files.at(i);
-        TTree* temp_tree = trees.at(i);
+        TTree* temp_tree_upsilon = trees_upsilon.at(i);
+        TTree* temp_tree_Bsig = trees_Bsig.at(i);
+        TTree* temp_tree_Btag = trees_Btag.at(i);
         temp_file->cd();
-        temp_tree->Write();
+        temp_tree_upsilon->Write();
+        temp_tree_Bsig->Write();
+        temp_tree_Btag->Write();
         temp_file->Close();
     }
 
@@ -1044,39 +1060,102 @@ void Loader::End() {
 }
 
 void Loader::PrintRootFile(std::string output_name) {
-    if (files.size() == current_file && trees.size() == current_file) { // allocate new TFile and TTree
+    if (files.size() == current_file && trees_upsilon.size() == current_file && trees_Bsig.size() == current_file && trees_Btag.size() == current_file) { // allocate new TFile and TTree
         TFile* file = new TFile(output_name.c_str(), "recreate");
         file->cd();
-        TTree* tree = new TTree("data", "data");
-        tree->Branch("R2", &DataToTree[0]);
-        tree->Branch("thrustBm", &DataToTree[1]);
-        tree->Branch("thrustOm", &DataToTree[2]);
-        tree->Branch("cosTBTO", &DataToTree[3]);
-        tree->Branch("cosTBz", &DataToTree[4]);
-        tree->Branch("KSFWVariables_et", &DataToTree[5]);
-        tree->Branch("KSFWVariables_mm2", &DataToTree[6]);
-        tree->Branch("KSFWVariables_hso00", &DataToTree[7]);
-        tree->Branch("KSFWVariables_hso02", &DataToTree[8]);
-        tree->Branch("KSFWVariables_hso04", &DataToTree[9]);
-        tree->Branch("KSFWVariables_hso10", &DataToTree[10]);
-        tree->Branch("KSFWVariables_hso12", &DataToTree[11]);
-        tree->Branch("KSFWVariables_hso14", &DataToTree[12]);
-        tree->Branch("KSFWVariables_hso20", &DataToTree[13]);
-        tree->Branch("KSFWVariables_hso22", &DataToTree[14]);
-        tree->Branch("KSFWVariables_hso24", &DataToTree[15]);
-        tree->Branch("CleoConeCS_1", &DataToTree[16]);
-        tree->Branch("CleoConeCS_2", &DataToTree[17]);
-        tree->Branch("CleoConeCS_3", &DataToTree[18]);
-        tree->Branch("CleoConeCS_4", &DataToTree[19]);
-        tree->Branch("CleoConeCS_5", &DataToTree[20]);
-        tree->Branch("CleoConeCS_6", &DataToTree[21]);
-        tree->Branch("CleoConeCS_7", &DataToTree[22]);
-        tree->Branch("CleoConeCS_8", &DataToTree[23]);
-        tree->Branch("CleoConeCS_9", &DataToTree[24]);
+        TTree* tree_upsilon = new TTree("Upsilon", "");
+        TTree* tree_Bsig = new TTree("Bsig", "");
+        TTree* tree_Btag = new TTree("Btag", "");
+
+        /*================================================================*/
+        // get event_info
+        tree_upsilon->Branch("__experiment__", &EventDataToTree[0]);
+        tree_upsilon->Branch("__run__", &EventDataToTree[1]);
+        tree_upsilon->Branch("__event__", &EventDataToTree[2]);
+        tree_upsilon->Branch("__candidate__", &EventDataToTree[3]);
+        tree_upsilon->Branch("__ncandidates__", &EventDataToTree[4]);
+        tree_Bsig->Branch("__experiment__", &EventDataToTree[5]);
+        tree_Bsig->Branch("__run__", &EventDataToTree[6]);
+        tree_Bsig->Branch("__event__", &EventDataToTree[7]);
+        tree_Bsig->Branch("__candidate__", &EventDataToTree[8]);
+        tree_Bsig->Branch("__ncandidates__", &EventDataToTree[9]);
+        tree_Btag->Branch("__experiment__", &EventDataToTree[10]);
+        tree_Btag->Branch("__run__", &EventDataToTree[11]);
+        tree_Btag->Branch("__event__", &EventDataToTree[12]);
+        tree_Btag->Branch("__candidate__", &EventDataToTree[13]);
+        tree_Btag->Branch("__ncandidates__", &EventDataToTree[14]);
+
+        // get decaymodeID
+        tree_upsilon->Branch("extraInfo__bodecayModeID__bc", &temp.Upsilon_decayIDToTree);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_decayModeID", &temp.Bsig_decayIDToTree);
+
+        // get Upsilon_info
+        tree_upsilon->Branch("nROE_ECLClusters__bocleanMask__bc", &UpsilonDataToTree[0]);
+        tree_upsilon->Branch("nROE_KLMClusters", &UpsilonDataToTree[1]);
+        tree_upsilon->Branch("nROE_Tracks__bocleanMask__bc", &UpsilonDataToTree[2]);
+        tree_upsilon->Branch("roeEextra__bocleanMask__bc", &UpsilonDataToTree[3]);
+        tree_upsilon->Branch("nROE_NeutralECLClusters__bocleanMask__bc", &UpsilonDataToTree[4]);
+        tree_upsilon->Branch("nROE_ParticlesInList__boK_S0__clmyKaonshort__bc", &UpsilonDataToTree[5]);
+        tree_upsilon->Branch("nROE_ParticlesInList__bopi0__clmyneutralPion__bc", &UpsilonDataToTree[6]);
+        tree_upsilon->Branch("missingMomentumOfEvent_theta", &UpsilonDataToTree[7]);
+        tree_upsilon->Branch("missingMomentumOfEvent", &UpsilonDataToTree[8]);
+        tree_upsilon->Branch("missingEnergyOfEventCMS", &UpsilonDataToTree[9]);
+        tree_upsilon->Branch("nRemainingTracksInEvent", &UpsilonDataToTree[10]);
+
+        // get Bsig_info
+        tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
+        tree_Bsig->Branch("Bsig_useCMSFrame_E", &BsigDataToTree[1]);
+        tree_upsilon->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc", &BsigDataToTree[2]);
+        tree_Bsig->Branch("Bsig_p", &BsigDataToTree[3]);
+        tree_Bsig->Branch("Bsig_useCMSFrame_p", &BsigDataToTree[4]);
+        tree_upsilon->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &BsigDataToTree[5]);
+        tree_Bsig->Branch("Bsig_M", &BsigDataToTree[6]);
+
+        // get Btag_info
+        tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
+        tree_Btag->Branch("Btag_Mbc", &BtagDataToTree[1]);
+        tree_Btag->Branch("Btag_deltaE", &BtagDataToTree[2]);
+        tree_Btag->Branch("Btag_E", &BtagDataToTree[3]);
+        tree_Btag->Branch("Btag_useCMSFrame_E", &BtagDataToTree[4]);
+        tree_Btag->Branch("Btag_extraInfo_SignalProbability", &BtagDataToTree[5]);
+
+        // other information I need
+        tree_Btag->Branch("Btag_R2", &DataToTree[0]);
+        tree_Btag->Branch("Btag_thrustBm", &DataToTree[1]);
+        tree_Btag->Branch("Btag_thrustOm", &DataToTree[2]);
+        tree_Btag->Branch("Btag_cosTBTO", &DataToTree[3]);
+        tree_Btag->Branch("Btag_cosTBz", &DataToTree[4]);
+        tree_Btag->Branch("Btag_KSFWVariables_et", &DataToTree[5]);
+        tree_Btag->Branch("Btag_KSFWVariables_mm2", &DataToTree[6]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso00", &DataToTree[7]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso02", &DataToTree[8]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso04", &DataToTree[9]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso10", &DataToTree[10]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso12", &DataToTree[11]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso14", &DataToTree[12]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso20", &DataToTree[13]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso22", &DataToTree[14]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso24", &DataToTree[15]);
+        tree_Btag->Branch("Btag_CleoConeCS_1", &DataToTree[16]);
+        tree_Btag->Branch("Btag_CleoConeCS_2", &DataToTree[17]);
+        tree_Btag->Branch("Btag_CleoConeCS_3", &DataToTree[18]);
+        tree_Btag->Branch("Btag_CleoConeCS_4", &DataToTree[19]);
+        tree_Btag->Branch("Btag_CleoConeCS_5", &DataToTree[20]);
+        tree_Btag->Branch("Btag_CleoConeCS_6", &DataToTree[21]);
+        tree_Btag->Branch("Btag_CleoConeCS_7", &DataToTree[22]);
+        tree_Btag->Branch("Btag_CleoConeCS_8", &DataToTree[23]);
+        tree_Btag->Branch("Btag_CleoConeCS_9", &DataToTree[24]);
+        tree_upsilon->Branch("missingMass2OfEvent", &DataToTree[25]);
+        tree_upsilon->Branch("visibleEnergyOfEventCMS", &DataToTree[26]);
+        tree_Btag->Branch("Btag_useCMSFrame_theta", &DataToTree[27]);
+        tree_Btag->Branch("Btag_chiProb", &DataToTree[28]);
+        /*================================================================*/
         files.push_back(file);
-        trees.push_back(tree);
+        trees_upsilon.push_back(tree_upsilon);
+        trees_Bsig.push_back(tree_Bsig);
+        trees_Btag.push_back(tree_Btag);
     }
-    else if (files.size() > current_file && trees.size() > current_file && files.size() == trees.size()) { // use what I have
+    else if (files.size() > current_file && trees_upsilon.size() > current_file && files.size() == trees_upsilon.size() && files.size() == trees_Bsig.size() && files.size() == trees_Btag.size()) { // use what I have
     }
     else { // error
         printf("ERROR!\n");
@@ -1085,16 +1164,35 @@ void Loader::PrintRootFile(std::string output_name) {
 
     TFile* temp_file = files.at(current_file);
     temp_file->cd();
-    TTree* temp_tree = trees.at(current_file);
+    TTree* temp_tree_upsilon = trees_upsilon.at(current_file);
+    TTree* temp_tree_Bsig = trees_Bsig.at(current_file);
+    TTree* temp_tree_Btag = trees_Btag.at(current_file);
     std::queue<Data> temp_queue = TotalData;
     while (!temp_queue.empty()) {
         Data temp = temp_queue.front();
         temp_queue.pop();
 
+        for (int i = 0; i < N_event_info; i++) {
+            EventDataToTree[i] = temp.event_info[i];
+        }
+        for (int i = 0; i < N_Upsilon_info; i++) {
+            UpsilonDataToTree[i] = temp.Upsilon_info[i];
+        }
+        for (int i = 0; i < N_Bsig_info; i++) {
+            BsigDataToTree[i] = temp.Bsig_info[i];
+        }
+        for (int i = 0; i < N_Btag_info; i++) {
+            BtagDataToTree[i] = temp.Btag_info[i];
+        }
         for (int i = 0; i < N_Needed_info; i++) {
             DataToTree[i] = temp.Needed_info[i];
         }
-        temp_tree->Fill();
+        Upsilon_decayIDToTree = temp.Upsilon_decayID;
+        Bsig_decayIDToTree = temp.Bsig_decayID;
+
+        temp_tree_upsilon->Fill();
+        temp_tree_Bsig->Fill();
+        temp_tree_Btag->Fill();
     }
 
     current_file++;
