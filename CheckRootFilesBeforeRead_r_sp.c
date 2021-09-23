@@ -320,12 +320,14 @@ void Loader::GetData(TFile* input_file) {
     tree_Btag->SetBranchAddress("Btag_chiProb", &temp.Needed_info[28]);
 
     printf("%lld entries...\n", tree_upsilon->GetEntries());
+    /*
     for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
         tree_upsilon->GetEntry(j);
         tree_Bsig->GetEntry(j);
         tree_Btag->GetEntry(j);
         TotalData.push(temp);
     }
+    */
     input_file->Close();
 }
 
