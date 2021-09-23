@@ -1526,7 +1526,7 @@ void ReadRootFiles_r_sp(){
         std::string::size_type const p(names.at(i).find_last_of('.'));
         std::string file_without_extension = names.at(i).substr(0, p);
 
-        printf("%s\n",file_without_extension);
+        printf("%s\n",file_without_extension.c_str());
     }
     loader.End();
 }
