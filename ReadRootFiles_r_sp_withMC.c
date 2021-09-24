@@ -188,6 +188,7 @@ private:
 
     int current_Confusion_matrix;
     double Confusion[Loader::MAX_NUM_DECAYMODE][Loader::MAX_NUM_DECAYMODE_MC]; // [reco][MC truth]
+    double Confusion_square[Loader::MAX_NUM_DECAYMODE][Loader::MAX_NUM_DECAYMODE + 1]; // [reco][MC truth]
     bool Confusion_matrixIsOn;
 
     int EventDataToTree[N_event_info];
@@ -239,6 +240,11 @@ Loader::Loader() {
     for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // initialization
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
             Confusion[i][j] = 0;
+        }
+    }
+    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // initialization
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE + 1; j++) {
+            Confusion_square[i][j] = 0;
         }
     }
     Confusion_matrixIsOn = false;
@@ -1095,6 +1101,38 @@ void Loader::End() {
         }
         printf("--------------- normalized confusion matrix ---------------\n");
 
+        printf("--------------- square confusion matrix ---------------\n");
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE + 1; j++) {
+                printf("%f ", Confusion_square[i][j]);
+            }
+            printf("\n");
+        }
+        printf("--------------- square confusion matrix ---------------\n");
+
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) Sum_Each_Reco[i] = 0;
+
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE + 1; j++) {
+                Sum_Each_Reco[i] = Sum_Each_Reco[i] + Confusion_square[i][j];
+            }
+        }
+
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // normalization
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE + 1; j++) {
+                if (Sum_Each_Reco[i] != 0) Confusion_square[i][j] = Confusion_square[i][j] / Sum_Each_Reco[i];
+            }
+        }
+
+        printf("--------------- normalized square confusion matrix ---------------\n");
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE + 1; j++) {
+                printf("%f ", Confusion_square[i][j]);
+            }
+            printf("\n");
+        }
+        printf("--------------- normalized square confusion matrix ---------------\n");
+
     }
 
     for (int i = 0; i < TH1Fs.size();i++) {
@@ -1784,6 +1822,34 @@ void Loader::PrintConfusionMatrix() {
         }
 
         Confusion[decaymodeid][decaymodeid_MC]++;
+
+        int decaymodeid_MC_for_square = -1;
+        if (decaymodeid_MC == 0) decaymodeid_MC_for_square = 0;
+        else if(decaymodeid_MC == 1)decaymodeid_MC_for_square = 1;
+        else if (decaymodeid_MC == 2)decaymodeid_MC_for_square = 2;
+        else if (decaymodeid_MC == 3)decaymodeid_MC_for_square = 1;
+        else if (decaymodeid_MC == 4)decaymodeid_MC_for_square = 2;
+        else if (decaymodeid_MC == 5)decaymodeid_MC_for_square = 3;
+        else if (decaymodeid_MC == 6)decaymodeid_MC_for_square = 4;
+        else if (decaymodeid_MC == 7)decaymodeid_MC_for_square = 5;
+        else if (decaymodeid_MC == 8)decaymodeid_MC_for_square = 6;
+        else if (decaymodeid_MC == 9)decaymodeid_MC_for_square = 7;
+        else if (decaymodeid_MC == 10)decaymodeid_MC_for_square = 8;
+        else if (decaymodeid_MC == 11)decaymodeid_MC_for_square = 9;
+        else if (decaymodeid_MC == 12)decaymodeid_MC_for_square = 10;
+        else if (decaymodeid_MC == 13)decaymodeid_MC_for_square = 11;
+        else if (decaymodeid_MC == 14)decaymodeid_MC_for_square = 12;
+        else if (decaymodeid_MC == 15)decaymodeid_MC_for_square = 11;
+        else if (decaymodeid_MC == 16)decaymodeid_MC_for_square = 12;
+        else if (decaymodeid_MC == 17)decaymodeid_MC_for_square = 13;
+        else if (decaymodeid_MC == 18)decaymodeid_MC_for_square = 14;
+        else if (decaymodeid_MC == 19)decaymodeid_MC_for_square = 15;
+        else if (decaymodeid_MC == 20)decaymodeid_MC_for_square = 16;
+        else if (decaymodeid_MC == 21)decaymodeid_MC_for_square = 17;
+        else if (decaymodeid_MC == 22)decaymodeid_MC_for_square = 18;
+        else if (decaymodeid_MC == 23)decaymodeid_MC_for_square = 19;
+        else if (decaymodeid_MC == 24)decaymodeid_MC_for_square = 20;
+        Confusion_square[decaymodeid][decaymodeid_MC_for_square]++;
 
     }
 
