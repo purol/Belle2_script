@@ -1527,38 +1527,39 @@ void ReadRootFiles_r_sp(){
         std::string file_without_extension = names.at(i).substr(0, p);
 
         loader.PrintInformation(std::string("========== inital =========="));
-        loader.DrawTH2F("MbcVSdeltaE_initial", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         loader.DrawTH1F("nROE_track_Upsilon_after_initial", "number of raw tracks in ROE of #Upsilon(4S);number of raw tracks;evt", 100, -0.5, 13.5, Loader::Upsilon, 10);
         loader.Cut(Loader::Upsilon, 10, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== nRawtrack = 0 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_nRawTrackcut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
-        loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
-        loader.PrintInformation(std::string("========== Mbc > 5.27 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
+        loader.DrawTH1F("nROE_pi0_after_ntrack_cut", "number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates;evt", 100, -0.5, 13.5, Loader::Upsilon, 6);
+        loader.Cut(Loader::Upsilon, 6, Loader::smaller_than, 0.5);
+        loader.PrintInformation(std::string("========== npi0 = 0 =========="));
 
+        loader.PrintSeparateRootFile(file_without_extension + std::string("_before_missing_momentum_theta_cut.root"));
+        loader.DrawTH1F("missing_momentum_theta_after_npi0_cut", "#theta_{missing};#theta_{missing} [rad];evt", 100, 0, 3.2, Loader::Upsilon, 7);
+        loader.Cut(Loader::Upsilon, 7, Loader::smaller_than, 2.618);
+        loader.Cut(Loader::Upsilon, 7, Loader::larger_than, 0.297);
+        loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="));
+
+        loader.DrawTH1F("momentum_Bsig_after_missing_theta_cut", "momentum of B_{sig} at CMS;momentum [GeV];evt", 100, 0, 3.2, Loader::Bsig, 4);
+        loader.Cut(Loader::Bsig, 4, Loader::smaller_than, 2.96);
+        loader.Cut(Loader::Bsig, 4, Loader::larger_than, 1.6);
+        loader.PrintInformation(std::string("========== 1.6 < momentum of signal side < 2.96 =========="));
+
+        loader.DrawTH2F("MbcVSdeltaE_after_psig_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
         loader.Cut(Loader::Btag, 2, Loader::larger_than, -0.1);
         loader.Cut(Loader::Btag, 2, Loader::smaller_than, 0.1);
         loader.PrintInformation(std::string("========== abs(deltaE) < 0.1 =========="));
         loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
-        loader.DrawTH1F("missing_momentum_theta_after_deltaE_strict_cut", "#theta_{missing};#theta_{missing} [rad];evt", 100, 0, 3.2, Loader::Upsilon, 7);
-        loader.Cut(Loader::Upsilon, 7, Loader::smaller_than, 2.618);
-        loader.Cut(Loader::Upsilon, 7, Loader::larger_than, 0.297);
-        loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="));
-
-        loader.DrawTH1F("nROE_pi0_after_missing_theta_cut", "number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates;evt", 100, -0.5, 13.5, Loader::Upsilon, 6);
-        loader.Cut(Loader::Upsilon, 6, Loader::smaller_than, 0.5);
-        loader.PrintInformation(std::string("========== npi0 = 0 =========="));
-
-        loader.DrawTH1F("momentum_Bsig_after_npi0_cut", "momentum of B_{sig} at CMS;momentum [GeV];evt", 100, 0, 3.2, Loader::Bsig, 4);
-        loader.Cut(Loader::Bsig, 4, Loader::smaller_than, 2.96);
-        loader.Cut(Loader::Bsig, 4, Loader::larger_than, 1.6);
-        loader.PrintInformation(std::string("========== 1.6 < momentum of signal side < 2.96 =========="));
+        loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Mbc_cut.root"));
+        loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
+        loader.PrintInformation(std::string("========== Mbc > 5.27 =========="));
+        loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Eecl_cut.root"));
-        loader.DrawTH1F("ROE_Eecl_Upsilon_after_psig_cut", "E_ecl in ROE of #Upsilon(4S);E_{ecl} [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 3);
+        loader.DrawTH1F("ROE_Eecl_Upsilon_after_Mbc_strict_cut", "E_ecl in ROE of #Upsilon(4S);E_{ecl} [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 3);
         loader.Cut(Loader::Upsilon, 3, Loader::smaller_than, 1.4);
         loader.PrintInformation(std::string("========== E_ecl < 1.4 GeV =========="));
 

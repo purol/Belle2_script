@@ -1874,27 +1874,12 @@ void ReadRootFiles_r_sp_withMC(){
         loader.GetData(input_file);
         if (loader.event_info_is_valid() == false) { printf("error!\n"); return; }
 
+        std::string::size_type const p(names.at(i).find_last_of('.'));
+        std::string file_without_extension = names.at(i).substr(0, p);
+
         loader.PrintInformation(std::string("========== inital =========="));
-        loader.DrawTH2F("MbcVSdeltaE_initial", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
-        loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.2);
-        loader.PrintInformation(std::string("========== Mbc > 5.2 =========="));
-
-        loader.Cut(Loader::Btag, 2, Loader::larger_than, -0.5);
-        loader.Cut(Loader::Btag, 2, Loader::smaller_than, 0.5);
-        loader.PrintInformation(std::string("========== abs(deltaE) < 0.5 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_loose_MbcDeltaE_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
-
-        loader.DrawTH1F("SignalProbability_Btag_after_loose_MbcDeltaE_cut", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
-        loader.Cut(Loader::Btag, 5, Loader::larger_than, 0.01);
-        loader.PrintInformation(std::string("========== SignalProbability > 0.01 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_SignalProbability_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
-
-        loader.DrawTH1F("ROE_Eecl_Upsilon_after_SignalProbability_cut", "E_ecl in ROE of #Upsilon(4S);E_{ecl} [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 3);
-        loader.Cut(Loader::Upsilon, 3, Loader::smaller_than, 1.2);
-        loader.PrintInformation(std::string("========== E_ecl < 1.2 GeV =========="));
-
-        loader.DrawTH1F("nROE_track_Upsilon_after_E_ROE_cut", "number of raw tracks in ROE of #Upsilon(4S);number of raw tracks;evt", 100, -0.5, 13.5, Loader::Upsilon, 10);
+        loader.DrawTH1F("nROE_track_Upsilon_after_initial", "number of raw tracks in ROE of #Upsilon(4S);number of raw tracks;evt", 100, -0.5, 13.5, Loader::Upsilon, 10);
         loader.Cut(Loader::Upsilon, 10, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== nRawtrack = 0 =========="));
 
@@ -1902,15 +1887,32 @@ void ReadRootFiles_r_sp_withMC(){
         loader.Cut(Loader::Upsilon, 6, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== npi0 = 0 =========="));
 
-        loader.DrawTH1F("momentum_Bsig_after_missingmomentumtheta_cut", "momentum of B_{sig} at CMS;momentum [GeV];evt", 100, 0, 3.2, Loader::Bsig, 4);
+        loader.PrintSeparateRootFile(file_without_extension + std::string("_before_missing_momentum_theta_cut.root"));
+        loader.DrawTH1F("missing_momentum_theta_after_npi0_cut", "#theta_{missing};#theta_{missing} [rad];evt", 100, 0, 3.2, Loader::Upsilon, 7);
+        loader.Cut(Loader::Upsilon, 7, Loader::smaller_than, 2.618);
+        loader.Cut(Loader::Upsilon, 7, Loader::larger_than, 0.297);
+        loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="));
+
+        loader.DrawTH1F("momentum_Bsig_after_missing_theta_cut", "momentum of B_{sig} at CMS;momentum [GeV];evt", 100, 0, 3.2, Loader::Bsig, 4);
         loader.Cut(Loader::Bsig, 4, Loader::smaller_than, 2.96);
         loader.Cut(Loader::Bsig, 4, Loader::larger_than, 1.6);
         loader.PrintInformation(std::string("========== 1.6 < momentum of signal side < 2.96 =========="));
 
-        loader.DrawTH1F("missing_momentum_theta_after_BCS", "#theta_{missing};#theta_{missing} [rad];evt", 100, 0, 3.2, Loader::Upsilon, 7);
-        loader.Cut(Loader::Upsilon, 7, Loader::smaller_than, 2.618);
-        loader.Cut(Loader::Upsilon, 7, Loader::larger_than, 0.297);
-        loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="));
+        loader.DrawTH2F("MbcVSdeltaE_after_psig_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
+        loader.Cut(Loader::Btag, 2, Loader::larger_than, -0.1);
+        loader.Cut(Loader::Btag, 2, Loader::smaller_than, 0.1);
+        loader.PrintInformation(std::string("========== abs(deltaE) < 0.1 =========="));
+        loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
+
+        loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Mbc_cut.root"));
+        loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
+        loader.PrintInformation(std::string("========== Mbc > 5.27 =========="));
+        loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
+
+        loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Eecl_cut.root"));
+        loader.DrawTH1F("ROE_Eecl_Upsilon_after_Mbc_strict_cut", "E_ecl in ROE of #Upsilon(4S);E_{ecl} [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 3);
+        loader.Cut(Loader::Upsilon, 3, Loader::smaller_than, 1.4);
+        loader.PrintInformation(std::string("========== E_ecl < 1.4 GeV =========="));
 
         loader.DrawTH1F("SignalProbability_Btag_before_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
         loader.BCS(Loader::Btag, 5, Loader::Highest);
@@ -1920,16 +1922,6 @@ void ReadRootFiles_r_sp_withMC(){
         }
         loader.DrawTH1F("SignalProbability_Btag_after_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
         loader.PrintInformation(std::string("========== BCS =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_BCS", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
-
-        loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
-        loader.PrintInformation(std::string("========== Mbc > 5.27 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
-
-        loader.Cut(Loader::Btag, 2, Loader::larger_than, -0.1);
-        loader.Cut(Loader::Btag, 2, Loader::smaller_than, 0.1);
-        loader.PrintInformation(std::string("========== abs(deltaE) < 0.1 =========="));
-        loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         loader.DrawTH1F("nROE_ECLcluster_Upsilon", "number of ECL clusters in ROE of #Upsilon(4S);number of ECL clusters;evt", 14, -0.5, 13.5, Loader::Upsilon, 0);
         loader.DrawTH1F("nROE_KLMcluster_Upsilon", "number of KLM clusters in ROE of #Upsilon(4S);number of KLM clusters;evt", 14, -0.5, 13.5, Loader::Upsilon, 1);
@@ -1940,6 +1932,9 @@ void ReadRootFiles_r_sp_withMC(){
         loader.DrawTH1F("nROE_K_S0", "number of K_S0 candidates in ROE of #Upsilon(4S);number of K_{S}^{0} candidates in ROE;evt", 100, -0.5, 5.5, Loader::Upsilon, 5);
         loader.DrawTH1F("theta_missing_momentum", "#theta of missing momentum;#theta [rad];evt", 50, 0, 3.2, Loader::Upsilon, 7);
         loader.DrawTH1F("M_Xs", "mass of X_{s};M_{Xs} [GeV];evt", 100, 0, 3.5, Loader::Bsig, 6);
+        loader.DrawTH1F("ROE_Eecl_Upsilon_final", "E_ecl in ROE of #Upsilon(4S);E_{ecl} [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 3);
+
+        loader.PrintSeparateRootFile(file_without_extension + std::string("_final_output.root"));
 
         loader.PrintConfusionMatrix();
         loader.PrintRootFile(std::string("output.root"));
