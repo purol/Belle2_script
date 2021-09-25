@@ -1180,9 +1180,15 @@ void Loader::End() {
 
     for (int i = 0; i < files.size(); i++) {
         TFile* temp_file = files.at(i);
-        TTree* temp_tree = trees.at(i);
+        TTree* temp_tree_upsilon = trees_upsilon.at(i);
+        TTree* temp_tree_Bsig = trees_Bsig.at(i);
+        TTree* temp_tree_Btag = trees_Btag.at(i);
+        TTree* temp_tree_Xs = trees_Xs.at(i);
         temp_file->cd();
-        temp_tree->Write();
+        temp_tree_upsilon->Write();
+        temp_tree_Bsig->Write();
+        temp_tree_Btag->Write();
+        temp_tree_Xs->Write();
         temp_file->Close();
     }
 
