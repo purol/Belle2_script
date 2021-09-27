@@ -1,4 +1,4 @@
-// last update: 2021-09-23-00
+// last update: 2021-09-27-00
 // for Belle2 data
 
 /*
@@ -8,6 +8,7 @@ revise typedef struct data
 revise void Loader::GetData(TFile* input_file)
 revise void Loader::PrintRootFile(std::string output_name)
 revise void Loader::PrintSeperateRootFile(std::string output_name)
+revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double flag = 0)
 */
 
 # define N_Needed_info 29
@@ -201,6 +202,7 @@ public:
     void End();
     void PrintRootFile(std::string output_name);
     void PrintSeparateRootFile(std::string output_name);
+    void ConvertIntoSeparateRootFile(std::string output_name, double flag = 0);
     void PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequality inq, double value);
 };
 
@@ -1340,6 +1342,69 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Write();
     temp_tree_Bsig->Write();
     temp_tree_Btag->Write();
+    temp_file->Close();
+
+}
+
+void Loader::ConvertIntoSeparateRootFile(std::string output_name, double flag = 0) {
+
+    TFile* temp_file = new TFile(output_name.c_str(), "recreate");
+    temp_file->cd();
+    TTree* temp_tree = new TTree("data", "");
+
+    double temp_DataToTree[N_Needed_info + 2];
+
+    /*================================================================*/
+    // other information I need
+    temp_tree->Branch("Btag_R2", &temp_DataToTree[0]);
+    temp_tree->Branch("Btag_thrustBm", &temp_DataToTree[1]);
+    temp_tree->Branch("Btag_thrustOm", &temp_DataToTree[2]);
+    temp_tree->Branch("Btag_cosTBTO", &temp_DataToTree[3]);
+    temp_tree->Branch("Btag_cosTBz", &temp_DataToTree[4]);
+    temp_tree->Branch("Btag_KSFWVariables_et", &temp_DataToTree[5]);
+    temp_tree->Branch("Btag_KSFWVariables_mm2", &temp_DataToTree[6]);
+    temp_tree->Branch("Btag_KSFWVariables_hso00", &temp_DataToTree[7]);
+    temp_tree->Branch("Btag_KSFWVariables_hso02", &temp_DataToTree[8]);
+    temp_tree->Branch("Btag_KSFWVariables_hso04", &temp_DataToTree[9]);
+    temp_tree->Branch("Btag_KSFWVariables_hso10", &temp_DataToTree[10]);
+    temp_tree->Branch("Btag_KSFWVariables_hso12", &temp_DataToTree[11]);
+    temp_tree->Branch("Btag_KSFWVariables_hso14", &temp_DataToTree[12]);
+    temp_tree->Branch("Btag_KSFWVariables_hso20", &temp_DataToTree[13]);
+    temp_tree->Branch("Btag_KSFWVariables_hso22", &temp_DataToTree[14]);
+    temp_tree->Branch("Btag_KSFWVariables_hso24", &temp_DataToTree[15]);
+    temp_tree->Branch("Btag_CleoConeCS_1", &temp_DataToTree[16]);
+    temp_tree->Branch("Btag_CleoConeCS_2", &temp_DataToTree[17]);
+    temp_tree->Branch("Btag_CleoConeCS_3", &temp_DataToTree[18]);
+    temp_tree->Branch("Btag_CleoConeCS_4", &temp_DataToTree[19]);
+    temp_tree->Branch("Btag_CleoConeCS_5", &temp_DataToTree[20]);
+    temp_tree->Branch("Btag_CleoConeCS_6", &temp_DataToTree[21]);
+    temp_tree->Branch("Btag_CleoConeCS_7", &temp_DataToTree[22]);
+    temp_tree->Branch("Btag_CleoConeCS_8", &temp_DataToTree[23]);
+    temp_tree->Branch("Btag_CleoConeCS_9", &temp_DataToTree[24]);
+    temp_tree->Branch("missingMass2OfEvent", &temp_DataToTree[25]);
+    temp_tree->Branch("visibleEnergyOfEventCMS", &temp_DataToTree[26]);
+    temp_tree->Branch("Btag_useCMSFrame_theta", &temp_DataToTree[27]);
+    temp_tree->Branch("Btag_chiProb", &temp_DataToTree[28]);
+    temp_tree->Branch("Btag_extraInfo_SignalProbability", &temp_DataToTree[29]);
+    temp_tree->Branch("flag", &temp_DataToTree[30]);
+    /*================================================================*/
+
+    std::queue<Data> temp_queue = TotalData;
+    while (!temp_queue.empty()) {
+        Data temp = temp_queue.front();
+        temp_queue.pop();
+
+        for (int i = 0; i < N_Needed_info; i++) {
+            temp_DataToTree[i] = temp.Needed_info[i];
+        }
+        temp_DataToTree[N_Needed_info] = temp.Btag_info[5];
+        temp_DataToTree[N_Needed_info + 1] = flag;
+
+        temp_tree->Fill();
+    }
+
+    temp_file->cd();
+    temp_tree->Write();
     temp_file->Close();
 
 }
