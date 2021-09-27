@@ -1,4 +1,4 @@
-// last update: 2021-09-27-00
+// last update: 2021-09-27-01
 // for Belle2 data
 
 /*
@@ -202,7 +202,7 @@ public:
     void End();
     void PrintRootFile(std::string output_name);
     void PrintSeparateRootFile(std::string output_name);
-    void ConvertIntoSeparateRootFile(std::string output_name, double flag = 0);
+    void ConvertIntoSeparateDataFile(std::string output_name, int flag = 0);
     void PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequality inq, double value);
 };
 
@@ -1346,15 +1346,63 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
 
 }
 
-void Loader::ConvertIntoSeparateRootFile(std::string output_name, double flag = 0) {
+void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) {
 
     TFile* temp_file = new TFile(output_name.c_str(), "recreate");
     temp_file->cd();
     TTree* temp_tree = new TTree("data", "");
 
-    double temp_DataToTree[N_Needed_info + 2];
+    int temp_EventDataToTree[N_event_info / 3];
+    double temp_UpsilonDataToTree[N_Upsilon_info];
+    double temp_BsigDataToTree[N_Bsig_info];
+    double temp_BtagDataToTree[N_Btag_info];
+    double temp_DataToTree[N_Needed_info];
+    double temp_Upsilon_decayIDToTree;
+    double temp_Bsig_decayIDToTree;
+    int temp_flag;
 
     /*================================================================*/
+    // get event_info
+    temp_tree->Branch("__experiment__", &temp_EventDataToTree[0]);
+    temp_tree->Branch("__run__", &temp_EventDataToTree[1]);
+    temp_tree->Branch("__event__", &temp_EventDataToTree[2]);
+    temp_tree->Branch("__candidate__", &temp_EventDataToTree[3]);
+    temp_tree->Branch("__ncandidates__", &temp_EventDataToTree[4]);
+
+    // get decaymodeID
+    temp_tree->Branch("extraInfo__bodecayModeID__bc", &temp_Upsilon_decayIDToTree);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_decayModeID", &temp_Bsig_decayIDToTree);
+
+    // get Upsilon_info
+    temp_tree->Branch("nROE_ECLClusters__bocleanMask__bc", &temp_UpsilonDataToTree[0]);
+    temp_tree->Branch("nROE_KLMClusters", &temp_UpsilonDataToTree[1]);
+    temp_tree->Branch("nROE_Tracks__bocleanMask__bc", &temp_UpsilonDataToTree[2]);
+    temp_tree->Branch("roeEextra__bocleanMask__bc", &temp_UpsilonDataToTree[3]);
+    temp_tree->Branch("nROE_NeutralECLClusters__bocleanMask__bc", &temp_UpsilonDataToTree[4]);
+    temp_tree->Branch("nROE_ParticlesInList__boK_S0__clmyKaonshort__bc", &temp_UpsilonDataToTree[5]);
+    temp_tree->Branch("nROE_ParticlesInList__bopi0__clmyneutralPion__bc", &temp_UpsilonDataToTree[6]);
+    temp_tree->Branch("missingMomentumOfEvent_theta", &temp_UpsilonDataToTree[7]);
+    temp_tree->Branch("missingMomentumOfEvent", &temp_UpsilonDataToTree[8]);
+    temp_tree->Branch("missingEnergyOfEventCMS", &temp_UpsilonDataToTree[9]);
+    temp_tree->Branch("nRemainingTracksInEvent", &temp_UpsilonDataToTree[10]);
+
+    // get Bsig_info
+    temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
+    temp_tree->Branch("Bsig_useCMSFrame_E", &temp_BsigDataToTree[1]);
+    temp_tree->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc", &temp_BsigDataToTree[2]);
+    temp_tree->Branch("Bsig_p", &temp_BsigDataToTree[3]);
+    temp_tree->Branch("Bsig_useCMSFrame_p", &temp_BsigDataToTree[4]);
+    temp_tree->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree[5]);
+    temp_tree->Branch("Bsig_M", &temp_BsigDataToTree[6]);
+
+    // get Btag_info
+    temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
+    temp_tree->Branch("Btag_Mbc", &temp_BtagDataToTree[1]);
+    temp_tree->Branch("Btag_deltaE", &temp_BtagDataToTree[2]);
+    temp_tree->Branch("Btag_E", &temp_BtagDataToTree[3]);
+    temp_tree->Branch("Btag_useCMSFrame_E", &temp_BtagDataToTree[4]);
+    temp_tree->Branch("Btag_extraInfo_SignalProbability", &temp_BtagDataToTree[5]);
+
     // other information I need
     temp_tree->Branch("Btag_R2", &temp_DataToTree[0]);
     temp_tree->Branch("Btag_thrustBm", &temp_DataToTree[1]);
@@ -1385,8 +1433,9 @@ void Loader::ConvertIntoSeparateRootFile(std::string output_name, double flag = 
     temp_tree->Branch("visibleEnergyOfEventCMS", &temp_DataToTree[26]);
     temp_tree->Branch("Btag_useCMSFrame_theta", &temp_DataToTree[27]);
     temp_tree->Branch("Btag_chiProb", &temp_DataToTree[28]);
-    temp_tree->Branch("Btag_extraInfo_SignalProbability", &temp_DataToTree[29]);
-    temp_tree->Branch("flag", &temp_DataToTree[30]);
+
+    // flag
+    temp_tree->Branch("flag", &temp_flag);
     /*================================================================*/
 
     std::queue<Data> temp_queue = TotalData;
@@ -1394,11 +1443,24 @@ void Loader::ConvertIntoSeparateRootFile(std::string output_name, double flag = 
         Data temp = temp_queue.front();
         temp_queue.pop();
 
+        for (int i = 0; i < N_event_info / 3; i++) {
+            temp_EventDataToTree[i] = temp.event_info[i];
+        }
+        for (int i = 0; i < N_Upsilon_info; i++) {
+            temp_UpsilonDataToTree[i] = temp.Upsilon_info[i];
+        }
+        for (int i = 0; i < N_Bsig_info; i++) {
+            temp_BsigDataToTree[i] = temp.Bsig_info[i];
+        }
+        for (int i = 0; i < N_Btag_info; i++) {
+            temp_BtagDataToTree[i] = temp.Btag_info[i];
+        }
         for (int i = 0; i < N_Needed_info; i++) {
             temp_DataToTree[i] = temp.Needed_info[i];
         }
-        temp_DataToTree[N_Needed_info] = temp.Btag_info[5];
-        temp_DataToTree[N_Needed_info + 1] = flag;
+        temp_Upsilon_decayIDToTree = temp.Upsilon_decayID;
+        temp_Bsig_decayIDToTree = temp.Bsig_decayID;
+        temp_flag = flag;
 
         temp_tree->Fill();
     }
