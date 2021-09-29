@@ -20,22 +20,22 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 
 void Deconvertor(){
 
-    const char* filenam = "/home/jwpark/storage/B2Xsnunu_1/GEN_SIG/output/Ntuple";
+    const char* filenam = "/media/sf_virtualbox_folder/20210927/TMVAClass.root";
 
         TFile *input_file = new TFile(filenam,"read");
 
-        TTree* tree_data = (TTree*)input_file->Get("dataset/TestTree");
+        TTree* temp_tree = (TTree*)input_file->Get("dataset/TestTree");
 
-        int temp_EventDataToTree[N_event_info / 3];
-        double temp_UpsilonDataToTree[N_Upsilon_info];
-        double temp_BsigDataToTree[N_Bsig_info];
-        double temp_BtagDataToTree[N_Btag_info];
-        double temp_DataToTree[N_Needed_info];
-        double temp_DecayDataToTree[N_decay];
-        double temp_Upsilon_decayIDToTree;
-        double temp_Bsig_decayIDToTree;
-        int temp_flag;
-        double temp_MLP_output;
+        float temp_EventDataToTree[N_event_info / 3];
+        float temp_UpsilonDataToTree[N_Upsilon_info];
+        float temp_BsigDataToTree[N_Bsig_info];
+        float temp_BtagDataToTree[N_Btag_info];
+        float temp_DataToTree[N_Needed_info];
+        float temp_DecayDataToTree[N_decay];
+        float temp_Upsilon_decayIDToTree;
+        float temp_Bsig_decayIDToTree;
+        float temp_flag;
+        float temp_MLP_output;
 
         // Get data
         /*================================================================*/
@@ -291,12 +291,10 @@ void Deconvertor(){
         temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
         /*================================================================*/
 
-        double temp_MLP_output;
-
         for (unsigned int j = 0; j < temp_tree->GetEntries(); j++) { // Fill
             temp_tree->GetEntry(j);
 
-            if (temp_flag > -0.5 && temp_flag < 0.5 && temp_MLP_output > 0.2) {
+            if (temp_flag > 5.5 && temp_flag < 6.5 && temp_MLP_output > 0.9614) {
                 temp_tree_upsilon->Fill();
                 temp_tree_Bsig->Fill();
                 temp_tree_Btag->Fill();
