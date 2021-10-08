@@ -11,11 +11,11 @@ revise void Loader::PrintSeperateRootFile(std::string output_name)
 revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double flag = 0)
 */
 
-# define N_Needed_info 29
+# define N_Needed_info 28
 # define N_event_info 15
 # define N_Upsilon_info 11
 # define N_Bsig_info 7
-# define N_Btag_info 6
+# define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
 void Deconvertor(){
@@ -79,6 +79,7 @@ void Deconvertor(){
         temp_tree->SetBranchAddress("Btag_E", &temp_BtagDataToTree[3]);
         temp_tree->SetBranchAddress("Btag_useCMSFrame_E", &temp_BtagDataToTree[4]);
         temp_tree->SetBranchAddress("Btag_extraInfo_SignalProbability", &temp_BtagDataToTree[5]);
+        temp_tree->SetBranchAddress("Btag_chiProb", &temp_BtagDataToTree[6]);
 
         // other information I need
         temp_tree->SetBranchAddress("Btag_R2", &temp_DataToTree[0]);
@@ -109,7 +110,6 @@ void Deconvertor(){
         temp_tree->SetBranchAddress("missingMass2OfEvent", &temp_DataToTree[25]);
         temp_tree->SetBranchAddress("visibleEnergyOfEventCMS", &temp_DataToTree[26]);
         temp_tree->SetBranchAddress("Btag_useCMSFrame_theta", &temp_DataToTree[27]);
-        temp_tree->SetBranchAddress("Btag_chiProb", &temp_DataToTree[28]);
 
         // decay mode (MC level)
         temp_tree->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &temp_DecayDataToTree[0]);
@@ -218,6 +218,7 @@ void Deconvertor(){
         temp_tree_Btag->Branch("Btag_E", &temp_BtagDataToTree[3]);
         temp_tree_Btag->Branch("Btag_useCMSFrame_E", &temp_BtagDataToTree[4]);
         temp_tree_Btag->Branch("Btag_extraInfo_SignalProbability", &temp_BtagDataToTree[5]);
+        temp_tree_Btag->Branch("Btag_chiProb", &temp_BtagDataToTree[6]);
 
         // other information I need
         temp_tree_Btag->Branch("Btag_R2", &temp_DataToTree[0]);
@@ -248,7 +249,6 @@ void Deconvertor(){
         temp_tree_upsilon->Branch("missingMass2OfEvent", &temp_DataToTree[25]);
         temp_tree_upsilon->Branch("visibleEnergyOfEventCMS", &temp_DataToTree[26]);
         temp_tree_Btag->Branch("Btag_useCMSFrame_theta", &temp_DataToTree[27]);
-        temp_tree_Btag->Branch("Btag_chiProb", &temp_DataToTree[28]);
 
         // decay mode (MC level)
         temp_tree_Xs->Branch("nParticlesInList__boB__pl__clKcharge_total__bc", &temp_DecayDataToTree[0]);

@@ -1,4 +1,4 @@
-// last update: 2021-09-28-00
+// last update: 2021-10-08
 // for Belle2 data
 
 /*
@@ -7,15 +7,15 @@ revise # define N_Needed_info ...
 revise typedef struct data
 revise void Loader::GetData(TFile* input_file)
 revise void Loader::PrintRootFile(std::string output_name)
-revise void Loader::PrintSeperateRootFile(std::string output_name)
-revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double flag = 0)
+revise void Loader::PrintSeparateRootFile(std::string output_name)
+revise void Loader::ConvertIntoSeparatedataFile(std::string output_name, double flag = 0)
 */
 
-# define N_Needed_info 29
+# define N_Needed_info 28
 # define N_event_info 15
 # define N_Upsilon_info 11
 # define N_Bsig_info 7
-# define N_Btag_info 6
+# define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
 void load_files(const char *dirname, std::vector<string>* names){
@@ -63,7 +63,7 @@ typedef struct data{
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
-    // 3: Btag_E, 4: Btag_E_CMS, 5: Btag_signalprobability
+    // 3: Btag_E, 4: Btag_E_CMS, 5: Btag_signalprobability, 6: chiProb_tag
 
     double Needed_info[N_Needed_info];
     // 0: R2, 1: thrustBm, 2: thrustOm. 3: cosTBTO
@@ -75,7 +75,8 @@ typedef struct data{
     // 19: CleoConeCS(4), 20: CleoConeCS(5), 21: CleoConeCS(6)
     // 22: CleoConeCS(7), 23: CleoConeCS(8), 24:CleoConeCS(9)
     // 25: missing mass^2, 26: visible energy, 27: theta_CMS_of_tag
-    // 28: chiProb_tag
+
+    double Decay[N_decay]; // MC level info
 
 } Data; 
 
@@ -105,7 +106,7 @@ public:
         Linear = 0,
         Log
     };
-    enum DecayMode {
+    enum DecayMode { // reco level
         B2Kc = 0,
         B2KcPi0,
         B2Ks0Pic,
@@ -113,11 +114,6 @@ public:
         B2Ks0PicPi0,
         B2KcPicPicPi0,
         B2Ks0PicPicPic,
-        B2KcPicPicPicPic,
-        B2Ks0PicPicPicPi0,
-        B2KcPi0Pi0,
-        B2Ks0PicPi0Pi0,
-        B2KcPicPicPi0Pi0,
         B2KcKcKc,
         B2KcKcKs0Pic,
         B2KcKcKcPi0,
@@ -128,15 +124,38 @@ public:
         B02Ks0PicPic,
         B02KcPicPicPic,
         B02Ks0PicPicPi0,
-        B02KcPicPicPicPi0,
-        B02Ks0PicPicPicPic,
-        B02Ks0Pi0Pi0,
-        B02KcPicPi0Pi0,
-        B02Ks0PicPicPi0Pi0,
         B02KcKcKs0,
         B02KcKcKcPic,
         B02KcKcKs0Pi0,
         MAX_NUM_DECAYMODE
+    };
+    enum DecayModeMC { // MC level
+        Xsu2Kc_MC = 0,
+        Xsu2Kcstar2KcPi0_MC,
+        Xsu2Kcstar2K0Pic_MC,
+        Xsu2KcPi0_MC,
+        Xsu2K0Pic_MC,
+        Xsu2KcPicPic_MC,
+        Xsu2K0PicPi0_MC,
+        Xsu2KcPicPicPi0_MC,
+        Xsu2K0PicPicPic_MC,
+        Xsu2KcKcKc_MC,
+        Xsu2KcKcK0Pic_MC,
+        Xsu2KcKcKcPi0_MC,
+        Xsd2K0_MC,
+        Xsd2K0star2KcPic_MC,
+        Xsd2K0star2K0Pi0_MC,
+        Xsd2KcPic_MC,
+        Xsd2K0Pi0_MC,
+        Xsd2KcPicPi0_MC,
+        Xsd2K0PicPic_MC,
+        Xsd2KcPicPicPic_MC,
+        Xsd2K0PicPicPi0_MC,
+        Xsd2KcKcK0_MC,
+        Xsd2KcKcKcPic_MC,
+        Xsd2KcKcK0Pi0_MC,
+        other,
+        MAX_NUM_DECAYMODE_MC
     };
     enum Qualifier {
         when = 0,
@@ -169,21 +188,32 @@ private:
     std::vector<TTree*> trees_upsilon;
     std::vector<TTree*> trees_Bsig;
     std::vector<TTree*> trees_Btag;
+    std::vector<TTree*> trees_Xs;
     int current_file;
+    bool AllOfThemHaveXsBranch;
 
     std::vector<THStack*> THStacks;
     std::vector<TH1F*> TH1Fs_THStack[Loader::MAX_NUM_DECAYMODE];
     int current_THStack;
 
+    int current_Confusion_matrix;
+    double Confusion[Loader::MAX_NUM_DECAYMODE][Loader::MAX_NUM_DECAYMODE_MC]; // [reco][MC truth]
+    double Confusion_square[Loader::MAX_NUM_DECAYMODE][Loader::MAX_NUM_DECAYMODE + 1]; // [reco][MC truth]
+    bool Confusion_matrixIsOn;
+
     int EventDataToTree[N_event_info];
     double UpsilonDataToTree[N_Upsilon_info];
     double BsigDataToTree[N_Bsig_info];
     double BtagDataToTree[N_Btag_info];
+    double DecayDataToTree[N_decay];
     double DataToTree[N_Needed_info];
     double Upsilon_decayIDToTree;
     double Bsig_decayIDToTree;
 
+    bool DoesItHaveXsBranch;
+
     bool TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode);
+    bool TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymodeMC);
 
 public:
     Loader();
@@ -205,6 +235,7 @@ public:
     void PrintSeparateRootFile(std::string output_name);
     void ConvertIntoSeparateDataFile(std::string output_name, int flag = 0);
     void PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequality inq, double value);
+    void PrintConfusionMatrix();
 };
 
 Loader::Loader() {
@@ -218,6 +249,20 @@ Loader::Loader() {
     current_N_experiment_index = 0;
     DebugIsOn = false;
     current_THStack = 0;
+    DoesItHaveXsBranch = false;
+    AllOfThemHaveXsBranch = true;
+    current_Confusion_matrix = 0;
+    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // initialization
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
+            Confusion[i][j] = 0;
+        }
+    }
+    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // initialization
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE + 1; j++) {
+            Confusion_square[i][j] = 0;
+        }
+    }
+    Confusion_matrixIsOn = false;
 }
 
 void Loader::initialize() {
@@ -231,12 +276,27 @@ void Loader::initialize() {
     current_N_experiment_index = 0;
     DebugIsOn = false;
     current_THStack = 0;
+    DoesItHaveXsBranch = false;
+    current_Confusion_matrix = 0;
+    Confusion_matrixIsOn = false;
 }
 
 void Loader::GetData(TFile* input_file) {
+    TList* branches = input_file->GetListOfKeys();
+    for (int i = 0; i < input_file->GetNkeys(); i++) {
+        TKey* branch = (TKey*)branches->At(i);
+        if (std::string("Xs") == branch->GetName()) { DoesItHaveXsBranch = true; }
+        else DoesItHaveXsBranch = false;
+    }
+    if (DoesItHaveXsBranch == false) AllOfThemHaveXsBranch = false;
+
     TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
     TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
     TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+    TTree* tree_Xs;
+    if (DoesItHaveXsBranch) tree_Xs = (TTree*)input_file->Get("Xs");
+    else tree_Xs = nullptr;
 
     Data temp = { 0 };
 
@@ -290,6 +350,7 @@ void Loader::GetData(TFile* input_file) {
     tree_Btag->SetBranchAddress("Btag_E", &temp.Btag_info[3]);
     tree_Btag->SetBranchAddress("Btag_useCMSFrame_E", &temp.Btag_info[4]);
     tree_Btag->SetBranchAddress("Btag_extraInfo_SignalProbability", &temp.Btag_info[5]);
+    tree_Btag->SetBranchAddress("Btag_chiProb", &temp.Btag_info[6]);
 
     // other information I need
     tree_Btag->SetBranchAddress("Btag_R2", &temp.Needed_info[0]);
@@ -320,13 +381,58 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("missingMass2OfEvent", &temp.Needed_info[25]);
     tree_upsilon->SetBranchAddress("visibleEnergyOfEventCMS", &temp.Needed_info[26]);
     tree_Btag->SetBranchAddress("Btag_useCMSFrame_theta", &temp.Needed_info[27]);
-    tree_Btag->SetBranchAddress("Btag_chiProb", &temp.Needed_info[28]);
+
+    if (DoesItHaveXsBranch) {
+        // decay mode (MC level)
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &temp.Decay[0]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &temp.Decay[1]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &temp.Decay[2]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &temp.Decay[3]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch1__bc", &temp.Decay[4]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch2__bc", &temp.Decay[5]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch3__bc", &temp.Decay[6]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch4__bc", &temp.Decay[7]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch5__bc", &temp.Decay[8]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch6__bc", &temp.Decay[9]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch7__bc", &temp.Decay[10]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch8__bc", &temp.Decay[11]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch9__bc", &temp.Decay[12]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch10__bc", &temp.Decay[13]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch11__bc", &temp.Decay[14]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch12__bc", &temp.Decay[15]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch13__bc", &temp.Decay[16]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch14__bc", &temp.Decay[17]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch15__bc", &temp.Decay[18]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &temp.Decay[19]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &temp.Decay[20]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &temp.Decay[21]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &temp.Decay[22]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch16__bc", &temp.Decay[23]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch17__bc", &temp.Decay[24]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch18__bc", &temp.Decay[25]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch19__bc", &temp.Decay[26]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch20__bc", &temp.Decay[27]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch21__bc", &temp.Decay[28]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch22__bc", &temp.Decay[29]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch23__bc", &temp.Decay[30]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch24__bc", &temp.Decay[31]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch25__bc", &temp.Decay[32]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch26__bc", &temp.Decay[33]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch27__bc", &temp.Decay[34]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &temp.Decay[35]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &temp.Decay[36]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &temp.Decay[37]);
+    }
+    else {
+        for (int i = 0; i < N_decay; i++) temp.Decay[i] = -1;
+    }
 
     printf("%lld entries...\n", tree_upsilon->GetEntries());
     for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
         tree_upsilon->GetEntry(j);
         tree_Bsig->GetEntry(j);
         tree_Btag->GetEntry(j);
+        if (DoesItHaveXsBranch) tree_Xs->GetEntry(j);
         TotalData.push(temp);
     }
     input_file->Close();
@@ -361,7 +467,7 @@ void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_l
     else if (TH1Fs.size() > current_TH1F) { // use what I have
     }
     else { // error
-        printf("ERROR!\n");
+        printf("ERROR! 000\n");
         exit(1);
     }
 
@@ -373,20 +479,20 @@ void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_l
         if (variable == Loader::Upsilon) {
             if(dr == Loader::Linear) temp_hist->Fill(temp_data.Upsilon_info[i]);
             else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Upsilon_info[i]));
-            else { printf("ERROR!\n"); exit(1); }
+            else { printf("ERROR! 001\n"); exit(1); }
         }
         else if(variable == Loader::Bsig) {
             if (dr == Loader::Linear) temp_hist->Fill(temp_data.Bsig_info[i]);
             else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Bsig_info[i]));
-            else { printf("ERROR!\n"); exit(1); }
+            else { printf("ERROR! 002\n"); exit(1); }
         }
         else if(variable == Loader::Btag) {
             if (dr == Loader::Linear) temp_hist->Fill(temp_data.Btag_info[i]);
             else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Btag_info[i]));
-            else { printf("ERROR!\n"); exit(1); }
+            else { printf("ERROR! 003\n"); exit(1); }
         }
         else {
-            printf("ERROR!\n");
+            printf("ERROR! 004\n");
             exit(1);
         }
     }
@@ -402,7 +508,7 @@ void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_l
     else if (TH1Fs.size() > current_TH1F) { // use what I have
     }
     else { // error
-        printf("ERROR!\n");
+        printf("ERROR! 005\n");
         exit(1);
     }
 
@@ -419,27 +525,27 @@ void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_l
             if (TrueIfDecayModeMatch(temp_data, decaymode)) continue;
         }
         else {
-            printf("ERROR!\n");
+            printf("ERROR! 006\n");
             exit(1);
         }
 
         if (variable == Loader::Upsilon) {
             if (dr == Loader::Linear) temp_hist->Fill(temp_data.Upsilon_info[i]);
             else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Upsilon_info[i]));
-            else { printf("ERROR!\n"); exit(1); }
+            else { printf("ERROR! 007\n"); exit(1); }
         }
         else if (variable == Loader::Bsig) {
             if (dr == Loader::Linear) temp_hist->Fill(temp_data.Bsig_info[i]);
             else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Bsig_info[i]));
-            else { printf("ERROR!\n"); exit(1); }
+            else { printf("ERROR! 008\n"); exit(1); }
         }
         else if (variable == Loader::Btag) {
             if (dr == Loader::Linear) temp_hist->Fill(temp_data.Btag_info[i]);
             else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Btag_info[i]));
-            else { printf("ERROR!\n"); exit(1); }
+            else { printf("ERROR! 009\n"); exit(1); }
         }
         else {
-            printf("ERROR!\n");
+            printf("ERROR! 010\n");
             exit(1);
         }
     }
@@ -455,7 +561,7 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
     else if (TH2Fs.size() > current_TH2F) { // use what I have
     }
     else { // error
-        printf("ERROR!\n");
+        printf("ERROR! 011\n");
         exit(1);
     }
 
@@ -475,7 +581,7 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
                 temp_hist->Fill(temp_data.Upsilon_info[i], temp_data.Btag_info[j]);
             }
             else {
-                printf("ERROR!\n");
+                printf("ERROR! 012\n");
                 exit(1);
             }
         }
@@ -490,7 +596,7 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
                 temp_hist->Fill(temp_data.Bsig_info[i], temp_data.Btag_info[j]);
             }
             else {
-                printf("ERROR!\n");
+                printf("ERROR! 013\n");
                 exit(1);
             }
         }
@@ -505,12 +611,12 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
                 temp_hist->Fill(temp_data.Btag_info[i], temp_data.Btag_info[j]);
             }
             else {
-                printf("ERROR!\n");
+                printf("ERROR! 014\n");
                 exit(1);
             }
         }
         else {
-            printf("ERROR!\n");
+            printf("ERROR! 015\n");
             exit(1);
         }
     }
@@ -526,7 +632,7 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
     else if (TH2Fs.size() > current_TH2F) { // use what I have
     }
     else { // error
-        printf("ERROR!\n");
+        printf("ERROR! 016\n");
         exit(1);
     }
 
@@ -543,7 +649,7 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
             if (TrueIfDecayModeMatch(temp_data, decaymode)) continue;
         }
         else {
-            printf("ERROR!\n");
+            printf("ERROR! 017\n");
             exit(1);
         }
 
@@ -558,7 +664,7 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
                 temp_hist->Fill(temp_data.Upsilon_info[i], temp_data.Btag_info[j]);
             }
             else {
-                printf("ERROR!\n");
+                printf("ERROR! 018\n");
                 exit(1);
             }
         }
@@ -573,7 +679,7 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
                 temp_hist->Fill(temp_data.Bsig_info[i], temp_data.Btag_info[j]);
             }
             else {
-                printf("ERROR!\n");
+                printf("ERROR! 019\n");
                 exit(1);
             }
         }
@@ -588,12 +694,12 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
                 temp_hist->Fill(temp_data.Btag_info[i], temp_data.Btag_info[j]);
             }
             else {
-                printf("ERROR!\n");
+                printf("ERROR! 020\n");
                 exit(1);
             }
         }
         else {
-            printf("ERROR!\n");
+            printf("ERROR! 021\n");
             exit(1);
         }
     }
@@ -613,7 +719,7 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
     else if (THStacks.size() > current_THStack) { // use what I have
     }
     else { // error
-        printf("ERROR!\n");
+        printf("ERROR! 022\n");
         exit(1);
     }
 
@@ -635,27 +741,27 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
             }
         }
         if (decaymodeid == Loader::MAX_NUM_DECAYMODE) {
-            printf("ERROR!\n");
+            printf("ERROR! 023\n");
             exit(1);
         }
 
         if (variable == Loader::Upsilon) {
             if (dr == Loader::Linear) temp_hist[decaymodeid]->Fill(temp_data.Upsilon_info[i]);
             else if (dr == Loader::Log) temp_hist[decaymodeid]->Fill(TMath::Log10(temp_data.Upsilon_info[i]));
-            else { printf("ERROR!\n"); exit(1); }
+            else { printf("ERROR! 024\n"); exit(1); }
         }
         else if (variable == Loader::Bsig) {
             if (dr == Loader::Linear) temp_hist[decaymodeid]->Fill(temp_data.Bsig_info[i]);
             else if (dr == Loader::Log) temp_hist[decaymodeid]->Fill(TMath::Log10(temp_data.Bsig_info[i]));
-            else { printf("ERROR!\n"); exit(1); }
+            else { printf("ERROR! 025\n"); exit(1); }
         }
         else if (variable == Loader::Btag) {
             if (dr == Loader::Linear) temp_hist[decaymodeid]->Fill(temp_data.Btag_info[i]);
             else if (dr == Loader::Log) temp_hist[decaymodeid]->Fill(TMath::Log10(temp_data.Btag_info[i]));
-            else { printf("ERROR!\n"); exit(1); }
+            else { printf("ERROR! 026\n"); exit(1); }
         }
         else {
-            printf("ERROR!\n");
+            printf("ERROR! 027\n");
             exit(1);
         }
     }
@@ -681,7 +787,7 @@ void Loader::PrintInformation(std::string title) {
     else if (N_events.size() > current_N_event && N_candidates.size() > current_N_candidate && N_events.size() == N_candidates.size() && current_N_event == current_N_candidate) { // use what I have
     }
     else { // error
-        printf("ERROR!\n");
+        printf("ERROR! 028\n");
         exit(1);
     }
 
@@ -712,7 +818,7 @@ void Loader::PrintInformation(std::string title) {
             }
         }
         if (decaymodeid == Loader::MAX_NUM_DECAYMODE) {
-            printf("ERROR!\n");
+            printf("ERROR! 029\n");
             exit(1);
         }
         N_candidates_modes[decaymodeid].at(current_N_candidate)++;
@@ -742,7 +848,7 @@ void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, doubl
             else if (inq == Loader::smaller_than && temp_data.Btag_info[i] < value) temp_queue.push(temp_data);
         }
         else {
-            printf("ERROR!\n");
+            printf("ERROR! 030\n");
             exit(1);
         }
     }
@@ -768,7 +874,7 @@ void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, doubl
             }
         }
         else {
-            printf("ERROR!\n");
+            printf("ERROR! 031\n");
             exit(1);
         }
 
@@ -785,7 +891,7 @@ void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, doubl
             else if (inq == Loader::smaller_than && temp_data.Btag_info[i] < value) temp_queue.push(temp_data);
         }
         else {
-            printf("ERROR!\n");
+            printf("ERROR! 032\n");
             exit(1);
         }
     }
@@ -854,7 +960,7 @@ void Loader::PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequalit
             }
         }
         else {
-            printf("ERROR!\n");
+            printf("ERROR! 033\n");
             exit(1);
         }
     }
@@ -944,7 +1050,7 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
             }
             break;
         default:
-            printf("ERROR!\n");
+            printf("ERROR! 034\n");
             exit(1);
             break;
         }
@@ -991,6 +1097,75 @@ void Loader::End() {
         printf("Number of event: %d\n", N_events.at(i));
         printf("Number of candidate: %d\n", N_candidates.at(i));
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %d\n", j, N_candidates_modes[j].at(i));
+    }
+
+
+    if (Confusion_matrixIsOn == true) {
+        printf("--------------- confusion matrix ---------------\n");
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
+                printf("%f ", Confusion[i][j]);
+            }
+            printf("\n");
+        }
+        printf("--------------- confusion matrix ---------------\n");
+
+        double Sum_Each_Reco[Loader::MAX_NUM_DECAYMODE];
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) Sum_Each_Reco[i] = 0;
+
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
+                Sum_Each_Reco[i] = Sum_Each_Reco[i] + Confusion[i][j];
+            }
+        }
+
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // normalization
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
+                if (Sum_Each_Reco[i] != 0) Confusion[i][j] = Confusion[i][j] / Sum_Each_Reco[i];
+            }
+        }
+
+        printf("--------------- normalized confusion matrix ---------------\n");
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
+                printf("%f ", Confusion[i][j]);
+            }
+            printf("\n");
+        }
+        printf("--------------- normalized confusion matrix ---------------\n");
+
+        printf("--------------- square confusion matrix ---------------\n");
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE + 1; j++) {
+                printf("%f ", Confusion_square[i][j]);
+            }
+            printf("\n");
+        }
+        printf("--------------- square confusion matrix ---------------\n");
+
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) Sum_Each_Reco[i] = 0;
+
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE + 1; j++) {
+                Sum_Each_Reco[i] = Sum_Each_Reco[i] + Confusion_square[i][j];
+            }
+        }
+
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // normalization
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE + 1; j++) {
+                if (Sum_Each_Reco[i] != 0) Confusion_square[i][j] = Confusion_square[i][j] / Sum_Each_Reco[i];
+            }
+        }
+
+        printf("--------------- normalized square confusion matrix ---------------\n");
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+            for (int j = 0; j < Loader::MAX_NUM_DECAYMODE + 1; j++) {
+                printf("%f ", Confusion_square[i][j]);
+            }
+            printf("\n");
+        }
+        printf("--------------- normalized square confusion matrix ---------------\n");
+
     }
 
     for (int i = 0; i < TH1Fs.size();i++) {
@@ -1041,10 +1216,13 @@ void Loader::End() {
         TTree* temp_tree_upsilon = trees_upsilon.at(i);
         TTree* temp_tree_Bsig = trees_Bsig.at(i);
         TTree* temp_tree_Btag = trees_Btag.at(i);
+        TTree* temp_tree_Xs = trees_Xs.at(i);
         temp_file->cd();
         temp_tree_upsilon->Write();
         temp_tree_Bsig->Write();
         temp_tree_Btag->Write();
+        if (AllOfThemHaveXsBranch) temp_tree_Xs->Write();
+        else delete temp_tree_Xs;
         temp_file->Close();
     }
 
@@ -1073,12 +1251,13 @@ void Loader::End() {
 }
 
 void Loader::PrintRootFile(std::string output_name) {
-    if (files.size() == current_file && trees_upsilon.size() == current_file && trees_Bsig.size() == current_file && trees_Btag.size() == current_file) { // allocate new TFile and TTree
+    if (files.size() == current_file && trees_upsilon.size() == current_file && trees_Bsig.size() == current_file && trees_Btag.size() == current_file && trees_Xs.size() == current_file) { // allocate new TFile and TTree
         TFile* file = new TFile(output_name.c_str(), "recreate");
         file->cd();
         TTree* tree_upsilon = new TTree("Upsilon", "");
         TTree* tree_Bsig = new TTree("Bsig", "");
         TTree* tree_Btag = new TTree("Btag", "");
+        TTree* tree_Xs = new TTree("Xs", "");
 
         /*================================================================*/
         // get event_info
@@ -1131,6 +1310,7 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Btag->Branch("Btag_E", &BtagDataToTree[3]);
         tree_Btag->Branch("Btag_useCMSFrame_E", &BtagDataToTree[4]);
         tree_Btag->Branch("Btag_extraInfo_SignalProbability", &BtagDataToTree[5]);
+        tree_Btag->Branch("Btag_chiProb", &BtagDataToTree[6]);
 
         // other information I need
         tree_Btag->Branch("Btag_R2", &DataToTree[0]);
@@ -1161,17 +1341,57 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("missingMass2OfEvent", &DataToTree[25]);
         tree_upsilon->Branch("visibleEnergyOfEventCMS", &DataToTree[26]);
         tree_Btag->Branch("Btag_useCMSFrame_theta", &DataToTree[27]);
-        tree_Btag->Branch("Btag_chiProb", &DataToTree[28]);
+
+        // decay mode (MC level)
+        tree_Xs->Branch("nParticlesInList__boB__pl__clKcharge_total__bc", &DecayDataToTree[0]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &DecayDataToTree[1]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &DecayDataToTree[2]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCcomb__bc", &DecayDataToTree[3]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch1__bc", &DecayDataToTree[4]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch2__bc", &DecayDataToTree[5]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch3__bc", &DecayDataToTree[6]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch4__bc", &DecayDataToTree[7]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch5__bc", &DecayDataToTree[8]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch6__bc", &DecayDataToTree[9]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch7__bc", &DecayDataToTree[10]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch8__bc", &DecayDataToTree[11]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch9__bc", &DecayDataToTree[12]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch10__bc", &DecayDataToTree[13]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch11__bc", &DecayDataToTree[14]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch12__bc", &DecayDataToTree[15]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch13__bc", &DecayDataToTree[16]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch14__bc", &DecayDataToTree[17]);
+        tree_Xs->Branch("nParticlesInList__boXsu__clMCch15__bc", &DecayDataToTree[18]);
+        tree_Xs->Branch("nParticlesInList__boB0__clKneutral_total__bc", &DecayDataToTree[19]);
+        tree_Xs->Branch("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &DecayDataToTree[20]);
+        tree_Xs->Branch("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &DecayDataToTree[21]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCcomb__bc", &DecayDataToTree[22]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch16__bc", &DecayDataToTree[23]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch17__bc", &DecayDataToTree[24]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch18__bc", &DecayDataToTree[25]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch19__bc", &DecayDataToTree[26]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch20__bc", &DecayDataToTree[27]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch21__bc", &DecayDataToTree[28]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch22__bc", &DecayDataToTree[29]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch23__bc", &DecayDataToTree[30]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch24__bc", &DecayDataToTree[31]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch25__bc", &DecayDataToTree[32]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch26__bc", &DecayDataToTree[33]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch27__bc", &DecayDataToTree[34]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch28__bc", &DecayDataToTree[35]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &DecayDataToTree[36]);
+        tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &DecayDataToTree[37]);
         /*================================================================*/
         files.push_back(file);
         trees_upsilon.push_back(tree_upsilon);
         trees_Bsig.push_back(tree_Bsig);
         trees_Btag.push_back(tree_Btag);
+        trees_Xs.push_back(tree_Xs);
     }
-    else if (files.size() > current_file && trees_upsilon.size() > current_file && files.size() == trees_upsilon.size() && files.size() == trees_Bsig.size() && files.size() == trees_Btag.size()) { // use what I have
+    else if (files.size() > current_file && trees_upsilon.size() > current_file && files.size() == trees_upsilon.size() && files.size() == trees_Bsig.size() && files.size() == trees_Btag.size() && files.size() == trees_Xs.size()) { // use what I have
     }
     else { // error
-        printf("ERROR!\n");
+        printf("ERROR! 035\n");
         exit(1);
     }
 
@@ -1180,6 +1400,7 @@ void Loader::PrintRootFile(std::string output_name) {
     TTree* temp_tree_upsilon = trees_upsilon.at(current_file);
     TTree* temp_tree_Bsig = trees_Bsig.at(current_file);
     TTree* temp_tree_Btag = trees_Btag.at(current_file);
+    TTree* temp_tree_Xs = trees_Xs.at(current_file);
     std::queue<Data> temp_queue = TotalData;
     while (!temp_queue.empty()) {
         Data temp = temp_queue.front();
@@ -1197,6 +1418,9 @@ void Loader::PrintRootFile(std::string output_name) {
         for (int i = 0; i < N_Btag_info; i++) {
             BtagDataToTree[i] = temp.Btag_info[i];
         }
+        for (int i = 0; i < N_decay; i++) {
+            DecayDataToTree[i] = temp.Decay[i];
+        }
         for (int i = 0; i < N_Needed_info; i++) {
             DataToTree[i] = temp.Needed_info[i];
         }
@@ -1206,6 +1430,7 @@ void Loader::PrintRootFile(std::string output_name) {
         temp_tree_upsilon->Fill();
         temp_tree_Bsig->Fill();
         temp_tree_Btag->Fill();
+        temp_tree_Xs->Fill();
     }
 
     current_file++;
@@ -1219,10 +1444,15 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     TTree* temp_tree_Bsig = new TTree("Bsig", "");
     TTree* temp_tree_Btag = new TTree("Btag", "");
 
+    TTree* temp_tree_Xs;
+    if (DoesItHaveXsBranch) temp_tree_Xs = new TTree("Xs", "");
+    else temp_tree_Xs = nullptr;
+
     int temp_EventDataToTree[N_event_info];
     double temp_UpsilonDataToTree[N_Upsilon_info];
     double temp_BsigDataToTree[N_Bsig_info];
     double temp_BtagDataToTree[N_Btag_info];
+    double temp_DecayDataToTree[N_decay];
     double temp_DataToTree[N_Needed_info];
     double temp_Upsilon_decayIDToTree;
     double temp_Bsig_decayIDToTree;
@@ -1278,6 +1508,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Btag->Branch("Btag_E", &temp_BtagDataToTree[3]);
     temp_tree_Btag->Branch("Btag_useCMSFrame_E", &temp_BtagDataToTree[4]);
     temp_tree_Btag->Branch("Btag_extraInfo_SignalProbability", &temp_BtagDataToTree[5]);
+    temp_tree_Btag->Branch("Btag_chiProb", &temp_BtagDataToTree[6]);
 
     // other information I need
     temp_tree_Btag->Branch("Btag_R2", &temp_DataToTree[0]);
@@ -1308,7 +1539,51 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("missingMass2OfEvent", &temp_DataToTree[25]);
     temp_tree_upsilon->Branch("visibleEnergyOfEventCMS", &temp_DataToTree[26]);
     temp_tree_Btag->Branch("Btag_useCMSFrame_theta", &temp_DataToTree[27]);
-    temp_tree_Btag->Branch("Btag_chiProb", &temp_DataToTree[28]);
+
+    if (DoesItHaveXsBranch) {
+        // decay mode (MC level)
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clKcharge_total__bc", &temp_DecayDataToTree[0]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &temp_DecayDataToTree[1]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &temp_DecayDataToTree[2]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCcomb__bc", &temp_DecayDataToTree[3]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch1__bc", &temp_DecayDataToTree[4]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch2__bc", &temp_DecayDataToTree[5]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch3__bc", &temp_DecayDataToTree[6]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch4__bc", &temp_DecayDataToTree[7]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch5__bc", &temp_DecayDataToTree[8]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch6__bc", &temp_DecayDataToTree[9]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch7__bc", &temp_DecayDataToTree[10]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch8__bc", &temp_DecayDataToTree[11]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch9__bc", &temp_DecayDataToTree[12]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch10__bc", &temp_DecayDataToTree[13]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch11__bc", &temp_DecayDataToTree[14]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch12__bc", &temp_DecayDataToTree[15]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch13__bc", &temp_DecayDataToTree[16]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch14__bc", &temp_DecayDataToTree[17]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsu__clMCch15__bc", &temp_DecayDataToTree[18]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clKneutral_total__bc", &temp_DecayDataToTree[19]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &temp_DecayDataToTree[20]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &temp_DecayDataToTree[21]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCcomb__bc", &temp_DecayDataToTree[22]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch16__bc", &temp_DecayDataToTree[23]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch17__bc", &temp_DecayDataToTree[24]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch18__bc", &temp_DecayDataToTree[25]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch19__bc", &temp_DecayDataToTree[26]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch20__bc", &temp_DecayDataToTree[27]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch21__bc", &temp_DecayDataToTree[28]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch22__bc", &temp_DecayDataToTree[29]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch23__bc", &temp_DecayDataToTree[30]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch24__bc", &temp_DecayDataToTree[31]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch25__bc", &temp_DecayDataToTree[32]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch26__bc", &temp_DecayDataToTree[33]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch27__bc", &temp_DecayDataToTree[34]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
+        temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
+    }
+    else {
+        for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
+    }
     /*================================================================*/
 
     std::queue<Data> temp_queue = TotalData;
@@ -1328,6 +1603,9 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         for (int i = 0; i < N_Btag_info; i++) {
             temp_BtagDataToTree[i] = temp.Btag_info[i];
         }
+        for (int i = 0; i < N_decay; i++) {
+            if (DoesItHaveXsBranch) temp_DecayDataToTree[i] = temp.Decay[i];
+        }
         for (int i = 0; i < N_Needed_info; i++) {
             temp_DataToTree[i] = temp.Needed_info[i];
         }
@@ -1337,12 +1615,14 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_upsilon->Fill();
         temp_tree_Bsig->Fill();
         temp_tree_Btag->Fill();
+        if (DoesItHaveXsBranch) temp_tree_Xs->Fill();
     }
 
     temp_file->cd();
     temp_tree_upsilon->Write();
     temp_tree_Bsig->Write();
     temp_tree_Btag->Write();
+    if (DoesItHaveXsBranch) temp_tree_Xs->Write();
     temp_file->Close();
 
 }
@@ -1404,6 +1684,7 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("Btag_E", &temp_BtagDataToTree[3]);
     temp_tree->Branch("Btag_useCMSFrame_E", &temp_BtagDataToTree[4]);
     temp_tree->Branch("Btag_extraInfo_SignalProbability", &temp_BtagDataToTree[5]);
+    temp_tree->Branch("Btag_chiProb", &temp_BtagDataToTree[6]);
 
     // other information I need
     temp_tree->Branch("Btag_R2", &temp_DataToTree[0]);
@@ -1434,47 +1715,51 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("missingMass2OfEvent", &temp_DataToTree[25]);
     temp_tree->Branch("visibleEnergyOfEventCMS", &temp_DataToTree[26]);
     temp_tree->Branch("Btag_useCMSFrame_theta", &temp_DataToTree[27]);
-    temp_tree->Branch("Btag_chiProb", &temp_DataToTree[28]);
 
-    // decay mode (MC level)
-    temp_tree->Branch("nParticlesInList__boB__pl__clKcharge_total__bc", &temp_DecayDataToTree[0]);
-    temp_tree->Branch("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &temp_DecayDataToTree[1]);
-    temp_tree->Branch("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &temp_DecayDataToTree[2]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCcomb__bc", &temp_DecayDataToTree[3]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch1__bc", &temp_DecayDataToTree[4]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch2__bc", &temp_DecayDataToTree[5]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch3__bc", &temp_DecayDataToTree[6]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch4__bc", &temp_DecayDataToTree[7]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch5__bc", &temp_DecayDataToTree[8]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch6__bc", &temp_DecayDataToTree[9]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch7__bc", &temp_DecayDataToTree[10]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch8__bc", &temp_DecayDataToTree[11]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch9__bc", &temp_DecayDataToTree[12]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch10__bc", &temp_DecayDataToTree[13]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch11__bc", &temp_DecayDataToTree[14]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch12__bc", &temp_DecayDataToTree[15]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch13__bc", &temp_DecayDataToTree[16]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch14__bc", &temp_DecayDataToTree[17]);
-    temp_tree->Branch("nParticlesInList__boXsu__clMCch15__bc", &temp_DecayDataToTree[18]);
-    temp_tree->Branch("nParticlesInList__boB0__clKneutral_total__bc", &temp_DecayDataToTree[19]);
-    temp_tree->Branch("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &temp_DecayDataToTree[20]);
-    temp_tree->Branch("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &temp_DecayDataToTree[21]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCcomb__bc", &temp_DecayDataToTree[22]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch16__bc", &temp_DecayDataToTree[23]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch17__bc", &temp_DecayDataToTree[24]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch18__bc", &temp_DecayDataToTree[25]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch19__bc", &temp_DecayDataToTree[26]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch20__bc", &temp_DecayDataToTree[27]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch21__bc", &temp_DecayDataToTree[28]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch22__bc", &temp_DecayDataToTree[29]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch23__bc", &temp_DecayDataToTree[30]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch24__bc", &temp_DecayDataToTree[31]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch25__bc", &temp_DecayDataToTree[32]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch26__bc", &temp_DecayDataToTree[33]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch27__bc", &temp_DecayDataToTree[34]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
-    temp_tree->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
+    if (DoesItHaveXsBranch) {
+        // decay mode (MC level)
+        temp_tree->Branch("nParticlesInList__boB__pl__clKcharge_total__bc", &temp_DecayDataToTree[0]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &temp_DecayDataToTree[1]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &temp_DecayDataToTree[2]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCcomb__bc", &temp_DecayDataToTree[3]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch1__bc", &temp_DecayDataToTree[4]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch2__bc", &temp_DecayDataToTree[5]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch3__bc", &temp_DecayDataToTree[6]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch4__bc", &temp_DecayDataToTree[7]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch5__bc", &temp_DecayDataToTree[8]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch6__bc", &temp_DecayDataToTree[9]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch7__bc", &temp_DecayDataToTree[10]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch8__bc", &temp_DecayDataToTree[11]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch9__bc", &temp_DecayDataToTree[12]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch10__bc", &temp_DecayDataToTree[13]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch11__bc", &temp_DecayDataToTree[14]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch12__bc", &temp_DecayDataToTree[15]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch13__bc", &temp_DecayDataToTree[16]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch14__bc", &temp_DecayDataToTree[17]);
+        temp_tree->Branch("nParticlesInList__boXsu__clMCch15__bc", &temp_DecayDataToTree[18]);
+        temp_tree->Branch("nParticlesInList__boB0__clKneutral_total__bc", &temp_DecayDataToTree[19]);
+        temp_tree->Branch("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &temp_DecayDataToTree[20]);
+        temp_tree->Branch("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &temp_DecayDataToTree[21]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCcomb__bc", &temp_DecayDataToTree[22]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch16__bc", &temp_DecayDataToTree[23]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch17__bc", &temp_DecayDataToTree[24]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch18__bc", &temp_DecayDataToTree[25]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch19__bc", &temp_DecayDataToTree[26]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch20__bc", &temp_DecayDataToTree[27]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch21__bc", &temp_DecayDataToTree[28]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch22__bc", &temp_DecayDataToTree[29]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch23__bc", &temp_DecayDataToTree[30]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch24__bc", &temp_DecayDataToTree[31]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch25__bc", &temp_DecayDataToTree[32]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch26__bc", &temp_DecayDataToTree[33]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch27__bc", &temp_DecayDataToTree[34]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
+        temp_tree->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
+    }
+    else {
+        for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
+    }
 
     // flag
     temp_tree->Branch("flag", &temp_flag);
@@ -1501,7 +1786,7 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
             temp_DataToTree[i] = temp.Needed_info[i];
         }
         for (int i = 0; i < N_decay; i++) {
-            temp_DecayDataToTree[i] = -1;
+            if (DoesItHaveXsBranch) temp_DecayDataToTree[i] = temp.Decay[i];
         }
         temp_Upsilon_decayIDToTree = temp.Upsilon_decayID;
         temp_Bsig_decayIDToTree = temp.Bsig_decayID;
@@ -1517,35 +1802,6 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
 }
 
 bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
-    /*
-        B2KcPicPic,
-        B2Ks0PicPi0,
-        B2KcPicPicPi0,
-        B2Ks0PicPicPic,
-        B2KcPicPicPicPic,
-        B2Ks0PicPicPicPi0,
-        B2KcPi0Pi0,
-        B2Ks0PicPi0Pi0,
-        B2KcPicPicPi0Pi0,
-        B2KcKcKc,
-        B2KcKcKs0Pic,
-        B2KcKcKcPi0,
-        B02Ks0,
-        B02KcPic,
-        B02Ks0Pi0,
-        B02KcPicPi0,
-        B02Ks0PicPic,
-        B02KcPicPicPic,
-        B02Ks0PicPicPi0,
-        B02KcPicPicPicPi0,
-        B02Ks0PicPicPicPic,
-        B02Ks0Pi0Pi0,
-        B02KcPicPi0Pi0,
-        B02Ks0PicPicPi0Pi0,
-        B02KcKcKs0,
-        B02KcKcKcPic,
-        B02KcKcKs0Pi0,
-    */
     switch (decaymode) {
     case Loader::B2Kc:
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > -0.5 && temp_data.Bsig_decayID < 0.5) return true;
@@ -1573,26 +1829,6 @@ bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
         break;
     case Loader::B2Ks0PicPicPic:
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 5.5 && temp_data.Bsig_decayID < 6.5) return true;
-        return false;
-        break;
-    case Loader::B2KcPicPicPicPic:
-        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 6.5 && temp_data.Bsig_decayID < 7.5) return true;
-        return false;
-        break;
-    case Loader::B2Ks0PicPicPicPi0:
-        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 7.5 && temp_data.Bsig_decayID < 8.5) return true;
-        return false;
-        break;
-    case Loader::B2KcPi0Pi0:
-        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 8.5 && temp_data.Bsig_decayID < 9.5) return true;
-        return false;
-        break;
-    case Loader::B2Ks0PicPi0Pi0:
-        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 9.5 && temp_data.Bsig_decayID < 10.5) return true;
-        return false;
-        break;
-    case Loader::B2KcPicPicPi0Pi0:
-        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 10.5 && temp_data.Bsig_decayID < 11.5) return true;
         return false;
         break;
     case Loader::B2KcKcKc:
@@ -1635,26 +1871,6 @@ bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
         if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 5.5 && temp_data.Bsig_decayID < 6.5) return true;
         return false;
         break;
-    case Loader::B02KcPicPicPicPi0:
-        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 6.5 && temp_data.Bsig_decayID < 7.5) return true;
-        return false;
-        break;
-    case Loader::B02Ks0PicPicPicPic:
-        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 7.5 && temp_data.Bsig_decayID < 8.5) return true;
-        return false;
-        break;
-    case Loader::B02Ks0Pi0Pi0:
-        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 8.5 && temp_data.Bsig_decayID < 9.5) return true;
-        return false;
-        break;
-    case Loader::B02KcPicPi0Pi0:
-        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 9.5 && temp_data.Bsig_decayID < 10.5) return true;
-        return false;
-        break;
-    case Loader::B02Ks0PicPicPi0Pi0:
-        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 10.5 && temp_data.Bsig_decayID < 11.5) return true;
-        return false;
-        break;
     case Loader::B02KcKcKs0:
         if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 11.5 && temp_data.Bsig_decayID < 12.5) return true;
         return false;
@@ -1668,20 +1884,215 @@ bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
         return false;
         break;
     default:
-        printf("ERROR!\n");
+        printf("ERROR! 036\n");
         exit(1);
         break;
     }
 
-    printf("ERROR!\n");
+    printf("ERROR! 037\n");
     exit(1);
     return false;
+}
+
+bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymodeMC) {
+    if (DoesItHaveXsBranch == false) {
+        printf("ERROR! TrueIfDecayModeMatch_MC is called when the data does not have Xs branch\n");
+        exit(1);
+    }
+
+    switch (decaymodeMC) {
+    case Loader::Xsu2Kc_MC:
+        if (temp_data.Decay[0] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2Kcstar2KcPi0_MC:
+        if (temp_data.Decay[2] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2Kcstar2K0Pic_MC:
+        if (temp_data.Decay[1] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcPi0_MC:
+        if (temp_data.Decay[5] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2K0Pic_MC:
+        if (temp_data.Decay[6] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcPicPic_MC:
+        if (temp_data.Decay[7] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2K0PicPi0_MC:
+        if (temp_data.Decay[8] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcPicPicPi0_MC:
+        if (temp_data.Decay[9] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2K0PicPicPic_MC:
+        if (temp_data.Decay[10] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcKcKc_MC:
+        if (temp_data.Decay[16] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcKcK0Pic_MC:
+        if (temp_data.Decay[17] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcKcKcPi0_MC:
+        if (temp_data.Decay[18] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0_MC:
+        if (temp_data.Decay[19] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0star2KcPic_MC:
+        if (temp_data.Decay[20] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0star2K0Pi0_MC:
+        if (temp_data.Decay[21] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcPic_MC:
+        if (temp_data.Decay[24] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0Pi0_MC:
+        if (temp_data.Decay[25] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcPicPi0_MC:
+        if (temp_data.Decay[26] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0PicPic_MC:
+        if (temp_data.Decay[27] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcPicPicPic_MC:
+        if (temp_data.Decay[28] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0PicPicPi0_MC:
+        if (temp_data.Decay[29] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcKcK0_MC:
+        if (temp_data.Decay[35] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcKcKcPic_MC:
+        if (temp_data.Decay[36] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcKcK0Pi0_MC:
+        if (temp_data.Decay[37] > 0) return true;
+        return false;
+        break;
+    case Loader::other:
+        return true;
+        break;
+    default:
+        printf("ERROR! Input value of TrueIfDecayModeMatch_MC is not appropriate\n");
+        exit(1);
+        break;
+    }
+
+    printf("ERROR! Input value of TrueIfDecayModeMatch_MC is not appropriate\n");
+    exit(1);
+    return false;
+}
+
+
+void Loader::PrintConfusionMatrix() {
+    if (current_Confusion_matrix > 0) { // allocate new int
+        printf("The number of PrintConfusionMatrix should not be larger than 1\n");
+        printf("Only first PrintConfusionMatrix is accepted\n");
+        return;
+    }
+    if (DoesItHaveXsBranch == false) {
+        printf("ERROR! PrintConfusionMatrix is called when the data does not have Xs branch\n");
+        exit(1);
+    }
+
+    std::queue<Data> temp_queue = TotalData;
+    while (!temp_queue.empty()) {
+        Data temp = temp_queue.front();
+        temp_queue.pop();
+
+        int decaymodeid = -1;
+        int decaymodeid_MC = -1;
+
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // find reco decay mode
+            if (TrueIfDecayModeMatch(temp, static_cast<Loader::DecayMode>(i))) {
+                decaymodeid = i;
+                break;
+            }
+        }
+        if (decaymodeid == Loader::MAX_NUM_DECAYMODE) {
+            printf("ERROR! Reco decay id cannot be found\n");
+            exit(1);
+        }
+
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) { // find MC decay mode
+            if (TrueIfDecayModeMatch_MC(temp, static_cast<Loader::DecayModeMC>(i))) {
+                decaymodeid_MC = i;
+                break;
+            }
+        }
+        if (decaymodeid_MC == Loader::MAX_NUM_DECAYMODE_MC) {
+            printf("ERROR! MC decay id cannot be found\n");
+            exit(1);
+        }
+
+        Confusion[decaymodeid][decaymodeid_MC]++;
+
+        int decaymodeid_MC_for_square = -1;
+        if (decaymodeid_MC == 0) decaymodeid_MC_for_square = 0;
+        else if (decaymodeid_MC == 1)decaymodeid_MC_for_square = 1;
+        else if (decaymodeid_MC == 2)decaymodeid_MC_for_square = 2;
+        else if (decaymodeid_MC == 3)decaymodeid_MC_for_square = 1;
+        else if (decaymodeid_MC == 4)decaymodeid_MC_for_square = 2;
+        else if (decaymodeid_MC == 5)decaymodeid_MC_for_square = 3;
+        else if (decaymodeid_MC == 6)decaymodeid_MC_for_square = 4;
+        else if (decaymodeid_MC == 7)decaymodeid_MC_for_square = 5;
+        else if (decaymodeid_MC == 8)decaymodeid_MC_for_square = 6;
+        else if (decaymodeid_MC == 9)decaymodeid_MC_for_square = 7;
+        else if (decaymodeid_MC == 10)decaymodeid_MC_for_square = 8;
+        else if (decaymodeid_MC == 11)decaymodeid_MC_for_square = 9;
+        else if (decaymodeid_MC == 12)decaymodeid_MC_for_square = 10;
+        else if (decaymodeid_MC == 13)decaymodeid_MC_for_square = 11;
+        else if (decaymodeid_MC == 14)decaymodeid_MC_for_square = 12;
+        else if (decaymodeid_MC == 15)decaymodeid_MC_for_square = 11;
+        else if (decaymodeid_MC == 16)decaymodeid_MC_for_square = 12;
+        else if (decaymodeid_MC == 17)decaymodeid_MC_for_square = 13;
+        else if (decaymodeid_MC == 18)decaymodeid_MC_for_square = 14;
+        else if (decaymodeid_MC == 19)decaymodeid_MC_for_square = 15;
+        else if (decaymodeid_MC == 20)decaymodeid_MC_for_square = 16;
+        else if (decaymodeid_MC == 21)decaymodeid_MC_for_square = 17;
+        else if (decaymodeid_MC == 22)decaymodeid_MC_for_square = 18;
+        else if (decaymodeid_MC == 23)decaymodeid_MC_for_square = 19;
+        else if (decaymodeid_MC == 24)decaymodeid_MC_for_square = 20;
+        Confusion_square[decaymodeid][decaymodeid_MC_for_square]++;
+
+    }
+
+    Confusion_matrixIsOn = true;
+    current_Confusion_matrix++;
 }
 
 void ReadRootFiles_r_sp(){
 
     std::vector<string> names;
-    const char* dirname = "/home/jwpark/storage/B2Xsnunu_1/GEN_SIG/output/Ntuple";
+    const char* dirname = "/home/jwpark/storage/BKG_gbasf2/BKG_total/CHG_after_FEISKIM_light_0_fix/train";
 
     load_files(dirname, &names);
 
@@ -1699,6 +2110,10 @@ void ReadRootFiles_r_sp(){
         std::string file_without_extension = names.at(i).substr(0, p);
 
         loader.PrintInformation(std::string("========== inital =========="));
+
+        loader.DrawTH1F("Btag_chiProb", "chiProb of Btag;chiProb;evt", 100, -1.2, 1.2, Loader::Btag, 6);
+        loader.Cut(Loader::Btag, 6, Loader::larger_than, -0.5);
+        loader.PrintInformation(std::string("========== chiProb_Btag > -0.5 =========="));
 
         loader.DrawTH1F("nROE_track_Upsilon_after_initial", "number of raw tracks in ROE of #Upsilon(4S);number of raw tracks;evt", 100, -0.5, 13.5, Loader::Upsilon, 10);
         loader.Cut(Loader::Upsilon, 10, Loader::smaller_than, 0.5);
@@ -1732,14 +2147,14 @@ void ReadRootFiles_r_sp(){
 
         loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Eecl_cut.root"));
         loader.DrawTH1F("ROE_Eecl_Upsilon_after_Mbc_strict_cut", "E_ecl in ROE of #Upsilon(4S);E_{ecl} [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 3);
-        loader.Cut(Loader::Upsilon, 3, Loader::smaller_than, 1.4);
-        loader.PrintInformation(std::string("========== E_ecl < 1.4 GeV =========="));
+        loader.Cut(Loader::Upsilon, 3, Loader::smaller_than, 3);
+        loader.PrintInformation(std::string("========== E_ecl < 3 GeV =========="));
 
         loader.DrawTH1F("SignalProbability_Btag_before_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
         loader.BCS(Loader::Btag, 5, Loader::Highest);
         if (loader.IsBCSValid() == false) {
-            printf("ERROR!\n");
-            exit(1);
+            printf("ERROR! it is not valid\n");
+            //exit(1);
         }
         loader.DrawTH1F("SignalProbability_Btag_after_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
         loader.PrintInformation(std::string("========== BCS =========="));
@@ -1756,6 +2171,9 @@ void ReadRootFiles_r_sp(){
         loader.DrawTH1F("ROE_Eecl_Upsilon_final", "E_ecl in ROE of #Upsilon(4S);E_{ecl} [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 3);
 
         loader.PrintSeparateRootFile(file_without_extension + std::string("_final_output.root"));
+        //loader.PrintRootFile(file_without_extension + std::string("_final_output_merge.root"));
+        //loader.ConvertIntoSeparateDataFile("data.root");
+        //loader.PrintConfusionMatrix();
     }
     loader.End();
 }
