@@ -293,7 +293,7 @@ namespace Belle2 {
 
   }
 
-  double FermiMomentum(double pf) {
+  double EvtBtoXsnunu_FERMI::FermiMomentum(double pf) {
       // Pick a value for the b-quark Fermi motion momentum
       // according to Ali's Gaussian model
 
@@ -311,7 +311,7 @@ namespace Belle2 {
       return pb;
   }
 
-  double FermiMomentumProb(double pb, double pf)
+  double EvtBtoXsnunu_FERMI::FermiMomentumProb(double pb, double pf)
   {
       // Compute probability according to Ali's Gaussian model
       // the function chosen has a convenient maximum value of 1 for pb = pf
