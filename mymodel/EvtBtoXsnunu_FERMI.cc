@@ -291,6 +291,7 @@ namespace Belle2 {
 
       double prob = sqrt(lambda) * (3 * sb * (1 + mstilda2 - sb) + lambda);
 
+      return prob;
   }
 
   double EvtBtoXsnunu_FERMI::FermiMomentum(double pf) {
