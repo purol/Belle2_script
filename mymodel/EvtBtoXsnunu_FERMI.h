@@ -28,7 +28,7 @@ namespace Belle2 {
 
     void decay(EvtParticle *p);
 
-    double dGdsbProb();
+    double dGdsbProb(double _sb);
     double FermiMomentum(double pf);
     double FermiMomentumProb(double pb, double pf);
 

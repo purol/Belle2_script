@@ -82,9 +82,9 @@ namespace Belle2 {
           double sbmax = (1 - mstilda) * (1 - mstilda);
           while (sb == 0.0)
           {
-              xbox = EvtRandom::Flat(smin, smax);
+              xbox = EvtRandom::Flat(sbmin, sbmax);
               ybox = EvtRandom::Flat(_dGdsbProbMax);
-              double prob = EvtBtoXsnunu_FERMI::dGdsbProb(xbox);
+              double prob = dGdsbProb(xbox);
               if (!(prob >= 0.0) && !(prob <= 0.0)) {
                   //	EvtGenReport(EVTGEN_INFO,"EvtGen") << "nan from dGdsProb " << prob << " " << mb << " " << _ms << " " << ml << " " << xbox << std::endl;
               }
