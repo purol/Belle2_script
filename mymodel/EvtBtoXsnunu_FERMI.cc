@@ -91,11 +91,6 @@ namespace Belle2 {
               if (ybox < prob) sb = xbox;
           }
 
-          if(sb > 0.9) {
-              std::cout << "sb is larger than 0.9\n";
-              ::abort();
-          }
-
           // b->s (nu nubar)
           EvtVector4R p4sdilep[2];
 
