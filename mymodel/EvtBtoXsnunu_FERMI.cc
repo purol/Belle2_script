@@ -110,6 +110,11 @@ namespace Belle2 {
 
           EvtGenKine::PhaseSpace(2, mll, p4ll, msdilep[1]);
 
+          // boost to b-quark rest frame
+
+          p4ll[0] = boostTo(p4ll[0], p4sdilep[1]);
+          p4ll[1] = boostTo(p4ll[1], p4sdilep[1]);
+
           // assign 4-momenta to valence quarks inside B meson in B rest frame
           double phi = EvtRandom::Flat(EvtConst::twoPi);
           double costh = EvtRandom::Flat(-1.0, 1.0);
