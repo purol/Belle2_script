@@ -273,6 +273,7 @@ namespace Belle2 {
               sbProbMax = sb;
               probMax = prob;
           }
+          std::cout << "sb = " << sb << "      dGdsb = " << prob << std::endl;
       }
 
       if (verbose()) {
