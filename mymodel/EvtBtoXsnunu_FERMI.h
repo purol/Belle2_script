@@ -40,6 +40,9 @@ namespace Belle2 {
       double         _pf;          // Fermi motion parameter for fermi motion
       double         _mxmin;
 
+      double _mb_prob;          // b-quark mass for dGdsb
+      double _ms_prob;          // s-quark mass for dGdsb
+
   };
 
 } // Belle 2 Namespace

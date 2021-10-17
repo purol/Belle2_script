@@ -74,8 +74,8 @@ namespace Belle2 {
           }
           mb = sqrt(mb);
 
-          double mb_prob = 4.68; // b-quark mass for probability density
-          double ms_prob = 0.1; // s-quark mass for probability density
+          double mb_prob = _mb_prob; // b-quark mass for probability density
+          double ms_prob = _ms_prob; // s-quark mass for probability density
           double mstilda = ms_prob / mb_prob;
           double sb = 0.0;
           double sbmin = 0;
@@ -164,7 +164,7 @@ namespace Belle2 {
 
       // check that there are no arguments
 
-      checkNArg(0, 4, 5);
+      checkNArg(0, 4, 5, 7);
 
       checkNDaug(3);
 
@@ -234,6 +234,8 @@ namespace Belle2 {
       _mq = 0.;
       _pf = 0.461;
       _mxmin = 1.1;
+      _mb_prob = 4.68;
+      _ms_prob = 0.1;
       if (getNArg() == 4)
       {
           // b-quark mass for fermi motion
@@ -249,10 +251,15 @@ namespace Belle2 {
       {
           _mxmin = getArg(4);
       }
+      if (getNArg() == 7)
+      {
+          _mb_prob = getArg(5);
+          _ms_prob = getArg(6);
+      }
 
       // get a maximum probability
-      double mb = 4.68;
-      double ms = 0.1;
+      double mb = _mb_prob;
+      double ms = _ms_prob;
       double mstilda = ms / mb;
       double mstilda2 = mstilda * mstilda;
 
@@ -285,8 +292,8 @@ namespace Belle2 {
 
   double EvtBtoXsnunu_FERMI::dGdsbProb(double _sb) {
 
-      double mb = 4.68; // b-quark mass for probability density
-      double ms = 0.1; // s-quark mass for probability density
+      double mb = _mb_prob; // b-quark mass for probability density
+      double ms = _ms_prob; // s-quark mass for probability density
       double mstilda = ms / mb;
 
       double sb = _sb;
