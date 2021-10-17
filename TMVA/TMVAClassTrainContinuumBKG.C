@@ -128,18 +128,33 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
    TFile *DDBAR_input(0);
    TFile *SSBAR_input(0);
    TFile* CHARM_input(0);
+   TFile* SIGNAL_input_test(0);
+   TFile* UUBAR_input_test(0);
+   TFile* DDBAR_input_test(0);
+   TFile* SSBAR_input_test(0);
+   TFile* CHARM_input_test(0);
 
    SIGNAL_input = TFile::Open( "SIGNAL_output_merge_data.root" );
    UUBAR_input = TFile::Open("UUBAR_output_merge_data.root");
    DDBAR_input = TFile::Open("DDBAR_output_merge_data.root");
    SSBAR_input = TFile::Open("SSBAR_output_merge_data.root");
    CHARM_input = TFile::Open("CHARM_output_merge_data.root");
+   SIGNAL_input_test = TFile::Open("SIGNAL_output_merge_data.root");
+   UUBAR_input_test = TFile::Open("UUBAR_output_merge_data.root");
+   DDBAR_input_test = TFile::Open("DDBAR_output_merge_data.root");
+   SSBAR_input_test = TFile::Open("SSBAR_output_merge_data.root");
+   CHARM_input_test = TFile::Open("CHARM_output_merge_data.root");
 
    TTree* SIGNAL_Tree = (TTree*)SIGNAL_input->Get("data");
    TTree* UUBAR_Tree = (TTree*)UUBAR_input->Get("data");
    TTree* DDBAR_Tree = (TTree*)DDBAR_input->Get("data");
    TTree* SSBAR_Tree = (TTree*)SSBAR_input->Get("data");
    TTree* CHARM_Tree = (TTree*)CHARM_input->Get("data");
+   TTree* SIGNAL_Tree_test = (TTree*)SIGNAL_input->Get("data");
+   TTree* UUBAR_Tree_test = (TTree*)UUBAR_input->Get("data");
+   TTree* DDBAR_Tree_test = (TTree*)DDBAR_input->Get("data");
+   TTree* SSBAR_Tree_test = (TTree*)SSBAR_input->Get("data");
+   TTree* CHARM_Tree_test = (TTree*)CHARM_input->Get("data");
 
    gROOT->cd( outfileName+TString(":/") );
    dataloader->AddSignalTree    (SIGNAL_Tree, 1.0, TMVA::Types::kTraining);
@@ -147,13 +162,21 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
    dataloader->AddBackgroundTree    (DDBAR_Tree, 1.0, TMVA::Types::kTraining);
    dataloader->AddBackgroundTree    (SSBAR_Tree, 1.0, TMVA::Types::kTraining);
    dataloader->AddBackgroundTree(CHARM_Tree, 1.0, TMVA::Types::kTraining);
+   dataloader->AddSignalTree(SIGNAL_Tree_test, 1.0, TMVA::Types::kTesting);
+   dataloader->AddBackgroundTree(UUBAR_Tree_test, 1.0, TMVA::Types::kTesting);
+   dataloader->AddBackgroundTree(DDBAR_Tree_test, 1.0, TMVA::Types::kTesting);
+   dataloader->AddBackgroundTree(SSBAR_Tree_test, 1.0, TMVA::Types::kTesting);
+   dataloader->AddBackgroundTree(CHARM_Tree_test, 1.0, TMVA::Types::kTesting);
 
    dataloader->PrepareTrainingAndTestTree( "", "SplitMode=Random:NormMode=NumEvents:!V" );
 
-   factory->BookMethod(dataloader, TMVA::Types::kMLP, "MLP", "H:!V:VarTransform=N");
+   factory->BookMethod(dataloader, TMVA::Types::kBDT, "BDT", "H:!V:VarTransform=N");
 
    // Train MVAs using the set of training events
    factory->TrainAllMethods();
+
+   // Evaluate all MVAs using the set of test events
+   factory->TestAllMethods();
 
    // Evaluate and compare performance of all configured MVAs
    factory->EvaluateAllMethods();

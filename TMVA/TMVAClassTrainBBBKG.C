@@ -126,26 +126,41 @@ void TMVAClassTrainBBBKG( TString myMethodList = "" )
    TFile *SIGNAL_input(0);
    TFile *CHG_input(0);
    TFile *MIX_input(0);
+   TFile* SIGNAL_input_test(0);
+   TFile* CHG_input_test(0);
+   TFile* MIX_input_test(0);
 
    SIGNAL_input = TFile::Open( "SIGNAL_output_merge_data.root" );
    CHG_input = TFile::Open("CHG_output_merge_data.root");
    MIX_input = TFile::Open("MIX_output_merge_data.root");
+   SIGNAL_input_test = TFile::Open("SIGNAL_output_merge_data.root");
+   CHG_input_test = TFile::Open("CHG_output_merge_data.root");
+   MIX_input_test = TFile::Open("MIX_output_merge_data.root");
 
    TTree* SIGNAL_Tree = (TTree*)SIGNAL_input->Get("data");
    TTree* CHG_Tree = (TTree*)CHG_input->Get("data");
    TTree* MIX_Tree = (TTree*)MIX_input->Get("data");
+   TTree* SIGNAL_Tree_test = (TTree*)SIGNAL_input->Get("data");
+   TTree* CHG_Tree_test = (TTree*)CHG_input->Get("data");
+   TTree* MIX_Tree_test = (TTree*)MIX_input->Get("data");
 
    gROOT->cd( outfileName+TString(":/") );
    dataloader->AddSignalTree    (SIGNAL_Tree, 1.0, TMVA::Types::kTraining);
    dataloader->AddBackgroundTree    (CHG_Tree, 1.0, TMVA::Types::kTraining);
    dataloader->AddBackgroundTree    (MIX_Tree, 1.0, TMVA::Types::kTraining);
+   dataloader->AddSignalTree(SIGNAL_Tree_test, 1.0, TMVA::Types::kTesting);
+   dataloader->AddBackgroundTree(CHG_Tree_test, 1.0, TMVA::Types::kTesting);
+   dataloader->AddBackgroundTree(MIX_Tree_test, 1.0, TMVA::Types::kTesting);
 
    dataloader->PrepareTrainingAndTestTree( "", "SplitMode=Random:NormMode=NumEvents:!V" );
 
-   factory->BookMethod(dataloader, TMVA::Types::kMLP, "MLP", "H:!V:VarTransform=N");
+   factory->BookMethod(dataloader, TMVA::Types::kBDT, "BDT", "H:!V:VarTransform=N");
 
    // Train MVAs using the set of training events
    factory->TrainAllMethods();
+
+   // Evaluate all MVAs using the set of test events
+   factory->TestAllMethods();
 
    // Evaluate and compare performance of all configured MVAs
    factory->EvaluateAllMethods();
