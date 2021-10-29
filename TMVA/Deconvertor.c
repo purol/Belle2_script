@@ -306,11 +306,17 @@ void Deconvertor(){
         for (unsigned int j = 0; j < temp_tree->GetEntries(); j++) { // Fill
             temp_tree->GetEntry(j);
 
-            if (temp_BB_output > 0.9614 && temp_Continuum_output > 0.9614) {
+            if (temp_BB_output > 0.99) {
                 temp_tree_upsilon->Fill();
                 temp_tree_Bsig->Fill();
                 temp_tree_Btag->Fill();
                 if (DoesItHaveXsBranch) temp_tree_Xs->Fill();
+                printf("experiment: %d\n", temp_EventDataToTree[0]);
+                printf("run: %d\n", temp_EventDataToTree[1]);
+                printf("event: %d\n", temp_EventDataToTree[2]);
+                printf("candidate: %d\n", temp_EventDataToTree[3]);
+                printf("ncandidates: %d\n", temp_EventDataToTree[4]);
+                printf("============================================\n", temp_EventDataToTree[4]);
             }
         }
 
