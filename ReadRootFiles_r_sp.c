@@ -8,12 +8,12 @@ revise typedef struct data
 revise void Loader::GetData(TFile* input_file)
 revise void Loader::PrintRootFile(std::string output_name)
 revise void Loader::PrintSeparateRootFile(std::string output_name)
-revise void Loader::ConvertIntoSeparatedataFile(std::string output_name, double flag = 0)
+revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double flag = 0)
 */
 
-# define N_Needed_info 28
+# define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 11
+# define N_Upsilon_info 13
 # define N_Bsig_info 7
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
@@ -55,6 +55,7 @@ typedef struct data{
     // 4: nROE_NeutralECLClusters(cleanMask), 5: nROE_K_S0, 6: nROE_pi0
     // 7: missing momentum of event theta, 8: missing momentum
     // 9: missing energy at CMS, 10: number of remaining tracks
+    // 11: roeNeextra(cleanMask), 12: useCMSFrame__boroeNeextra__bocleanMask__bc__bc
 
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
@@ -68,13 +69,17 @@ typedef struct data{
     double Needed_info[N_Needed_info];
     // 0: R2, 1: thrustBm, 2: thrustOm. 3: cosTBTO
     // 4: cosTBz, 5: KSFWVariables(et), 6: KSFWVariables(mm2)
-    // 7: KSFWVariables(hso00), 8: KSFWVariables(hso02), 9: KSFWVariables(hso04)
-    // 10: KSFWVariables(hso10), 11: KSFWVariables(hso12), 12: KSFWVariables(hso14)
-    // 13: KSFWVariables(hso20), 14: KSFWVariables(hso22), 15: KSFWVariables(hso24)
-    // 16: CleoConeCS(1), 17: CleoConeCS(2), 18: CleoConeCS(3)
-    // 19: CleoConeCS(4), 20: CleoConeCS(5), 21: CleoConeCS(6)
-    // 22: CleoConeCS(7), 23: CleoConeCS(8), 24:CleoConeCS(9)
-    // 25: missing mass^2, 26: visible energy, 27: theta_CMS_of_tag
+    // 7: KSFWVariables(hso00), 8: KSFWVariables(hso01), 9: KSFWVariables(hso02)
+    // 10: KSFWVariables(hso03), 11: KSFWVariables(hso04)
+    // 12: KSFWVariables(hso10), 13: KSFWVariables(hso12), 14: KSFWVariables(hso14)
+    // 15: KSFWVariables(hso20), 16: KSFWVariables(hso22), 17: KSFWVariables(hso24)
+    // 18: KSFWVariables(hoo0), 19: KSFWVariables(hoo1), 20: KSFWVariables(hoo2)
+    // 21: KSFWVariables(hoo3), 22: KSFWVariables(hoo4)
+    // 23: CleoConeCS(1), 24: CleoConeCS(2), 25: CleoConeCS(3)
+    // 26: CleoConeCS(4), 27: CleoConeCS(5), 28: CleoConeCS(6)
+    // 29: CleoConeCS(7), 30: CleoConeCS(8), 31:CleoConeCS(9)
+    // 32: missing mass^2, 33: visible energy, 34: theta_CMS_of_tag
+    // 35: decayhash, 36: decayhash_extended
 
     double Decay[N_decay]; // MC level info
 
@@ -333,6 +338,8 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("missingMomentumOfEvent", &temp.Upsilon_info[8]);
     tree_upsilon->SetBranchAddress("missingEnergyOfEventCMS", &temp.Upsilon_info[9]);
     tree_upsilon->SetBranchAddress("nRemainingTracksInEvent", &temp.Upsilon_info[10]);
+    tree_upsilon->SetBranchAddress("roeNeextra__bocleanMask__bc", &temp.Upsilon_info[11]);
+    tree_upsilon->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp.Upsilon_info[12]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
@@ -361,26 +368,35 @@ void Loader::GetData(TFile* input_file) {
     tree_Btag->SetBranchAddress("Btag_KSFWVariables_et", &temp.Needed_info[5]);
     tree_Btag->SetBranchAddress("Btag_KSFWVariables_mm2", &temp.Needed_info[6]);
     tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso00", &temp.Needed_info[7]);
-    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso02", &temp.Needed_info[8]);
-    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso04", &temp.Needed_info[9]);
-    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso10", &temp.Needed_info[10]);
-    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso12", &temp.Needed_info[11]);
-    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso14", &temp.Needed_info[12]);
-    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso20", &temp.Needed_info[13]);
-    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso22", &temp.Needed_info[14]);
-    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso24", &temp.Needed_info[15]);
-    tree_Btag->SetBranchAddress("Btag_CleoConeCS_1", &temp.Needed_info[16]);
-    tree_Btag->SetBranchAddress("Btag_CleoConeCS_2", &temp.Needed_info[17]);
-    tree_Btag->SetBranchAddress("Btag_CleoConeCS_3", &temp.Needed_info[18]);
-    tree_Btag->SetBranchAddress("Btag_CleoConeCS_4", &temp.Needed_info[19]);
-    tree_Btag->SetBranchAddress("Btag_CleoConeCS_5", &temp.Needed_info[20]);
-    tree_Btag->SetBranchAddress("Btag_CleoConeCS_6", &temp.Needed_info[21]);
-    tree_Btag->SetBranchAddress("Btag_CleoConeCS_7", &temp.Needed_info[22]);
-    tree_Btag->SetBranchAddress("Btag_CleoConeCS_8", &temp.Needed_info[23]);
-    tree_Btag->SetBranchAddress("Btag_CleoConeCS_9", &temp.Needed_info[24]);
-    tree_upsilon->SetBranchAddress("missingMass2OfEvent", &temp.Needed_info[25]);
-    tree_upsilon->SetBranchAddress("visibleEnergyOfEventCMS", &temp.Needed_info[26]);
-    tree_Btag->SetBranchAddress("Btag_useCMSFrame_theta", &temp.Needed_info[27]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso01", &temp.Needed_info[8]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso02", &temp.Needed_info[9]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso03", &temp.Needed_info[10]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso04", &temp.Needed_info[11]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso10", &temp.Needed_info[12]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso12", &temp.Needed_info[13]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso14", &temp.Needed_info[14]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso20", &temp.Needed_info[15]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso22", &temp.Needed_info[16]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hso24", &temp.Needed_info[17]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hoo0", &temp.Needed_info[18]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hoo1", &temp.Needed_info[19]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hoo2", &temp.Needed_info[20]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hoo3", &temp.Needed_info[21]);
+    tree_Btag->SetBranchAddress("Btag_KSFWVariables_hoo4", &temp.Needed_info[22]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_1", &temp.Needed_info[23]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_2", &temp.Needed_info[24]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_3", &temp.Needed_info[25]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_4", &temp.Needed_info[26]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_5", &temp.Needed_info[27]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_6", &temp.Needed_info[28]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_7", &temp.Needed_info[29]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_8", &temp.Needed_info[30]);
+    tree_Btag->SetBranchAddress("Btag_CleoConeCS_9", &temp.Needed_info[31]);
+    tree_upsilon->SetBranchAddress("missingMass2OfEvent", &temp.Needed_info[32]);
+    tree_upsilon->SetBranchAddress("visibleEnergyOfEventCMS", &temp.Needed_info[33]);
+    tree_Btag->SetBranchAddress("Btag_useCMSFrame_theta", &temp.Needed_info[34]);
+    tree_upsilon->SetBranchAddress("extraInfo__boDecayHash__bc", &temp.Needed_info[35]);
+    tree_upsilon->SetBranchAddress("extraInfo__boDecayHashExtended__bc", &temp.Needed_info[36]);
 
     if (DoesItHaveXsBranch) {
         // decay mode (MC level)
@@ -1293,6 +1309,8 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("missingMomentumOfEvent", &UpsilonDataToTree[8]);
         tree_upsilon->Branch("missingEnergyOfEventCMS", &UpsilonDataToTree[9]);
         tree_upsilon->Branch("nRemainingTracksInEvent", &UpsilonDataToTree[10]);
+        tree_upsilon->Branch("roeNeextra__bocleanMask__bc", &UpsilonDataToTree[11]);
+        tree_upsilon->Branch("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &UpsilonDataToTree[12]);
 
         // get Bsig_info
         tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
@@ -1321,26 +1339,35 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Btag->Branch("Btag_KSFWVariables_et", &DataToTree[5]);
         tree_Btag->Branch("Btag_KSFWVariables_mm2", &DataToTree[6]);
         tree_Btag->Branch("Btag_KSFWVariables_hso00", &DataToTree[7]);
-        tree_Btag->Branch("Btag_KSFWVariables_hso02", &DataToTree[8]);
-        tree_Btag->Branch("Btag_KSFWVariables_hso04", &DataToTree[9]);
-        tree_Btag->Branch("Btag_KSFWVariables_hso10", &DataToTree[10]);
-        tree_Btag->Branch("Btag_KSFWVariables_hso12", &DataToTree[11]);
-        tree_Btag->Branch("Btag_KSFWVariables_hso14", &DataToTree[12]);
-        tree_Btag->Branch("Btag_KSFWVariables_hso20", &DataToTree[13]);
-        tree_Btag->Branch("Btag_KSFWVariables_hso22", &DataToTree[14]);
-        tree_Btag->Branch("Btag_KSFWVariables_hso24", &DataToTree[15]);
-        tree_Btag->Branch("Btag_CleoConeCS_1", &DataToTree[16]);
-        tree_Btag->Branch("Btag_CleoConeCS_2", &DataToTree[17]);
-        tree_Btag->Branch("Btag_CleoConeCS_3", &DataToTree[18]);
-        tree_Btag->Branch("Btag_CleoConeCS_4", &DataToTree[19]);
-        tree_Btag->Branch("Btag_CleoConeCS_5", &DataToTree[20]);
-        tree_Btag->Branch("Btag_CleoConeCS_6", &DataToTree[21]);
-        tree_Btag->Branch("Btag_CleoConeCS_7", &DataToTree[22]);
-        tree_Btag->Branch("Btag_CleoConeCS_8", &DataToTree[23]);
-        tree_Btag->Branch("Btag_CleoConeCS_9", &DataToTree[24]);
-        tree_upsilon->Branch("missingMass2OfEvent", &DataToTree[25]);
-        tree_upsilon->Branch("visibleEnergyOfEventCMS", &DataToTree[26]);
-        tree_Btag->Branch("Btag_useCMSFrame_theta", &DataToTree[27]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso01", &DataToTree[8]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso02", &DataToTree[9]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso03", &DataToTree[10]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso04", &DataToTree[11]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso10", &DataToTree[12]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso12", &DataToTree[13]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso14", &DataToTree[14]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso20", &DataToTree[15]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso22", &DataToTree[16]);
+        tree_Btag->Branch("Btag_KSFWVariables_hso24", &DataToTree[17]);
+        tree_Btag->Branch("Btag_KSFWVariables_hoo0", &DataToTree[18]);
+        tree_Btag->Branch("Btag_KSFWVariables_hoo1", &DataToTree[19]);
+        tree_Btag->Branch("Btag_KSFWVariables_hoo2", &DataToTree[20]);
+        tree_Btag->Branch("Btag_KSFWVariables_hoo3", &DataToTree[21]);
+        tree_Btag->Branch("Btag_KSFWVariables_hoo4", &DataToTree[22]);
+        tree_Btag->Branch("Btag_CleoConeCS_1", &DataToTree[23]);
+        tree_Btag->Branch("Btag_CleoConeCS_2", &DataToTree[24]);
+        tree_Btag->Branch("Btag_CleoConeCS_3", &DataToTree[25]);
+        tree_Btag->Branch("Btag_CleoConeCS_4", &DataToTree[26]);
+        tree_Btag->Branch("Btag_CleoConeCS_5", &DataToTree[27]);
+        tree_Btag->Branch("Btag_CleoConeCS_6", &DataToTree[28]);
+        tree_Btag->Branch("Btag_CleoConeCS_7", &DataToTree[29]);
+        tree_Btag->Branch("Btag_CleoConeCS_8", &DataToTree[30]);
+        tree_Btag->Branch("Btag_CleoConeCS_9", &DataToTree[31]);
+        tree_upsilon->Branch("missingMass2OfEvent", &DataToTree[32]);
+        tree_upsilon->Branch("visibleEnergyOfEventCMS", &DataToTree[33]);
+        tree_Btag->Branch("Btag_useCMSFrame_theta", &DataToTree[34]);
+        tree_upsilon->Branch("extraInfo__boDecayHash__bc", &DataToTree[35]);
+        tree_upsilon->Branch("extraInfo__boDecayHashExtended__bc", &DataToTree[36]);
 
         // decay mode (MC level)
         tree_Xs->Branch("nParticlesInList__boB__pl__clKcharge_total__bc", &DecayDataToTree[0]);
@@ -1491,6 +1518,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("missingMomentumOfEvent", &temp_UpsilonDataToTree[8]);
     temp_tree_upsilon->Branch("missingEnergyOfEventCMS", &temp_UpsilonDataToTree[9]);
     temp_tree_upsilon->Branch("nRemainingTracksInEvent", &temp_UpsilonDataToTree[10]);
+    temp_tree_upsilon->Branch("roeNeextra__bocleanMask__bc", &temp_UpsilonDataToTree[11]);
+    temp_tree_upsilon->Branch("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp_UpsilonDataToTree[12]);
 
     // get Bsig_info
     temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -1519,26 +1548,35 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Btag->Branch("Btag_KSFWVariables_et", &temp_DataToTree[5]);
     temp_tree_Btag->Branch("Btag_KSFWVariables_mm2", &temp_DataToTree[6]);
     temp_tree_Btag->Branch("Btag_KSFWVariables_hso00", &temp_DataToTree[7]);
-    temp_tree_Btag->Branch("Btag_KSFWVariables_hso02", &temp_DataToTree[8]);
-    temp_tree_Btag->Branch("Btag_KSFWVariables_hso04", &temp_DataToTree[9]);
-    temp_tree_Btag->Branch("Btag_KSFWVariables_hso10", &temp_DataToTree[10]);
-    temp_tree_Btag->Branch("Btag_KSFWVariables_hso12", &temp_DataToTree[11]);
-    temp_tree_Btag->Branch("Btag_KSFWVariables_hso14", &temp_DataToTree[12]);
-    temp_tree_Btag->Branch("Btag_KSFWVariables_hso20", &temp_DataToTree[13]);
-    temp_tree_Btag->Branch("Btag_KSFWVariables_hso22", &temp_DataToTree[14]);
-    temp_tree_Btag->Branch("Btag_KSFWVariables_hso24", &temp_DataToTree[15]);
-    temp_tree_Btag->Branch("Btag_CleoConeCS_1", &temp_DataToTree[16]);
-    temp_tree_Btag->Branch("Btag_CleoConeCS_2", &temp_DataToTree[17]);
-    temp_tree_Btag->Branch("Btag_CleoConeCS_3", &temp_DataToTree[18]);
-    temp_tree_Btag->Branch("Btag_CleoConeCS_4", &temp_DataToTree[19]);
-    temp_tree_Btag->Branch("Btag_CleoConeCS_5", &temp_DataToTree[20]);
-    temp_tree_Btag->Branch("Btag_CleoConeCS_6", &temp_DataToTree[21]);
-    temp_tree_Btag->Branch("Btag_CleoConeCS_7", &temp_DataToTree[22]);
-    temp_tree_Btag->Branch("Btag_CleoConeCS_8", &temp_DataToTree[23]);
-    temp_tree_Btag->Branch("Btag_CleoConeCS_9", &temp_DataToTree[24]);
-    temp_tree_upsilon->Branch("missingMass2OfEvent", &temp_DataToTree[25]);
-    temp_tree_upsilon->Branch("visibleEnergyOfEventCMS", &temp_DataToTree[26]);
-    temp_tree_Btag->Branch("Btag_useCMSFrame_theta", &temp_DataToTree[27]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hso01", &temp_DataToTree[8]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hso02", &temp_DataToTree[9]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hso03", &temp_DataToTree[10]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hso04", &temp_DataToTree[11]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hso10", &temp_DataToTree[12]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hso12", &temp_DataToTree[13]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hso14", &temp_DataToTree[14]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hso20", &temp_DataToTree[15]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hso22", &temp_DataToTree[16]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hso24", &temp_DataToTree[17]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hoo0", &temp_DataToTree[18]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hoo1", &temp_DataToTree[19]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hoo2", &temp_DataToTree[20]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hoo3", &temp_DataToTree[21]);
+    temp_tree_Btag->Branch("Btag_KSFWVariables_hoo4", &temp_DataToTree[22]);
+    temp_tree_Btag->Branch("Btag_CleoConeCS_1", &temp_DataToTree[23]);
+    temp_tree_Btag->Branch("Btag_CleoConeCS_2", &temp_DataToTree[24]);
+    temp_tree_Btag->Branch("Btag_CleoConeCS_3", &temp_DataToTree[25]);
+    temp_tree_Btag->Branch("Btag_CleoConeCS_4", &temp_DataToTree[26]);
+    temp_tree_Btag->Branch("Btag_CleoConeCS_5", &temp_DataToTree[27]);
+    temp_tree_Btag->Branch("Btag_CleoConeCS_6", &temp_DataToTree[28]);
+    temp_tree_Btag->Branch("Btag_CleoConeCS_7", &temp_DataToTree[29]);
+    temp_tree_Btag->Branch("Btag_CleoConeCS_8", &temp_DataToTree[30]);
+    temp_tree_Btag->Branch("Btag_CleoConeCS_9", &temp_DataToTree[31]);
+    temp_tree_upsilon->Branch("missingMass2OfEvent", &temp_DataToTree[32]);
+    temp_tree_upsilon->Branch("visibleEnergyOfEventCMS", &temp_DataToTree[33]);
+    temp_tree_Btag->Branch("Btag_useCMSFrame_theta", &temp_DataToTree[34]);
+    temp_tree_upsilon->Branch("extraInfo__boDecayHash__bc", &temp_DataToTree[35]);
+    temp_tree_upsilon->Branch("extraInfo__boDecayHashExtended__bc", &temp_DataToTree[36]);
 
     if (DoesItHaveXsBranch) {
         // decay mode (MC level)
@@ -1667,6 +1705,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("missingMomentumOfEvent", &temp_UpsilonDataToTree[8]);
     temp_tree->Branch("missingEnergyOfEventCMS", &temp_UpsilonDataToTree[9]);
     temp_tree->Branch("nRemainingTracksInEvent", &temp_UpsilonDataToTree[10]);
+    temp_tree->Branch("roeNeextra__bocleanMask__bc", &temp_UpsilonDataToTree[11]);
+    temp_tree->Branch("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp_UpsilonDataToTree[12]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -1695,26 +1735,35 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("Btag_KSFWVariables_et", &temp_DataToTree[5]);
     temp_tree->Branch("Btag_KSFWVariables_mm2", &temp_DataToTree[6]);
     temp_tree->Branch("Btag_KSFWVariables_hso00", &temp_DataToTree[7]);
-    temp_tree->Branch("Btag_KSFWVariables_hso02", &temp_DataToTree[8]);
-    temp_tree->Branch("Btag_KSFWVariables_hso04", &temp_DataToTree[9]);
-    temp_tree->Branch("Btag_KSFWVariables_hso10", &temp_DataToTree[10]);
-    temp_tree->Branch("Btag_KSFWVariables_hso12", &temp_DataToTree[11]);
-    temp_tree->Branch("Btag_KSFWVariables_hso14", &temp_DataToTree[12]);
-    temp_tree->Branch("Btag_KSFWVariables_hso20", &temp_DataToTree[13]);
-    temp_tree->Branch("Btag_KSFWVariables_hso22", &temp_DataToTree[14]);
-    temp_tree->Branch("Btag_KSFWVariables_hso24", &temp_DataToTree[15]);
-    temp_tree->Branch("Btag_CleoConeCS_1", &temp_DataToTree[16]);
-    temp_tree->Branch("Btag_CleoConeCS_2", &temp_DataToTree[17]);
-    temp_tree->Branch("Btag_CleoConeCS_3", &temp_DataToTree[18]);
-    temp_tree->Branch("Btag_CleoConeCS_4", &temp_DataToTree[19]);
-    temp_tree->Branch("Btag_CleoConeCS_5", &temp_DataToTree[20]);
-    temp_tree->Branch("Btag_CleoConeCS_6", &temp_DataToTree[21]);
-    temp_tree->Branch("Btag_CleoConeCS_7", &temp_DataToTree[22]);
-    temp_tree->Branch("Btag_CleoConeCS_8", &temp_DataToTree[23]);
-    temp_tree->Branch("Btag_CleoConeCS_9", &temp_DataToTree[24]);
-    temp_tree->Branch("missingMass2OfEvent", &temp_DataToTree[25]);
-    temp_tree->Branch("visibleEnergyOfEventCMS", &temp_DataToTree[26]);
-    temp_tree->Branch("Btag_useCMSFrame_theta", &temp_DataToTree[27]);
+    temp_tree->Branch("Btag_KSFWVariables_hso01", &temp_DataToTree[8]);
+    temp_tree->Branch("Btag_KSFWVariables_hso02", &temp_DataToTree[9]);
+    temp_tree->Branch("Btag_KSFWVariables_hso03", &temp_DataToTree[10]);
+    temp_tree->Branch("Btag_KSFWVariables_hso04", &temp_DataToTree[11]);
+    temp_tree->Branch("Btag_KSFWVariables_hso10", &temp_DataToTree[12]);
+    temp_tree->Branch("Btag_KSFWVariables_hso12", &temp_DataToTree[13]);
+    temp_tree->Branch("Btag_KSFWVariables_hso14", &temp_DataToTree[14]);
+    temp_tree->Branch("Btag_KSFWVariables_hso20", &temp_DataToTree[15]);
+    temp_tree->Branch("Btag_KSFWVariables_hso22", &temp_DataToTree[16]);
+    temp_tree->Branch("Btag_KSFWVariables_hso24", &temp_DataToTree[17]);
+    temp_tree->Branch("Btag_KSFWVariables_hoo0", &temp_DataToTree[18]);
+    temp_tree->Branch("Btag_KSFWVariables_hoo1", &temp_DataToTree[19]);
+    temp_tree->Branch("Btag_KSFWVariables_hoo2", &temp_DataToTree[20]);
+    temp_tree->Branch("Btag_KSFWVariables_hoo3", &temp_DataToTree[21]);
+    temp_tree->Branch("Btag_KSFWVariables_hoo4", &temp_DataToTree[22]);
+    temp_tree->Branch("Btag_CleoConeCS_1", &temp_DataToTree[23]);
+    temp_tree->Branch("Btag_CleoConeCS_2", &temp_DataToTree[24]);
+    temp_tree->Branch("Btag_CleoConeCS_3", &temp_DataToTree[25]);
+    temp_tree->Branch("Btag_CleoConeCS_4", &temp_DataToTree[26]);
+    temp_tree->Branch("Btag_CleoConeCS_5", &temp_DataToTree[27]);
+    temp_tree->Branch("Btag_CleoConeCS_6", &temp_DataToTree[28]);
+    temp_tree->Branch("Btag_CleoConeCS_7", &temp_DataToTree[29]);
+    temp_tree->Branch("Btag_CleoConeCS_8", &temp_DataToTree[30]);
+    temp_tree->Branch("Btag_CleoConeCS_9", &temp_DataToTree[31]);
+    temp_tree->Branch("missingMass2OfEvent", &temp_DataToTree[32]);
+    temp_tree->Branch("visibleEnergyOfEventCMS", &temp_DataToTree[33]);
+    temp_tree->Branch("Btag_useCMSFrame_theta", &temp_DataToTree[34]);
+    temp_tree->Branch("extraInfo__boDecayHash__bc", &temp_DataToTree[35]);
+    temp_tree->Branch("extraInfo__boDecayHashExtended__bc", &temp_DataToTree[36]);
 
     if (DoesItHaveXsBranch) {
         // decay mode (MC level)
