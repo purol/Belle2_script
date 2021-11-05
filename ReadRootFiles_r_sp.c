@@ -868,7 +868,7 @@ void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, doubl
             exit(1);
         }
     }
-    TotalData = temp_queue;
+    TotalData.swap(temp_queue);
 }
 
 void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::DecayMode decaymode) {
@@ -911,7 +911,7 @@ void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, doubl
             exit(1);
         }
     }
-    TotalData = temp_queue;
+    TotalData.swap(temp_queue);
 }
 
 void Loader::PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequality inq, double value) {
