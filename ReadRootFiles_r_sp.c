@@ -471,7 +471,7 @@ bool Loader::event_info_is_valid() {
         temp_data.__ncandidates__ = temp_data.event_info[4];
         temp_queue.push(temp_data);
     }
-    TotalData = temp_queue;
+    TotalData.swap(temp_queue);
     return true;
 }
 
@@ -488,7 +488,8 @@ void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_l
     }
 
     TH1F* temp_hist = TH1Fs.at(current_TH1F);
-    std::queue<Data> temp_queue = TotalData;
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
     while (!temp_queue.empty()) {
         Data temp_data = temp_queue.front();
         temp_queue.pop();
@@ -511,6 +512,7 @@ void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_l
             printf("ERROR! 004\n");
             exit(1);
         }
+        TotalData.push(temp_data);
     }
 
     current_TH1F++;
@@ -529,7 +531,8 @@ void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_l
     }
 
     TH1F* temp_hist = TH1Fs.at(current_TH1F);
-    std::queue<Data> temp_queue = TotalData;
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
     while (!temp_queue.empty()) {
         Data temp_data = temp_queue.front();
         temp_queue.pop();
@@ -564,6 +567,7 @@ void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_l
             printf("ERROR! 010\n");
             exit(1);
         }
+        TotalData.push(temp_data);
     }
 
     current_TH1F++;
@@ -582,7 +586,8 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
     }
 
     TH2F* temp_hist = TH2Fs.at(current_TH2F);
-    std::queue<Data> temp_queue = TotalData;
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
     while (!temp_queue.empty()) {
         Data temp_data = temp_queue.front();
         temp_queue.pop();
@@ -635,6 +640,7 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
             printf("ERROR! 015\n");
             exit(1);
         }
+        TotalData.push(temp_data);
     }
 
     current_TH2F++;
@@ -653,7 +659,8 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
     }
 
     TH2F* temp_hist = TH2Fs.at(current_TH2F);
-    std::queue<Data> temp_queue = TotalData;
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
     while (!temp_queue.empty()) {
         Data temp_data = temp_queue.front();
         temp_queue.pop();
@@ -718,6 +725,7 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
             printf("ERROR! 021\n");
             exit(1);
         }
+        TotalData.push(temp_data);
     }
 
     current_TH2F++;
@@ -744,7 +752,8 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
         temp_hist[i] = TH1Fs_THStack[i].at(current_THStack);
     }
 
-    std::queue<Data> temp_queue = TotalData;
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
     while (!temp_queue.empty()) {
         Data temp_data = temp_queue.front();
         temp_queue.pop();
@@ -780,6 +789,7 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
             printf("ERROR! 027\n");
             exit(1);
         }
+        TotalData.push(temp_data);
     }
 
     current_THStack++;
@@ -807,7 +817,8 @@ void Loader::PrintInformation(std::string title) {
         exit(1);
     }
 
-    std::queue<Data> temp_queue = TotalData;
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
     while (!temp_queue.empty()) {
         Data temp = temp_queue.front();
         temp_queue.pop();
@@ -839,6 +850,7 @@ void Loader::PrintInformation(std::string title) {
         }
         N_candidates_modes[decaymodeid].at(current_N_candidate)++;
 
+        TotalData.push(temp_data);
     }
     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size();
 
@@ -1428,7 +1440,8 @@ void Loader::PrintRootFile(std::string output_name) {
     TTree* temp_tree_Bsig = trees_Bsig.at(current_file);
     TTree* temp_tree_Btag = trees_Btag.at(current_file);
     TTree* temp_tree_Xs = trees_Xs.at(current_file);
-    std::queue<Data> temp_queue = TotalData;
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
     while (!temp_queue.empty()) {
         Data temp = temp_queue.front();
         temp_queue.pop();
@@ -1458,6 +1471,8 @@ void Loader::PrintRootFile(std::string output_name) {
         temp_tree_Bsig->Fill();
         temp_tree_Btag->Fill();
         temp_tree_Xs->Fill();
+
+        TotalData.push(temp);
     }
 
     current_file++;
@@ -1624,7 +1639,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     }
     /*================================================================*/
 
-    std::queue<Data> temp_queue = TotalData;
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
     while (!temp_queue.empty()) {
         Data temp = temp_queue.front();
         temp_queue.pop();
@@ -1654,6 +1670,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_Bsig->Fill();
         temp_tree_Btag->Fill();
         if (DoesItHaveXsBranch) temp_tree_Xs->Fill();
+
+        TotalData.push(temp);
     }
 
     temp_file->cd();
@@ -1814,7 +1832,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("flag", &temp_flag);
     /*================================================================*/
 
-    std::queue<Data> temp_queue = TotalData;
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
     while (!temp_queue.empty()) {
         Data temp = temp_queue.front();
         temp_queue.pop();
@@ -1842,6 +1861,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         temp_flag = flag;
 
         temp_tree->Fill();
+
+        TotalData.push(temp);
     }
 
     temp_file->cd();
@@ -2072,7 +2093,8 @@ void Loader::PrintConfusionMatrix() {
         exit(1);
     }
 
-    std::queue<Data> temp_queue = TotalData;
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
     while (!temp_queue.empty()) {
         Data temp = temp_queue.front();
         temp_queue.pop();
@@ -2132,6 +2154,7 @@ void Loader::PrintConfusionMatrix() {
         else if (decaymodeid_MC == 24)decaymodeid_MC_for_square = 20;
         Confusion_square[decaymodeid][decaymodeid_MC_for_square]++;
 
+        TotalData.push(temp);
     }
 
     Confusion_matrixIsOn = true;
