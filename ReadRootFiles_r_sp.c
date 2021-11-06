@@ -934,7 +934,7 @@ void Loader::PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequalit
     }
 
     std::queue<Data> temp_queue;
-    temp_queue = TotalData;
+    temp_queue.swap(TotalData);
 
     while (!temp_queue.empty()) {
         Data temp_data = temp_queue.front();
@@ -991,6 +991,7 @@ void Loader::PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequalit
             printf("ERROR! 033\n");
             exit(1);
         }
+        TotalData.push(temp_data);
     }
 
     DebugIsOn = true;
@@ -1101,8 +1102,8 @@ bool Loader::IsBCSValid() {
 
     std::vector<Labels> label_list;
     std::queue<Data> TotalData_;
+    TotalData_.swap(TotalData);
 
-    TotalData_ = TotalData;
     while (!TotalData_.empty()) {
         Data temp = TotalData_.front();
         TotalData_.pop();
@@ -1115,6 +1116,8 @@ bool Loader::IsBCSValid() {
         temp_Labels.__event__ = temp.__event__;
         temp_Labels.__ncandidates__ = temp.__ncandidates__;
         label_list.push_back(temp_Labels);
+
+        TotalData.push(temp);
     }
     return true;
 }
@@ -2187,10 +2190,12 @@ void ReadRootFiles_r_sp(){
         loader.Cut(Loader::Btag, 6, Loader::larger_than, -0.5);
         loader.PrintInformation(std::string("========== chiProb_Btag > -0.5 =========="));
 
+        loader.PrintSeparateRootFile(file_without_extension + std::string("_before_nRawtrack_cut.root"));
         loader.DrawTH1F("nROE_track_Upsilon_after_initial", "number of raw tracks in ROE of #Upsilon(4S);number of raw tracks;evt", 100, -0.5, 13.5, Loader::Upsilon, 10);
         loader.Cut(Loader::Upsilon, 10, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== nRawtrack = 0 =========="));
 
+        loader.PrintSeparateRootFile(file_without_extension + std::string("_before_npi0_cut.root"));
         loader.DrawTH1F("nROE_pi0_after_ntrack_cut", "number of #pi^{0} candidates in ROE of #Upsilon(4S);number of #pi^{0} candidates;evt", 100, -0.5, 13.5, Loader::Upsilon, 6);
         loader.Cut(Loader::Upsilon, 6, Loader::smaller_than, 0.5);
         loader.PrintInformation(std::string("========== npi0 = 0 =========="));
@@ -2201,11 +2206,13 @@ void ReadRootFiles_r_sp(){
         loader.Cut(Loader::Upsilon, 7, Loader::larger_than, 0.297);
         loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="));
 
+        loader.PrintSeparateRootFile(file_without_extension + std::string("_before_psig_cut.root"));
         loader.DrawTH1F("momentum_Bsig_after_missing_theta_cut", "momentum of B_{sig} at CMS;momentum [GeV];evt", 100, 0, 3.2, Loader::Bsig, 4);
         loader.Cut(Loader::Bsig, 4, Loader::smaller_than, 2.96);
-        loader.Cut(Loader::Bsig, 4, Loader::larger_than, 1.6);
-        loader.PrintInformation(std::string("========== 1.6 < momentum of signal side < 2.96 =========="));
+        loader.Cut(Loader::Bsig, 4, Loader::larger_than, 0.5);
+        loader.PrintInformation(std::string("========== 0.5 < momentum of signal side < 2.96 =========="));
 
+        loader.PrintSeparateRootFile(file_without_extension + std::string("_before_delE_cut.root"));
         loader.DrawTH2F("MbcVSdeltaE_after_psig_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
         loader.Cut(Loader::Btag, 2, Loader::larger_than, -0.1);
         loader.Cut(Loader::Btag, 2, Loader::smaller_than, 0.1);
@@ -2219,8 +2226,8 @@ void ReadRootFiles_r_sp(){
 
         loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Eecl_cut.root"));
         loader.DrawTH1F("ROE_Eecl_Upsilon_after_Mbc_strict_cut", "E_ecl in ROE of #Upsilon(4S);E_{ecl} [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 3);
-        loader.Cut(Loader::Upsilon, 3, Loader::smaller_than, 3);
-        loader.PrintInformation(std::string("========== E_ecl < 3 GeV =========="));
+        loader.Cut(Loader::Upsilon, 3, Loader::smaller_than, 2);
+        loader.PrintInformation(std::string("========== E_ecl < 2 GeV =========="));
 
         loader.DrawTH1F("SignalProbability_Btag_before_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
         loader.BCS(Loader::Btag, 5, Loader::Highest);
