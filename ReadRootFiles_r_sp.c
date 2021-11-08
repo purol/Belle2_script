@@ -850,7 +850,7 @@ void Loader::PrintInformation(std::string title) {
         }
         N_candidates_modes[decaymodeid].at(current_N_candidate)++;
 
-        TotalData.push(temp_data);
+        TotalData.push(temp);
     }
     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size();
 
