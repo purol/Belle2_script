@@ -1,4 +1,4 @@
-// last update: 2021-10-08
+// last update: 2021-11-09
 // for Belle2 data
 
 /*
@@ -1009,6 +1009,7 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
         int event_ = initial_data.__event__;
         int ncandidates_ = initial_data.__ncandidates__;
         while (true) { // I suppose that the order of data exists
+            if (TotalData.empty()) break;
             Data temp_data = TotalData.front();
             if (temp_data.__experiment__ == experiment_ && temp_data.__run__ == run_ && temp_data.__event__ == event_ && temp_data.__ncandidates__ == ncandidates_) {
                 TotalData.pop();
@@ -1093,6 +1094,8 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
 }
 
 bool Loader::IsBCSValid() {
+    bool IsItValid = true;
+
     typedef struct labels {
         int __experiment__;
         int __run__;
@@ -1108,7 +1111,7 @@ bool Loader::IsBCSValid() {
         Data temp = TotalData_.front();
         TotalData_.pop();
         for (unsigned int i = 0; i < label_list.size(); i++) {
-            if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) return false;
+            if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) IsItValid = false;
         }
         Labels temp_Labels;
         temp_Labels.__experiment__ = temp.__experiment__;
@@ -1119,7 +1122,7 @@ bool Loader::IsBCSValid() {
 
         TotalData.push(temp);
     }
-    return true;
+    return IsItValid;
 }
 
 void Loader::End() {
@@ -2233,7 +2236,7 @@ void ReadRootFiles_r_sp(){
         loader.BCS(Loader::Btag, 5, Loader::Highest);
         if (loader.IsBCSValid() == false) {
             printf("ERROR! it is not valid\n");
-            //exit(1);
+            exit(1);
         }
         loader.DrawTH1F("SignalProbability_Btag_after_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
         loader.PrintInformation(std::string("========== BCS =========="));
