@@ -141,8 +141,8 @@ void TMVAClassTrainBBBKG( TString myMethodList = "" )
    CHG_input = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_small/final_output_merge_Mxs_smaller_CHG_train_data.root");
    MIX_input = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_small/final_output_merge_Mxs_smaller_MIX_train_data.root");
    SIGNAL_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_SIGNAL/test/Mxs_small/final_output_merge_Mxs_smaller_SIGNAL_test_data.root");
-   CHG_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_small/final_output_merge_Mxs_smaller_CHG_test_data.roo");
-   MIX_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_small/final_output_merge_Mxs_smaller_MIX_test_data.roo");
+   CHG_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_small/final_output_merge_Mxs_smaller_CHG_test_data.root");
+   MIX_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_small/final_output_merge_Mxs_smaller_MIX_test_data.root");
 
    TTree* SIGNAL_Tree = (TTree*)SIGNAL_input->Get("data");
    TTree* CHG_Tree = (TTree*)CHG_input->Get("data");
