@@ -68,7 +68,9 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
    dataloader->AddVariable("Btag_KSFWVariables_et", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_mm2", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso00", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hso01", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso02", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hso03", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso04", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso10", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso12", 'F');
@@ -76,6 +78,11 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
    dataloader->AddVariable("Btag_KSFWVariables_hso20", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso22", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso24", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hoo0", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hoo1", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hoo2", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hoo3", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hoo4", 'F');
    dataloader->AddVariable("Btag_CleoConeCS_1", 'F');
    dataloader->AddVariable("Btag_CleoConeCS_2", 'F');
    dataloader->AddVariable("Btag_CleoConeCS_3", 'F');
@@ -134,27 +141,27 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
    TFile* SSBAR_input_test(0);
    TFile* CHARM_input_test(0);
 
-   SIGNAL_input = TFile::Open( "SIGNAL_output_merge_data.root" );
-   UUBAR_input = TFile::Open("UUBAR_output_merge_data.root");
-   DDBAR_input = TFile::Open("DDBAR_output_merge_data.root");
-   SSBAR_input = TFile::Open("SSBAR_output_merge_data.root");
-   CHARM_input = TFile::Open("CHARM_output_merge_data.root");
-   SIGNAL_input_test = TFile::Open("SIGNAL_output_merge_data.root");
-   UUBAR_input_test = TFile::Open("UUBAR_output_merge_data.root");
-   DDBAR_input_test = TFile::Open("DDBAR_output_merge_data.root");
-   SSBAR_input_test = TFile::Open("SSBAR_output_merge_data.root");
-   CHARM_input_test = TFile::Open("CHARM_output_merge_data.root");
+   SIGNAL_input = TFile::Open( "/media/sf_virtualbox_folder/20211109/For_TMVA_SIGNAL/train/Mxs_small/final_output_merge_Mxs_smaller_SIGNAL_train_data.root" );
+   UUBAR_input = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_small/final_output_merge_Mxs_smaller_UUBAR_train_data.root");
+   DDBAR_input = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_small/final_output_merge_Mxs_smaller_DDBAR_train_data.root");
+   SSBAR_input = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_small/final_output_merge_Mxs_smaller_SSBAR_train_data.root");
+   CHARM_input = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_small/final_output_merge_Mxs_smaller_CHARM_train_data.root");
+   SIGNAL_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_SIGNAL/test/Mxs_small/final_output_merge_Mxs_smaller_SIGNAL_test_data.root");
+   UUBAR_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_small/final_output_merge_Mxs_smaller_UUBAR_test_data.root");
+   DDBAR_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_small/final_output_merge_Mxs_smaller_DDBAR_test_data.root");
+   SSBAR_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_small/final_output_merge_Mxs_smaller_SSBAR_test_data.root");
+   CHARM_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_small/final_output_merge_Mxs_smaller_CHARM_test_data.root");
 
    TTree* SIGNAL_Tree = (TTree*)SIGNAL_input->Get("data");
    TTree* UUBAR_Tree = (TTree*)UUBAR_input->Get("data");
    TTree* DDBAR_Tree = (TTree*)DDBAR_input->Get("data");
    TTree* SSBAR_Tree = (TTree*)SSBAR_input->Get("data");
    TTree* CHARM_Tree = (TTree*)CHARM_input->Get("data");
-   TTree* SIGNAL_Tree_test = (TTree*)SIGNAL_input->Get("data");
-   TTree* UUBAR_Tree_test = (TTree*)UUBAR_input->Get("data");
-   TTree* DDBAR_Tree_test = (TTree*)DDBAR_input->Get("data");
-   TTree* SSBAR_Tree_test = (TTree*)SSBAR_input->Get("data");
-   TTree* CHARM_Tree_test = (TTree*)CHARM_input->Get("data");
+   TTree* SIGNAL_Tree_test = (TTree*)SIGNAL_input_test->Get("data");
+   TTree* UUBAR_Tree_test = (TTree*)UUBAR_input_test->Get("data");
+   TTree* DDBAR_Tree_test = (TTree*)DDBAR_input_test->Get("data");
+   TTree* SSBAR_Tree_test = (TTree*)SSBAR_input_test->Get("data");
+   TTree* CHARM_Tree_test = (TTree*)CHARM_input_test->Get("data");
 
    gROOT->cd( outfileName+TString(":/") );
    dataloader->AddSignalTree    (SIGNAL_Tree, 1.0, TMVA::Types::kTraining);
@@ -170,7 +177,7 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
 
    dataloader->PrepareTrainingAndTestTree( "", "SplitMode=Random:NormMode=NumEvents:!V" );
 
-   factory->BookMethod(dataloader, TMVA::Types::kBDT, "BDT", "H:!V:VarTransform=N");
+   factory->BookMethod(dataloader, TMVA::Types::kMLP, "MLP", "H:!V:VarTransform=N");
 
    // Train MVAs using the set of training events
    factory->TrainAllMethods();

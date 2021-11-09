@@ -68,7 +68,9 @@ void TMVAClassTrainBBBKG( TString myMethodList = "" )
    dataloader->AddVariable("Btag_KSFWVariables_et", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_mm2", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso00", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hso01", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso02", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hso03", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso04", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso10", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso12", 'F');
@@ -76,6 +78,11 @@ void TMVAClassTrainBBBKG( TString myMethodList = "" )
    dataloader->AddVariable("Btag_KSFWVariables_hso20", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso22", 'F');
    dataloader->AddVariable("Btag_KSFWVariables_hso24", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hoo0", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hoo1", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hoo2", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hoo3", 'F');
+   dataloader->AddVariable("Btag_KSFWVariables_hoo4", 'F');
    dataloader->AddVariable("Btag_CleoConeCS_1", 'F');
    dataloader->AddVariable("Btag_CleoConeCS_2", 'F');
    dataloader->AddVariable("Btag_CleoConeCS_3", 'F');
@@ -130,19 +137,19 @@ void TMVAClassTrainBBBKG( TString myMethodList = "" )
    TFile* CHG_input_test(0);
    TFile* MIX_input_test(0);
 
-   SIGNAL_input = TFile::Open( "SIGNAL_output_merge_data.root" );
-   CHG_input = TFile::Open("CHG_output_merge_data.root");
-   MIX_input = TFile::Open("MIX_output_merge_data.root");
-   SIGNAL_input_test = TFile::Open("SIGNAL_output_merge_data.root");
-   CHG_input_test = TFile::Open("CHG_output_merge_data.root");
-   MIX_input_test = TFile::Open("MIX_output_merge_data.root");
+   SIGNAL_input = TFile::Open( "/media/sf_virtualbox_folder/20211109/For_TMVA_SIGNAL/train/Mxs_small/final_output_merge_Mxs_smaller_SIGNAL_train_data.root" );
+   CHG_input = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_small/final_output_merge_Mxs_smaller_CHG_train_data.root");
+   MIX_input = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_small/final_output_merge_Mxs_smaller_MIX_train_data.root");
+   SIGNAL_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_SIGNAL/test/Mxs_small/final_output_merge_Mxs_smaller_SIGNAL_test_data.root");
+   CHG_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_small/final_output_merge_Mxs_smaller_CHG_test_data.roo");
+   MIX_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_small/final_output_merge_Mxs_smaller_MIX_test_data.roo");
 
    TTree* SIGNAL_Tree = (TTree*)SIGNAL_input->Get("data");
    TTree* CHG_Tree = (TTree*)CHG_input->Get("data");
    TTree* MIX_Tree = (TTree*)MIX_input->Get("data");
-   TTree* SIGNAL_Tree_test = (TTree*)SIGNAL_input->Get("data");
-   TTree* CHG_Tree_test = (TTree*)CHG_input->Get("data");
-   TTree* MIX_Tree_test = (TTree*)MIX_input->Get("data");
+   TTree* SIGNAL_Tree_test = (TTree*)SIGNAL_input_test->Get("data");
+   TTree* CHG_Tree_test = (TTree*)CHG_input_test->Get("data");
+   TTree* MIX_Tree_test = (TTree*)MIX_input_test->Get("data");
 
    gROOT->cd( outfileName+TString(":/") );
    dataloader->AddSignalTree    (SIGNAL_Tree, 1.0, TMVA::Types::kTraining);
@@ -154,7 +161,7 @@ void TMVAClassTrainBBBKG( TString myMethodList = "" )
 
    dataloader->PrepareTrainingAndTestTree( "", "SplitMode=Random:NormMode=NumEvents:!V" );
 
-   factory->BookMethod(dataloader, TMVA::Types::kBDT, "BDT", "H:!V:VarTransform=N");
+   factory->BookMethod(dataloader, TMVA::Types::kMLP, "MLP", "H:!V:VarTransform=N");
 
    // Train MVAs using the set of training events
    factory->TrainAllMethods();
