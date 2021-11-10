@@ -27,14 +27,14 @@ void load_files(const char *dirname, std::vector<string>* names){
    }
 }
 
-THStack* Stack = new THStack("thstack", ";#theta_{missing} [rad];arbitrary unit");
-TH1F* SIGNAL_hist = new TH1F("SIGNAL_hist", ";#theta_{missing};",100,0, 3.142);
-TH1F* CHG_hist = new TH1F("UUBAR_hist", ";#theta_{missing};", 100, 0, 3.142);
-TH1F* MIX_hist = new TH1F("DDBAR_hist", ";#theta_{missing};", 100, 0, 3.142);
-TH1F* UUBAR_hist = new TH1F("UUBAR_hist", ";#theta_{missing};", 100, 0, 3.142);
-TH1F* DDBAR_hist = new TH1F("DDBAR_hist", ";#theta_{missing};", 100, 0, 3.142);
-TH1F* SSBAR_hist = new TH1F("SSBAR_hist", ";#theta_{missing};", 100, 0, 3.142);
-TH1F* CHARM_hist = new TH1F("CHARM_hist", ";#theta_{missing};", 100, 0, 3.142);
+THStack* Stack = new THStack("thstack", ";number of remaining #pi^{0} candidates;arbitrary unit");
+TH1F* SIGNAL_hist = new TH1F("SIGNAL_hist", ";number of remaining #pi^{0} candidates;arbitrary unit",7, -0.5, 6.5);
+TH1F* CHG_hist = new TH1F("UUBAR_hist", ";number of remaining #pi^{0} candidates;arbitrary unit", 7, -0.5, 6.5);
+TH1F* MIX_hist = new TH1F("DDBAR_hist", ";number of remaining #pi^{0} candidates;arbitrary unit", 7, -0.5, 6.5);
+TH1F* UUBAR_hist = new TH1F("UUBAR_hist", ";number of remaining #pi^{0} candidates;arbitrary unit", 7, -0.5, 6.5);
+TH1F* DDBAR_hist = new TH1F("DDBAR_hist", ";number of remaining #pi^{0} candidates;arbitrary unit", 7, -0.5, 6.5);
+TH1F* SSBAR_hist = new TH1F("SSBAR_hist", ";number of remaining #pi^{0} candidates;arbitrary unit", 7, -0.5, 6.5);
+TH1F* CHARM_hist = new TH1F("CHARM_hist", ";number of remaining #pi^{0} candidates;arbitrary unit", 7, -0.5, 6.5);
 
 void LetsFill(const char* dirname, TH1F* hist) {
     double var = 0;
@@ -51,7 +51,7 @@ void LetsFill(const char* dirname, TH1F* hist) {
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_upsilon->SetBranchAddress("missingMomentumOfEvent_theta", &var);
+        tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bopi0__clmyneutralPion__bc", &var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -66,15 +66,15 @@ void LetsFill(const char* dirname, TH1F* hist) {
 
 }
 
-void temp_THStack_missing_theta(){
+void temp_THStack_nRawtrack(){
 
-    const char* SIGNAL_dirname = "/home/jwpark/storage/SIGNAL_Aqua/test_v000/before_missing_momentum_theta_cut";
-    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/CHG_analysis/test_v000/before_missing_momentum_theta_cut";
-    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/MIX_analysis/test_v000/before_missing_momentum_theta_cut";
-    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/UUBAR_analysis/test_v000/before_missing_momentum_theta_cut";
-    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/DDBAR_analysis/test_v000/before_missing_momentum_theta_cut";
-    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/SSBAR_analysis/test_v000/before_missing_momentum_theta_cut";
-    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/CHARM_analysis/test_v000/before_missing_momentum_theta_cut";
+    const char* SIGNAL_dirname = "/home/jwpark/storage/SIGNAL_Aqua/test_v000/before_npi0_cut";
+    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/CHG_analysis/test_v000/before_npi0_cut";
+    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/MIX_analysis/test_v000/before_npi0_cut";
+    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/UUBAR_analysis/test_v000/before_npi0_cut";
+    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/DDBAR_analysis/test_v000/before_npi0_cut";
+    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/SSBAR_analysis/test_v000/before_npi0_cut";
+    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/CHARM_analysis/test_v000/before_npi0_cut";
 
     LetsFill(SIGNAL_dirname, SIGNAL_hist);
     LetsFill(CHG_dirname, CHG_hist);
