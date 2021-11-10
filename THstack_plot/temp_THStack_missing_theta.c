@@ -29,8 +29,8 @@ void load_files(const char *dirname, std::vector<string>* names){
 
 THStack* Stack = new THStack("thstack", ";#theta_{missing} [rad];arbitrary unit");
 TH1F* SIGNAL_hist = new TH1F("SIGNAL_hist", ";#theta_{missing};",100,0, 3.142);
-TH1F* CHG_hist = new TH1F("UUBAR_hist", ";#theta_{missing};", 100, 0, 3.142);
-TH1F* MIX_hist = new TH1F("DDBAR_hist", ";#theta_{missing};", 100, 0, 3.142);
+TH1F* CHG_hist = new TH1F("CHG_hist", ";#theta_{missing};", 100, 0, 3.142);
+TH1F* MIX_hist = new TH1F("MIX_hist", ";#theta_{missing};", 100, 0, 3.142);
 TH1F* UUBAR_hist = new TH1F("UUBAR_hist", ";#theta_{missing};", 100, 0, 3.142);
 TH1F* DDBAR_hist = new TH1F("DDBAR_hist", ";#theta_{missing};", 100, 0, 3.142);
 TH1F* SSBAR_hist = new TH1F("SSBAR_hist", ";#theta_{missing};", 100, 0, 3.142);

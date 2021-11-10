@@ -29,8 +29,8 @@ void load_files(const char *dirname, std::vector<string>* names){
 
 THStack* Stack = new THStack("thstack", ";number of remaining #pi^{0} candidates;arbitrary unit");
 TH1F* SIGNAL_hist = new TH1F("SIGNAL_hist", ";number of remaining #pi^{0} candidates;arbitrary unit",7, -0.5, 6.5);
-TH1F* CHG_hist = new TH1F("UUBAR_hist", ";number of remaining #pi^{0} candidates;arbitrary unit", 7, -0.5, 6.5);
-TH1F* MIX_hist = new TH1F("DDBAR_hist", ";number of remaining #pi^{0} candidates;arbitrary unit", 7, -0.5, 6.5);
+TH1F* CHG_hist = new TH1F("CHG_hist", ";number of remaining #pi^{0} candidates;arbitrary unit", 7, -0.5, 6.5);
+TH1F* MIX_hist = new TH1F("MIX_hist", ";number of remaining #pi^{0} candidates;arbitrary unit", 7, -0.5, 6.5);
 TH1F* UUBAR_hist = new TH1F("UUBAR_hist", ";number of remaining #pi^{0} candidates;arbitrary unit", 7, -0.5, 6.5);
 TH1F* DDBAR_hist = new TH1F("DDBAR_hist", ";number of remaining #pi^{0} candidates;arbitrary unit", 7, -0.5, 6.5);
 TH1F* SSBAR_hist = new TH1F("SSBAR_hist", ";number of remaining #pi^{0} candidates;arbitrary unit", 7, -0.5, 6.5);
