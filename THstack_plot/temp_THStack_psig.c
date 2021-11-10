@@ -31,10 +31,10 @@ THStack* Stack = new THStack("thstack", ";p_{sig} [GeV];arbitrary unit");
 TH1F* SIGNAL_hist = new TH1F("SIGNAL_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3);
 TH1F* CHG_hist = new TH1F("CHG_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3);
 TH1F* MIX_hist = new TH1F("MIX_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3);
-TH1F* UUBAR_hist = new TH1F("SIGNAL_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3);
-TH1F* DDBAR_hist = new TH1F("SIGNAL_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3);
-TH1F* SSBAR_hist = new TH1F("SIGNAL_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3);
-TH1F* CHARM_hist = new TH1F("SIGNAL_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3);
+TH1F* UUBAR_hist = new TH1F("UUBAR_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3);
+TH1F* DDBAR_hist = new TH1F("DDBAR_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3);
+TH1F* SSBAR_hist = new TH1F("SSBAR_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3);
+TH1F* CHARM_hist = new TH1F("CHARM_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3);
 
 void LetsFill(const char* dirname, TH1F* hist) {
     double var = 0;
@@ -112,8 +112,8 @@ void temp_THStack_psig() {
 
     double norm_for_SIG = 0.003385;
 
-    //SIGNAL_hist->Scale(norm_for_SIG*5300.0/BKG_int, "width");
-    SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
+    SIGNAL_hist->Scale(norm_for_SIG*6500.0/BKG_int, "width");
+    //SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
     SIGNAL_hist->SetLineWidth(3);
     SIGNAL_hist->SetLineColor(2);
     SIGNAL_hist->SetFillStyle(0);

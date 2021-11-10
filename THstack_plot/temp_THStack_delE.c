@@ -112,8 +112,8 @@ void temp_THStack_delE() {
 
     double norm_for_SIG = 0.003385;
 
-    //SIGNAL_hist->Scale(norm_for_SIG*5300.0/BKG_int, "width");
-    SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
+    SIGNAL_hist->Scale(norm_for_SIG*1000.0/BKG_int, "width");
+    //SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
     SIGNAL_hist->SetLineWidth(3);
     SIGNAL_hist->SetLineColor(2);
     SIGNAL_hist->SetFillStyle(0);

@@ -66,7 +66,7 @@ void LetsFill(const char* dirname, TH1F* hist) {
 
 }
 
-void temp_THStack_nRawtrack(){
+void temp_THStack_npi0(){
 
     const char* SIGNAL_dirname = "/home/jwpark/storage/SIGNAL_Aqua/test_v000/before_npi0_cut";
     const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/CHG_analysis/test_v000/before_npi0_cut";
@@ -112,8 +112,8 @@ void temp_THStack_nRawtrack(){
 
     double norm_for_SIG = 0.003385;
 
-    //SIGNAL_hist->Scale(norm_for_SIG*5300.0/BKG_int, "width");
-    SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
+    SIGNAL_hist->Scale(norm_for_SIG*5300.0/BKG_int, "width");
+    //SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
     SIGNAL_hist->SetLineWidth(3);
     SIGNAL_hist->SetLineColor(2);
     SIGNAL_hist->SetFillStyle(0);
