@@ -42,7 +42,7 @@ void LetsFill(const char* dirname, TH1F* hist) {
     std::vector<string> names;
     load_files(dirname, &names);
 
-    for (unsigned int i = 0; i < SIGNAL_names.size(); i++) {
+    for (unsigned int i = 0; i < names.size(); i++) {
 
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
         printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
