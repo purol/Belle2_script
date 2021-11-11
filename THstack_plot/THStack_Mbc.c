@@ -66,7 +66,7 @@ void LetsFill(const char* dirname, TH1F* hist) {
 
 }
 
-void temp_THStack_Mbc() {
+void THStack_Mbc() {
 
     const char* SIGNAL_dirname = "/home/jwpark/storage/SIGNAL_Aqua/test_v000/before_Mbc_cut";
     const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/CHG_analysis/test_v000/before_Mbc_cut";

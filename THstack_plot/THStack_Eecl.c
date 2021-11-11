@@ -27,14 +27,14 @@ void load_files(const char *dirname, std::vector<string>* names){
    }
 }
 
-THStack* Stack = new THStack("thstack", ";#Delta E [GeV];arbitrary unit");
-TH1F* SIGNAL_hist = new TH1F("SIGNAL_hist", ";#Delta E [GeV];arbitrary unit", 100, -0.2, 0.2);
-TH1F* CHG_hist = new TH1F("CHG_hist", ";#Delta E [GeV];arbitrary unit", 100, -0.2, 0.2);
-TH1F* MIX_hist = new TH1F("MIX_hist", ";#Delta E [GeV];arbitrary unit", 100, -0.2, 0.2);
-TH1F* UUBAR_hist = new TH1F("UUBAR_hist", ";#Delta E [GeV];arbitrary unit", 100, -0.2, 0.2);
-TH1F* DDBAR_hist = new TH1F("DDBAR_hist", ";#Delta E [GeV];arbitrary unit", 100, -0.2, 0.2);
-TH1F* SSBAR_hist = new TH1F("SSBAR_hist", ";#Delta E [GeV];arbitrary unit", 100, -0.2, 0.2);
-TH1F* CHARM_hist = new TH1F("CHARM_hist", ";#Delta E [GeV];arbitrary unit", 100, -0.2, 0.2);
+THStack* Stack = new THStack("thstack", ";E_{ecl} [GeV];arbitrary unit");
+TH1F* SIGNAL_hist = new TH1F("SIGNAL_hist", ";E_{ecl} [GeV];arbitrary unit", 21, 0, 7);
+TH1F* CHG_hist = new TH1F("CHG_hist", ";E_{ecl} [GeV];arbitrary unit", 21, 0, 7);
+TH1F* MIX_hist = new TH1F("MIX_hist", ";E_{ecl} [GeV];arbitrary unit", 21, 0, 7);
+TH1F* UUBAR_hist = new TH1F("UUBAR_hist", ";E_{ecl} [GeV];arbitrary unit", 21, 0, 7);
+TH1F* DDBAR_hist = new TH1F("DDBAR_hist", ";E_{ecl} [GeV];arbitrary unit", 21, 0, 7);
+TH1F* SSBAR_hist = new TH1F("SSBAR_hist", ";E_{ecl} [GeV];arbitrary unit", 21, 0, 7);
+TH1F* CHARM_hist = new TH1F("CHARM_hist", ";E_{ecl} [GeV];arbitrary unit", 21, 0, 7);
 
 void LetsFill(const char* dirname, TH1F* hist) {
     double var = 0;
@@ -51,7 +51,7 @@ void LetsFill(const char* dirname, TH1F* hist) {
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_Btag->SetBranchAddress("Btag_deltaE", &var);
+        tree_upsilon->SetBranchAddress("roeEextra__bocleanMask__bc", &var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -66,15 +66,15 @@ void LetsFill(const char* dirname, TH1F* hist) {
 
 }
 
-void temp_THStack_delE() {
+void THStack_Eecl() {
 
-    const char* SIGNAL_dirname = "/home/jwpark/storage/SIGNAL_Aqua/test_v000/before_delE_cut";
-    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/CHG_analysis/test_v000/before_delE_cut";
-    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/MIX_analysis/test_v000/before_delE_cut";
-    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/UUBAR_analysis/test_v000/before_delE_cut";
-    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/DDBAR_analysis/test_v000/before_delE_cut";
-    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/SSBAR_analysis/test_v000/before_delE_cut";
-    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/CHARM_analysis/test_v000/before_delE_cut";
+    const char* SIGNAL_dirname = "/home/jwpark/storage/SIGNAL_Aqua/test_v000/before_Eecl_cut";
+    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/CHG_analysis/test_v000/before_Eecl_cut";
+    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/MIX_analysis/test_v000/before_Eecl_cut";
+    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/UUBAR_analysis/test_v000/before_Eecl_cut";
+    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/DDBAR_analysis/test_v000/before_Eecl_cut";
+    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/SSBAR_analysis/test_v000/before_Eecl_cut";
+    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Aqua/CHARM_analysis/test_v000/before_Eecl_cut";
 
     LetsFill(SIGNAL_dirname, SIGNAL_hist);
     LetsFill(CHG_dirname, CHG_hist);
@@ -112,7 +112,7 @@ void temp_THStack_delE() {
 
     double norm_for_SIG = 0.003385;
 
-    SIGNAL_hist->Scale(norm_for_SIG*1000.0/BKG_int, "width");
+    SIGNAL_hist->Scale(norm_for_SIG*600.0/BKG_int, "width");
     //SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
     SIGNAL_hist->SetLineWidth(3);
     SIGNAL_hist->SetLineColor(2);
