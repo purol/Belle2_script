@@ -1,4 +1,4 @@
-// last update: 2021-11-09
+// last update: 2021-11-11
 // for Belle2 data
 
 /*
@@ -59,6 +59,8 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include <RooExponential.h>
 #include <RooArgusBG.h>
 
+#include <TSystemDirectory.h>
+
 #include <TCanvas.h>
 #include <TCut.h>
 #include <RooPlot.h>
@@ -71,7 +73,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
-void load_files(const char *dirname, std::vector<string>* names){
+void load_files(const char *dirname, std::vector<std::string>* names){
    TSystemDirectory dir(dirname, dirname);
    TList *files = dir.GetListOfFiles();
    if (files) {
@@ -528,7 +530,7 @@ bool Loader::event_info_is_valid() {
     return true;
 }
 
-void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear) {
+void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr) {
     if (TH1Fs.size() == current_TH1F) { // allocate new hist
         TH1F* hist = new TH1F(name, title, nbins, x_low, x_high);
         TH1Fs.push_back(hist);
@@ -571,7 +573,7 @@ void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_l
     current_TH1F++;
 }
 
-void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::Qualifier qualifier, Loader::DecayMode decaymode, Loader::ValueOption dr = Loader::Linear) {
+void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::Qualifier qualifier, Loader::DecayMode decaymode, Loader::ValueOption dr) {
     if (TH1Fs.size() == current_TH1F) { // allocate new hist
         TH1F* hist = new TH1F(name, title, nbins, x_low, x_high);
         TH1Fs.push_back(hist);
@@ -784,7 +786,7 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
     current_TH2F++;
 }
 
-void Loader::DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear) {
+void Loader::DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr) {
     if (THStacks.size() == current_THStack) { // allocate new thstacks
         THStack* stack = new THStack(name, title);
         THStacks.push_back(stack);
@@ -1742,7 +1744,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
 
 }
 
-void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) {
+void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
 
     TFile* temp_file = new TFile(output_name.c_str(), "recreate");
     temp_file->cd();
@@ -2220,7 +2222,7 @@ void Loader::PrintConfusionMatrix() {
     current_Confusion_matrix++;
 }
 
-void main(int argc, char* argv[]) { // argv[1]: Ntuple input with path, argv[2]: destination of output, 
+int main(int argc, char* argv[]) { // argv[1]: Ntuple input with path, argv[2]: destination of output, 
 
     std::string filename_with_path = std::string(argv[1]); // /home/file.root
     std::string destination = std::string(argv[2]);
@@ -2239,7 +2241,7 @@ void main(int argc, char* argv[]) { // argv[1]: Ntuple input with path, argv[2]:
     TFile* input_file = new TFile(filename_with_path.c_str(), "read");
     printf("%s\n", filename_with_path.c_str());
     loader.GetData(input_file);
-    if (loader.event_info_is_valid() == false) { printf("error!\n"); return; }
+    if (loader.event_info_is_valid() == false) { printf("error!\n"); return 0; }
 
     loader.PrintInformation(std::string("========== inital =========="));
 
@@ -2274,7 +2276,7 @@ void main(int argc, char* argv[]) { // argv[1]: Ntuple input with path, argv[2]:
     loader.Cut(Loader::Btag, 2, Loader::larger_than, -0.1);
     loader.Cut(Loader::Btag, 2, Loader::smaller_than, 0.1);
     loader.PrintInformation(std::string("========== abs(deltaE) < 0.1 =========="));
-    loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
+    //loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
     //loader.PrintSeparateRootFile(destination + file_without_extension + std::string("_before_Mbc_cut.root"));
     //loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
@@ -2312,4 +2314,6 @@ void main(int argc, char* argv[]) { // argv[1]: Ntuple input with path, argv[2]:
     //loader.PrintConfusionMatrix();
 
     loader.End();
+
+    return 0;
 }

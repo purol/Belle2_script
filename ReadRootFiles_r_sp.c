@@ -1,4 +1,4 @@
-// last update: 2021-11-09
+// last update: 2021-11-11
 // for Belle2 data
 
 /*
@@ -18,7 +18,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
-void load_files(const char *dirname, std::vector<string>* names){
+void load_files(const char *dirname, std::vector<std::string>* names){
    TSystemDirectory dir(dirname, dirname);
    TList *files = dir.GetListOfFiles();
    if (files) {
@@ -2167,7 +2167,7 @@ void Loader::PrintConfusionMatrix() {
     current_Confusion_matrix++;
 }
 
-void ReadRootFiles_r_sp(){
+int ReadRootFiles_r_sp(){
 
     std::vector<string> names;
     const char* dirname = "/home/jwpark/storage/BKG_gbasf2/BKG_total/CHG_after_FEISKIM_light_0_fix/train";
@@ -2258,4 +2258,6 @@ void ReadRootFiles_r_sp(){
         //loader.PrintConfusionMatrix();
     }
     loader.End();
+
+    return 0;
 }
