@@ -1,5 +1,7 @@
 // modified from EvtBtoXsll.cpp
 // updated: 2021-10-05
+// dGdsb: arXiv:1509.06248v2
+// Fermi motion model: Ali, Ahmed, et al. 
 
 #include <generators/evtgen/EvtGenModelRegister.h>
 

@@ -1,5 +1,6 @@
 // decay for B->K nu nu
 // updated: 2021-10-05
+// form factor: arXiv:1409.4557v2
 
 #include <generators/evtgen/EvtGenModelRegister.h>
 
