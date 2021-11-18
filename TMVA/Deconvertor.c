@@ -1,4 +1,4 @@
-// last update: 2021-11-10-00
+// last update: 2021-11-18-00
 // for Belle2 data
 
 /*
@@ -326,6 +326,10 @@ void Deconvertor(){
             temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
             temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
         }
+
+        temp_tree_upsilon->Branch("TMVA_BB", &temp_BB_output);
+        temp_tree_upsilon->Branch("TMVA_Continuum", &temp_Continuum_output);
+
         /*================================================================*/
 
         for (unsigned int j = 0; j < temp_tree->GetEntries(); j++) { // Fill
