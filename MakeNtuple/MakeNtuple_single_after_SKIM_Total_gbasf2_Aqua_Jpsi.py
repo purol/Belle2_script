@@ -104,7 +104,7 @@ ma.copyLists(outputListName="Upsilon(4S):withoutneutrino", inputListNames=["Upsi
 
 # check J/psi
 ma.fillParticleList(decayString="mu+:mychargedMuon", cut="muonID>0.9 and p>0.7 and dr < 0.5 and abs(dz) < 2",path=my_path)
-ma.fillParticleList(decayString="J/psi:myJpsi_beforedMcut -> mu+:mychargedMuon mu-:mychargedMuon", cut="",path=my_path)
+ma.reconstructDecay(decayString="J/psi:myJpsi_beforedMcut -> mu+:mychargedMuon mu-:mychargedMuon", cut="",path=my_path)
 ma.cutAndCopyList(outputListName='J/psi:myJpsi', inputListName='J/psi:myJpsi_beforedMcut',cut="abs(dM) < 0.05", path=my_path)
 
 ma.buildRestOfEvent("Upsilon(4S):withoutneutrino", inputParticlelists=["K_S0:myKaonshort", "pi0:myneutralPion", "J/psi:myJpsi"], path=my_path)
