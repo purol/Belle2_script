@@ -96,7 +96,7 @@ ma.copyLists(outputListName="Xsd:comb", inputListNames=["Xsd:ch0", "Xsd:ch1", "X
 # reconstruct J/psi and pick appropriate one
 ma.fillParticleList(decayString="mu+:mychargedMuon", cut="muonID>0.9 and p>0.7 and dr < 0.5 and abs(dz) < 2",path=my_path)
 ma.reconstructDecay(decayString="J/psi:myJpsi_beforedMcut -> mu+:mychargedMuon mu-:mychargedMuon", cut="",path=my_path)
-ma.cutAndCopyList('J/psi:myJpsi', 'J/psi:myJpsi_beforedMcut','abs(dM)<0.05', path=path)
+ma.cutAndCopyList('J/psi:myJpsi', 'J/psi:myJpsi_beforedMcut','abs(dM)<0.05', path=my_path)
 
 ma.reconstructDecay("B+:sig_Jpsi -> Xsu:comb J/psi:myJpsi", cut="", dmID=0, path = my_path)
 ma.reconstructDecay("B0:sig_Jpsi -> Xsd:comb J/psi:myJpsi", cut="", dmID=0, path = my_path)
@@ -108,8 +108,8 @@ ma.reconstructDecay("Upsilon(4S):withoutneutrino_neutral_opposite_cp_Jpsi -> B0:
 ma.reconstructDecay("Upsilon(4S):withoutneutrino_neutral_same_cp_Jpsi -> B0:feiHadronic B0:sig_Jpsi",cut ="", dmID = 1, path=my_path)
 ma.copyLists(outputListName="Upsilon(4S):withoutneutrino_Jpsi", inputListNames=["Upsilon(4S):withoutneutrino_charged_Jpsi", "Upsilon(4S):withoutneutrino_neutral_opposite_cp_Jpsi", "Upsilon(4S):withoutneutrino_neutral_same_cp_Jpsi"], path=my_path)
 
-ma.cutAndCopyList('J/psi:myJpsi_proper', 'J/psi:myJpsi','isDescendantOfList(Upsilon(4S):withoutneutrino_Jpsi,2)', path=path)
-ma.cutAndCopyList('mu+:mychargedMuon_proper', 'mu+:mychargedMuon','isDescendantOfList(J/psi:myJpsi_proper,1)', path=path)
+ma.cutAndCopyList('J/psi:myJpsi_proper', 'J/psi:myJpsi','isDescendantOfList(Upsilon(4S):withoutneutrino_Jpsi,2)', path=my_path)
+ma.cutAndCopyList('mu+:mychargedMuon_proper', 'mu+:mychargedMuon','isDescendantOfList(J/psi:myJpsi_proper,1)', path=my_path)
 
 # tag side
 track_selection = "dr < 0.5 and abs(dz) < 2 and sourceObjectIsInList(mu+:mychargedMuon_proper)==0"
@@ -133,7 +133,8 @@ ma.reconstructDecay("Upsilon(4S):withoutneutrino_charged -> B+:feiHadronic B-:si
 ma.reconstructDecay("Upsilon(4S):withoutneutrino_neutral_opposite_cp -> B0:feiHadronic anti-B0:sig",cut ="", dmID = 1, path=my_path)
 ma.reconstructDecay("Upsilon(4S):withoutneutrino_neutral_same_cp -> B0:feiHadronic B0:sig",cut ="", dmID = 1, path=my_path)
 ma.copyLists(outputListName="Upsilon(4S):withoutneutrino", inputListNames=["Upsilon(4S):withoutneutrino_charged", "Upsilon(4S):withoutneutrino_neutral_opposite_cp", "Upsilon(4S):withoutneutrino_neutral_same_cp"], path=my_path)
-ma.buildRestOfEvent("Upsilon(4S):withoutneutrino", inputParticlelists=["K_S0:myKaonshort", "pi0:myneutralPion"], path=my_path)
+ma.buildRestOfEvent("Upsilon(4S):withoutneutrino", inputParticlelists=["K_S0:myKaonshort", "pi0:myneutralPion", "J/psi:myJpsi_proper"], path=my_path)
+ma.applyCuts('Upsilon(4S):withoutneutrino', 'nROE_ParticlesInList(J/psi:myJpsi_proper)==1 and nRemainingTracksInEvent==2', path=my_path)
 
 # apply cut: no charged track, E, cluster on ROE
 ma.appendROEMasks("Upsilon(4S):withoutneutrino",[cleanMask],path=my_path)
@@ -201,7 +202,7 @@ U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + EvtKinematic
 output_file = "Ntuple.root"
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Btag_vars,filename=output_file,treename="Btag",path=my_path)
 ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Bsig_vars,filename=output_file,treename="Bsig",path=my_path)
-ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=U_vars+["nParticlesInList(J/psi:myJpsi_proper)"],filename=output_file,treename="Upsilon",path=my_path)
+ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=U_vars+["nParticlesInList(J/psi:myJpsi_proper)", "nROE_ParticlesInList(J/psi:myJpsi_proper)"],filename=output_file,treename="Upsilon",path=my_path)
 ma.variablesToNtuple(decayString="J/psi:myJpsi_beforedMcut",variables=["M"],filename=output_file,treename="Jpsi",path=my_path)
 
 # for plot of primary particles
