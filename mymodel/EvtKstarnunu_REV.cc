@@ -1,6 +1,10 @@
-// revised version of EvtKstarnunu
-// updated 2021-10-05
-// form factor: arXiv:1503.05534v3
+/**************************************************************************
+ * basf2 (Belle II Analysis Software Framework)                           *
+ * Author: The Belle II Collaboration                                     *
+ *                                                                        *
+ * See git log for contributors and copyright holders.                    *
+ * This file is licensed under LGPL-3.0, see LICENSE.md.                  *
+ **************************************************************************/
 
 #include <generators/evtgen/EvtGenModelRegister.h>
 
@@ -67,6 +71,9 @@ namespace Belle2 {
 
         EvtVector4R p4b; p4b.set(m_b, 0., 0., 0.);  // Do calcs in mother rest frame
 
+        // calculate form factors [arXiv:1503.05534v3]
+        // see Table 15, eq 15, eq 16, Table 3
+
         // FFs
         double tp = (m_b + m_k) * (m_b + m_k);
         double tm = (m_b - m_k) * (m_b - m_k);
@@ -100,6 +107,14 @@ namespace Belle2 {
 
         // A2
         double A2 = ((m_b + m_k) * (m_b + m_k) * (m_b * m_b - m_k * m_k - q2) * A1 - A12 * 16 * m_b * m_k * m_k * (m_b + m_k)) / lambda;
+
+        // calculate quark decay amplitude from [arXiv:hep-ph/9910221v2]
+        // see eq 3.3, eq 3.4, eq 3.5, eq 4.1, eq 4.4, and eq 4.5
+        // but in B->Kstar nu nubar, A3 = 0, A0 = 0, and all T = 0
+
+        // definition of A12 can be found from [arXiv:1303.5794v2]
+
+        // definition of A3 can be found from [arXiv:1408.5614v1]
 
         EvtTensor4C tds = (-2 * v0 / (m_b + m_k)) * dual(EvtGenFunctions::directProd(p4b, momkstar))
             - EvtComplex(0.0, 1.0) *
@@ -138,13 +153,18 @@ namespace Belle2 {
         checkNDaug(3);
 
         //We expect the parent to be a scalar 
-        //and the daughters to be K neutrino netrino
+        //and the daughters to be Kstar neutrino netrino
 
         checkSpinParent(EvtSpinType::SCALAR);
 
         checkSpinDaughter(0, EvtSpinType::VECTOR);
         checkSpinDaughter(1, EvtSpinType::NEUTRINO);
         checkSpinDaughter(2, EvtSpinType::NEUTRINO);
+    }
+
+    void EvtKstarnunu_REV::initProbMax() {
+        // obtained by brute force (18013.282)
+        setProbMax(20000.0);
     }
 
 }

@@ -1,7 +1,10 @@
-// modified from EvtBtoXsll.cpp
-// updated: 2021-10-05
-// dGdsb: arXiv:1509.06248v2
-// Fermi motion model: Ali, Ahmed, et al. 
+/**************************************************************************
+ * basf2 (Belle II Analysis Software Framework)                           *
+ * Author: The Belle II Collaboration                                     *
+ *                                                                        *
+ * See git log for contributors and copyright holders.                    *
+ * This file is licensed under LGPL-3.0, see LICENSE.md.                  *
+ **************************************************************************/
 
 #include <generators/evtgen/EvtGenModelRegister.h>
 
@@ -293,6 +296,8 @@ namespace Belle2 {
   }
 
   double EvtBtoXsnunu_FERMI::dGdsbProb(double _sb) {
+      // dGdsb: arXiv:1509.06248v2
+      // see (eq.41)
 
       double mb = _mb_prob; // b-quark mass for probability density
       double ms = _ms_prob; // s-quark mass for probability density
@@ -312,6 +317,9 @@ namespace Belle2 {
       // Pick a value for the b-quark Fermi motion momentum
       // according to Ali's Gaussian model
 
+      // Power corrections in the decay rate and distributions in B->Xs l+l- 2 in the standard model
+      // see (eq.57)
+
       double pb, pbmax, xbox, ybox;
       pb = 0.0;
       pbmax = 5.0 * pf;
@@ -330,6 +338,9 @@ namespace Belle2 {
   {
       // Compute probability according to Ali's Gaussian model
       // the function chosen has a convenient maximum value of 1 for pb = pf
+
+      // Power corrections in the decay rate and distributions in B->Xs l+l- 2 in the standard model
+      // see (eq.57)
 
       double prsq = (pb * pb) / (pf * pf);
       double prob = prsq * exp(1.0 - prsq);

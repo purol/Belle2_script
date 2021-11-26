@@ -1,5 +1,10 @@
-// decay for B->K nu nu
-// updated: 2021-10-05
+/**************************************************************************
+ * basf2 (Belle II Analysis Software Framework)                           *
+ * Author: The Belle II Collaboration                                     *
+ *                                                                        *
+ * See git log for contributors and copyright holders.                    *
+ * This file is licensed under LGPL-3.0, see LICENSE.md.                  *
+ **************************************************************************/
 // form factor: arXiv:1409.4557v2
 
 #include <generators/evtgen/EvtGenModelRegister.h>
@@ -72,8 +77,8 @@ namespace Belle2 {
         EvtVector4R phat = (p4b + momk) / m_b;
         EvtVector4R qhat = q / m_b;
 
-        // calculate form factor
-        // Buras, Andrzej J., et al. Journal of High Energy Physics 2015.2 (2015): 1-39.
+        // calculate form factor from [arXiv:1409.4557v2]
+        // see eq 104, eq 105, eq 106, eq 107
         double alpha0 = 0.432;
         double alpha1 = -0.664;
         double alpha2 = -1.2;
@@ -84,6 +89,10 @@ namespace Belle2 {
         double z = (sqrt(tp - q2) - sqrt(tp - t0)) / (sqrt(tp - q2) + sqrt(tp - t0));
         double fp = (1 / (1 - q2 / (mp * mp))) * (alpha0 + alpha1 * z + alpha2 * z * z + (-alpha1 + 2 * alpha2) * z * z * z / 3);
         double fm = -fp * (1 - mkhat * mkhat) / shat;
+
+        // calculate quark decay amplitude from [arXiv:hep-ph/9910221v2]
+        // see eq 3.1, eq 3.2, eq 4.1, eq 4.2, and eq 4.3
+        // but in B->K nu nubar, fT = 0 and f0 = 0
 
         EvtVector4C T1;
 
@@ -123,6 +132,11 @@ namespace Belle2 {
         checkSpinDaughter(0, EvtSpinType::SCALAR);
         checkSpinDaughter(1, EvtSpinType::NEUTRINO);
         checkSpinDaughter(2, EvtSpinType::NEUTRINO);
+    }
+
+    void EvtKnunu::initProbMax() {
+        // obtained by brute force (71.177)
+        setProbMax(80.0);
     }
 
 }

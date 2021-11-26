@@ -27,6 +27,8 @@ namespace Belle2 {
 
 		void decay(EvtParticle* p);
 
+		void initProbMax();
+
 	};
 
 } // Belle 2 Namespace
