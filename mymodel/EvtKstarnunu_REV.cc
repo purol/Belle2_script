@@ -110,7 +110,7 @@ namespace Belle2 {
 
         // calculate quark decay amplitude from [arXiv:hep-ph/9910221v2]
         // see eq 3.3, eq 3.4, eq 3.5, eq 4.1, eq 4.4, and eq 4.5
-        // but in B->Kstar nu nubar, A3 = 0, A0 = 0, and all T = 0
+        // but in B->Kstar nu nubar, A3, A0, and all T terms are ignored
 
         // definition of A12 can be found from [arXiv:1303.5794v2]
 

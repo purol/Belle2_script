@@ -92,7 +92,7 @@ namespace Belle2 {
 
         // calculate quark decay amplitude from [arXiv:hep-ph/9910221v2]
         // see eq 3.1, eq 3.2, eq 4.1, eq 4.2, and eq 4.3
-        // but in B->K nu nubar, fT = 0 and f0 = 0
+        // but in B->K nu nubar, fT and f0 terms are ignored
 
         EvtVector4C T1;
 
