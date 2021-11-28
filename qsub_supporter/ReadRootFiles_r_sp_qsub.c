@@ -1,4 +1,4 @@
-// last update: 2021-11-11
+// last update: 2021-11-28
 // for Belle2 data
 
 /*
@@ -296,6 +296,8 @@ public:
     void ConvertIntoSeparateDataFile(std::string output_name, int flag = 0);
     void PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequality inq, double value);
     void PrintConfusionMatrix();
+    void DvetoFor(Loader::Variable variable, int i);
+    void BsigFitConvergeFor(Loader::Variable variable, int i);
 };
 
 Loader::Loader() {
@@ -2220,6 +2222,59 @@ void Loader::PrintConfusionMatrix() {
 
     Confusion_matrixIsOn = true;
     current_Confusion_matrix++;
+}
+
+void Loader::DvetoFor(Loader::Variable variable, int i) { // remove 1.85 < X < 1.89
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+        if (variable == Loader::Upsilon) {
+            if (1.85 < temp_data.Upsilon_info[i] && temp_data.Upsilon_info[i] < 1.89) {}
+            else temp_queue.push(temp_data);
+        }
+        else if (variable == Loader::Bsig) {
+            if (1.85 < temp_data.Bsig_info[i] && temp_data.Bsig_info[i] < 1.89) {}
+            else temp_queue.push(temp_data);
+        }
+        else if (variable == Loader::Btag) {
+            if (1.85 < temp_data.Btag_info[i] && temp_data.Btag_info[i] < 1.89) {}
+            else temp_queue.push(temp_data);
+        }
+        else {
+            printf("ERROR! 499\n");
+            exit(1);
+        }
+    }
+    TotalData.swap(temp_queue);
+}
+
+void BsigFitConvergeFor(Loader::Variable variable, int i) { // remove X < -0.5 depending on decay mode
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+
+        if (TrueIfDecayModeMatch(temp_data, Loader::B2Kc) || TrueIfDecayModeMatch(temp_data, Loader::B2KcPi0) || TrueIfDecayModeMatch(temp_data, Loader::B02Ks0) || TrueIfDecayModeMatch(temp_data, Loader::B02Ks0Pi0)) {
+            temp_queue.push(temp_data);
+            continue;
+        }
+
+        if (variable == Loader::Upsilon) {
+            if (-0.5 < temp_data.Upsilon_info[i]) temp_queue.push(temp_data);
+        }
+        else if (variable == Loader::Bsig) {
+            if (-0.5 < temp_data.Bsig_info[i]) temp_queue.push(temp_data);
+        }
+        else if (variable == Loader::Btag) {
+            if (-0.5 < temp_data.Btag_info[i]) temp_queue.push(temp_data);
+        }
+        else {
+            printf("ERROR! 500\n");
+            exit(1);
+        }
+    }
+    TotalData.swap(temp_queue);
 }
 
 int main(int argc, char* argv[]) { // argv[1]: Ntuple input with path, argv[2]: destination of output, 
