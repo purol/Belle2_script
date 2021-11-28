@@ -2194,7 +2194,7 @@ void Loader::DvetoFor(Loader::Variable variable, int i) { // remove 1.85 < X < 1
     TotalData.swap(temp_queue);
 }
 
-void BsigFitConvergeFor(Loader::Variable variable, int i) { // remove X < -0.5 depending on decay mode
+void Loader::BsigFitConvergeFor(Loader::Variable variable, int i) { // remove X < -0.5 depending on decay mode
     std::queue<Data> temp_queue;
     while (!TotalData.empty()) {
         Data temp_data = TotalData.front();
