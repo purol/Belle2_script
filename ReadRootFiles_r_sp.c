@@ -2237,7 +2237,7 @@ int ReadRootFiles_r_sp(){
         TFile *input_file = new TFile( (dirname+std::string("/")+names.at(i)).c_str(),"read");
         printf("%s (%d/%zu)\n",("Read "+names.at(i) + "... ").c_str(), i, names.size());
         loader.GetData(input_file);
-        if (loader.event_info_is_valid() == false) { printf("error!\n"); return; }
+        if (loader.event_info_is_valid() == false) { printf("error!\n"); return 0; }
 
         std::string::size_type const p(names.at(i).find_last_of('.'));
         std::string file_without_extension = names.at(i).substr(0, p);
