@@ -173,7 +173,8 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    // we'll later on use only the "signal" events for the test in this example.
    //
    TFile *input(0);
-   TString fname = "/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_large/final_output_merge_Mxs_larger_MIX_test_data.root";
+   std::string input_file_name("final_output_merge_Mxs_smaller_SIGNAL_train_data.root");
+   TString fname = "./For_TMVA_SIGNAL/train/Mxs_small/"+ input_file_name;
    input = TFile::Open( fname );
    if (!input) {
       std::cout << "ERROR: could not open data file" << std::endl;
@@ -323,7 +324,7 @@ void TMVAClassificationApplication( TString myMethodList = "" )
 
    std::cout << "--- Processing: " << theTree->GetEntries() << " events" << std::endl;
 
-   TFile* temp_file = new TFile("TMVAoutput_MIX_final_output_merge_Mxs_larger_test.root", "recreate");
+   TFile* temp_file = new TFile( ("TMVAoutput_"+ input_file_name).c_str(), "recreate");
    temp_file->cd();
    TTree* temp_tree = new TTree("data", "");
 

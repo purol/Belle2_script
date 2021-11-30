@@ -1,4 +1,4 @@
-// last update: 2021-11-18-00
+// last update: 2021-11-10-00
 // for Belle2 data
 
 /*
@@ -23,7 +23,11 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 
 void Deconvertor(){
 
-    const char* filenam = "/media/sf_virtualbox_folder/20211109/TMVA_output/TMVAoutput_CHARM_final_output_merge_Mxs_larger_test.root";
+    std::string input_name("TMVAoutput_final_output_merge_Mxs_smaller_CHARM_train_data.root");
+    size_t lastindex = input_name.find_last_of(".");
+    string rawname = input_name.substr(0, lastindex);
+
+    const char* filenam = ("./TMVA_output/"+ input_name).c_str();
 
         TFile *input_file = new TFile(filenam,"read");
 
@@ -182,7 +186,7 @@ void Deconvertor(){
         /*================================================================*/
 
 
-        TFile* temp_file = new TFile("TMVAoutput_CHARM_final_output_merge_Mxs_larger_test_after_TMVA.root", "recreate");
+        TFile* temp_file = new TFile((rawname+"_after_TMVA.root").c_str(), "recreate");
         temp_file->cd();
         TTree* temp_tree_upsilon = new TTree("Upsilon", "");
         TTree* temp_tree_Bsig = new TTree("Bsig", "");
@@ -326,16 +330,12 @@ void Deconvertor(){
             temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
             temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
         }
-
-        temp_tree_upsilon->Branch("TMVA_BB", &temp_BB_output);
-        temp_tree_upsilon->Branch("TMVA_Continuum", &temp_Continuum_output);
-
         /*================================================================*/
 
         for (unsigned int j = 0; j < temp_tree->GetEntries(); j++) { // Fill
             temp_tree->GetEntry(j);
 
-            if (temp_BB_output > 0.925 && temp_Continuum_output > 0.95) {
+            if (temp_BB_output > 0.98 && temp_Continuum_output > 0.98) {
                 temp_tree_upsilon->Fill();
                 temp_tree_Bsig->Fill();
                 temp_tree_Btag->Fill();
