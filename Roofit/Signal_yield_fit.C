@@ -25,19 +25,22 @@ void load_files(const char* dirname, std::vector<string>* names) {
     }
 }
 
-RooRealVar  Mbc_DATA("Mbc_DATA", "Mbc", 5.27, 5.29);
-RooRealVar  Eecl_DATA("Eecl_DATA", "Eecl", 0, 1.2);
-RooDataSet info_DATA("2Dinfo_DATA", "2Dinfo", RooArgSet(Mbc_DATA, Eecl_DATA));
+RooRealVar  Mbc_DATA("Mbc", "Mbc_DATA", 5.27, 5.29);
+RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0, 1.2);
+RooRealVar weight_DATA("weight", "weight_DATA", 0.0, 1.0);
+RooDataSet info_DATA("2Dinfo", "2Dinfo_DATA", RooArgSet(Mbc_DATA, Eecl_DATA, weight_DATA), WeightVar("weight"));
 
-RooRealVar  Mbc_MC_signal("Mbc_MC_signal", "Mbc", 5.27, 5.29);
-RooRealVar  Eecl_MC_signal("Eecl_MC_signal", "Eecl", 0, 1.2);
-RooDataSet info_MC_signal("2Dinfo_MC_signal", "2Dinfo", RooArgSet(Mbc_MC_signal, Eecl_MC_signal));
+RooRealVar  Mbc_MC_signal("Mbc", "Mbc_MC_signal", 5.27, 5.29);
+RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0, 1.2);
+RooRealVar weight_MC_signal("weight", "weight_MC_signal", 0.0, 1.0);
+RooDataSet info_MC_signal("2Dinfo", "2Dinfo_MC_signal", RooArgSet(Mbc_MC_signal, Eecl_MC_signal, weight_MC_signal), WeightVar("weight"));
 
-RooRealVar  Mbc_MC_background("Mbc_MC_background", "Mbc", 5.27, 5.29);
-RooRealVar  Eecl_MC_background("Eecl_MC_background", "Eecl", 0, 1.2);
-RooDataSet info_MC_background("2Dinfo_MC_background", "2Dinfo", RooArgSet(Mbc_MC_background, Eecl_MC_background));
+RooRealVar  Mbc_MC_background("Mbc", "Mbc_MC_background", 5.27, 5.29);
+RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0, 1.2);
+RooRealVar weight_MC_background("weight", "weight_MC_background", 0.0, 1.0);
+RooDataSet info_MC_background("2Dinfo", "2Dinfo_MC_background", RooArgSet(Mbc_MC_background, Eecl_MC_background, weight_MC_background), WeightVar("weight"));
 
-void LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar*  Eecl_, RooDataSet* info_, double weight_ = 1.0) {
+void LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar*  Eecl_, RooRealVar* weight_, RooDataSet* info_, double weight_var = 1.0) {
     double Eecl_var = 0;
     double Mbc_var = 0;
 
@@ -64,7 +67,8 @@ void LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar*  Eecl_, RooDataS
             
             *Eecl_ = Eecl_var;
             *Mbc_ = Mbc_var;
-            info_->add(RooArgSet(*Mbc_, *Eecl_), weight_);
+            *weight_ = weight_var;
+            info_->add(RooArgSet(*Mbc_, *Eecl_), weight_->getVal());
         }
         input_file->Close();
 
@@ -75,10 +79,13 @@ void LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar*  Eecl_, RooDataS
 void Signal_yield_fit()
 {
     // to extract signal yield
+    RooRealVar EeclFit("Eecl", "Eecl", 0, 1.2, "GeV");
+    EeclFit.setBins(12);
+    RooPlot* Eeclframe = EeclFit.frame(Bins(12), Title(" "));
 
     // get data from root files
     const char* MC_dirname_signal = "./output_after_TMVA_test/SIGNAL";
-    LetsAdd(MC_dirname_signal, &Mbc_MC_signal, &Eecl_MC_signal, &info_MC_signal);
+    LetsAdd(MC_dirname_signal, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal);
 
     const char* MC_dirname_CHG = "./output_after_TMVA_test/CHG";
     const char* MC_dirname_MIX = "./output_after_TMVA_test/MIX";
@@ -86,39 +93,39 @@ void Signal_yield_fit()
     const char* MC_dirname_DDBAR = "./output_after_TMVA_test/DDBAR";
     const char* MC_dirname_SSBAR = "./output_after_TMVA_test/SSBAR";
     const char* MC_dirname_CHARM = "./output_after_TMVA_test/CHARM";
-    LetsAdd(MC_dirname_CHG, &Mbc_MC_background, &Eecl_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_MIX, &Mbc_MC_background, &Eecl_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_UUBAR, &Mbc_MC_background, &Eecl_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_DDBAR, &Mbc_MC_background, &Eecl_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_SSBAR, &Mbc_MC_background, &Eecl_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_CHARM, &Mbc_MC_background, &Eecl_MC_background, &info_MC_background);
+    LetsAdd(MC_dirname_CHG, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd(MC_dirname_MIX, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd(MC_dirname_UUBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd(MC_dirname_DDBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd(MC_dirname_SSBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd(MC_dirname_CHARM, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
 
     const char* DATA_dirname_BKG = "./output_after_TMVA_train/BKG";
     const char* DATA_dirname_SIGNAL = "./output_after_TMVA_train/SIGNAL";
-    LetsAdd(DATA_dirname_BKG, &Mbc_DATA, &Eecl_DATA, &info_DATA);
-    LetsAdd(DATA_dirname_SIGNAL, &Mbc_DATA, &Eecl_DATA, &info_DATA, 0.0);
+    LetsAdd(DATA_dirname_BKG, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
+    LetsAdd(DATA_dirname_SIGNAL, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, 0.003385);
 
 
     // define frame and get ready to make pdfs
     Eecl_DATA.setBins(12);
-    RooPlot* Eeclframe = Eecl_DATA.frame(Bins(12), Title("Operations on binned datasets"));
+    //RooPlot* Eeclframe = Eecl_DATA.frame(Bins(12), Title("Operations on binned datasets"));
     RooDataSet* d_Eecl = (RooDataSet*)info_DATA.reduce(RooArgSet(Eecl_DATA));
 
     Eecl_MC_signal.setBins(12);
     RooDataSet* dataset_Eecl_MC_signal = (RooDataSet*)info_MC_signal.reduce(RooArgSet(Eecl_MC_signal));
-    RooDataHist* hist_Eecl_MC_signal = dataset_Eecl_MC_signal->binnedClone();
+    RooDataHist hist_Eecl_MC_signal("hist_Eecl_MC_signal", "histogram for Eecl of MC signal samples", EeclFit, *dataset_Eecl_MC_signal);
     Eecl_MC_background.setBins(12);
     RooDataSet* dataset_Eecl_MC_background = (RooDataSet*)info_MC_background.reduce(RooArgSet(Eecl_MC_background));
-    RooDataHist* hist_Eecl_MC_background = dataset_Eecl_MC_background->binnedClone();
+    RooDataHist hist_Eecl_MC_background("hist_Eecl_MC_background", "histogram for Eecl of MC background samples", EeclFit, *dataset_Eecl_MC_background);
 
 
     // define pdf and extended pdf
-    RooHistPdf histpdf_Eecl_signal("histpdf_Eecl_signal", "histpdf_Eecl_signal", Eecl_DATA, *hist_Eecl_MC_signal, 0);
-    RooRealVar nsig("nsig", "number of signal events", 10, 0, 20);
+    RooHistPdf histpdf_Eecl_signal("histpdf_Eecl_signal", "histpdf_Eecl_signal", EeclFit, hist_Eecl_MC_signal, 0);
+    RooRealVar nsig("nsig", "number of signal events", 10, 0, 40);
     RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal, nsig);
 
-    RooHistPdf histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", Eecl_DATA, *hist_Eecl_MC_background, 0);
-    RooRealVar nbkg("nbkg", "number of background events", 130, 0, 250);
+    RooHistPdf histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, hist_Eecl_MC_background, 0);
+    RooRealVar nbkg("nbkg", "number of background events", 130, 0, 300);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background, nbkg);
 
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -126,12 +133,17 @@ void Signal_yield_fit()
     // fit
     totalpdf.fitTo(*d_Eecl);
 
+    //info_DATA.get(0)->Print("V");
+    //info_DATA.get(1)->Print("V");
 
     // Draw result
     d_Eecl->plotOn(Eeclframe);
-    totalpdf.plotOn(Eeclframe, LineColor(kRed), Normalization(1.0, RooAbsReal::RelativeExpected));
-    totalpdf.plotOn(Eeclframe, Components(esig), LineColor(kBlue), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
-    totalpdf.plotOn(Eeclframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
+    totalpdf.plotOn(Eeclframe, LineColor(kRed));
+    totalpdf.plotOn(Eeclframe, Components(esig), LineColor(kBlue), LineStyle(kDashed));
+    totalpdf.plotOn(Eeclframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed));
+    //dataset_Eecl_MC_signal->plotOn(Eeclframe);
+    //histpdf_Eecl_signal.plotOn(Eeclframe);
+    //totalpdf.plotOn(Eeclframe, LineColor(kRed), Normalization(1.0, RooAbsReal::RelativeExpected));
 
     new TCanvas("Eecl", "Eecl", 600, 600);
     gPad->SetLeftMargin(0.15); Eeclframe->GetYaxis()->SetTitleOffset(1.4); Eeclframe->Draw();
