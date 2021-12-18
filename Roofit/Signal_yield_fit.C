@@ -100,8 +100,8 @@ void Signal_yield_fit()
     LetsAdd(MC_dirname_SSBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_CHARM, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
 
-    const char* DATA_dirname_BKG = "./output_after_TMVA_train/BKG";
-    const char* DATA_dirname_SIGNAL = "./output_after_TMVA_train/SIGNAL";
+    const char* DATA_dirname_BKG = "./output_after_TMVA_test/BKG";
+    const char* DATA_dirname_SIGNAL = "./output_after_TMVA_test/SIGNAL";
     LetsAdd(DATA_dirname_BKG, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
     LetsAdd(DATA_dirname_SIGNAL, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, 0.003385);
 
@@ -121,11 +121,11 @@ void Signal_yield_fit()
 
     // define pdf and extended pdf
     RooHistPdf histpdf_Eecl_signal("histpdf_Eecl_signal", "histpdf_Eecl_signal", EeclFit, hist_Eecl_MC_signal, 0);
-    RooRealVar nsig("nsig", "number of signal events", 10, 0, 40);
+    RooRealVar nsig("nsig", "number of signal events", 10, -100, 100);
     RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal, nsig);
 
     RooHistPdf histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, hist_Eecl_MC_background, 0);
-    RooRealVar nbkg("nbkg", "number of background events", 130, 0, 300);
+    RooRealVar nbkg("nbkg", "number of background events", 130, -300, 300);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background, nbkg);
 
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -145,6 +145,29 @@ void Signal_yield_fit()
     //histpdf_Eecl_signal.plotOn(Eeclframe);
     //totalpdf.plotOn(Eeclframe, LineColor(kRed), Normalization(1.0, RooAbsReal::RelativeExpected));
 
-    new TCanvas("Eecl", "Eecl", 600, 600);
-    gPad->SetLeftMargin(0.15); Eeclframe->GetYaxis()->SetTitleOffset(1.4); Eeclframe->Draw();
+    TCanvas* c = new TCanvas("Eecl", "Eecl", 600, 600);
+    gPad->SetLeftMargin(0.15); Eeclframe->GetYaxis()->SetTitleOffset(1.4); Eeclframe->Draw(); c->SaveAs("Eecl_distribution.png");
+
+
+
+    /* ============== toy MC study ============== */
+    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 1.2);
+    Eecl_TOY.setBins(12);
+
+    RooMCStudy* mcstudy = new RooMCStudy(totalpdf, Eecl_TOY, Binned(kTRUE), Silence(), Extended(),FitOptions(Save(kTRUE), PrintEvalErrors(0)));
+    mcstudy->generateAndFit(1000);
+
+    // Make plots of the distributions of mean, the error on mean and the pull of mean
+    RooPlot* frame1 = mcstudy->plotParam(nsig, Bins(40));
+    RooPlot* frame2 = mcstudy->plotError(nsig, Bins(40));
+    RooPlot* frame3 = mcstudy->plotPull(nsig, Bins(40), FitGauss(kTRUE));
+
+
+    // Draw all plots on a canvas
+    gStyle->SetOptStat(0);
+    TCanvas* cf = new TCanvas("rf801_mcstudy", "rf801_mcstudy", 1200, 400);
+    cf->Divide(3, 1);
+    cf->cd(1); gPad->SetLeftMargin(0.15); frame1->GetYaxis()->SetTitleOffset(1.4); frame1->Draw();
+    cf->cd(2); gPad->SetLeftMargin(0.15); frame2->GetYaxis()->SetTitleOffset(1.4); frame2->Draw();
+    cf->cd(3); gPad->SetLeftMargin(0.15); frame3->GetYaxis()->SetTitleOffset(1.4); frame3->Draw();
 }

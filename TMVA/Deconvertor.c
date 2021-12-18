@@ -1,4 +1,4 @@
-// last update: 2021-11-30-00
+// last update: 2021-12-18-00
 // for Belle2 data
 
 /*
@@ -14,7 +14,7 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 # define N_Needed_info 37
 # define N_event_info 15
 # define N_Upsilon_info 13
-# define N_Bsig_info 7
+# define N_Bsig_info 8
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
@@ -86,6 +86,7 @@ void Deconvertor(){
         temp_tree->SetBranchAddress("Bsig_useCMSFrame_p", &temp_BsigDataToTree[4]);
         temp_tree->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree[5]);
         temp_tree->SetBranchAddress("Bsig_M", &temp_BsigDataToTree[6]);
+        temp_tree->SetBranchAddress("Bsig_daughter_0_chiProb", &temp_BsigDataToTree[7]);
 
         // get Btag_info
         temp_tree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -240,6 +241,7 @@ void Deconvertor(){
         temp_tree_Bsig->Branch("Bsig_useCMSFrame_p", &temp_BsigDataToTree[4]);
         temp_tree_upsilon->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree[5]);
         temp_tree_Bsig->Branch("Bsig_M", &temp_BsigDataToTree[6]);
+        temp_tree_Bsig->Branch("Bsig_daughter_0_chiProb", &temp_BsigDataToTree[7]);
 
         // get Btag_info
         temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);

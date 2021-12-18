@@ -1,4 +1,4 @@
-// last update: 2021-11-28
+// last update: 2021-12-18
 // for Belle2 data
 
 /*
@@ -69,7 +69,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_Needed_info 37
 # define N_event_info 15
 # define N_Upsilon_info 13
-# define N_Bsig_info 7
+# define N_Bsig_info 8
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
@@ -115,7 +115,7 @@ typedef struct data{
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
     // 3: Bsig_p, 4: Bsig_p_CMS, 5: Bsig_p_Recoil
-    // 6: M
+    // 6: M, 7: Bsig_daughter_0_chiProb
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
@@ -406,6 +406,7 @@ void Loader::GetData(TFile* input_file) {
     tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_p", &temp.Bsig_info[4]);
     tree_upsilon->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp.Bsig_info[5]);
     tree_Bsig->SetBranchAddress("Bsig_M", &temp.Bsig_info[6]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_chiProb", &temp.Bsig_info[7]);
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
@@ -1395,6 +1396,7 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Bsig->Branch("Bsig_useCMSFrame_p", &BsigDataToTree[4]);
         tree_upsilon->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &BsigDataToTree[5]);
         tree_Bsig->Branch("Bsig_M", &BsigDataToTree[6]);
+        tree_Bsig->Branch("Bsig_daughter_0_chiProb", &BsigDataToTree[7]);
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -1607,6 +1609,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Bsig->Branch("Bsig_useCMSFrame_p", &temp_BsigDataToTree[4]);
     temp_tree_upsilon->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree[5]);
     temp_tree_Bsig->Branch("Bsig_M", &temp_BsigDataToTree[6]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_chiProb", &temp_BsigDataToTree[7]);
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -1797,6 +1800,7 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("Bsig_useCMSFrame_p", &temp_BsigDataToTree[4]);
     temp_tree->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree[5]);
     temp_tree->Branch("Bsig_M", &temp_BsigDataToTree[6]);
+    temp_tree->Branch("Bsig_daughter_0_chiProb", &temp_BsigDataToTree[7]);
 
     // get Btag_info
     temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -2304,6 +2308,10 @@ int main(int argc, char* argv[]) { // argv[1]: Ntuple input with path, argv[2]: 
     loader.Cut(Loader::Btag, 6, Loader::larger_than, -0.5);
     loader.PrintInformation(std::string("========== chiProb_Btag > -0.5 =========="));
 
+    //loader.DrawTH1F("Bsig_chiProb", "chiProb of X_{s};chiProb;evt", 100, -1.2, 1.2, Loader::Bsig, 7);
+    loader.BsigFitConvergeFor(Loader::Bsig, 7);
+    loader.PrintInformation(std::string("========== chiProb_Bsig for some decay modes > -0.5 =========="));
+
     loader.PrintSeparateRootFile(destination + file_without_extension + std::string("_before_nRawtrack_cut.root"));
     //loader.DrawTH1F("nROE_track_Upsilon_after_initial", "number of raw tracks in ROE of #Upsilon(4S);number of raw tracks;evt", 100, -0.5, 13.5, Loader::Upsilon, 10);
     loader.Cut(Loader::Upsilon, 10, Loader::smaller_than, 0.5);
@@ -2333,15 +2341,20 @@ int main(int argc, char* argv[]) { // argv[1]: Ntuple input with path, argv[2]: 
     loader.PrintInformation(std::string("========== abs(deltaE) < 0.1 =========="));
     //loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
-    //loader.PrintSeparateRootFile(destination + file_without_extension + std::string("_before_Mbc_cut.root"));
-    //loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
-    //loader.PrintInformation(std::string("========== Mbc > 5.27 =========="));
+    loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Dveto_cut.root"));
+    //loader.DrawTH1F("Bsig_M_Xs", "mass of X_{s};M_{Xs} [GeV];evt", 100, 0, 3.5, Loader::Bsig, 6);
+    loader.DvetoFor(Loader::Bsig, 6);
+    loader.PrintInformation(std::string("========== D veto =========="));
+
+    loader.PrintSeparateRootFile(destination + file_without_extension + std::string("_before_Mbc_cut.root"));
+    loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
+    loader.PrintInformation(std::string("========== Mbc > 5.27 =========="));
     //loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
     loader.PrintSeparateRootFile(destination + file_without_extension + std::string("_before_Eecl_cut.root"));
     //loader.DrawTH1F("ROE_Eecl_Upsilon_after_Mbc_strict_cut", "E_ecl in ROE of #Upsilon(4S);E_{ecl} [GeV];candidates", 100, -0.1, 8, Loader::Upsilon, 3);
-    loader.Cut(Loader::Upsilon, 3, Loader::smaller_than, 2);
-    loader.PrintInformation(std::string("========== E_ecl < 2 GeV =========="));
+    loader.Cut(Loader::Upsilon, 3, Loader::smaller_than, 1.2);
+    loader.PrintInformation(std::string("========== E_ecl < 1.2 GeV =========="));
 
     //loader.DrawTH1F("SignalProbability_Btag_before_BCS", "SignalProbability of B_{tag};log_{10}(SignalProbability);Num of candidate", 100, -10, 0, Loader::Btag, 5, Loader::Log);
     loader.BCS(Loader::Btag, 5, Loader::Highest);

@@ -14,7 +14,7 @@
 # define N_Needed_info 37
 # define N_event_info 15
 # define N_Upsilon_info 13
-# define N_Bsig_info 7
+# define N_Bsig_info 8
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
@@ -140,6 +140,7 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    reader->AddSpectator("Bsig_useCMSFrame_p", &temp_BsigDataToTree_f[4]);
    reader->AddSpectator("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree_f[5]);
    reader->AddSpectator("Bsig_M", &temp_BsigDataToTree_f[6]);
+   reader->AddSpectator("Bsig_daughter_0_chiProb", &temp_BsigDataToTree_f[7]);
    reader->AddSpectator("Btag_extraInfo_decayModeID", &temp_BtagDataToTree_f[0]);
    reader->AddSpectator("Btag_Mbc", &temp_BtagDataToTree_f[1]);
    reader->AddSpectator("Btag_deltaE", &temp_BtagDataToTree_f[2]);
@@ -225,6 +226,7 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    theTree->SetBranchAddress("Bsig_useCMSFrame_p", &temp_BsigDataToTree[4]);
    theTree->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree[5]);
    theTree->SetBranchAddress("Bsig_M", &temp_BsigDataToTree[6]);
+   theTree->SetBranchAddress("Bsig_daughter_0_chiProb", &temp_BsigDataToTree[7]);
 
    // get Btag_info
    theTree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -363,6 +365,7 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    temp_tree->Branch("Bsig_useCMSFrame_p", &temp_BsigDataToTree[4]);
    temp_tree->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree[5]);
    temp_tree->Branch("Bsig_M", &temp_BsigDataToTree[6]);
+   temp_tree->Branch("Bsig_daughter_0_chiProb", &temp_BsigDataToTree[7]);
 
    // get Btag_info
    temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);

@@ -125,6 +125,7 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
    dataloader->AddSpectator("Bsig_useCMSFrame_p", 'F');
    dataloader->AddSpectator("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", 'F');
    dataloader->AddSpectator("Bsig_M", 'F');
+   dataloader->AddSpectator("Bsig_daughter_0_chiProb", 'F');
    dataloader->AddSpectator("Btag_extraInfo_decayModeID", 'F');
    dataloader->AddSpectator("Btag_Mbc", 'F');
    dataloader->AddSpectator("Btag_deltaE", 'F');
