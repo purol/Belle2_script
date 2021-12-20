@@ -2341,7 +2341,7 @@ int main(int argc, char* argv[]) { // argv[1]: Ntuple input with path, argv[2]: 
     loader.PrintInformation(std::string("========== abs(deltaE) < 0.1 =========="));
     //loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
-    loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Dveto_cut.root"));
+    loader.PrintSeparateRootFile(destination + file_without_extension + std::string("_before_Dveto_cut.root"));
     //loader.DrawTH1F("Bsig_M_Xs", "mass of X_{s};M_{Xs} [GeV];evt", 100, 0, 3.5, Loader::Bsig, 6);
     loader.DvetoFor(Loader::Bsig, 6);
     loader.PrintInformation(std::string("========== D veto =========="));
