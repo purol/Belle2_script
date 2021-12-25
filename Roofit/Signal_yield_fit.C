@@ -165,7 +165,7 @@ void Signal_yield_fit()
 
     // Draw all plots on a canvas
     gStyle->SetOptStat(0);
-    TCanvas* cf = new TCanvas("rf801_mcstudy", "rf801_mcstudy", 1200, 400);
+    TCanvas* cf = new TCanvas("", "", 1200, 400);
     cf->Divide(3, 1);
     cf->cd(1); gPad->SetLeftMargin(0.15); frame1->GetYaxis()->SetTitleOffset(1.4); frame1->Draw();
     cf->cd(2); gPad->SetLeftMargin(0.15); frame2->GetYaxis()->SetTitleOffset(1.4); frame2->Draw();
