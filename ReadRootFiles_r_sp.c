@@ -168,6 +168,12 @@ public:
         when = 0,
         except
     };
+    enum Dvetotype {
+        Dchargedwithoutpizero = 0,
+        Dchargedwithpizero,
+        Dneutralwithoutpizero,
+        Dneutralwithpizero
+    };
 
 private:
     std::queue<Data> TotalData;
@@ -245,6 +251,8 @@ public:
     void PrintConfusionMatrix();
     void DvetoFor(Loader::Variable variable, int i);
     void BsigFitConvergeFor(Loader::Variable variable, int i);
+    void OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type);
+    void DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type, double minM, double maxM);
 };
 
 Loader::Loader() {
@@ -2242,6 +2250,108 @@ void Loader::BsigFitConvergeFor(Loader::Variable variable, int i) { // remove X 
         }
         else {
             printf("ERROR! 500\n");
+            exit(1);
+        }
+    }
+    TotalData.swap(temp_queue);
+}
+
+void Loader::OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type) { // select specific D veto type
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+
+        double temp_dmID_Dcharged;
+        double temp_dmID_Dneutral;
+        if (variable == Loader::Upsilon) {
+            temp_dmID_Dcharged = temp_data.Upsilon_info[DchargedvetodmIDindex];
+            temp_dmID_Dneutral = temp_data.Upsilon_info[DneutralvetodmIDindex];
+        }
+        else if (variable == Loader::Bsig) {
+            temp_dmID_Dcharged = temp_data.Bsig_info[DchargedvetodmIDindex];
+            temp_dmID_Dneutral = temp_data.Bsig_info[DneutralvetodmIDindex];
+        }
+        else if (variable == Loader::Btag) {
+            temp_dmID_Dcharged = temp_data.Btag_info[DchargedvetodmIDindex];
+            temp_dmID_Dneutral = temp_data.Btag_info[DneutralvetodmIDindex];
+        }
+
+        if (type == Loader::Dchargedwithoutpizero) {
+            if (0.5 < temp_dmID_Dcharged < 3.5 || 5.5 < temp_dmID_Dcharged < 8.5) temp_queue.push(temp_data);
+        }
+        else if (type == Loader::Dchargedwithpizero) {
+            if (3.5 < temp_dmID_Dcharged < 5.5 || 8.5 < temp_dmID_Dcharged < 11.5) temp_queue.push(temp_data);
+        }
+        else if (type == Loader::Dneutralwithoutpizero) {
+            if (0.5 < temp_dmID_Dneutral < 3.5 || 6.5 < temp_dmID_Dneutral < 7.5) temp_queue.push(temp_data);
+        }
+        else if (type == Loader::Dneutralwithpizero) {
+            if (3.5 < temp_dmID_Dneutral < 6.5 || 7.5 < temp_dmID_Dneutral < 8.5) temp_queue.push(temp_data);
+        }
+        else {
+            printf("ERROR! 963\n");
+            exit(1);
+        }
+    }
+    TotalData.swap(temp_queue);
+}
+
+void Loader::DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type, double minM, double maxM) { // reject minM < D < max for specific type
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+
+        double temp_dmID_Dcharged;
+        double temp_M_Dcharged;
+        double temp_dmID_Dneutral;
+        double temp_M_Dneutral;
+        if (variable == Loader::Upsilon) {
+            temp_dmID_Dcharged = temp_data.Upsilon_info[DchargedvetodmIDindex];
+            temp_M_Dcharged = temp_data.Upsilon_info[Dchargedvetomassindex];
+            temp_dmID_Dneutral = temp_data.Upsilon_info[DneutralvetodmIDindex];
+            temp_M_Dneutral = temp_data.Upsilon_info[Dneutralvetomassindex];
+        }
+        else if (variable == Loader::Bsig) {
+            temp_dmID_Dcharged = temp_data.Bsig_info[DchargedvetodmIDindex];
+            temp_M_Dcharged = temp_data.Bsig_info[Dchargedvetomassindex];
+            temp_dmID_Dneutral = temp_data.Bsig_info[DneutralvetodmIDindex];
+            temp_M_Dneutral = temp_data.Bsig_info[Dneutralvetomassindex];
+        }
+        else if (variable == Loader::Btag) {
+            temp_dmID_Dcharged = temp_data.Btag_info[DchargedvetodmIDindex];
+            temp_M_Dcharged = temp_data.Btag_info[Dchargedvetomassindex];
+            temp_dmID_Dneutral = temp_data.Btag_info[DneutralvetodmIDindex];
+            temp_M_Dneutral = temp_data.Btag_info[Dneutralvetomassindex];
+        }
+
+        if (type == Loader::Dchargedwithoutpizero) {
+            if (0.5 < temp_dmID_Dcharged < 3.5 || 5.5 < temp_dmID_Dcharged < 8.5) {
+                if(temp_M_Dcharged < minM || temp_M_Dcharged > maxM) temp_queue.push(temp_data);
+            }
+            else temp_queue.push(temp_data);
+        }
+        else if (type == Loader::Dchargedwithpizero) {
+            if (3.5 < temp_dmID_Dcharged < 5.5 || 8.5 < temp_dmID_Dcharged < 11.5) {
+                if (temp_M_Dcharged < minM || temp_M_Dcharged > maxM) temp_queue.push(temp_data);
+            }
+            else temp_queue.push(temp_data);
+        }
+        else if (type == Loader::Dneutralwithoutpizero) {
+            if (0.5 < temp_dmID_Dneutral < 3.5 || 6.5 < temp_dmID_Dneutral < 7.5) {
+                if (temp_M_Dneutral < minM || temp_M_Dneutral > maxM) temp_queue.push(temp_data);
+            }
+            else temp_queue.push(temp_data);
+        }
+        else if (type == Loader::Dneutralwithpizero) {
+            if (3.5 < temp_dmID_Dneutral < 6.5 || 7.5 < temp_dmID_Dneutral < 8.5) {
+                if (temp_M_Dneutral < minM || temp_M_Dneutral > maxM) temp_queue.push(temp_data);
+            }
+            else temp_queue.push(temp_data);
+        }
+        else {
+            printf("ERROR! 964\n");
             exit(1);
         }
     }
