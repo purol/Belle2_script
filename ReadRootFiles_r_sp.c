@@ -1,4 +1,4 @@
-// last update: 2021-12-18
+// last update: 2021-12-26
 // for Belle2 data
 
 /*
@@ -14,7 +14,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_Needed_info 37
 # define N_event_info 15
 # define N_Upsilon_info 13
-# define N_Bsig_info 8
+# define N_Bsig_info 13
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
@@ -60,7 +60,9 @@ typedef struct data{
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
     // 3: Bsig_p, 4: Bsig_p_CMS, 5: Bsig_p_Recoil
-    // 6: M, 7: Bsig_daughter_0_chiProb
+    // 6: M
+    // 7: Dcvetomass, 8: DcvetodmID, 9: DcvetoabsdM
+    // 10: Dnvetomass, 11: DnvetodmID, 12: DnvetoabsdM
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
@@ -351,7 +353,12 @@ void Loader::GetData(TFile* input_file) {
     tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_p", &temp.Bsig_info[4]);
     tree_upsilon->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp.Bsig_info[5]);
     tree_Bsig->SetBranchAddress("Bsig_M", &temp.Bsig_info[6]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_chiProb", &temp.Bsig_info[7]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcvetomass", &temp.Bsig_info[7]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_DcvetodmID", &temp.Bsig_info[8]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcvetoabsdm", &temp.Bsig_info[9]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dnvetomass", &temp.Bsig_info[10]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_DnvetodmID", &temp.Bsig_info[11]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp.Bsig_info[12]);
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
@@ -1341,7 +1348,12 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Bsig->Branch("Bsig_useCMSFrame_p", &BsigDataToTree[4]);
         tree_upsilon->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &BsigDataToTree[5]);
         tree_Bsig->Branch("Bsig_M", &BsigDataToTree[6]);
-        tree_Bsig->Branch("Bsig_daughter_0_chiProb", &BsigDataToTree[7]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcvetomass", &BsigDataToTree[7]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_DcvetodmID", &BsigDataToTree[8]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcvetoabsdm", &BsigDataToTree[9]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dnvetomass", &BsigDataToTree[10]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_DnvetodmID", &BsigDataToTree[11]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &BsigDataToTree[12]);
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -1554,7 +1566,12 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Bsig->Branch("Bsig_useCMSFrame_p", &temp_BsigDataToTree[4]);
     temp_tree_upsilon->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree[5]);
     temp_tree_Bsig->Branch("Bsig_M", &temp_BsigDataToTree[6]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_chiProb", &temp_BsigDataToTree[7]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcvetomass", &temp_BsigDataToTree[7]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_DcvetodmID", &temp_BsigDataToTree[8]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcvetoabsdm", &temp_BsigDataToTree[9]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dnvetomass", &temp_BsigDataToTree[10]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_DnvetodmID", &temp_BsigDataToTree[11]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp_BsigDataToTree[12]);
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -1745,7 +1762,12 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("Bsig_useCMSFrame_p", &temp_BsigDataToTree[4]);
     temp_tree->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree[5]);
     temp_tree->Branch("Bsig_M", &temp_BsigDataToTree[6]);
-    temp_tree->Branch("Bsig_daughter_0_chiProb", &temp_BsigDataToTree[7]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcvetomass", &temp_BsigDataToTree[7]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_DcvetodmID", &temp_BsigDataToTree[8]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcvetoabsdm", &temp_BsigDataToTree[9]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dnvetomass", &temp_BsigDataToTree[10]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_DnvetodmID", &temp_BsigDataToTree[11]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp_BsigDataToTree[12]);
 
     // get Btag_info
     temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
