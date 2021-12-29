@@ -2333,16 +2333,16 @@ void Loader::OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetom
         }
 
         if (type == Loader::Dchargedwithoutpizero) {
-            if (0.5 < temp_dmID_Dcharged < 3.5 || 5.5 < temp_dmID_Dcharged < 8.5) temp_queue.push(temp_data);
+            if ((0.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 3.5) || (5.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 8.5)) temp_queue.push(temp_data);
         }
         else if (type == Loader::Dchargedwithpizero) {
-            if (3.5 < temp_dmID_Dcharged < 5.5 || 8.5 < temp_dmID_Dcharged < 11.5) temp_queue.push(temp_data);
+            if ((3.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 5.5) || (8.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 11.5)) temp_queue.push(temp_data);
         }
         else if (type == Loader::Dneutralwithoutpizero) {
-            if (0.5 < temp_dmID_Dneutral < 3.5 || 6.5 < temp_dmID_Dneutral < 7.5) temp_queue.push(temp_data);
+            if ((0.5 < temp_dmID_Dneutral && temp_dmID_Dneutral < 3.5) || (6.5 < temp_dmID_Dneutral && temp_dmID_Dneutral < 7.5)) temp_queue.push(temp_data);
         }
         else if (type == Loader::Dneutralwithpizero) {
-            if (3.5 < temp_dmID_Dneutral < 6.5 || 7.5 < temp_dmID_Dneutral < 8.5) temp_queue.push(temp_data);
+            if ((3.5 < temp_dmID_Dneutral && temp_dmID_Dneutral < 6.5) || (7.5 < temp_dmID_Dneutral && temp_dmID_Dneutral < 8.5)) temp_queue.push(temp_data);
         }
         else {
             printf("ERROR! 963\n");
@@ -2382,25 +2382,25 @@ void Loader::DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedve
         }
 
         if (type == Loader::Dchargedwithoutpizero) {
-            if (0.5 < temp_dmID_Dcharged < 3.5 || 5.5 < temp_dmID_Dcharged < 8.5) {
+            if ((0.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 3.5) || (5.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 8.5)) {
                 if (temp_M_Dcharged < minM || temp_M_Dcharged > maxM) temp_queue.push(temp_data);
             }
             else temp_queue.push(temp_data);
         }
         else if (type == Loader::Dchargedwithpizero) {
-            if (3.5 < temp_dmID_Dcharged < 5.5 || 8.5 < temp_dmID_Dcharged < 11.5) {
+            if ((3.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 5.5) || (8.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 11.5)) {
                 if (temp_M_Dcharged < minM || temp_M_Dcharged > maxM) temp_queue.push(temp_data);
             }
             else temp_queue.push(temp_data);
         }
         else if (type == Loader::Dneutralwithoutpizero) {
-            if (0.5 < temp_dmID_Dneutral < 3.5 || 6.5 < temp_dmID_Dneutral < 7.5) {
+            if ((0.5 < temp_dmID_Dneutral && temp_dmID_Dneutral < 3.5) || (6.5 < temp_dmID_Dneutral && temp_dmID_Dneutral < 7.5)) {
                 if (temp_M_Dneutral < minM || temp_M_Dneutral > maxM) temp_queue.push(temp_data);
             }
             else temp_queue.push(temp_data);
         }
         else if (type == Loader::Dneutralwithpizero) {
-            if (3.5 < temp_dmID_Dneutral < 6.5 || 7.5 < temp_dmID_Dneutral < 8.5) {
+            if ((3.5 < temp_dmID_Dneutral && temp_dmID_Dneutral < 6.5) || (7.5 < temp_dmID_Dneutral && temp_dmID_Dneutral < 8.5)) {
                 if (temp_M_Dneutral < minM || temp_M_Dneutral > maxM) temp_queue.push(temp_data);
             }
             else temp_queue.push(temp_data);

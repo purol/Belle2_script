@@ -9,6 +9,26 @@
 #include "RooPlot.h"
 using namespace RooFit ;
 
+typedef struct decaymode {
+    std::string name;
+    int dmID;
+    int ntrack;
+    int nKp;
+    int nKm;
+    int npip;
+    int npim;
+    int npizero;
+    int nKshort;
+    int nslowpion;
+    double MCefficiency;
+} DecayMode;
+
+const double Uncer_track_MC[3] = { 100, 0.82, 0.82 }; // 100 + 0.82 -0.82 % [BELLE2-NOTE-PH-2020-006 (Moriond)]
+const double Uncer_KaonID[3] = { 0 }; // https://stash.desy.de/users/saurabh/repos/pid_dst_sandilya/browse/dtmc_logs [b2n048_P11BB]
+const double Uncer_PionmID[3] = { 0.942574, 0.00848917275, 0.00848863242 }; // https://stash.desy.de/users/saurabh/repos/pid_dst_sandilya/browse/dtmc_logs [b2n048_P11BB]
+const double Uncer_PionpID[3] = { 0.935591, 0.00818119524, 0.00818084324 }; // https://stash.desy.de/users/saurabh/repos/pid_dst_sandilya/browse/dtmc_logs [b2n048_P11BB]
+const double Uncer_KS0 = 0.6; // %/cm BELLE2-NOTE-PH-2020-072
+
 void load_files(const char* dirname, std::vector<string>* names) {
     TSystemDirectory dir(dirname, dirname);
     TList* files = dir.GetListOfFiles();
@@ -170,4 +190,7 @@ void Signal_yield_fit()
     cf->cd(1); gPad->SetLeftMargin(0.15); frame1->GetYaxis()->SetTitleOffset(1.4); frame1->Draw();
     cf->cd(2); gPad->SetLeftMargin(0.15); frame2->GetYaxis()->SetTitleOffset(1.4); frame2->Draw();
     cf->cd(3); gPad->SetLeftMargin(0.15); frame3->GetYaxis()->SetTitleOffset(1.4); frame3->Draw();
+
+
+    /* ============== Get systematic uncertainty of efficiency ============== */
 }
