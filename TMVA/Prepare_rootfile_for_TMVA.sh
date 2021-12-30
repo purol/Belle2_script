@@ -64,10 +64,10 @@ mkdir -p ./For_TMVA_SIGNAL/test/Mxs_small
 mkdir -p ./For_TMVA_SIGNAL/train/Mxs_large
 mkdir -p ./For_TMVA_SIGNAL/train/Mxs_small
 
-mv ./root_file_for_TMVA/*larger*SIGNAL*$2_data.root ./For_TMVA_BKG/test/Mxs_large
-mv ./root_file_for_TMVA/*smaller*SIGNAL*$2_data.root ./For_TMVA_BKG/test/Mxs_small
-mv ./root_file_for_TMVA/*larger*SIGNAL*$3_data.root ./For_TMVA_BKG/train/Mxs_large
-mv ./root_file_for_TMVA/*smaller*SIGNAL*$3_data.root ./For_TMVA_BKG/train/Mxs_small
+mv ./root_file_for_TMVA/*larger*SIGNAL*$2_data.root ./For_TMVA_SIGNAL/test/Mxs_large
+mv ./root_file_for_TMVA/*smaller*SIGNAL*$2_data.root ./For_TMVA_SIGNAL/test/Mxs_small
+mv ./root_file_for_TMVA/*larger*SIGNAL*$3_data.root ./For_TMVA_SIGNAL/train/Mxs_large
+mv ./root_file_for_TMVA/*smaller*SIGNAL*$3_data.root ./For_TMVA_SIGNAL/train/Mxs_small
 
 mv ./root_file_for_TMVA/*larger*$2_data.root ./For_TMVA_BKG/test/Mxs_large
 mv ./root_file_for_TMVA/*smaller*$2_data.root ./For_TMVA_BKG/test/Mxs_small
