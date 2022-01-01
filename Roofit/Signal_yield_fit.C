@@ -9,26 +9,6 @@
 #include "RooPlot.h"
 using namespace RooFit ;
 
-typedef struct decaymode {
-    std::string name;
-    int dmID;
-    int ntrack;
-    int nKp;
-    int nKm;
-    int npip;
-    int npim;
-    int npizero;
-    int nKshort;
-    int nslowpion;
-    double MCefficiency;
-} DecayMode;
-
-const double Uncer_track_MC[3] = { 100, 0.82, 0.82 }; // 100 + 0.82 -0.82 % [BELLE2-NOTE-PH-2020-006 (Moriond)]
-const double Uncer_KaonID[3] = { 0 }; // https://stash.desy.de/users/saurabh/repos/pid_dst_sandilya/browse/dtmc_logs [b2n048_P11BB]
-const double Uncer_PionmID[3] = { 0.942574, 0.00848917275, 0.00848863242 }; // https://stash.desy.de/users/saurabh/repos/pid_dst_sandilya/browse/dtmc_logs [b2n048_P11BB]
-const double Uncer_PionpID[3] = { 0.935591, 0.00818119524, 0.00818084324 }; // https://stash.desy.de/users/saurabh/repos/pid_dst_sandilya/browse/dtmc_logs [b2n048_P11BB]
-const double Uncer_KS0 = 0.6; // %/cm BELLE2-NOTE-PH-2020-072
-
 void load_files(const char* dirname, std::vector<string>* names) {
     TSystemDirectory dir(dirname, dirname);
     TList* files = dir.GetListOfFiles();
@@ -96,6 +76,156 @@ void LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar*  Eecl_, RooRealV
 
 }
 
+void LetsCalculateUncertainties(const char* dirname) {
+    const double KS0_rel_uncertainty = 0.6; // %/cm
+    const double track_rel_uncertainty = 0.69; // %
+    const double pi0_correction = 0.932;
+    const double pi0_rel_uncertainty = (0.0369/0.932)*100.0; // %
+
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+
+    int total_N = 0;
+    std::vector<int> ntracks;
+    std::vector<int> npi0s;
+
+    std::vector<string> names;
+    load_files(dirname, &names);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+            tree_upsilon->GetEntry(j);
+            tree_Bsig->GetEntry(j);
+            tree_Btag->GetEntry(j);
+
+            if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B2Kc
+                ntracks.push_back(1);
+                npi0s.push_back(0);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B2KcPi0
+                ntracks.push_back(1);
+                npi0s.push_back(1);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B2Ks0Pic
+                ntracks.push_back(1);
+                npi0s.push_back(0);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B2KcPicPic
+                ntracks.push_back(3);
+                npi0s.push_back(0);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B2Ks0PicPi0
+                ntracks.push_back(1);
+                npi0s.push_back(1);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B2KcPicPicPi0
+                ntracks.push_back(3);
+                npi0s.push_back(1);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B2Ks0PicPicPic
+                ntracks.push_back(3);
+                npi0s.push_back(0);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B2KcKcKc
+                ntracks.push_back(3);
+                npi0s.push_back(0);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B2KcKcKs0Pic
+                ntracks.push_back(3);
+                npi0s.push_back(0);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B2KcKcKcPi0
+                ntracks.push_back(3);
+                npi0s.push_back(1);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B02Ks0
+                ntracks.push_back(0);
+                npi0s.push_back(0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B02KcPic
+                ntracks.push_back(2);
+                npi0s.push_back(0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B02Ks0Pi0
+                ntracks.push_back(0);
+                npi0s.push_back(1);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B02KcPicPi0
+                ntracks.push_back(2);
+                npi0s.push_back(1);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B02Ks0PicPic
+                ntracks.push_back(2);
+                npi0s.push_back(0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B02KcPicPicPic
+                ntracks.push_back(4);
+                npi0s.push_back(0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B02Ks0PicPicPi0
+                ntracks.push_back(2);
+                npi0s.push_back(0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B02KcKcKs0
+                ntracks.push_back(2);
+                npi0s.push_back(0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B02KcKcKcPic
+                ntracks.push_back(4);
+                npi0s.push_back(0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B02KcKcKs0Pi0
+                ntracks.push_back(2);
+                npi0s.push_back(1);
+            }
+            else {
+                printf("[ERROR] unexpected decay ID\n");
+                exit(1);
+            }
+            
+        }
+        total_N = total_N + tree_upsilon->GetEntries();
+        input_file->Close();
+
+    }
+
+    // start to calculate correction factor/uncertainties
+    std::vector<double> corrected_Ns;
+    std::vector<double> KS0_rel_uncertainties;
+    std::vector<double> track_rel_uncertainties;
+    std::vector<double> pi0_rel_uncertainties;
+    for (int j = 0; j < total_N; j++) {
+        corrected_Ns.push_back(pow(pi0_correction, npi0s.at(j)));
+        track_rel_uncertainties.push_back(track_rel_uncertainty* ntracks.at(j));
+        pi0_rel_uncertainties.push_back(pi0_rel_uncertainty* npi0s.at(j));
+    }
+    double corrected_N = 0;
+    double avg_track_rel_uncertainty = 0;
+    double avg_pi0_rel_uncertainty = 0;
+    for (int j = 0; j < total_N; j++) {
+        corrected_N = corrected_N + corrected_Ns.at(j);
+        avg_track_rel_uncertainty = avg_track_rel_uncertainty + corrected_Ns.at(j) * track_rel_uncertainties.at(j);
+        avg_pi0_rel_uncertainty = avg_pi0_rel_uncertainty + corrected_Ns.at(j) * pi0_rel_uncertainties.at(j);
+    }
+    avg_track_rel_uncertainty = avg_track_rel_uncertainty / corrected_N;
+    avg_pi0_rel_uncertainty = avg_pi0_rel_uncertainty / corrected_N;
+    printf("Average correction factor: %lf\n", corrected_N / total_N);
+    printf("Average relative uncertainty from track: %lf%%\n", avg_track_rel_uncertainty);
+    printf("Average relative uncertainty from pi0: %lf%%\n", avg_pi0_rel_uncertainty);
+}
+
 void Signal_yield_fit()
 {
     // to extract signal yield
@@ -120,8 +250,8 @@ void Signal_yield_fit()
     LetsAdd(MC_dirname_SSBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_CHARM, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
 
-    const char* DATA_dirname_BKG = "./output_after_TMVA_test/BKG";
-    const char* DATA_dirname_SIGNAL = "./output_after_TMVA_test/SIGNAL";
+    const char* DATA_dirname_BKG = "./output_after_TMVA_train/BKG";
+    const char* DATA_dirname_SIGNAL = "./output_after_TMVA_train/SIGNAL";
     LetsAdd(DATA_dirname_BKG, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
     LetsAdd(DATA_dirname_SIGNAL, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, 0.003385);
 
@@ -141,7 +271,7 @@ void Signal_yield_fit()
 
     // define pdf and extended pdf
     RooHistPdf histpdf_Eecl_signal("histpdf_Eecl_signal", "histpdf_Eecl_signal", EeclFit, hist_Eecl_MC_signal, 0);
-    RooRealVar nsig("nsig", "number of signal events", 10, -100, 100);
+    RooRealVar nsig("nsig", "number of signal events", 10, -180, 180);
     RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal, nsig);
 
     RooHistPdf histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, hist_Eecl_MC_background, 0);
@@ -182,15 +312,15 @@ void Signal_yield_fit()
     RooPlot* frame2 = mcstudy->plotError(nsig, Bins(40));
     RooPlot* frame3 = mcstudy->plotPull(nsig, Bins(40), FitGauss(kTRUE));
 
-
     // Draw all plots on a canvas
     gStyle->SetOptStat(0);
-    TCanvas* cf = new TCanvas("", "", 1200, 400);
+    TCanvas* cf = new TCanvas("rf801_mcstudy", "rf801_mcstudy", 1200, 400);
     cf->Divide(3, 1);
     cf->cd(1); gPad->SetLeftMargin(0.15); frame1->GetYaxis()->SetTitleOffset(1.4); frame1->Draw();
     cf->cd(2); gPad->SetLeftMargin(0.15); frame2->GetYaxis()->SetTitleOffset(1.4); frame2->Draw();
     cf->cd(3); gPad->SetLeftMargin(0.15); frame3->GetYaxis()->SetTitleOffset(1.4); frame3->Draw();
+    cf->SaveAs("ToyStudy.png");
 
-
-    /* ============== Get systematic uncertainty of efficiency ============== */
+    // calculate uncertainties
+    LetsCalculateUncertainties(MC_dirname_signal);
 }
