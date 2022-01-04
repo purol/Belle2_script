@@ -37,6 +37,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include <TH3F.h>
 #include <THStack.h>
 #include <TPaveText.h>
+#include <TKey.h>
 
 #include <RooChi2Var.h>
 #include <RooConstVar.h>
