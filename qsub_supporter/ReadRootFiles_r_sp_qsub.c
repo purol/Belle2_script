@@ -1,4 +1,4 @@
-// last update: 2021-12-26
+// last update: 2022-01-05
 // for Belle2 data
 
 /*
@@ -241,6 +241,7 @@ private:
     std::vector<int> N_events;
     std::vector<int> N_candidates;
     std::vector<int> N_candidates_modes[Loader::MAX_NUM_DECAYMODE];
+    std::vector<int> N_events_modes[Loader::MAX_NUM_DECAYMODE];
     std::vector<std::string> titles;
     int current_N_event;
     int current_N_candidate;
@@ -875,6 +876,7 @@ void Loader::PrintInformation(std::string title) {
         int __run__;
         int __event__;
         int __ncandidates__;
+        bool IsThisModeExist[Loader::MAX_NUM_DECAYMODE];
     } Labels;
     std::vector<Labels> label_list;
 
@@ -883,6 +885,7 @@ void Loader::PrintInformation(std::string title) {
         N_candidates.push_back(0);
         titles.push_back(title);
         for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) N_candidates_modes[i].push_back(0);
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) N_events_modes[i].push_back(0);
     }
     else if (N_events.size() > current_N_event && N_candidates.size() > current_N_candidate && N_events.size() == N_candidates.size() && current_N_event == current_N_candidate) { // use what I have
     }
@@ -899,7 +902,22 @@ void Loader::PrintInformation(std::string title) {
 
         bool overlap = false;
         for (unsigned int i = 0; i < label_list.size(); i++) {
-            if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) { overlap = true; }
+            if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) {
+                Loader::DecayMode decaymodeid = Loader::MAX_NUM_DECAYMODE;
+                for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) {
+                    if (TrueIfDecayModeMatch(temp, static_cast<Loader::DecayMode>(j))) {
+                        decaymodeid = static_cast<Loader::DecayMode>(j);
+                        break;
+                    }
+                }
+                if (decaymodeid == Loader::MAX_NUM_DECAYMODE) {
+                    printf("ERROR! 029\n");
+                    exit(1);
+                }
+                label_list.at(i).IsThisModeExist[decaymodeid] = true;
+
+                overlap = true;
+            }
         }
         if (overlap == false) {
             N_events.at(current_N_event) = N_events.at(current_N_event) + 1;
@@ -908,6 +926,21 @@ void Loader::PrintInformation(std::string title) {
             temp_Labels.__run__ = temp.__run__;
             temp_Labels.__event__ = temp.__event__;
             temp_Labels.__ncandidates__ = temp.__ncandidates__;
+
+            for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) temp_Labels.IsThisModeExist[i] = false;
+            Loader::DecayMode decaymodeid = Loader::MAX_NUM_DECAYMODE;
+            for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
+                if (TrueIfDecayModeMatch(temp, static_cast<Loader::DecayMode>(i))) {
+                    decaymodeid = static_cast<Loader::DecayMode>(i);
+                    break;
+                }
+            }
+            if (decaymodeid == Loader::MAX_NUM_DECAYMODE) {
+                printf("ERROR! 095\n");
+                exit(1);
+            }
+            temp_Labels.IsThisModeExist[decaymodeid] = true;
+
             label_list.push_back(temp_Labels);
         }
 
@@ -927,6 +960,13 @@ void Loader::PrintInformation(std::string title) {
         TotalData.push(temp);
     }
     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size();
+    for (unsigned int i = 0; i < label_list.size(); i++) {
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) {
+            if (label_list.at(i).IsThisModeExist[j]) {
+                N_events_modes[j].at(current_N_candidate)++;
+            }
+        }
+    }
 
     current_N_event++;
     current_N_candidate++;
@@ -1205,6 +1245,7 @@ void Loader::End() {
         printf("Number of event: %d\n", N_events.at(i));
         printf("Number of candidate: %d\n", N_candidates.at(i));
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %d\n", j, N_candidates_modes[j].at(i));
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of event including decayID %d: %d\n", j, N_events_modes[j].at(i));
     }
 
 
