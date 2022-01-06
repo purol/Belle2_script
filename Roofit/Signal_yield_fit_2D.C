@@ -290,24 +290,39 @@ void Signal_yield_fit_2D()
     //info_DATA.get(1)->Print("V");
 
     // Draw result
-    info_DATA->plotOn(Eeclframe);
+    info_DATA.plotOn(Eeclframe);
     totalpdf.plotOn(Eeclframe, LineColor(kRed));
     totalpdf.plotOn(Eeclframe, Components(esig), LineColor(kBlue), LineStyle(kDashed));
     totalpdf.plotOn(Eeclframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed));
-    //dataset_Eecl_MC_signal->plotOn(Eeclframe);
-    //histpdf_Eecl_signal.plotOn(Eeclframe);
-    //totalpdf.plotOn(Eeclframe, LineColor(kRed), Normalization(1.0, RooAbsReal::RelativeExpected));
 
-    TCanvas* c = new TCanvas("Eecl", "Eecl", 600, 600);
+    info_DATA.plotOn(Mbcframe);
+    totalpdf.plotOn(Mbcframe, LineColor(kRed));
+    totalpdf.plotOn(Mbcframe, Components(esig), LineColor(kBlue), LineStyle(kDashed));
+    totalpdf.plotOn(Mbcframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed));
+
+    TCanvas* c = new TCanvas("MbcVSEecl", "MbcVSEecl", 600, 600);
+    TH1* hh_data = info_DATA.createHistogram("Mbc,Eecl", 10, 12);
+    hh_data->Draw("lego"); c->SaveAs("MbcVSEecl_distribution.png");
+    delete c;
+    delete hh_data;
+
+    c = new TCanvas("Eecl", "Eecl", 600, 600);
     gPad->SetLeftMargin(0.15); Eeclframe->GetYaxis()->SetTitleOffset(1.4); Eeclframe->Draw(); c->SaveAs("Eecl_distribution.png");
+    delete c;
+
+    c = new TCanvas("Mbc", "Mbc", 600, 600);
+    gPad->SetLeftMargin(0.15); Mbcframe->GetYaxis()->SetTitleOffset(1.4); Mbcframe->Draw(); c->SaveAs("Mbc_distribution.png");
+    delete c;
 
 
 
     /* ============== toy MC study ============== */
     RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 1.2);
     Eecl_TOY.setBins(12);
+    RooRealVar  Mbc_TOY("Mbc", "Mbc_TOY", 5.27, 5.29);
+    Mbc_TOY.setBins(10);
 
-    RooMCStudy* mcstudy = new RooMCStudy(totalpdf, Eecl_TOY, Binned(kTRUE), Silence(), Extended(),FitOptions(Save(kTRUE), PrintEvalErrors(0)));
+    RooMCStudy* mcstudy = new RooMCStudy(totalpdf, RooArgList(Mbc_TOY, Eecl_TOY), Binned(kTRUE), Silence(), Extended(),FitOptions(Save(kTRUE), PrintEvalErrors(0)));
     mcstudy->generateAndFit(1000);
 
     // Make plots of the distributions of mean, the error on mean and the pull of mean
