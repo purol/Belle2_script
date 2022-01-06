@@ -13,8 +13,8 @@
 
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 13
-# define N_Bsig_info 13
+# define N_Upsilon_info 14
+# define N_Bsig_info 28
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
@@ -133,6 +133,7 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    reader->AddSpectator("nRemainingTracksInEvent", &temp_UpsilonDataToTree_f[10]);
    reader->AddSpectator("roeNeextra__bocleanMask__bc", &temp_UpsilonDataToTree_f[11]);
    reader->AddSpectator("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp_UpsilonDataToTree_f[12]);
+   reader->AddSpectator("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp_UpsilonDataToTree_f[13]);
    reader->AddSpectator("Bsig_E", &temp_BsigDataToTree_f[0]);
    reader->AddSpectator("Bsig_useCMSFrame_E", &temp_BsigDataToTree_f[1]);
    reader->AddSpectator("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc", &temp_BsigDataToTree_f[2]);
@@ -146,6 +147,21 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    reader->AddSpectator("Bsig_daughter_0_extraInfo_Dnvetomass", &temp_BsigDataToTree_f[10]);
    reader->AddSpectator("Bsig_daughter_0_extraInfo_DnvetodmID", &temp_BsigDataToTree_f[11]);
    reader->AddSpectator("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp_BsigDataToTree_f[12]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_BsigDataToTree_f[13]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_BsigDataToTree_f[14]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_BsigDataToTree_f[15]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_BsigDataToTree_f[16]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Pion_PID_correction", &temp_BsigDataToTree_f[17]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &temp_BsigDataToTree_f[18]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &temp_BsigDataToTree_f[19]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nKslow1", &temp_BsigDataToTree_f[20]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nKslow2", &temp_BsigDataToTree_f[21]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nKslow3", &temp_BsigDataToTree_f[22]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nPislow1", &temp_BsigDataToTree_f[23]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nPislow2", &temp_BsigDataToTree_f[24]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree_f[25]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree_f[26]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree_f[27]);
    reader->AddSpectator("Btag_extraInfo_decayModeID", &temp_BtagDataToTree_f[0]);
    reader->AddSpectator("Btag_Mbc", &temp_BtagDataToTree_f[1]);
    reader->AddSpectator("Btag_deltaE", &temp_BtagDataToTree_f[2]);
@@ -222,6 +238,7 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    theTree->SetBranchAddress("nRemainingTracksInEvent", &temp_UpsilonDataToTree[10]);
    theTree->SetBranchAddress("roeNeextra__bocleanMask__bc", &temp_UpsilonDataToTree[11]);
    theTree->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp_UpsilonDataToTree[12]);
+   theTree->SetBranchAddress("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp_UpsilonDataToTree[13]);
 
    // get Bsig_info
    theTree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -237,6 +254,21 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dnvetomass", &temp_BsigDataToTree[10]);
    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_DnvetodmID", &temp_BsigDataToTree[11]);
    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp_BsigDataToTree[12]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_BsigDataToTree[13]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_BsigDataToTree[14]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_BsigDataToTree[15]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_BsigDataToTree[16]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Pion_PID_correction", &temp_BsigDataToTree[17]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &temp_BsigDataToTree[18]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &temp_BsigDataToTree[19]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow1", &temp_BsigDataToTree[20]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow2", &temp_BsigDataToTree[21]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow3", &temp_BsigDataToTree[22]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow1", &temp_BsigDataToTree[23]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow2", &temp_BsigDataToTree[24]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree[25]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree[26]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree[27]);
 
    // get Btag_info
    theTree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -366,6 +398,7 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    temp_tree->Branch("nRemainingTracksInEvent", &temp_UpsilonDataToTree[10]);
    temp_tree->Branch("roeNeextra__bocleanMask__bc", &temp_UpsilonDataToTree[11]);
    temp_tree->Branch("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp_UpsilonDataToTree[12]);
+   temp_tree->Branch("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp_UpsilonDataToTree[13]);
 
    // get Bsig_info
    temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -381,6 +414,21 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dnvetomass", &temp_BsigDataToTree[10]);
    temp_tree->Branch("Bsig_daughter_0_extraInfo_DnvetodmID", &temp_BsigDataToTree[11]);
    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp_BsigDataToTree[12]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_BsigDataToTree[13]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_BsigDataToTree[14]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_BsigDataToTree[15]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_BsigDataToTree[16]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Pion_PID_correction", &temp_BsigDataToTree[17]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &temp_BsigDataToTree[18]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &temp_BsigDataToTree[19]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow1", &temp_BsigDataToTree[20]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow2", &temp_BsigDataToTree[21]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow3", &temp_BsigDataToTree[22]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow1", &temp_BsigDataToTree[23]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow2", &temp_BsigDataToTree[24]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree[25]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree[26]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree[27]);
 
    // get Btag_info
    temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);

@@ -1,4 +1,4 @@
-// last update: 2022-01-05
+// last update: 2022-01-06
 // for Belle2 data
 
 /*
@@ -69,8 +69,8 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 13
-# define N_Bsig_info 13
+# define N_Upsilon_info 14
+# define N_Bsig_info 28
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
@@ -112,6 +112,7 @@ typedef struct data{
     // 7: missing momentum of event theta, 8: missing momentum
     // 9: missing energy at CMS, 10: number of remaining tracks
     // 11: roeNeextra(cleanMask), 12: useCMSFrame__boroeNeextra__bocleanMask__bc__bc
+    // 13: nROE_ParticlesInList__bogamma__clmygamma__bc
 
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
@@ -119,6 +120,11 @@ typedef struct data{
     // 6: M
     // 7: Dcvetomass, 8: DcvetodmID, 9: DcvetoabsdM
     // 10: Dnvetomass, 11: DnvetodmID, 12: DnvetoabsdM
+    // 13: KS0_distance, 14: Kaon PID correction, 15: Kaon PID rel uncertainty up
+    // 16: Kaon PID rel uncertainty down, 17: Pion PID correction, 18: Pion PID rel uncertainty up
+    // 19: Pion PID rel uncertainty down, 20: nKslow1, 21: nKslow2
+    // 22: nKslow3, 23: nPislow1, 24: nPislow2
+    // 25: nPislow3, 26:nKexcept, 27: nPiexcept
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
@@ -409,6 +415,7 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("nRemainingTracksInEvent", &temp.Upsilon_info[10]);
     tree_upsilon->SetBranchAddress("roeNeextra__bocleanMask__bc", &temp.Upsilon_info[11]);
     tree_upsilon->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp.Upsilon_info[12]);
+    tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp.Upsilon_info[13]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
@@ -424,6 +431,21 @@ void Loader::GetData(TFile* input_file) {
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dnvetomass", &temp.Bsig_info[10]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_DnvetodmID", &temp.Bsig_info[11]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp.Bsig_info[12]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp.Bsig_info[13]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp.Bsig_info[14]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp.Bsig_info[15]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp.Bsig_info[16]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Pion_PID_correction", &temp.Bsig_info[17]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &temp.Bsig_info[18]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &temp.Bsig_info[19]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow1", &temp.Bsig_info[20]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow2", &temp.Bsig_info[21]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow3", &temp.Bsig_info[22]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow1", &temp.Bsig_info[23]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow2", &temp.Bsig_info[24]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow3", &temp.Bsig_info[25]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp.Bsig_info[26]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPiexcep", &temp.Bsig_info[27]);
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
@@ -1444,6 +1466,7 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("nRemainingTracksInEvent", &UpsilonDataToTree[10]);
         tree_upsilon->Branch("roeNeextra__bocleanMask__bc", &UpsilonDataToTree[11]);
         tree_upsilon->Branch("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &UpsilonDataToTree[12]);
+        tree_upsilon->Branch("nROE_ParticlesInList__bogamma__clmygamma__bc", &UpsilonDataToTree[13]);
 
         // get Bsig_info
         tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
@@ -1459,6 +1482,21 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dnvetomass", &BsigDataToTree[10]);
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_DnvetodmID", &BsigDataToTree[11]);
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &BsigDataToTree[12]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_3D_distance", &BsigDataToTree[13]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &BsigDataToTree[14]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &BsigDataToTree[15]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &BsigDataToTree[16]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Pion_PID_correction", &BsigDataToTree[17]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &BsigDataToTree[18]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &BsigDataToTree[19]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow1", &BsigDataToTree[20]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow2", &BsigDataToTree[21]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow3", &BsigDataToTree[22]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow1", &BsigDataToTree[23]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow2", &BsigDataToTree[24]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow3", &BsigDataToTree[25]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKexcep", &BsigDataToTree[26]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &BsigDataToTree[27]);
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -1662,6 +1700,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("nRemainingTracksInEvent", &temp_UpsilonDataToTree[10]);
     temp_tree_upsilon->Branch("roeNeextra__bocleanMask__bc", &temp_UpsilonDataToTree[11]);
     temp_tree_upsilon->Branch("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp_UpsilonDataToTree[12]);
+    temp_tree_upsilon->Branch("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp_UpsilonDataToTree[13]);
 
     // get Bsig_info
     temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -1677,6 +1716,21 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dnvetomass", &temp_BsigDataToTree[10]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_DnvetodmID", &temp_BsigDataToTree[11]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp_BsigDataToTree[12]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_BsigDataToTree[13]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_BsigDataToTree[14]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_BsigDataToTree[15]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_BsigDataToTree[16]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Pion_PID_correction", &temp_BsigDataToTree[17]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &temp_BsigDataToTree[18]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &temp_BsigDataToTree[19]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow1", &temp_BsigDataToTree[20]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow2", &temp_BsigDataToTree[21]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow3", &temp_BsigDataToTree[22]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow1", &temp_BsigDataToTree[23]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow2", &temp_BsigDataToTree[24]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree[25]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree[26]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree[27]);
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -1858,6 +1912,7 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("nRemainingTracksInEvent", &temp_UpsilonDataToTree[10]);
     temp_tree->Branch("roeNeextra__bocleanMask__bc", &temp_UpsilonDataToTree[11]);
     temp_tree->Branch("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp_UpsilonDataToTree[12]);
+    temp_tree->Branch("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp_UpsilonDataToTree[13]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -1873,6 +1928,21 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("Bsig_daughter_0_extraInfo_Dnvetomass", &temp_BsigDataToTree[10]);
     temp_tree->Branch("Bsig_daughter_0_extraInfo_DnvetodmID", &temp_BsigDataToTree[11]);
     temp_tree->Branch("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp_BsigDataToTree[12]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_BsigDataToTree[13]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_BsigDataToTree[14]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_BsigDataToTree[15]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_BsigDataToTree[16]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Pion_PID_correction", &temp_BsigDataToTree[17]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &temp_BsigDataToTree[18]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &temp_BsigDataToTree[19]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow1", &temp_BsigDataToTree[20]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow2", &temp_BsigDataToTree[21]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow3", &temp_BsigDataToTree[22]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow1", &temp_BsigDataToTree[23]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow2", &temp_BsigDataToTree[24]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree[25]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree[26]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree[27]);
 
     // get Btag_info
     temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
