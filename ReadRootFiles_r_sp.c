@@ -1,4 +1,4 @@
-// last update: 2022-01-06
+// last update: 2022-01-07
 // for Belle2 data
 
 /*
@@ -256,7 +256,7 @@ public:
     void ConvertIntoSeparateDataFile(std::string output_name, int flag = 0);
     void PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequality inq, double value);
     void PrintConfusionMatrix();
-    void DvetoFor(Loader::Variable variable, int i);
+    void DvetoFor(Loader::Variable variable, int i, double min, double max);
     void BsigFitConvergeFor(Loader::Variable variable, int i);
     void OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type);
     void DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type, double minM, double maxM);
@@ -2314,21 +2314,21 @@ void Loader::PrintConfusionMatrix() {
     current_Confusion_matrix++;
 }
 
-void Loader::DvetoFor(Loader::Variable variable, int i) { // remove 1.85 < X < 1.89
+void Loader::DvetoFor(Loader::Variable variable, int i, double min, double max) { // remove min < X < max
     std::queue<Data> temp_queue;
     while (!TotalData.empty()) {
         Data temp_data = TotalData.front();
         TotalData.pop();
         if (variable == Loader::Upsilon) {
-            if (1.85 < temp_data.Upsilon_info[i] && temp_data.Upsilon_info[i] < 1.89) {}
+            if (min < temp_data.Upsilon_info[i] && temp_data.Upsilon_info[i] < max) {}
             else temp_queue.push(temp_data);
         }
         else if (variable == Loader::Bsig) {
-            if (1.85 < temp_data.Bsig_info[i] && temp_data.Bsig_info[i] < 1.89) {}
+            if (min < temp_data.Bsig_info[i] && temp_data.Bsig_info[i] < max) {}
             else temp_queue.push(temp_data);
         }
         else if (variable == Loader::Btag) {
-            if (1.85 < temp_data.Btag_info[i] && temp_data.Btag_info[i] < 1.89) {}
+            if (min < temp_data.Btag_info[i] && temp_data.Btag_info[i] < max) {}
             else temp_queue.push(temp_data);
         }
         else {
