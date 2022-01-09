@@ -25,24 +25,24 @@ void load_files(const char* dirname, std::vector<string>* names) {
     }
 }
 
-RooRealVar  Mbc_DATA("Mbc", "Mbc_DATA", 5.27, 5.29);
+RooRealVar  OBB_DATA("OBB", "OBB_DATA", 0.6, 1.0);
 RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0, 1.2);
 RooRealVar weight_DATA("weight", "weight_DATA", 0.0, 1.0);
-RooDataSet info_DATA("2Dinfo", "2Dinfo_DATA", RooArgSet(Mbc_DATA, Eecl_DATA, weight_DATA), WeightVar("weight"));
+RooDataSet info_DATA("2Dinfo", "2Dinfo_DATA", RooArgSet(OBB_DATA, Eecl_DATA, weight_DATA), WeightVar("weight"));
 
-RooRealVar  Mbc_MC_signal("Mbc", "Mbc_MC_signal", 5.27, 5.29);
+RooRealVar  OBB_MC_signal("OBB", "OBB_MC_signal", 0.6, 1.0);
 RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0, 1.2);
 RooRealVar weight_MC_signal("weight", "weight_MC_signal", 0.0, 1.0);
-RooDataSet info_MC_signal("2Dinfo", "2Dinfo_MC_signal", RooArgSet(Mbc_MC_signal, Eecl_MC_signal, weight_MC_signal), WeightVar("weight"));
+RooDataSet info_MC_signal("2Dinfo", "2Dinfo_MC_signal", RooArgSet(OBB_MC_signal, Eecl_MC_signal, weight_MC_signal), WeightVar("weight"));
 
-RooRealVar  Mbc_MC_background("Mbc", "Mbc_MC_background", 5.27, 5.29);
+RooRealVar  OBB_MC_background("OBB", "OBB_MC_background", 0.6, 1.0);
 RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0, 1.2);
 RooRealVar weight_MC_background("weight", "weight_MC_background", 0.0, 1.0);
-RooDataSet info_MC_background("2Dinfo", "2Dinfo_MC_background", RooArgSet(Mbc_MC_background, Eecl_MC_background, weight_MC_background), WeightVar("weight"));
+RooDataSet info_MC_background("2Dinfo", "2Dinfo_MC_background", RooArgSet(OBB_MC_background, Eecl_MC_background, weight_MC_background), WeightVar("weight"));
 
-void LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar*  Eecl_, RooRealVar* weight_, RooDataSet* info_, double weight_var = 1.0) {
+void LetsAdd(const char* dirname, RooRealVar* OBB_, RooRealVar*  Eecl_, RooRealVar* weight_, RooDataSet* info_, double weight_var = 1.0) {
     double Eecl_var = 0;
-    double Mbc_var = 0;
+    float OBB_var = 0;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -57,7 +57,7 @@ void LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar*  Eecl_, RooRealV
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         tree_upsilon->SetBranchAddress("roeEextra__bocleanMask__bc", &Eecl_var); // Eecl
-        tree_Btag->SetBranchAddress("Btag_Mbc", &Mbc_var); // Mbc
+        tree_upsilon->SetBranchAddress("TMVA_BB", &OBB_var); // OBB
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -66,9 +66,9 @@ void LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar*  Eecl_, RooRealV
             tree_Btag->GetEntry(j);
             
             *Eecl_ = Eecl_var;
-            *Mbc_ = Mbc_var;
+            *OBB_ = OBB_var;
             *weight_ = weight_var;
-            info_->add(RooArgSet(*Mbc_, *Eecl_), weight_->getVal());
+            info_->add(RooArgSet(*OBB_, *Eecl_), weight_->getVal());
         }
         input_file->Close();
 
@@ -233,13 +233,13 @@ void Signal_yield_fit_2D()
     EeclFit.setBins(12);
     RooPlot* Eeclframe = EeclFit.frame(Bins(12), Title(" "));
 
-    RooRealVar MbcFit("Mbc", "Mbc", 5.27, 5.29, "GeV");
-    MbcFit.setBins(10);
-    RooPlot* Mbcframe = MbcFit.frame(Bins(10), Title(" "));
+    RooRealVar OBBFit("OBB", "OBB", 0.6, 1.0, "");
+    OBBFit.setBins(10);
+    RooPlot* OBBframe = OBBFit.frame(Bins(10), Title(" "));
 
     // get data from root files
     const char* MC_dirname_signal = "./output_after_TMVA_test/SIGNAL";
-    LetsAdd(MC_dirname_signal, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal);
+    LetsAdd(MC_dirname_signal, &OBB_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal);
 
     const char* MC_dirname_CHG = "./output_after_TMVA_test/CHG";
     const char* MC_dirname_MIX = "./output_after_TMVA_test/MIX";
@@ -247,37 +247,37 @@ void Signal_yield_fit_2D()
     const char* MC_dirname_DDBAR = "./output_after_TMVA_test/DDBAR";
     const char* MC_dirname_SSBAR = "./output_after_TMVA_test/SSBAR";
     const char* MC_dirname_CHARM = "./output_after_TMVA_test/CHARM";
-    LetsAdd(MC_dirname_CHG, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_MIX, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_UUBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_DDBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_SSBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_CHARM, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd(MC_dirname_CHG, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd(MC_dirname_MIX, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd(MC_dirname_UUBAR, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd(MC_dirname_DDBAR, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd(MC_dirname_SSBAR, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd(MC_dirname_CHARM, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
 
     const char* DATA_dirname_BKG = "./output_after_TMVA_train/BKG";
     const char* DATA_dirname_SIGNAL = "./output_after_TMVA_train/SIGNAL";
-    LetsAdd(DATA_dirname_BKG, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
-    LetsAdd(DATA_dirname_SIGNAL, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, 0.003385);
+    LetsAdd(DATA_dirname_BKG, &OBB_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
+    LetsAdd(DATA_dirname_SIGNAL, &OBB_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, 0.003385);
 
 
     // define frame and get ready to make pdfs
     Eecl_DATA.setBins(12);
-    Mbc_DATA.setBins(10);
+    OBB_DATA.setBins(10);
 
     Eecl_MC_signal.setBins(12);
-    Mbc_MC_signal.setBins(10);
-    RooDataHist hist_MC_signal("hist_MC_signal", "histogram for MC signal samples", RooArgSet(MbcFit, EeclFit), info_MC_signal);
+    OBB_MC_signal.setBins(10);
+    RooDataHist hist_MC_signal("hist_MC_signal", "histogram for MC signal samples", RooArgSet(OBBFit, EeclFit), info_MC_signal);
 
     Eecl_MC_background.setBins(12);
-    Mbc_MC_background.setBins(10);
-    RooDataHist hist_MC_background("hist_MC_background", "histogram for MC background samples", RooArgSet(MbcFit, EeclFit), info_MC_background);
+    OBB_MC_background.setBins(10);
+    RooDataHist hist_MC_background("hist_MC_background", "histogram for MC background samples", RooArgSet(OBBFit, EeclFit), info_MC_background);
 
     // define pdf and extended pdf
-    RooHistPdf histpdf_signal("histpdf_signal", "histpdf_signal", RooArgSet(MbcFit, EeclFit), hist_MC_signal, 0);
+    RooHistPdf histpdf_signal("histpdf_signal", "histpdf_signal", RooArgSet(OBBFit, EeclFit), hist_MC_signal, 0);
     RooRealVar nsig("nsig", "number of signal events", 10, -180, 180);
     RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_signal, nsig);
 
-    RooHistPdf histpdf_background("histpdf_background", "histpdf_background", RooArgSet(MbcFit, EeclFit), hist_MC_background, 0);
+    RooHistPdf histpdf_background("histpdf_background", "histpdf_background", RooArgSet(OBBFit, EeclFit), hist_MC_background, 0);
     RooRealVar nbkg("nbkg", "number of background events", 130, -300, 300);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_background, nbkg);
 
@@ -295,14 +295,14 @@ void Signal_yield_fit_2D()
     totalpdf.plotOn(Eeclframe, Components(esig), LineColor(kBlue), LineStyle(kDashed));
     totalpdf.plotOn(Eeclframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed));
 
-    info_DATA.plotOn(Mbcframe);
-    totalpdf.plotOn(Mbcframe, LineColor(kRed));
-    totalpdf.plotOn(Mbcframe, Components(esig), LineColor(kBlue), LineStyle(kDashed));
-    totalpdf.plotOn(Mbcframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed));
+    info_DATA.plotOn(OBBframe);
+    totalpdf.plotOn(OBBframe, LineColor(kRed));
+    totalpdf.plotOn(OBBframe, Components(esig), LineColor(kBlue), LineStyle(kDashed));
+    totalpdf.plotOn(OBBframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed));
 
-    TCanvas* c = new TCanvas("MbcVSEecl", "MbcVSEecl", 600, 600);
-    TH1* hh_data = info_DATA.createHistogram("Mbc,Eecl", 10, 12);
-    hh_data->Draw("lego"); c->SaveAs("MbcVSEecl_distribution.png");
+    TCanvas* c = new TCanvas("OBBVSEecl", "OBBVSEecl", 600, 600);
+    TH1* hh_data = info_DATA.createHistogram("OBB,Eecl", 10, 12);
+    hh_data->Draw("lego"); c->SaveAs("OBBVSEecl_distribution.png");
     delete c;
     delete hh_data;
 
@@ -310,8 +310,8 @@ void Signal_yield_fit_2D()
     gPad->SetLeftMargin(0.15); Eeclframe->GetYaxis()->SetTitleOffset(1.4); Eeclframe->Draw(); c->SaveAs("Eecl_distribution.png");
     delete c;
 
-    c = new TCanvas("Mbc", "Mbc", 600, 600);
-    gPad->SetLeftMargin(0.15); Mbcframe->GetYaxis()->SetTitleOffset(1.4); Mbcframe->Draw(); c->SaveAs("Mbc_distribution.png");
+    c = new TCanvas("OBB", "OBB", 600, 600);
+    gPad->SetLeftMargin(0.15); OBBframe->GetYaxis()->SetTitleOffset(1.4); OBBframe->Draw(); c->SaveAs("OBB_distribution.png");
     delete c;
 
 
@@ -319,10 +319,10 @@ void Signal_yield_fit_2D()
     /* ============== toy MC study ============== */
     RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 1.2);
     Eecl_TOY.setBins(12);
-    RooRealVar  Mbc_TOY("Mbc", "Mbc_TOY", 5.27, 5.29);
-    Mbc_TOY.setBins(10);
+    RooRealVar  OBB_TOY("OBB", "OBB_TOY", 0.6, 1.0);
+    OBB_TOY.setBins(10);
 
-    RooMCStudy* mcstudy = new RooMCStudy(totalpdf, RooArgList(Mbc_TOY, Eecl_TOY), Binned(kTRUE), Silence(), Extended(),FitOptions(Save(kTRUE), PrintEvalErrors(0)));
+    RooMCStudy* mcstudy = new RooMCStudy(totalpdf, RooArgList(OBB_TOY, Eecl_TOY), Binned(kTRUE), Silence(), Extended(),FitOptions(Save(kTRUE), PrintEvalErrors(0)));
     mcstudy->generateAndFit(1000);
 
     // Make plots of the distributions of mean, the error on mean and the pull of mean

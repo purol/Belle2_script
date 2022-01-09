@@ -37,8 +37,18 @@
 
 using namespace TMVA;
 
-void TMVAClassificationApplication( TString myMethodList = "" )
+void TMVAClassificationApplication(const char* filename, const char* option)
 {
+    std::string OPTION = std::string(option);
+    if (OPTION == std::string("large")) {}
+    else if (OPTION == std::string("small")) {}
+    else {
+        printf("unknown option!\n");
+        exit(0);
+    }
+
+    std::string string_filename(filename);
+    std::string OnlyFileName = string_filename.substr(string_filename.find_last_of("\\/") + 1, string_filename.size() - string_filename.find_last_of("\\/"));
 
    //---------------------------------------------------------------
    // This loads the library
@@ -171,9 +181,19 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    reader->AddSpectator("Btag_useCMSFrame_E", &temp_BtagDataToTree_f[4]);
    reader->AddSpectator("flag", &temp_flag_f);
 
-   TString dir_continuum    = "dataset_Continuum_Mxs_small/weights/";
-   TString dir_BB = "dataset_BB_Mxs_small/weights/";
-   TString prefix = "TMVAClassification";
+   TString dir_continuum    = "";
+   TString dir_BB = "";
+   TString prefix = "";
+   if (OPTION == std::string("large")) {
+       dir_continuum = "dataset_Continuum_Mxs_large/weights/";
+       dir_BB = "dataset_BB_Mxs_large/weights/";
+       prefix = "TMVAClassification";
+   }
+   else if (OPTION == std::string("small")) {
+       dir_continuum = "dataset_Continuum_Mxs_small/weights/";
+       dir_BB = "dataset_BB_Mxs_small/weights/";
+       prefix = "TMVAClassification";
+   }
 
    TString methodName_continuum = TString("Continuum");
    TString weightfile_continuum = dir_continuum + prefix + TString("_") + TString("MLP") + TString(".weights.xml");
@@ -195,8 +215,7 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    // we'll later on use only the "signal" events for the test in this example.
    //
    TFile *input(0);
-   std::string input_file_name("final_output_merge_Mxs_smaller_SIGNAL_train_data.root");
-   TString fname = "./For_TMVA_SIGNAL/train/Mxs_small/"+ input_file_name;
+   TString fname = std::string(filename);
    input = TFile::Open( fname );
    if (!input) {
       std::cout << "ERROR: could not open data file" << std::endl;
@@ -368,7 +387,7 @@ void TMVAClassificationApplication( TString myMethodList = "" )
 
    std::cout << "--- Processing: " << theTree->GetEntries() << " events" << std::endl;
 
-   TFile* temp_file = new TFile( ("TMVAoutput_"+ input_file_name).c_str(), "recreate");
+   TFile* temp_file = new TFile( ("TMVAoutput_"+ OnlyFileName).c_str(), "recreate");
    temp_file->cd();
    TTree* temp_tree = new TTree("data", "");
 
@@ -555,4 +574,5 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    delete reader;
 
    std::cout << "==> TMVAClassificationApplication is done!" << std::endl << std::endl;
+   
 }
