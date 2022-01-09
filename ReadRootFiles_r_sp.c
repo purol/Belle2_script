@@ -1,4 +1,4 @@
-// last update: 2022-01-07
+// last update: 2022-01-10
 // for Belle2 data
 
 /*
@@ -90,6 +90,9 @@ typedef struct data{
     // 35: decayhash, 36: decayhash_extended
 
     double Decay[N_decay]; // MC level info
+
+    float TMVA_BB;
+    float TMVA_Continuum;
 
 } Data; 
 
@@ -211,6 +214,7 @@ private:
     std::vector<TTree*> trees_Xs;
     int current_file;
     bool AllOfThemHaveXsBranch;
+    bool AllOfThemHaveTMVAOutput;
 
     std::vector<THStack*> THStacks;
     std::vector<TH1F*> TH1Fs_THStack[Loader::MAX_NUM_DECAYMODE];
@@ -229,8 +233,11 @@ private:
     double DataToTree[N_Needed_info];
     double Upsilon_decayIDToTree;
     double Bsig_decayIDToTree;
+    double TMVA_BB_DataToTree;
+    double TMVA_Continuum_DataToTree;
 
     bool DoesItHaveXsBranch;
+    bool DoesItHaveTMVAOutput;
 
     bool TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode);
     bool TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymodeMC);
@@ -274,7 +281,9 @@ Loader::Loader() {
     DebugIsOn = false;
     current_THStack = 0;
     DoesItHaveXsBranch = false;
+    DoesItHaveTMVAOutput = false;
     AllOfThemHaveXsBranch = true;
+    AllOfThemHaveTMVAOutput = true;
     current_Confusion_matrix = 0;
     for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // initialization
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
@@ -301,6 +310,7 @@ void Loader::initialize() {
     DebugIsOn = false;
     current_THStack = 0;
     DoesItHaveXsBranch = false;
+    DoesItHaveTMVAOutput = false;
     current_Confusion_matrix = 0;
     Confusion_matrixIsOn = false;
 }
@@ -321,6 +331,11 @@ void Loader::GetData(TFile* input_file) {
     TTree* tree_Xs;
     if (DoesItHaveXsBranch) tree_Xs = (TTree*)input_file->Get("Xs");
     else tree_Xs = nullptr;
+
+    DoesItHaveTMVAOutput = false;
+    if (tree_upsilon->FindLeaf("TMVA_BB") == 0 || tree_upsilon->FindLeaf("TMVA_Continuum") == 0) DoesItHaveTMVAOutput = false;
+    else DoesItHaveTMVAOutput = true;
+    if (DoesItHaveTMVAOutput == false) AllOfThemHaveTMVAOutput = false;
 
     Data temp = { 0 };
 
@@ -482,6 +497,15 @@ void Loader::GetData(TFile* input_file) {
     }
     else {
         for (int i = 0; i < N_decay; i++) temp.Decay[i] = -1;
+    }
+
+    if (DoesItHaveTMVAOutput) {
+        tree_upsilon->SetBranchAddress("TMVA_BB", &temp.TMVA_BB);
+        tree_upsilon->SetBranchAddress("TMVA_Continuum", &temp.TMVA_Continuum);
+    }
+    else {
+        temp.TMVA_BB = -1;
+        temp.TMVA_Continuum = -1;
     }
 
     printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -1338,6 +1362,12 @@ void Loader::End() {
         temp_tree_Btag->Write();
         if (AllOfThemHaveXsBranch) temp_tree_Xs->Write();
         else delete temp_tree_Xs;
+        if (AllOfThemHaveTMVAOutput == false) {
+            TLeaf* l = temp_tree_upsilon->GetLeaf("TMVA_BB");
+            temp_tree_upsilon->GetListOfLeaves()->Remove(l);
+            l = temp_tree_upsilon->GetLeaf("TMVA_Continuum");
+            temp_tree_upsilon->GetListOfLeaves()->Remove(l);
+        }
         temp_file->Close();
     }
 
@@ -1529,6 +1559,9 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch28__bc", &DecayDataToTree[35]);
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &DecayDataToTree[36]);
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &DecayDataToTree[37]);
+
+        tree_upsilon->Branch("TMVA_BB", &TMVA_BB_DataToTree);
+        tree_upsilon->Branch("TMVA_Continuum", &TMVA_Continuum_DataToTree);
         /*================================================================*/
         files.push_back(file);
         trees_upsilon.push_back(tree_upsilon);
@@ -1576,6 +1609,9 @@ void Loader::PrintRootFile(std::string output_name) {
         Upsilon_decayIDToTree = temp.Upsilon_decayID;
         Bsig_decayIDToTree = temp.Bsig_decayID;
 
+        TMVA_BB_DataToTree = temp.TMVA_BB;
+        TMVA_Continuum_DataToTree = temp.TMVA_Continuum;
+
         temp_tree_upsilon->Fill();
         temp_tree_Bsig->Fill();
         temp_tree_Btag->Fill();
@@ -1607,6 +1643,9 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     double temp_DataToTree[N_Needed_info];
     double temp_Upsilon_decayIDToTree;
     double temp_Bsig_decayIDToTree;
+
+    float temp_TMVA_BB_DataToTree;
+    float temp_TMVA_Continuum_DataToTree;
 
     /*================================================================*/
     // get event_info
@@ -1768,6 +1807,15 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     else {
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
     }
+
+    if (DoesItHaveTMVAOutput) {
+        temp_tree_upsilon->Branch("TMVA_BB", &temp_TMVA_BB_DataToTree);
+        temp_tree_upsilon->Branch("TMVA_Continuum", &temp_TMVA_Continuum_DataToTree);
+    }
+    else {
+        temp_TMVA_BB = -1;
+        temp_TMVA_Continuum = -1;
+    }
     /*================================================================*/
 
     std::queue<Data> temp_queue;
@@ -1796,6 +1844,10 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         }
         temp_Upsilon_decayIDToTree = temp.Upsilon_decayID;
         temp_Bsig_decayIDToTree = temp.Bsig_decayID;
+        if (DoesItHaveTMVAOutput) {
+            temp_TMVA_BB_DataToTree = temp.TMVA_BB;
+            temp_TMVA_Continuum_DataToTree = temp.TMVA_Continuum;
+        }
 
         temp_tree_upsilon->Fill();
         temp_tree_Bsig->Fill();
@@ -1829,6 +1881,9 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     double temp_Upsilon_decayIDToTree;
     double temp_Bsig_decayIDToTree;
     int temp_flag;
+
+    float temp_TMVA_BB_DataToTree;
+    float temp_TMVA_Continuum_DataToTree;
 
     /*================================================================*/
     // get event_info
@@ -1981,6 +2036,15 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
     }
 
+    if (DoesItHaveTMVAOutput) {
+        temp_tree->Branch("TMVA_BB", &temp_TMVA_BB_DataToTree);
+        temp_tree->Branch("TMVA_Continuum", &temp_TMVA_Continuum_DataToTree);
+    }
+    else {
+        temp_TMVA_BB = -1;
+        temp_TMVA_Continuum = -1;
+    }
+
     // flag
     temp_tree->Branch("flag", &temp_flag);
     /*================================================================*/
@@ -2011,6 +2075,12 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         }
         temp_Upsilon_decayIDToTree = temp.Upsilon_decayID;
         temp_Bsig_decayIDToTree = temp.Bsig_decayID;
+
+        if (DoesItHaveTMVAOutput) {
+            temp_TMVA_BB_DataToTree = temp.TMVA_BB;
+            temp_TMVA_Continuum_DataToTree = temp.TMVA_Continuum;
+        }
+
         temp_flag = flag;
 
         temp_tree->Fill();

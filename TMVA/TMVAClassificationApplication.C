@@ -37,16 +37,8 @@
 
 using namespace TMVA;
 
-void TMVAClassificationApplication(const char* filename, const char* option)
+void TMVAClassificationApplication(const char* filename)
 {
-    std::string OPTION = std::string(option);
-    if (OPTION == std::string("large")) {}
-    else if (OPTION == std::string("small")) {}
-    else {
-        printf("unknown option!\n");
-        exit(0);
-    }
-
     std::string string_filename(filename);
     std::string OnlyFileName = string_filename.substr(string_filename.find_last_of("\\/") + 1, string_filename.size() - string_filename.find_last_of("\\/"));
 
@@ -181,34 +173,30 @@ void TMVAClassificationApplication(const char* filename, const char* option)
    reader->AddSpectator("Btag_useCMSFrame_E", &temp_BtagDataToTree_f[4]);
    reader->AddSpectator("flag", &temp_flag_f);
 
-   TString dir_continuum    = "";
-   TString dir_BB = "";
-   TString prefix = "";
-   if (OPTION == std::string("large")) {
-       dir_continuum = "dataset_Continuum_Mxs_large/weights/";
-       dir_BB = "dataset_BB_Mxs_large/weights/";
-       prefix = "TMVAClassification";
-   }
-   else if (OPTION == std::string("small")) {
-       dir_continuum = "dataset_Continuum_Mxs_small/weights/";
-       dir_BB = "dataset_BB_Mxs_small/weights/";
-       prefix = "TMVAClassification";
-   }
 
-   TString methodName_continuum = TString("Continuum");
-   TString weightfile_continuum = dir_continuum + prefix + TString("_") + TString("MLP") + TString(".weights.xml");
-   reader->BookMVA(methodName_continuum, weightfile_continuum);
+   TString dir_continuum_large = "dataset_Continuum_Mxs_large/weights/";
+   TString dir_BB_large = "dataset_BB_Mxs_large/weights/";
+   TString prefix_large = "TMVAClassification";
 
-   TString methodName_BB = TString("BB");
-   TString weightfile_BB = dir_BB + prefix + TString("_") + TString("MLP") + TString(".weights.xml");
-   reader->BookMVA(methodName_BB, weightfile_BB);
+   TString dir_continuum_small = "dataset_Continuum_Mxs_small/weights/";
+   TString dir_BB_small = "dataset_BB_Mxs_small/weights/";
+   TString prefix_small = "TMVAClassification";
 
-   int nbin = 100;
-   TH1F *histMLP_Continuum(0);
-   TH1F* histMLP_BB(0);
+   TString methodName_continuum_large = TString("Continuum_large");
+   TString weightfile_continuum_large = dir_continuum_large + prefix_large + TString("_") + TString("MLP") + TString(".weights.xml");
+   reader->BookMVA(methodName_continuum_large, weightfile_continuum_large);
 
-   histMLP_Continuum = new TH1F("MVA_MLP_Continuum", "MVA_MLP_Continuum", nbin, -0.8, 0.8);
-   histMLP_BB = new TH1F("MVA_MLP_BB", "MVA_MLP_BB", nbin, -0.8, 0.8);
+   TString methodName_BB_large = TString("BB_large");
+   TString weightfile_BB_large = dir_BB_large + prefix_large + TString("_") + TString("MLP") + TString(".weights.xml");
+   reader->BookMVA(methodName_BB_large, weightfile_BB_large);
+
+   TString methodName_continuum_small = TString("Continuum_small");
+   TString weightfile_continuum_small = dir_continuum_small + prefix_small + TString("_") + TString("MLP") + TString(".weights.xml");
+   reader->BookMVA(methodName_continuum_small, weightfile_continuum_small);
+
+   TString methodName_BB_small = TString("BB_small");
+   TString weightfile_BB_small = dir_BB_small + prefix_small + TString("_") + TString("MLP") + TString(".weights.xml");
+   reader->BookMVA(methodName_BB_small, weightfile_BB_small);
 
    // Prepare input tree (this must be replaced by your data source)
    // in this example, there is a toy tree with signal and one with background events
@@ -561,9 +549,14 @@ void TMVAClassificationApplication(const char* filename, const char* option)
        temp_Bsig_decayIDToTree_f = (float)temp_Bsig_decayIDToTree;
        temp_flag_f = (float)temp_flag;
 
-       Output_BB = reader->EvaluateMVA("BB");
-       Output_Continuum = reader->EvaluateMVA("Continuum");
-
+       if (temp_BsigDataToTree[6] > 1.1) { // Bsig_M
+           Output_BB = reader->EvaluateMVA("BB_large");
+           Output_Continuum = reader->EvaluateMVA("Continuum_large");
+       }
+       else {
+           Output_BB = reader->EvaluateMVA("BB_small");
+           Output_Continuum = reader->EvaluateMVA("Continuum_small");
+       }
        temp_tree->Fill();
    }
 
