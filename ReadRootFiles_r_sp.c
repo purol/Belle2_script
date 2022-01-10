@@ -1,4 +1,4 @@
-// last update: 2022-01-10
+// last update: 2022-01-11
 // for Belle2 data
 
 /*
@@ -17,6 +17,10 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_Bsig_info 28
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
+
+# define Nstep 20
+# define start 0.8
+# define end 1.0
 
 void load_files(const char *dirname, std::vector<std::string>* names){
    TSystemDirectory dir(dirname, dirname);
@@ -225,6 +229,10 @@ private:
     double Confusion_square[Loader::MAX_NUM_DECAYMODE][Loader::MAX_NUM_DECAYMODE + 1]; // [reco][MC truth]
     bool Confusion_matrixIsOn;
 
+    int current_FOM;
+    double FOM_Matrix[Nstep][Nstep];
+    bool FOMIsOn;
+
     int EventDataToTree[N_event_info];
     double UpsilonDataToTree[N_Upsilon_info];
     double BsigDataToTree[N_Bsig_info];
@@ -267,6 +275,7 @@ public:
     void BsigFitConvergeFor(Loader::Variable variable, int i);
     void OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type);
     void DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type, double minM, double maxM);
+    void PrintFOM();
 };
 
 Loader::Loader() {
@@ -296,6 +305,9 @@ Loader::Loader() {
         }
     }
     Confusion_matrixIsOn = false;
+    current_FOM = 0;
+    for (int i = 0; i < Nstep; i++) for (int j = 0; j < Nstep; j++) FOM_Matrix[i][j] = 0.0; // initialization
+    FOMIsOn = false;
 }
 
 void Loader::initialize() {
@@ -313,6 +325,8 @@ void Loader::initialize() {
     DoesItHaveTMVAOutput = false;
     current_Confusion_matrix = 0;
     Confusion_matrixIsOn = false;
+    current_FOM = 0;
+    FOMIsOn = false;
 }
 
 void Loader::GetData(TFile* input_file) {
@@ -1307,6 +1321,19 @@ void Loader::End() {
 
     }
 
+    if (FOMIsOn == true) {
+        printf("--------------- number of event to get FOM ---------------\n");
+        printf("--------------- Oqq -> ---------------\n");
+        printf("\n");
+        for (int i = 0; i < Nstep; i++) {
+            for (int j = 0; j < Nstep; j++) {
+                printf("%f ", FOM_Matrix[i][j]);
+            }
+            printf("\n");
+        }
+        printf("--------------- number of event to get FOM ---------------\n");
+    }
+
     for (int i = 0; i < TH1Fs.size();i++) {
         TCanvas* c_temp = new TCanvas("c", "", 1500, 1200); c_temp->cd();
         TH1Fs.at(i)->Draw("Hist"); c_temp->SaveAs((std::string(TH1Fs.at(i)->GetName()) + ".png").c_str());
@@ -1813,8 +1840,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_upsilon->Branch("TMVA_Continuum", &temp_TMVA_Continuum_DataToTree);
     }
     else {
-        temp_TMVA_BB = -1;
-        temp_TMVA_Continuum = -1;
+        temp_TMVA_BB_DataToTree = -1;
+        temp_TMVA_Continuum_DataToTree = -1;
     }
     /*================================================================*/
 
@@ -2041,8 +2068,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         temp_tree->Branch("TMVA_Continuum", &temp_TMVA_Continuum_DataToTree);
     }
     else {
-        temp_TMVA_BB = -1;
-        temp_TMVA_Continuum = -1;
+        temp_TMVA_BB_DataToTree = -1;
+        temp_TMVA_Continuum_DataToTree = -1;
     }
 
     // flag
@@ -2537,6 +2564,66 @@ void Loader::DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedve
         }
     }
     TotalData.swap(temp_queue);
+}
+
+void Loader::PrintFOM() {
+    if (current_FOM > 0) { // allocate new int
+        printf("The number of PrintFOM should not be larger than 1\n");
+        printf("Only first PrintFOM is accepted\n");
+        return;
+    }
+    if (DoesItHaveTMVAOutput == false) {
+        printf("ERROR! PrintFOM is called when the data does not have TMVA output\n");
+        exit(1);
+    }
+    typedef struct labels {
+        int __experiment__;
+        int __run__;
+        int __event__;
+        int __ncandidates__;
+    } Labels;
+
+    for (int i = 0; i < Nstep; i++) {
+        for (int j = 0; j < Nstep; j++) {
+            std::queue<Data> temp_queue;
+            temp_queue.swap(TotalData);
+
+            double BB_output = start + (end - start) * i / Nstep;
+            double Continuum_output = start + (end - start) * j / Nstep;
+
+            std::vector<Labels> label_list;
+            double EVT_num = 0.0;
+
+            while (!temp_queue.empty()) {
+                Data temp = temp_queue.front();
+                temp_queue.pop();
+
+                if (temp.TMVA_BB > BB_output && temp.TMVA_Continuum > Continuum_output) {
+                    bool overlap = false;
+                    for (unsigned int k = 0; k < label_list.size(); k++) {
+                        if (label_list.at(k).__experiment__ == temp.__experiment__ && label_list.at(k).__run__ == temp.__run__ && label_list.at(k).__event__ == temp.__event__ && label_list.at(k).__ncandidates__ == temp.__ncandidates__) {
+                            overlap = true;
+                        }
+                    }
+                    if (overlap == false) {
+                        EVT_num = EVT_num + 1.0;
+                        Labels temp_Labels;
+                        temp_Labels.__experiment__ = temp.__experiment__;
+                        temp_Labels.__run__ = temp.__run__;
+                        temp_Labels.__event__ = temp.__event__;
+                        temp_Labels.__ncandidates__ = temp.__ncandidates__;
+                        label_list.push_back(temp_Labels);
+                    }
+                }
+
+                TotalData.push(temp);
+            }
+            FOM_Matrix[i][j] = FOM_Matrix[i][j] + EVT_num;
+        }
+    }
+
+    FOMIsOn = true;
+    current_FOM++;
 }
 
 int ReadRootFiles_r_sp(){
