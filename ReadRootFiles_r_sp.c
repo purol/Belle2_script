@@ -1,4 +1,4 @@
-// last update: 2022-01-11
+// last update: 2022-01-12
 // for Belle2 data
 
 /*
@@ -1389,17 +1389,19 @@ void Loader::End() {
         TTree* temp_tree_Btag = trees_Btag.at(i);
         TTree* temp_tree_Xs = trees_Xs.at(i);
         temp_file->cd();
+
+        if (AllOfThemHaveTMVAOutput == false) {
+            TBranch* b = temp_tree_upsilon->GetBranch("TMVA_BB");
+            temp_tree_upsilon->GetListOfBranches()->Remove(b);
+            b = temp_tree_upsilon->GetBranch("TMVA_Continuum");
+            temp_tree_upsilon->GetListOfBranches()->Remove(b);
+        }
+
         temp_tree_upsilon->Write();
         temp_tree_Bsig->Write();
         temp_tree_Btag->Write();
         if (AllOfThemHaveXsBranch) temp_tree_Xs->Write();
         else delete temp_tree_Xs;
-        if (AllOfThemHaveTMVAOutput == false) {
-            TLeaf* l = temp_tree_upsilon->GetLeaf("TMVA_BB");
-            temp_tree_upsilon->GetListOfLeaves()->Remove(l);
-            l = temp_tree_upsilon->GetLeaf("TMVA_Continuum");
-            temp_tree_upsilon->GetListOfLeaves()->Remove(l);
-        }
         temp_file->Close();
     }
 
