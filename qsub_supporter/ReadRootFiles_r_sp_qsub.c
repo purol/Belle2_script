@@ -243,6 +243,10 @@ public:
         Dneutralwithoutpizero,
         Dneutralwithpizero
     };
+    enum MassRegion {
+        SmallMass = 0,
+        LargeMass
+    };
 
 private:
     std::queue<Data> TotalData;
@@ -332,6 +336,7 @@ public:
     void OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type);
     void DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type, double minM, double maxM);
     void PrintFOM();
+    void TMVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
 };
 
 Loader::Loader() {
@@ -2680,6 +2685,34 @@ void Loader::PrintFOM() {
 
     FOMIsOn = true;
     current_FOM++;
+}
+
+void Loader::TMVACut(double OBB, double Oqq, Loader::MassRegion massRegion) {
+    if (DoesItHaveTMVAOutput == false) {
+        printf("ERROR! TMVACut is called when the data does not have TMVA output\n");
+        exit(1);
+    }
+
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+
+        if (massRegion == Loader::SmallMass) {
+            if (temp_data.Bsig_info[6] > 1.1) temp_queue.push(temp_data);
+            else {
+                if (temp_data.TMVA_BB > OBB && temp_data.TMVA_Continuum > Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else if (massRegion == Loader::LargeMass) {
+            if (temp_data.Bsig_info[6] < 1.1) temp_queue.push(temp_data);
+            else {
+                if (temp_data.TMVA_BB > OBB && temp_data.TMVA_Continuum > Oqq) temp_queue.push(temp_data);
+            }
+        }
+
+    }
+    TotalData.swap(temp_queue);
 }
 
 int main(int argc, char* argv[]) { // argv[1]: Ntuple input with path, argv[2]: destination of output, 
