@@ -523,8 +523,8 @@ void Loader::GetData(TFile* input_file) {
         tree_upsilon->SetBranchAddress("TMVA_Continuum", &temp.TMVA_Continuum);
     }
     else {
-        temp.TMVA_BB = -1;
-        temp.TMVA_Continuum = -1;
+        temp.TMVA_BB = -1.0f;
+        temp.TMVA_Continuum = -1.0f;
     }
 
     printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -1389,14 +1389,6 @@ void Loader::End() {
         TTree* temp_tree_Btag = trees_Btag.at(i);
         TTree* temp_tree_Xs = trees_Xs.at(i);
         temp_file->cd();
-
-        if (AllOfThemHaveTMVAOutput == false) {
-            TBranch* b = temp_tree_upsilon->GetBranch("TMVA_BB");
-            temp_tree_upsilon->GetListOfBranches()->Remove(b);
-            b = temp_tree_upsilon->GetBranch("TMVA_Continuum");
-            temp_tree_upsilon->GetListOfBranches()->Remove(b);
-        }
-
         temp_tree_upsilon->Write();
         temp_tree_Bsig->Write();
         temp_tree_Btag->Write();
@@ -1847,8 +1839,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_upsilon->Branch("TMVA_Continuum", &temp_TMVA_Continuum_DataToTree);
     }
     else {
-        temp_TMVA_BB_DataToTree = -1;
-        temp_TMVA_Continuum_DataToTree = -1;
+        temp_TMVA_BB_DataToTree = -1.0f;
+        temp_TMVA_Continuum_DataToTree = -1.0f;
     }
     /*================================================================*/
 
@@ -2075,8 +2067,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         temp_tree->Branch("TMVA_Continuum", &temp_TMVA_Continuum_DataToTree);
     }
     else {
-        temp_TMVA_BB_DataToTree = -1;
-        temp_TMVA_Continuum_DataToTree = -1;
+        temp_TMVA_BB_DataToTree = -1.0f;
+        temp_TMVA_Continuum_DataToTree = -1.0f;
     }
 
     // flag
