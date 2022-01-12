@@ -245,8 +245,8 @@ private:
     double DataToTree[N_Needed_info];
     double Upsilon_decayIDToTree;
     double Bsig_decayIDToTree;
-    double TMVA_BB_DataToTree;
-    double TMVA_Continuum_DataToTree;
+    float TMVA_BB_DataToTree;
+    float TMVA_Continuum_DataToTree;
 
     bool DoesItHaveXsBranch;
     bool DoesItHaveTMVAOutput;
