@@ -80,7 +80,7 @@ void LetsCalculateUncertainties(const char* dirname) {
     const double KS0_rel_uncertainty = 0.6; // %/cm
     const double track_rel_uncertainty = 0.69; // %
     const double pi0_correction = 0.932;
-    const double pi0_rel_uncertainty = (0.0369/0.932)*100.0; // %
+    const double pi0_rel_uncertainty = (0.0369 / 0.932) * 100.0; // %
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
@@ -88,6 +88,7 @@ void LetsCalculateUncertainties(const char* dirname) {
     int total_N = 0;
     std::vector<int> ntracks;
     std::vector<int> npi0s;
+    std::vector<double> KS0_3D_distance;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -97,12 +98,15 @@ void LetsCalculateUncertainties(const char* dirname) {
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
         printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
 
+        double temp_KS0_3D_distance = -1;
+
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_KS0_3D_distance);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -194,7 +198,7 @@ void LetsCalculateUncertainties(const char* dirname) {
                 printf("[ERROR] unexpected decay ID\n");
                 exit(1);
             }
-            
+            KS0_3D_distance.push_back(temp_KS0_3D_distance);
         }
         total_N = total_N + tree_upsilon->GetEntries();
         input_file->Close();
@@ -208,22 +212,27 @@ void LetsCalculateUncertainties(const char* dirname) {
     std::vector<double> pi0_rel_uncertainties;
     for (int j = 0; j < total_N; j++) {
         corrected_Ns.push_back(pow(pi0_correction, npi0s.at(j)));
-        track_rel_uncertainties.push_back(track_rel_uncertainty* ntracks.at(j));
-        pi0_rel_uncertainties.push_back(pi0_rel_uncertainty* npi0s.at(j));
+        track_rel_uncertainties.push_back(track_rel_uncertainty * ntracks.at(j));
+        pi0_rel_uncertainties.push_back(pi0_rel_uncertainty * npi0s.at(j));
+        KS0_rel_uncertainties.push_back(KS0_rel_uncertainty * KS0_3D_distance.at(j));
     }
     double corrected_N = 0;
     double avg_track_rel_uncertainty = 0;
     double avg_pi0_rel_uncertainty = 0;
+    double avg_KS0_rel_uncertainty = 0;
     for (int j = 0; j < total_N; j++) {
         corrected_N = corrected_N + corrected_Ns.at(j);
         avg_track_rel_uncertainty = avg_track_rel_uncertainty + corrected_Ns.at(j) * track_rel_uncertainties.at(j);
         avg_pi0_rel_uncertainty = avg_pi0_rel_uncertainty + corrected_Ns.at(j) * pi0_rel_uncertainties.at(j);
+        avg_KS0_rel_uncertainty = avg_KS0_rel_uncertainty + corrected_Ns.at(j) * KS0_rel_uncertainties.at(j);
     }
     avg_track_rel_uncertainty = avg_track_rel_uncertainty / corrected_N;
     avg_pi0_rel_uncertainty = avg_pi0_rel_uncertainty / corrected_N;
+    avg_KS0_rel_uncertainty = avg_KS0_rel_uncertainty / corrected_N;
     printf("Average correction factor: %lf\n", corrected_N / total_N);
     printf("Average relative uncertainty from track: %lf%%\n", avg_track_rel_uncertainty);
     printf("Average relative uncertainty from pi0: %lf%%\n", avg_pi0_rel_uncertainty);
+    printf("Average relative uncertainty from KS0: %lf%%\n", avg_KS0_rel_uncertainty);
 }
 
 void Signal_yield_fit()

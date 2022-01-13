@@ -26,17 +26,17 @@ void load_files(const char* dirname, std::vector<string>* names) {
 }
 
 RooRealVar  OBB_DATA("OBB", "OBB_DATA", 0.6, 1.0);
-RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0, 1.2);
+RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0, 1.6);
 RooRealVar weight_DATA("weight", "weight_DATA", 0.0, 1.0);
 RooDataSet info_DATA("2Dinfo", "2Dinfo_DATA", RooArgSet(OBB_DATA, Eecl_DATA, weight_DATA), WeightVar("weight"));
 
 RooRealVar  OBB_MC_signal("OBB", "OBB_MC_signal", 0.6, 1.0);
-RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0, 1.2);
+RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0, 1.6);
 RooRealVar weight_MC_signal("weight", "weight_MC_signal", 0.0, 1.0);
 RooDataSet info_MC_signal("2Dinfo", "2Dinfo_MC_signal", RooArgSet(OBB_MC_signal, Eecl_MC_signal, weight_MC_signal), WeightVar("weight"));
 
 RooRealVar  OBB_MC_background("OBB", "OBB_MC_background", 0.6, 1.0);
-RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0, 1.2);
+RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0, 1.6);
 RooRealVar weight_MC_background("weight", "weight_MC_background", 0.0, 1.0);
 RooDataSet info_MC_background("2Dinfo", "2Dinfo_MC_background", RooArgSet(OBB_MC_background, Eecl_MC_background, weight_MC_background), WeightVar("weight"));
 
@@ -88,6 +88,7 @@ void LetsCalculateUncertainties(const char* dirname) {
     int total_N = 0;
     std::vector<int> ntracks;
     std::vector<int> npi0s;
+    std::vector<double> KS0_3D_distance;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -97,12 +98,15 @@ void LetsCalculateUncertainties(const char* dirname) {
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
         printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
 
+        double temp_KS0_3D_distance = -1;
+
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_KS0_3D_distance);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -194,7 +198,7 @@ void LetsCalculateUncertainties(const char* dirname) {
                 printf("[ERROR] unexpected decay ID\n");
                 exit(1);
             }
-            
+            KS0_3D_distance.push_back(temp_KS0_3D_distance);
         }
         total_N = total_N + tree_upsilon->GetEntries();
         input_file->Close();
@@ -210,43 +214,48 @@ void LetsCalculateUncertainties(const char* dirname) {
         corrected_Ns.push_back(pow(pi0_correction, npi0s.at(j)));
         track_rel_uncertainties.push_back(track_rel_uncertainty* ntracks.at(j));
         pi0_rel_uncertainties.push_back(pi0_rel_uncertainty* npi0s.at(j));
+        KS0_rel_uncertainties.push_back(KS0_rel_uncertainty*KS0_3D_distance.at(j));
     }
     double corrected_N = 0;
     double avg_track_rel_uncertainty = 0;
     double avg_pi0_rel_uncertainty = 0;
+    double avg_KS0_rel_uncertainty = 0;
     for (int j = 0; j < total_N; j++) {
         corrected_N = corrected_N + corrected_Ns.at(j);
         avg_track_rel_uncertainty = avg_track_rel_uncertainty + corrected_Ns.at(j) * track_rel_uncertainties.at(j);
         avg_pi0_rel_uncertainty = avg_pi0_rel_uncertainty + corrected_Ns.at(j) * pi0_rel_uncertainties.at(j);
+        avg_KS0_rel_uncertainty = avg_KS0_rel_uncertainty + corrected_Ns.at(j) * KS0_rel_uncertainties.at(j);
     }
     avg_track_rel_uncertainty = avg_track_rel_uncertainty / corrected_N;
     avg_pi0_rel_uncertainty = avg_pi0_rel_uncertainty / corrected_N;
+    avg_KS0_rel_uncertainty = avg_KS0_rel_uncertainty / corrected_N;
     printf("Average correction factor: %lf\n", corrected_N / total_N);
     printf("Average relative uncertainty from track: %lf%%\n", avg_track_rel_uncertainty);
     printf("Average relative uncertainty from pi0: %lf%%\n", avg_pi0_rel_uncertainty);
+    printf("Average relative uncertainty from KS0: %lf%%\n", avg_KS0_rel_uncertainty);
 }
 
 void Signal_yield_fit_2D()
 {
     // to extract signal yield
-    RooRealVar EeclFit("Eecl", "Eecl", 0, 1.2, "GeV");
-    EeclFit.setBins(12);
-    RooPlot* Eeclframe = EeclFit.frame(Bins(12), Title(" "));
+    RooRealVar EeclFit("Eecl", "Eecl", 0, 1.6, "GeV");
+    EeclFit.setBins(16);
+    RooPlot* Eeclframe = EeclFit.frame(Bins(16), Title(" "));
 
     RooRealVar OBBFit("OBB", "OBB", 0.6, 1.0, "");
     OBBFit.setBins(10);
     RooPlot* OBBframe = OBBFit.frame(Bins(10), Title(" "));
 
     // get data from root files
-    const char* MC_dirname_signal = "./output_after_TMVA_test/SIGNAL";
+    const char* MC_dirname_signal = "./For_Roofit_SIGNAL/test";
     LetsAdd(MC_dirname_signal, &OBB_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal);
 
-    const char* MC_dirname_CHG = "./output_after_TMVA_test/CHG";
-    const char* MC_dirname_MIX = "./output_after_TMVA_test/MIX";
-    const char* MC_dirname_UUBAR = "./output_after_TMVA_test/UUBAR";
-    const char* MC_dirname_DDBAR = "./output_after_TMVA_test/DDBAR";
-    const char* MC_dirname_SSBAR = "./output_after_TMVA_test/SSBAR";
-    const char* MC_dirname_CHARM = "./output_after_TMVA_test/CHARM";
+    const char* MC_dirname_CHG = "./For_Roofit_BKG/test/CHG";
+    const char* MC_dirname_MIX = "./For_Roofit_BKG/test/MIX";
+    const char* MC_dirname_UUBAR = "./For_Roofit_BKG/test/UUBAR";
+    const char* MC_dirname_DDBAR = "./For_Roofit_BKG/test/DDBAR";
+    const char* MC_dirname_SSBAR = "./For_Roofit_BKG/test/SSBAR";
+    const char* MC_dirname_CHARM = "./For_Roofit_BKG/test/CHARM";
     LetsAdd(MC_dirname_CHG, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_MIX, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_UUBAR, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
@@ -254,31 +263,31 @@ void Signal_yield_fit_2D()
     LetsAdd(MC_dirname_SSBAR, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_CHARM, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
 
-    const char* DATA_dirname_BKG = "./output_after_TMVA_train/BKG";
-    const char* DATA_dirname_SIGNAL = "./output_after_TMVA_train/SIGNAL";
+    const char* DATA_dirname_BKG = "./For_Roofit_BKG/validation";
+    const char* DATA_dirname_SIGNAL = "./For_Roofit_SIGNAL/validation";
     LetsAdd(DATA_dirname_BKG, &OBB_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
     LetsAdd(DATA_dirname_SIGNAL, &OBB_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, 0.003385);
 
 
     // define frame and get ready to make pdfs
-    Eecl_DATA.setBins(12);
+    Eecl_DATA.setBins(16);
     OBB_DATA.setBins(10);
 
-    Eecl_MC_signal.setBins(12);
+    Eecl_MC_signal.setBins(16);
     OBB_MC_signal.setBins(10);
     RooDataHist hist_MC_signal("hist_MC_signal", "histogram for MC signal samples", RooArgSet(OBBFit, EeclFit), info_MC_signal);
 
-    Eecl_MC_background.setBins(12);
+    Eecl_MC_background.setBins(16);
     OBB_MC_background.setBins(10);
     RooDataHist hist_MC_background("hist_MC_background", "histogram for MC background samples", RooArgSet(OBBFit, EeclFit), info_MC_background);
 
     // define pdf and extended pdf
     RooHistPdf histpdf_signal("histpdf_signal", "histpdf_signal", RooArgSet(OBBFit, EeclFit), hist_MC_signal, 0);
-    RooRealVar nsig("nsig", "number of signal events", 10, -180, 180);
+    RooRealVar nsig("nsig", "number of signal events", 19, -500, 500);
     RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_signal, nsig);
 
     RooHistPdf histpdf_background("histpdf_background", "histpdf_background", RooArgSet(OBBFit, EeclFit), hist_MC_background, 0);
-    RooRealVar nbkg("nbkg", "number of background events", 130, -300, 300);
+    RooRealVar nbkg("nbkg", "number of background events", 860, -10000, 10000);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_background, nbkg);
 
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -301,7 +310,7 @@ void Signal_yield_fit_2D()
     totalpdf.plotOn(OBBframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed));
 
     TCanvas* c = new TCanvas("OBBVSEecl", "OBBVSEecl", 600, 600);
-    TH1* hh_data = info_DATA.createHistogram("OBB,Eecl", 10, 12);
+    TH1* hh_data = info_DATA.createHistogram("OBB,Eecl", 10, 16);
     hh_data->Draw("lego"); c->SaveAs("OBBVSEecl_distribution.png");
     delete c;
     delete hh_data;
@@ -317,8 +326,8 @@ void Signal_yield_fit_2D()
 
 
     /* ============== toy MC study ============== */
-    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 1.2);
-    Eecl_TOY.setBins(12);
+    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 1.6);
+    Eecl_TOY.setBins(16);
     RooRealVar  OBB_TOY("OBB", "OBB_TOY", 0.6, 1.0);
     OBB_TOY.setBins(10);
 
