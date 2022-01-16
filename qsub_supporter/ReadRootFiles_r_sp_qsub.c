@@ -1,4 +1,4 @@
-// last update: 2022-01-12
+// last update: 2022-01-16
 // for Belle2 data
 
 /*
@@ -293,6 +293,10 @@ private:
     double FOM_Matrix[Nstep][Nstep];
     bool FOMIsOn;
 
+    int current_MCcount;
+    int MCcount[Loader::MAX_NUM_DECAYMODE_MC];
+    bool MCcountOn;
+
     int EventDataToTree[N_event_info];
     double UpsilonDataToTree[N_Upsilon_info];
     double BsigDataToTree[N_Bsig_info];
@@ -337,6 +341,7 @@ public:
     void DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type, double minM, double maxM);
     void PrintFOM();
     void TMVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
+    void CountMCEvent();
 };
 
 Loader::Loader() {
@@ -369,6 +374,9 @@ Loader::Loader() {
     current_FOM = 0;
     for (int i = 0; i < Nstep; i++) for (int j = 0; j < Nstep; j++) FOM_Matrix[i][j] = 0.0; // initialization
     FOMIsOn = false;
+    current_MCcount = 0;
+    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) MCcount[Loader::MAX_NUM_DECAYMODE_MC] = 0;
+    MCcountOn = false;
 }
 
 void Loader::initialize() {
@@ -388,6 +396,8 @@ void Loader::initialize() {
     Confusion_matrixIsOn = false;
     current_FOM = 0;
     FOMIsOn = false;
+    current_MCcount = 0;
+    MCcountOn = false;
 }
 
 void Loader::GetData(TFile* input_file) {
@@ -1393,6 +1403,12 @@ void Loader::End() {
             printf("\n");
         }
         printf("--------------- number of event to get FOM ---------------\n");
+    }
+
+    if (MCcountOn == true) {
+        printf("--------------- number of Decay mode ---------------\n");
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event of MCdecayID %d: %d\n", j, MCcount[j]);
+        printf("--------------- number of Decay mode ---------------\n");
     }
 
     for (int i = 0; i < TH1Fs.size();i++) {
@@ -2707,6 +2723,67 @@ void Loader::TMVACut(double OBB, double Oqq, Loader::MassRegion massRegion) {
 
     }
     TotalData.swap(temp_queue);
+}
+
+void Loader::CountMCEvent() {
+    if (current_MCcount > 0) { // allocate new int
+        printf("The number of CountMCEvent should not be larger than 1\n");
+        printf("Only first CountMCEvent is accepted\n");
+        return;
+    }
+    if (DoesItHaveXsBranch == false) {
+        printf("ERROR! CountMCEvent is called when the data does not have Xs branch\n");
+        exit(1);
+    }
+    typedef struct labels {
+        int __experiment__;
+        int __run__;
+        int __event__;
+        int __ncandidates__;
+    } Labels;
+
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
+
+    std::vector<Labels> label_list;
+
+    while (!temp_queue.empty()) {
+        Data temp = temp_queue.front();
+        temp_queue.pop();
+
+        bool overlap = false;
+        for (unsigned int k = 0; k < label_list.size(); k++) {
+            if (label_list.at(k).__experiment__ == temp.__experiment__ && label_list.at(k).__run__ == temp.__run__ && label_list.at(k).__event__ == temp.__event__ && label_list.at(k).__ncandidates__ == temp.__ncandidates__) {
+                overlap = true;
+            }
+        }
+        if (overlap == false) {
+            Labels temp_Labels;
+            temp_Labels.__experiment__ = temp.__experiment__;
+            temp_Labels.__run__ = temp.__run__;
+            temp_Labels.__event__ = temp.__event__;
+            temp_Labels.__ncandidates__ = temp.__ncandidates__;
+            label_list.push_back(temp_Labels);
+
+            int decaymodeid_MC = -1;
+            for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) { // find MC decay mode
+                if (TrueIfDecayModeMatch_MC(temp, static_cast<Loader::DecayModeMC>(i))) {
+                    decaymodeid_MC = i;
+                    break;
+                }
+            }
+            if (decaymodeid_MC == Loader::MAX_NUM_DECAYMODE_MC) {
+                printf("ERROR! MC decay id cannot be found\n");
+                exit(1);
+            }
+            MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + 1;
+        }
+
+        TotalData.push(temp);
+    }
+
+    MCcountOn = true;
+    current_MCcount++;
 }
 
 int main(int argc, char* argv[]) { // argv[1]: Ntuple input with path, argv[2]: destination of output, 
