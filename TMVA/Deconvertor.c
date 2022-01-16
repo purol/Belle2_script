@@ -43,8 +43,8 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
         load_files(dirname, &names);
 
         for (unsigned int i = 0; i < names.size(); i++) {
-            const char* filename = (dirname + std::string("/") + names.at(i)).c_str();
-            std::string string_filename(filename);
+            std::string string_filename = dirname + std::string("/") + names.at(i);
+            const char* filename = string_filename.c_str();
             std::string OnlyFileName = string_filename.substr(string_filename.find_last_of("\\/") + 1, string_filename.size() - string_filename.find_last_of("\\/"));
             size_t lastindex = OnlyFileName.find_last_of(".");
             std::string rawname = OnlyFileName.substr(0, lastindex);
