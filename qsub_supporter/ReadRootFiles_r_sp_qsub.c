@@ -375,7 +375,7 @@ Loader::Loader() {
     for (int i = 0; i < Nstep; i++) for (int j = 0; j < Nstep; j++) FOM_Matrix[i][j] = 0.0; // initialization
     FOMIsOn = false;
     current_MCcount = 0;
-    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) MCcount[Loader::MAX_NUM_DECAYMODE_MC] = 0;
+    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) MCcount[i] = 0;
     MCcountOn = false;
 }
 
