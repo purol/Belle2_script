@@ -37,7 +37,23 @@
 
 using namespace TMVA;
 
-void TMVAClassificationApplication(const char* filename)
+void load_files(const char* dirname, std::vector<std::string>* names) {
+    TSystemDirectory dir(dirname, dirname);
+    TList* files = dir.GetListOfFiles();
+    if (files) {
+        TSystemFile* file;
+        TString fname;
+        TIter next(files);
+        while ((file = (TSystemFile*)next())) {
+            fname = file->GetName();
+            if (!file->IsDirectory() && fname.EndsWith(".root")) {
+                names->push_back(fname.Data());
+            }
+        }
+    }
+}
+
+void ApplicationEachFile(const char* filename)
 {
     std::string string_filename(filename);
     std::string OnlyFileName = string_filename.substr(string_filename.find_last_of("\\/") + 1, string_filename.size() - string_filename.find_last_of("\\/"));
@@ -564,8 +580,24 @@ void TMVAClassificationApplication(const char* filename)
    temp_tree->Write();
    temp_file->Close();
 
+   input->Close();
+
    delete reader;
 
    std::cout << "==> TMVAClassificationApplication is done!" << std::endl << std::endl;
    
+}
+
+void TMVAClassificationApplication(const char* dirname) {
+
+    std::vector<std::string> names;
+    load_files(dirname, &names);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+        std::string string_filename = dirname + std::string("/") + names.at(i);
+        const char* filename = string_filename.c_str();
+
+        ApplicationEachFile(filename);
+    }
+
 }
