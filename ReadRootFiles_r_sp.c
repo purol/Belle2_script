@@ -1,4 +1,4 @@
-// last update: 2022-01-16
+// last update: 2022-01-19
 // for Belle2 data
 
 /*
@@ -21,6 +21,44 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define Nstep 20
 # define start 0.8
 # define end 1.0
+
+// arXiv:1409.4557v2
+# define TB0 1.5195 // (Table. 1)
+# define TBp 1.6384 // (Table. 1)
+# define BR_Kplus_nunubar 0.00000398 // (eq. 10)
+# define BR_K0star_nunubar 0.00000919 // (eq. 11)
+# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15)
+# define BR_Kplusstar_nunubar (BR_K0star_nunubar*TBp/TB0) // under (eq. 15)
+# define BR_Xs_nunubar 0.000029 // (eq. 23)
+# define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
+# define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
+
+// https://confluence.desy.de/pages/viewpage.action?pageId=107054222
+# define N_BpBp_1invab 565400000.0
+# define N_B0B0_1invab 534600000.0
+
+# define N_Kplus_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplus_nunubar)
+# define N_Kplusstar_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplusstar_nunubar)
+# define N_Xsu_nonresonant_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Xsu_nonresonant_nunubar)
+# define N_K0_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0_nunubar)
+# define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
+# define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
+
+// my MC sample number
+# define N_Kplus_nunubar 10000000.0
+# define N_K0_nunubar 10000000.0
+# define N_Kplusstar_nunubar 10000000.0
+# define N_K0star_nunubar 10000000.0
+# define N_Xsu_nonresonant_nunubar 50000000.0
+# define N_Xsd_nonresonant_nunubar 50000000.0
+
+// scale factor for each MC sample
+# define Scale_Kplus (N_Kplus_nunubar_1invab/N_Kplus_nunubar)
+# define Scale_Kplusstar (N_Kplusstar_nunubar_1invab/N_Kplusstar_nunubar)
+# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar)
+# define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
+# define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
+# define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
 
 void load_files(const char *dirname, std::vector<std::string>* names){
    TSystemDirectory dir(dirname, dirname);
@@ -191,6 +229,15 @@ public:
         SmallMass = 0,
         LargeMass
     };
+    enum ScaleFactor {
+        None = 0,
+        Kplus,
+        Kplusstar,
+        Xsu_nonresonant,
+        K0,
+        K0star,
+        Xsd_nonresonant
+    };
 
 private:
     std::queue<Data> TotalData;
@@ -236,6 +283,7 @@ private:
     int current_FOM;
     double FOM_Matrix[Nstep][Nstep];
     bool FOMIsOn;
+    Loader::ScaleFactor scaleFactor;
 
     int current_MCcount;
     int MCcount[Loader::MAX_NUM_DECAYMODE_MC];
@@ -283,7 +331,7 @@ public:
     void BsigFitConvergeFor(Loader::Variable variable, int i);
     void OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type);
     void DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type, double minM, double maxM);
-    void PrintFOM();
+    void PrintFOM(Loader::ScaleFactor scaleFactor_ = Loader::None);
     void TMVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
     void CountMCEvent();
 };
@@ -318,6 +366,7 @@ Loader::Loader() {
     current_FOM = 0;
     for (int i = 0; i < Nstep; i++) for (int j = 0; j < Nstep; j++) FOM_Matrix[i][j] = 0.0; // initialization
     FOMIsOn = false;
+    scaleFactor = Loader::None;
     current_MCcount = 0;
     for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) MCcount[i] = 0;
     MCcountOn = false;
@@ -340,6 +389,7 @@ void Loader::initialize() {
     Confusion_matrixIsOn = false;
     current_FOM = 0;
     FOMIsOn = false;
+    scaleFactor = Loader::None;
     current_MCcount = 0;
     MCcountOn = false;
 }
@@ -1337,15 +1387,36 @@ void Loader::End() {
     }
 
     if (FOMIsOn == true) {
+        double SF = -1;
+        if (scaleFactor == Loader::None) SF = 1.0;
+        else if(scaleFactor == Loader::Kplus) SF = Scale_Kplus;
+        else if (scaleFactor == Loader::Kplusstar) SF = Scale_Kplusstar;
+        else if (scaleFactor == Loader::Xsu_nonresonant) SF = Scale_Xsu_nonresonant;
+        else if (scaleFactor == Loader::K0) SF = Scale_K0;
+        else if (scaleFactor == Loader::K0star) SF = Scale_K0star;
+        else if (scaleFactor == Loader::Xsd_nonresonant) SF = Scale_Xsd_nonresonant;
+        else {
+            printf("ERROR 526!\n");
+            exit(1);
+        }
+
         printf("--------------- number of event to get FOM ---------------\n");
         printf("--------------- Oqq -> ---------------\n");
         printf("\n");
         for (int i = 0; i < Nstep; i++) {
             for (int j = 0; j < Nstep; j++) {
-                printf("%f ", FOM_Matrix[i][j]);
+                printf("%lf ", SF * FOM_Matrix[i][j]);
             }
             printf("\n");
         }
+        if (scaleFactor == Loader::None) printf("no specified decay mode\n");
+        else if (scaleFactor == Loader::Kplus) printf("B+ -> K+ nu nubar decay is specified\n");
+        else if (scaleFactor == Loader::Kplusstar) printf("B+ -> K*+ nu nubar decay is specified\n");
+        else if (scaleFactor == Loader::Xsu_nonresonant) printf("B+ -> Xsu nu nubar decay (non-resonant) is specified\n");
+        else if (scaleFactor == Loader::K0) printf("B0 -> K0 nu nubar decay is specified\n");
+        else if (scaleFactor == Loader::K0star) Sprintf("B0 -> K*0 nu nubar decay is specified\n");
+        else if (scaleFactor == Loader::Xsd_nonresonant) printf("B+ -> Xsd nu nubar decay (non-resonant) is specified\n");
+        printf("Scale factor: %lf\n", SF);
         printf("--------------- number of event to get FOM ---------------\n");
     }
 
@@ -2581,7 +2652,7 @@ void Loader::DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedve
     TotalData.swap(temp_queue);
 }
 
-void Loader::PrintFOM() {
+void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_ = Loader::None) {
     if (current_FOM > 0) { // allocate new int
         printf("The number of PrintFOM should not be larger than 1\n");
         printf("Only first PrintFOM is accepted\n");
@@ -2637,6 +2708,7 @@ void Loader::PrintFOM() {
         }
     }
 
+    scaleFactor = scaleFactor_;
     FOMIsOn = true;
     current_FOM++;
 }
