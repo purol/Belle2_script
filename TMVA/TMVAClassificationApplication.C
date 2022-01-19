@@ -53,7 +53,7 @@ void load_files(const char* dirname, std::vector<std::string>* names) {
     }
 }
 
-void ApplicationEachFile(const char* filename)
+void ApplicationEachFile(const char* filename, const char* dataset_path)
 {
     std::string string_filename(filename);
     std::string OnlyFileName = string_filename.substr(string_filename.find_last_of("\\/") + 1, string_filename.size() - string_filename.find_last_of("\\/"));
@@ -190,12 +190,12 @@ void ApplicationEachFile(const char* filename)
    reader->AddSpectator("flag", &temp_flag_f);
 
 
-   TString dir_continuum_large = "dataset_Continuum_Mxs_large/weights/";
-   TString dir_BB_large = "dataset_BB_Mxs_large/weights/";
+   TString dir_continuum_large = (std::string(dataset_path) + "dataset_Continuum_Mxs_large/weights/").c_str();
+   TString dir_BB_large = (std::string(dataset_path) + "dataset_BB_Mxs_large/weights/").c_str();
    TString prefix_large = "TMVAClassification";
 
-   TString dir_continuum_small = "dataset_Continuum_Mxs_small/weights/";
-   TString dir_BB_small = "dataset_BB_Mxs_small/weights/";
+   TString dir_continuum_small = (std::string(dataset_path) + "dataset_Continuum_Mxs_small/weights/").c_str();
+   TString dir_BB_small = (std::string(dataset_path) + "dataset_BB_Mxs_small/weights/").c_str();
    TString prefix_small = "TMVAClassification";
 
    TString methodName_continuum_large = TString("Continuum_large");
@@ -588,7 +588,7 @@ void ApplicationEachFile(const char* filename)
    
 }
 
-void TMVAClassificationApplication(const char* dirname) {
+void TMVAClassificationApplication(const char* dirname, const char* dataset_path) {
 
     std::vector<std::string> names;
     load_files(dirname, &names);
@@ -597,7 +597,7 @@ void TMVAClassificationApplication(const char* dirname) {
         std::string string_filename = dirname + std::string("/") + names.at(i);
         const char* filename = string_filename.c_str();
 
-        ApplicationEachFile(filename);
+        ApplicationEachFile(filename, dataset_path);
     }
 
 }
