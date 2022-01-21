@@ -1,4 +1,4 @@
-// last update: 2022-01-19
+// last update: 2022-01-21
 // for Belle2 data
 
 /*
@@ -13,8 +13,8 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 14
-# define N_Bsig_info 28
+# define N_Upsilon_info 45
+# define N_Bsig_info 60
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
@@ -99,6 +99,16 @@ typedef struct data{
     // 9: missing energy at CMS, 10: number of remaining tracks
     // 11: roeNeextra(cleanMask), 12: useCMSFrame__boroeNeextra__bocleanMask__bc__bc
     // 13: nROE_ParticlesInList__bogamma__clmygamma__bc
+    // 14: foxWolframR1, 15: foxWolframR2, 16: foxWolframR3, 17: foxWolframR4
+    // 18: harmonicMomentThrust0, 19: harmonicMomentThrust1, 20: harmonicMomentThrust2
+    // 21: harmonicMomentThrust3, 22: harmonicMomentThrust4, 23: cleoConeThrust0
+    // 24: cleoConeThrust1, 25: cleoConeThrust2
+    // 26: cleoConeThrust3, 27: cleoConeThrust4, 28: cleoConeThrust5
+    // 29: cleoConeThrust6, 30: cleoConeThrust7, 31: cleoConeThrust8
+    // 32: sphericity, 33: aplanarity, 34: thrust, 35: thrustAxisCosTheta
+    // 36: MsquaredBsig_op0, 37: MsquaredBsig_op1, 38: MsquaredBsig_op2
+    // 39: MsquaredBsig_op3, 40: MsquaredBsig_op4, 41: MsquaredBsig_op7
+    // 42: roeP__bocleanMask__bc, 43: roeM__bocleanMask__bc, 44: roePTheta__bocleanMask__bc
 
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
@@ -111,6 +121,17 @@ typedef struct data{
     // 19: Pion PID rel uncertainty down, 20: nKslow1, 21: nKslow2
     // 22: nKslow3, 23: nPislow1, 24: nPislow2
     // 25: nPislow3, 26:nKexcept, 27: nPiexcept
+    // 28: Bsig_R2, 29: Bsig_thrustBm, 30: Bsig_thrustOm
+    // 31: Bsig_cosTBTO, 32: Bsig_cosTBz, 33: Bsig_KSFWVariables_et
+    // 34: Bsig_KSFWVariables_mm2, 35: Bsig_KSFWVariables_hso00, 36: Bsig_KSFWVariables_hso01
+    // 37: Bsig_KSFWVariables_hso02, 38: Bsig_KSFWVariables_hso03: 39: Bsig_KSFWVariables_hso04
+    // 40: Bsig_KSFWVariables_hso10, 41: Bsig_KSFWVariables_hso12, 42: Bsig_KSFWVariables_hso14
+    // 43: Bsig_KSFWVariables_hso20, 44: Bsig_KSFWVariables_hso22, 45: Bsig_KSFWVariables_hso24
+    // 46: Bsig_KSFWVariables_hoo0, 47: Bsig_KSFWVariables_hoo1, 48: Bsig_KSFWVariables_hoo2
+    // 49: Bsig_KSFWVariables_hoo3, 50: Bsig_KSFWVariables_hoo4, 51: Bsig_CleoConeCS_1
+    // 52: Bsig_CleoConeCS_2, 53: Bsig_CleoConeCS_3, 54: Bsig_CleoConeCS_4
+    // 55: Bsig_CleoConeCS_5, 56: Bsig_CleoConeCS_6, 57: Bsig_CleoConeCS_7
+    // 58: Bsig_CleoConeCS_8, 59: Bsig_CleoConeCS_9
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
@@ -454,6 +475,37 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("roeNeextra__bocleanMask__bc", &temp.Upsilon_info[11]);
     tree_upsilon->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp.Upsilon_info[12]);
     tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp.Upsilon_info[13]);
+    tree_upsilon->SetBranchAddress("foxWolframR1", &temp.Upsilon_info[14]);
+    tree_upsilon->SetBranchAddress("foxWolframR2", &temp.Upsilon_info[15]);
+    tree_upsilon->SetBranchAddress("foxWolframR3", &temp.Upsilon_info[16]);
+    tree_upsilon->SetBranchAddress("foxWolframR4", &temp.Upsilon_info[17]);
+    tree_upsilon->SetBranchAddress("harmonicMomentThrust0", &temp.Upsilon_info[18]);
+    tree_upsilon->SetBranchAddress("harmonicMomentThrust1", &temp.Upsilon_info[19]);
+    tree_upsilon->SetBranchAddress("harmonicMomentThrust2", &temp.Upsilon_info[20]);
+    tree_upsilon->SetBranchAddress("harmonicMomentThrust3", &temp.Upsilon_info[21]);
+    tree_upsilon->SetBranchAddress("harmonicMomentThrust4", &temp.Upsilon_info[22]);
+    tree_upsilon->SetBranchAddress("cleoConThrust0", &temp.Upsilon_info[23]);
+    tree_upsilon->SetBranchAddress("cleoConThrust1", &temp.Upsilon_info[24]);
+    tree_upsilon->SetBranchAddress("cleoConThrust2", &temp.Upsilon_info[25]);
+    tree_upsilon->SetBranchAddress("cleoConThrust3", &temp.Upsilon_info[26]);
+    tree_upsilon->SetBranchAddress("cleoConThrust4", &temp.Upsilon_info[27]);
+    tree_upsilon->SetBranchAddress("cleoConThrust5", &temp.Upsilon_info[28]);
+    tree_upsilon->SetBranchAddress("cleoConThrust6", &temp.Upsilon_info[29]);
+    tree_upsilon->SetBranchAddress("cleoConThrust7", &temp.Upsilon_info[30]);
+    tree_upsilon->SetBranchAddress("cleoConThrust8", &temp.Upsilon_info[31]);
+    tree_upsilon->SetBranchAddress("sphericity", &temp.Upsilon_info[32]);
+    tree_upsilon->SetBranchAddress("aplanarity", &temp.Upsilon_info[33]);
+    tree_upsilon->SetBranchAddress("thrust", &temp.Upsilon_info[34]);
+    tree_upsilon->SetBranchAddress("thrustAxisCosTheta", &temp.Upsilon_info[35]);
+    tree_upsilon->SetBranchAddress("MsquaredBsig_op0", &temp.Upsilon_info[36]);
+    tree_upsilon->SetBranchAddress("MsquaredBsig_op1", &temp.Upsilon_info[37]);
+    tree_upsilon->SetBranchAddress("MsquaredBsig_op2", &temp.Upsilon_info[38]);
+    tree_upsilon->SetBranchAddress("MsquaredBsig_op3", &temp.Upsilon_info[39]);
+    tree_upsilon->SetBranchAddress("MsquaredBsig_op4", &temp.Upsilon_info[40]);
+    tree_upsilon->SetBranchAddress("MsquaredBsig_op7", &temp.Upsilon_info[41]);
+    tree_upsilon->SetBranchAddress("roeP__bocleanMask__bc", &temp.Upsilon_info[42]);
+    tree_upsilon->SetBranchAddress("roeM__bocleanMask__bc", &temp.Upsilon_info[43]);
+    tree_upsilon->SetBranchAddress("roePTheta__bocleanMask__bc", &temp.Upsilon_info[44]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
@@ -484,6 +536,38 @@ void Loader::GetData(TFile* input_file) {
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow3", &temp.Bsig_info[25]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp.Bsig_info[26]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPiexcep", &temp.Bsig_info[27]);
+    tree_Bsig->SetBranchAddress("Bsig_R2", &temp.Bsig_info[28]);
+    tree_Bsig->SetBranchAddress("Bsig_thrustBm", &temp.Bsig_info[29]);
+    tree_Bsig->SetBranchAddress("Bsig_thrustOm", &temp.Bsig_info[30]);
+    tree_Bsig->SetBranchAddress("Bsig_cosTBTO", &temp.Bsig_info[31]);
+    tree_Bsig->SetBranchAddress("Bsig_cosTBz", &temp.Bsig_info[32]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_et", &temp.Bsig_info[33]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_mm2", &temp.Bsig_info[34]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso00", &temp.Bsig_info[35]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso01", &temp.Bsig_info[36]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso02", &temp.Bsig_info[37]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso03", &temp.Bsig_info[38]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso04", &temp.Bsig_info[39]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso10", &temp.Bsig_info[40]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso12", &temp.Bsig_info[41]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso14", &temp.Bsig_info[42]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso20", &temp.Bsig_info[43]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso22", &temp.Bsig_info[44]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso24", &temp.Bsig_info[45]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo0", &temp.Bsig_info[46]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo1", &temp.Bsig_info[47]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo2", &temp.Bsig_info[48]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo3", &temp.Bsig_info[49]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo4", &temp.Bsig_info[50]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_1", &temp.Bsig_info[51]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_2", &temp.Bsig_info[52]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_3", &temp.Bsig_info[53]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_4", &temp.Bsig_info[54]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_5", &temp.Bsig_info[55]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_6", &temp.Bsig_info[56]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_7", &temp.Bsig_info[57]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_8", &temp.Bsig_info[58]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_9", &temp.Bsig_info[59]);
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
@@ -1554,6 +1638,37 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("roeNeextra__bocleanMask__bc", &UpsilonDataToTree[11]);
         tree_upsilon->Branch("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &UpsilonDataToTree[12]);
         tree_upsilon->Branch("nROE_ParticlesInList__bogamma__clmygamma__bc", &UpsilonDataToTree[13]);
+        tree_upsilon->Branch("foxWolframR1", &UpsilonDataToTree[14]);
+        tree_upsilon->Branch("foxWolframR2", &UpsilonDataToTree[15]);
+        tree_upsilon->Branch("foxWolframR3", &UpsilonDataToTree[16]);
+        tree_upsilon->Branch("foxWolframR4", &UpsilonDataToTree[17]);
+        tree_upsilon->Branch("harmonicMomentThrust0", &UpsilonDataToTree[18]);
+        tree_upsilon->Branch("harmonicMomentThrust1", &UpsilonDataToTree[19]);
+        tree_upsilon->Branch("harmonicMomentThrust2", &UpsilonDataToTree[20]);
+        tree_upsilon->Branch("harmonicMomentThrust3", &UpsilonDataToTree[21]);
+        tree_upsilon->Branch("harmonicMomentThrust4", &UpsilonDataToTree[22]);
+        tree_upsilon->Branch("cleoConThrust0", &UpsilonDataToTree[23]);
+        tree_upsilon->Branch("cleoConThrust1", &UpsilonDataToTree[24]);
+        tree_upsilon->Branch("cleoConThrust2", &UpsilonDataToTree[25]);
+        tree_upsilon->Branch("cleoConThrust3", &UpsilonDataToTree[26]);
+        tree_upsilon->Branch("cleoConThrust4", &UpsilonDataToTree[27]);
+        tree_upsilon->Branch("cleoConThrust5", &UpsilonDataToTree[28]);
+        tree_upsilon->Branch("cleoConThrust6", &UpsilonDataToTree[29]);
+        tree_upsilon->Branch("cleoConThrust7", &UpsilonDataToTree[30]);
+        tree_upsilon->Branch("cleoConThrust8", &UpsilonDataToTree[31]);
+        tree_upsilon->Branch("sphericity", &UpsilonDataToTree[32]);
+        tree_upsilon->Branch("aplanarity", &UpsilonDataToTree[33]);
+        tree_upsilon->Branch("thrust", &UpsilonDataToTree[34]);
+        tree_upsilon->Branch("thrustAxisCosTheta", &UpsilonDataToTree[35]);
+        tree_upsilon->Branch("MsquaredBsig_op0", &UpsilonDataToTree[36]);
+        tree_upsilon->Branch("MsquaredBsig_op1", &UpsilonDataToTree[37]);
+        tree_upsilon->Branch("MsquaredBsig_op2", &UpsilonDataToTree[38]);
+        tree_upsilon->Branch("MsquaredBsig_op3", &UpsilonDataToTree[39]);
+        tree_upsilon->Branch("MsquaredBsig_op4", &UpsilonDataToTree[40]);
+        tree_upsilon->Branch("MsquaredBsig_op7", &UpsilonDataToTree[41]);
+        tree_upsilon->Branch("roeP__bocleanMask__bc", &UpsilonDataToTree[42]);
+        tree_upsilon->Branch("roeM__bocleanMask__bc", &UpsilonDataToTree[43]);
+        tree_upsilon->Branch("roePTheta__bocleanMask__bc", &UpsilonDataToTree[44]);
 
         // get Bsig_info
         tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
@@ -1584,6 +1699,38 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow3", &BsigDataToTree[25]);
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKexcep", &BsigDataToTree[26]);
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &BsigDataToTree[27]);
+        tree_Bsig->Branch("Bsig_R2", &BsigDataToTree[28]);
+        tree_Bsig->Branch("Bsig_thrustBm", &BsigDataToTree[29]);
+        tree_Bsig->Branch("Bsig_thrustOm", &BsigDataToTree[30]);
+        tree_Bsig->Branch("Bsig_cosTBTO", &BsigDataToTree[31]);
+        tree_Bsig->Branch("Bsig_cosTBz", &BsigDataToTree[32]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_et", &BsigDataToTree[33]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_mm2", &BsigDataToTree[34]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso00", &BsigDataToTree[35]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso01", &BsigDataToTree[36]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso02", &BsigDataToTree[37]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso03", &BsigDataToTree[38]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso04", &BsigDataToTree[39]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso10", &BsigDataToTree[40]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso12", &BsigDataToTree[41]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso14", &BsigDataToTree[42]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso20", &BsigDataToTree[43]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso22", &BsigDataToTree[44]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso24", &BsigDataToTree[45]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hoo0", &BsigDataToTree[46]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hoo1", &BsigDataToTree[47]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hoo2", &BsigDataToTree[48]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hoo3", &BsigDataToTree[49]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hoo4", &BsigDataToTree[50]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_1", &BsigDataToTree[51]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_2", &BsigDataToTree[52]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_3", &BsigDataToTree[53]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_4", &BsigDataToTree[54]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_5", &BsigDataToTree[55]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_6", &BsigDataToTree[56]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_7", &BsigDataToTree[57]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_8", &BsigDataToTree[58]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_9", &BsigDataToTree[59]);
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -1797,6 +1944,37 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("roeNeextra__bocleanMask__bc", &temp_UpsilonDataToTree[11]);
     temp_tree_upsilon->Branch("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp_UpsilonDataToTree[12]);
     temp_tree_upsilon->Branch("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp_UpsilonDataToTree[13]);
+    temp_tree_upsilon->Branch("foxWolframR1", &temp_UpsilonDataToTree[14]);
+    temp_tree_upsilon->Branch("foxWolframR2", &temp_UpsilonDataToTree[15]);
+    temp_tree_upsilon->Branch("foxWolframR3", &temp_UpsilonDataToTree[16]);
+    temp_tree_upsilon->Branch("foxWolframR4", &temp_UpsilonDataToTree[17]);
+    temp_tree_upsilon->Branch("harmonicMomentThrust0", &temp_UpsilonDataToTree[18]);
+    temp_tree_upsilon->Branch("harmonicMomentThrust1", &temp_UpsilonDataToTree[19]);
+    temp_tree_upsilon->Branch("harmonicMomentThrust2", &temp_UpsilonDataToTree[20]);
+    temp_tree_upsilon->Branch("harmonicMomentThrust3", &temp_UpsilonDataToTree[21]);
+    temp_tree_upsilon->Branch("harmonicMomentThrust4", &temp_UpsilonDataToTree[22]);
+    temp_tree_upsilon->Branch("cleoConThrust0", &temp_UpsilonDataToTree[23]);
+    temp_tree_upsilon->Branch("cleoConThrust1", &temp_UpsilonDataToTree[24]);
+    temp_tree_upsilon->Branch("cleoConThrust2", &temp_UpsilonDataToTree[25]);
+    temp_tree_upsilon->Branch("cleoConThrust3", &temp_UpsilonDataToTree[26]);
+    temp_tree_upsilon->Branch("cleoConThrust4", &temp_UpsilonDataToTree[27]);
+    temp_tree_upsilon->Branch("cleoConThrust5", &temp_UpsilonDataToTree[28]);
+    temp_tree_upsilon->Branch("cleoConThrust6", &temp_UpsilonDataToTree[29]);
+    temp_tree_upsilon->Branch("cleoConThrust7", &temp_UpsilonDataToTree[30]);
+    temp_tree_upsilon->Branch("cleoConThrust8", &temp_UpsilonDataToTree[31]);
+    temp_tree_upsilon->Branch("sphericity", &temp_UpsilonDataToTree[32]);
+    temp_tree_upsilon->Branch("aplanarity", &temp_UpsilonDataToTree[33]);
+    temp_tree_upsilon->Branch("thrust", &temp_UpsilonDataToTree[34]);
+    temp_tree_upsilon->Branch("thrustAxisCosTheta", &temp_UpsilonDataToTree[35]);
+    temp_tree_upsilon->Branch("MsquaredBsig_op0", &temp_UpsilonDataToTree[36]);
+    temp_tree_upsilon->Branch("MsquaredBsig_op1", &temp_UpsilonDataToTree[37]);
+    temp_tree_upsilon->Branch("MsquaredBsig_op2", &temp_UpsilonDataToTree[38]);
+    temp_tree_upsilon->Branch("MsquaredBsig_op3", &temp_UpsilonDataToTree[39]);
+    temp_tree_upsilon->Branch("MsquaredBsig_op4", &temp_UpsilonDataToTree[40]);
+    temp_tree_upsilon->Branch("MsquaredBsig_op7", &temp_UpsilonDataToTree[41]);
+    temp_tree_upsilon->Branch("roeP__bocleanMask__bc", &temp_UpsilonDataToTree[42]);
+    temp_tree_upsilon->Branch("roeM__bocleanMask__bc", &temp_UpsilonDataToTree[43]);
+    temp_tree_upsilon->Branch("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
 
     // get Bsig_info
     temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -1827,6 +2005,38 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree[25]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree[26]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree[27]);
+    temp_tree_Bsig->Branch("Bsig_R2", &temp_BsigDataToTree[28]);
+    temp_tree_Bsig->Branch("Bsig_thrustBm", &temp_BsigDataToTree[29]);
+    temp_tree_Bsig->Branch("Bsig_thrustOm", &temp_BsigDataToTree[30]);
+    temp_tree_Bsig->Branch("Bsig_cosTBTO", &temp_BsigDataToTree[31]);
+    temp_tree_Bsig->Branch("Bsig_cosTBz", &temp_BsigDataToTree[32]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_et", &temp_BsigDataToTree[33]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_mm2", &temp_BsigDataToTree[34]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso00", &temp_BsigDataToTree[35]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso01", &temp_BsigDataToTree[36]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso02", &temp_BsigDataToTree[37]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso03", &temp_BsigDataToTree[38]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso04", &temp_BsigDataToTree[39]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso10", &temp_BsigDataToTree[40]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso12", &temp_BsigDataToTree[41]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso14", &temp_BsigDataToTree[42]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso20", &temp_BsigDataToTree[43]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso22", &temp_BsigDataToTree[44]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso24", &temp_BsigDataToTree[45]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo0", &temp_BsigDataToTree[46]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo1", &temp_BsigDataToTree[47]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo2", &temp_BsigDataToTree[48]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo3", &temp_BsigDataToTree[49]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo4", &temp_BsigDataToTree[50]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_1", &temp_BsigDataToTree[51]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_2", &temp_BsigDataToTree[52]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_3", &temp_BsigDataToTree[53]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_4", &temp_BsigDataToTree[54]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_5", &temp_BsigDataToTree[55]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_6", &temp_BsigDataToTree[56]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_7", &temp_BsigDataToTree[57]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_8", &temp_BsigDataToTree[58]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_9", &temp_BsigDataToTree[59]);
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -2025,6 +2235,37 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("roeNeextra__bocleanMask__bc", &temp_UpsilonDataToTree[11]);
     temp_tree->Branch("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp_UpsilonDataToTree[12]);
     temp_tree->Branch("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp_UpsilonDataToTree[13]);
+    temp_tree->Branch("foxWolframR1", &temp_UpsilonDataToTree[14]);
+    temp_tree->Branch("foxWolframR2", &temp_UpsilonDataToTree[15]);
+    temp_tree->Branch("foxWolframR3", &temp_UpsilonDataToTree[16]);
+    temp_tree->Branch("foxWolframR4", &temp_UpsilonDataToTree[17]);
+    temp_tree->Branch("harmonicMomentThrust0", &temp_UpsilonDataToTree[18]);
+    temp_tree->Branch("harmonicMomentThrust1", &temp_UpsilonDataToTree[19]);
+    temp_tree->Branch("harmonicMomentThrust2", &temp_UpsilonDataToTree[20]);
+    temp_tree->Branch("harmonicMomentThrust3", &temp_UpsilonDataToTree[21]);
+    temp_tree->Branch("harmonicMomentThrust4", &temp_UpsilonDataToTree[22]);
+    temp_tree->Branch("cleoConThrust0", &temp_UpsilonDataToTree[23]);
+    temp_tree->Branch("cleoConThrust1", &temp_UpsilonDataToTree[24]);
+    temp_tree->Branch("cleoConThrust2", &temp_UpsilonDataToTree[25]);
+    temp_tree->Branch("cleoConThrust3", &temp_UpsilonDataToTree[26]);
+    temp_tree->Branch("cleoConThrust4", &temp_UpsilonDataToTree[27]);
+    temp_tree->Branch("cleoConThrust5", &temp_UpsilonDataToTree[28]);
+    temp_tree->Branch("cleoConThrust6", &temp_UpsilonDataToTree[29]);
+    temp_tree->Branch("cleoConThrust7", &temp_UpsilonDataToTree[30]);
+    temp_tree->Branch("cleoConThrust8", &temp_UpsilonDataToTree[31]);
+    temp_tree->Branch("sphericity", &temp_UpsilonDataToTree[32]);
+    temp_tree->Branch("aplanarity", &temp_UpsilonDataToTree[33]);
+    temp_tree->Branch("thrust", &temp_UpsilonDataToTree[34]);
+    temp_tree->Branch("thrustAxisCosTheta", &temp_UpsilonDataToTree[35]);
+    temp_tree->Branch("MsquaredBsig_op0", &temp_UpsilonDataToTree[36]);
+    temp_tree->Branch("MsquaredBsig_op1", &temp_UpsilonDataToTree[37]);
+    temp_tree->Branch("MsquaredBsig_op2", &temp_UpsilonDataToTree[38]);
+    temp_tree->Branch("MsquaredBsig_op3", &temp_UpsilonDataToTree[39]);
+    temp_tree->Branch("MsquaredBsig_op4", &temp_UpsilonDataToTree[40]);
+    temp_tree->Branch("MsquaredBsig_op7", &temp_UpsilonDataToTree[41]);
+    temp_tree->Branch("roeP__bocleanMask__bc", &temp_UpsilonDataToTree[42]);
+    temp_tree->Branch("roeM__bocleanMask__bc", &temp_UpsilonDataToTree[43]);
+    temp_tree->Branch("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -2055,6 +2296,38 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree[25]);
     temp_tree->Branch("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree[26]);
     temp_tree->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree[27]);
+    temp_tree->Branch("Bsig_R2", &temp_BsigDataToTree[28]);
+    temp_tree->Branch("Bsig_thrustBm", &temp_BsigDataToTree[29]);
+    temp_tree->Branch("Bsig_thrustOm", &temp_BsigDataToTree[30]);
+    temp_tree->Branch("Bsig_cosTBTO", &temp_BsigDataToTree[31]);
+    temp_tree->Branch("Bsig_cosTBz", &temp_BsigDataToTree[32]);
+    temp_tree->Branch("Bsig_KSFWVariables_et", &temp_BsigDataToTree[33]);
+    temp_tree->Branch("Bsig_KSFWVariables_mm2", &temp_BsigDataToTree[34]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso00", &temp_BsigDataToTree[35]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso01", &temp_BsigDataToTree[36]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso02", &temp_BsigDataToTree[37]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso03", &temp_BsigDataToTree[38]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso04", &temp_BsigDataToTree[39]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso10", &temp_BsigDataToTree[40]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso12", &temp_BsigDataToTree[41]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso14", &temp_BsigDataToTree[42]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso20", &temp_BsigDataToTree[43]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso22", &temp_BsigDataToTree[44]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso24", &temp_BsigDataToTree[45]);
+    temp_tree->Branch("Bsig_KSFWVariables_hoo0", &temp_BsigDataToTree[46]);
+    temp_tree->Branch("Bsig_KSFWVariables_hoo1", &temp_BsigDataToTree[47]);
+    temp_tree->Branch("Bsig_KSFWVariables_hoo2", &temp_BsigDataToTree[48]);
+    temp_tree->Branch("Bsig_KSFWVariables_hoo3", &temp_BsigDataToTree[49]);
+    temp_tree->Branch("Bsig_KSFWVariables_hoo4", &temp_BsigDataToTree[50]);
+    temp_tree->Branch("Bsig_CleoConeCS_1", &temp_BsigDataToTree[51]);
+    temp_tree->Branch("Bsig_CleoConeCS_2", &temp_BsigDataToTree[52]);
+    temp_tree->Branch("Bsig_CleoConeCS_3", &temp_BsigDataToTree[53]);
+    temp_tree->Branch("Bsig_CleoConeCS_4", &temp_BsigDataToTree[54]);
+    temp_tree->Branch("Bsig_CleoConeCS_5", &temp_BsigDataToTree[55]);
+    temp_tree->Branch("Bsig_CleoConeCS_6", &temp_BsigDataToTree[56]);
+    temp_tree->Branch("Bsig_CleoConeCS_7", &temp_BsigDataToTree[57]);
+    temp_tree->Branch("Bsig_CleoConeCS_8", &temp_BsigDataToTree[58]);
+    temp_tree->Branch("Bsig_CleoConeCS_9", &temp_BsigDataToTree[59]);
 
     // get Btag_info
     temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
