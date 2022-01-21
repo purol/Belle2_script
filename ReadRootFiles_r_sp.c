@@ -2925,7 +2925,7 @@ void Loader::DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedve
     TotalData.swap(temp_queue);
 }
 
-void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_ = Loader::None) {
+void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_) {
     if (current_FOM > 0) { // allocate new int
         printf("The number of PrintFOM should not be larger than 1\n");
         printf("Only first PrintFOM is accepted\n");
