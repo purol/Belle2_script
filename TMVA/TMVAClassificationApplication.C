@@ -13,8 +13,8 @@
 
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 13
-# define N_Bsig_info 7
+# define N_Upsilon_info 45
+# define N_Bsig_info 60
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
@@ -37,8 +37,26 @@
 
 using namespace TMVA;
 
-void TMVAClassificationApplication( TString myMethodList = "" )
+void load_files(const char* dirname, std::vector<std::string>* names) {
+    TSystemDirectory dir(dirname, dirname);
+    TList* files = dir.GetListOfFiles();
+    if (files) {
+        TSystemFile* file;
+        TString fname;
+        TIter next(files);
+        while ((file = (TSystemFile*)next())) {
+            fname = file->GetName();
+            if (!file->IsDirectory() && fname.EndsWith(".root")) {
+                names->push_back(fname.Data());
+            }
+        }
+    }
+}
+
+void ApplicationEachFile(const char* filename, const char* dataset_path)
 {
+    std::string string_filename(filename);
+    std::string OnlyFileName = string_filename.substr(string_filename.find_last_of("\\/") + 1, string_filename.size() - string_filename.find_last_of("\\/"));
 
    //---------------------------------------------------------------
    // This loads the library
@@ -133,6 +151,38 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    reader->AddSpectator("nRemainingTracksInEvent", &temp_UpsilonDataToTree_f[10]);
    reader->AddSpectator("roeNeextra__bocleanMask__bc", &temp_UpsilonDataToTree_f[11]);
    reader->AddSpectator("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp_UpsilonDataToTree_f[12]);
+   reader->AddSpectator("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp_UpsilonDataToTree_f[13]);
+   reader->AddSpectator("foxWolframR1", &temp_UpsilonDataToTree_f[14]);
+   reader->AddSpectator("foxWolframR2", &temp_UpsilonDataToTree_f[15]);
+   reader->AddSpectator("foxWolframR3", &temp_UpsilonDataToTree_f[16]);
+   reader->AddSpectator("foxWolframR4", &temp_UpsilonDataToTree_f[17]);
+   reader->AddSpectator("harmonicMomentThrust0", &temp_UpsilonDataToTree_f[18]);
+   reader->AddSpectator("harmonicMomentThrust1", &temp_UpsilonDataToTree_f[19]);
+   reader->AddSpectator("harmonicMomentThrust2", &temp_UpsilonDataToTree_f[20]);
+   reader->AddSpectator("harmonicMomentThrust3", &temp_UpsilonDataToTree_f[21]);
+   reader->AddSpectator("harmonicMomentThrust4", &temp_UpsilonDataToTree_f[22]);
+   reader->AddSpectator("cleoConeThrust0", &temp_UpsilonDataToTree_f[23]);
+   reader->AddSpectator("cleoConeThrust1", &temp_UpsilonDataToTree_f[24]);
+   reader->AddSpectator("cleoConeThrust2", &temp_UpsilonDataToTree_f[25]);
+   reader->AddSpectator("cleoConeThrust3", &temp_UpsilonDataToTree_f[26]);
+   reader->AddSpectator("cleoConeThrust4", &temp_UpsilonDataToTree_f[27]);
+   reader->AddSpectator("cleoConeThrust5", &temp_UpsilonDataToTree_f[28]);
+   reader->AddSpectator("cleoConeThrust6", &temp_UpsilonDataToTree_f[29]);
+   reader->AddSpectator("cleoConeThrust7", &temp_UpsilonDataToTree_f[30]);
+   reader->AddSpectator("cleoConeThrust8", &temp_UpsilonDataToTree_f[31]);
+   reader->AddSpectator("sphericity", &temp_UpsilonDataToTree_f[32]);
+   reader->AddSpectator("aplanarity", &temp_UpsilonDataToTree_f[33]);
+   reader->AddSpectator("thrust", &temp_UpsilonDataToTree_f[34]);
+   reader->AddSpectator("thrustAxisCosTheta", &temp_UpsilonDataToTree_f[35]);
+   reader->AddSpectator("MsquaredBsig_op0", &temp_UpsilonDataToTree_f[36]);
+   reader->AddSpectator("MsquaredBsig_op1", &temp_UpsilonDataToTree_f[37]);
+   reader->AddSpectator("MsquaredBsig_op2", &temp_UpsilonDataToTree_f[38]);
+   reader->AddSpectator("MsquaredBsig_op3", &temp_UpsilonDataToTree_f[39]);
+   reader->AddSpectator("MsquaredBsig_op4", &temp_UpsilonDataToTree_f[40]);
+   reader->AddSpectator("MsquaredBsig_op7", &temp_UpsilonDataToTree_f[41]);
+   reader->AddSpectator("roeP__bocleanMask__bc", &temp_UpsilonDataToTree_f[42]);
+   reader->AddSpectator("roeM__bocleanMask__bc", &temp_UpsilonDataToTree_f[43]);
+   reader->AddSpectator("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree_f[44]);
    reader->AddSpectator("Bsig_E", &temp_BsigDataToTree_f[0]);
    reader->AddSpectator("Bsig_useCMSFrame_E", &temp_BsigDataToTree_f[1]);
    reader->AddSpectator("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc", &temp_BsigDataToTree_f[2]);
@@ -140,6 +190,59 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    reader->AddSpectator("Bsig_useCMSFrame_p", &temp_BsigDataToTree_f[4]);
    reader->AddSpectator("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree_f[5]);
    reader->AddSpectator("Bsig_M", &temp_BsigDataToTree_f[6]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Dcvetomass", &temp_BsigDataToTree_f[7]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_DcvetodmID", &temp_BsigDataToTree_f[8]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Dcvetoabsdm", &temp_BsigDataToTree_f[9]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Dnvetomass", &temp_BsigDataToTree_f[10]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_DnvetodmID", &temp_BsigDataToTree_f[11]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp_BsigDataToTree_f[12]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_BsigDataToTree_f[13]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_BsigDataToTree_f[14]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_BsigDataToTree_f[15]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_BsigDataToTree_f[16]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Pion_PID_correction", &temp_BsigDataToTree_f[17]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &temp_BsigDataToTree_f[18]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &temp_BsigDataToTree_f[19]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nKslow1", &temp_BsigDataToTree_f[20]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nKslow2", &temp_BsigDataToTree_f[21]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nKslow3", &temp_BsigDataToTree_f[22]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nPislow1", &temp_BsigDataToTree_f[23]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nPislow2", &temp_BsigDataToTree_f[24]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree_f[25]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree_f[26]);
+   reader->AddSpectator("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree_f[27]);
+   reader->AddSpectator("Bsig_R2", &temp_BsigDataToTree_f[28]);
+   reader->AddSpectator("Bsig_thrustBm", &temp_BsigDataToTree_f[29]);
+   reader->AddSpectator("Bsig_thrustOm", &temp_BsigDataToTree_f[30]);
+   reader->AddSpectator("Bsig_cosTBTO", &temp_BsigDataToTree_f[31]);
+   reader->AddSpectator("Bsig_cosTBz", &temp_BsigDataToTree_f[32]);
+   reader->AddSpectator("Bsig_KSFWVariables_et", &temp_BsigDataToTree_f[33]);
+   reader->AddSpectator("Bsig_KSFWVariables_mm2", &temp_BsigDataToTree_f[34]);
+   reader->AddSpectator("Bsig_KSFWVariables_hso00", &temp_BsigDataToTree_f[35]);
+   reader->AddSpectator("Bsig_KSFWVariables_hso01", &temp_BsigDataToTree_f[36]);
+   reader->AddSpectator("Bsig_KSFWVariables_hso02", &temp_BsigDataToTree_f[37]);
+   reader->AddSpectator("Bsig_KSFWVariables_hso03", &temp_BsigDataToTree_f[38]);
+   reader->AddSpectator("Bsig_KSFWVariables_hso04", &temp_BsigDataToTree_f[39]);
+   reader->AddSpectator("Bsig_KSFWVariables_hso10", &temp_BsigDataToTree_f[40]);
+   reader->AddSpectator("Bsig_KSFWVariables_hso12", &temp_BsigDataToTree_f[41]);
+   reader->AddSpectator("Bsig_KSFWVariables_hso14", &temp_BsigDataToTree_f[42]);
+   reader->AddSpectator("Bsig_KSFWVariables_hso20", &temp_BsigDataToTree_f[43]);
+   reader->AddSpectator("Bsig_KSFWVariables_hso22", &temp_BsigDataToTree_f[44]);
+   reader->AddSpectator("Bsig_KSFWVariables_hso24", &temp_BsigDataToTree_f[45]);
+   reader->AddSpectator("Bsig_KSFWVariables_hoo0", &temp_BsigDataToTree_f[46]);
+   reader->AddSpectator("Bsig_KSFWVariables_hoo1", &temp_BsigDataToTree_f[47]);
+   reader->AddSpectator("Bsig_KSFWVariables_hoo2", &temp_BsigDataToTree_f[48]);
+   reader->AddSpectator("Bsig_KSFWVariables_hoo3", &temp_BsigDataToTree_f[49]);
+   reader->AddSpectator("Bsig_KSFWVariables_hoo4", &temp_BsigDataToTree_f[50]);
+   reader->AddSpectator("Bsig_CleoConeCS_1", &temp_BsigDataToTree_f[51]);
+   reader->AddSpectator("Bsig_CleoConeCS_2", &temp_BsigDataToTree_f[52]);
+   reader->AddSpectator("Bsig_CleoConeCS_3", &temp_BsigDataToTree_f[53]);
+   reader->AddSpectator("Bsig_CleoConeCS_4", &temp_BsigDataToTree_f[54]);
+   reader->AddSpectator("Bsig_CleoConeCS_5", &temp_BsigDataToTree_f[55]);
+   reader->AddSpectator("Bsig_CleoConeCS_6", &temp_BsigDataToTree_f[56]);
+   reader->AddSpectator("Bsig_CleoConeCS_7", &temp_BsigDataToTree_f[57]);
+   reader->AddSpectator("Bsig_CleoConeCS_8", &temp_BsigDataToTree_f[58]);
+   reader->AddSpectator("Bsig_CleoConeCS_9", &temp_BsigDataToTree_f[59]);
    reader->AddSpectator("Btag_extraInfo_decayModeID", &temp_BtagDataToTree_f[0]);
    reader->AddSpectator("Btag_Mbc", &temp_BtagDataToTree_f[1]);
    reader->AddSpectator("Btag_deltaE", &temp_BtagDataToTree_f[2]);
@@ -149,32 +252,37 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    reader->AddSpectator("Btag_useCMSFrame_E", &temp_BtagDataToTree_f[4]);
    reader->AddSpectator("flag", &temp_flag_f);
 
-   TString dir_continuum    = "dataset_Continuum_Mxs_small/weights/";
-   TString dir_BB = "dataset_BB_Mxs_small/weights/";
-   TString prefix = "TMVAClassification";
 
-   TString methodName_continuum = TString("Continuum");
-   TString weightfile_continuum = dir_continuum + prefix + TString("_") + TString("MLP") + TString(".weights.xml");
-   reader->BookMVA(methodName_continuum, weightfile_continuum);
+   TString dir_continuum_large = (std::string(dataset_path) + "dataset_Continuum_Mxs_large/weights/").c_str();
+   TString dir_BB_large = (std::string(dataset_path) + "dataset_BB_Mxs_large/weights/").c_str();
+   TString prefix_large = "TMVAClassification";
 
-   TString methodName_BB = TString("BB");
-   TString weightfile_BB = dir_BB + prefix + TString("_") + TString("MLP") + TString(".weights.xml");
-   reader->BookMVA(methodName_BB, weightfile_BB);
+   TString dir_continuum_small = (std::string(dataset_path) + "dataset_Continuum_Mxs_small/weights/").c_str();
+   TString dir_BB_small = (std::string(dataset_path) + "dataset_BB_Mxs_small/weights/").c_str();
+   TString prefix_small = "TMVAClassification";
 
-   int nbin = 100;
-   TH1F *histMLP_Continuum(0);
-   TH1F* histMLP_BB(0);
+   TString methodName_continuum_large = TString("Continuum_large");
+   TString weightfile_continuum_large = dir_continuum_large + prefix_large + TString("_") + TString("MLP") + TString(".weights.xml");
+   reader->BookMVA(methodName_continuum_large, weightfile_continuum_large);
 
-   histMLP_Continuum = new TH1F("MVA_MLP_Continuum", "MVA_MLP_Continuum", nbin, -0.8, 0.8);
-   histMLP_BB = new TH1F("MVA_MLP_BB", "MVA_MLP_BB", nbin, -0.8, 0.8);
+   TString methodName_BB_large = TString("BB_large");
+   TString weightfile_BB_large = dir_BB_large + prefix_large + TString("_") + TString("MLP") + TString(".weights.xml");
+   reader->BookMVA(methodName_BB_large, weightfile_BB_large);
+
+   TString methodName_continuum_small = TString("Continuum_small");
+   TString weightfile_continuum_small = dir_continuum_small + prefix_small + TString("_") + TString("MLP") + TString(".weights.xml");
+   reader->BookMVA(methodName_continuum_small, weightfile_continuum_small);
+
+   TString methodName_BB_small = TString("BB_small");
+   TString weightfile_BB_small = dir_BB_small + prefix_small + TString("_") + TString("MLP") + TString(".weights.xml");
+   reader->BookMVA(methodName_BB_small, weightfile_BB_small);
 
    // Prepare input tree (this must be replaced by your data source)
    // in this example, there is a toy tree with signal and one with background events
    // we'll later on use only the "signal" events for the test in this example.
    //
    TFile *input(0);
-   std::string input_file_name("final_output_merge_Mxs_smaller_SIGNAL_train_data.root");
-   TString fname = "./For_TMVA_SIGNAL/train/Mxs_small/"+ input_file_name;
+   TString fname = std::string(filename);
    input = TFile::Open( fname );
    if (!input) {
       std::cout << "ERROR: could not open data file" << std::endl;
@@ -216,6 +324,38 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    theTree->SetBranchAddress("nRemainingTracksInEvent", &temp_UpsilonDataToTree[10]);
    theTree->SetBranchAddress("roeNeextra__bocleanMask__bc", &temp_UpsilonDataToTree[11]);
    theTree->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp_UpsilonDataToTree[12]);
+   theTree->SetBranchAddress("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp_UpsilonDataToTree[13]);
+   theTree->SetBranchAddress("foxWolframR1", &temp_UpsilonDataToTree[14]);
+   theTree->SetBranchAddress("foxWolframR2", &temp_UpsilonDataToTree[15]);
+   theTree->SetBranchAddress("foxWolframR3", &temp_UpsilonDataToTree[16]);
+   theTree->SetBranchAddress("foxWolframR4", &temp_UpsilonDataToTree[17]);
+   theTree->SetBranchAddress("harmonicMomentThrust0", &temp_UpsilonDataToTree[18]);
+   theTree->SetBranchAddress("harmonicMomentThrust1", &temp_UpsilonDataToTree[19]);
+   theTree->SetBranchAddress("harmonicMomentThrust2", &temp_UpsilonDataToTree[20]);
+   theTree->SetBranchAddress("harmonicMomentThrust3", &temp_UpsilonDataToTree[21]);
+   theTree->SetBranchAddress("harmonicMomentThrust4", &temp_UpsilonDataToTree[22]);
+   theTree->SetBranchAddress("cleoConeThrust0", &temp_UpsilonDataToTree[23]);
+   theTree->SetBranchAddress("cleoConeThrust1", &temp_UpsilonDataToTree[24]);
+   theTree->SetBranchAddress("cleoConeThrust2", &temp_UpsilonDataToTree[25]);
+   theTree->SetBranchAddress("cleoConeThrust3", &temp_UpsilonDataToTree[26]);
+   theTree->SetBranchAddress("cleoConeThrust4", &temp_UpsilonDataToTree[27]);
+   theTree->SetBranchAddress("cleoConeThrust5", &temp_UpsilonDataToTree[28]);
+   theTree->SetBranchAddress("cleoConeThrust6", &temp_UpsilonDataToTree[29]);
+   theTree->SetBranchAddress("cleoConeThrust7", &temp_UpsilonDataToTree[30]);
+   theTree->SetBranchAddress("cleoConeThrust8", &temp_UpsilonDataToTree[31]);
+   theTree->SetBranchAddress("sphericity", &temp_UpsilonDataToTree[32]);
+   theTree->SetBranchAddress("aplanarity", &temp_UpsilonDataToTree[33]);
+   theTree->SetBranchAddress("thrust", &temp_UpsilonDataToTree[34]);
+   theTree->SetBranchAddress("thrustAxisCosTheta", &temp_UpsilonDataToTree[35]);
+   theTree->SetBranchAddress("MsquaredBsig_op0", &temp_UpsilonDataToTree[36]);
+   theTree->SetBranchAddress("MsquaredBsig_op1", &temp_UpsilonDataToTree[37]);
+   theTree->SetBranchAddress("MsquaredBsig_op2", &temp_UpsilonDataToTree[38]);
+   theTree->SetBranchAddress("MsquaredBsig_op3", &temp_UpsilonDataToTree[39]);
+   theTree->SetBranchAddress("MsquaredBsig_op4", &temp_UpsilonDataToTree[40]);
+   theTree->SetBranchAddress("MsquaredBsig_op7", &temp_UpsilonDataToTree[41]);
+   theTree->SetBranchAddress("roeP__bocleanMask__bc", &temp_UpsilonDataToTree[42]);
+   theTree->SetBranchAddress("roeM__bocleanMask__bc", &temp_UpsilonDataToTree[43]);
+   theTree->SetBranchAddress("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
 
    // get Bsig_info
    theTree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -225,6 +365,59 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    theTree->SetBranchAddress("Bsig_useCMSFrame_p", &temp_BsigDataToTree[4]);
    theTree->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree[5]);
    theTree->SetBranchAddress("Bsig_M", &temp_BsigDataToTree[6]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcvetomass", &temp_BsigDataToTree[7]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_DcvetodmID", &temp_BsigDataToTree[8]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcvetoabsdm", &temp_BsigDataToTree[9]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dnvetomass", &temp_BsigDataToTree[10]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_DnvetodmID", &temp_BsigDataToTree[11]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp_BsigDataToTree[12]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_BsigDataToTree[13]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_BsigDataToTree[14]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_BsigDataToTree[15]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_BsigDataToTree[16]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Pion_PID_correction", &temp_BsigDataToTree[17]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &temp_BsigDataToTree[18]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &temp_BsigDataToTree[19]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow1", &temp_BsigDataToTree[20]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow2", &temp_BsigDataToTree[21]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow3", &temp_BsigDataToTree[22]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow1", &temp_BsigDataToTree[23]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow2", &temp_BsigDataToTree[24]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree[25]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree[26]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree[27]);
+   theTree->SetBranchAddress("Bsig_R2", &temp_BsigDataToTree[28]);
+   theTree->SetBranchAddress("Bsig_thrustBm", &temp_BsigDataToTree[29]);
+   theTree->SetBranchAddress("Bsig_thrustOm", &temp_BsigDataToTree[30]);
+   theTree->SetBranchAddress("Bsig_cosTBTO", &temp_BsigDataToTree[31]);
+   theTree->SetBranchAddress("Bsig_cosTBz", &temp_BsigDataToTree[32]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_et", &temp_BsigDataToTree[33]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_mm2", &temp_BsigDataToTree[34]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hso00", &temp_BsigDataToTree[35]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hso01", &temp_BsigDataToTree[36]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hso02", &temp_BsigDataToTree[37]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hso03", &temp_BsigDataToTree[38]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hso04", &temp_BsigDataToTree[39]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hso10", &temp_BsigDataToTree[40]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hso12", &temp_BsigDataToTree[41]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hso14", &temp_BsigDataToTree[42]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hso20", &temp_BsigDataToTree[43]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hso22", &temp_BsigDataToTree[44]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hso24", &temp_BsigDataToTree[45]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hoo0", &temp_BsigDataToTree[46]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hoo1", &temp_BsigDataToTree[47]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hoo2", &temp_BsigDataToTree[48]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hoo3", &temp_BsigDataToTree[49]);
+   theTree->SetBranchAddress("Bsig_KSFWVariables_hoo4", &temp_BsigDataToTree[50]);
+   theTree->SetBranchAddress("Bsig_CleoConeCS_1", &temp_BsigDataToTree[51]);
+   theTree->SetBranchAddress("Bsig_CleoConeCS_2", &temp_BsigDataToTree[52]);
+   theTree->SetBranchAddress("Bsig_CleoConeCS_3", &temp_BsigDataToTree[53]);
+   theTree->SetBranchAddress("Bsig_CleoConeCS_4", &temp_BsigDataToTree[54]);
+   theTree->SetBranchAddress("Bsig_CleoConeCS_5", &temp_BsigDataToTree[55]);
+   theTree->SetBranchAddress("Bsig_CleoConeCS_6", &temp_BsigDataToTree[56]);
+   theTree->SetBranchAddress("Bsig_CleoConeCS_7", &temp_BsigDataToTree[57]);
+   theTree->SetBranchAddress("Bsig_CleoConeCS_8", &temp_BsigDataToTree[58]);
+   theTree->SetBranchAddress("Bsig_CleoConeCS_9", &temp_BsigDataToTree[59]);
 
    // get Btag_info
    theTree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -324,7 +517,7 @@ void TMVAClassificationApplication( TString myMethodList = "" )
 
    std::cout << "--- Processing: " << theTree->GetEntries() << " events" << std::endl;
 
-   TFile* temp_file = new TFile( ("TMVAoutput_"+ input_file_name).c_str(), "recreate");
+   TFile* temp_file = new TFile( ("TMVAoutput_"+ OnlyFileName).c_str(), "recreate");
    temp_file->cd();
    TTree* temp_tree = new TTree("data", "");
 
@@ -354,6 +547,38 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    temp_tree->Branch("nRemainingTracksInEvent", &temp_UpsilonDataToTree[10]);
    temp_tree->Branch("roeNeextra__bocleanMask__bc", &temp_UpsilonDataToTree[11]);
    temp_tree->Branch("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp_UpsilonDataToTree[12]);
+   temp_tree->Branch("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp_UpsilonDataToTree[13]);
+   temp_tree->Branch("foxWolframR1", &temp_UpsilonDataToTree[14]);
+   temp_tree->Branch("foxWolframR2", &temp_UpsilonDataToTree[15]);
+   temp_tree->Branch("foxWolframR3", &temp_UpsilonDataToTree[16]);
+   temp_tree->Branch("foxWolframR4", &temp_UpsilonDataToTree[17]);
+   temp_tree->Branch("harmonicMomentThrust0", &temp_UpsilonDataToTree[18]);
+   temp_tree->Branch("harmonicMomentThrust1", &temp_UpsilonDataToTree[19]);
+   temp_tree->Branch("harmonicMomentThrust2", &temp_UpsilonDataToTree[20]);
+   temp_tree->Branch("harmonicMomentThrust3", &temp_UpsilonDataToTree[21]);
+   temp_tree->Branch("harmonicMomentThrust4", &temp_UpsilonDataToTree[22]);
+   temp_tree->Branch("cleoConeThrust0", &temp_UpsilonDataToTree[23]);
+   temp_tree->Branch("cleoConeThrust1", &temp_UpsilonDataToTree[24]);
+   temp_tree->Branch("cleoConeThrust2", &temp_UpsilonDataToTree[25]);
+   temp_tree->Branch("cleoConeThrust3", &temp_UpsilonDataToTree[26]);
+   temp_tree->Branch("cleoConeThrust4", &temp_UpsilonDataToTree[27]);
+   temp_tree->Branch("cleoConeThrust5", &temp_UpsilonDataToTree[28]);
+   temp_tree->Branch("cleoConeThrust6", &temp_UpsilonDataToTree[29]);
+   temp_tree->Branch("cleoConeThrust7", &temp_UpsilonDataToTree[30]);
+   temp_tree->Branch("cleoConeThrust8", &temp_UpsilonDataToTree[31]);
+   temp_tree->Branch("sphericity", &temp_UpsilonDataToTree[32]);
+   temp_tree->Branch("aplanarity", &temp_UpsilonDataToTree[33]);
+   temp_tree->Branch("thrust", &temp_UpsilonDataToTree[34]);
+   temp_tree->Branch("thrustAxisCosTheta", &temp_UpsilonDataToTree[35]);
+   temp_tree->Branch("MsquaredBsig_op0", &temp_UpsilonDataToTree[36]);
+   temp_tree->Branch("MsquaredBsig_op1", &temp_UpsilonDataToTree[37]);
+   temp_tree->Branch("MsquaredBsig_op2", &temp_UpsilonDataToTree[38]);
+   temp_tree->Branch("MsquaredBsig_op3", &temp_UpsilonDataToTree[39]);
+   temp_tree->Branch("MsquaredBsig_op4", &temp_UpsilonDataToTree[40]);
+   temp_tree->Branch("MsquaredBsig_op7", &temp_UpsilonDataToTree[41]);
+   temp_tree->Branch("roeP__bocleanMask__bc", &temp_UpsilonDataToTree[42]);
+   temp_tree->Branch("roeM__bocleanMask__bc", &temp_UpsilonDataToTree[43]);
+   temp_tree->Branch("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
 
    // get Bsig_info
    temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -363,6 +588,59 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    temp_tree->Branch("Bsig_useCMSFrame_p", &temp_BsigDataToTree[4]);
    temp_tree->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree[5]);
    temp_tree->Branch("Bsig_M", &temp_BsigDataToTree[6]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcvetomass", &temp_BsigDataToTree[7]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_DcvetodmID", &temp_BsigDataToTree[8]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcvetoabsdm", &temp_BsigDataToTree[9]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Dnvetomass", &temp_BsigDataToTree[10]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_DnvetodmID", &temp_BsigDataToTree[11]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp_BsigDataToTree[12]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_BsigDataToTree[13]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_BsigDataToTree[14]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_BsigDataToTree[15]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_BsigDataToTree[16]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Pion_PID_correction", &temp_BsigDataToTree[17]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &temp_BsigDataToTree[18]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &temp_BsigDataToTree[19]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow1", &temp_BsigDataToTree[20]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow2", &temp_BsigDataToTree[21]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow3", &temp_BsigDataToTree[22]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow1", &temp_BsigDataToTree[23]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow2", &temp_BsigDataToTree[24]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree[25]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree[26]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree[27]);
+   temp_tree->Branch("Bsig_R2", &temp_BsigDataToTree[28]);
+   temp_tree->Branch("Bsig_thrustBm", &temp_BsigDataToTree[29]);
+   temp_tree->Branch("Bsig_thrustOm", &temp_BsigDataToTree[30]);
+   temp_tree->Branch("Bsig_cosTBTO", &temp_BsigDataToTree[31]);
+   temp_tree->Branch("Bsig_cosTBz", &temp_BsigDataToTree[32]);
+   temp_tree->Branch("Bsig_KSFWVariables_et", &temp_BsigDataToTree[33]);
+   temp_tree->Branch("Bsig_KSFWVariables_mm2", &temp_BsigDataToTree[34]);
+   temp_tree->Branch("Bsig_KSFWVariables_hso00", &temp_BsigDataToTree[35]);
+   temp_tree->Branch("Bsig_KSFWVariables_hso01", &temp_BsigDataToTree[36]);
+   temp_tree->Branch("Bsig_KSFWVariables_hso02", &temp_BsigDataToTree[37]);
+   temp_tree->Branch("Bsig_KSFWVariables_hso03", &temp_BsigDataToTree[38]);
+   temp_tree->Branch("Bsig_KSFWVariables_hso04", &temp_BsigDataToTree[39]);
+   temp_tree->Branch("Bsig_KSFWVariables_hso10", &temp_BsigDataToTree[40]);
+   temp_tree->Branch("Bsig_KSFWVariables_hso12", &temp_BsigDataToTree[41]);
+   temp_tree->Branch("Bsig_KSFWVariables_hso14", &temp_BsigDataToTree[42]);
+   temp_tree->Branch("Bsig_KSFWVariables_hso20", &temp_BsigDataToTree[43]);
+   temp_tree->Branch("Bsig_KSFWVariables_hso22", &temp_BsigDataToTree[44]);
+   temp_tree->Branch("Bsig_KSFWVariables_hso24", &temp_BsigDataToTree[45]);
+   temp_tree->Branch("Bsig_KSFWVariables_hoo0", &temp_BsigDataToTree[46]);
+   temp_tree->Branch("Bsig_KSFWVariables_hoo1", &temp_BsigDataToTree[47]);
+   temp_tree->Branch("Bsig_KSFWVariables_hoo2", &temp_BsigDataToTree[48]);
+   temp_tree->Branch("Bsig_KSFWVariables_hoo3", &temp_BsigDataToTree[49]);
+   temp_tree->Branch("Bsig_KSFWVariables_hoo4", &temp_BsigDataToTree[50]);
+   temp_tree->Branch("Bsig_CleoConeCS_1", &temp_BsigDataToTree[51]);
+   temp_tree->Branch("Bsig_CleoConeCS_2", &temp_BsigDataToTree[52]);
+   temp_tree->Branch("Bsig_CleoConeCS_3", &temp_BsigDataToTree[53]);
+   temp_tree->Branch("Bsig_CleoConeCS_4", &temp_BsigDataToTree[54]);
+   temp_tree->Branch("Bsig_CleoConeCS_5", &temp_BsigDataToTree[55]);
+   temp_tree->Branch("Bsig_CleoConeCS_6", &temp_BsigDataToTree[56]);
+   temp_tree->Branch("Bsig_CleoConeCS_7", &temp_BsigDataToTree[57]);
+   temp_tree->Branch("Bsig_CleoConeCS_8", &temp_BsigDataToTree[58]);
+   temp_tree->Branch("Bsig_CleoConeCS_9", &temp_BsigDataToTree[59]);
 
    // get Btag_info
    temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -476,9 +754,14 @@ void TMVAClassificationApplication( TString myMethodList = "" )
        temp_Bsig_decayIDToTree_f = (float)temp_Bsig_decayIDToTree;
        temp_flag_f = (float)temp_flag;
 
-       Output_BB = reader->EvaluateMVA("BB");
-       Output_Continuum = reader->EvaluateMVA("Continuum");
-
+       if (temp_BsigDataToTree[6] > 1.1) { // Bsig_M
+           Output_BB = reader->EvaluateMVA("BB_large");
+           Output_Continuum = reader->EvaluateMVA("Continuum_large");
+       }
+       else {
+           Output_BB = reader->EvaluateMVA("BB_small");
+           Output_Continuum = reader->EvaluateMVA("Continuum_small");
+       }
        temp_tree->Fill();
    }
 
@@ -486,7 +769,24 @@ void TMVAClassificationApplication( TString myMethodList = "" )
    temp_tree->Write();
    temp_file->Close();
 
+   input->Close();
+
    delete reader;
 
    std::cout << "==> TMVAClassificationApplication is done!" << std::endl << std::endl;
+   
+}
+
+void TMVAClassificationApplication(const char* dirname, const char* dataset_path) {
+
+    std::vector<std::string> names;
+    load_files(dirname, &names);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+        std::string string_filename = dirname + std::string("/") + names.at(i);
+        const char* filename = string_filename.c_str();
+
+        ApplicationEachFile(filename, dataset_path);
+    }
+
 }

@@ -1,7 +1,7 @@
 // last update: 2021-11-10-00
 // for Belle2 data
 # define Nstep 20
-# define start 0.5
+# define start 0.8
 # define end 1.0
 # define NormFactorForSignal (31481.0/9300000.0)
 
@@ -53,7 +53,7 @@ void TMVA_FOM() {
 
     // output step: 0.05 0.1 0.15 ... 0.95
     double Matrix[Nstep][Nstep];
-    for(int i = 0; i < Nstep; i++) for(int j = 0; i < Nstep; i++) Matrix[i][j] = 0.0;
+    for(int i = 0; i < Nstep; i++) for(int j = 0; j < Nstep; j++) Matrix[i][j] = 0.0;
 
     for (int i = 0; i < Nstep; i++) {
         for (int j = 0; j < Nstep; j++) {
