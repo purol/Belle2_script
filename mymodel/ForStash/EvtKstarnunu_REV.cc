@@ -54,7 +54,7 @@ namespace Belle2 {
 
     p->initializePhaseSpace(getNDaug(), getDaugs());
 
-    double m_b = p->mass();
+    double m_b = EvtPDL::getNominalMass(p->getId());
 
     EvtParticle* meson, * neutrino1, * neutrino2;
     meson = p->getDaug(0);
@@ -67,7 +67,7 @@ namespace Belle2 {
     EvtVector4R q = momnu1 + momnu2;
     double q2 = q.mass2();
 
-    double m_k = meson->mass();
+    double m_k = EvtPDL::getNominalMass(meson->getId());
 
     EvtVector4R p4b; p4b.set(m_b, 0., 0., 0.);  // Do calcs in mother rest frame
 
@@ -82,23 +82,23 @@ namespace Belle2 {
     double z0 = (sqrt(tp) - sqrt(tp - t0)) / (sqrt(tp) + sqrt(tp - t0));
 
     // v0
-    double alpha0_v0 = 0.38;
-    double alpha1_v0 = -1.17;
-    double alpha2_v0 = 2.42;
+    double alpha0_v0 = m_alpha0_v0;
+    double alpha1_v0 = m_alpha1_v0;
+    double alpha2_v0 = m_alpha2_v0;
     double mR_v0 = 5.415;
     double v0 = (1 / (1 - q2 / (mR_v0 * mR_v0))) * (alpha0_v0 + alpha1_v0 * (z - z0) + alpha2_v0 * (z - z0) * (z - z0));
 
     // A1
-    double alpha0_A1 = 0.3;
-    double alpha1_A1 = 0.39;
-    double alpha2_A1 = 1.19;
+    double alpha0_A1 = m_alpha0_A1;
+    double alpha1_A1 = m_alpha1_A1;
+    double alpha2_A1 = m_alpha2_A1;
     double mR_A1 = 5.829;
     double A1 = (1 / (1 - q2 / (mR_A1 * mR_A1))) * (alpha0_A1 + alpha1_A1 * (z - z0) + alpha2_A1 * (z - z0) * (z - z0));
 
     // A12
-    double alpha0_A12 = 0.27;
-    double alpha1_A12 = 0.53;
-    double alpha2_A12 = 0.48;
+    double alpha0_A12 = m_alpha0_A12;
+    double alpha1_A12 = m_alpha1_A12;
+    double alpha2_A12 = m_alpha2_A12;
     double mR_A12 = 5.829;
     double A12 = (1 / (1 - q2 / (mR_A12 * mR_A12))) * (alpha0_A12 + alpha1_A12 * (z - z0) + alpha2_A12 * (z - z0) * (z - z0));
 
@@ -149,7 +149,7 @@ namespace Belle2 {
   {
 
     // check that there are 0 arguments
-    checkNArg(0);
+    checkNArg(0, 9);
     checkNDaug(3);
 
     //We expect the parent to be a scalar
@@ -160,6 +160,27 @@ namespace Belle2 {
     checkSpinDaughter(0, EvtSpinType::VECTOR);
     checkSpinDaughter(1, EvtSpinType::NEUTRINO);
     checkSpinDaughter(2, EvtSpinType::NEUTRINO);
+
+    if (getNArg() == 9) {
+        // z expansion coefficient alpha0_v0
+        double m_alpha0_v0 = getArg(0);
+        // z expansion coefficient alpha1_v0
+        double m_alpha1_v0 = getArg(1);
+        // z expansion coefficient alpha2_v0
+        double m_alpha2_v0 = getArg(2);
+        // z expansion coefficient alpha0_A1
+        double m_alpha0_A1 = getArg(3);
+        // z expansion coefficient alpha1_A1
+        double m_alpha1_A1 = getArg(4);
+        // z expansion coefficient alpha2_A1
+        double m_alpha2_A1 = getArg(5);
+        // z expansion coefficient alpha0_A12
+        double m_alpha0_A12 = getArg(6);
+        // z expansion coefficient alpha1_A12
+        double m_alpha1_A12 = getArg(7);
+        // z expansion coefficient alpha2_A12
+        double m_alpha2_A12 = getArg(8);
+    }
   }
 
   void EvtKstarnunu_REV::initProbMax()

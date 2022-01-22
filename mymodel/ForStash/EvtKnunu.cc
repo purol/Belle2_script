@@ -54,7 +54,7 @@ namespace Belle2 {
 
     p->initializePhaseSpace(getNDaug(), getDaugs());
 
-    double m_b = p->mass();
+    double m_b = EvtPDL::getNominalMass(p->getId());
 
     EvtParticle* meson, * neutrino1, * neutrino2;
     meson = p->getDaug(0);
@@ -69,7 +69,7 @@ namespace Belle2 {
 
     EvtVector4R p4b; p4b.set(m_b, 0., 0., 0.);  // Do calcs in mother rest frame
 
-    double m_k = meson->mass();
+    double m_k = EvtPDL::getNominalMass(meson->getId());
     double mkhat = m_k / (m_b);
     double shat = q2 / (m_b * m_b);
 
@@ -78,9 +78,9 @@ namespace Belle2 {
 
     // calculate form factor from [arXiv:1409.4557v2]
     // see eq 104, eq 105, eq 106, eq 107
-    double alpha0 = 0.432;
-    double alpha1 = -0.664;
-    double alpha2 = -1.2;
+    double alpha0 = m_alpha0;
+    double alpha1 = m_alpha1;
+    double alpha2 = m_alpha2;
     double mp = m_b + 0.046;
     double tp = (m_b + m_k) * (m_b + m_k);
     double tm = (m_b - m_k) * (m_b - m_k);
@@ -120,7 +120,7 @@ namespace Belle2 {
   void EvtKnunu::init()
   {
     // check that there are 0 arguments
-    checkNArg(0);
+    checkNArg(0, 3);
     checkNDaug(3);
 
     //We expect the parent to be a scalar
@@ -131,6 +131,15 @@ namespace Belle2 {
     checkSpinDaughter(0, EvtSpinType::SCALAR);
     checkSpinDaughter(1, EvtSpinType::NEUTRINO);
     checkSpinDaughter(2, EvtSpinType::NEUTRINO);
+
+    if (getNArg() == 3) {
+        // z expansion coefficient alpha0
+        m_alpha0 = getArg(0);
+        // z expansion coefficient alpha1
+        m_alpha1 = getArg(1);
+        // z expansion coefficient alpha2
+        m_alpha2 = getArg(2);
+    }
   }
 
   void EvtKnunu::initProbMax()

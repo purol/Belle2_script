@@ -51,7 +51,7 @@ namespace Belle2 {
 
     findMasses(p, getNDaug(), getDaugs(), mass);
 
-    double mB = p->mass();
+    double mB = EvtPDL::getNominalMass(p->getId());
     double ml = mass[1];
     double pb(0.); // fermi momentum of b-quark
 

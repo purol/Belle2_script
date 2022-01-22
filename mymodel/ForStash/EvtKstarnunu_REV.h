@@ -19,6 +19,16 @@ namespace Belle2 {
 
     /** The evtgen model to produce B-> Kstar nu nubar decay sample.
      * From factors are based on [arXiv:1503.05534v3].
+     * 
+     * You can use the model as follows:
+     * 
+     * Decay MyB+
+     * 1.0 K*+ nu_e anti-nu_e                    PHOTOS KSTARNUNU_REV 0.38 -1.17 2.42 0.3 0.39 1.19 0.27 0.53 0.48;
+     * Enddecay
+     * 
+     * First three arguments are z expansion coefficients for V0.
+     * Next three arguments are z expansion coefficients for A1.
+     * Next three arguments are z expansion coefficients for A12
      */
 
   public:
@@ -57,6 +67,34 @@ namespace Belle2 {
      * The function to sets a maximum probability.
      */
     void initProbMax();
+
+  private:
+      /** z expansion coefficient alpha0_v0    */
+      double m_alpha0_v0{ 0.38 };
+
+      /** z expansion coefficient alpha1_v0    */
+      double m_alpha1_v0{ -1.17 };
+
+      /** z expansion coefficient alpha2_v0    */
+      double m_alpha2_v0{ 2.42 };
+
+      /** z expansion coefficient alpha0_A1    */
+      double m_alpha0_A1{ 0.3 };
+
+      /** z expansion coefficient alpha1_A1    */
+      double m_alpha1_A1{ 0.39 };
+
+      /** z expansion coefficient alpha2_A1    */
+      double m_alpha2_A1{ 1.19 };
+
+      /** z expansion coefficient alpha0_A12    */
+      double m_alpha0_A12{ 0.27 };
+
+      /** z expansion coefficient alpha1_A12    */
+      double m_alpha1_A12{ 0.53 };
+
+      /** z expansion coefficient alpha2_A12    */
+      double m_alpha2_A12{ 0.48 };
 
   };
 
