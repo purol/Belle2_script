@@ -107,7 +107,7 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
    dataloader->AddSpectator("Bsig_daughter_0_extraInfo_decayModeID", 'F');
    dataloader->AddSpectator("nROE_ECLClusters__bocleanMask__bc", 'F');
    dataloader->AddSpectator("nROE_KLMClusters", 'F');
-   dataloader->AddSpectator("nROE_Tracks__bocleanMask__bc", 'F');
+   dataloader->AddVariable("nROE_Tracks__bocleanMask__bc", 'F');
    dataloader->AddSpectator("roeEextra__bocleanMask__bc", 'F');
    dataloader->AddSpectator("nROE_NeutralECLClusters__bocleanMask__bc", 'F');
    dataloader->AddSpectator("nROE_ParticlesInList__boK_S0__clmyKaonshort__bc", 'F');
@@ -115,7 +115,7 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
    dataloader->AddSpectator("missingMomentumOfEvent_theta", 'F');
    dataloader->AddSpectator("missingMomentumOfEvent", 'F');
    dataloader->AddSpectator("missingEnergyOfEventCMS", 'F');
-   dataloader->AddSpectator("nRemainingTracksInEvent", 'F');
+   dataloader->AddVariable("nRemainingTracksInEvent", 'F');
    dataloader->AddSpectator("roeNeextra__bocleanMask__bc", 'F');
    dataloader->AddSpectator("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", 'F');
    dataloader->AddSpectator("nROE_ParticlesInList__bogamma__clmygamma__bc", 'F');
@@ -137,8 +137,8 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
    dataloader->AddSpectator("cleoConeThrust6", 'F');
    dataloader->AddSpectator("cleoConeThrust7", 'F');
    dataloader->AddSpectator("cleoConeThrust8", 'F');
-   dataloader->AddSpectator("sphericity", 'F');
-   dataloader->AddSpectator("aplanarity", 'F');
+   dataloader->AddVariable("sphericity", 'F');
+   dataloader->AddVariable("aplanarity", 'F');
    dataloader->AddSpectator("thrust", 'F');
    dataloader->AddSpectator("thrustAxisCosTheta", 'F');
    dataloader->AddSpectator("MsquaredBsig_op0", 'F');
@@ -147,9 +147,9 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
    dataloader->AddSpectator("MsquaredBsig_op3", 'F');
    dataloader->AddSpectator("MsquaredBsig_op4", 'F');
    dataloader->AddSpectator("MsquaredBsig_op7", 'F');
-   dataloader->AddSpectator("roeP__bocleanMask__bc", 'F');
-   dataloader->AddSpectator("roeM__bocleanMask__bc", 'F');
-   dataloader->AddSpectator("roePTheta__bocleanMask__bc", 'F');
+   dataloader->AddVariable("roeP__bocleanMask__bc", 'F');
+   dataloader->AddVariable("roeM__bocleanMask__bc", 'F');
+   dataloader->AddVariable("roePTheta__bocleanMask__bc", 'F');
    dataloader->AddSpectator("Bsig_E", 'F');
    dataloader->AddSpectator("Bsig_useCMSFrame_E", 'F');
    dataloader->AddSpectator("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc", 'F');
@@ -212,7 +212,7 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
    dataloader->AddSpectator("Bsig_CleoConeCS_9", 'F');
    dataloader->AddSpectator("Btag_extraInfo_decayModeID", 'F');
    dataloader->AddSpectator("Btag_Mbc", 'F');
-   dataloader->AddSpectator("Btag_deltaE", 'F');
+   dataloader->AddVariable("Btag_deltaE", 'F');
    dataloader->AddSpectator("Btag_E", 'F');
    dataloader->AddSpectator("missingMass2OfEvent", 'F');
    dataloader->AddSpectator("visibleEnergyOfEventCMS", 'F');
@@ -266,7 +266,7 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
 
    dataloader->PrepareTrainingAndTestTree( "", "SplitMode=Random:NormMode=NumEvents:!V" );
 
-   factory->BookMethod(dataloader, TMVA::Types::kMLP, "MLP", "H:!V:VarTransform=N");
+   factory->BookMethod(dataloader, TMVA::Types::kBDT, "MLP", "H:!V");
 
    // Train MVAs using the set of training events
    factory->TrainAllMethods();
