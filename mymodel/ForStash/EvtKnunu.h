@@ -17,9 +17,9 @@ class EvtParticle;
 namespace Belle2 {
   class EvtKnunu : public  EvtDecayAmp {
 
-  /** The evtgen model to produce B-> K nu nubar decay sample.
-   * From factors are based on [arXiv:1409.4557v2].
-   */
+    /** The evtgen model to produce B-> K nu nubar decay sample.
+     * From factors are based on [arXiv:1409.4557v2].
+     */
 
   public:
 
