@@ -111,7 +111,7 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
    dataloader->AddSpectator("roeEextra__bocleanMask__bc", 'F');
    dataloader->AddSpectator("nROE_NeutralECLClusters__bocleanMask__bc", 'F');
    dataloader->AddSpectator("nROE_ParticlesInList__boK_S0__clmyKaonshort__bc", 'F');
-   dataloader->AddSpectator("nROE_ParticlesInList__bopi0__clmyneutralPion__bc", 'F');
+   dataloader->AddVariable("nROE_ParticlesInList__bopi0__clmyneutralPion__bc", 'F');
    dataloader->AddSpectator("missingMomentumOfEvent_theta", 'F');
    dataloader->AddSpectator("missingMomentumOfEvent", 'F');
    dataloader->AddSpectator("missingEnergyOfEventCMS", 'F');
@@ -266,7 +266,7 @@ void TMVAClassTrainContinuumBKG( TString myMethodList = "" )
 
    dataloader->PrepareTrainingAndTestTree( "", "SplitMode=Random:NormMode=NumEvents:!V" );
 
-   factory->BookMethod(dataloader, TMVA::Types::kBDT, "MLP", "H:!V");
+   factory->BookMethod(dataloader, TMVA::Types::kBDT, "BDT", "H:!V");
 
    // Train MVAs using the set of training events
    factory->TrainAllMethods();
