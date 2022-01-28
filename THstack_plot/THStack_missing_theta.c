@@ -81,14 +81,14 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-THStack* Stack = new THStack("thstack", ";M_{bc}^{tag} [GeV];arbitrary unit");
-TH1F* SIGNAL_hist = new TH1F("SIGNAL_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* CHG_hist = new TH1F("CHG_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* MIX_hist = new TH1F("MIX_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* UUBAR_hist = new TH1F("UUBAR_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* DDBAR_hist = new TH1F("DDBAR_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* SSBAR_hist = new TH1F("SSBAR_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* CHARM_hist = new TH1F("CHARM_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
+THStack* Stack = new THStack("thstack", ";#theta_{missing} [rad];arbitrary unit");
+TH1F* SIGNAL_hist = new TH1F("SIGNAL_hist", ";#theta_{missing};", 100, 0, 3.142);
+TH1F* CHG_hist = new TH1F("CHG_hist", ";#theta_{missing};", 100, 0, 3.142);
+TH1F* MIX_hist = new TH1F("MIX_hist", ";#theta_{missing};", 100, 0, 3.142);
+TH1F* UUBAR_hist = new TH1F("UUBAR_hist", ";#theta_{missing};", 100, 0, 3.142);
+TH1F* DDBAR_hist = new TH1F("DDBAR_hist", ";#theta_{missing};", 100, 0, 3.142);
+TH1F* SSBAR_hist = new TH1F("SSBAR_hist", ";#theta_{missing};", 100, 0, 3.142);
+TH1F* CHARM_hist = new TH1F("CHARM_hist", ";#theta_{missing};", 100, 0, 3.142);
 
 void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
     double var = 0;
@@ -150,20 +150,20 @@ void LetsFill(const char* dirname, TH1F* hist, , const char* included_string, do
 
 }
 
-void THStack_Mbc() {
+void THStack_missing_theta() {
 
-    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_Mbc_cut";
-    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_Mbc_cut";
-    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_Mbc_cut";
-    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_Mbc_cut";
-    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_Mbc_cut";
-    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_Mbc_cut";
-    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/CHG_analysis/validation_v002/before_Mbc_cut";
-    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/MIX_analysis/validation_v002/before_Mbc_cut";
-    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/UUBAR_analysis/validation_v002/before_before_Mbc_cut";
-    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/DDBAR_analysis/validation_v002/before_Mbc_cut";
-    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SSBAR_analysis/validation_v002/before_Mbc_cut";
-    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/CHARM_analysis/validation_v002/before_Mbc_cut";
+    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_missing_momentum_theta_cut";
+    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_missing_momentum_theta_cut";
+    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_missing_momentum_theta_cut";
+    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_missing_momentum_theta_cut";
+    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_missing_momentum_theta_cut";
+    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_missing_momentum_theta_cut";
+    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/CHG_analysis/validation_v002/before_missing_momentum_theta_cut";
+    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/MIX_analysis/validation_v002/before_missing_momentum_theta_cut";
+    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/UUBAR_analysis/validation_v002/before_before_missing_momentum_theta_cut";
+    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/DDBAR_analysis/validation_v002/before_missing_momentum_theta_cut";
+    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SSBAR_analysis/validation_v002/before_missing_momentum_theta_cut";
+    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/CHARM_analysis/validation_v002/before_missing_momentum_theta_cut";
 
     LetsFill(Knunu_dirname, SIGNAL_hist, "B2Knunu", Scale_Kplus);
     LetsFill(Kstarnunu_dirname, SIGNAL_hist, "B2Kstarnunu", Scale_Kplusstar);
@@ -216,13 +216,18 @@ void THStack_Mbc() {
 
     Stack->Draw("pfc Hist"); SIGNAL_hist->Draw("HistSAME");
     Float_t ymax = Stack->GetMaximum();
-    TLine* line = new TLine(5.27, 0, 5.27, ymax);
-    line->SetLineColor(kRed);
-    line->SetLineStyle(5);
-    line->Draw();
+    TLine* lineA = new TLine(0.297, 0, 0.297, ymax);
+    lineA->SetLineColor(kRed);
+    lineA->SetLineStyle(5);
+    lineA->Draw();
+    TLine* lineB = new TLine(2.618, 0, 2.618, ymax);
+    lineB->SetLineColor(kRed);
+    lineB->SetLineStyle(5);
+    lineB->Draw();
     c_temp->SaveAs("Plot.png");
 
-    free(line);
+    free(lineA);
+    free(lineB);
     gPad->BuildLegend();
     c_temp->SaveAs("Plot_with_legend.png");
 }
