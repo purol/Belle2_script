@@ -286,12 +286,12 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree->SetBranchAddress("flag", &temp_flag);
 
             // MLP
-            temp_tree->SetBranchAddress("TMVA_BB", &temp_BB_output);
-            temp_tree->SetBranchAddress("TMVA_Continuum", &temp_Continuum_output);
+            temp_tree->SetBranchAddress("MVA_BB", &temp_BB_output);
+            temp_tree->SetBranchAddress("MVA_Continuum", &temp_Continuum_output);
             /*================================================================*/
 
 
-            TFile* temp_file = new TFile((rawname + "_after_TMVA.root").c_str(), "recreate");
+            TFile* temp_file = new TFile((rawname + "_after_MVA.root").c_str(), "recreate");
             temp_file->cd();
             TTree* temp_tree_upsilon = new TTree("Upsilon", "");
             TTree* temp_tree_Bsig = new TTree("Bsig", "");
@@ -521,8 +521,8 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                 temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
             }
 
-            temp_tree_upsilon->Branch("TMVA_BB", &temp_BB_output);
-            temp_tree_upsilon->Branch("TMVA_Continuum", &temp_Continuum_output);
+            temp_tree_upsilon->Branch("MVA_BB", &temp_BB_output);
+            temp_tree_upsilon->Branch("MVA_Continuum", &temp_Continuum_output);
 
             /*================================================================*/
 

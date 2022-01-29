@@ -1,22 +1,10 @@
-/// \file
-/// \ingroup tutorial_tmva
-/// \notebook -nodraw
-/// This macro provides a simple example on how to use the trained classifiers
-/// within an analysis module
-/// - Project   : TMVA - a Root-integrated toolkit for multivariate data analysis
-/// - Package   : TMVA
-/// - Exectuable: TMVAClassificationApplication
-///
-/// \macro_output
-/// \macro_code
-/// \author Andreas Hoecker
-
 # define N_Needed_info 37
 # define N_event_info 15
 # define N_Upsilon_info 45
 # define N_Bsig_info 60
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
+
 
 #include <cstdlib>
 #include <vector>
@@ -31,11 +19,7 @@
 #include "TROOT.h"
 #include "TStopwatch.h"
 
-#include "TMVA/Tools.h"
-#include "TMVA/Reader.h"
-#include "TMVA/MethodCuts.h"
-
-using namespace TMVA;
+#include "Classifier.h"
 
 void load_files(const char* dirname, std::vector<std::string>* names) {
     TSystemDirectory dir(dirname, dirname);
@@ -59,28 +43,8 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
     std::string OnlyFileName = string_filename.substr(string_filename.find_last_of("\\/") + 1, string_filename.size() - string_filename.find_last_of("\\/"));
 
    //---------------------------------------------------------------
-   // This loads the library
-   TMVA::Tools::Instance();
 
-   std::cout << std::endl;
-   std::cout << "==> Start TMVAClassificationApplication" << std::endl;
-
-   // Create the Reader object
-
-   TMVA::Reader *reader = new TMVA::Reader( "!Color:!Silent" );
-
-   // Create a set of variables and declare them to the reader
-   // - the variable names MUST corresponds in name and type to those given in the weight file(s) used
-   float temp_EventDataToTree_f[N_event_info / 3];
-   float temp_UpsilonDataToTree_f[N_Upsilon_info];
-   float temp_BsigDataToTree_f[N_Bsig_info];
-   float temp_BtagDataToTree_f[N_Btag_info];
-   float temp_DataToTree_f[N_Needed_info];
-   //float temp_DecayDataToTree_f[N_decay];
-   float temp_Upsilon_decayIDToTree_f;
-   float temp_Bsig_decayIDToTree_f;
-   float temp_flag_f;
-
+   // Create a set of variables
    int temp_EventDataToTree[N_event_info / 3];
    double temp_UpsilonDataToTree[N_Upsilon_info];
    double temp_BsigDataToTree[N_Bsig_info];
@@ -93,194 +57,18 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    float Output_BB;
    float Output_Continuum;
 
-   reader->AddSpectator("Btag_R2", &temp_DataToTree_f[0]);
-   reader->AddSpectator("Btag_thrustBm", &temp_DataToTree_f[1]);
-   reader->AddVariable("Btag_thrustOm", &temp_DataToTree_f[2]);
-   reader->AddVariable("Btag_cosTBTO", &temp_DataToTree_f[3]);
-   reader->AddSpectator("Btag_cosTBz", &temp_DataToTree_f[4]);
-   reader->AddSpectator("Btag_KSFWVariables_et", &temp_DataToTree_f[5]);
-   reader->AddSpectator("Btag_KSFWVariables_mm2", &temp_DataToTree_f[6]);
-   reader->AddVariable("Btag_KSFWVariables_hso00", &temp_DataToTree_f[7]);
-   reader->AddSpectator("Btag_KSFWVariables_hso01", &temp_DataToTree_f[8]);
-   reader->AddSpectator("Btag_KSFWVariables_hso02", &temp_DataToTree_f[9]);
-   reader->AddSpectator("Btag_KSFWVariables_hso03", &temp_DataToTree_f[10]);
-   reader->AddSpectator("Btag_KSFWVariables_hso04", &temp_DataToTree_f[11]);
-   reader->AddVariable("Btag_KSFWVariables_hso10", &temp_DataToTree_f[12]);
-   reader->AddSpectator("Btag_KSFWVariables_hso12", &temp_DataToTree_f[13]);
-   reader->AddSpectator("Btag_KSFWVariables_hso14", &temp_DataToTree_f[14]);
-   reader->AddVariable("Btag_KSFWVariables_hso20", &temp_DataToTree_f[15]);
-   reader->AddSpectator("Btag_KSFWVariables_hso22", &temp_DataToTree_f[16]);
-   reader->AddSpectator("Btag_KSFWVariables_hso24", &temp_DataToTree_f[17]);
-   reader->AddSpectator("Btag_KSFWVariables_hoo0", &temp_DataToTree_f[18]);
-   reader->AddSpectator("Btag_KSFWVariables_hoo1", &temp_DataToTree_f[19]);
-   reader->AddSpectator("Btag_KSFWVariables_hoo2", &temp_DataToTree_f[20]);
-   reader->AddSpectator("Btag_KSFWVariables_hoo3", &temp_DataToTree_f[21]);
-   reader->AddSpectator("Btag_KSFWVariables_hoo4", &temp_DataToTree_f[22]);
-   reader->AddSpectator("Btag_CleoConeCS_1", &temp_DataToTree_f[23]);
-   reader->AddSpectator("Btag_CleoConeCS_2", &temp_DataToTree_f[24]);
-   reader->AddSpectator("Btag_CleoConeCS_3", &temp_DataToTree_f[25]);
-   reader->AddSpectator("Btag_CleoConeCS_4", &temp_DataToTree_f[26]);
-   reader->AddSpectator("Btag_CleoConeCS_5", &temp_DataToTree_f[27]);
-   reader->AddSpectator("Btag_CleoConeCS_6", &temp_DataToTree_f[28]);
-   reader->AddSpectator("Btag_CleoConeCS_7", &temp_DataToTree_f[29]);
-   reader->AddSpectator("Btag_CleoConeCS_8", &temp_DataToTree_f[30]);
-   reader->AddSpectator("Btag_CleoConeCS_9", &temp_DataToTree_f[31]);
-   reader->AddVariable("Btag_useCMSFrame_theta", &temp_DataToTree_f[34]);
-   reader->AddVariable("Btag_extraInfo_SignalProbability", &temp_BtagDataToTree_f[5]);
-   reader->AddVariable("Btag_chiProb", &temp_BtagDataToTree_f[6]);
-   //reader->AddSpectator("extraInfo__boDecayHash__bc", &temp_DataToTree_f[35]);
-   //reader->AddSpectator("extraInfo__boDecayHashExtended__bc", &temp_DataToTree_f[36]);
+   std::fstream in_stream((dataset_path + "BB_large.weightfile").c_str(), std::ios_base::in);
+   FastBDT::Classifier classifier_BB_large(in_stream);
 
-   reader->AddSpectator("__experiment__", &temp_EventDataToTree_f[0]);
-   reader->AddSpectator("__run__", &temp_EventDataToTree_f[1]);
-   reader->AddSpectator("__event__", &temp_EventDataToTree_f[2]);
-   reader->AddSpectator("__candidate__", &temp_EventDataToTree_f[3]);
-   reader->AddSpectator("__ncandidates__", &temp_EventDataToTree_f[4]);
-   reader->AddSpectator("extraInfo__bodecayModeID__bc", &temp_Upsilon_decayIDToTree_f);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_decayModeID", &temp_Bsig_decayIDToTree_f);
-   reader->AddSpectator("nROE_ECLClusters__bocleanMask__bc", &temp_UpsilonDataToTree_f[0]);
-   reader->AddSpectator("nROE_KLMClusters", &temp_UpsilonDataToTree_f[1]);
-   reader->AddSpectator("nROE_Tracks__bocleanMask__bc", &temp_UpsilonDataToTree_f[2]);
-   reader->AddSpectator("roeEextra__bocleanMask__bc", &temp_UpsilonDataToTree_f[3]);
-   reader->AddSpectator("nROE_NeutralECLClusters__bocleanMask__bc", &temp_UpsilonDataToTree_f[4]);
-   reader->AddSpectator("nROE_ParticlesInList__boK_S0__clmyKaonshort__bc", &temp_UpsilonDataToTree_f[5]);
-   reader->AddSpectator("nROE_ParticlesInList__bopi0__clmyneutralPion__bc", &temp_UpsilonDataToTree_f[6]);
-   reader->AddSpectator("missingMomentumOfEvent_theta", &temp_UpsilonDataToTree_f[7]);
-   reader->AddSpectator("missingMomentumOfEvent", &temp_UpsilonDataToTree_f[8]);
-   reader->AddSpectator("missingEnergyOfEventCMS", &temp_UpsilonDataToTree_f[9]);
-   reader->AddSpectator("nRemainingTracksInEvent", &temp_UpsilonDataToTree_f[10]);
-   reader->AddSpectator("roeNeextra__bocleanMask__bc", &temp_UpsilonDataToTree_f[11]);
-   reader->AddSpectator("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp_UpsilonDataToTree_f[12]);
-   reader->AddSpectator("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp_UpsilonDataToTree_f[13]);
-   reader->AddSpectator("foxWolframR1", &temp_UpsilonDataToTree_f[14]);
-   reader->AddSpectator("foxWolframR2", &temp_UpsilonDataToTree_f[15]);
-   reader->AddSpectator("foxWolframR3", &temp_UpsilonDataToTree_f[16]);
-   reader->AddSpectator("foxWolframR4", &temp_UpsilonDataToTree_f[17]);
-   reader->AddSpectator("harmonicMomentThrust0", &temp_UpsilonDataToTree_f[18]);
-   reader->AddSpectator("harmonicMomentThrust1", &temp_UpsilonDataToTree_f[19]);
-   reader->AddSpectator("harmonicMomentThrust2", &temp_UpsilonDataToTree_f[20]);
-   reader->AddSpectator("harmonicMomentThrust3", &temp_UpsilonDataToTree_f[21]);
-   reader->AddSpectator("harmonicMomentThrust4", &temp_UpsilonDataToTree_f[22]);
-   reader->AddSpectator("cleoConeThrust0", &temp_UpsilonDataToTree_f[23]);
-   reader->AddSpectator("cleoConeThrust1", &temp_UpsilonDataToTree_f[24]);
-   reader->AddSpectator("cleoConeThrust2", &temp_UpsilonDataToTree_f[25]);
-   reader->AddSpectator("cleoConeThrust3", &temp_UpsilonDataToTree_f[26]);
-   reader->AddSpectator("cleoConeThrust4", &temp_UpsilonDataToTree_f[27]);
-   reader->AddSpectator("cleoConeThrust5", &temp_UpsilonDataToTree_f[28]);
-   reader->AddSpectator("cleoConeThrust6", &temp_UpsilonDataToTree_f[29]);
-   reader->AddSpectator("cleoConeThrust7", &temp_UpsilonDataToTree_f[30]);
-   reader->AddSpectator("cleoConeThrust8", &temp_UpsilonDataToTree_f[31]);
-   reader->AddSpectator("sphericity", &temp_UpsilonDataToTree_f[32]);
-   reader->AddSpectator("aplanarity", &temp_UpsilonDataToTree_f[33]);
-   reader->AddSpectator("thrust", &temp_UpsilonDataToTree_f[34]);
-   reader->AddSpectator("thrustAxisCosTheta", &temp_UpsilonDataToTree_f[35]);
-   reader->AddSpectator("MsquaredBsig_op0", &temp_UpsilonDataToTree_f[36]);
-   reader->AddSpectator("MsquaredBsig_op1", &temp_UpsilonDataToTree_f[37]);
-   reader->AddSpectator("MsquaredBsig_op2", &temp_UpsilonDataToTree_f[38]);
-   reader->AddSpectator("MsquaredBsig_op3", &temp_UpsilonDataToTree_f[39]);
-   reader->AddSpectator("MsquaredBsig_op4", &temp_UpsilonDataToTree_f[40]);
-   reader->AddSpectator("MsquaredBsig_op7", &temp_UpsilonDataToTree_f[41]);
-   reader->AddSpectator("roeP__bocleanMask__bc", &temp_UpsilonDataToTree_f[42]);
-   reader->AddSpectator("roeM__bocleanMask__bc", &temp_UpsilonDataToTree_f[43]);
-   reader->AddSpectator("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree_f[44]);
-   reader->AddSpectator("Bsig_E", &temp_BsigDataToTree_f[0]);
-   reader->AddSpectator("Bsig_useCMSFrame_E", &temp_BsigDataToTree_f[1]);
-   reader->AddSpectator("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc", &temp_BsigDataToTree_f[2]);
-   reader->AddSpectator("Bsig_p", &temp_BsigDataToTree_f[3]);
-   reader->AddSpectator("Bsig_useCMSFrame_p", &temp_BsigDataToTree_f[4]);
-   reader->AddSpectator("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree_f[5]);
-   reader->AddSpectator("Bsig_M", &temp_BsigDataToTree_f[6]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_Dcvetomass", &temp_BsigDataToTree_f[7]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_DcvetodmID", &temp_BsigDataToTree_f[8]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_Dcvetoabsdm", &temp_BsigDataToTree_f[9]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_Dnvetomass", &temp_BsigDataToTree_f[10]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_DnvetodmID", &temp_BsigDataToTree_f[11]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp_BsigDataToTree_f[12]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_BsigDataToTree_f[13]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_BsigDataToTree_f[14]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_BsigDataToTree_f[15]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_BsigDataToTree_f[16]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_Pion_PID_correction", &temp_BsigDataToTree_f[17]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &temp_BsigDataToTree_f[18]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &temp_BsigDataToTree_f[19]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_nKslow1", &temp_BsigDataToTree_f[20]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_nKslow2", &temp_BsigDataToTree_f[21]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_nKslow3", &temp_BsigDataToTree_f[22]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_nPislow1", &temp_BsigDataToTree_f[23]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_nPislow2", &temp_BsigDataToTree_f[24]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree_f[25]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree_f[26]);
-   reader->AddSpectator("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree_f[27]);
-   reader->AddSpectator("Bsig_R2", &temp_BsigDataToTree_f[28]);
-   reader->AddSpectator("Bsig_thrustBm", &temp_BsigDataToTree_f[29]);
-   reader->AddSpectator("Bsig_thrustOm", &temp_BsigDataToTree_f[30]);
-   reader->AddSpectator("Bsig_cosTBTO", &temp_BsigDataToTree_f[31]);
-   reader->AddSpectator("Bsig_cosTBz", &temp_BsigDataToTree_f[32]);
-   reader->AddSpectator("Bsig_KSFWVariables_et", &temp_BsigDataToTree_f[33]);
-   reader->AddSpectator("Bsig_KSFWVariables_mm2", &temp_BsigDataToTree_f[34]);
-   reader->AddSpectator("Bsig_KSFWVariables_hso00", &temp_BsigDataToTree_f[35]);
-   reader->AddSpectator("Bsig_KSFWVariables_hso01", &temp_BsigDataToTree_f[36]);
-   reader->AddSpectator("Bsig_KSFWVariables_hso02", &temp_BsigDataToTree_f[37]);
-   reader->AddSpectator("Bsig_KSFWVariables_hso03", &temp_BsigDataToTree_f[38]);
-   reader->AddSpectator("Bsig_KSFWVariables_hso04", &temp_BsigDataToTree_f[39]);
-   reader->AddSpectator("Bsig_KSFWVariables_hso10", &temp_BsigDataToTree_f[40]);
-   reader->AddSpectator("Bsig_KSFWVariables_hso12", &temp_BsigDataToTree_f[41]);
-   reader->AddSpectator("Bsig_KSFWVariables_hso14", &temp_BsigDataToTree_f[42]);
-   reader->AddSpectator("Bsig_KSFWVariables_hso20", &temp_BsigDataToTree_f[43]);
-   reader->AddSpectator("Bsig_KSFWVariables_hso22", &temp_BsigDataToTree_f[44]);
-   reader->AddSpectator("Bsig_KSFWVariables_hso24", &temp_BsigDataToTree_f[45]);
-   reader->AddSpectator("Bsig_KSFWVariables_hoo0", &temp_BsigDataToTree_f[46]);
-   reader->AddSpectator("Bsig_KSFWVariables_hoo1", &temp_BsigDataToTree_f[47]);
-   reader->AddSpectator("Bsig_KSFWVariables_hoo2", &temp_BsigDataToTree_f[48]);
-   reader->AddSpectator("Bsig_KSFWVariables_hoo3", &temp_BsigDataToTree_f[49]);
-   reader->AddSpectator("Bsig_KSFWVariables_hoo4", &temp_BsigDataToTree_f[50]);
-   reader->AddSpectator("Bsig_CleoConeCS_1", &temp_BsigDataToTree_f[51]);
-   reader->AddSpectator("Bsig_CleoConeCS_2", &temp_BsigDataToTree_f[52]);
-   reader->AddSpectator("Bsig_CleoConeCS_3", &temp_BsigDataToTree_f[53]);
-   reader->AddSpectator("Bsig_CleoConeCS_4", &temp_BsigDataToTree_f[54]);
-   reader->AddSpectator("Bsig_CleoConeCS_5", &temp_BsigDataToTree_f[55]);
-   reader->AddSpectator("Bsig_CleoConeCS_6", &temp_BsigDataToTree_f[56]);
-   reader->AddSpectator("Bsig_CleoConeCS_7", &temp_BsigDataToTree_f[57]);
-   reader->AddSpectator("Bsig_CleoConeCS_8", &temp_BsigDataToTree_f[58]);
-   reader->AddSpectator("Bsig_CleoConeCS_9", &temp_BsigDataToTree_f[59]);
-   reader->AddSpectator("Btag_extraInfo_decayModeID", &temp_BtagDataToTree_f[0]);
-   reader->AddSpectator("Btag_Mbc", &temp_BtagDataToTree_f[1]);
-   reader->AddSpectator("Btag_deltaE", &temp_BtagDataToTree_f[2]);
-   reader->AddSpectator("Btag_E", &temp_BtagDataToTree_f[3]);
-   reader->AddSpectator("missingMass2OfEvent", &temp_DataToTree_f[32]);
-   reader->AddSpectator("visibleEnergyOfEventCMS", &temp_DataToTree_f[33]);
-   reader->AddSpectator("Btag_useCMSFrame_E", &temp_BtagDataToTree_f[4]);
-   reader->AddSpectator("flag", &temp_flag_f);
+   std::fstream in_stream((dataset_path + "BB_small.weightfile").c_str(), std::ios_base::in);
+   FastBDT::Classifier classifier_BB_small(in_stream);
 
+   std::fstream in_stream((dataset_path + "Continuum_large.weightfile").c_str(), std::ios_base::in);
+   FastBDT::Classifier classifier_Continuum_large(in_stream);
 
-   TString dir_continuum_large = (std::string(dataset_path) + "dataset_Continuum_Mxs_large/weights/").c_str();
-   TString dir_BB_large = (std::string(dataset_path) + "dataset_BB_Mxs_large/weights/").c_str();
-   TString prefix_large = "TMVAClassification";
+   std::fstream in_stream((dataset_path + "Continuum_small.weightfile").c_str(), std::ios_base::in);
+   FastBDT::Classifier classifier_Continuum_small(in_stream);
 
-   TString dir_continuum_small = (std::string(dataset_path) + "dataset_Continuum_Mxs_small/weights/").c_str();
-   TString dir_BB_small = (std::string(dataset_path) + "dataset_BB_Mxs_small/weights/").c_str();
-   TString prefix_small = "TMVAClassification";
-
-   TString methodName_continuum_large = TString("Continuum_large");
-   TString weightfile_continuum_large = dir_continuum_large + prefix_large + TString("_") + TString("MLP") + TString(".weights.xml");
-   reader->BookMVA(methodName_continuum_large, weightfile_continuum_large);
-
-   TString methodName_BB_large = TString("BB_large");
-   TString weightfile_BB_large = dir_BB_large + prefix_large + TString("_") + TString("MLP") + TString(".weights.xml");
-   reader->BookMVA(methodName_BB_large, weightfile_BB_large);
-
-   TString methodName_continuum_small = TString("Continuum_small");
-   TString weightfile_continuum_small = dir_continuum_small + prefix_small + TString("_") + TString("MLP") + TString(".weights.xml");
-   reader->BookMVA(methodName_continuum_small, weightfile_continuum_small);
-
-   TString methodName_BB_small = TString("BB_small");
-   TString weightfile_BB_small = dir_BB_small + prefix_small + TString("_") + TString("MLP") + TString(".weights.xml");
-   reader->BookMVA(methodName_BB_small, weightfile_BB_small);
-
-   // Prepare input tree (this must be replaced by your data source)
-   // in this example, there is a toy tree with signal and one with background events
-   // we'll later on use only the "signal" events for the test in this example.
-   //
    TFile *input(0);
    TString fname = std::string(filename);
    input = TFile::Open( fname );
@@ -288,7 +76,6 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
       std::cout << "ERROR: could not open data file" << std::endl;
       exit(1);
    }
-   std::cout << "--- TMVAClassificationApp    : Using input file: " << input->GetName() << std::endl;
 
    // Event loop
 
@@ -517,7 +304,7 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
 
    std::cout << "--- Processing: " << theTree->GetEntries() << " events" << std::endl;
 
-   TFile* temp_file = new TFile( ("TMVAoutput_"+ OnlyFileName).c_str(), "recreate");
+   TFile* temp_file = new TFile( ("MVAoutput_"+ OnlyFileName).c_str(), "recreate");
    temp_file->cd();
    TTree* temp_tree = new TTree("data", "");
 
@@ -745,22 +532,30 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
 
        theTree->GetEntry(ievt);
 
-       for (int i = 0; i < N_event_info / 3; i++) temp_EventDataToTree_f[i] = (float)temp_EventDataToTree[i];
-       for (int i = 0; i < N_Upsilon_info; i++) temp_UpsilonDataToTree_f[i] = (float)temp_UpsilonDataToTree[i];
-       for (int i = 0; i < N_Bsig_info; i++) temp_BsigDataToTree_f[i] = (float)temp_BsigDataToTree[i];
-       for (int i = 0; i < N_Btag_info; i++) temp_BtagDataToTree_f[i] = (float)temp_BtagDataToTree[i];
-       for (int i = 0; i < N_Needed_info ; i++) temp_DataToTree_f[i] = (float)temp_DataToTree[i];
-       temp_Upsilon_decayIDToTree_f = (float)temp_Upsilon_decayIDToTree;
-       temp_Bsig_decayIDToTree_f = (float)temp_Bsig_decayIDToTree;
-       temp_flag_f = (float)temp_flag;
+       std::vector<float> temp;
+       temp.push_back(temp_UpsilonDataToTree[37]);
+       temp.push_back(temp_UpsilonDataToTree[10]);
+       temp.push_back(temp_UpsilonDataToTree[7]);
+       temp.push_back(temp_BtagDataToTree[5]);
+       temp.push_back(temp_DataToTree[19]);
+       temp.push_back(temp_UpsilonDataToTree[19]);
+       temp.push_back(temp_DataToTree[7]);
+       temp.push_back(temp_DataToTree[16]);
+       temp.push_back(temp_DataToTree[34]);
+       temp.push_back(temp_BtagDataToTree[2]);
+       temp.push_back(temp_DataToTree[3]);
+       temp.push_back(temp_DataToTree[17]);
+       temp.push_back(temp_BtagDataToTree[6]);
+       temp.push_back(temp_DataToTree[1]);
+       temp.push_back(temp_UpsilonDataToTree[23]);
 
        if (temp_BsigDataToTree[6] > 1.1) { // Bsig_M
-           Output_BB = reader->EvaluateMVA("BB_large");
-           Output_Continuum = reader->EvaluateMVA("Continuum_large");
+           Output_BB = classifier_BB_large.predict(temp);
+           Output_Continuum = classifier_Continuum_large.predict(temp);
        }
        else {
-           Output_BB = reader->EvaluateMVA("BB_small");
-           Output_Continuum = reader->EvaluateMVA("Continuum_small");
+           Output_BB = classifier_BB_small.predict(temp);
+           Output_Continuum = classifier_Continuum_small.predict(temp);
        }
        temp_tree->Fill();
    }
@@ -771,22 +566,20 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
 
    input->Close();
 
-   delete reader;
-
-   std::cout << "==> TMVAClassificationApplication is done!" << std::endl << std::endl;
+   std::cout << "==> MVA Classification is done!" << std::endl << std::endl;
    
 }
 
-void TMVAClassificationApplication(const char* dirname, const char* dataset_path) {
+void main(int argc, char* argv[]) { // const char* dirname, const char* dataset_path
 
     std::vector<std::string> names;
-    load_files(dirname, &names);
+    load_files(argv[1], &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
-        std::string string_filename = dirname + std::string("/") + names.at(i);
+        std::string string_filename = argv[1] + std::string("/") + names.at(i);
         const char* filename = string_filename.c_str();
 
-        ApplicationEachFile(filename, dataset_path);
+        ApplicationEachFile(filename, argv[2]);
     }
 
 }

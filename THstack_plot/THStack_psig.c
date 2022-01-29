@@ -120,7 +120,7 @@ void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
 
 }
 
-void LetsFill(const char* dirname, TH1F* hist, , const char* included_string, double weight = 1) {
+void LetsFill(const char* dirname, TH1F* hist, const char* included_string, double weight = 1) {
     double var = 0;
 
     std::vector<string> names;

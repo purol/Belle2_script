@@ -120,7 +120,7 @@ void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
 
 }
 
-void LetsFill(const char* dirname, TH1F* hist, , const char* included_string, double weight = 1) {
+void LetsFill(const char* dirname, TH1F* hist, const char* included_string, double weight = 1) {
     double var = 0;
 
     std::vector<string> names;
@@ -170,7 +170,7 @@ void THStack_Mbc() {
     LetsFill(Xsununu_dirname, SIGNAL_hist, "B2Xsnunu", Scale_Xsu_nonresonant);
     LetsFill(K0nunu_dirname, SIGNAL_hist, "B02K0nunu", Scale_K0);
     LetsFill(K0starnunu_dirname, SIGNAL_hist, "B02Kstar0nunu", Scale_K0star);
-    LetsFill(Xsdnunu_dirname, SIGNAL_hist, B02Xsnunu, Scale_Xsd_nonresonant);
+    LetsFill(Xsdnunu_dirname, SIGNAL_hist, "B02Xsnunu", Scale_Xsd_nonresonant);
     LetsFill(CHG_dirname, CHG_hist);
     LetsFill(MIX_dirname, MIX_hist);
     LetsFill(UUBAR_dirname, UUBAR_hist);

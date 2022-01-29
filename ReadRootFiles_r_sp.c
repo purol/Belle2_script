@@ -1,4 +1,4 @@
-// last update: 2022-01-21
+// last update: 2022-01-29
 // for Belle2 data
 
 /*
@@ -154,8 +154,8 @@ typedef struct data{
 
     double Decay[N_decay]; // MC level info
 
-    float TMVA_BB;
-    float TMVA_Continuum;
+    float MVA_BB;
+    float MVA_Continuum;
 
 } Data; 
 
@@ -290,7 +290,7 @@ private:
     std::vector<TTree*> trees_Xs;
     int current_file;
     bool AllOfThemHaveXsBranch;
-    bool AllOfThemHaveTMVAOutput;
+    bool AllOfThemHaveMVAOutput;
 
     std::vector<THStack*> THStacks;
     std::vector<TH1F*> TH1Fs_THStack[Loader::MAX_NUM_DECAYMODE];
@@ -318,11 +318,11 @@ private:
     double DataToTree[N_Needed_info];
     double Upsilon_decayIDToTree;
     double Bsig_decayIDToTree;
-    float TMVA_BB_DataToTree;
-    float TMVA_Continuum_DataToTree;
+    float MVA_BB_DataToTree;
+    float MVA_Continuum_DataToTree;
 
     bool DoesItHaveXsBranch;
-    bool DoesItHaveTMVAOutput;
+    bool DoesItHaveMVAOutput;
 
     bool TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode);
     bool TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymodeMC);
@@ -353,7 +353,7 @@ public:
     void OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type);
     void DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type, double minM, double maxM);
     void PrintFOM(Loader::ScaleFactor scaleFactor_ = Loader::None);
-    void TMVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
+    void MVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
     void CountMCEvent();
 };
 
@@ -369,9 +369,9 @@ Loader::Loader() {
     DebugIsOn = false;
     current_THStack = 0;
     DoesItHaveXsBranch = false;
-    DoesItHaveTMVAOutput = false;
+    DoesItHaveMVAOutput = false;
     AllOfThemHaveXsBranch = true;
-    AllOfThemHaveTMVAOutput = true;
+    AllOfThemHaveMVAOutput = true;
     current_Confusion_matrix = 0;
     for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // initialization
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
@@ -405,7 +405,7 @@ void Loader::initialize() {
     DebugIsOn = false;
     current_THStack = 0;
     DoesItHaveXsBranch = false;
-    DoesItHaveTMVAOutput = false;
+    DoesItHaveMVAOutput = false;
     current_Confusion_matrix = 0;
     Confusion_matrixIsOn = false;
     current_FOM = 0;
@@ -432,10 +432,10 @@ void Loader::GetData(TFile* input_file) {
     if (DoesItHaveXsBranch) tree_Xs = (TTree*)input_file->Get("Xs");
     else tree_Xs = nullptr;
 
-    DoesItHaveTMVAOutput = false;
-    if (tree_upsilon->FindLeaf("TMVA_BB") == 0 || tree_upsilon->FindLeaf("TMVA_Continuum") == 0) DoesItHaveTMVAOutput = false;
-    else DoesItHaveTMVAOutput = true;
-    if (DoesItHaveTMVAOutput == false) AllOfThemHaveTMVAOutput = false;
+    DoesItHaveMVAOutput = false;
+    if (tree_upsilon->FindLeaf("MVA_BB") == 0 || tree_upsilon->FindLeaf("MVA_Continuum") == 0) DoesItHaveMVAOutput = false;
+    else DoesItHaveMVAOutput = true;
+    if (DoesItHaveMVAOutput == false) AllOfThemHaveMVAOutput = false;
 
     Data temp = { 0 };
 
@@ -662,13 +662,13 @@ void Loader::GetData(TFile* input_file) {
         for (int i = 0; i < N_decay; i++) temp.Decay[i] = -1;
     }
 
-    if (DoesItHaveTMVAOutput) {
-        tree_upsilon->SetBranchAddress("TMVA_BB", &temp.TMVA_BB);
-        tree_upsilon->SetBranchAddress("TMVA_Continuum", &temp.TMVA_Continuum);
+    if (DoesItHaveMVAOutput) {
+        tree_upsilon->SetBranchAddress("MVA_BB", &temp.MVA_BB);
+        tree_upsilon->SetBranchAddress("MVA_Continuum", &temp.MVA_Continuum);
     }
     else {
-        temp.TMVA_BB = -1.0f;
-        temp.TMVA_Continuum = -1.0f;
+        temp.MVA_BB = -1.0f;
+        temp.MVA_Continuum = -1.0f;
     }
 
     printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -1820,8 +1820,8 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &DecayDataToTree[36]);
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &DecayDataToTree[37]);
 
-        tree_upsilon->Branch("TMVA_BB", &TMVA_BB_DataToTree);
-        tree_upsilon->Branch("TMVA_Continuum", &TMVA_Continuum_DataToTree);
+        tree_upsilon->Branch("MVA_BB", &MVA_BB_DataToTree);
+        tree_upsilon->Branch("MVA_Continuum", &MVA_Continuum_DataToTree);
         /*================================================================*/
         files.push_back(file);
         trees_upsilon.push_back(tree_upsilon);
@@ -1869,8 +1869,8 @@ void Loader::PrintRootFile(std::string output_name) {
         Upsilon_decayIDToTree = temp.Upsilon_decayID;
         Bsig_decayIDToTree = temp.Bsig_decayID;
 
-        TMVA_BB_DataToTree = temp.TMVA_BB;
-        TMVA_Continuum_DataToTree = temp.TMVA_Continuum;
+        MVA_BB_DataToTree = temp.MVA_BB;
+        MVA_Continuum_DataToTree = temp.MVA_Continuum;
 
         temp_tree_upsilon->Fill();
         temp_tree_Bsig->Fill();
@@ -1904,8 +1904,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     double temp_Upsilon_decayIDToTree;
     double temp_Bsig_decayIDToTree;
 
-    float temp_TMVA_BB_DataToTree;
-    float temp_TMVA_Continuum_DataToTree;
+    float temp_MVA_BB_DataToTree;
+    float temp_MVA_Continuum_DataToTree;
 
     /*================================================================*/
     // get event_info
@@ -2131,13 +2131,13 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
     }
 
-    if (DoesItHaveTMVAOutput) {
-        temp_tree_upsilon->Branch("TMVA_BB", &temp_TMVA_BB_DataToTree);
-        temp_tree_upsilon->Branch("TMVA_Continuum", &temp_TMVA_Continuum_DataToTree);
+    if (DoesItHaveMVAOutput) {
+        temp_tree_upsilon->Branch("MVA_BB", &temp_MVA_BB_DataToTree);
+        temp_tree_upsilon->Branch("MVA_Continuum", &temp_MVA_Continuum_DataToTree);
     }
     else {
-        temp_TMVA_BB_DataToTree = -1.0f;
-        temp_TMVA_Continuum_DataToTree = -1.0f;
+        temp_MVA_BB_DataToTree = -1.0f;
+        temp_MVA_Continuum_DataToTree = -1.0f;
     }
     /*================================================================*/
 
@@ -2167,9 +2167,9 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         }
         temp_Upsilon_decayIDToTree = temp.Upsilon_decayID;
         temp_Bsig_decayIDToTree = temp.Bsig_decayID;
-        if (DoesItHaveTMVAOutput) {
-            temp_TMVA_BB_DataToTree = temp.TMVA_BB;
-            temp_TMVA_Continuum_DataToTree = temp.TMVA_Continuum;
+        if (DoesItHaveMVAOutput) {
+            temp_MVA_BB_DataToTree = temp.MVA_BB;
+            temp_MVA_Continuum_DataToTree = temp.MVA_Continuum;
         }
 
         temp_tree_upsilon->Fill();
@@ -2205,8 +2205,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     double temp_Bsig_decayIDToTree;
     int temp_flag;
 
-    float temp_TMVA_BB_DataToTree;
-    float temp_TMVA_Continuum_DataToTree;
+    float temp_MVA_BB_DataToTree;
+    float temp_MVA_Continuum_DataToTree;
 
     /*================================================================*/
     // get event_info
@@ -2422,13 +2422,13 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
     }
 
-    if (DoesItHaveTMVAOutput) {
-        temp_tree->Branch("TMVA_BB", &temp_TMVA_BB_DataToTree);
-        temp_tree->Branch("TMVA_Continuum", &temp_TMVA_Continuum_DataToTree);
+    if (DoesItHaveMVAOutput) {
+        temp_tree->Branch("MVA_BB", &temp_MVA_BB_DataToTree);
+        temp_tree->Branch("MVA_Continuum", &temp_MVA_Continuum_DataToTree);
     }
     else {
-        temp_TMVA_BB_DataToTree = -1.0f;
-        temp_TMVA_Continuum_DataToTree = -1.0f;
+        temp_MVA_BB_DataToTree = -1.0f;
+        temp_MVA_Continuum_DataToTree = -1.0f;
     }
 
     // flag
@@ -2462,9 +2462,9 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         temp_Upsilon_decayIDToTree = temp.Upsilon_decayID;
         temp_Bsig_decayIDToTree = temp.Bsig_decayID;
 
-        if (DoesItHaveTMVAOutput) {
-            temp_TMVA_BB_DataToTree = temp.TMVA_BB;
-            temp_TMVA_Continuum_DataToTree = temp.TMVA_Continuum;
+        if (DoesItHaveMVAOutput) {
+            temp_MVA_BB_DataToTree = temp.MVA_BB;
+            temp_MVA_Continuum_DataToTree = temp.MVA_Continuum;
         }
 
         temp_flag = flag;
@@ -2931,8 +2931,8 @@ void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_) {
         printf("Only first PrintFOM is accepted\n");
         return;
     }
-    if (DoesItHaveTMVAOutput == false) {
-        printf("ERROR! PrintFOM is called when the data does not have TMVA output\n");
+    if (DoesItHaveMVAOutput == false) {
+        printf("ERROR! PrintFOM is called when the data does not have MVA output\n");
         exit(1);
     }
     typedef struct labels {
@@ -2957,7 +2957,7 @@ void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_) {
                 Data temp = temp_queue.front();
                 temp_queue.pop();
 
-                if (temp.TMVA_BB > BB_output && temp.TMVA_Continuum > Continuum_output) {
+                if (temp.MVA_BB > BB_output && temp.MVA_Continuum > Continuum_output) {
                     bool overlap = false;
                     for (unsigned int k = 0; k < label_list.size(); k++) {
                         if (label_list.at(k).__experiment__ == temp.__experiment__ && label_list.at(k).__run__ == temp.__run__ && label_list.at(k).__event__ == temp.__event__ && label_list.at(k).__ncandidates__ == temp.__ncandidates__) {
@@ -2986,9 +2986,9 @@ void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_) {
     current_FOM++;
 }
 
-void Loader::TMVACut(double OBB, double Oqq, Loader::MassRegion massRegion) {
-    if (DoesItHaveTMVAOutput == false) {
-        printf("ERROR! TMVACut is called when the data does not have TMVA output\n");
+void Loader::MVACut(double OBB, double Oqq, Loader::MassRegion massRegion) {
+    if (DoesItHaveMVAOutput == false) {
+        printf("ERROR! MVACut is called when the data does not have MVA output\n");
         exit(1);
     }
 
@@ -3000,13 +3000,13 @@ void Loader::TMVACut(double OBB, double Oqq, Loader::MassRegion massRegion) {
         if (massRegion == Loader::SmallMass) {
             if (temp_data.Bsig_info[6] > 1.1) temp_queue.push(temp_data);
             else {
-                if(temp_data.TMVA_BB > OBB && temp_data.TMVA_Continuum > Oqq) temp_queue.push(temp_data);
+                if(temp_data.MVA_BB > OBB && temp_data.MVA_Continuum > Oqq) temp_queue.push(temp_data);
             }
         }
         else if (massRegion == Loader::LargeMass) {
             if (temp_data.Bsig_info[6] < 1.1) temp_queue.push(temp_data);
             else {
-                if (temp_data.TMVA_BB > OBB && temp_data.TMVA_Continuum > Oqq) temp_queue.push(temp_data);
+                if (temp_data.MVA_BB > OBB && temp_data.MVA_Continuum > Oqq) temp_queue.push(temp_data);
             }
         }
 
