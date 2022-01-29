@@ -13,12 +13,18 @@
 #include <string>
 #include <fstream>
 
-#include "TFile.h"
-#include "TTree.h"
-#include "TString.h"
-#include "TSystem.h"
-#include "TROOT.h"
-#include "TStopwatch.h"
+#include <TMath.h>
+#include <TColor.h>
+#include <TStyle.h>
+#include <TAxis.h>
+#include <TFile.h>
+#include <TTree.h>
+#include <TCut.h>
+#include <TString.h>
+#include <TPaveText.h>
+#include <TKey.h>
+
+#include <TSystemDirectory.h>
 
 #include "Classifier.h"
 
@@ -58,17 +64,17 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    float Output_BB;
    float Output_Continuum;
 
-   std::fstream in_stream((dataset_path + std::string("BB_large.weightfile")).c_str(), std::ios_base::in);
-   FastBDT::Classifier classifier_BB_large(in_stream);
+   std::fstream in_stream_BB_large((dataset_path + std::string("BB_large.weightfile")).c_str(), std::ios_base::in);
+   FastBDT::Classifier classifier_BB_large(in_stream_BB_large);
 
-   std::fstream in_stream((dataset_path + std::string("BB_small.weightfile")).c_str(), std::ios_base::in);
-   FastBDT::Classifier classifier_BB_small(in_stream);
+   std::fstream in_stream_BB_small((dataset_path + std::string("BB_small.weightfile")).c_str(), std::ios_base::in);
+   FastBDT::Classifier classifier_BB_small(in_stream_BB_small);
 
-   std::fstream in_stream((dataset_path + std::string("Continuum_large.weightfile")).c_str(), std::ios_base::in);
-   FastBDT::Classifier classifier_Continuum_large(in_stream);
+   std::fstream in_stream_Continuum_large((dataset_path + std::string("Continuum_large.weightfile")).c_str(), std::ios_base::in);
+   FastBDT::Classifier classifier_Continuum_large(in_stream_Continuum_large);
 
-   std::fstream in_stream((dataset_path + std::string("Continuum_small.weightfile")).c_str(), std::ios_base::in);
-   FastBDT::Classifier classifier_Continuum_small(in_stream);
+   std::fstream in_stream_Continuum_small((dataset_path + std::string("Continuum_small.weightfile")).c_str(), std::ios_base::in);
+   FastBDT::Classifier classifier_Continuum_small(in_stream_Continuum_small);
 
    TFile *input(0);
    TString fname = std::string(filename);
@@ -571,7 +577,7 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    
 }
 
-void main(int argc, char* argv[]) { // const char* dirname, const char* dataset_path
+int main(int argc, char* argv[]) { // const char* dirname, const char* dataset_path
 
     std::vector<std::string> names;
     load_files(argv[1], &names);
@@ -583,4 +589,5 @@ void main(int argc, char* argv[]) { // const char* dirname, const char* dataset_
         ApplicationEachFile(filename, argv[2]);
     }
 
+    return 0;
 }
