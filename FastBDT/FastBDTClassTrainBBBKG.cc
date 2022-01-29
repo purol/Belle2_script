@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 # include <vector>
+#include <fstream>
 
 #include <TMath.h>
 #include <TColor.h>
@@ -87,7 +88,7 @@ float GetScore(const FastBDT::Classifier& classifier, std::vector<std::vector<fl
     return sum;
 }
 
-void main()
+int main()
 {
     // define classifier and set options
     FastBDT::Classifier classifier;
@@ -132,7 +133,7 @@ void main()
 
     std::map<unsigned int, double> rank;
     rank = classifier.GetVariableRanking();
-    printf("Variable importance:\n")
+    printf("Variable importance:\n");
     for (auto iter = rank.begin(); iter != rank.end(); iter++)
     {
         std::cout << "[" << iter->first << ", " << iter->second << "]" << " ";
@@ -163,4 +164,5 @@ void main()
 
     classifier2.Print();
 
+    return 0;
 }

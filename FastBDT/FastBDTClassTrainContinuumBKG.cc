@@ -4,6 +4,7 @@
 #include <map>
 #include <string>
 # include <vector>
+#include <fstream>
 
 #include <TMath.h>
 #include <TColor.h>
@@ -87,7 +88,7 @@ float GetScore(const FastBDT::Classifier& classifier, std::vector<std::vector<fl
     return sum;
 }
 
-void main()
+int main()
 {
     // define classifier and set options
     FastBDT::Classifier classifier;
@@ -102,16 +103,16 @@ void main()
     std::vector<float> input_vars[Nvar];
 
     // input file
-    SIGNAL_input = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_SIGNAL/train/Mxs_large/final_output_merge_Mxs_larger_SIGNAL_train_data.root");
-    UUBAR_input = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_large/final_output_merge_Mxs_larger_UUBAR_train_data.root");
-    DDBAR_input = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_large/final_output_merge_Mxs_larger_DDBAR_train_data.root");
-    SSBAR_input = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_large/final_output_merge_Mxs_larger_SSBAR_train_data.root");
-    CHARM_input = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_large/final_output_merge_Mxs_larger_CHARM_train_data.root");
-    SIGNAL_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_SIGNAL/test/Mxs_large/final_output_merge_Mxs_larger_SIGNAL_test_data.root");
-    UUBAR_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_large/final_output_merge_Mxs_larger_UUBAR_test_data.root");
-    DDBAR_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_large/final_output_merge_Mxs_larger_DDBAR_test_data.root");
-    SSBAR_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_large/final_output_merge_Mxs_larger_SSBAR_test_data.root");
-    CHARM_input_test = TFile::Open("/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_large/final_output_merge_Mxs_larger_CHARM_test_data.root");
+    SIGNAL_input = "/media/sf_virtualbox_folder/20211109/For_TMVA_SIGNAL/train/Mxs_large/final_output_merge_Mxs_larger_SIGNAL_train_data.root";
+    UUBAR_input = "/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_large/final_output_merge_Mxs_larger_UUBAR_train_data.root";
+    DDBAR_input = "/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_large/final_output_merge_Mxs_larger_DDBAR_train_data.root";
+    SSBAR_input = "/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_large/final_output_merge_Mxs_larger_SSBAR_train_data.root";
+    CHARM_input = "/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/train/Mxs_large/final_output_merge_Mxs_larger_CHARM_train_data.root";
+    SIGNAL_input_test = "/media/sf_virtualbox_folder/20211109/For_TMVA_SIGNAL/test/Mxs_large/final_output_merge_Mxs_larger_SIGNAL_test_data.root";
+    UUBAR_input_test = "/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_large/final_output_merge_Mxs_larger_UUBAR_test_data.root";
+    DDBAR_input_test = "/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_large/final_output_merge_Mxs_larger_DDBAR_test_data.root";
+    SSBAR_input_test = "/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_large/final_output_merge_Mxs_larger_SSBAR_test_data.root";
+    CHARM_input_test = "/media/sf_virtualbox_folder/20211109/For_TMVA_BKG/test/Mxs_large/final_output_merge_Mxs_larger_CHARM_test_data.root";
 
     FillVariables(SIGNAL_input, input_vars, &IsSignal, &weight);
     FillVariables(UUBAR_input, input_vars, &IsSignal, &weight);
@@ -138,7 +139,7 @@ void main()
 
     std::map<unsigned int, double> rank;
     rank = classifier.GetVariableRanking();
-    printf("Variable importance:\n")
+    printf("Variable importance:\n");
         for (auto iter = rank.begin(); iter != rank.end(); iter++)
         {
             std::cout << "[" << iter->first << ", " << iter->second << "]" << " ";
@@ -171,4 +172,5 @@ void main()
 
     classifier2.Print();
 
+    return 0;
 }
