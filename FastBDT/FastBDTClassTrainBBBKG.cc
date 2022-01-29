@@ -85,7 +85,7 @@ float GetScore(const FastBDT::Classifier& classifier, std::vector<std::vector<fl
         float p = classifier.predict(temp);
         sum += (static_cast<int>(IsSignal[i]) - p) * (static_cast<int>(IsSignal[i]) - p);
     }
-    return sum;
+    return sum / IsSignal.size();
 }
 
 int main()
