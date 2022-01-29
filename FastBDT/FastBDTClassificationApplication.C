@@ -58,16 +58,16 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    float Output_BB;
    float Output_Continuum;
 
-   std::fstream in_stream((dataset_path + "BB_large.weightfile").c_str(), std::ios_base::in);
+   std::fstream in_stream((dataset_path + std::string("BB_large.weightfile")).c_str(), std::ios_base::in);
    FastBDT::Classifier classifier_BB_large(in_stream);
 
-   std::fstream in_stream((dataset_path + "BB_small.weightfile").c_str(), std::ios_base::in);
+   std::fstream in_stream((dataset_path + std::string("BB_small.weightfile")).c_str(), std::ios_base::in);
    FastBDT::Classifier classifier_BB_small(in_stream);
 
-   std::fstream in_stream((dataset_path + "Continuum_large.weightfile").c_str(), std::ios_base::in);
+   std::fstream in_stream((dataset_path + std::string("Continuum_large.weightfile")).c_str(), std::ios_base::in);
    FastBDT::Classifier classifier_Continuum_large(in_stream);
 
-   std::fstream in_stream((dataset_path + "Continuum_small.weightfile").c_str(), std::ios_base::in);
+   std::fstream in_stream((dataset_path + std::string("Continuum_small.weightfile")).c_str(), std::ios_base::in);
    FastBDT::Classifier classifier_Continuum_small(in_stream);
 
    TFile *input(0);
