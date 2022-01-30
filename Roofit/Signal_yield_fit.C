@@ -9,6 +9,44 @@
 #include "RooPlot.h"
 using namespace RooFit ;
 
+// arXiv:1409.4557v2
+# define TB0 1.5195 // (Table. 1)
+# define TBp 1.6384 // (Table. 1)
+# define BR_Kplus_nunubar 0.00000398 // (eq. 10)
+# define BR_K0star_nunubar 0.00000919 // (eq. 11)
+# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15)
+# define BR_Kplusstar_nunubar (BR_K0star_nunubar*TBp/TB0) // under (eq. 15)
+# define BR_Xs_nunubar 0.000029 // (eq. 23)
+# define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
+# define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
+
+// https://confluence.desy.de/pages/viewpage.action?pageId=107054222
+# define N_BpBp_1invab 565400000.0
+# define N_B0B0_1invab 534600000.0
+
+# define N_Kplus_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplus_nunubar)
+# define N_Kplusstar_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplusstar_nunubar)
+# define N_Xsu_nonresonant_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Xsu_nonresonant_nunubar)
+# define N_K0_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0_nunubar)
+# define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
+# define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
+
+// my MC sample number
+# define N_Kplus_nunubar 10000000.0
+# define N_K0_nunubar 10000000.0
+# define N_Kplusstar_nunubar 10000000.0
+# define N_K0star_nunubar 10000000.0
+# define N_Xsu_nonresonant_nunubar 50000000.0
+# define N_Xsd_nonresonant_nunubar 50000000.0
+
+// scale factor for each MC sample
+# define Scale_Kplus (N_Kplus_nunubar_1invab/N_Kplus_nunubar)
+# define Scale_Kplusstar (N_Kplusstar_nunubar_1invab/N_Kplusstar_nunubar)
+# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar)
+# define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
+# define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
+# define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
+
 void load_files(const char* dirname, std::vector<string>* names) {
     TSystemDirectory dir(dirname, dirname);
     TList* files = dir.GetListOfFiles();
@@ -26,17 +64,17 @@ void load_files(const char* dirname, std::vector<string>* names) {
 }
 
 RooRealVar  Mbc_DATA("Mbc", "Mbc_DATA", 5.27, 5.29);
-RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0, 1.2);
+RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0, 3);
 RooRealVar weight_DATA("weight", "weight_DATA", 0.0, 1.0);
 RooDataSet info_DATA("2Dinfo", "2Dinfo_DATA", RooArgSet(Mbc_DATA, Eecl_DATA, weight_DATA), WeightVar("weight"));
 
 RooRealVar  Mbc_MC_signal("Mbc", "Mbc_MC_signal", 5.27, 5.29);
-RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0, 1.2);
+RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0, 3);
 RooRealVar weight_MC_signal("weight", "weight_MC_signal", 0.0, 1.0);
 RooDataSet info_MC_signal("2Dinfo", "2Dinfo_MC_signal", RooArgSet(Mbc_MC_signal, Eecl_MC_signal, weight_MC_signal), WeightVar("weight"));
 
 RooRealVar  Mbc_MC_background("Mbc", "Mbc_MC_background", 5.27, 5.29);
-RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0, 1.2);
+RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0, 3);
 RooRealVar weight_MC_background("weight", "weight_MC_background", 0.0, 1.0);
 RooDataSet info_MC_background("2Dinfo", "2Dinfo_MC_background", RooArgSet(Mbc_MC_background, Eecl_MC_background, weight_MC_background), WeightVar("weight"));
 
@@ -238,20 +276,30 @@ void LetsCalculateUncertainties(const char* dirname) {
 void Signal_yield_fit()
 {
     // to extract signal yield
-    RooRealVar EeclFit("Eecl", "Eecl", 0, 1.2, "GeV");
-    EeclFit.setBins(12);
-    RooPlot* Eeclframe = EeclFit.frame(Bins(12), Title(" "));
+    RooRealVar EeclFit("Eecl", "Eecl", 0, 3, "GeV");
+    EeclFit.setBins(15);
+    RooPlot* Eeclframe = EeclFit.frame(Bins(15), Title(" "));
 
     // get data from root files
-    const char* MC_dirname_signal = "./output_after_TMVA_test/SIGNAL";
-    LetsAdd(MC_dirname_signal, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal);
+    const char* MC_dirname_Knunu = "./SIGNAL_analysis/test_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* MC_dirname_Kstarnunu = "./SIGNAL_analysis/test_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
+    const char* MC_dirname_Xsununu = "./SIGNAL_analysis/test_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
+    const char* MC_dirname_K0nunu = "./SIGNAL_analysis/test_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
+    const char* MC_dirname_K0starnunu = "./SIGNAL_analysis/test_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
+    const char* MC_dirname_Xsdnunu = "./SIGNAL_analysis/test_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    LetsAdd(MC_dirname_Knunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Kplus);
+    LetsAdd(MC_dirname_Kstarnunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Kplusstar);
+    LetsAdd(MC_dirname_Xsununu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Xsu_nonresonant);
+    LetsAdd(MC_dirname_K0nunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_K0);
+    LetsAdd(MC_dirname_K0starnunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_K0star);
+    LetsAdd(MC_dirname_Xsdnunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Xsd_nonresonant);
 
-    const char* MC_dirname_CHG = "./output_after_TMVA_test/CHG";
-    const char* MC_dirname_MIX = "./output_after_TMVA_test/MIX";
-    const char* MC_dirname_UUBAR = "./output_after_TMVA_test/UUBAR";
-    const char* MC_dirname_DDBAR = "./output_after_TMVA_test/DDBAR";
-    const char* MC_dirname_SSBAR = "./output_after_TMVA_test/SSBAR";
-    const char* MC_dirname_CHARM = "./output_after_TMVA_test/CHARM";
+    const char* MC_dirname_CHG = "./CHG_analysis/test_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_MIX = "./MIX_analysis/test_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_UUBAR = "./UUBAR_analysis/test_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_DDBAR = "./DDBAR_analysis/test_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_SSBAR = "./SSBAR_analysis/test_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHARM = "./CHARM_analysis/test_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge";
     LetsAdd(MC_dirname_CHG, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_MIX, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_UUBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
@@ -259,32 +307,53 @@ void Signal_yield_fit()
     LetsAdd(MC_dirname_SSBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_CHARM, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
 
-    const char* DATA_dirname_BKG = "./output_after_TMVA_train/BKG";
-    const char* DATA_dirname_SIGNAL = "./output_after_TMVA_train/SIGNAL";
-    LetsAdd(DATA_dirname_BKG, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
-    LetsAdd(DATA_dirname_SIGNAL, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, 0.003385);
+    const char* DATA_dirname_Knunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* DATA_dirname_Kstarnunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
+    const char* DATA_dirname_Xsununu = "./SIGNAL_analysis/validation_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
+    const char* DATA_dirname_K0nunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
+    const char* DATA_dirname_K0starnunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
+    const char* DATA_dirname_Xsdnunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    LetsAdd(DATA_dirname_Knunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplus);
+    LetsAdd(DATA_dirname_Kstarnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplusstar);
+    LetsAdd(DATA_dirname_Xsununu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsu_nonresonant);
+    LetsAdd(DATA_dirname_K0nunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0);
+    LetsAdd(DATA_dirname_K0starnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0star);
+    LetsAdd(DATA_dirname_Xsdnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsd_nonresonant);
+
+    const char* DATA_dirname_CHG = "./CHG_analysis/validation_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_MIX = "./MIX_analysis/validation_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_UUBAR = "./UUBAR_analysis/validation_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_DDBAR = "./DDBAR_analysis/validation_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_SSBAR = "./SSBAR_analysis/validation_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_CHARM = "./CHARM_analysis/validation_v002/final_output_root_after_TMVA_Application_after_cut/BCS_only/Merge";
+    LetsAdd(DATA_dirname_CHG, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
+    LetsAdd(DATA_dirname_MIX, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
+    LetsAdd(DATA_dirname_UUBAR, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
+    LetsAdd(DATA_dirname_DDBAR, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
+    LetsAdd(DATA_dirname_SSBAR, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
+    LetsAdd(DATA_dirname_CHARM, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
 
 
     // define frame and get ready to make pdfs
-    Eecl_DATA.setBins(12);
-    //RooPlot* Eeclframe = Eecl_DATA.frame(Bins(12), Title("Operations on binned datasets"));
+    Eecl_DATA.setBins(15);
+    //RooPlot* Eeclframe = Eecl_DATA.frame(Bins(15), Title("Operations on binned datasets"));
     RooDataSet* d_Eecl = (RooDataSet*)info_DATA.reduce(RooArgSet(Eecl_DATA));
 
-    Eecl_MC_signal.setBins(12);
+    Eecl_MC_signal.setBins(15);
     RooDataSet* dataset_Eecl_MC_signal = (RooDataSet*)info_MC_signal.reduce(RooArgSet(Eecl_MC_signal));
     RooDataHist hist_Eecl_MC_signal("hist_Eecl_MC_signal", "histogram for Eecl of MC signal samples", EeclFit, *dataset_Eecl_MC_signal);
-    Eecl_MC_background.setBins(12);
+    Eecl_MC_background.setBins(15);
     RooDataSet* dataset_Eecl_MC_background = (RooDataSet*)info_MC_background.reduce(RooArgSet(Eecl_MC_background));
     RooDataHist hist_Eecl_MC_background("hist_Eecl_MC_background", "histogram for Eecl of MC background samples", EeclFit, *dataset_Eecl_MC_background);
 
 
     // define pdf and extended pdf
     RooHistPdf histpdf_Eecl_signal("histpdf_Eecl_signal", "histpdf_Eecl_signal", EeclFit, hist_Eecl_MC_signal, 0);
-    RooRealVar nsig("nsig", "number of signal events", 10, -180, 180);
+    RooRealVar nsig("nsig", "number of signal events", 5, -180, 200);
     RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal, nsig);
 
     RooHistPdf histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, hist_Eecl_MC_background, 0);
-    RooRealVar nbkg("nbkg", "number of background events", 130, -300, 300);
+    RooRealVar nbkg("nbkg", "number of background events", 100, -1800, 2300);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background, nbkg);
 
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -310,8 +379,8 @@ void Signal_yield_fit()
 
 
     /* ============== toy MC study ============== */
-    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 1.2);
-    Eecl_TOY.setBins(12);
+    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 3);
+    Eecl_TOY.setBins(15);
 
     RooMCStudy* mcstudy = new RooMCStudy(totalpdf, Eecl_TOY, Binned(kTRUE), Silence(), Extended(),FitOptions(Save(kTRUE), PrintEvalErrors(0)));
     mcstudy->generateAndFit(1000);
@@ -331,5 +400,5 @@ void Signal_yield_fit()
     cf->SaveAs("ToyStudy.png");
 
     // calculate uncertainties
-    LetsCalculateUncertainties(MC_dirname_signal);
+    //LetsCalculateUncertainties(MC_dirname_signal);
 }
