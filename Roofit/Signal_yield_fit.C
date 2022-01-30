@@ -74,17 +74,17 @@ void load_files(const char* dirname, std::vector<string>* names) {
 }
 
 RooRealVar  Mbc_DATA("Mbc", "Mbc_DATA", 5.27, 5.29);
-RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0, 3);
+RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0, 2.8);
 RooRealVar weight_DATA("weight", "weight_DATA", 0.0, 1.0);
 RooDataSet info_DATA("2Dinfo", "2Dinfo_DATA", RooArgSet(Mbc_DATA, Eecl_DATA, weight_DATA), WeightVar("weight"));
 
 RooRealVar  Mbc_MC_signal("Mbc", "Mbc_MC_signal", 5.27, 5.29);
-RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0, 3);
+RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0, 2.8);
 RooRealVar weight_MC_signal("weight", "weight_MC_signal", 0.0, 1.0);
 RooDataSet info_MC_signal("2Dinfo", "2Dinfo_MC_signal", RooArgSet(Mbc_MC_signal, Eecl_MC_signal, weight_MC_signal), WeightVar("weight"));
 
 RooRealVar  Mbc_MC_background("Mbc", "Mbc_MC_background", 5.27, 5.29);
-RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0, 3);
+RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0, 2.8);
 RooRealVar weight_MC_background("weight", "weight_MC_background", 0.0, 1.0);
 RooDataSet info_MC_background("2Dinfo", "2Dinfo_MC_background", RooArgSet(Mbc_MC_background, Eecl_MC_background, weight_MC_background), WeightVar("weight"));
 
@@ -263,10 +263,7 @@ void PrintUncertainties() {
     double avg_pi0_rel_uncertainty = 0;
     double avg_KS0_rel_uncertainty = 0;
 
-    double total_N = 0;
-    for (unsigned int j = 0; j < Ns.size(); j++) total_N = total_N + Ns.at(j);
-
-    for (int j = 0; j < total_N; j++) {
+    for (int j = 0; j < Ns.size(); j++) {
         corrected_N = corrected_N + corrected_Ns.at(j);
         avg_track_rel_uncertainty = avg_track_rel_uncertainty + corrected_Ns.at(j) * track_rel_uncertainties.at(j);
         avg_pi0_rel_uncertainty = avg_pi0_rel_uncertainty + corrected_Ns.at(j) * pi0_rel_uncertainties.at(j);
@@ -275,6 +272,9 @@ void PrintUncertainties() {
     avg_track_rel_uncertainty = avg_track_rel_uncertainty / corrected_N;
     avg_pi0_rel_uncertainty = avg_pi0_rel_uncertainty / corrected_N;
     avg_KS0_rel_uncertainty = avg_KS0_rel_uncertainty / corrected_N;
+
+    double total_N = 0;
+    for (unsigned int j = 0; j < Ns.size(); j++) total_N = total_N + Ns.at(j);
 
     printf("Average correction factor: %lf\n", corrected_N / total_N);
     printf("Average relative uncertainty from track: %lf%%\n", avg_track_rel_uncertainty);
@@ -285,7 +285,7 @@ void PrintUncertainties() {
 void Signal_yield_fit()
 {
     // to extract signal yield
-    RooRealVar EeclFit("Eecl", "Eecl", 0, 3, "GeV");
+    RooRealVar EeclFit("Eecl", "Eecl", 0, 2.8, "GeV");
     EeclFit.setBins(15);
     RooPlot* Eeclframe = EeclFit.frame(Bins(15), Title(" "));
 
@@ -388,7 +388,7 @@ void Signal_yield_fit()
 
 
     /* ============== toy MC study ============== */
-    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 3);
+    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0,2.8);
     Eecl_TOY.setBins(15);
 
     RooMCStudy* mcstudy = new RooMCStudy(totalpdf, Eecl_TOY, Binned(kTRUE), Silence(), Extended(),FitOptions(Save(kTRUE), PrintEvalErrors(0)));
