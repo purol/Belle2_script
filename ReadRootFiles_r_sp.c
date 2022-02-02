@@ -1,4 +1,4 @@
-// last update: 2022-01-29
+// last update: 2022-02-03
 // for Belle2 data
 
 /*
@@ -271,6 +271,7 @@ private:
     std::vector<int> N_candidates;
     std::vector<int> N_candidates_modes[Loader::MAX_NUM_DECAYMODE];
     std::vector<int> N_events_modes[Loader::MAX_NUM_DECAYMODE];
+    std::vector<double> N_MC_modes[Loader::MAX_NUM_DECAYMODE_MC];
     std::vector<std::string> titles;
     int current_N_event;
     int current_N_candidate;
@@ -1039,6 +1040,7 @@ void Loader::PrintInformation(std::string title) {
         titles.push_back(title);
         for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) N_candidates_modes[i].push_back(0);
         for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) N_events_modes[i].push_back(0);
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) N_MC_modes[i].push_back(0);
     }
     else if (N_events.size() > current_N_event && N_candidates.size() > current_N_candidate && N_events.size() == N_candidates.size() && current_N_event == current_N_candidate) { // use what I have
     }
@@ -1095,6 +1097,34 @@ void Loader::PrintInformation(std::string title) {
             temp_Labels.IsThisModeExist[decaymodeid] = true;
 
             label_list.push_back(temp_Labels);
+
+
+            Loader::DecayModeMC decaymodeid_MC = Loader::MAX_NUM_DECAYMODE_MC;
+            if (DoesItHaveXsBranch) {
+                for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) { // find MC decay mode
+                    if (TrueIfDecayModeMatch_MC(temp, static_cast<Loader::DecayModeMC>(i))) {
+                        decaymodeid_MC = i;
+                        break;
+                    }
+                }
+                if (decaymodeid_MC == Loader::MAX_NUM_DECAYMODE_MC) {
+                    printf("ERROR! MC decay id cannot be found\n");
+                    exit(1);
+                }
+
+                double temp_N = -1;
+                if (decaymodeid_MC == Loader::Xsu2Kc_MC) temp_N = Scale_Kplus;
+                else if (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC) temp_N = Scale_Kplusstar;
+                else if (static_cast<int>(Xsu2KcPi0_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(Xsu2KcKcKcPi0_MC)) temp_N = Scale_Xsu_nonresonant;
+                else if (decaymodeid_MC == Loader::Xsd2K0_MC) temp_N = Scale_K0;
+                else if (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC) temp_N = Scale_K0star;
+                else if (static_cast<int>(Xsd2KcPic_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(other)) temp_N = Scale_Xsd_nonresonant;
+                else {
+                    printf("ERROR 265\n");
+                    exit(1);
+                }
+                N_MC_modes[decaymodeid_MC].at(current_N_event) = N_MC_modes[decaymodeid_MC].at(current_N_event) + temp_N;
+            }
         }
 
         Loader::DecayMode decaymodeid = Loader::MAX_NUM_DECAYMODE;
@@ -1399,6 +1429,7 @@ void Loader::End() {
         printf("Number of candidate: %d\n", N_candidates.at(i));
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %d\n", j, N_candidates_modes[j].at(i));
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of event including decayID %d: %d\n", j, N_events_modes[j].at(i));
+        if (AllOfThemHaveXsBranch) for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i));
     }
 
 
