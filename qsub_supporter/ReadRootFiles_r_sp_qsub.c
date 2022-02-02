@@ -1159,7 +1159,7 @@ void Loader::PrintInformation(std::string title) {
             if (DoesItHaveXsBranch) {
                 for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) { // find MC decay mode
                     if (TrueIfDecayModeMatch_MC(temp, static_cast<Loader::DecayModeMC>(i))) {
-                        decaymodeid_MC = i;
+                        decaymodeid_MC = static_cast<Loader::DecayModeMC>(i);
                         break;
                     }
                 }
