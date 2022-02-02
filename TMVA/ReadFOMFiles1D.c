@@ -1,15 +1,24 @@
-# define NormFactorForSignal (31481.0/9300000.0)
-
 # define Nstep 20
-# define start 0.6
+# define start 0.9
 # define end 1.0
 
 void ReadFOMFiles1D(){
 
-    const char* SIGNAL_small = "./FOM_SIGNAL_small";
-    const char* SIGNAL_large = "./FOM_SIGNAL_large";
-    const char* BKG_small = "./FOM_BKG_small";
-    const char* BKG_large = "./FOM_BKG_large";
+    const char* Kplus_large = "./FOM_plot_Kplus_large";
+    const char* Kplusstar_large = "./FOM_plot_Kplusstar_large";
+    const char* Xsu_nonres_large = "./FOM_plot_Xsu_large";
+    const char* K0_large = "./FOM_plot_K0_large";
+    const char* K0star_large = "./FOM_plot_K0star_large";
+    const char* Xsd_nonres_large = "./FOM_plot_Xsd_large";
+    const char* BKG_large = "./FOM_plot_BKG_large";
+
+    const char* Kplus_small = "./FOM_plot_Kplus_small";
+    const char* Kplusstar_small = "./FOM_plot_Kplusstar_small";
+    const char* Xsu_nonres_small = "./FOM_plot_Xsu_small";
+    const char* K0_small = "./FOM_plot_K0_small";
+    const char* K0star_small = "./FOM_plot_K0star_small";
+    const char* Xsd_nonres_small = "./FOM_plot_Xsd_small";
+    const char* BKG_small = "./FOM_plot_BKG_small";
 
     double Matrix_SIGNAL_small[Nstep];
     for (int i = 0; i < Nstep; i++) Matrix_SIGNAL_small[i] = 0;
@@ -29,16 +38,41 @@ void ReadFOMFiles1D(){
     double FOM_Matrix_large[Nstep];
     for (int i = 0; i < Nstep; i++) FOM_Matrix_large[i] = 0;
     
+    /* ========================== read FOM files ========================== */
     FILE* pf;
-    pf = fopen(SIGNAL_small, "r");
+    pf = fopen(Kplus_small, "r");
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &Matrix_SIGNAL_small[i]);
     }
     fclose(pf);
-    
-    pf = fopen(SIGNAL_large, "r");
+
+    pf = fopen(Kplusstar_small, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_SIGNAL_large[i]);
+        fscanf(pf, "%lf ", &Matrix_SIGNAL_small[i]);
+    }
+    fclose(pf);
+
+    pf = fopen(Xsu_nonres_small, "r");
+    for (int i = 0; i < Nstep; i++) {
+        fscanf(pf, "%lf ", &Matrix_SIGNAL_small[i]);
+    }
+    fclose(pf);
+
+    pf = fopen(K0_small, "r");
+    for (int i = 0; i < Nstep; i++) {
+        fscanf(pf, "%lf ", &Matrix_SIGNAL_small[i]);
+    }
+    fclose(pf);
+
+    pf = fopen(K0star_small, "r");
+    for (int i = 0; i < Nstep; i++) {
+        fscanf(pf, "%lf ", &Matrix_SIGNAL_small[i]);
+    }
+    fclose(pf);
+
+    pf = fopen(Xsd_nonres_small, "r");
+    for (int i = 0; i < Nstep; i++) {
+        fscanf(pf, "%lf ", &Matrix_SIGNAL_small[i]);
     }
     fclose(pf);
 
@@ -48,15 +82,50 @@ void ReadFOMFiles1D(){
     }
     fclose(pf);
 
+
+    pf = fopen(Kplus_large, "r");
+    for (int i = 0; i < Nstep; i++) {
+        fscanf(pf, "%lf ", &Matrix_SIGNAL_large[i]);
+    }
+    fclose(pf);
+
+    pf = fopen(Kplusstar_large, "r");
+    for (int i = 0; i < Nstep; i++) {
+        fscanf(pf, "%lf ", &Matrix_SIGNAL_large[i]);
+    }
+    fclose(pf);
+
+    pf = fopen(Xsu_nonres_large, "r");
+    for (int i = 0; i < Nstep; i++) {
+        fscanf(pf, "%lf ", &Matrix_SIGNAL_large[i]);
+    }
+    fclose(pf);
+
+    pf = fopen(K0_large, "r");
+    for (int i = 0; i < Nstep; i++) {
+        fscanf(pf, "%lf ", &Matrix_SIGNAL_large[i]);
+    }
+    fclose(pf);
+
+    pf = fopen(K0star_large, "r");
+    for (int i = 0; i < Nstep; i++) {
+        fscanf(pf, "%lf ", &Matrix_SIGNAL_large[i]);
+    }
+    fclose(pf);
+
+    pf = fopen(Xsd_nonres_large, "r");
+    for (int i = 0; i < Nstep; i++) {
+        fscanf(pf, "%lf ", &Matrix_SIGNAL_large[i]);
+    }
+    fclose(pf);
+
     pf = fopen(BKG_large, "r");
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &Matrix_BKG_large[i]);
     }
     fclose(pf);
+    /* ========================== read FOM files ========================== */
     
-    for (int i = 0; i < Nstep; i++) Matrix_SIGNAL_small[i] = Matrix_SIGNAL_small[i] * NormFactorForSignal;
-    for (int i = 0; i < Nstep; i++) Matrix_SIGNAL_large[i] = Matrix_SIGNAL_large[i] * NormFactorForSignal;
-
     for (int i = 0; i < Nstep; i++) FOM_Matrix_small[i] = Matrix_SIGNAL_small[i] / sqrt(Matrix_SIGNAL_small[i] + Matrix_BKG_small[i]);
     for (int i = 0; i < Nstep; i++) FOM_Matrix_large[i] = Matrix_SIGNAL_large[i] / sqrt(Matrix_SIGNAL_large[i] + Matrix_BKG_large[i]);
 
