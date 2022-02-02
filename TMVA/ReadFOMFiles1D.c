@@ -40,88 +40,103 @@ void ReadFOMFiles1D(){
     
     /* ========================== read FOM files ========================== */
     FILE* pf;
+    double temp_var = 0;
     pf = fopen(Kplus_small, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_SIGNAL_small[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_SIGNAL_small[i] = Matrix_SIGNAL_small[i] + temp_var;
     }
     fclose(pf);
 
     pf = fopen(Kplusstar_small, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_SIGNAL_small[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_SIGNAL_small[i] = Matrix_SIGNAL_small[i] + temp_var;
     }
     fclose(pf);
 
     pf = fopen(Xsu_nonres_small, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_SIGNAL_small[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_SIGNAL_small[i] = Matrix_SIGNAL_small[i] + temp_var;
     }
     fclose(pf);
 
     pf = fopen(K0_small, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_SIGNAL_small[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_SIGNAL_small[i] = Matrix_SIGNAL_small[i] + temp_var;
     }
     fclose(pf);
 
     pf = fopen(K0star_small, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_SIGNAL_small[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_SIGNAL_small[i] = Matrix_SIGNAL_small[i] + temp_var;
     }
     fclose(pf);
 
     pf = fopen(Xsd_nonres_small, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_SIGNAL_small[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_SIGNAL_small[i] = Matrix_SIGNAL_small[i] + temp_var;
     }
     fclose(pf);
 
     pf = fopen(BKG_small, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_BKG_small[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_BKG_small[i] = Matrix_BKG_small[i] + temp_var;
     }
     fclose(pf);
 
 
     pf = fopen(Kplus_large, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_SIGNAL_large[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_SIGNAL_large[i] = Matrix_SIGNAL_large[i] + temp_var;
     }
     fclose(pf);
 
     pf = fopen(Kplusstar_large, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_SIGNAL_large[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_SIGNAL_large[i] = Matrix_SIGNAL_large[i] + temp_var;
     }
     fclose(pf);
 
     pf = fopen(Xsu_nonres_large, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_SIGNAL_large[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_SIGNAL_large[i] = Matrix_SIGNAL_large[i] + temp_var;
     }
     fclose(pf);
 
     pf = fopen(K0_large, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_SIGNAL_large[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_SIGNAL_large[i] = Matrix_SIGNAL_large[i] + temp_var;
     }
     fclose(pf);
 
     pf = fopen(K0star_large, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_SIGNAL_large[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_SIGNAL_large[i] = Matrix_SIGNAL_large[i] + temp_var;
     }
     fclose(pf);
 
     pf = fopen(Xsd_nonres_large, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_SIGNAL_large[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_SIGNAL_large[i] = Matrix_SIGNAL_large[i] + temp_var;
     }
     fclose(pf);
 
     pf = fopen(BKG_large, "r");
     for (int i = 0; i < Nstep; i++) {
-        fscanf(pf, "%lf ", &Matrix_BKG_large[i]);
+        fscanf(pf, "%lf ", &temp_var);
+        Matrix_BKG_large[i] = Matrix_BKG_large[i] + temp_var;
     }
     fclose(pf);
     /* ========================== read FOM files ========================== */
@@ -159,5 +174,5 @@ void ReadFOMFiles1D(){
     gr2->SetTitle("M_{Xs} > 1.1 [GeV];O_{Continuum};#frac{S}{#sqrt{S+B}}");
     gr2->SetMarkerStyle(0);
     gr2->Draw("");
-    c1->SaveAs("FOM_large.png");
+    c2->SaveAs("FOM_large.png");
 }
