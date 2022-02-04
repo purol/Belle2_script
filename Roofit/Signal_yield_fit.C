@@ -283,6 +283,150 @@ void PrintUncertainties() {
     printf("Average relative uncertainty from KS0: %lf%%\n", avg_KS0_rel_uncertainty);
 }
 
+void LinearityTest(RooFitResult* r, RooRealVar EeclFit) {
+    const int LT_number = 10;
+    const int LT_iterate_number = 1000;
+
+    RooArgSet fitargs = r->floatParsFinal();
+    TIterator* iter(fitargs.createIterator());
+
+    double N_nbkg = -1;
+    double N_nsig = -1;
+    double N_p2 = -1;
+    double ERR_nbkg = -1;
+    double ERR_nsig = -1;
+    double ERR_p2 = -1;
+
+    for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        double val = rrv->getVal();
+        double err = rrv->getError();
+        if (name == std::string("nbkg")) {
+            N_nbkg = val;
+            ERR_nbkg = err;
+        }
+        else if (name == std::string("nsig")) {
+            N_nsig = val;
+            ERR_nsig = err;
+        }
+        else if (name == std::string("p2")) {
+            N_p2 = val;
+            ERR_p2 = err;
+        }
+    }
+
+    std::vector<double> n_sigs[LT_number];
+    std::vector<double> n_sigs_err[LT_number];
+    for (int i = 0; i < LT_number; i++) {
+
+        for (int j = 0; j < LT_iterate_number; j++) {
+            // produce toy MC sample
+            RooRealVar m0_fix("m0_fix", "m0_fix", 0.6);
+            RooRealVar sigma_fix("sigma_fix", "sigma_fix", 0.413);
+            RooRealVar alpha_fix("alpha_fix", "alpha_fix", -0.74);
+            RooRealVar n_fix("n_fix", "n_fix", 60);
+            RooCBShape histpdf_Eecl_signal_fix("genpdf_fix", "genpdf_fix", EeclFit, m0_fix, sigma_fix, alpha_fix, n_fix);
+            RooDataSet* d1 = histpdf_Eecl_signal_fix.generate(EeclFit, i);
+
+            RooRealVar p1_fix("p1_fix", "coeff #1", 39.89);
+            RooRealVar p3_fix("p3_fix", "coeff #3", 4.386);
+            RooRealVar p2_fix("p2_fix", "coeff #2", N_p2);
+            RooPolynomial histpdf_Eecl_background_fix("histpdf_Eecl_background_fix", "histpdf_Eecl_background_fix", EeclFit, RooArgList(p1_fix, p2_fix, p3_fix));
+            RooDataSet* genData = histpdf_Eecl_background_fix.generate(EeclFit, N_nbkg);
+
+            genData->append(*d1);
+
+            // construct fitting function
+            RooRealVar m0("m0", "m0", 0.6);
+            RooRealVar sigma("sigma", "sigma", 0.413);
+            RooRealVar alpha("alpha", "alpha", -0.74);
+            RooRealVar n("n", "n", 60);
+            RooCBShape histpdf_Eecl_signal("genpdf", "genpdf", EeclFit, m0, sigma, alpha, n);
+            RooRealVar nsig("nsig", "n_{sig}", 7.5, -150, 200);
+            RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal, nsig);
+
+            RooRealVar p1("p1", "coeff #1", 39.89);
+            RooRealVar p3("p3", "coeff #3", 4.386);
+            RooRealVar p2("p2", "coeff #2", -26.03, -40, -10);
+
+            RooPolynomial histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, RooArgList(p1, p2, p3));
+
+            RooRealVar nbkg("nbkg", "number of background events", 218, -100, 600);
+            RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background, nbkg);
+
+            RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
+
+            // fit
+            RooFitResult* result = totalpdf.fitTo(*genData, Save());
+
+            RooArgSet fitargs_LT = result->floatParsFinal();
+            TIterator* iter_LT(fitargs_LT.createIterator());
+
+            for (TObject* a_LT = iter_LT->Next(); a_LT != 0; a_LT = iter_LT->Next()) {
+                RooRealVar* rrv_LT = dynamic_cast<RooRealVar*>(a_LT);
+                std::string name_LT = rrv_LT->GetName();
+                double val_LT = rrv_LT->getVal();
+                double err_LT = rrv_LT->getError();
+                if (name_LT == std::string("nsig")) {
+                    n_sigs[i].push_back(val_LT);
+                    n_sigs_err[i].push_back(err_LT);
+                }
+            }
+
+        }
+
+    }
+
+    // create root file
+    TFile* temp_file = new TFile("Linearity.root", "recreate");
+    temp_file->cd();
+    TTree* temp_tree = new TTree("Linearity", "");
+    double nsig_fit[LT_number];
+    double nsig_fit_err[LT_number];
+
+    for (int i = 0; i < LT_number;i++) temp_tree->Branch(("nsig_"+ to_string(i)).c_str(), &nsig_fit[i]);
+    for (int i = 0; i < LT_number; i++) temp_tree->Branch(("nsig_error_" + to_string(i)).c_str(), &nsig_fit_err[i]);
+
+    for (int i = 0; i < LT_iterate_number; i++) {
+        for (int j = 0; j < LT_number; j++) {
+            nsig_fit[j] = n_sigs[j].at(i);
+            nsig_fit_err[j] = n_sigs_err[j].at(i);
+        }
+        temp_tree->Fill();
+    }
+    temp_tree->Write();
+    temp_file->Close();
+
+    // print png file
+    FILE* fp;
+    fp = fopen("Linearity_test_out", "w");
+    for (int i = 0; i < LT_number; i++) {
+        RooRealVar  nsig_roorealvar("nsig_roorealvar", "n_{sig}", -100, 100);
+        RooDataSet nsig_RooDataSet("nsig_RooDataSet", "nsig_RooDataSet", RooArgSet(nsig_roorealvar));
+        for (int j = 0; j < LT_iterate_number; j++) {
+            nsig_roorealvar = n_sigs[i].at(j);
+            nsig_RooDataSet.add(RooArgSet(nsig_roorealvar));
+        }
+        RooRealVar gausmean("gausmean","",i, i - ERR_nsig, i + ERR_nsig);
+        RooRealVar gauswidth("gauswidth","", ERR_nsig, 0, 2* ERR_nsig);
+        RooGaussian gauss("gauss","gauss", nsig_roorealvar,gausmean,gauswidth);
+        RooRealVar nentry("nentry", "number of entries", 1000, 900, 1100);
+        RooExtendPdf egauss("egauss", "extended gauss", gauss, nentry);
+        RooFitResult* result_LT = egauss.fitTo(nsig_RooDataSet, Save());
+
+        RooPlot* nsigframe = nsig_roorealvar.frame(Bins(400), Title(" "));
+        nsig_RooDataSet.plotOn(nsigframe);
+        egauss.plotOn(nsigframe, LineColor(kBlue));
+        egauss.paramOn(nsigframe);
+        TCanvas* c = new TCanvas("nsig_gauss_fit", "nsig_gauss_fit", 600, 600);
+        gPad->SetLeftMargin(0.15); nsigframe->GetYaxis()->SetTitleOffset(1.4); nsigframe->Draw(); c->SaveAs(("nsig_"+ to_string(i) +"_distribution.png").c_str());
+
+        delete c;
+    }
+
+}
+
 void Signal_yield_fit()
 {
     // to extract signal yield
@@ -383,16 +527,19 @@ void Signal_yield_fit()
 //    RooRealVar p3("p3","coeff #3", 10.19, 3.0, 20.0);
 
     RooRealVar p1("p1","coeff #1", 39.89);
-//    RooRealVar p2("p2","coeff #2", -26.03, -40, -10);
+//   RooRealVar p2("p2","coeff #2", -26.03);
     RooRealVar p3("p3","coeff #3", 4.386);
-//    RooRealVar p1("p1","coeff #1", 39,89, 20, 60.0);
+//    RooRealVar p1("p1","coeff #1", 39.89, 20, 60.0);
     RooRealVar p2("p2","coeff #2", -26.03, -40, -10);
 //    RooRealVar p3("p3","coeff #3", 4.486, 1.5, 7.5);
     RooPolynomial histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, RooArgList(p1,p2, p3));
 
-//    RooRealVar p1("p1","coeff #1", -3.6e-03, -2.0e-01, 2.0e-01);
-//    RooRealVar p2("p2","coeff #2", -6.37e-01, -9.0e-01, -3.0e-01);
-//    RooRealVar p3("p3","coeff #3", 2.78e-01, -1.0e-02, 5.0e-01);
+//    RooRealVar p1("p1","coeff #1", -3.6e-03);
+//    RooRealVar p2("p2","coeff #2", -6.37e-01);
+//    RooRealVar p3("p3","coeff #3", 2.78e-01);
+//   RooRealVar p1("p1", "coeff #1", -3.6e-03, -2.0e-01, 2.0e-01);
+//    RooRealVar p2("p2", "coeff #2", -6.37e-01, -9.0e-01, -3.0e-01);
+//    RooRealVar p3("p3", "coeff #3", 2.78e-01, -1.0e-02, 5.0e-01);
 //    RooChebychev histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, RooArgList(p1, p2, p3));
 
     RooRealVar nbkg("nbkg", "number of background events", 218, -100, 600);
@@ -401,7 +548,7 @@ void Signal_yield_fit()
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
 
     // fit
-    totalpdf.fitTo(*d_Eecl);
+    RooFitResult* r = totalpdf.fitTo(*d_Eecl, Save());
 
     //info_DATA.get(0)->Print("V");
     //info_DATA.get(1)->Print("V");
@@ -422,6 +569,9 @@ void Signal_yield_fit()
     TCanvas* c = new TCanvas("Eecl", "Eecl", 600, 600);
     gPad->SetLeftMargin(0.15); Eeclframe->GetYaxis()->SetTitleOffset(1.4); Eeclframe->Draw(); c->SaveAs("Eecl_distribution.png");
 
+
+    /* ============== Linearity test ============== */
+    //LinearityTest(r, EeclFit);
 
 
     /* ============== toy MC study ============== */
@@ -445,7 +595,7 @@ void Signal_yield_fit()
     cf->cd(3); gPad->SetLeftMargin(0.15); frame3->GetYaxis()->SetTitleOffset(1.4); frame3->Draw();
     cf->SaveAs("ToyStudy.png");
 
-    // calculate uncertainties
+    /* ============== Uncertainty Calculation ============== */
     LetsCalculateUncertainties(MC_dirname_Knunu, Scale_Kplus);
     LetsCalculateUncertainties(MC_dirname_Kstarnunu, Scale_Kplusstar);
     LetsCalculateUncertainties(MC_dirname_Xsununu, Scale_Xsu_nonresonant);
