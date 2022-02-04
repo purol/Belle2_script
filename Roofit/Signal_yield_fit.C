@@ -263,7 +263,7 @@ void PrintUncertainties() {
     double avg_pi0_rel_uncertainty = 0;
     double avg_KS0_rel_uncertainty = 0;
 
-    for (int j = 0; j < Ns.size(); j++) {
+    for (unsigned int j = 0; j < Ns.size(); j++) {
         corrected_N = corrected_N + corrected_Ns.at(j);
         avg_track_rel_uncertainty = avg_track_rel_uncertainty + corrected_Ns.at(j) * track_rel_uncertainties.at(j);
         avg_pi0_rel_uncertainty = avg_pi0_rel_uncertainty + corrected_Ns.at(j) * pi0_rel_uncertainties.at(j);
@@ -276,6 +276,7 @@ void PrintUncertainties() {
     double total_N = 0;
     for (unsigned int j = 0; j < Ns.size(); j++) total_N = total_N + Ns.at(j);
 
+    printf("total uncorrected signal num: %lf\n", total_N);
     printf("Average correction factor: %lf\n", corrected_N / total_N);
     printf("Average relative uncertainty from track: %lf%%\n", avg_track_rel_uncertainty);
     printf("Average relative uncertainty from pi0: %lf%%\n", avg_pi0_rel_uncertainty);
@@ -286,8 +287,8 @@ void Signal_yield_fit()
 {
     // to extract signal yield
     RooRealVar EeclFit("Eecl", "Eecl", 0, 2.8, "GeV");
-    EeclFit.setBins(15);
-    RooPlot* Eeclframe = EeclFit.frame(Bins(15), Title(" "));
+    EeclFit.setBins(10);
+    RooPlot* Eeclframe = EeclFit.frame(Bins(10), Title(" "));
 
     // get data from root files
     const char* MC_dirname_Knunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
@@ -344,25 +345,57 @@ void Signal_yield_fit()
 
 
     // define frame and get ready to make pdfs
-    Eecl_DATA.setBins(15);
+    Eecl_DATA.setBins(10);
     //RooPlot* Eeclframe = Eecl_DATA.frame(Bins(15), Title("Operations on binned datasets"));
     RooDataSet* d_Eecl = (RooDataSet*)info_DATA.reduce(RooArgSet(Eecl_DATA));
 
-    Eecl_MC_signal.setBins(15);
+    Eecl_MC_signal.setBins(10);
     RooDataSet* dataset_Eecl_MC_signal = (RooDataSet*)info_MC_signal.reduce(RooArgSet(Eecl_MC_signal));
     RooDataHist hist_Eecl_MC_signal("hist_Eecl_MC_signal", "histogram for Eecl of MC signal samples", EeclFit, *dataset_Eecl_MC_signal);
-    Eecl_MC_background.setBins(15);
+    Eecl_MC_background.setBins(10);
     RooDataSet* dataset_Eecl_MC_background = (RooDataSet*)info_MC_background.reduce(RooArgSet(Eecl_MC_background));
     RooDataHist hist_Eecl_MC_background("hist_Eecl_MC_background", "histogram for Eecl of MC background samples", EeclFit, *dataset_Eecl_MC_background);
 
 
     // define pdf and extended pdf
-    RooHistPdf histpdf_Eecl_signal("histpdf_Eecl_signal", "histpdf_Eecl_signal", EeclFit, hist_Eecl_MC_signal, 0);
-    RooRealVar nsig("nsig", "number of signal events", 5, -180, 200);
+//    RooHistPdf histpdf_Eecl_signal("histpdf_Eecl_signal", "histpdf_Eecl_signal", EeclFit, hist_Eecl_MC_signal, 0);
+   RooRealVar m0("m0","m0",0.6) ;
+   RooRealVar sigma("sigma","sigma",0.413) ;
+   RooRealVar alpha("alpha","alpha",-0.74) ;
+   RooRealVar n("n","n",60) ;
+   RooCBShape histpdf_Eecl_signal("genpdf", "genpdf", EeclFit, m0, sigma, alpha, n);
+    RooRealVar nsig("nsig", "n_{sig}",7.5, -150, 200);
     RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal, nsig);
 
-    RooHistPdf histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, hist_Eecl_MC_background, 0);
-    RooRealVar nbkg("nbkg", "number of background events", 100, -1800, 2300);
+//    RooHistPdf histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, hist_Eecl_MC_background, 0);
+//    RooRealVar p1("p1","coeff #1", 1.65, -10, 15.0);
+//    RooPolynomial bkg_linear("bkg_linear","bkg_linear", EeclFit, RooArgList(p1));
+//    RooRealVar gausmean("gausmean","",1.113);
+//    RooRealVar gauswidth("gauswidth","", 0.547);
+//    RooGaussian bkg_gauss("bkg_gauss","bkg_gauss",EeclFit,gausmean,gauswidth);
+//    RooRealVar bkgfrac("bkgfrac","fraction in bkg",0.589,0.,1.);   
+//    RooAddPdf histpdf_Eecl_background("int","int",RooArgList(bkg_gauss,bkg_linear),bkgfrac);
+//    RooRealVar p1("p1","coeff #1", 88.6);
+//    RooRealVar p2("p2","coeff #2", -58);
+//    RooRealVar p3("p3","coeff #3", 10.2);
+//    RooRealVar p1("p1","coeff #1", 88.6, 40.0, 150);
+//    RooRealVar p2("p2","coeff #2", -58, -80, -30);
+//    RooRealVar p3("p3","coeff #3", 10.19, 3.0, 20.0);
+
+    RooRealVar p1("p1","coeff #1", 39.89);
+//    RooRealVar p2("p2","coeff #2", -26.03, -40, -10);
+    RooRealVar p3("p3","coeff #3", 4.386);
+//    RooRealVar p1("p1","coeff #1", 39,89, 20, 60.0);
+    RooRealVar p2("p2","coeff #2", -26.03, -40, -10);
+//    RooRealVar p3("p3","coeff #3", 4.486, 1.5, 7.5);
+    RooPolynomial histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, RooArgList(p1,p2, p3));
+
+//    RooRealVar p1("p1","coeff #1", -3.6e-03, -2.0e-01, 2.0e-01);
+//    RooRealVar p2("p2","coeff #2", -6.37e-01, -9.0e-01, -3.0e-01);
+//    RooRealVar p3("p3","coeff #3", 2.78e-01, -1.0e-02, 5.0e-01);
+//    RooChebychev histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, RooArgList(p1, p2, p3));
+
+    RooRealVar nbkg("nbkg", "number of background events", 218, -100, 600);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background, nbkg);
 
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -374,10 +407,14 @@ void Signal_yield_fit()
     //info_DATA.get(1)->Print("V");
 
     // Draw result
-    d_Eecl->plotOn(Eeclframe);
+    d_Eecl->plotOn(Eeclframe, DataError(RooAbsData::Poisson));
+//    d_Eecl->plotOn(Eeclframe);
     totalpdf.plotOn(Eeclframe, LineColor(kRed));
     totalpdf.plotOn(Eeclframe, Components(esig), LineColor(kBlue), LineStyle(kDashed));
     totalpdf.plotOn(Eeclframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed));
+//    totalpdf.plotOn(Eeclframe, Components(bkg_linear), LineColor(kRed), LineStyle(kDashed), Normalization(1.0,RooAbsReal::RelativeExpected));
+//    totalpdf.plotOn(Eeclframe, Components(bkg_gauss1), LineColor(kGreen), LineStyle(kDashed), Normalization(1.0,RooAbsReal::RelativeExpected));
+//    totalpdf.plotOn(Eeclframe, Components(bkg_gauss2), LineColor(kGreen), LineStyle(kDashed), Normalization(1.0,RooAbsReal::RelativeExpected));
     //dataset_Eecl_MC_signal->plotOn(Eeclframe);
     //histpdf_Eecl_signal.plotOn(Eeclframe);
     //totalpdf.plotOn(Eeclframe, LineColor(kRed), Normalization(1.0, RooAbsReal::RelativeExpected));
@@ -388,8 +425,8 @@ void Signal_yield_fit()
 
 
     /* ============== toy MC study ============== */
-    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0,2.8);
-    Eecl_TOY.setBins(15);
+    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 2.8);
+    Eecl_TOY.setBins(10);
 
     RooMCStudy* mcstudy = new RooMCStudy(totalpdf, Eecl_TOY, Binned(kTRUE), Silence(), Extended(),FitOptions(Save(kTRUE), PrintEvalErrors(0)));
     mcstudy->generateAndFit(1000);
