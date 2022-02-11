@@ -1,4 +1,4 @@
-// last update: 2022-01-13-00
+// last update: 2022-02-11-00
 // for Belle2 data
 
 /*
@@ -13,8 +13,8 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 45
-# define N_Bsig_info 60
+# define N_Upsilon_info 46
+# define N_Bsig_info 64
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
@@ -129,6 +129,7 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree->SetBranchAddress("roeP__bocleanMask__bc", &temp_UpsilonDataToTree[42]);
             temp_tree->SetBranchAddress("roeM__bocleanMask__bc", &temp_UpsilonDataToTree[43]);
             temp_tree->SetBranchAddress("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
+            temp_tree->SetBranchAddress("qsquared", &temp_UpsilonDataToTree[45]);
 
             // get Bsig_info
             temp_tree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -191,6 +192,10 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree->SetBranchAddress("Bsig_CleoConeCS_7", &temp_BsigDataToTree[57]);
             temp_tree->SetBranchAddress("Bsig_CleoConeCS_8", &temp_BsigDataToTree[58]);
             temp_tree->SetBranchAddress("Bsig_CleoConeCS_9", &temp_BsigDataToTree[59]);
+            temp_tree->SetBranchAddress("Bsig_pt", &temp_BsigDataToTree[60]);
+            temp_tree->SetBranchAddress("Bsig_useCMSFrame_pt", &temp_BsigDataToTree[61]);
+            temp_tree->SetBranchAddress("Bsig_theta", &temp_BsigDataToTree[62]);
+            temp_tree->SetBranchAddress("Bsig_useCMSFrame_theta", &temp_BsigDataToTree[63]);
 
             // get Btag_info
             temp_tree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -368,6 +373,7 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree_upsilon->Branch("roeP__bocleanMask__bc", &temp_UpsilonDataToTree[42]);
             temp_tree_upsilon->Branch("roeM__bocleanMask__bc", &temp_UpsilonDataToTree[43]);
             temp_tree_upsilon->Branch("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
+            temp_tree_upsilon->Branch("qsquared", &temp_UpsilonDataToTree[45]);
 
             // get Bsig_info
             temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -430,6 +436,10 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree_Bsig->Branch("Bsig_CleoConeCS_7", &temp_BsigDataToTree[57]);
             temp_tree_Bsig->Branch("Bsig_CleoConeCS_8", &temp_BsigDataToTree[58]);
             temp_tree_Bsig->Branch("Bsig_CleoConeCS_9", &temp_BsigDataToTree[59]);
+            temp_tree_Bsig->Branch("Bsig_pt", &temp_BsigDataToTree[60]);
+            temp_tree_Bsig->Branch("Bsig_useCMSFrame_pt", &temp_BsigDataToTree[61]);
+            temp_tree_Bsig->Branch("Bsig_theta", &temp_BsigDataToTree[62]);
+            temp_tree_Bsig->Branch("Bsig_useCMSFrame_theta", &temp_BsigDataToTree[63]);
 
             // get Btag_info
             temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
