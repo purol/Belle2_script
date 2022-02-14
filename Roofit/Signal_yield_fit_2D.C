@@ -545,7 +545,7 @@ void Signal_yield_fit_2D()
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
 
     // fit
-    totalpdf.fitTo(info_DATA);
+    RooFitResult* r = totalpdf.fitTo(info_DATA, Save(), SumW2Error(false));
 
     //info_DATA.get(0)->Print("V");
     //info_DATA.get(1)->Print("V");
@@ -576,7 +576,7 @@ void Signal_yield_fit_2D()
     delete c;
 
     /* ============== Linearity test ============== */
-    BKG_total_Num = 0;
+    double BKG_total_Num = 0;
     BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_CHG);
     BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_MIX);
     BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_UUBAR);
