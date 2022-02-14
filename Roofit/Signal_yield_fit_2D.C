@@ -52,7 +52,7 @@ using namespace RooFit ;
 # define pi0_correction 0.932
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 
-# define EeclBins 20
+# define EeclBins 10
 # define OtherBins 3
 
 std::vector<double> Ns;
@@ -93,7 +93,7 @@ RooDataSet info_MC_background("2Dinfo", "2Dinfo_MC_background", RooArgSet(OBB_MC
 
 void LetsAdd(const char* dirname, RooRealVar* OBB_, RooRealVar*  Eecl_, RooRealVar* weight_, RooDataSet* info_, double weight_var = 1.0) {
     double Eecl_var = 0;
-    float OBB_var = 0;
+    double OBB_var = 0;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -286,6 +286,176 @@ void PrintUncertainties() {
     printf("Average relative uncertainty from KS0: %lf%%\n", avg_KS0_rel_uncertainty);
 }
 
+double GetEvtNum(const char* dirname, double weight_var = 1.0) {
+
+    double Total_Evt_Num = 0;
+
+    std::vector<string> names;
+    load_files(dirname, &names);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        Total_Evt_Num = Total_Evt_Num + weight_var * tree_upsilon->GetEntries();
+
+        input_file->Close();
+
+    }
+
+    return Total_Evt_Num;
+
+}
+
+void LinearityTest(RooFitResult* r, RooRealVar EeclFit, RooRealVar OBBFit, RooHistPdf histpdfSIGNAL, RooHistPdf histpdfBKG, double BKG_num) {
+    const int LT_number = 10;
+    const int LT_iterate_number = 1000;
+
+    RooArgSet fitargs = r->floatParsFinal();
+    TIterator* iter(fitargs.createIterator());
+
+    double N_nbkg = -1;
+    double N_nsig = -1;
+    double ERR_nbkg = -1;
+    double ERR_nsig = -1;
+
+    for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        double val = rrv->getVal();
+        double err = rrv->getError();
+        if (name == std::string("nbkg")) {
+            N_nbkg = val;
+            ERR_nbkg = err;
+        }
+        else if (name == std::string("nsig")) {
+            N_nsig = val;
+            ERR_nsig = err;
+        }
+    }
+
+    std::vector<double> n_sigs[LT_number];
+    std::vector<double> n_sigs_err[LT_number];
+    for (int i = 0; i < LT_number; i++) {
+
+        for (int j = 0; j < LT_iterate_number; j++) {
+            // produce toy MC sample
+            RooDataSet* d1 = histpdfSIGNAL.generate(RooArgSet(EeclFit, OBBFit), i);
+
+            int N_nbkg_int = round(BKG_num);
+            RooDataSet* genData = histpdfBKG.generate(RooArgSet(EeclFit, OBBFit), N_nbkg_int);
+
+            genData->append(*d1);
+
+            // construct fitting function
+            RooRealVar nsig("nsig", "number of signal events", 4.5, -100, 100);
+            RooExtendPdf esig("esignal", "extended signal p.d.f", histpdfSIGNAL, nsig);
+
+            RooRealVar nbkg("nbkg", "number of background events", 91, -1000, 1000);
+            RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdfBKG, nbkg);
+
+            RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
+
+            // fit
+            RooFitResult* result = totalpdf.fitTo(*genData, Verbose(false), PrintLevel(-1), Save());
+
+            RooArgSet fitargs_LT = result->floatParsFinal();
+            TIterator* iter_LT(fitargs_LT.createIterator());
+
+            for (TObject* a_LT = iter_LT->Next(); a_LT != 0; a_LT = iter_LT->Next()) {
+                RooRealVar* rrv_LT = dynamic_cast<RooRealVar*>(a_LT);
+                std::string name_LT = rrv_LT->GetName();
+                double val_LT = rrv_LT->getVal();
+                double err_LT = rrv_LT->getError();
+                if (name_LT == std::string("nsig")) {
+                    n_sigs[i].push_back(val_LT);
+                    n_sigs_err[i].push_back(err_LT);
+                }
+            }
+
+        }
+
+    }
+
+    // create root file
+    TFile* temp_file = new TFile("Linearity.root", "recreate");
+    temp_file->cd();
+    TTree* temp_tree = new TTree("Linearity", "");
+    double nsig_fit[LT_number];
+    double nsig_fit_err[LT_number];
+
+    for (int i = 0; i < LT_number; i++) temp_tree->Branch(("nsig_" + to_string(i)).c_str(), &nsig_fit[i]);
+    for (int i = 0; i < LT_number; i++) temp_tree->Branch(("nsig_error_" + to_string(i)).c_str(), &nsig_fit_err[i]);
+
+    for (int i = 0; i < LT_iterate_number; i++) {
+        for (int j = 0; j < LT_number; j++) {
+            nsig_fit[j] = n_sigs[j].at(i);
+            nsig_fit_err[j] = n_sigs_err[j].at(i);
+        }
+        temp_tree->Fill();
+    }
+    temp_tree->Write();
+    temp_file->Close();
+
+    // print png file
+    double Inputnsig[LT_number] = { 0 };
+    double Inputnsigerror[LT_number] = { 0 };
+    double outputnsig[LT_number] = { 0 };
+    double outputnsigerror[LT_number] = { 0 };
+    for (int i = 0; i < LT_number; i++) {
+        double nsig_avg = 0;
+        RooRealVar  nsig_roorealvar("nsig_roorealvar", "n_{sig}", -100, 150);
+        RooDataSet nsig_RooDataSet("nsig_RooDataSet", "nsig_RooDataSet", RooArgSet(nsig_roorealvar));
+        for (int j = 0; j < LT_iterate_number; j++) {
+            nsig_roorealvar = n_sigs[i].at(j);
+            nsig_RooDataSet.add(RooArgSet(nsig_roorealvar));
+            nsig_avg = nsig_avg + n_sigs[i].at(j);
+        }
+        nsig_avg = nsig_avg / LT_iterate_number;
+        RooRealVar gausmean("gausmean", "", nsig_avg, nsig_avg - ERR_nsig, nsig_avg + ERR_nsig);
+        RooRealVar gauswidth("gauswidth", "", ERR_nsig, 0, 2 * ERR_nsig);
+        RooGaussian gauss("gauss", "gauss", nsig_roorealvar, gausmean, gauswidth);
+        RooRealVar nentry("nentry", "number of entries", 1000, 900, 1100);
+        RooExtendPdf egauss("egauss", "extended gauss", gauss, nentry);
+        RooFitResult* result_LT = egauss.fitTo(nsig_RooDataSet, Save());
+
+        RooPlot* nsigframe = nsig_roorealvar.frame(Bins(400), Title(" "));
+        nsig_RooDataSet.plotOn(nsigframe);
+        egauss.plotOn(nsigframe, LineColor(kBlue));
+        egauss.paramOn(nsigframe);
+        TCanvas* c = new TCanvas("nsig_gauss_fit", "nsig_gauss_fit", 600, 600);
+        gPad->SetLeftMargin(0.15); nsigframe->GetYaxis()->SetTitleOffset(1.4); nsigframe->Draw(); c->SaveAs(("nsig_" + to_string(i) + "_distribution.png").c_str());
+
+        Inputnsig[i] = i;
+        Inputnsigerror[i] = 0;
+        outputnsig[i] = gausmean.getValV();
+        outputnsigerror[i] = gauswidth.getValV();
+
+        delete c;
+    }
+    gStyle->SetOptFit(010); gStyle->SetStatH(0.05);
+    TCanvas* c = new TCanvas("Linearity test canvas", "", 800, 800);
+    TGraphErrors* gr = new TGraphErrors(LT_number, Inputnsig, outputnsig, Inputnsigerror, outputnsigerror);
+    gr->SetMarkerStyle(21); gr->SetTitle(";input n_{sig};output n_{sig}");
+    gr->Fit("pol1"); gr->Draw("AP");
+    c->SaveAs("Linearity_test.png");
+
+    gr->SetMinimum(-1);
+    gr->SetMaximum(12.0);
+    gr->Draw("AP");
+    c->Modified(); c->Update(); c->SaveAs("Linearity_test_magnify.png");
+
+    delete gr;
+    delete c;
+
+    gStyle->SetOptFit(0); gStyle->SetStatH();
+
+}
+
 void Signal_yield_fit_2D()
 {
     // to extract signal yield
@@ -405,7 +575,15 @@ void Signal_yield_fit_2D()
     gPad->SetLeftMargin(0.15); OBBframe->GetYaxis()->SetTitleOffset(1.4); OBBframe->Draw(); c->SaveAs("OBB_distribution.png");
     delete c;
 
-
+    /* ============== Linearity test ============== */
+    BKG_total_Num = 0;
+    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_CHG);
+    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_MIX);
+    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_UUBAR);
+    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_DDBAR);
+    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_SSBAR);
+    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_CHARM);
+    LinearityTest(r, EeclFit, OBBFit, histpdf_signal, histpdf_background, BKG_total_Num);
 
     /* ============== toy MC study ============== */
     RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 5.0);

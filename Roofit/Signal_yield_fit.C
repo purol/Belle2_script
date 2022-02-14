@@ -286,6 +286,31 @@ void PrintUncertainties() {
     printf("Average relative uncertainty from KS0: %lf%%\n", avg_KS0_rel_uncertainty);
 }
 
+double GetEvtNum(const char* dirname, double weight_var = 1.0) {
+
+    double Total_Evt_Num = 0;
+
+    std::vector<string> names;
+    load_files(dirname, &names);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        Total_Evt_Num = Total_Evt_Num + weight_var * tree_upsilon->GetEntries();
+
+        input_file->Close();
+
+    }
+
+    return Total_Evt_Num;
+
+}
+
 void LinearityTest(RooFitResult* r, RooRealVar EeclFit) {
     const int LT_number = 10;
     const int LT_iterate_number = 1000;
@@ -408,13 +433,16 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit) {
     double outputnsig[LT_number] = { 0 };
     double outputnsigerror[LT_number] = { 0 };
     for (int i = 0; i < LT_number; i++) {
+        double nsig_avg = 0;
         RooRealVar  nsig_roorealvar("nsig_roorealvar", "n_{sig}", -100, 150);
         RooDataSet nsig_RooDataSet("nsig_RooDataSet", "nsig_RooDataSet", RooArgSet(nsig_roorealvar));
         for (int j = 0; j < LT_iterate_number; j++) {
             nsig_roorealvar = n_sigs[i].at(j);
             nsig_RooDataSet.add(RooArgSet(nsig_roorealvar));
+            nsig_avg = nsig_avg + n_sigs[i].at(j);
         }
-        RooRealVar gausmean("gausmean","",i, i - ERR_nsig, i + ERR_nsig);
+        nsig_avg = nsig_avg / LT_iterate_number;
+        RooRealVar gausmean("gausmean","", nsig_avg, nsig_avg - ERR_nsig, nsig_avg + ERR_nsig);
         RooRealVar gauswidth("gauswidth","", ERR_nsig, 0, 2* ERR_nsig);
         RooGaussian gauss("gauss","gauss", nsig_roorealvar,gausmean,gauswidth);
         RooRealVar nentry("nentry", "number of entries", 1000, 900, 1100);
