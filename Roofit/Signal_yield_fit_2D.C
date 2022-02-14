@@ -52,6 +52,9 @@ using namespace RooFit ;
 # define pi0_correction 0.932
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 
+# define EeclBins 20
+# define OtherBins 3
+
 std::vector<double> Ns;
 std::vector<int> ntracks;
 std::vector<int> npi0s;
@@ -73,18 +76,18 @@ void load_files(const char* dirname, std::vector<string>* names) {
     }
 }
 
-RooRealVar  OBB_DATA("OBB", "OBB_DATA", 0.6, 1.0);
-RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0, 2.8);
+RooRealVar  OBB_DATA("OBB", "OBB_DATA", 0.0, 3.0);
+RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0, 5.0);
 RooRealVar weight_DATA("weight", "weight_DATA", 0.0, 1.0);
 RooDataSet info_DATA("2Dinfo", "2Dinfo_DATA", RooArgSet(OBB_DATA, Eecl_DATA, weight_DATA), WeightVar("weight"));
 
-RooRealVar  OBB_MC_signal("OBB", "OBB_MC_signal", 0.6, 1.0);
-RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0, 2.8);
+RooRealVar  OBB_MC_signal("OBB", "OBB_MC_signal", 0.0, 3.0);
+RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0, 5.0);
 RooRealVar weight_MC_signal("weight", "weight_MC_signal", 0.0, 1.0);
 RooDataSet info_MC_signal("2Dinfo", "2Dinfo_MC_signal", RooArgSet(OBB_MC_signal, Eecl_MC_signal, weight_MC_signal), WeightVar("weight"));
 
-RooRealVar  OBB_MC_background("OBB", "OBB_MC_background", 0.6, 1.0);
-RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0, 2.8);
+RooRealVar  OBB_MC_background("OBB", "OBB_MC_background", 0.0, 3.0);
+RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0, 5.0);
 RooRealVar weight_MC_background("weight", "weight_MC_background", 0.0, 1.0);
 RooDataSet info_MC_background("2Dinfo", "2Dinfo_MC_background", RooArgSet(OBB_MC_background, Eecl_MC_background, weight_MC_background), WeightVar("weight"));
 
@@ -105,7 +108,7 @@ void LetsAdd(const char* dirname, RooRealVar* OBB_, RooRealVar*  Eecl_, RooRealV
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         tree_upsilon->SetBranchAddress("roeEextra__bocleanMask__bc", &Eecl_var); // Eecl
-        tree_upsilon->SetBranchAddress("MVA_BB", &OBB_var); // OBB
+        tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_pt", &OBB_var); // OBB
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -263,7 +266,7 @@ void PrintUncertainties() {
     double avg_pi0_rel_uncertainty = 0;
     double avg_KS0_rel_uncertainty = 0;
 
-    for (int j = 0; j < Ns.size(); j++) {
+    for (unsigned int j = 0; j < Ns.size(); j++) {
         corrected_N = corrected_N + corrected_Ns.at(j);
         avg_track_rel_uncertainty = avg_track_rel_uncertainty + corrected_Ns.at(j) * track_rel_uncertainties.at(j);
         avg_pi0_rel_uncertainty = avg_pi0_rel_uncertainty + corrected_Ns.at(j) * pi0_rel_uncertainties.at(j);
@@ -276,6 +279,7 @@ void PrintUncertainties() {
     double total_N = 0;
     for (unsigned int j = 0; j < Ns.size(); j++) total_N = total_N + Ns.at(j);
 
+    printf("total uncorrected signal num: %lf\n", total_N);
     printf("Average correction factor: %lf\n", corrected_N / total_N);
     printf("Average relative uncertainty from track: %lf%%\n", avg_track_rel_uncertainty);
     printf("Average relative uncertainty from pi0: %lf%%\n", avg_pi0_rel_uncertainty);
@@ -285,13 +289,13 @@ void PrintUncertainties() {
 void Signal_yield_fit_2D()
 {
     // to extract signal yield
-    RooRealVar EeclFit("Eecl", "Eecl", 0, 2.8, "GeV");
-    EeclFit.setBins(16);
-    RooPlot* Eeclframe = EeclFit.frame(Bins(16), Title(" "));
+    RooRealVar EeclFit("Eecl", "Eecl", 0, 5.0, "GeV");
+    EeclFit.setBins(EeclBins);
+    RooPlot* Eeclframe = EeclFit.frame(Bins(EeclBins), Title(" "));
 
-    RooRealVar OBBFit("OBB", "OBB", 0.6, 1.0, "");
-    OBBFit.setBins(10);
-    RooPlot* OBBframe = OBBFit.frame(Bins(10), Title(" "));
+    RooRealVar OBBFit("OBB", "OBB", 0.0, 3.0, "");
+    OBBFit.setBins(OtherBins);
+    RooPlot* OBBframe = OBBFit.frame(Bins(OtherBins), Title(" "));
 
     // get data from root files
     const char* MC_dirname_Knunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
@@ -348,24 +352,24 @@ void Signal_yield_fit_2D()
 
 
     // define frame and get ready to make pdfs
-    Eecl_DATA.setBins(16);
-    OBB_DATA.setBins(10);
+    Eecl_DATA.setBins(EeclBins);
+    OBB_DATA.setBins(OtherBins);
 
-    Eecl_MC_signal.setBins(16);
-    OBB_MC_signal.setBins(10);
+    Eecl_MC_signal.setBins(EeclBins);
+    OBB_MC_signal.setBins(OtherBins);
     RooDataHist hist_MC_signal("hist_MC_signal", "histogram for MC signal samples", RooArgSet(OBBFit, EeclFit), info_MC_signal);
 
-    Eecl_MC_background.setBins(16);
-    OBB_MC_background.setBins(10);
+    Eecl_MC_background.setBins(EeclBins);
+    OBB_MC_background.setBins(OtherBins);
     RooDataHist hist_MC_background("hist_MC_background", "histogram for MC background samples", RooArgSet(OBBFit, EeclFit), info_MC_background);
 
     // define pdf and extended pdf
     RooHistPdf histpdf_signal("histpdf_signal", "histpdf_signal", RooArgSet(OBBFit, EeclFit), hist_MC_signal, 0);
-    RooRealVar nsig("nsig", "number of signal events", 19, -500, 500);
+    RooRealVar nsig("nsig", "number of signal events", 4.5, -100, 100);
     RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_signal, nsig);
 
     RooHistPdf histpdf_background("histpdf_background", "histpdf_background", RooArgSet(OBBFit, EeclFit), hist_MC_background, 0);
-    RooRealVar nbkg("nbkg", "number of background events", 860, -10000, 10000);
+    RooRealVar nbkg("nbkg", "number of background events", 91, -1000, 1000);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_background, nbkg);
 
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -388,7 +392,7 @@ void Signal_yield_fit_2D()
     totalpdf.plotOn(OBBframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed));
 
     TCanvas* c = new TCanvas("OBBVSEecl", "OBBVSEecl", 600, 600);
-    TH1* hh_data = info_DATA.createHistogram("OBB,Eecl", 10, 16);
+    TH1* hh_data = info_DATA.createHistogram("OBB,Eecl", OtherBins, EeclBins);
     hh_data->Draw("lego"); c->SaveAs("OBBVSEecl_distribution.png");
     delete c;
     delete hh_data;
@@ -404,10 +408,10 @@ void Signal_yield_fit_2D()
 
 
     /* ============== toy MC study ============== */
-    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 2.8);
-    Eecl_TOY.setBins(16);
-    RooRealVar  OBB_TOY("OBB", "OBB_TOY", 0.6, 1.0);
-    OBB_TOY.setBins(10);
+    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 5.0);
+    Eecl_TOY.setBins(EeclBins);
+    RooRealVar  OBB_TOY("OBB", "OBB_TOY", 0.0, 3.0);
+    OBB_TOY.setBins(OtherBins);
 
     RooMCStudy* mcstudy = new RooMCStudy(totalpdf, RooArgList(OBB_TOY, Eecl_TOY), Binned(kTRUE), Silence(), Extended(),FitOptions(Save(kTRUE), PrintEvalErrors(0)));
     mcstudy->generateAndFit(1000);
