@@ -1,4 +1,4 @@
-// last update: 2022-02-11-00
+// last update: 2022-02-17-00
 // for Belle2 data
 
 /*
@@ -64,11 +64,19 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             int temp_flag;
             float temp_BB_output;
             float temp_Continuum_output;
+            double temp_nROE_mu;
+            double temp_nROE_Jpsi;
+            double temp_nROE_Upsilon_BCS;
+            double temp_nROE_Upsilon;
 
             bool DoesItHaveXsBranch = false;
             for (int i = 0; i < temp_tree->GetListOfBranches()->LastIndex(); i++) {
                 if (temp_tree->GetListOfBranches()->At(i)->GetName() == std::string("nParticlesInList__boB__pl__clKcharge_total__bc")) DoesItHaveXsBranch = true;
             }
+
+            bool DoesItHaveJpsiOutput = false;
+            if (temp_tree->FindLeaf("nParticlesInList__bomu__pl__clfromUpsilonmychargedMuon__bc") == 0 || temp_tree->FindLeaf("nParticlesInList__boJ__slpsi__clfromUpsilontemp__bc") == 0 || temp_tree->FindLeaf("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino_BCS__bc") == 0 || temp_tree->FindLeaf("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino__bc") == 0) DoesItHaveJpsiOutput = false;
+            else DoesItHaveJpsiOutput = true;
 
             // Get data
             /*================================================================*/
@@ -293,6 +301,19 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             // MLP
             temp_tree->SetBranchAddress("MVA_BB", &temp_BB_output);
             temp_tree->SetBranchAddress("MVA_Continuum", &temp_Continuum_output);
+
+            if (DoesItHaveJpsiOutput) {
+                temp_tree->SetBranchAddress("nParticlesInList__bomu__pl__clfromUpsilonmychargedMuon__bc", &temp_nROE_mu);
+                temp_tree->SetBranchAddress("nParticlesInList__boJ__slpsi__clfromUpsilontemp__bc", &temp_nROE_Jpsi);
+                temp_tree->SetBranchAddress("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino_BCS__bc", &temp_nROE_Upsilon_BCS);
+                temp_tree->SetBranchAddress("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino__bc", &temp_nROE_Upsilon);
+            }
+            else {
+                temp_nROE_mu = -1.0;
+                temp_nROE_Jpsi = -1.0;
+                temp_nROE_Upsilon_BCS = -1.0;
+                temp_nROE_Upsilon = -1.0;
+            }
             /*================================================================*/
 
 
@@ -533,6 +554,13 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
 
             temp_tree_upsilon->Branch("MVA_BB", &temp_BB_output);
             temp_tree_upsilon->Branch("MVA_Continuum", &temp_Continuum_output);
+
+            if (DoesItHaveJpsiOutput) {
+                temp_tree_upsilon->Branch("nParticlesInList__bomu__pl__clfromUpsilonmychargedMuon__bc", &temp_nROE_mu);
+                temp_tree_upsilon->Branch("nParticlesInList__boJ__slpsi__clfromUpsilontemp__bc", &temp_nROE_Jpsi);
+                temp_tree_upsilon->Branch("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino_BCS__bc", &temp_nROE_Upsilon_BCS);
+                temp_tree_upsilon->Branch("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino__bc", &temp_nROE_Upsilon);
+            }
 
             /*================================================================*/
 
