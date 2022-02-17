@@ -1,4 +1,4 @@
-// last update: 2022-02-11
+// last update: 2022-02-17
 // for Belle2 data
 
 /*
@@ -215,6 +215,11 @@ typedef struct data{
     float MVA_BB;
     float MVA_Continuum;
 
+    double nROE_mu;
+    double nROE_Jpsi;
+    double nROE_Upsilon_BCS;
+    double nROE_Upsilon;
+
 } Data; 
 
 class Loader {
@@ -350,6 +355,7 @@ private:
     int current_file;
     bool AllOfThemHaveXsBranch;
     bool AllOfThemHaveMVAOutput;
+    bool AllOfThemHaveJpsiOutput;
 
     std::vector<THStack*> THStacks;
     std::vector<TH1F*> TH1Fs_THStack[Loader::MAX_NUM_DECAYMODE];
@@ -379,9 +385,14 @@ private:
     double Bsig_decayIDToTree;
     float MVA_BB_DataToTree;
     float MVA_Continuum_DataToTree;
+    double nROE_mu_DataToTree;
+    double nROE_Jpsi_DataToTree;
+    double nROE_Upsilon_BCS_DataToTree;
+    double nROE_Upsilon_DataToTree;
 
     bool DoesItHaveXsBranch;
     bool DoesItHaveMVAOutput;
+    bool DoesItHaveJpsiOutput;
 
     bool TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode);
     bool TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymodeMC);
@@ -429,8 +440,10 @@ Loader::Loader() {
     current_THStack = 0;
     DoesItHaveXsBranch = false;
     DoesItHaveMVAOutput = false;
+    DoesItHaveJpsiOutput = false;
     AllOfThemHaveXsBranch = true;
     AllOfThemHaveMVAOutput = true;
+    AllOfThemHaveJpsiOutput = true;
     current_Confusion_matrix = 0;
     for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) { // initialization
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) {
@@ -465,6 +478,7 @@ void Loader::initialize() {
     current_THStack = 0;
     DoesItHaveXsBranch = false;
     DoesItHaveMVAOutput = false;
+    DoesItHaveJpsiOutput = false;
     current_Confusion_matrix = 0;
     Confusion_matrixIsOn = false;
     current_FOM = 0;
@@ -495,6 +509,11 @@ void Loader::GetData(TFile* input_file) {
     if (tree_upsilon->FindLeaf("MVA_BB") == 0 || tree_upsilon->FindLeaf("MVA_Continuum") == 0) DoesItHaveMVAOutput = false;
     else DoesItHaveMVAOutput = true;
     if (DoesItHaveMVAOutput == false) AllOfThemHaveMVAOutput = false;
+
+    DoesItHaveJpsiOutput = false;
+    if (tree_upsilon->FindLeaf("nParticlesInList__bomu__pl__clfromUpsilonmychargedMuon__bc") == 0 || tree_upsilon->FindLeaf("nParticlesInList__boJ__slpsi__clfromUpsilontemp__bc") == 0 || tree_upsilon->FindLeaf("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino_BCS__bc") == 0 || tree_upsilon->FindLeaf("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino__bc") == 0) DoesItHaveJpsiOutput = false;
+    else DoesItHaveJpsiOutput = true;
+    if (DoesItHaveJpsiOutput == false) AllOfThemHaveJpsiOutput = false;
 
     Data temp = { 0 };
 
@@ -733,6 +752,19 @@ void Loader::GetData(TFile* input_file) {
     else {
         temp.MVA_BB = -1.0f;
         temp.MVA_Continuum = -1.0f;
+    }
+
+    if (DoesItHaveJpsiOutput) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clfromUpsilonmychargedMuon__bc", &temp.nROE_mu);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boJ__slpsi__clfromUpsilontemp__bc", &temp.nROE_Jpsi);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino_BCS__bc", &temp.nROE_Upsilon_BCS);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino__bc", &temp.nROE_Upsilon);
+    }
+    else {
+        temp.nROE_mu = -1.0;
+        temp.nROE_Jpsi = -1.0;
+        temp.nROE_Upsilon_BCS = -1.0;
+        temp.nROE_Upsilon = -1.0;
     }
 
     printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -1921,6 +1953,11 @@ void Loader::PrintRootFile(std::string output_name) {
 
         tree_upsilon->Branch("MVA_BB", &MVA_BB_DataToTree);
         tree_upsilon->Branch("MVA_Continuum", &MVA_Continuum_DataToTree);
+
+        tree_upsilon->Branch("nParticlesInList__bomu__pl__clfromUpsilonmychargedMuon__bc", &nROE_mu_DataToTree);
+        tree_upsilon->Branch("nParticlesInList__boJ__slpsi__clfromUpsilontemp__bc", &nROE_Jpsi_DataToTree);
+        tree_upsilon->Branch("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino_BCS__bc", &nROE_Upsilon_BCS_DataToTree);
+        tree_upsilon->Branch("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino__bc", &nROE_Upsilon_DataToTree);
         /*================================================================*/
         files.push_back(file);
         trees_upsilon.push_back(tree_upsilon);
@@ -1971,6 +2008,11 @@ void Loader::PrintRootFile(std::string output_name) {
         MVA_BB_DataToTree = temp.MVA_BB;
         MVA_Continuum_DataToTree = temp.MVA_Continuum;
 
+        nROE_mu_DataToTree = temp.nROE_mu;
+        nROE_Jpsi_DataToTree = temp.nROE_Jpsi;
+        nROE_Upsilon_BCS_DataToTree = temp.nROE_Upsilon_BCS;
+        nROE_Upsilon_DataToTree = temp.nROE_Upsilon;
+
         temp_tree_upsilon->Fill();
         temp_tree_Bsig->Fill();
         temp_tree_Btag->Fill();
@@ -2005,6 +2047,11 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
 
     float temp_MVA_BB_DataToTree;
     float temp_MVA_Continuum_DataToTree;
+
+    double temp_nROE_mu;
+    double temp_nROE_Jpsi;
+    double temp_nROE_Upsilon_BCS;
+    double temp_nROE_Upsilon;
 
     /*================================================================*/
     // get event_info
@@ -2243,6 +2290,19 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_MVA_BB_DataToTree = -1.0f;
         temp_MVA_Continuum_DataToTree = -1.0f;
     }
+
+    if (DoesItHaveJpsiOutput) {
+        temp_tree_upsilon->Branch("nParticlesInList__bomu__pl__clfromUpsilonmychargedMuon__bc", &temp_nROE_mu);
+        temp_tree_upsilon->Branch("nParticlesInList__boJ__slpsi__clfromUpsilontemp__bc", &temp_nROE_Jpsi);
+        temp_tree_upsilon->Branch("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino_BCS__bc", &temp_nROE_Upsilon_BCS);
+        temp_tree_upsilon->Branch("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino__bc", &temp_nROE_Upsilon);
+    }
+    else {
+        temp_nROE_mu = -1.0;
+        temp_nROE_Jpsi = -1.0;
+        temp_nROE_Upsilon_BCS = -1.0;
+        temp_nROE_Upsilon = -1.0;
+    }
     /*================================================================*/
 
     std::queue<Data> temp_queue;
@@ -2274,6 +2334,12 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         if (DoesItHaveMVAOutput) {
             temp_MVA_BB_DataToTree = temp.MVA_BB;
             temp_MVA_Continuum_DataToTree = temp.MVA_Continuum;
+        }
+        if (DoesItHaveJpsiOutput) {
+            temp_nROE_mu = temp.nROE_mu;
+            temp_nROE_Jpsi = temp.nROE_Jpsi;
+            temp_nROE_Upsilon_BCS = temp.nROE_Upsilon_BCS;
+            temp_nROE_Upsilon = temp.nROE_Upsilon;
         }
 
         temp_tree_upsilon->Fill();
@@ -2311,6 +2377,11 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
 
     float temp_MVA_BB_DataToTree;
     float temp_MVA_Continuum_DataToTree;
+
+    double temp_nROE_mu_DataToTree;
+    double temp_nROE_Jpsi_DataToTree;
+    double temp_nROE_Upsilon_BCS_DataToTree;
+    double temp_nROE_Upsilon_DataToTree;
 
     /*================================================================*/
     // get event_info
@@ -2540,6 +2611,19 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
         temp_MVA_Continuum_DataToTree = -1.0f;
     }
 
+    if (DoesItHaveJpsiOutput) {
+        temp_tree->Branch("nParticlesInList__bomu__pl__clfromUpsilonmychargedMuon__bc", &temp_nROE_mu_DataToTree);
+        temp_tree->Branch("nParticlesInList__boJ__slpsi__clfromUpsilontemp__bc", &temp_nROE_Jpsi_DataToTree);
+        temp_tree->Branch("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino_BCS__bc", &temp_nROE_Upsilon_BCS_DataToTree);
+        temp_tree->Branch("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino__bc", &temp_nROE_Upsilon_DataToTree);
+    }
+    else {
+        temp_nROE_mu_DataToTree = -1.0;
+        temp_nROE_Jpsi_DataToTree = -1.0;
+        temp_nROE_Upsilon_BCS_DataToTree = -1.0;
+        temp_nROE_Upsilon_DataToTree = -1.0;
+    }
+
     // flag
     temp_tree->Branch("flag", &temp_flag);
     /*================================================================*/
@@ -2574,6 +2658,13 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
         if (DoesItHaveMVAOutput) {
             temp_MVA_BB_DataToTree = temp.MVA_BB;
             temp_MVA_Continuum_DataToTree = temp.MVA_Continuum;
+        }
+
+        if (DoesItHaveJpsiOutput) {
+            temp_nROE_mu_DataToTree = temp.nROE_mu;
+            temp_nROE_Jpsi_DataToTree = temp.nROE_Jpsi;
+            temp_nROE_Upsilon_BCS_DataToTree = temp.nROE_Upsilon_BCS;
+            temp_nROE_Upsilon_DataToTree = temp.nROE_Upsilon;
         }
 
         temp_flag = flag;
