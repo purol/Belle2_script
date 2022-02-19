@@ -52,8 +52,8 @@ using namespace RooFit ;
 # define pi0_correction 0.932
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 
-# define EeclBins 10
-# define OtherBins 3
+# define EeclBins 5
+# define OtherBins 5
 
 std::vector<double> Ns;
 std::vector<int> ntracks;
@@ -77,17 +77,17 @@ void load_files(const char* dirname, std::vector<string>* names) {
 }
 
 RooRealVar  OBB_DATA("OBB", "OBB_DATA", 0.0, 3.0);
-RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0, 5.0);
+RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0, 4.0);
 RooRealVar weight_DATA("weight", "weight_DATA", 0.0, 1.0);
 RooDataSet info_DATA("2Dinfo", "2Dinfo_DATA", RooArgSet(OBB_DATA, Eecl_DATA, weight_DATA), WeightVar("weight"));
 
 RooRealVar  OBB_MC_signal("OBB", "OBB_MC_signal", 0.0, 3.0);
-RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0, 5.0);
+RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0, 4.0);
 RooRealVar weight_MC_signal("weight", "weight_MC_signal", 0.0, 1.0);
 RooDataSet info_MC_signal("2Dinfo", "2Dinfo_MC_signal", RooArgSet(OBB_MC_signal, Eecl_MC_signal, weight_MC_signal), WeightVar("weight"));
 
 RooRealVar  OBB_MC_background("OBB", "OBB_MC_background", 0.0, 3.0);
-RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0, 5.0);
+RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0, 4.0);
 RooRealVar weight_MC_background("weight", "weight_MC_background", 0.0, 1.0);
 RooDataSet info_MC_background("2Dinfo", "2Dinfo_MC_background", RooArgSet(OBB_MC_background, Eecl_MC_background, weight_MC_background), WeightVar("weight"));
 
@@ -352,10 +352,10 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, RooRealVar OBBFit, RooHi
             genData->append(*d1);
 
             // construct fitting function
-            RooRealVar nsig("nsig", "number of signal events", 4.5, -100, 100);
+            RooRealVar nsig("nsig", "number of signal events", 2.5, -60, 60);
             RooExtendPdf esig("esignal", "extended signal p.d.f", histpdfSIGNAL, nsig);
 
-            RooRealVar nbkg("nbkg", "number of background events", 91, -1000, 1000);
+            RooRealVar nbkg("nbkg", "number of background events", 150, 50, 300);
             RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdfBKG, nbkg);
 
             RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -408,7 +408,7 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, RooRealVar OBBFit, RooHi
     double outputnsigerror[LT_number] = { 0 };
     for (int i = 0; i < LT_number; i++) {
         double nsig_avg = 0;
-        RooRealVar  nsig_roorealvar("nsig_roorealvar", "n_{sig}", -100, 150);
+        RooRealVar  nsig_roorealvar("nsig_roorealvar", "n_{sig}", -60, 60);
         RooDataSet nsig_RooDataSet("nsig_RooDataSet", "nsig_RooDataSet", RooArgSet(nsig_roorealvar));
         for (int j = 0; j < LT_iterate_number; j++) {
             nsig_roorealvar = n_sigs[i].at(j);
@@ -459,7 +459,7 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, RooRealVar OBBFit, RooHi
 void Signal_yield_fit_2D()
 {
     // to extract signal yield
-    RooRealVar EeclFit("Eecl", "Eecl", 0, 5.0, "GeV");
+    RooRealVar EeclFit("Eecl", "Eecl", 0, 4.0, "GeV");
     EeclFit.setBins(EeclBins);
     RooPlot* Eeclframe = EeclFit.frame(Bins(EeclBins), Title(" "));
 
@@ -468,12 +468,12 @@ void Signal_yield_fit_2D()
     RooPlot* OBBframe = OBBFit.frame(Bins(OtherBins), Title(" "));
 
     // get data from root files
-    const char* MC_dirname_Knunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* MC_dirname_Kstarnunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* MC_dirname_Xsununu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* MC_dirname_K0nunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* MC_dirname_K0starnunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* MC_dirname_Xsdnunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* MC_dirname_Knunu = "./SampleForFitv003/Knunu1/Merge";
+    const char* MC_dirname_Kstarnunu = "./SampleForFitv003/Kstarnunu1/Merge";
+    const char* MC_dirname_Xsununu = "./SampleForFitv003/Xsununu1/Merge";
+    const char* MC_dirname_K0nunu = "./SampleForFitv003/K0nunu1/Merge";
+    const char* MC_dirname_K0starnunu = "./SampleForFitv003/K0starnunu1/Merge";
+    const char* MC_dirname_Xsdnunu = "./SampleForFitv003/Xsdnunu1/Merge";
     LetsAdd(MC_dirname_Knunu, &OBB_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Kplus);
     LetsAdd(MC_dirname_Kstarnunu, &OBB_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Kplusstar);
     LetsAdd(MC_dirname_Xsununu, &OBB_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Xsu_nonresonant);
@@ -481,12 +481,12 @@ void Signal_yield_fit_2D()
     LetsAdd(MC_dirname_K0starnunu, &OBB_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_K0star);
     LetsAdd(MC_dirname_Xsdnunu, &OBB_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Xsd_nonresonant);
 
-    const char* MC_dirname_CHG = "./CHG_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_MIX = "./MIX_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_UUBAR = "./UUBAR_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_DDBAR = "./DDBAR_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_SSBAR = "./SSBAR_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_CHARM = "./CHARM_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHG = "./SampleForFitv003/CHG1/Merge";
+    const char* MC_dirname_MIX = "./SampleForFitv003/MIX1/Merge";
+    const char* MC_dirname_UUBAR = "./SampleForFitv003/UUBAR1/Merge";
+    const char* MC_dirname_DDBAR = "./SampleForFitv003/DDBAR1/Merge";
+    const char* MC_dirname_SSBAR = "./SampleForFitv003/SSBAR1/Merge";
+    const char* MC_dirname_CHARM = "./SampleForFitv003/CHARM1/Merge";
     LetsAdd(MC_dirname_CHG, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_MIX, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_UUBAR, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
@@ -494,12 +494,12 @@ void Signal_yield_fit_2D()
     LetsAdd(MC_dirname_SSBAR, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_CHARM, &OBB_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
 
-    const char* DATA_dirname_Knunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* DATA_dirname_Kstarnunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* DATA_dirname_Xsununu = "./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* DATA_dirname_K0nunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* DATA_dirname_K0starnunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* DATA_dirname_Xsdnunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* DATA_dirname_Knunu = "./SampleForFitv003/Knunu2/Merge";
+    const char* DATA_dirname_Kstarnunu = "./SampleForFitv003/Kstarnunu2/Merge";
+    const char* DATA_dirname_Xsununu = "./SampleForFitv003/Xsununu2/Merge";
+    const char* DATA_dirname_K0nunu = "./SampleForFitv003/K0nunu2/Merge";
+    const char* DATA_dirname_K0starnunu = "./SampleForFitv003/K0starnunu2/Merge";
+    const char* DATA_dirname_Xsdnunu = "./SampleForFitv003/Xsdnunu2/Merge";
     LetsAdd(DATA_dirname_Knunu, &OBB_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplus);
     LetsAdd(DATA_dirname_Kstarnunu, &OBB_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplusstar);
     LetsAdd(DATA_dirname_Xsununu, &OBB_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsu_nonresonant);
@@ -507,12 +507,12 @@ void Signal_yield_fit_2D()
     LetsAdd(DATA_dirname_K0starnunu, &OBB_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0star);
     LetsAdd(DATA_dirname_Xsdnunu, &OBB_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsd_nonresonant);
 
-    const char* DATA_dirname_CHG = "./CHG_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_MIX = "./MIX_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_UUBAR = "./UUBAR_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_DDBAR = "./DDBAR_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_SSBAR = "./SSBAR_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_CHARM = "./CHARM_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_CHG = "./SampleForFitv003/CHG2/Merge";
+    const char* DATA_dirname_MIX = "./SampleForFitv003/MIX2/Merge";
+    const char* DATA_dirname_UUBAR = "./SampleForFitv003/UUBAR2/Merge";
+    const char* DATA_dirname_DDBAR = "./SampleForFitv003/DDBAR2/Merge";
+    const char* DATA_dirname_SSBAR = "./SampleForFitv003/SSBAR2/Merge";
+    const char* DATA_dirname_CHARM = "./SampleForFitv003/CHARM2/Merge";
     LetsAdd(DATA_dirname_CHG, &OBB_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
     LetsAdd(DATA_dirname_MIX, &OBB_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
     LetsAdd(DATA_dirname_UUBAR, &OBB_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
@@ -535,16 +535,17 @@ void Signal_yield_fit_2D()
 
     // define pdf and extended pdf
     RooHistPdf histpdf_signal("histpdf_signal", "histpdf_signal", RooArgSet(OBBFit, EeclFit), hist_MC_signal, 0);
-    RooRealVar nsig("nsig", "number of signal events", 4.5, -100, 100);
+    RooRealVar nsig("nsig", "number of signal events", 2.5, -60, 60);
     RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_signal, nsig);
 
     RooHistPdf histpdf_background("histpdf_background", "histpdf_background", RooArgSet(OBBFit, EeclFit), hist_MC_background, 0);
-    RooRealVar nbkg("nbkg", "number of background events", 91, -1000, 1000);
+    RooRealVar nbkg("nbkg", "number of background events", 150, 50, 300);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_background, nbkg);
 
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
 
     // fit
+//    RooDataHist binned_data("binned data", "binned data", RooArgSet(OBBFit, EeclFit), info_DATA);
     RooFitResult* r = totalpdf.fitTo(info_DATA, Save(), SumW2Error(false));
 
     //info_DATA.get(0)->Print("V");
@@ -586,7 +587,7 @@ void Signal_yield_fit_2D()
     LinearityTest(r, EeclFit, OBBFit, histpdf_signal, histpdf_background, BKG_total_Num);
 
     /* ============== toy MC study ============== */
-    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 5.0);
+    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 4.0);
     Eecl_TOY.setBins(EeclBins);
     RooRealVar  OBB_TOY("OBB", "OBB_TOY", 0.0, 3.0);
     OBB_TOY.setBins(OtherBins);
@@ -609,11 +610,11 @@ void Signal_yield_fit_2D()
     cf->SaveAs("ToyStudy.png");
 
     // calculate uncertainties
-    LetsCalculateUncertainties(MC_dirname_Knunu, Scale_Kplus);
-    LetsCalculateUncertainties(MC_dirname_Kstarnunu, Scale_Kplusstar);
-    LetsCalculateUncertainties(MC_dirname_Xsununu, Scale_Xsu_nonresonant);
-    LetsCalculateUncertainties(MC_dirname_K0nunu, Scale_K0);
-    LetsCalculateUncertainties(MC_dirname_K0starnunu, Scale_K0star);
-    LetsCalculateUncertainties(MC_dirname_Xsdnunu, Scale_Xsd_nonresonant);
+    LetsCalculateUncertainties(DATA_dirname_Knunu, Scale_Kplus);
+    LetsCalculateUncertainties(DATA_dirname_Kstarnunu, Scale_Kplusstar);
+    LetsCalculateUncertainties(DATA_dirname_Xsununu, Scale_Xsu_nonresonant);
+    LetsCalculateUncertainties(DATA_dirname_K0nunu, Scale_K0);
+    LetsCalculateUncertainties(DATA_dirname_K0starnunu, Scale_K0star);
+    LetsCalculateUncertainties(DATA_dirname_Xsdnunu, Scale_Xsd_nonresonant);
     PrintUncertainties();
 }
