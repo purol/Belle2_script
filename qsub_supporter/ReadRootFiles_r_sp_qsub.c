@@ -1,4 +1,4 @@
-// last update: 2022-02-17
+// last update: 2022-02-19
 // for Belle2 data
 
 /*
@@ -425,6 +425,7 @@ public:
     void PrintFOM(Loader::ScaleFactor scaleFactor_ = Loader::None);
     void MVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
     void CountMCEvent();
+    void SelectDecayModeOf(Loader::DecayMode decaymode);
 };
 
 Loader::Loader() {
@@ -3273,6 +3274,18 @@ void Loader::CountMCEvent() {
 
     MCcountOn = true;
     current_MCcount++;
+}
+
+void Loader::SelectDecayModeOf(Loader::DecayMode decaymode)() {
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+
+        if (TrueIfDecayModeMatch(temp_data, decaymode)) temp_queue.push(temp_data);
+
+    }
+    TotalData.swap(temp_queue);
 }
 
 int main(int argc, char* argv[]) { // argv[1]: Ntuple input with path, argv[2]: destination of output, 
