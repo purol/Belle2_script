@@ -3220,7 +3220,7 @@ void Loader::CountMCEvent() {
     current_MCcount++;
 }
 
-void Loader::SelectDecayModeOf(Loader::DecayMode decaymode)() {
+void Loader::SelectDecayModeOf(Loader::DecayMode decaymode) {
     std::queue<Data> temp_queue;
     while (!TotalData.empty()) {
         Data temp_data = TotalData.front();
