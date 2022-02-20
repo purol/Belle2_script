@@ -78,8 +78,8 @@ TH1F* OBB_SIGNAL_test = new TH1F("OBB_SIGNAL_test", ";O_{BB};", 40, 0, 1.0);
 TH1F* Oqq_SIGNAL_test = new TH1F("Oqq_SIGNAL_test", ";O_{qq};", 40, 0, 1.0);
 
 void LetsFill(const char* dirname, TH2F* OBB_Oqq_hist, TH1F* OBB_hist, TH1F* Oqq_hist, double weight_var = 1.0) {
-    double OBB_var = 0;
-    double Oqq_var = 0;
+    float OBB_var = 0;
+    float Oqq_var = 0;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -94,7 +94,7 @@ void LetsFill(const char* dirname, TH2F* OBB_Oqq_hist, TH1F* OBB_hist, TH1F* Oqq
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         tree_upsilon->SetBranchAddress("MVA_BB", &OBB_var);
-        tree_Btag->SetBranchAddress("MVA_Continuum", &Oqq_var);
+        tree_upsilon->SetBranchAddress("MVA_Continuum", &Oqq_var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -103,8 +103,8 @@ void LetsFill(const char* dirname, TH2F* OBB_Oqq_hist, TH1F* OBB_hist, TH1F* Oqq
             tree_Btag->GetEntry(j);
             
             OBB_Oqq_hist->Fill(OBB_var, Oqq_var, weight_var);
-            OBB_hist->Fill(OBB_var, Oqq_var, weight_var);
-            Oqq_hist->Fill(OBB_var, Oqq_var, weight_var);
+            OBB_hist->Fill(OBB_var, weight_var);
+            Oqq_hist->Fill(Oqq_var, weight_var);
         }
         input_file->Close();
 
@@ -116,12 +116,12 @@ void FastBDT_output_KS_test()
 {
 
     // get data from root files
-    const char* train_dirname_Knunu = "./SIGNAL_analysis/train_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* train_dirname_Kstarnunu = "./SIGNAL_analysis/train_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* train_dirname_Xsununu = "./SIGNAL_analysis/train_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* train_dirname_K0nunu = "./SIGNAL_analysis/train_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* train_dirname_K0starnunu = "./SIGNAL_analysis/train_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* train_dirname_Xsdnunu = "./SIGNAL_analysis/train_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* train_dirname_Knunu = "./temp_v005_train/B2Knunu";
+    const char* train_dirname_Kstarnunu = "./temp_v005_train/B2Kstarnunu";
+    const char* train_dirname_Xsununu = "./temp_v005_train/B2Xsnunu";
+    const char* train_dirname_K0nunu = "./temp_v005_train/B02K0nunu";
+    const char* train_dirname_K0starnunu = "./temp_v005_train/B02K0starnunu";
+    const char* train_dirname_Xsdnunu = "./temp_v005_train/B02Xsnunu";
     LetsFill(train_dirname_Knunu, OBB_Oqq_SIGNAL_train, OBB_SIGNAL_train, Oqq_SIGNAL_train, Scale_Kplus);
     LetsFill(train_dirname_Kstarnunu, OBB_Oqq_SIGNAL_train, OBB_SIGNAL_train, Oqq_SIGNAL_train, Scale_Kplusstar);
     LetsFill(train_dirname_Xsununu, OBB_Oqq_SIGNAL_train, OBB_SIGNAL_train, Oqq_SIGNAL_train, Scale_Xsu_nonresonant);
@@ -129,24 +129,15 @@ void FastBDT_output_KS_test()
     LetsFill(train_dirname_K0starnunu, OBB_Oqq_SIGNAL_train, OBB_SIGNAL_train, Oqq_SIGNAL_train, Scale_K0star);
     LetsFill(train_dirname_Xsdnunu, OBB_Oqq_SIGNAL_train, OBB_SIGNAL_train, Oqq_SIGNAL_train, Scale_Xsd_nonresonant);
 
-    const char* train_dirname_CHG = "./CHG_analysis/train_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* train_dirname_MIX = "./MIX_analysis/train_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* train_dirname_UUBAR = "./UUBAR_analysis/train_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* train_dirname_DDBAR = "./DDBAR_analysis/train_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* train_dirname_SSBAR = "./SSBAR_analysis/train_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* train_dirname_CHARM = "./CHARM_analysis/train_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    LetsFill(train_dirname_CHG, OBB_Oqq_BKG_train, OBB_BKG_train, Oqq_BKG_train);
-    LetsFill(train_dirname_MIX, OBB_Oqq_BKG_train, OBB_BKG_train, Oqq_BKG_train);
-    LetsFill(train_dirname_UUBAR, OBB_Oqq_BKG_train, OBB_BKG_train, Oqq_BKG_train);
-    LetsFill(train_dirname_DDBAR, OBB_Oqq_BKG_train, OBB_BKG_train, Oqq_BKG_train);
-    LetsFill(train_dirname_CHARM, OBB_Oqq_BKG_train, OBB_BKG_train, Oqq_BKG_train);
+    const char* train_dirname_BKG = "./temp_v005_train/BKG";
+    LetsFill(train_dirname_BKG, OBB_Oqq_BKG_train, OBB_BKG_train, Oqq_BKG_train);
 
-    const char* test_dirname_Knunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* test_dirname_Kstarnunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* test_dirname_Xsununu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* test_dirname_K0nunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* test_dirname_K0starnunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* test_dirname_Xsdnunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* test_dirname_Knunu = "./temp_v005/B2Knunu";
+    const char* test_dirname_Kstarnunu = "./temp_v005/B2Kstarnunu";
+    const char* test_dirname_Xsununu = "./temp_v005/B2Xsnunu";
+    const char* test_dirname_K0nunu = "./temp_v005/B02K0nunu";
+    const char* test_dirname_K0starnunu = "./temp_v005/B02K0starnunu";
+    const char* test_dirname_Xsdnunu = "./temp_v005/B02Xsnunu";
     LetsFill(test_dirname_Knunu, OBB_Oqq_SIGNAL_test, OBB_SIGNAL_test, Oqq_SIGNAL_test, Scale_Kplus);
     LetsFill(test_dirname_Kstarnunu, OBB_Oqq_SIGNAL_test, OBB_SIGNAL_test, Oqq_SIGNAL_test, Scale_Kplusstar);
     LetsFill(test_dirname_Xsununu, OBB_Oqq_SIGNAL_test, OBB_SIGNAL_test, Oqq_SIGNAL_test, Scale_Xsu_nonresonant);
@@ -154,17 +145,10 @@ void FastBDT_output_KS_test()
     LetsFill(test_dirname_K0starnunu, OBB_Oqq_SIGNAL_test, OBB_SIGNAL_test, Oqq_SIGNAL_test, Scale_K0star);
     LetsFill(test_dirname_Xsdnunu, OBB_Oqq_SIGNAL_test, OBB_SIGNAL_test, Oqq_SIGNAL_test, Scale_Xsd_nonresonant);
 
-    const char* test_dirname_CHG = "./CHG_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* test_dirname_MIX = "./MIX_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* test_dirname_UUBAR = "./UUBAR_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* test_dirname_DDBAR = "./DDBAR_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* test_dirname_SSBAR = "./SSBAR_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* test_dirname_CHARM = "./CHARM_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    LetsFill(test_dirname_CHG, OBB_Oqq_BKG_test, OBB_BKG_test, Oqq_BKG_test);
-    LetsFill(test_dirname_MIX, OBB_Oqq_BKG_test, OBB_BKG_test, Oqq_BKG_test);
-    LetsFill(test_dirname_UUBAR, OBB_Oqq_BKG_test, OBB_BKG_test, Oqq_BKG_test);
-    LetsFill(test_dirname_DDBAR, OBB_Oqq_BKG_test, OBB_BKG_test, Oqq_BKG_test);
-    LetsFill(test_dirname_CHARM, OBB_Oqq_BKG_test, OBB_BKG_test, Oqq_BKG_test);
+    const char* test_dirname_BKG = "./temp_v005/BKG";
+    LetsFill(test_dirname_BKG, OBB_Oqq_BKG_test, OBB_BKG_test, Oqq_BKG_test);
+
+    double factor = 1.0;
 
     // normalization
     OBB_Oqq_SIGNAL_train->Scale(factor / OBB_Oqq_SIGNAL_train->Integral(), "width");
@@ -223,14 +207,16 @@ void FastBDT_output_KS_test()
     printf("p value SIGNAL: %lf\n", p_value_SIGNAL);
     printf("p value BKG: %lf\n", p_value_BKG);
 
+    gStyle->SetOptStat(0);
+
     TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd();
-    OBB_SIGNAL_train->Draw("Hist"); OBB_BKG_train->Draw("HistSAME");
-    OBB_SIGNAL_test->Draw("SAME"); OBB_BKG_test->Draw("SAME");
+    OBB_BKG_train->Draw("Hist"); OBB_SIGNAL_train->Draw("HistSAME");
+    OBB_BKG_test->Draw("SAME"); OBB_SIGNAL_test->Draw("SAME");
     c_temp->SaveAs("OBB_Plot.png");
 
     TCanvas* c_temp_2 = new TCanvas("c2", "", 600, 600); c_temp->cd();
-    Oqq_SIGNAL_train->Draw("Hist"); Oqq_BKG_train->Draw("HistSAME");
-    Oqq_SIGNAL_test->Draw("SAME"); Oqq_BKG_test->Draw("SAME");
+    Oqq_BKG_train->Draw("Hist"); Oqq_SIGNAL_train->Draw("HistSAME");
+    Oqq_BKG_test->Draw("SAMEP"); Oqq_SIGNAL_test->Draw("SAMEP");
     c_temp->SaveAs("Oqq_Plot.png");
 
 }
