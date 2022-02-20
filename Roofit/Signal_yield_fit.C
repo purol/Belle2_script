@@ -374,7 +374,7 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
             RooRealVar alpha_LT("alpha_LT", "alpha_LT", -0.85);
             RooRealVar n_LT("n_LT", "n_LT", 60);
             RooCBShape histpdf_Eecl_signal_LT("genpdfs_LT", "genpdfs_LT", EeclFit, m0_LT, sigma_LT, alpha_LT, n_LT);
-            RooRealVar nsig("nsig", "n_{sig}", 7.5, -100, 150);
+            RooRealVar nsig("nsig", "n_{sig}", 7.5, -100, 100);
             RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal_LT, nsig);
 
             RooRealVar m0b_LT("m0b_LT", "m0b_LT", 1.6);
@@ -383,7 +383,7 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
             RooRealVar nb_LT("nb_LT", "nb_LT", 20);
             RooCBShape histpdf_Eecl_background_LT("genpdfb_LT", "genpdfb_LT", EeclFit, m0b_LT, sigmab_LT, alphab_LT, nb_LT);
 
-            RooRealVar nbkg("nbkg", "number of background events", 410, 200, 600);
+            RooRealVar nbkg("nbkg", "number of background events", 450, 300, 600);
             RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background_LT, nbkg);
 
             RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -462,7 +462,7 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
 
         delete c;
     }
-    gStyle->SetOptFit(010); gStyle->SetStatH(0.05);
+    gStyle->SetOptFit(1); gStyle->SetStatH(0.05);
     TCanvas* c = new TCanvas("Linearity test canvas", "", 800, 800);
     TGraphErrors* gr = new TGraphErrors(LT_number, Inputnsig, outputnsig, Inputnsigerror, outputnsigerror);
     gr->SetMarkerStyle(21); gr->SetTitle(";input n_{sig};output n_{sig}");
@@ -476,6 +476,98 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
 
     delete gr;
     delete c;
+
+    gStyle->SetOptFit(0); gStyle->SetStatH();
+
+}
+
+void ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf ExtendedBKGPDF, RooRealVar EeclFit, double SINAL_num, double BKG_num) {
+    const int TOY_iterate_number = 1000;
+
+    RooArgSet fitargs = r->floatParsFinal();
+    TIterator* iter(fitargs.createIterator());
+
+    std::vector<double> n_sigs;
+    std::vector<double> n_sigs_err;
+
+    for (int j = 0; j < TOY_iterate_number; j++) {
+        // produce toy MC sample
+        RooDataSet* d1 = ExtendedSIGNALPDF.generate(EeclFit, SINAL_num, false, true, "", false, true);
+        RooDataSet* genData = ExtendedBKGPDF.generate(EeclFit, BKG_num, false, true, "", false, true);
+
+        genData->append(*d1);
+        //            RooDataHist gen_binned_data_Eecl("gen binned Eecl data", "gen binned Eecl data", EeclFit, *genData);
+
+                    // construct fitting function
+        RooRealVar m0_TOY("m0_TOY", "m0_TOY", 0.65);
+        RooRealVar sigma_TOY("sigma_TOY", "sigma_TOY", 0.53);
+        RooRealVar alpha_TOY("alpha_TOY", "alpha_TOY", -0.85);
+        RooRealVar n_TOY("n_TOY", "n_TOY", 60);
+        RooCBShape histpdf_Eecl_signal_TOY("genpdfs_TOY", "genpdfs_TOY", EeclFit, m0_TOY, sigma_TOY, alpha_TOY, n_TOY);
+        RooRealVar nsig("nsig", "n_{sig}", 7.5, -100, 100);
+        RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal_TOY, nsig);
+
+        RooRealVar m0b_TOY("m0b_TOY", "m0b_TOY", 1.6);
+        RooRealVar sigmab_TOY("sigmab_TOY", "sigmab_TOY", 0.67);
+        RooRealVar alphab_TOY("alphab_TOY", "alphab_TOY", -0.368);
+        RooRealVar nb_TOY("nb_TOY", "nb_TOY", 20);
+        RooCBShape histpdf_Eecl_background_TOY("genpdfb_TOY", "genpdfb_TOY", EeclFit, m0b_TOY, sigmab_TOY, alphab_TOY, nb_TOY);
+
+        RooRealVar nbkg("nbkg", "number of background events", 450, 300, 600);
+        RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background_TOY, nbkg);
+
+        RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
+
+        // fit
+        RooFitResult* result = totalpdf.fitTo(*genData, Verbose(false), PrintLevel(-1), Save());
+
+        RooArgSet fitargs_TOY = result->floatParsFinal();
+        TIterator* iter_TOY(fitargs_TOY.createIterator());
+
+        for (TObject* a_TOY = iter_TOY->Next(); a_TOY != 0; a_TOY = iter_TOY->Next()) {
+            RooRealVar* rrv_TOY = dynamic_cast<RooRealVar*>(a_TOY);
+            std::string name_TOY = rrv_TOY->GetName();
+            double val_TOY = rrv_TOY->getVal();
+            double err_TOY = rrv_TOY->getError();
+            if (name_TOY == std::string("nsig")) {
+                n_sigs.push_back(val_TOY);
+                n_sigs_err.push_back(err_TOY);
+            }
+        }
+
+    }
+
+    // print png
+    TH1F* ToyMCnsig = new TH1F("ToyMCnsig", ";n_{sig};evt", 80, -100, 100);
+    TH1F* ToyMCnsigerror = new TH1F("ToyMCnsigerror", ";error of n_{sig};evt", 80, 5, 20);
+    TH1F* ToyMCnsigpull = new TH1F("ToyMCnsigpull", ";error of n_{sig};evt", 80, -5, 5);
+
+    for (int i = 0; i < TOY_iterate_number; i++) {
+        ToyMCnsig->Fill(n_sigs.at(i));
+        ToyMCnsigerror->Fill(n_sigs_err.at(i));
+        ToyMCnsigerror->Fill((n_sigs.at(i) - SINAL_num)/ n_sigs_err.at(i));
+    }
+
+    gStyle->SetOptFit(1); gStyle->SetStatH(0.05);
+    TCanvas* c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
+    ToyMCnsig->Draw("E1");
+    c->SaveAs("TOYMC_nsig.png");
+    delete c;
+
+    c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
+    ToyMCnsigerror->Draw("E1");
+    c->SaveAs("TOYMC_nsigerror.png");
+    delete c;
+
+    c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
+    ToyMCnsigpull->Fit("gaus");
+    ToyMCnsigpull->Draw("E1");
+    c->SaveAs("TOYMC_nsigpull.png");
+    delete c;
+
+    delete ToyMCnsig;
+    delete ToyMCnsigerror;
+    delete ToyMCnsigpull;
 
     gStyle->SetOptFit(0); gStyle->SetStatH();
 
