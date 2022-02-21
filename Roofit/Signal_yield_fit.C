@@ -312,7 +312,7 @@ double GetEvtNum(const char* dirname, double weight_var = 1.0) {
 }
 
 void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
-    const int LT_number = 50;
+    const int LT_number = 15;
     const int LT_iterate_number = 1000;
 
     RooArgSet fitargs = r->floatParsFinal();
@@ -462,7 +462,7 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
 
         delete c;
     }
-    gStyle->SetOptFit(1); gStyle->SetStatH(0.05);
+    gStyle->SetOptFit(11); gStyle->SetStatH(0.05);
     TCanvas* c = new TCanvas("Linearity test canvas", "", 800, 800);
     TGraphErrors* gr = new TGraphErrors(LT_number, Inputnsig, outputnsig, Inputnsigerror, outputnsigerror);
     gr->SetMarkerStyle(21); gr->SetTitle(";input n_{sig};output n_{sig}");
@@ -483,9 +483,6 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
 
 void ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf ExtendedBKGPDF, RooRealVar EeclFit, double SINAL_num, double BKG_num) {
     const int TOY_iterate_number = 1000;
-
-    RooArgSet fitargs = r->floatParsFinal();
-    TIterator* iter(fitargs.createIterator());
 
     std::vector<double> n_sigs;
     std::vector<double> n_sigs_err;
@@ -538,30 +535,42 @@ void ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf ExtendedBKGPDF, Roo
     }
 
     // print png
-    TH1F* ToyMCnsig = new TH1F("ToyMCnsig", ";n_{sig};evt", 80, -100, 100);
-    TH1F* ToyMCnsigerror = new TH1F("ToyMCnsigerror", ";error of n_{sig};evt", 80, 5, 20);
-    TH1F* ToyMCnsigpull = new TH1F("ToyMCnsigpull", ";error of n_{sig};evt", 80, -5, 5);
+    TH1F* ToyMCnsig = new TH1F("ToyMCnsig", ";n_{sig};evt", 40, -100, 100);
+    TH1F* ToyMCnsigerror = new TH1F("ToyMCnsigerror", ";error of n_{sig};evt", 40, 5, 20);
+    TH1F* ToyMCnsigpull = new TH1F("ToyMCnsigpull", ";pull of n_{sig};evt", 40, -5, 5);
+
+    ToyMCnsig->SetMarkerStyle(kFullCircle);
+    ToyMCnsig->SetLineColor(kBlack);
+    ToyMCnsig->SetMarkerColor(kBlack);
+
+    ToyMCnsigerror->SetMarkerStyle(kFullCircle);
+    ToyMCnsigerror->SetLineColor(kBlack);
+    ToyMCnsigerror->SetMarkerColor(kBlack);
+
+    ToyMCnsigpull->SetMarkerStyle(kFullCircle);
+    ToyMCnsigpull->SetLineColor(kBlack);
+    ToyMCnsigpull->SetMarkerColor(kBlack);
 
     for (int i = 0; i < TOY_iterate_number; i++) {
         ToyMCnsig->Fill(n_sigs.at(i));
         ToyMCnsigerror->Fill(n_sigs_err.at(i));
-        ToyMCnsigerror->Fill((n_sigs.at(i) - SINAL_num)/ n_sigs_err.at(i));
+        ToyMCnsigpull->Fill((n_sigs.at(i) - SINAL_num)/ n_sigs_err.at(i));
     }
 
-    gStyle->SetOptFit(1); gStyle->SetStatH(0.05);
+    gStyle->SetOptFit(11); gStyle->SetStatH(0.05);
     TCanvas* c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
-    ToyMCnsig->Draw("E1");
+    ToyMCnsig->Draw("PE1");
     c->SaveAs("TOYMC_nsig.png");
     delete c;
 
     c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
-    ToyMCnsigerror->Draw("E1");
+    ToyMCnsigerror->Draw("PE1");
     c->SaveAs("TOYMC_nsigerror.png");
     delete c;
 
     c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
     ToyMCnsigpull->Fit("gaus");
-    ToyMCnsigpull->Draw("E1");
+    ToyMCnsigpull->Draw("PE1");
     c->SaveAs("TOYMC_nsigpull.png");
     delete c;
 
@@ -577,9 +586,9 @@ void Signal_yield_fit()
 {
     // to extract signal yield
     RooRealVar EeclFit("Eecl", "Eecl", 0, 4, "GeV");
-//    EeclFit.setBins(EeclBins);
-//    RooPlot* Eeclframe = EeclFit.frame(Bins(EeclBins), Title(" "));
-    RooPlot* Eeclframe = EeclFit.frame(Title(" "));
+    EeclFit.setBins(EeclBins);
+    RooPlot* Eeclframe = EeclFit.frame(Bins(EeclBins), Title(" "));
+//    RooPlot* Eeclframe = EeclFit.frame(Title(" "));
 
     // get data from root files
     const char* MC_dirname_Knunu = "./SIGNAL_analysis/test_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
@@ -636,12 +645,12 @@ void Signal_yield_fit()
 
 
     // define frame and get ready to make pdfs
-//    Eecl_DATA.setBins(EeclBins);
+    Eecl_DATA.setBins(EeclBins);
     RooDataSet* d_Eecl = (RooDataSet*)info_DATA.reduce(RooArgSet(Eecl_DATA));
-//    RooDataHist binned_data_Eecl("binned Eecl data", "binned Eecl data", EeclFit, *d_Eecl);
+    RooDataHist binned_data_Eecl("binned Eecl data", "binned Eecl data", EeclFit, *d_Eecl);
 
-//    Eecl_MC_signal.setBins(EeclBins);
-//    Eecl_MC_background.setBins(EeclBins);
+    Eecl_MC_signal.setBins(EeclBins);
+    Eecl_MC_background.setBins(EeclBins);
 
     // define pdf and extended pdf
     RooRealVar m0("m0", "m0", 0.65);
@@ -720,6 +729,7 @@ void Signal_yield_fit()
     totalpdf.plotOn(Eeclframe, LineColor(kRed));
     totalpdf.plotOn(Eeclframe, Components(esig), LineColor(kBlue), LineStyle(kDashed));
     totalpdf.plotOn(Eeclframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed));
+    totalpdf.paramOn(Eeclframe);
 
     TCanvas* c = new TCanvas("Eecl", "Eecl", 600, 600);
     gPad->SetLeftMargin(0.15); Eeclframe->GetYaxis()->SetTitleOffset(1.4); Eeclframe->Draw(); c->SaveAs("Eecl_distribution.png");
@@ -727,14 +737,21 @@ void Signal_yield_fit()
 
     
     /* ============== Linearity test ============== */
-//    double BKG_total_Num = 0;
-//    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_CHG);
-//    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_MIX);
-//    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_UUBAR);
-//    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_DDBAR);
-//    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_SSBAR);
-//    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_CHARM);
-//    LinearityTest(r, EeclFit, BKG_total_Num);
+    double BKG_total_Num = 0;
+    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_CHG);
+    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_MIX);
+    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_UUBAR);
+    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_DDBAR);
+    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_SSBAR);
+    BKG_total_Num = BKG_total_Num + GetEvtNum(DATA_dirname_CHARM);
+    double SIGNAL_total_Num = 0;
+    SIGNAL_total_Num = SIGNAL_total_Num + GetEvtNum(DATA_dirname_Knunu, Scale_Kplus);
+    SIGNAL_total_Num = SIGNAL_total_Num + GetEvtNum(DATA_dirname_Kstarnunu, Scale_Kplusstar);
+    SIGNAL_total_Num = SIGNAL_total_Num + GetEvtNum(DATA_dirname_Xsununu, Scale_Xsu_nonresonant);
+    SIGNAL_total_Num = SIGNAL_total_Num + GetEvtNum(DATA_dirname_K0nunu, Scale_K0);
+    SIGNAL_total_Num = SIGNAL_total_Num + GetEvtNum(DATA_dirname_K0starnunu, Scale_K0star);
+    SIGNAL_total_Num = SIGNAL_total_Num + GetEvtNum(DATA_dirname_Xsdnunu, Scale_Xsd_nonresonant);
+    LinearityTest(r, EeclFit, BKG_total_Num);
 
     /* ============== Print profile likelihood  ============== */
 //    RooPlot* nllframe = nsig.frame();
@@ -747,25 +764,26 @@ void Signal_yield_fit()
 //    delete c_pll;
 
     /* ============== toy MC study ============== */
-    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 4);
+    ToyMCstudy(esig, ebkg, EeclFit, SIGNAL_total_Num, BKG_total_Num);
+//    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 4);
 //    Eecl_TOY.setBins(EeclBins);
 
-    RooMCStudy* mcstudy = new RooMCStudy(totalpdf, Eecl_TOY, Binned(kTRUE), Silence(), Extended(),FitOptions(Save(kTRUE), PrintEvalErrors(0)));
-    mcstudy->generateAndFit(1000);
+//    RooMCStudy* mcstudy = new RooMCStudy(totalpdf, Eecl_TOY, Binned(kTRUE), Silence(), Extended(),FitOptions(Save(kTRUE), PrintEvalErrors(0)));
+//    mcstudy->generateAndFit(1000);
 
     // Make plots of the distributions of mean, the error on mean and the pull of mean
-    RooPlot* frame1 = mcstudy->plotParam(nsig, Bins(40));
-    RooPlot* frame2 = mcstudy->plotError(nsig, Bins(40));
-    RooPlot* frame3 = mcstudy->plotPull(nsig, Bins(40), FitGauss(kTRUE));
+//    RooPlot* frame1 = mcstudy->plotParam(nsig, Bins(40));
+//    RooPlot* frame2 = mcstudy->plotError(nsig, Bins(40));
+//    RooPlot* frame3 = mcstudy->plotPull(nsig, Bins(40), FitGauss(kTRUE));
 
     // Draw all plots on a canvas
-    gStyle->SetOptStat(0);
-    TCanvas* cf = new TCanvas("rf801_mcstudy", "rf801_mcstudy", 1200, 400);
-    cf->Divide(3, 1);
-    cf->cd(1); gPad->SetLeftMargin(0.15); frame1->GetYaxis()->SetTitleOffset(1.4); frame1->Draw();
-    cf->cd(2); gPad->SetLeftMargin(0.15); frame2->GetYaxis()->SetTitleOffset(1.4); frame2->Draw();
-    cf->cd(3); gPad->SetLeftMargin(0.15); frame3->GetYaxis()->SetTitleOffset(1.4); frame3->Draw();
-    cf->SaveAs("ToyStudy.png");
+//    gStyle->SetOptStat(0);
+//    TCanvas* cf = new TCanvas("rf801_mcstudy", "rf801_mcstudy", 1200, 400);
+//    cf->Divide(3, 1);
+//    cf->cd(1); gPad->SetLeftMargin(0.15); frame1->GetYaxis()->SetTitleOffset(1.4); frame1->Draw();
+//    cf->cd(2); gPad->SetLeftMargin(0.15); frame2->GetYaxis()->SetTitleOffset(1.4); frame2->Draw();
+//    cf->cd(3); gPad->SetLeftMargin(0.15); frame3->GetYaxis()->SetTitleOffset(1.4); frame3->Draw();
+//    cf->SaveAs("ToyStudy.png");
 
     /* ============== Uncertainty Calculation ============== */
     LetsCalculateUncertainties(MC_dirname_Knunu, Scale_Kplus);

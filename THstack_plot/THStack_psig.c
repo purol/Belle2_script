@@ -105,7 +105,7 @@ void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_Btag->SetBranchAddress("Btag_Mbc", &var);
+        tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_p", &var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -135,7 +135,7 @@ void LetsFill(const char* dirname, TH1F* hist, const char* included_string, doub
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_Btag->SetBranchAddress("Btag_Mbc", &var);
+        tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_p", &var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -152,18 +152,18 @@ void LetsFill(const char* dirname, TH1F* hist, const char* included_string, doub
 
 void THStack_psig() {
 
-    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_psig_cut";
-    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_psig_cut";
-    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_psig_cut";
-    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_psig_cut";
-    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_psig_cut";
-    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SIGNAL_analysis/validation_v002/before_psig_cut";
-    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/CHG_analysis/validation_v002/before_psig_cut";
-    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/MIX_analysis/validation_v002/before_psig_cut";
-    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/UUBAR_analysis/validation_v002/before_psig_cut";
-    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/DDBAR_analysis/validation_v002/before_psig_cut";
-    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/SSBAR_analysis/validation_v002/before_psig_cut";
-    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Reimu/CHARM_analysis/validation_v002/before_psig_cut";
+    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_psig_cut";
+    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_psig_cut";
+    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_psig_cut";
+    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_psig_cut";
+    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_psig_cut";
+    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_psig_cut";
+    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/CHG_analysis/validation_v003/before_psig_cut";
+    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/MIX_analysis/validation_v003/before_psig_cut";
+    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/UUBAR_analysis/validation_v003/before_psig_cut";
+    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/DDBAR_analysis/validation_v003/before_psig_cut";
+    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SSBAR_analysis/validation_v003/before_psig_cut";
+    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/CHARM_analysis/validation_v003/before_psig_cut";
 
     LetsFill(Knunu_dirname, SIGNAL_hist, "B2Knunu", Scale_Kplus);
     LetsFill(Kstarnunu_dirname, SIGNAL_hist, "B2Kstarnunu", Scale_Kplusstar);
@@ -203,7 +203,7 @@ void THStack_psig() {
     Stack->Add(CHARM_hist);
     //Stack->SetMaximum(100.0);
 
-    SIGNAL_hist->Scale(600.0/BKG_int, "width");
+    SIGNAL_hist->Scale(10000.0/BKG_int, "width");
     //SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
     SIGNAL_hist->SetLineWidth(3);
     SIGNAL_hist->SetLineColor(2);
@@ -223,10 +223,10 @@ void THStack_psig() {
     lineB->SetLineColor(kRed);
     lineB->SetLineStyle(5);
     lineB->Draw();
-    c_temp->SaveAs("Plot.png");
+    c_temp->SaveAs("Plot_psig.png");
 
-    free(lineA);
-    free(lineB);
-    gPad->BuildLegend();
-    c_temp->SaveAs("Plot_with_legend.png");
+//    free(lineA);
+//    free(lineB);
+//    gPad->BuildLegend();
+//    c_temp->SaveAs("Plot_with_legend.png");
 }
