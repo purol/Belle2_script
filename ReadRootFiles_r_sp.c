@@ -1,4 +1,4 @@
-// last update: 2022-02-19
+// last update: 2022-02-21
 // for Belle2 data
 
 /*
@@ -361,7 +361,7 @@ public:
     void PrintSeparateRootFile(std::string output_name);
     void ConvertIntoSeparateDataFile(std::string output_name, int flag = 0);
     void PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequality inq, double value);
-    void PrintConfusionMatrix();
+    void PrintConfusionMatrix(std::string filename = std::string(""), bool smartmode = true);
     void DvetoFor(Loader::Variable variable, int i, double min, double max);
     void BsigFitConvergeFor(Loader::Variable variable, int i);
     void OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type);
@@ -2836,7 +2836,7 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
 }
 
 
-void Loader::PrintConfusionMatrix() {
+void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
     if (current_Confusion_matrix > 0) { // allocate new int
         printf("The number of PrintConfusionMatrix should not be larger than 1\n");
         printf("Only first PrintConfusionMatrix is accepted\n");
@@ -2906,7 +2906,16 @@ void Loader::PrintConfusionMatrix() {
         else if (decaymodeid_MC == 22)decaymodeid_MC_for_square = 18;
         else if (decaymodeid_MC == 23)decaymodeid_MC_for_square = 19;
         else if (decaymodeid_MC == 24)decaymodeid_MC_for_square = 20;
-        Confusion_square[decaymodeid][decaymodeid_MC_for_square]++;
+        if(smartmode == false) Confusion_square[decaymodeid][decaymodeid_MC_for_square]++;
+        else {
+            if(filename.find("B2Knunu") != string::npos ) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplus;
+            else if (filename.find("B2Kstarnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplusstar;
+            else if (filename.find("B2Xsnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsu_nonresonant;
+            else if (filename.find("B02K0nunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0;
+            else if (filename.find("B02Kstar0nunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0star;
+            else if (filename.find("B02Xsnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsd_nonresonant;
+            else { printf("ERROR 142\n"); exit(1); }
+        }
 
         TotalData.push(temp);
     }
