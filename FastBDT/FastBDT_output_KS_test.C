@@ -80,6 +80,7 @@ TH1F* Oqq_SIGNAL_test = new TH1F("Oqq_SIGNAL_test", ";O_{qq};", 40, 0, 1.0);
 void LetsFill(const char* dirname, TH2F* OBB_Oqq_hist, TH1F* OBB_hist, TH1F* Oqq_hist, double weight_var = 1.0) {
     float OBB_var = 0;
     float Oqq_var = 0;
+    double Mx = 0;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -95,6 +96,7 @@ void LetsFill(const char* dirname, TH2F* OBB_Oqq_hist, TH1F* OBB_hist, TH1F* Oqq
 
         tree_upsilon->SetBranchAddress("MVA_BB", &OBB_var);
         tree_upsilon->SetBranchAddress("MVA_Continuum", &Oqq_var);
+        tree_Bsig->SetBranchAddress("Bsig_M", &Mx);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -102,6 +104,7 @@ void LetsFill(const char* dirname, TH2F* OBB_Oqq_hist, TH1F* OBB_hist, TH1F* Oqq
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             
+            if(Mx < 1.1) continue;
             OBB_Oqq_hist->Fill(OBB_var, Oqq_var, weight_var);
             OBB_hist->Fill(OBB_var, weight_var);
             Oqq_hist->Fill(Oqq_var, weight_var);
@@ -116,12 +119,12 @@ void FastBDT_output_KS_test()
 {
 
     // get data from root files
-    const char* train_dirname_Knunu = "./temp_v005_train/B2Knunu";
-    const char* train_dirname_Kstarnunu = "./temp_v005_train/B2Kstarnunu";
-    const char* train_dirname_Xsununu = "./temp_v005_train/B2Xsnunu";
-    const char* train_dirname_K0nunu = "./temp_v005_train/B02K0nunu";
-    const char* train_dirname_K0starnunu = "./temp_v005_train/B02K0starnunu";
-    const char* train_dirname_Xsdnunu = "./temp_v005_train/B02Xsnunu";
+    const char* train_dirname_Knunu = "./temp_v003_train/B2Knunu";
+    const char* train_dirname_Kstarnunu = "./temp_v003_train/B2Kstarnunu";
+    const char* train_dirname_Xsununu = "./temp_v003_train/B2Xsnunu";
+    const char* train_dirname_K0nunu = "./temp_v003_train/B02K0nunu";
+    const char* train_dirname_K0starnunu = "./temp_v003_train/B02K0starnunu";
+    const char* train_dirname_Xsdnunu = "./temp_v003_train/B02Xsnunu";
     LetsFill(train_dirname_Knunu, OBB_Oqq_SIGNAL_train, OBB_SIGNAL_train, Oqq_SIGNAL_train, Scale_Kplus);
     LetsFill(train_dirname_Kstarnunu, OBB_Oqq_SIGNAL_train, OBB_SIGNAL_train, Oqq_SIGNAL_train, Scale_Kplusstar);
     LetsFill(train_dirname_Xsununu, OBB_Oqq_SIGNAL_train, OBB_SIGNAL_train, Oqq_SIGNAL_train, Scale_Xsu_nonresonant);
@@ -129,15 +132,15 @@ void FastBDT_output_KS_test()
     LetsFill(train_dirname_K0starnunu, OBB_Oqq_SIGNAL_train, OBB_SIGNAL_train, Oqq_SIGNAL_train, Scale_K0star);
     LetsFill(train_dirname_Xsdnunu, OBB_Oqq_SIGNAL_train, OBB_SIGNAL_train, Oqq_SIGNAL_train, Scale_Xsd_nonresonant);
 
-    const char* train_dirname_BKG = "./temp_v005_train/BKG";
+    const char* train_dirname_BKG = "./temp_v003_train/BKG";
     LetsFill(train_dirname_BKG, OBB_Oqq_BKG_train, OBB_BKG_train, Oqq_BKG_train);
 
-    const char* test_dirname_Knunu = "./temp_v005/B2Knunu";
-    const char* test_dirname_Kstarnunu = "./temp_v005/B2Kstarnunu";
-    const char* test_dirname_Xsununu = "./temp_v005/B2Xsnunu";
-    const char* test_dirname_K0nunu = "./temp_v005/B02K0nunu";
-    const char* test_dirname_K0starnunu = "./temp_v005/B02K0starnunu";
-    const char* test_dirname_Xsdnunu = "./temp_v005/B02Xsnunu";
+    const char* test_dirname_Knunu = "./temp_v003/B2Knunu";
+    const char* test_dirname_Kstarnunu = "./temp_v003/B2Kstarnunu";
+    const char* test_dirname_Xsununu = "./temp_v003/B2Xsnunu";
+    const char* test_dirname_K0nunu = "./temp_v003/B02K0nunu";
+    const char* test_dirname_K0starnunu = "./temp_v003/B02K0starnunu";
+    const char* test_dirname_Xsdnunu = "./temp_v003/B02Xsnunu";
     LetsFill(test_dirname_Knunu, OBB_Oqq_SIGNAL_test, OBB_SIGNAL_test, Oqq_SIGNAL_test, Scale_Kplus);
     LetsFill(test_dirname_Kstarnunu, OBB_Oqq_SIGNAL_test, OBB_SIGNAL_test, Oqq_SIGNAL_test, Scale_Kplusstar);
     LetsFill(test_dirname_Xsununu, OBB_Oqq_SIGNAL_test, OBB_SIGNAL_test, Oqq_SIGNAL_test, Scale_Xsu_nonresonant);
@@ -145,7 +148,7 @@ void FastBDT_output_KS_test()
     LetsFill(test_dirname_K0starnunu, OBB_Oqq_SIGNAL_test, OBB_SIGNAL_test, Oqq_SIGNAL_test, Scale_K0star);
     LetsFill(test_dirname_Xsdnunu, OBB_Oqq_SIGNAL_test, OBB_SIGNAL_test, Oqq_SIGNAL_test, Scale_Xsd_nonresonant);
 
-    const char* test_dirname_BKG = "./temp_v005/BKG";
+    const char* test_dirname_BKG = "./temp_v003/BKG";
     LetsFill(test_dirname_BKG, OBB_Oqq_BKG_test, OBB_BKG_test, Oqq_BKG_test);
 
     double factor = 1.0;
@@ -169,20 +172,24 @@ void FastBDT_output_KS_test()
 
     // set color (BKG: kRed, SIGNAL: kBlue)
     // solid line: test, histogram: traing
-    OBB_SIGNAL_test->SetMarkerStyle(8);
+    OBB_SIGNAL_test->SetMarkerStyle(kFullCircle);
     OBB_SIGNAL_test->SetLineColor(kBlue);
+    OBB_SIGNAL_test->SetMarkerColor(kBlue);
     OBB_SIGNAL_test->SetLineWidth(1);
 
-    Oqq_SIGNAL_test->SetMarkerStyle(8);
+    Oqq_SIGNAL_test->SetMarkerStyle(kFullCircle);
     Oqq_SIGNAL_test->SetLineColor(kBlue);
+    Oqq_SIGNAL_test->SetMarkerColor(kBlue);
     Oqq_SIGNAL_test->SetLineWidth(1);
 
-    OBB_BKG_test->SetMarkerStyle(8);
+    OBB_BKG_test->SetMarkerStyle(kFullCircle);
     OBB_BKG_test->SetLineColor(kRed);
+    OBB_BKG_test->SetMarkerColor(kRed);
     OBB_BKG_test->SetLineWidth(1);
 
-    Oqq_BKG_test->SetMarkerStyle(8);
+    Oqq_BKG_test->SetMarkerStyle(kFullCircle);
     Oqq_BKG_test->SetLineColor(kRed);
+    Oqq_BKG_test->SetMarkerColor(kRed);
     Oqq_BKG_test->SetLineWidth(1);
 
     OBB_SIGNAL_train->SetFillStyle(3004);
@@ -210,13 +217,20 @@ void FastBDT_output_KS_test()
     gStyle->SetOptStat(0);
 
     TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd();
+    double OBB_BKG_train_max = OBB_BKG_train->GetMaximum(); double OBB_SIGNAL_train_max = OBB_SIGNAL_train->GetMaximum();
+    if(OBB_BKG_train_max > OBB_SIGNAL_train_max) OBB_BKG_train->SetMaximum(1.05 * OBB_BKG_train_max);
+    else OBB_BKG_train->SetMaximum(1.05 * OBB_SIGNAL_train_max);
     OBB_BKG_train->Draw("Hist"); OBB_SIGNAL_train->Draw("HistSAME");
-    OBB_BKG_test->Draw("SAME"); OBB_SIGNAL_test->Draw("SAME");
+    OBB_BKG_test->Draw("AP SAME"); OBB_SIGNAL_test->Draw("AP SAME");
+    gPad->BuildLegend();
     c_temp->SaveAs("OBB_Plot.png");
 
-    TCanvas* c_temp_2 = new TCanvas("c2", "", 600, 600); c_temp->cd();
+    TCanvas* c_temp_2 = new TCanvas("c2", "", 600, 600); c_temp_2->cd();
+    double Oqq_BKG_train_max = Oqq_BKG_train->GetMaximum(); double Oqq_SIGNAL_train_max = Oqq_SIGNAL_train->GetMaximum();
+    if(Oqq_BKG_train_max > Oqq_SIGNAL_train_max) Oqq_BKG_train->SetMaximum(1.05 * Oqq_BKG_train_max);
+    else Oqq_BKG_train->SetMaximum(1.05 * Oqq_SIGNAL_train_max);
     Oqq_BKG_train->Draw("Hist"); Oqq_SIGNAL_train->Draw("HistSAME");
-    Oqq_BKG_test->Draw("SAMEP"); Oqq_SIGNAL_test->Draw("SAMEP");
-    c_temp->SaveAs("Oqq_Plot.png");
+    Oqq_BKG_test->Draw("AP SAME"); Oqq_SIGNAL_test->Draw("AP SAME");
+    c_temp_2->SaveAs("Oqq_Plot.png");
 
 }
