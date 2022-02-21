@@ -81,14 +81,14 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-THStack* Stack = new THStack("thstack", ";M_{bc}^{tag} [GeV];arbitrary unit");
-TH1F* SIGNAL_hist = new TH1F("SIGNAL_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* CHG_hist = new TH1F("CHG_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* MIX_hist = new TH1F("MIX_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* UUBAR_hist = new TH1F("UUBAR_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* DDBAR_hist = new TH1F("DDBAR_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* SSBAR_hist = new TH1F("SSBAR_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* CHARM_hist = new TH1F("CHARM_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
+THStack* Stack = new THStack("thstack", ";E_{ecl} [GeV];arbitrary unit");
+TH1F* SIGNAL_hist = new TH1F("SIGNAL_hist", ";E_{ecl} [GeV];arbitrary unit", 100, 0, 5);
+TH1F* CHG_hist = new TH1F("CHG_hist", ";E_{ecl} [GeV];arbitrary unit", 100, 0, 5);
+TH1F* MIX_hist = new TH1F("MIX_hist", ";E_{ecl} [GeV];arbitrary unit", 100, 0, 5);
+TH1F* UUBAR_hist = new TH1F("UUBAR_hist", ";E_{ecl} [GeV];arbitrary unit", 100, 0, 5);
+TH1F* DDBAR_hist = new TH1F("DDBAR_hist", ";E_{ecl} [GeV];arbitrary unit", 100, 0, 5);
+TH1F* SSBAR_hist = new TH1F("SSBAR_hist", ";E_{ecl} [GeV];arbitrary unit", 100, 0, 5);
+TH1F* CHARM_hist = new TH1F("CHARM_hist", ";E_{ecl} [GeV];arbitrary unit", 100, 0, 5);
 
 void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
     double var = 0;
@@ -105,7 +105,7 @@ void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_Btag->SetBranchAddress("Btag_Mbc", &var);
+        tree_upsilon->SetBranchAddress("roeEextra__bocleanMask__bc", &var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -135,7 +135,7 @@ void LetsFill(const char* dirname, TH1F* hist, const char* included_string, doub
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_Btag->SetBranchAddress("Btag_Mbc", &var);
+        tree_upsilon->SetBranchAddress("roeEextra__bocleanMask__bc", &var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -150,20 +150,20 @@ void LetsFill(const char* dirname, TH1F* hist, const char* included_string, doub
 
 }
 
-void THStack_Mbc() {
+void THStack_Eecl() {
 
-    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_Mbc_cut";
-    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_Mbc_cut";
-    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_Mbc_cut";
-    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_Mbc_cut";
-    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_Mbc_cut";
-    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_Mbc_cut";
-    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/CHG_analysis/validation_v003/before_Mbc_cut";
-    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/MIX_analysis/validation_v003/before_Mbc_cut";
-    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/UUBAR_analysis/validation_v003/before_before_Mbc_cut";
-    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/DDBAR_analysis/validation_v003/before_Mbc_cut";
-    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SSBAR_analysis/validation_v003/before_Mbc_cut";
-    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/CHARM_analysis/validation_v003/before_Mbc_cut";
+    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_Eecl_cut";
+    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_Eecl_cut";
+    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_Eecl_cut";
+    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_Eecl_cut";
+    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_Eecl_cut";
+    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_Eecl_cut";
+    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/CHG_analysis/validation_v003/before_Eecl_cut";
+    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/MIX_analysis/validation_v003/before_Eecl_cut";
+    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/UUBAR_analysis/validation_v003/before_before_Eecl_cut";
+    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/DDBAR_analysis/validation_v003/before_Eecl_cut";
+    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SSBAR_analysis/validation_v003/before_Eecl_cut";
+    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/CHARM_analysis/validation_v003/before_Eecl_cut";
 
     LetsFill(Knunu_dirname, SIGNAL_hist, "B2Knunu", Scale_Kplus);
     LetsFill(Kstarnunu_dirname, SIGNAL_hist, "B2Kstarnunu", Scale_Kplusstar);
@@ -204,7 +204,7 @@ void THStack_Mbc() {
     Stack->Add(CHARM_hist);
     //Stack->SetMaximum(100.0);
 
-    SIGNAL_hist->Scale(5000.0/BKG_int, "width");
+    SIGNAL_hist->Scale(10000.0/BKG_int, "width");
     //SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
     SIGNAL_hist->SetLineWidth(3);
     SIGNAL_hist->SetLineColor(2);
@@ -216,11 +216,11 @@ void THStack_Mbc() {
 
     Stack->Draw("pfc Hist"); SIGNAL_hist->Draw("HistSAME");
     Float_t ymax = Stack->GetMaximum();
-    TLine* line = new TLine(5.27, 0, 5.27, ymax);
+    TLine* line = new TLine(4.0, 0, 4.0, ymax);
     line->SetLineColor(kRed);
     line->SetLineStyle(5);
     line->Draw();
-    c_temp->SaveAs("Plot_Mbc.png");
+    c_temp->SaveAs("Plot_Eecl.png");
 
 //    free(line);
 //    gPad->BuildLegend();
