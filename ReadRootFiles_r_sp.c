@@ -1,4 +1,4 @@
-// last update: 2022-02-21
+// last update: 2022-02-22
 // for Belle2 data
 
 /*
@@ -370,6 +370,7 @@ public:
     void MVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
     void CountMCEvent();
     void SelectDecayModeOf(Loader::DecayMode decaymode);
+    void RejectDecayModeOf(Loader::DecayMode decaymode);
 };
 
 Loader::Loader() {
@@ -3236,6 +3237,19 @@ void Loader::SelectDecayModeOf(Loader::DecayMode decaymode) {
         TotalData.pop();
 
         if (TrueIfDecayModeMatch(temp_data, decaymode)) temp_queue.push(temp_data);
+
+    }
+    TotalData.swap(temp_queue);
+}
+
+void Loader::RejectDecayModeOf(Loader::DecayMode decaymode) {
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+
+        if (TrueIfDecayModeMatch(temp_data, decaymode)) {}
+        else temp_queue.push(temp_data);
 
     }
     TotalData.swap(temp_queue);
