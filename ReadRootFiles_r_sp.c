@@ -1,4 +1,4 @@
-// last update: 2022-02-22
+// last update: 2022-02-27
 // for Belle2 data
 
 /*
@@ -354,6 +354,7 @@ public:
     void PrintInformation(std::string title);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
+    void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::Variable variable_qual, int i_qual, Loader::Inequality inq_qual, double value_qual);
     void BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit);
     bool IsBCSValid();
     void End();
@@ -1258,6 +1259,61 @@ void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, doubl
         }
         else {
             printf("ERROR! 032\n");
+            exit(1);
+        }
+    }
+    TotalData.swap(temp_queue);
+}
+
+void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::Variable variable_qual, int i_qual, Loader::Inequality inq_qual, double value_qual) {
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+
+        double qualifier_var = -1;
+        bool satisfy = false;
+        if (variable_qual == Loader::Upsilon) qualifier_var = temp_data.Upsilon_info[i_qual];
+        else if(variable_qual == Loader::Bsig) qualifier_var = temp_data.Bsig_info[i_qual];
+        else if(variable_qual == Loader::Btag) qualifier_var = temp_data.Btag_info[i_qual];
+        else {
+            printf("ERROR! 130\n");
+            exit(1);
+        }
+        if (inq_qual == Loader::larger_than && qualifier_var > value_qual) satisfy = true;
+        else if(inq_qual == Loader::smaller_than && qualifier_var < value_qual) satisfy = true;
+        else satisfy = false;
+        if (qualifier == Loader::when) {
+            if (!satisfy) {
+                temp_queue.push(temp_data);
+                continue;
+            }
+        }
+        else if (qualifier == Loader::except) {
+            if (satisfy) {
+                temp_queue.push(temp_data);
+                continue;
+            }
+        }
+        else {
+            printf("ERROR! 131\n");
+            exit(1);
+        }
+
+        if (variable == Loader::Upsilon) {
+            if (inq == Loader::larger_than && temp_data.Upsilon_info[i] > value) temp_queue.push(temp_data);
+            else if (inq == Loader::smaller_than && temp_data.Upsilon_info[i] < value) temp_queue.push(temp_data);
+        }
+        else if (variable == Loader::Bsig) {
+            if (inq == Loader::larger_than && temp_data.Bsig_info[i] > value) temp_queue.push(temp_data);
+            else if (inq == Loader::smaller_than && temp_data.Bsig_info[i] < value) temp_queue.push(temp_data);
+        }
+        else if (variable == Loader::Btag) {
+            if (inq == Loader::larger_than && temp_data.Btag_info[i] > value) temp_queue.push(temp_data);
+            else if (inq == Loader::smaller_than && temp_data.Btag_info[i] < value) temp_queue.push(temp_data);
+        }
+        else {
+            printf("ERROR! 330\n");
             exit(1);
         }
     }
