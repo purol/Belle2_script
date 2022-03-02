@@ -30,12 +30,51 @@
 
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 45
-# define N_Bsig_info 60
+# define N_Upsilon_info 47
+# define N_Bsig_info 78
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
-# define Nvar 15
+# define Nvar 16
+
+// arXiv:1409.4557v2
+# define TB0 1.5195 // (Table. 1)
+# define TBp 1.6384 // (Table. 1)
+# define BR_Kplus_nunubar 0.00000398 // (eq. 10)
+# define BR_K0star_nunubar 0.00000919 // (eq. 11)
+# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15)
+# define BR_Kplusstar_nunubar (BR_K0star_nunubar*TBp/TB0) // under (eq. 15)
+# define BR_Xs_nunubar 0.000029 // (eq. 23)
+# define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
+# define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
+
+// https://confluence.desy.de/pages/viewpage.action?pageId=107054222
+# define N_BpBp_1invab 565400000.0
+# define N_B0B0_1invab 534600000.0
+
+# define N_Kplus_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplus_nunubar)
+# define N_Kplusstar_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplusstar_nunubar)
+# define N_Xsu_nonresonant_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Xsu_nonresonant_nunubar)
+# define N_K0_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0_nunubar)
+# define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
+# define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
+
+// my MC sample number
+# define N_Kplus_nunubar 10000000.0
+# define N_K0_nunubar 10000000.0
+# define N_Kplusstar_nunubar 10000000.0
+# define N_K0star_nunubar 10000000.0
+# define N_Xsu_nonresonant_nunubar 50000000.0
+# define N_Xsd_nonresonant_nunubar 50000000.0
+
+// scale factor for each MC sample
+# define Scale_Kplus (N_Kplus_nunubar_1invab/N_Kplus_nunubar)
+# define Scale_Kplusstar (N_Kplusstar_nunubar_1invab/N_Kplusstar_nunubar)
+# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar)
+# define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
+# define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
+# define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
+
 
 void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], std::vector<bool>* IsSignal, std::vector<float>* weight) {
     TFile* input_file = new TFile(filename, "read");
@@ -45,21 +84,22 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     double Vars[Nvar];
     double flag;
 
-    tree_data->SetBranchAddress("MsquaredBsig_op1", &Vars[0]);
-    tree_data->SetBranchAddress("nRemainingTracksInEvent", &Vars[1]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[2]);
-    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[3]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo1", &Vars[4]);
-    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[5]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso00", &Vars[6]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso22", &Vars[7]);
-    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[8]);
-    tree_data->SetBranchAddress("Btag_deltaE", &Vars[9]);
-    tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[10]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[11]);
-    tree_data->SetBranchAddress("Btag_chiProb", &Vars[12]);
-    tree_data->SetBranchAddress("Btag_thrustBm", &Vars[13]);
-    tree_data->SetBranchAddress("cleoConeThrust0", &Vars[14]);
+    tree_data->SetBranchAddress("nRemainingTracksInEvent", &Vars[0]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[1]);
+    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[2]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo1", &Vars[3]);
+    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[4]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso00", &Vars[5]);
+    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[6]);
+    tree_data->SetBranchAddress("Btag_deltaE", &Vars[7]);
+    tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[8]);
+    tree_data->SetBranchAddress("Btag_chiProb", &Vars[9]);
+    tree_data->SetBranchAddress("Btag_thrustBm", &Vars[10]);
+    tree_data->SetBranchAddress("cleoConeThrust0", &Vars[11]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso01", &Vars[12]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso04", &Vars[13]);
+    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[14]);
+    tree_data->SetBranchAddress("cleoConeThrust6", &Vars[15]);
     tree_data->SetBranchAddress("flag", &flag);
 
     printf("%lld entries...\n", tree_data->GetEntries());

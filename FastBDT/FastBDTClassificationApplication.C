@@ -1,7 +1,7 @@
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 45
-# define N_Bsig_info 60
+# define N_Upsilon_info 47
+# define N_Bsig_info 78
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
@@ -150,6 +150,8 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    theTree->SetBranchAddress("roeP__bocleanMask__bc", &temp_UpsilonDataToTree[42]);
    theTree->SetBranchAddress("roeM__bocleanMask__bc", &temp_UpsilonDataToTree[43]);
    theTree->SetBranchAddress("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
+   theTree->SetBranchAddress("qsquared", &temp_UpsilonDataToTree[45]);
+   theTree->SetBranchAddress("chiProb", &temp_UpsilonDataToTree[46]);
 
    // get Bsig_info
    theTree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -212,6 +214,24 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    theTree->SetBranchAddress("Bsig_CleoConeCS_7", &temp_BsigDataToTree[57]);
    theTree->SetBranchAddress("Bsig_CleoConeCS_8", &temp_BsigDataToTree[58]);
    theTree->SetBranchAddress("Bsig_CleoConeCS_9", &temp_BsigDataToTree[59]);
+   theTree->SetBranchAddress("Bsig_pt", &temp_BsigDataToTree[60]);
+   theTree->SetBranchAddress("Bsig_useCMSFrame_pt", &temp_BsigDataToTree[61]);
+   theTree->SetBranchAddress("Bsig_theta", &temp_BsigDataToTree[62]);
+   theTree->SetBranchAddress("Bsig_useCMSFrame_theta", &temp_BsigDataToTree[63]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nDc", &temp_BsigDataToTree[64]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &temp_BsigDataToTree[65]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &temp_BsigDataToTree[66]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &temp_BsigDataToTree[67]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &temp_BsigDataToTree[68]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &temp_BsigDataToTree[69]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &temp_BsigDataToTree[70]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nD0", &temp_BsigDataToTree[71]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med", &temp_BsigDataToTree[72]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std", &temp_BsigDataToTree[73]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &temp_BsigDataToTree[74]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[75]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
 
    // get Btag_info
    theTree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -373,6 +393,8 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    temp_tree->Branch("roeP__bocleanMask__bc", &temp_UpsilonDataToTree[42]);
    temp_tree->Branch("roeM__bocleanMask__bc", &temp_UpsilonDataToTree[43]);
    temp_tree->Branch("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
+   temp_tree->Branch("qsquared", &temp_UpsilonDataToTree[45]);
+   temp_tree->Branch("chiProb", &temp_UpsilonDataToTree[46]);
 
    // get Bsig_info
    temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -435,6 +457,24 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    temp_tree->Branch("Bsig_CleoConeCS_7", &temp_BsigDataToTree[57]);
    temp_tree->Branch("Bsig_CleoConeCS_8", &temp_BsigDataToTree[58]);
    temp_tree->Branch("Bsig_CleoConeCS_9", &temp_BsigDataToTree[59]);
+   temp_tree->Branch("Bsig_pt", &temp_BsigDataToTree[60]);
+   temp_tree->Branch("Bsig_useCMSFrame_pt", &temp_BsigDataToTree[61]);
+   temp_tree->Branch("Bsig_theta", &temp_BsigDataToTree[62]);
+   temp_tree->Branch("Bsig_useCMSFrame_theta", &temp_BsigDataToTree[63]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nDc", &temp_BsigDataToTree[64]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med", &temp_BsigDataToTree[65]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std", &temp_BsigDataToTree[66]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &temp_BsigDataToTree[67]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &temp_BsigDataToTree[68]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &temp_BsigDataToTree[69]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &temp_BsigDataToTree[70]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_nD0", &temp_BsigDataToTree[71]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med", &temp_BsigDataToTree[72]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std", &temp_BsigDataToTree[73]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &temp_BsigDataToTree[74]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[75]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
 
    // get Btag_info
    temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);

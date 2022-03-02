@@ -1,4 +1,4 @@
-// last update: 2022-02-17-00
+// last update: 2022-03-02
 // for Belle2 data
 
 /*
@@ -13,8 +13,8 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 46
-# define N_Bsig_info 64
+# define N_Upsilon_info 47
+# define N_Bsig_info 78
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
@@ -138,6 +138,7 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree->SetBranchAddress("roeM__bocleanMask__bc", &temp_UpsilonDataToTree[43]);
             temp_tree->SetBranchAddress("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
             temp_tree->SetBranchAddress("qsquared", &temp_UpsilonDataToTree[45]);
+            temp_tree->SetBranchAddress("chiProb", &temp_UpsilonDataToTree[46]);
 
             // get Bsig_info
             temp_tree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -204,6 +205,20 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree->SetBranchAddress("Bsig_useCMSFrame_pt", &temp_BsigDataToTree[61]);
             temp_tree->SetBranchAddress("Bsig_theta", &temp_BsigDataToTree[62]);
             temp_tree->SetBranchAddress("Bsig_useCMSFrame_theta", &temp_BsigDataToTree[63]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_nDc", &temp_BsigDataToTree[64]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &temp_BsigDataToTree[65]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &temp_BsigDataToTree[66]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &temp_BsigDataToTree[67]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &temp_BsigDataToTree[68]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &temp_BsigDataToTree[69]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &temp_BsigDataToTree[70]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_nD0", &temp_BsigDataToTree[71]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med", &temp_BsigDataToTree[72]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std", &temp_BsigDataToTree[73]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &temp_BsigDataToTree[74]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[75]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
 
             // get Btag_info
             temp_tree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -395,6 +410,7 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree_upsilon->Branch("roeM__bocleanMask__bc", &temp_UpsilonDataToTree[43]);
             temp_tree_upsilon->Branch("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
             temp_tree_upsilon->Branch("qsquared", &temp_UpsilonDataToTree[45]);
+            temp_tree_upsilon->Branch("chiProb", &temp_UpsilonDataToTree[46]);
 
             // get Bsig_info
             temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -461,6 +477,20 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree_Bsig->Branch("Bsig_useCMSFrame_pt", &temp_BsigDataToTree[61]);
             temp_tree_Bsig->Branch("Bsig_theta", &temp_BsigDataToTree[62]);
             temp_tree_Bsig->Branch("Bsig_useCMSFrame_theta", &temp_BsigDataToTree[63]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc", &temp_BsigDataToTree[64]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med", &temp_BsigDataToTree[65]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std", &temp_BsigDataToTree[66]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &temp_BsigDataToTree[67]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &temp_BsigDataToTree[68]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &temp_BsigDataToTree[69]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &temp_BsigDataToTree[70]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nD0", &temp_BsigDataToTree[71]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med", &temp_BsigDataToTree[72]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std", &temp_BsigDataToTree[73]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &temp_BsigDataToTree[74]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[75]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
 
             // get Btag_info
             temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
