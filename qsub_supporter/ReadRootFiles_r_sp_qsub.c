@@ -260,6 +260,8 @@ public:
         B2Ks0PicPi0,
         B2KcPicPicPi0,
         B2Ks0PicPicPic,
+        B2KcPicPicPicPic,
+        B2Ks0PicPicPicPi0,
         B2KcKcKc,
         B2KcKcKs0Pic,
         B2KcKcKcPi0,
@@ -270,6 +272,8 @@ public:
         B02Ks0PicPic,
         B02KcPicPicPic,
         B02Ks0PicPicPi0,
+        B02KcPicPicPicPi0,
+        B02Ks0PicPicPicPic,
         B02KcKcKs0,
         B02KcKcKcPic,
         B02KcKcKs0Pi0,
@@ -285,6 +289,8 @@ public:
         Xsu2K0PicPi0_MC,
         Xsu2KcPicPicPi0_MC,
         Xsu2K0PicPicPic_MC,
+        Xsu2KcPicPicPicPic_MC,
+        Xsu2K0PicPicPicPi0_MC,
         Xsu2KcKcKc_MC,
         Xsu2KcKcK0Pic_MC,
         Xsu2KcKcKcPi0_MC,
@@ -297,6 +303,8 @@ public:
         Xsd2K0PicPic_MC,
         Xsd2KcPicPicPic_MC,
         Xsd2K0PicPicPi0_MC,
+        Xsd2KcPicPicPicPi0_MC,
+        Xsd2K0PicPicPicPic_MC,
         Xsd2KcKcK0_MC,
         Xsd2KcKcKcPic_MC,
         Xsd2KcKcK0Pi0_MC,
@@ -2840,6 +2848,14 @@ bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 5.5 && temp_data.Bsig_decayID < 6.5) return true;
         return false;
         break;
+    case Loader::B2KcPicPicPicPic:
+        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 6.5 && temp_data.Bsig_decayID < 7.5) return true;
+        return false;
+        break;
+    case Loader::B2Ks0PicPicPicPi0:
+        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 7.5 && temp_data.Bsig_decayID < 8.5) return true;
+        return false;
+        break;
     case Loader::B2KcKcKc:
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 11.5 && temp_data.Bsig_decayID < 12.5) return true;
         return false;
@@ -2878,6 +2894,14 @@ bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
         break;
     case Loader::B02Ks0PicPicPi0:
         if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 5.5 && temp_data.Bsig_decayID < 6.5) return true;
+        return false;
+        break;
+    case Loader::B02KcPicPicPicPi0:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 6.5 && temp_data.Bsig_decayID < 7.5) return true;
+        return false;
+        break;
+    case Loader::B02Ks0PicPicPicPic:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 7.5 && temp_data.Bsig_decayID < 8.5) return true;
         return false;
         break;
     case Loader::B02KcKcKs0:
@@ -2946,6 +2970,14 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
         if (temp_data.Decay[10] > 0) return true;
         return false;
         break;
+    case Loader::Xsu2KcPicPicPicPic_MC:
+        if (temp_data.Decay[11] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2K0PicPicPicPi0_MC:
+        if (temp_data.Decay[12] > 0) return true;
+        return false;
+        break;
     case Loader::Xsu2KcKcKc_MC:
         if (temp_data.Decay[16] > 0) return true;
         return false;
@@ -2992,6 +3024,14 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
         break;
     case Loader::Xsd2K0PicPicPi0_MC:
         if (temp_data.Decay[29] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcPicPicPicPi0_MC:
+        if (temp_data.Decay[30] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0PicPicPicPic_MC:
+        if (temp_data.Decay[31] > 0) return true;
         return false;
         break;
     case Loader::Xsd2KcKcK0_MC:
