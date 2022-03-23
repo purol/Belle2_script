@@ -1,4 +1,4 @@
-// last update: 2022-03-02
+// last update: 2022-03-23
 // for Belle2 data
 
 /*
@@ -13,7 +13,7 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 47
+# define N_Upsilon_info 49
 # define N_Bsig_info 78
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
@@ -139,6 +139,8 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree->SetBranchAddress("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
             temp_tree->SetBranchAddress("qsquared", &temp_UpsilonDataToTree[45]);
             temp_tree->SetBranchAddress("chiProb", &temp_UpsilonDataToTree[46]);
+            temp_tree->SetBranchAddress("dr", &temp_UpsilonDataToTree[47]);
+            temp_tree->SetBranchAddress("dz", &temp_UpsilonDataToTree[48]);
 
             // get Bsig_info
             temp_tree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -411,6 +413,8 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree_upsilon->Branch("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
             temp_tree_upsilon->Branch("qsquared", &temp_UpsilonDataToTree[45]);
             temp_tree_upsilon->Branch("chiProb", &temp_UpsilonDataToTree[46]);
+            temp_tree_upsilon->Branch("dr", &temp_UpsilonDataToTree[47]);
+            temp_tree_upsilon->Branch("dz", &temp_UpsilonDataToTree[48]);
 
             // get Bsig_info
             temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);

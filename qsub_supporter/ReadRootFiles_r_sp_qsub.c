@@ -1,4 +1,4 @@
-// last update: 2022-03-02
+// last update: 2022-03-23
 // for Belle2 data
 
 /*
@@ -165,7 +165,7 @@ typedef struct data{
     // 36: MsquaredBsig_op0, 37: MsquaredBsig_op1, 38: MsquaredBsig_op2
     // 39: MsquaredBsig_op3, 40: MsquaredBsig_op4, 41: MsquaredBsig_op7
     // 42: roeP__bocleanMask__bc, 43: roeM__bocleanMask__bc, 44: roePTheta__bocleanMask__bc
-    // 45: qsquared - MB^2, 46: chiProb
+    // 45: qsquared - MB^2, 46: chiProb, 47: dr, 48: dz
 
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
@@ -593,6 +593,8 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("roePTheta__bocleanMask__bc", &temp.Upsilon_info[44]);
     tree_upsilon->SetBranchAddress("qsquared", &temp.Upsilon_info[45]);
     tree_upsilon->SetBranchAddress("chiProb", &temp.Upsilon_info[46]);
+    tree_upsilon->SetBranchAddress("dr", &temp.Upsilon_info[47]);
+    tree_upsilon->SetBranchAddress("dz", &temp.Upsilon_info[48]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
@@ -1874,6 +1876,8 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("roePTheta__bocleanMask__bc", &UpsilonDataToTree[44]);
         tree_upsilon->Branch("qsquared", &UpsilonDataToTree[45]);
         tree_upsilon->Branch("chiProb", &UpsilonDataToTree[46]);
+        tree_upsilon->Branch("dr", &UpsilonDataToTree[47]);
+        tree_upsilon->Branch("dz", &UpsilonDataToTree[48]);
 
         // get Bsig_info
         tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
@@ -2215,6 +2219,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
     temp_tree_upsilon->Branch("qsquared", &temp_UpsilonDataToTree[45]);
     temp_tree_upsilon->Branch("chiProb", &temp_UpsilonDataToTree[46]);
+    temp_tree_upsilon->Branch("dr", &temp_UpsilonDataToTree[47]);
+    temp_tree_upsilon->Branch("dz", &temp_UpsilonDataToTree[48]);
 
     // get Bsig_info
     temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -2550,6 +2556,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
     temp_tree->Branch("qsquared", &temp_UpsilonDataToTree[45]);
     temp_tree->Branch("chiProb", &temp_UpsilonDataToTree[46]);
+    temp_tree->Branch("dr", &temp_UpsilonDataToTree[47]);
+    temp_tree->Branch("dz", &temp_UpsilonDataToTree[48]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);

@@ -1,6 +1,6 @@
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 47
+# define N_Upsilon_info 49
 # define N_Bsig_info 78
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
@@ -152,6 +152,8 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    theTree->SetBranchAddress("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
    theTree->SetBranchAddress("qsquared", &temp_UpsilonDataToTree[45]);
    theTree->SetBranchAddress("chiProb", &temp_UpsilonDataToTree[46]);
+   theTree->SetBranchAddress("dr", &temp_UpsilonDataToTree[47]);
+   theTree->SetBranchAddress("dz", &temp_UpsilonDataToTree[48]);
 
    // get Bsig_info
    theTree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -395,6 +397,8 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    temp_tree->Branch("roePTheta__bocleanMask__bc", &temp_UpsilonDataToTree[44]);
    temp_tree->Branch("qsquared", &temp_UpsilonDataToTree[45]);
    temp_tree->Branch("chiProb", &temp_UpsilonDataToTree[46]);
+   temp_tree->Branch("dr", &temp_UpsilonDataToTree[47]);
+   temp_tree->Branch("dz", &temp_UpsilonDataToTree[48]);
 
    // get Bsig_info
    temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);

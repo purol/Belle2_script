@@ -3,10 +3,10 @@ void CL_calculator(){
 	const double CL = 0.90;
 	const double step = 0.01;
 	double Area = 0;
-	double xmin = 4.8;
-	double xmax = 4.8;
+	double xmin = 8.67;
+	double xmax = 8.67;
 
-	TF1* f3 = new TF1("f3", "exp(-0.5*((x-4.8)/21)^2)", 0, 1000);
+	TF1* f3 = new TF1("f3", "exp(-0.5*((x-8.67)/22.568)^2)", 0, 1000);
 
 	const double total_Area = f3->Integral(0, 1000);
 
@@ -20,12 +20,12 @@ void CL_calculator(){
 
 	TCanvas* c1 = new TCanvas("c1", "Graph Draw Options", 200, 10, 600, 400);
 
-	TF1* f1 = new TF1("f1", "exp(-0.5*((x-4.8)/21)^2)", 0, 100);
+	TF1* f1 = new TF1("f1", "exp(-0.5*((x-8.67)/22.568)^2)", 0, 100);
 	f1->SetLineColor(1);
 	f1->SetTitle("");
 	f1->Draw();
 
-	TF1* f2 = new TF1("f2", "exp(-0.5*((x-4.8)/21)^2)", xmin, xmax);
+	TF1* f2 = new TF1("f2", "exp(-0.5*((x-8.67)/22.568)^2)", xmin, xmax);
 	f2->SetLineColor(1);
 	f2->SetFillColor(15);
 	f2->SetFillStyle(3004);
