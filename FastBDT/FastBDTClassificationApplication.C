@@ -496,8 +496,8 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    temp_tree->Branch("Btag_useCMSFrame_E", &temp_BtagDataToTree[4]);
    temp_tree->Branch("Btag_extraInfo_SignalProbability", &temp_BtagDataToTree[5]);
    temp_tree->Branch("Btag_chiProb", &temp_BtagDataToTree[6]);
-   temp_tree->Branch("Btag_dr", &temp_BtagDataToTree[6]);
-   temp_tree->Branch("Btag_dz", &temp_BtagDataToTree[6]);
+   temp_tree->Branch("Btag_dr", &temp_BtagDataToTree[7]);
+   temp_tree->Branch("Btag_dz", &temp_BtagDataToTree[8]);
 
    // other information I need
    temp_tree->Branch("Btag_R2", &temp_DataToTree[0]);
