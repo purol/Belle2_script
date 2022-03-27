@@ -31,8 +31,8 @@
 # define N_Needed_info 37
 # define N_event_info 15
 # define N_Upsilon_info 49
-# define N_Bsig_info 78
-# define N_Btag_info 7
+# define N_Bsig_info 81
+# define N_Btag_info 9
 # define N_decay 38 // five decay mode + others
 
 # define Nvar 16

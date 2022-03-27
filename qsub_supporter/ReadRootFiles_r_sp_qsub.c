@@ -1,4 +1,4 @@
-// last update: 2022-03-23
+// last update: 2022-03-27
 // for Belle2 data
 
 /*
@@ -70,8 +70,8 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_Needed_info 37
 # define N_event_info 15
 # define N_Upsilon_info 47
-# define N_Bsig_info 78
-# define N_Btag_info 7
+# define N_Bsig_info 81
+# define N_Btag_info 9
 # define N_decay 38 // five decay mode + others
 
 # define Nstep 20
@@ -194,10 +194,12 @@ typedef struct data{
     // 68: Dcsimpleveto_dr, 69: Dcsimpleveto_dz, 70: Dcsimpleveto_M
     // 71: nD0, 72: D0_pValue_med, 73: D0_pValue:std, 74: D0simpleveto_chiProb
     // 75: D0simpleveto_dr, 76: D0simpleveto_dz, 77: D0simpleveto_M
+    // 78: mychiProb, 79: mydr, 80: mydz
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
     // 3: Btag_E, 4: Btag_E_CMS, 5: Btag_signalprobability, 6: chiProb_tag
+    // 7: dr, 8: dz
 
     double Needed_info[N_Needed_info];
     // 0: R2, 1: thrustBm, 2: thrustOm. 3: cosTBTO
@@ -683,6 +685,9 @@ void Loader::GetData(TFile* input_file) {
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp.Bsig_info[75]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp.Bsig_info[76]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp.Bsig_info[77]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_mychiProb", &temp.Bsig_info[78]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_mydr", &temp.Bsig_info[79]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_mydz", &temp.Bsig_info[80]);
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
@@ -692,6 +697,8 @@ void Loader::GetData(TFile* input_file) {
     tree_Btag->SetBranchAddress("Btag_useCMSFrame_E", &temp.Btag_info[4]);
     tree_Btag->SetBranchAddress("Btag_extraInfo_SignalProbability", &temp.Btag_info[5]);
     tree_Btag->SetBranchAddress("Btag_chiProb", &temp.Btag_info[6]);
+    tree_Btag->SetBranchAddress("Btag_dr", &temp.Btag_info[7]);
+    tree_Btag->SetBranchAddress("Btag_dz", &temp.Btag_info[8]);
 
     // other information I need
     tree_Btag->SetBranchAddress("Btag_R2", &temp.Needed_info[0]);
@@ -1966,6 +1973,9 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &BsigDataToTree[75]);
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &BsigDataToTree[76]);
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &BsigDataToTree[77]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mychiProb", &BsigDataToTree[78]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_dr", &BsigDataToTree[79]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_dz", &BsigDataToTree[80]);
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -1975,6 +1985,8 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Btag->Branch("Btag_useCMSFrame_E", &BtagDataToTree[4]);
         tree_Btag->Branch("Btag_extraInfo_SignalProbability", &BtagDataToTree[5]);
         tree_Btag->Branch("Btag_chiProb", &BtagDataToTree[6]);
+        tree_Btag->Branch("Btag_dr", &BtagDataToTree[7]);
+        tree_Btag->Branch("Btag_dz", &BtagDataToTree[8]);
 
         // other information I need
         tree_Btag->Branch("Btag_R2", &DataToTree[0]);
@@ -2309,6 +2321,9 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[75]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[78]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_dr", &temp_BsigDataToTree[79]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_dz", &temp_BsigDataToTree[80]);
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -2318,6 +2333,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Btag->Branch("Btag_useCMSFrame_E", &temp_BtagDataToTree[4]);
     temp_tree_Btag->Branch("Btag_extraInfo_SignalProbability", &temp_BtagDataToTree[5]);
     temp_tree_Btag->Branch("Btag_chiProb", &temp_BtagDataToTree[6]);
+    temp_tree_Btag->Branch("Btag_dr", &temp_BtagDataToTree[7]);
+    temp_tree_Btag->Branch("Btag_dz", &temp_BtagDataToTree[8]);
 
     // other information I need
     temp_tree_Btag->Branch("Btag_R2", &temp_DataToTree[0]);
@@ -2646,6 +2663,9 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[75]);
     temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
     temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[78]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_dr", &temp_BsigDataToTree[79]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_dz", &temp_BsigDataToTree[80]);
 
     // get Btag_info
     temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -2655,6 +2675,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("Btag_useCMSFrame_E", &temp_BtagDataToTree[4]);
     temp_tree->Branch("Btag_extraInfo_SignalProbability", &temp_BtagDataToTree[5]);
     temp_tree->Branch("Btag_chiProb", &temp_BtagDataToTree[6]);
+    temp_tree->Branch("Btag_dr", &temp_BtagDataToTree[7]);
+    temp_tree->Branch("Btag_dz", &temp_BtagDataToTree[8]);
 
     // other information I need
     temp_tree->Branch("Btag_R2", &temp_DataToTree[0]);

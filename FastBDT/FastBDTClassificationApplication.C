@@ -1,8 +1,8 @@
 # define N_Needed_info 37
 # define N_event_info 15
 # define N_Upsilon_info 49
-# define N_Bsig_info 78
-# define N_Btag_info 7
+# define N_Bsig_info 81
+# define N_Btag_info 9
 # define N_decay 38 // five decay mode + others
 
 
@@ -234,6 +234,9 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[75]);
    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[78]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_dr", &temp_BsigDataToTree[79]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_dz", &temp_BsigDataToTree[80]);
 
    // get Btag_info
    theTree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -243,6 +246,8 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    theTree->SetBranchAddress("Btag_useCMSFrame_E", &temp_BtagDataToTree[4]);
    theTree->SetBranchAddress("Btag_extraInfo_SignalProbability", &temp_BtagDataToTree[5]);
    theTree->SetBranchAddress("Btag_chiProb", &temp_BtagDataToTree[6]);
+   theTree->SetBranchAddress("Btag_dr", &temp_BtagDataToTree[7]);
+   theTree->SetBranchAddress("Btag_dz", &temp_BtagDataToTree[8]);
 
    // other information I need
    theTree->SetBranchAddress("Btag_R2", &temp_DataToTree[0]);
@@ -479,6 +484,9 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[75]);
    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[78]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_dr", &temp_BsigDataToTree[79]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_dz", &temp_BsigDataToTree[80]);
 
    // get Btag_info
    temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -488,6 +496,8 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    temp_tree->Branch("Btag_useCMSFrame_E", &temp_BtagDataToTree[4]);
    temp_tree->Branch("Btag_extraInfo_SignalProbability", &temp_BtagDataToTree[5]);
    temp_tree->Branch("Btag_chiProb", &temp_BtagDataToTree[6]);
+   temp_tree->Branch("Btag_dr", &temp_BtagDataToTree[6]);
+   temp_tree->Branch("Btag_dz", &temp_BtagDataToTree[6]);
 
    // other information I need
    temp_tree->Branch("Btag_R2", &temp_DataToTree[0]);
