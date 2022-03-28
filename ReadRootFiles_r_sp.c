@@ -1918,8 +1918,8 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &BsigDataToTree[76]);
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &BsigDataToTree[77]);
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mychiProb", &BsigDataToTree[78]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_dr", &BsigDataToTree[79]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_dz", &BsigDataToTree[80]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydr", &BsigDataToTree[79]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydz", &BsigDataToTree[80]);
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -2266,8 +2266,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[78]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_dr", &temp_BsigDataToTree[79]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_dz", &temp_BsigDataToTree[80]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydr", &temp_BsigDataToTree[79]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydz", &temp_BsigDataToTree[80]);
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -2608,8 +2608,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
     temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
     temp_tree->Branch("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[78]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_dr", &temp_BsigDataToTree[79]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_dz", &temp_BsigDataToTree[80]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_mydr", &temp_BsigDataToTree[79]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_mydz", &temp_BsigDataToTree[80]);
 
     // get Btag_info
     temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);

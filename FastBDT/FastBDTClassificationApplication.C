@@ -235,8 +235,8 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[78]);
-   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_dr", &temp_BsigDataToTree[79]);
-   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_dz", &temp_BsigDataToTree[80]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_mydr", &temp_BsigDataToTree[79]);
+   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_mydz", &temp_BsigDataToTree[80]);
 
    // get Btag_info
    theTree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -485,8 +485,8 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
    temp_tree->Branch("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[78]);
-   temp_tree->Branch("Bsig_daughter_0_extraInfo_dr", &temp_BsigDataToTree[79]);
-   temp_tree->Branch("Bsig_daughter_0_extraInfo_dz", &temp_BsigDataToTree[80]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_mydr", &temp_BsigDataToTree[79]);
+   temp_tree->Branch("Bsig_daughter_0_extraInfo_mydz", &temp_BsigDataToTree[80]);
 
    // get Btag_info
    temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
