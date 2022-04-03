@@ -1,4 +1,4 @@
-// last update: 2022-03-27
+// last update: 2022-04-03
 // for Belle2 data
 
 /*
@@ -16,7 +16,7 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 # define N_Upsilon_info 49
 # define N_Bsig_info 81
 # define N_Btag_info 9
-# define N_decay 38 // five decay mode + others
+# define N_decay 44 // five decay mode + others + 6 variables for systematics
 
 // small: temp_BB_output > 0.6 && temp_Continuum_output > 0.94
 // large: temp_BB_output > 0.6 && temp_Continuum_output > 0.84
@@ -315,6 +315,12 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                 temp_tree->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
                 temp_tree->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
                 temp_tree->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
+                temp_tree->SetBranchAddress("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[38]);
+                temp_tree->SetBranchAddress("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayDataToTree[39]);
+                temp_tree->SetBranchAddress("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayDataToTree[40]);
+                temp_tree->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
+                temp_tree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
+                temp_tree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
             }
 
             // flag
@@ -594,6 +600,12 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                 temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
                 temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
                 temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
+                temp_tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[38]);
+                temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayDataToTree[39]);
+                temp_tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayDataToTree[40]);
+                temp_tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
+                temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
+                temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
             }
 
             temp_tree_upsilon->Branch("MVA_BB", &temp_BB_output);
