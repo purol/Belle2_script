@@ -8,6 +8,7 @@
 #include "TAxis.h"
 #include "RooPlot.h"
 #include <cmath>
+#include <float.h>
 using namespace RooFit ;
 
 // arXiv:1409.4557v2
@@ -55,10 +56,322 @@ using namespace RooFit ;
 
 # define EeclBins 30
 
+// global variables to calculate uncertainties
 std::vector<double> Ns;
 std::vector<int> ntracks;
 std::vector<int> npi0s;
 std::vector<double> KS0_3D_distance;
+
+void K_formfactor_uncertainty(const char* dirname, int charge, double weight) {
+    if (charge == 0 || charge == 1 || charge == -1) {}
+    else {
+        printf("charge should be 0 or +-1 for B->K nu nubar decay\n");
+        exit(1);
+    }
+
+    double m_b = -1; // B meson mass
+    double m_k = -1; // Kaon mass
+
+    const double alpha0 = 0.432; // +-0.011
+    const double alpha1 = -0.664; // +-0.096
+    const double alpha2 = -1.2; // +-0.69
+    const double alpha0_sigma = 0.011;
+    const double alpha1_sigma = -0.664;
+    const double alpha2_sigma = -1.2;
+    /*
+    <PCA>
+    e0 = -0.00586 alpha0 + 0.03681 alpha1 + 0.99931 alpha2
+    e1 = 0.05181 alpha0 + 0.99799 alpha1 - 0.03646 alpha2
+    e2 = 0.99864 alpha0 -0.05156 alpha2 + 0.00776 alpha2
+    lambda0 = 0.69047
+    lambda1 = 0.09274
+    lambda2 = 0.01007
+    */
+    double LinearCoefficients[3][3] = {
+        {-0.005860659921244,   0.051812539908648,   0.998639631385367},
+        {0.036811794399807,   0.997991063981209, -0.051562854912436},
+        {0.999305030738039, -0.036459524432847,   0.007756198796883}
+    };
+    double Lambdas[7][3] = {
+        {0.0, 0.0, 0.0},
+        {0.690465567619637, 0.0, 0.0},
+        {-0.690465567619637, 0.0, 0.0},
+        {0.0, 0.092737087984295, 0.0},
+        {0.0, -0.092737087984295, 0.0},
+        {0.0, 0.0, 0.010065727287981},
+        {0.0, 0.0, -0.010065727287981}
+    };
+    double fluctuations[7][3] = {0.0};
+    for (int i = 0; i < 7; i++) {
+        for (int j = 0; j < 3; j++) {
+            for (int k = 0; k < 3; k++) fluctuations[i][j] = fluctuations[i][j] + Lambdas[i][k] * LinearCoefficients[k][j];
+        }
+    }
+    /*
+    fluctuations[0][0] = 0.0; // alpha0 change
+    fluctuations[0][1] = 0.0; // alpha1 change
+    fluctuations[0][2] = 0.0; // alpha2 change
+    fluctuations[1][0] = 0.69047 * (-0.00586); // alpha0 change Lambdas[1][0]*LinearCoefficients[0][0] + Lambdas[1][1]*LinearCoefficients[1][0] + Lambdas[1][2]*LinearCoefficients[2][0]
+    fluctuations[1][1] = 0.69047 * 0.03681; // alpha1 change Lambdas[1][0]*LinearCoefficients[0][1] + Lambdas[1][1]*LinearCoefficients[1][1] + Lambdas[1][2]*LinearCoefficients[2][1]
+    fluctuations[1][2] = 0.69047 * 0.99931; // alpha2 change
+    fluctuations[2][0] = (-0.69047) * (-0.00586); // alpha0 change
+    fluctuations[2][1] = (-0.69047) * 0.03681; // alpha1 change
+    fluctuations[2][2] = (-0.69047) * 0.99931; // alpha2 change
+    fluctuations[3][0] = 0.09274 * 0.05181; // alpha0 change
+    fluctuations[3][1] = 0.09274 * 0.99799; // alpha1 change
+    fluctuations[3][2] = 0.09274 * (-0.03646); // alpha2 change
+    fluctuations[4][0] = (-0.09274) * 0.05181; // alpha0 change
+    fluctuations[4][1] = (-0.09274) * 0.99799; // alpha1 change
+    fluctuations[4][2] = (-0.09274) * (-0.03646); // alpha2 change
+    fluctuations[5][0] = 0.01007 * 0.99864; // alpha0 change
+    fluctuations[5][1] = 0.01007 * (-0.05156); // alpha1 change
+    fluctuations[5][2] = 0.01007 * 0.00775; // alpha2 change
+    fluctuations[6][0] = 0.01007 * 0.99864; // alpha0 change
+    fluctuations[6][1] = 0.01007 * (-0.05156); // alpha1 change
+    fluctuations[6][2] = 0.01007 * 0.00775; // alpha2 change
+    */
+    double value[7] = { 0.0 }; // value of lambda^1.5 * fp*fp;
+    double Nevts[7] = { 0.0 }; // number of events at each fluctuations
+
+    double q2 = -1;
+
+    // load files
+    std::vector<string> names;
+    load_files(dirname, &names);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_Xs = (TTree*)input_file->Get("Xs");
+
+        tree_Xs->SetBranchAddress("invMaxxInLists__bonu_e__clMC_signal__bc", &q2);
+        if (charge == 0) {
+            tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &m_b);
+            tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &m_k);
+        }
+        else {
+            tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &m_b);
+            tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &m_k);
+        }
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+            tree_Xs->GetEntry(j);
+
+            q2 = q2 * q2;
+
+            for (int k = 0; k < 7; k++) {
+                const double alpha0_fluc = alpha0 + fluctuations[k][0];
+                const double alpha1_fluc = alpha1 + fluctuations[k][1];
+                const double alpha2_fluc = alpha2 + fluctuations[k][2];
+
+                double mp = m_b + 0.046;
+                double tp = (m_b + m_k) * (m_b + m_k);
+                double tm = (m_b - m_k) * (m_b - m_k);
+                double t0 = tp * (1 - sqrt(1 - tm / tp));
+                double z = (sqrt(tp - q2) - sqrt(tp - t0)) / (sqrt(tp - q2) + sqrt(tp - t0));
+                double fp = (1 / (1 - q2 / (mp * mp))) * (alpha0_fluc + alpha1_fluc * z + alpha2_fluc * z * z + (-alpha1_fluc + 2 * alpha2_fluc) * z * z * z / 3);
+                double lambda = (m_b * m_b * m_b * m_b) + (m_k * m_k * m_k * m_k) + (q2 * q2) - 2 * (m_b * m_b * m_k * m_k + m_b * m_b * q2 + m_k * m_k * q2);
+
+                value[i] = std::pow(lambda, 1.5) * fp * fp;
+                Nevts[i] = Nevts[i] + (value[i] / value[0]) * weight;
+            }
+
+        }
+        input_file->Close();
+
+    }
+
+    // show summary
+    double Min = DBL_MAX;
+    double Max = -1;
+    for (int i = 1; i < 7; i++) {
+        if (Nevts[i] > Max) Max = Nevts[i];
+        if (Nevts[i] < Min) Min = Nevts[i];
+    }
+    if (charge == 0) {
+        printf("B0->K0 nu nubar num evt: %lf + %lf -%lf\n", Nevts[0], Max - Nevts[0], Nevts[0] - Min);
+    }
+    else if (charge == 1 || charge == -1) {
+        printf("B+->K+ nu nubar num evt: %lf + %lf -%lf\n", Nevts[0], Max - Nevts[0], Nevts[0] - Min);
+    }
+
+}
+
+void Kstar_formfactor_uncertainty(const char* dirname, int charge, double weight) {
+    if (charge == 0 || charge == 1 || charge == -1) {}
+    else {
+        printf("charge should be 0 or +-1 for B->K nu nubar decay\n");
+        exit(1);
+    }
+
+    double m_b = -1; // B meson mass
+    double m_k = -1; // Kaon star mass
+    double costheta = -100; // costheta
+
+    const double alpha0_A1 = 0.3;
+    const double alpha1_A1 = 0.39;
+    const double alpha2_A1 = 1.19;
+    const double alpha0_A12 = 0.27;
+    const double alpha1_A12 = 0.53;
+    const double alpha2_A12 = 0.48;
+    const double alpha0_v0 = 0.38;
+    const double alpha1_v0 = -1.17;
+    const double alpha2_v0 = 2.42;
+    const double mR_A1 = 5.829;
+    const double mR_A12 = 5.829;
+    const double mR_v0 = 5.415;
+    /*
+    <PCA>
+    e0 = - 0.00477 A1a0 + 0.01377 A1a1 + 0.29659 A1a2 + 0.00314 A12a0 + 0.02574 A12a1 + 0.11862 A12a2 - 0.00662 Va0 + 0.02683 Va1 + 0.94674 Va2
+    e1 = 0.00955 A1a0 + 0.14336 A1a1 + 0.83303 A1a2 + 0.00253 A12a0 + 0.04200 A12a1 + 0.40190 A12a2 + 0.01359 Va0 + 0.14322 Va1 - 0.31847 Va2
+    e2 = 0.00490 A1a0 - 0.02719 A1a1 - 0.43464 A1a2 - 0.00490 A12a0 + 0.14067 A12a1 + 0.88604 A12a2 + 0.00321 Va0 + 0.07099 Va1 + 0.01977 Va2
+    e = 0.A1a0 + A1a1 + A1a2 + A12a0 + A12a1 + A12a2 + Va0 + Va1 + Va2
+    e = A1a0 + A1a1 + A1a2 + A12a0 + A12a1 + A12a2 + Va0 + Va1 + Va2
+    e = A1a0 + A1a1 + A1a2 + A12a0 + A12a1 + A12a2 + Va0 + Va1 + Va2
+    e = A1a0 + A1a1 + A1a2 + A12a0 + A12a1 + A12a2 + Va0 + Va1 + Va2
+    e = A1a0 + A1a1 + A1a2 + A12a0 + A12a1 + A12a2 + Va0 + Va1 + Va2
+    e = A1a0 + A1a1 + A1a2 + A12a0 + A12a1 + A12a2 + Va0 + Va1 + Va2
+    lambda0 = 1.57728
+    lambda1 = 1.06016
+    lambda2 = 0.52088
+    lambda3 = 0.23284
+    lambda4 = 0.08996
+    lambda5 = 0.05088
+    lambda6 = 0.01842
+    lambda7 = 0.00740
+    lambda8 = 0.00177
+    */
+    double LinearCoefficients[9][9] = {
+    {-0.004767833929074,   0.013772238042338,   0.296589616507393,   0.003139670856264,   0.025743553369441,   0.118620792973715, -0.006615160985686,   0.026825078669141,   0.946739334135628},
+    {0.009545743410425,   0.143364495729883,   0.833028724155009,   0.002528027950777,   0.041995533293814,   0.401904805723855,   0.013592144331223,   0.143215823688685, -0.318473920017488},
+    {0.004903939104258, -0.027192276054885, -0.434636497785463, -0.004895872506074,   0.140668610588867,   0.886044604252808,   0.003208697626475,   0.070992606469561,   0.019766944252755},
+    {0.081726107544427,   0.418943528790113, - 0.148580744618415,   0.008936060075137,   0.016121321335068, - 0.134221136343898,   0.101230277583689,   0.875232126303976,   0.033121258010682},
+    {-0.047393076509321, -0.020252979416420,   0.020465460529877,   0.194484738990744,   0.966871985468078, -0.140890698347323, -0.062525020565583, -0.015984271025904, -0.015622549984120},
+    {0.130012725270740,   0.880660653289362, -0.078326566909849, -0.023912474389986,   0.027560190412870,   0.018608679240451,   0.008992181636485, -0.446264603521217,   0.022087208404295},
+    {0.512122358575286, -0.109791833791786,   0.012308677320526,   0.445594862213020, -0.020341462354386,   0.009165569689839,   0.721186808802633, -0.079569219353840,   0.005540910930872},
+    {-0.519183885001133,   0.030474942310095,   0.001530220137484, -0.500080935622905,   0.116801392077100, -0.015739303946084,   0.680871786694491, -0.044168374846196,   0.002926015416780},
+    {-0.664990460261152,   0.118522184960495, -0.020121877756987,   0.716134125194759, -0.166939357181738,   0.027983481968456,   0.042738598277210, -0.002952732689141,   0.000271198372049}
+    };
+    double Lambdas[19][9] = {
+        {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+        {1.577276362747197, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+        {-1.577276362747197, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+        {0.0, 1.060164618950133, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+        {0.0, -1.060164618950133, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.520878893100167, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+        {0.0, 0.0, -0.520878893100167, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0, 0.232840750162789, 0.0, 0.0, 0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0, -0.232840750162789, 0.0, 0.0, 0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0, 0.0, 0.089960782159514, 0.0, 0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0, 0.0, -0.089960782159514, 0.0, 0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0, 0.0, 0.0, 0.050880752840377, 0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0, 0.0, 0.0, -0.050880752840377, 0.0, 0.0, 0.0},
+        {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.018416666017616, 0.0, 0.0},
+        {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.018416666017616, 0.0, 0.0},
+        {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.007399540696482, 0.0},
+        {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.007399540696482, 0.0},
+        {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.001770848832452},
+        {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, -0.001770848832452}
+    };
+    double fluctuations[19][9] = {0.0};
+    for (int i = 0; i < 19; i++) {
+        for (int j = 0; j < 9; j++) {
+            for (int k = 0; k < 9; k++) fluctuations[i][j] = fluctuations[i][j] + Lambdas[i][k] * LinearCoefficients[k][j];
+        }
+    }
+
+    double value[19] = { 0.0 }; // 
+    double Nevts[19] = { 0.0 }; // number of events at each fluctuations
+
+    double q2 = -1;
+
+    // load files
+    std::vector<string> names;
+    load_files(dirname, &names);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_Xs = (TTree*)input_file->Get("Xs");
+
+        tree_Xs->SetBranchAddress("invMaxxInLists__bonu_e__clMC_signal__bc", &q2);
+        if (charge == 0) {
+            tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &m_b);
+            tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &m_k);
+            tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &costheta);
+        }
+        else {
+            tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &m_b);
+            tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &m_k);
+            tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &costheta);
+        }
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+            tree_Xs->GetEntry(j);
+
+            q2 = q2 * q2;
+
+            for (int k = 0; k < 19; k++) {
+                const double alpha0_A1_fluc = alpha0_A1 + fluctuations[k][0];
+                const double alpha1_A1_fluc = alpha1_A1 + fluctuations[k][1];
+                const double alpha2_A1_fluc = alpha2_A1 + fluctuations[k][2];
+                const double alpha0_A12_fluc = alpha0_A12 + fluctuations[k][3];
+                const double alpha1_A12_fluc = alpha1_A12 + fluctuations[k][4];
+                const double alpha2_A12_fluc = alpha2_A12 + fluctuations[k][5];
+                const double alpha0_v0_fluc = alpha0_v0 + fluctuations[k][6];
+                const double alpha1_v0_fluc = alpha1_v0 + fluctuations[k][7];
+                const double alpha2_v0_fluc = alpha2_v0 + fluctuations[k][8];
+
+                double tp = (m_b + m_k) * (m_b + m_k);
+                double tm = (m_b - m_k) * (m_b - m_k);
+                double t0 = tp * (1 - sqrt(1 - tm / tp));
+                double z = (sqrt(tp - q2) - sqrt(tp - t0)) / (sqrt(tp - q2) + sqrt(tp - t0));
+                double z0 = (sqrt(tp) - sqrt(tp - t0)) / (sqrt(tp) + sqrt(tp - t0));
+
+                double v0 = (1 / (1 - q2 / (mR_v0 * mR_v0))) * (alpha0_v0_fluc + alpha1_v0_fluc * (z - z0) + alpha2_v0_fluc * (z - z0) * (z - z0));
+                double A1 = (1 / (1 - q2 / (mR_A1 * mR_A1))) * (alpha0_A1_fluc + alpha1_A1_fluc * (z - z0) + alpha2_A1_fluc * (z - z0) * (z - z0));
+                double A12 = (1 / (1 - q2 / (mR_A12 * mR_A12))) * (alpha0_A12_fluc + alpha1_A12_fluc * (z - z0) + alpha2_A12_fluc * (z - z0) * (z - z0));
+                double lambda = (tp - q2) * (tm - q2);
+                double A2 = ((m_b + m_k) * (m_b + m_k) * (m_b * m_b - m_k * m_k - q2) * A1 - A12 * 16 * m_b * m_k * m_k * (m_b + m_k)) / lambda;
+
+                double sB = q2 / (m_b * m_b);
+                double m_k_tilda = m_k / m_b;
+                double Lambda = 1 + std::pow(m_k_tilda, 4) + sB * sB - 2 * (m_k_tilda * m_k_tilda + sB + sB * m_k_tilda * m_k_tilda);
+
+                double Amp_parallel = -2 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (std::sqrt(2)) * (1 + m_k_tilda) * A1;
+                double Amp_vertical = 2 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (std::sqrt(2)) * (std::sqrt(Lambda)) * V0 / (1 + m_k_tilda);
+                double Amp_0 = -1 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (1.0 / m_k_tilda) * (1.0 / std::pow(sB, 0.5)) * ((1 - m_k_tilda * m_k_tilda - sB) * (1 + m_k_tilda) * A1 - Lambda * A2 / (1 + m_k_tilda));
+
+                value[i] = (3.0 / 4.0) * (Amp_vertical * Amp_vertical + Amp_parallel * Amp_parallel) * (1 - costheta * costheta) + (3.0 / 2.0) * Amp_0 * Amp_0 * costheta * costheta;
+                Nevts[i] = Nevts[i] + (value[i] / value[0]) * weight;
+            }
+
+        }
+        input_file->Close();
+
+    }
+
+    // show summary
+    double Min = DBL_MAX;
+    double Max = -1;
+    for (int i = 1; i < 7; i++) {
+        if (Nevts[i] > Max) Max = Nevts[i];
+        if (Nevts[i] < Min) Min = Nevts[i];
+    }
+    if (charge == 0) {
+        printf("B*0->K*0 nu nubar num evt: %lf + %lf -%lf\n", Nevts[0], Max - Nevts[0], Nevts[0] - Min);
+    }
+    else if (charge == 1 || charge == -1) {
+        printf("B*+->K*+ nu nubar num evt: %lf + %lf -%lf\n", Nevts[0], Max - Nevts[0], Nevts[0] - Min);
+    }
+
+}
 
 void load_files(const char* dirname, std::vector<string>* names) {
     TSystemDirectory dir(dirname, dirname);
