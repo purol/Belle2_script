@@ -1,4 +1,4 @@
-// last update: 2022-04-03
+// last update: 2022-04-04
 // for Belle2 data
 
 /*
@@ -72,7 +72,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_Upsilon_info 47
 # define N_Bsig_info 81
 # define N_Btag_info 9
-# define N_decay 44 // five decay mode + others + 6 variables for systematics
+# define N_decay 48 // five decay mode + others + 10 variables for systematics
 
 # define Nstep 20
 # define start 0.8
@@ -785,6 +785,10 @@ void Loader::GetData(TFile* input_file) {
         tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp.Decay[41]);
         tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp.Decay[42]);
         tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp.Decay[43]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp.Decay[44]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp.Decay[45]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp.Decay[46]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp.Decay[47]);
     }
     else {
         for (int i = 0; i < N_decay; i++) temp.Decay[i] = -1;
@@ -2078,6 +2082,10 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &DecayDataToTree[41]);
         tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &DecayDataToTree[42]);
         tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &DecayDataToTree[43]);
+        tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &DecayDataToTree[44]);
+        tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &DecayDataToTree[45]);
+        tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &DecayDataToTree[46]);
+        tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &DecayDataToTree[47]);
 
         tree_upsilon->Branch("MVA_BB", &MVA_BB_DataToTree);
         tree_upsilon->Branch("MVA_Continuum", &MVA_Continuum_DataToTree);
@@ -2433,6 +2441,10 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
         temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
         temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
+        temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[44]);
+        temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[45]);
+        temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[46]);
+        temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[47]);
     }
     else {
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
@@ -2781,6 +2793,10 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
         temp_tree->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
         temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
         temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
+        temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[44]);
+        temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[45]);
+        temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[46]);
+        temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[47]);
     }
     else {
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;

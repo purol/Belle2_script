@@ -3,7 +3,7 @@
 # define N_Upsilon_info 49
 # define N_Bsig_info 81
 # define N_Btag_info 9
-# define N_decay 44 // five decay mode + others + 6 variables for systematics
+# define N_decay 48 // five decay mode + others + 10 variables for systematics
 
 
 #include <cstdlib>
@@ -338,6 +338,10 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        theTree->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
        theTree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
        theTree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
+       theTree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[44]);
+       theTree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[45]);
+       theTree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[46]);
+       theTree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[47]);
    }
 
    theTree->SetBranchAddress("flag", &temp_flag);
@@ -590,6 +594,10 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        temp_tree->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
        temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
        temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
+       temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[44]);
+       temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[45]);
+       temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[46]);
+       temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[47]);
    }
 
    // flag

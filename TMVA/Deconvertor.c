@@ -1,4 +1,4 @@
-// last update: 2022-04-03
+// last update: 2022-04-04
 // for Belle2 data
 
 /*
@@ -16,7 +16,7 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 # define N_Upsilon_info 49
 # define N_Bsig_info 81
 # define N_Btag_info 9
-# define N_decay 44 // five decay mode + others + 6 variables for systematics
+# define N_decay 48 // five decay mode + others + 10 variables for systematics
 
 // small: temp_BB_output > 0.6 && temp_Continuum_output > 0.94
 // large: temp_BB_output > 0.6 && temp_Continuum_output > 0.84
@@ -321,6 +321,10 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                 temp_tree->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
                 temp_tree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
                 temp_tree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
+                temp_tree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[44]);
+                temp_tree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[45]);
+                temp_tree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[46]);
+                temp_tree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[47]);
             }
 
             // flag
@@ -606,6 +610,10 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                 temp_tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
                 temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
                 temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
+                temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[44]);
+                temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[45]);
+                temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[46]);
+                temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[47]);
             }
 
             temp_tree_upsilon->Branch("MVA_BB", &temp_BB_output);
