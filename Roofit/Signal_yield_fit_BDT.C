@@ -62,6 +62,8 @@ std::vector<int> ntracks;
 std::vector<int> npi0s;
 std::vector<double> KS0_3D_distance;
 
+void load_files(const char* dirname, std::vector<string>* names);
+
 void K_formfactor_uncertainty(const char* dirname, int charge, double weight) {
     if (charge == 0 || charge == 1 || charge == -1) {}
     else {
@@ -142,7 +144,7 @@ void K_formfactor_uncertainty(const char* dirname, int charge, double weight) {
     for (unsigned int i = 0; i < names.size(); i++) {
 
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
-        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+        //printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
 
         TTree* tree_Xs = (TTree*)input_file->Get("Xs");
 
@@ -156,8 +158,8 @@ void K_formfactor_uncertainty(const char* dirname, int charge, double weight) {
             tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &m_k);
         }
 
-        printf("%lld entries...\n", tree_upsilon->GetEntries());
-        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+        //printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_Xs->GetEntries(); j++) { // Fill
             tree_Xs->GetEntry(j);
 
             q2 = q2 * q2;
@@ -295,7 +297,7 @@ void Kstar_formfactor_uncertainty(const char* dirname, int charge, double weight
     for (unsigned int i = 0; i < names.size(); i++) {
 
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
-        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+        //printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
 
         TTree* tree_Xs = (TTree*)input_file->Get("Xs");
 
@@ -311,8 +313,8 @@ void Kstar_formfactor_uncertainty(const char* dirname, int charge, double weight
             tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &costheta);
         }
 
-        printf("%lld entries...\n", tree_upsilon->GetEntries());
-        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+        //printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_Xs->GetEntries(); j++) { // Fill
             tree_Xs->GetEntry(j);
 
             q2 = q2 * q2;
@@ -345,7 +347,7 @@ void Kstar_formfactor_uncertainty(const char* dirname, int charge, double weight
                 double Lambda = 1 + std::pow(m_k_tilda, 4) + sB * sB - 2 * (m_k_tilda * m_k_tilda + sB + sB * m_k_tilda * m_k_tilda);
 
                 double Amp_parallel = -2 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (std::sqrt(2)) * (1 + m_k_tilda) * A1;
-                double Amp_vertical = 2 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (std::sqrt(2)) * (std::sqrt(Lambda)) * V0 / (1 + m_k_tilda);
+                double Amp_vertical = 2 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (std::sqrt(2)) * (std::sqrt(Lambda)) * v0 / (1 + m_k_tilda);
                 double Amp_0 = -1 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (1.0 / m_k_tilda) * (1.0 / std::pow(sB, 0.5)) * ((1 - m_k_tilda * m_k_tilda - sB) * (1 + m_k_tilda) * A1 - Lambda * A2 / (1 + m_k_tilda));
 
                 value[i] = (3.0 / 4.0) * (Amp_vertical * Amp_vertical + Amp_parallel * Amp_parallel) * (1 - costheta * costheta) + (3.0 / 2.0) * Amp_0 * Amp_0 * costheta * costheta;
