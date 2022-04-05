@@ -148,7 +148,7 @@ void K_formfactor_uncertainty(const char* dirname, int charge, double weight) {
 
         TTree* tree_Xs = (TTree*)input_file->Get("Xs");
 
-        tree_Xs->SetBranchAddress("invMaxxInLists__bonu_e__clMC_signal__bc", &q2);
+        tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &q2);
         if (charge == 0) {
             tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &m_b);
             tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &m_k);
@@ -177,8 +177,8 @@ void K_formfactor_uncertainty(const char* dirname, int charge, double weight) {
                 double fp = (1 / (1 - q2 / (mp * mp))) * (alpha0_fluc + alpha1_fluc * z + alpha2_fluc * z * z + (-alpha1_fluc + 2 * alpha2_fluc) * z * z * z / 3);
                 double lambda = (m_b * m_b * m_b * m_b) + (m_k * m_k * m_k * m_k) + (q2 * q2) - 2 * (m_b * m_b * m_k * m_k + m_b * m_b * q2 + m_k * m_k * q2);
 
-                value[i] = std::pow(lambda, 1.5) * fp * fp;
-                Nevts[i] = Nevts[i] + (value[i] / value[0]) * weight;
+                value[k] = std::pow(lambda, 1.5) * fp * fp;
+                Nevts[k] = Nevts[k] + (value[k] / value[0]) * weight;
             }
 
         }
@@ -301,7 +301,7 @@ void Kstar_formfactor_uncertainty(const char* dirname, int charge, double weight
 
         TTree* tree_Xs = (TTree*)input_file->Get("Xs");
 
-        tree_Xs->SetBranchAddress("invMaxxInLists__bonu_e__clMC_signal__bc", &q2);
+        tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &q2);
         if (charge == 0) {
             tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &m_b);
             tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &m_k);
@@ -350,8 +350,8 @@ void Kstar_formfactor_uncertainty(const char* dirname, int charge, double weight
                 double Amp_vertical = 2 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (std::sqrt(2)) * (std::sqrt(Lambda)) * v0 / (1 + m_k_tilda);
                 double Amp_0 = -1 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (1.0 / m_k_tilda) * (1.0 / std::pow(sB, 0.5)) * ((1 - m_k_tilda * m_k_tilda - sB) * (1 + m_k_tilda) * A1 - Lambda * A2 / (1 + m_k_tilda));
 
-                value[i] = (3.0 / 4.0) * (Amp_vertical * Amp_vertical + Amp_parallel * Amp_parallel) * (1 - costheta * costheta) + (3.0 / 2.0) * Amp_0 * Amp_0 * costheta * costheta;
-                Nevts[i] = Nevts[i] + (value[i] / value[0]) * weight;
+                value[k] = (3.0 / 4.0) * (Amp_vertical * Amp_vertical + Amp_parallel * Amp_parallel) * (1 - costheta * costheta) + (3.0 / 2.0) * Amp_0 * Amp_0 * costheta * costheta;
+                Nevts[k] = Nevts[k] + (value[k] / value[0]) * weight;
             }
 
         }
