@@ -54,7 +54,10 @@ using namespace RooFit ;
 # define pi0_correction 0.932
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 
-# define EeclBins 30
+# define EeclBins 40
+
+# define nsig_min -100
+# define nsig_max 130
 
 // global variables to calculate uncertainties
 std::vector<double> Ns;
@@ -64,7 +67,7 @@ std::vector<double> KS0_3D_distance;
 
 void load_files(const char* dirname, std::vector<string>* names);
 
-void K_formfactor_uncertainty(const char* dirname, int charge, double weight) {
+std::vector<double> K_formfactor_uncertainty(const char* dirname, int charge, double weight) {
     if (charge == 0 || charge == 1 || charge == -1) {}
     else {
         printf("charge should be 0 or +-1 for B->K nu nubar decay\n");
@@ -200,9 +203,14 @@ void K_formfactor_uncertainty(const char* dirname, int charge, double weight) {
         printf("B+->K+ nu nubar num evt: %lf + %lf -%lf\n", Nevts[0], Max - Nevts[0], Nevts[0] - Min);
     }
 
+    std::vector<double> outputs;
+    outputs.push_back(Nevts[0]);
+    outputs.push_back(Max - Nevts[0]);
+    outputs.push_back(Nevts[0] - Min);
+    return outputs;
 }
 
-void Kstar_formfactor_uncertainty(const char* dirname, int charge, double weight) {
+std::vector<double> Kstar_formfactor_uncertainty(const char* dirname, int charge, double weight) {
     if (charge == 0 || charge == 1 || charge == -1) {}
     else {
         printf("charge should be 0 or +-1 for B->K nu nubar decay\n");
@@ -373,6 +381,11 @@ void Kstar_formfactor_uncertainty(const char* dirname, int charge, double weight
         printf("B*+->K*+ nu nubar num evt: %lf + %lf -%lf\n", Nevts[0], Max - Nevts[0], Nevts[0] - Min);
     }
 
+    std::vector<double> outputs;
+    outputs.push_back(Nevts[0]);
+    outputs.push_back(Max - Nevts[0]);
+    outputs.push_back(Nevts[0] - Min);
+    return outputs;
 }
 
 void load_files(const char* dirname, std::vector<string>* names) {
@@ -392,17 +405,17 @@ void load_files(const char* dirname, std::vector<string>* names) {
 }
 
 RooRealVar  Mbc_DATA("Mbc", "Mbc_DATA", 5.27, 5.29);
-RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0.86, 1.0);
+RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0.85, 1.0);
 RooRealVar weight_DATA("weight", "weight_DATA", 0.0, 1.0);
 RooDataSet info_DATA("2Dinfo", "2Dinfo_DATA", RooArgSet(Mbc_DATA, Eecl_DATA, weight_DATA), WeightVar("weight"));
 
 RooRealVar  Mbc_MC_signal("Mbc", "Mbc_MC_signal", 5.27, 5.29);
-RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0.86, 1.0);
+RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0.85, 1.0);
 RooRealVar weight_MC_signal("weight", "weight_MC_signal", 0.0, 1.0);
 RooDataSet info_MC_signal("2Dinfo", "2Dinfo_MC_signal", RooArgSet(Mbc_MC_signal, Eecl_MC_signal, weight_MC_signal), WeightVar("weight"));
 
 RooRealVar  Mbc_MC_background("Mbc", "Mbc_MC_background", 5.27, 5.29);
-RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0.86, 1.0);
+RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0.85, 1.0);
 RooRealVar weight_MC_background("weight", "weight_MC_background", 0.0, 1.0);
 RooDataSet info_MC_background("2Dinfo", "2Dinfo_MC_background", RooArgSet(Mbc_MC_background, Eecl_MC_background, weight_MC_background), WeightVar("weight"));
 
@@ -602,7 +615,7 @@ void LetsCalculateUncertainties(const char* dirname, double weight) {
     }
 }
 
-void PrintUncertainties() {
+std::vector<double> PrintUncertainties() {
     // start to calculate correction factor/uncertainties
     std::vector<double> corrected_Ns;
     std::vector<double> KS0_rel_uncertainties;
@@ -637,6 +650,14 @@ void PrintUncertainties() {
     printf("Average relative uncertainty from track: %lf%%\n", avg_track_rel_uncertainty);
     printf("Average relative uncertainty from pi0: %lf%%\n", avg_pi0_rel_uncertainty);
     printf("Average relative uncertainty from KS0: %lf%%\n", avg_KS0_rel_uncertainty);
+
+    std::vector<double> outputs;
+    outputs.push_back(total_N);
+    outputs.push_back(corrected_N / total_N);
+    outputs.push_back(avg_track_rel_uncertainty);
+    outputs.push_back(avg_pi0_rel_uncertainty);
+    outputs.push_back(avg_KS0_rel_uncertainty);
+    return outputs;
 }
 
 double GetEvtNum(const char* dirname, double weight_var = 1.0) {
@@ -943,16 +964,15 @@ void ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf ExtendedBKGPDF, Roo
 
 // functions for TF1. it will be used for likelihood
 TGraph *TGraph_Likelihood;
+TF1* TF1_Likelihood;
+TGraph *TGraph_smeared_Likelihood;
+TF1* TF1_smeared_Likelihood;
 double ConvertToTF1(double *xx, double *){
     return TGraph_Likelihood->Eval(xx[0]);
 }
 
-double GaussianDis(double *xx, double *){
-    double mean = 0.0;
-    double sigma = 10.0;
-
-    return std::exp(-0.5*(xx[0]-mean)*(xx[0]-mean)/(sigma*sigma))/(sigma * std::sqrt(2*TMath::Pi()));
-
+double ConvertToTF1_smeared(double *xx, double *){
+    return TGraph_smeared_Likelihood->Eval(xx[0]);
 }
 
 void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Eecl, RooAddPdf totalpdf){
@@ -964,25 +984,42 @@ void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Eecl, RooAddPdf totalpdf){
     TF1 *pll_tf;
     pll_tf = pll_nsig->asTF(RooArgList(*nsig));
 
-    const int Nbins = 2000;
-    const double xmin = -100;
-    const double xmax = 130;
+    const int Nbins = 3000;
+    const double xmin = nsig_min;
+    const double xmax = nsig_max;
+    const double delx = (xmax-xmin)/Nbins;
     double x_pll[Nbins] = {0};
     double y_pll[Nbins] = {0};
 
-    FILE* fp; fp = fopen("pll.txt","w");
     for(int i=0; i<Nbins; i++){
-      x_pll[i] = xmin + (xmax - xmin)*i/Nbins;
-      fprintf(fp, "(%lf, %lf) ", x_pll[i], pll_tf->Eval(x_pll[i]));
+      x_pll[i] = xmin + ((xmax - xmin)*i)/Nbins;
       if(isnan(pll_tf->Eval(x_pll[i])) == 0) y_pll[i] = 1.0/std::exp(pll_tf->Eval(x_pll[i]));
       else y_pll[i] = 0.0;
     }
-    fclose(fp);
     TGraph_Likelihood = new TGraph(Nbins, x_pll, y_pll);
-    TF1* TF1_Likelihood = new TF1("TF1_Likelihood", ConvertToTF1, -100, 130);
-    TF1* Gaussian_smear = new TF1("Gauss_smear", GaussianDis, -100, 130);
-    TF1Convolution *smeared_likelihood_conv = new TF1Convolution("TF1_Likelihood","Gauss_smear", -100, 130);
-    TF1* smeared_likelihood = new TF1("smeared_likelihood", *smeared_likelihood_conv, -100, 130, smeared_likelihood_conv->GetNpar());
+    TF1_Likelihood = new TF1("TF1_Likelihood", ConvertToTF1, nsig_min, nsig_max);
+    //TF1* Gaussian_smear = new TF1("Gauss_smear", GaussianDis, -100, 130);
+    //TF1Convolution *smeared_likelihood_conv = new TF1Convolution("TF1_Likelihood","Gauss_smear", -100, 130);
+    //TF1* smeared_likelihood = new TF1("smeared_likelihood", *smeared_likelihood_conv, -100, 130, smeared_likelihood_conv->GetNpar());
+
+    // obtain smeared likelihood
+    double unc_add = 5;
+    double unc_mul = 0.05;
+    double x_pll_smeared[Nbins] = {0};
+    double y_pll_smeared[Nbins] = {0};
+    for(int i=0; i<Nbins; i++){
+        x_pll_smeared[i] = xmin + ((xmax - xmin)*i)/Nbins;
+        double integral_value = 0;
+        for(int j=0; j<Nbins; j++){ // convolution
+            double x_conv = xmin + j * delx;
+            double unc_tot = std::sqrt(unc_add*unc_add + unc_mul*x_conv*unc_mul*x_conv);
+            double Gaussian_value = std::exp( -0.5*(x_pll_smeared[i]-x_conv)*(x_pll_smeared[i]-x_conv)/( unc_tot*unc_tot ) )/( unc_tot*std::sqrt(2*TMath::Pi()) );
+            integral_value = integral_value + TF1_Likelihood->Eval(x_conv) * Gaussian_value * delx;
+        }
+        y_pll_smeared[i] = integral_value;
+    }
+    TGraph_smeared_Likelihood = new TGraph(Nbins, x_pll_smeared, y_pll_smeared);
+    TF1_smeared_Likelihood = new TF1("TF1_smeared_Likelihood", ConvertToTF1_smeared, nsig_min, nsig_max);;
 
     // plot -Log profile likelihood
     TCanvas* c_pll = new TCanvas("pll", "pll", 600, 600);
@@ -990,14 +1027,15 @@ void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Eecl, RooAddPdf totalpdf){
     delete c_pll;
 
     // calculate CL90 point
-    const double total_Area_only_stat = TF1_Likelihood->Integral(0, 130);
-    const double total_Area = smeared_likelihood->Integral(0, 130);
-    double nsig_limit_only_stat = 0;
-    double nsig_limit = 0;
+    const double total_Area_only_stat = TF1_Likelihood->Integral(0, nsig_max);
+    const double total_Area = TF1_smeared_Likelihood->Integral(0, nsig_max);
+    double nsig_limit_only_stat = 65;
+    double nsig_limit = 20;
     while( total_Area_only_stat*0.9 > TF1_Likelihood->Integral(0, nsig_limit_only_stat) ){
         nsig_limit_only_stat = nsig_limit_only_stat + 0.002;
     }
-    while( total_Area*0.9 > smeared_likelihood->Integral(0, nsig_limit) ){
+    nsig_limit = nsig_limit_only_stat;
+    while( total_Area*0.9 > TF1_smeared_Likelihood->Integral(0, nsig_limit) ){
         nsig_limit = nsig_limit + 0.002;
     }
     printf("nsig limit only stat: %lf\n", nsig_limit_only_stat);
@@ -1006,8 +1044,8 @@ void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Eecl, RooAddPdf totalpdf){
     // plot profile likelihood
     TCanvas* c_pll_again = new TCanvas("pll_again", "pll_again", 600, 600);
     TF1_Likelihood->SetLineColor(1); TF1_Likelihood->GetHistogram()->GetYaxis()->SetTitle("profile likelihood"); TF1_Likelihood->GetHistogram()->GetXaxis()->SetTitle("n_{sig}");
-    smeared_likelihood->SetLineColor(2); smeared_likelihood->SetLineStyle(7);
-    TF1_Likelihood->Draw(""); smeared_likelihood->Draw("SAME");
+    TF1_smeared_Likelihood->SetLineColor(2); TF1_smeared_Likelihood->SetLineStyle(7);
+    TF1_Likelihood->Draw(""); TF1_smeared_Likelihood->Draw("SAME");
     TLine* line_only_stat = new TLine(nsig_limit_only_stat, 0, nsig_limit_only_stat, 0.6); line_only_stat->SetLineColor(1); line_only_stat->Draw("");
     TLine* line = new TLine(nsig_limit, 0, nsig_limit, 0.6); line->SetLineColor(2); line->SetLineStyle(7); line->Draw("");
     c_pll_again->SaveAs("Likelihood.png");
@@ -1017,7 +1055,7 @@ void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Eecl, RooAddPdf totalpdf){
 void Signal_yield_fit_BDT()
 {
     // to extract signal yield
-    RooRealVar EeclFit("Eecl", "BDT_{2}", 0.86, 1.0, "");
+    RooRealVar EeclFit("Eecl", "BDT_{2}", 0.85, 1.0, "");
     EeclFit.setBins(EeclBins);
     RooPlot* Eeclframe = EeclFit.frame(Bins(EeclBins), Title(" "));
 //    RooPlot* Eeclframe = EeclFit.frame(Title(" "));
@@ -1026,12 +1064,12 @@ void Signal_yield_fit_BDT()
     double BKG_total_Num = 0;
     double SIGNAL_total_Num = 0;
 
-    const char* MC_dirname_Knunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* MC_dirname_Kstarnunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* MC_dirname_Xsununu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* MC_dirname_K0nunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* MC_dirname_K0starnunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* MC_dirname_Xsdnunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* MC_dirname_Knunu = "./SIGNAL_analysis/test_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* MC_dirname_Kstarnunu = "./SIGNAL_analysis/test_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
+    const char* MC_dirname_Xsununu = "./SIGNAL_analysis/test_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
+    const char* MC_dirname_K0nunu = "./SIGNAL_analysis/test_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
+    const char* MC_dirname_K0starnunu = "./SIGNAL_analysis/test_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
+    const char* MC_dirname_Xsdnunu = "./SIGNAL_analysis/test_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
     LetsAdd(MC_dirname_Knunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Kplus);
     LetsAdd(MC_dirname_Kstarnunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Kplusstar);
     LetsAdd(MC_dirname_Xsununu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Xsu_nonresonant);
@@ -1039,12 +1077,12 @@ void Signal_yield_fit_BDT()
     LetsAdd(MC_dirname_K0starnunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_K0star);
     LetsAdd(MC_dirname_Xsdnunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Xsd_nonresonant);
 
-    const char* MC_dirname_CHG = "./CHG_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_MIX = "./MIX_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_UUBAR = "./UUBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_DDBAR = "./DDBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_SSBAR = "./SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_CHARM = "./CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHG = "./CHG_analysis/test_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_MIX = "./MIX_analysis/test_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_UUBAR = "./UUBAR_analysis/test_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_DDBAR = "./DDBAR_analysis/test_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_SSBAR = "./SSBAR_analysis/test_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHARM = "./CHARM_analysis/test_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     LetsAdd(MC_dirname_CHG, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_MIX, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_UUBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
@@ -1052,12 +1090,12 @@ void Signal_yield_fit_BDT()
     LetsAdd(MC_dirname_SSBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd(MC_dirname_CHARM, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
 
-    const char* DATA_dirname_Knunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* DATA_dirname_Kstarnunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* DATA_dirname_Xsununu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* DATA_dirname_K0nunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* DATA_dirname_K0starnunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* DATA_dirname_Xsdnunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* DATA_dirname_Knunu = "./SIGNAL_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* DATA_dirname_Kstarnunu = "./SIGNAL_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
+    const char* DATA_dirname_Xsununu = "./SIGNAL_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
+    const char* DATA_dirname_K0nunu = "./SIGNAL_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
+    const char* DATA_dirname_K0starnunu = "./SIGNAL_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
+    const char* DATA_dirname_Xsdnunu = "./SIGNAL_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
     SIGNAL_total_Num += LetsAdd(DATA_dirname_Knunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplus);
     SIGNAL_total_Num += LetsAdd(DATA_dirname_Kstarnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplusstar);
     SIGNAL_total_Num += LetsAdd(DATA_dirname_Xsununu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsu_nonresonant);
@@ -1065,12 +1103,12 @@ void Signal_yield_fit_BDT()
     SIGNAL_total_Num += LetsAdd(DATA_dirname_K0starnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0star);
     SIGNAL_total_Num += LetsAdd(DATA_dirname_Xsdnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsd_nonresonant);
 
-    const char* DATA_dirname_CHG = "./CHG_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_MIX = "./MIX_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_UUBAR = "./UUBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_DDBAR = "./DDBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_SSBAR = "./SSBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_CHARM = "./CHARM_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_CHG = "./CHG_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_MIX = "./MIX_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_UUBAR = "./UUBAR_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_DDBAR = "./DDBAR_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_SSBAR = "./SSBAR_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_CHARM = "./CHARM_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     BKG_total_Num += LetsAdd(DATA_dirname_CHG, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
     BKG_total_Num += LetsAdd(DATA_dirname_MIX, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
     BKG_total_Num += LetsAdd(DATA_dirname_UUBAR, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
@@ -1098,15 +1136,15 @@ void Signal_yield_fit_BDT()
 //    RooDataHist hist_Eecl_MC_signal("hist_Eecl_MC_signal", "histogram for Eecl of MC signal samples", EeclFit, *dataset_Eecl_MC_signal);
 //    RooHistPdf histpdf_Eecl_signal("histpdf_Eecl_signal", "histpdf_Eecl_signal", EeclFit, hist_Eecl_MC_signal, 0);
 
-    RooRealVar cexp("cexp", "cexp", 42.73); // 51.93, 79.96 for K+,
-    RooRealVar fraction("fraction","fraction", 0.6524); //0.7061, 0.8483 for K+
+    RooRealVar cexp("cexp", "cexp", 38.13); // 51.93, 79.96 for K+,
+    RooRealVar fraction("fraction","fraction", 0.6480); //0.7061, 0.8483 for K+
 //    RooRealVar cexp("cexp", "cexp", 46.45, 35, 100);
 //    RooRealVar fraction("fraction","fraction",0.6842, 0.0, 1.0);
     RooPolynomial pol0("pol0","pol0",EeclFit,RooArgList());
     RooExponential SIGNAL_exp("genpdfs", "genpdfs", EeclFit, cexp);
     RooAddPdf histpdf_Eecl_signal("histpdf_Eecl_signal","pol0+exp",RooArgList(SIGNAL_exp,pol0),RooArgList(fraction));
 
-    RooRealVar nsig("nsig", "n_{sig}", 20, -100, 130);
+    RooRealVar nsig("nsig", "n_{sig}", 20, nsig_min, nsig_max);
     RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal, nsig);
 
     //    RooRealVar p1("p1","coeff #1", 1.65, -10, 15.0);
@@ -1131,15 +1169,15 @@ void Signal_yield_fit_BDT()
 //        RooRealVar p3("p3","coeff #3", 1.5, -20, 50);
 //     RooPolynomial histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, RooArgList(p1, p2, p3, p4));
 
-    RooRealVar m0b("m0b", "m0b", 0.9873); // 0.9880 for K
-    RooRealVar sigmab("sigmab", "sigmab", 0.0088); // 0.0083 for K
-    RooRealVar alphab("alphab", "alphab", 0.018); // 0.172 for B->K nu nubar
-    RooRealVar nb("nb", "nb", 79.48);
+//    RooRealVar m0b("m0b", "m0b", 0.9873); // 0.9880 for K
+//    RooRealVar sigmab("sigmab", "sigmab", 0.0088); // 0.0083 for K
+//    RooRealVar alphab("alphab", "alphab", 0.018); // 0.172 for B->K nu nubar
+//    RooRealVar nb("nb", "nb", 79.48);
 //    RooRealVar m0b("m0b", "m0b", 0.98, 0.960, 1.0);
 //    RooRealVar sigmab("sigmab", "sigmab", 0.0083, 0.0, 0.73);
 //    RooRealVar alphab("alphab", "alphab", 0.172, -0.7, 0.8);
 //    RooRealVar nb("nb", "nb", 1.5, 0, 150);
-    RooCBShape histpdf_Eecl_background("genpdfb", "genpdfb", EeclFit, m0b, sigmab, alphab, nb);
+//    RooCBShape histpdf_Eecl_background("genpdfb", "genpdfb", EeclFit, m0b, sigmab, alphab, nb);
 
 //    RooRealVar m0b("m0b", "m0b", 1.464);
 //    RooRealVar sigmab("sigmab", "sigmab", 0.716);
@@ -1178,10 +1216,10 @@ void Signal_yield_fit_BDT()
 //    RooRealVar poly1("poly1", "poly1", 0, -10, 100);
 //    RooPolynomial pol1("pol1","pol1",EeclFit,RooArgList(poly1));
 
-//    RooRealVar m0("m0", "m0", 1); // 1
-//    RooRealVar c0("c0", "c0", -2.77); // -6.79
-//    RooRealVar p0("p0", "p0", 0.248); // 0.35
-//    RooArgusBG histpdf_Eecl_background("histpdf_Eecl_background_ARGUS", "histpdf_Eecl_background_ARGUS", EeclFit, m0, c0, p0);
+    RooRealVar m0("m0", "m0", 1); // 1
+    RooRealVar c0("c0", "c0", -1.703); // -6.79
+    RooRealVar p0("p0", "p0", 0.245); // 0.35
+    RooArgusBG histpdf_Eecl_background("histpdf_Eecl_background_ARGUS", "histpdf_Eecl_background_ARGUS", EeclFit, m0, c0, p0);
 
 //        RooRealVar gausmean("gausmean","", 0.896);
 //        RooRealVar gauswidth("gauswidth","", 0.047);
@@ -1190,7 +1228,7 @@ void Signal_yield_fit_BDT()
 
 //    RooAddPdf histpdf_Eecl_background_a("histpdf_Eecl_background","",RooArgList(histpdf_Eecl_background, pol1),RooArgList(bkgfrac));
 
-    RooRealVar nbkg("nbkg", "number of background events", 850, 700, 1000);
+    RooRealVar nbkg("nbkg", "number of background events", 1070, 820, 1320);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background, nbkg);
 
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
