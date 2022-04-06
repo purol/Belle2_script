@@ -1156,7 +1156,7 @@ std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf Exte
 
     gStyle->SetOptFit(0); gStyle->SetStatH();
 
-    std::vector outputs;
+    std::vector<double> outputs;
     outputs.push_back(constant_gauss);
     outputs.push_back(mean_gauss);
     outputs.push_back(sigma_gauss);
