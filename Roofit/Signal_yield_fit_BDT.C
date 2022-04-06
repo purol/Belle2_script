@@ -266,17 +266,17 @@ double K_formfactor_uncertainty(const char* dirname, int charge, double weight, 
 
     // get relative uncertainty of efficiency
     double efficiency_correction[3] = { 0.0 };
-    efficinecy_correction[0] = std::max(std::abs((efficiency[0] - efficiency[1]) / efficiency[0]), std::abs((efficiency[0] - efficiency[2]) / efficiency[0]));
-    efficinecy_correction[1] = std::max(std::abs((efficiency[0] - efficiency[3]) / efficiency[0]), std::abs((efficiency[0] - efficiency[4]) / efficiency[0]));
-    efficinecy_correction[2] = std::max(std::abs((efficiency[0] - efficiency[5]) / efficiency[0]), std::abs((efficiency[0] - efficiency[6]) / efficiency[0]));
-    const double efficiency_relative_uncertainty = std::sqrt(efficinecy_correction[0]* efficinecy_correction[0]+ efficinecy_correction[1] * efficinecy_correction[1]+ efficinecy_correction[2] * efficinecy_correction[2]);
+    efficiency_correction[0] = std::max(std::abs((efficiency[0] - efficiency[1]) / efficiency[0]), std::abs((efficiency[0] - efficiency[2]) / efficiency[0]));
+    efficiency_correction[1] = std::max(std::abs((efficiency[0] - efficiency[3]) / efficiency[0]), std::abs((efficiency[0] - efficiency[4]) / efficiency[0]));
+    efficiency_correction[2] = std::max(std::abs((efficiency[0] - efficiency[5]) / efficiency[0]), std::abs((efficiency[0] - efficiency[6]) / efficiency[0]));
+    const double efficiency_relative_uncertainty = std::sqrt(efficiency_correction[0]* efficiency_correction[0]+ efficiency_correction[1] * efficiency_correction[1]+ efficiency_correction[2] * efficiency_correction[2]);
 
     // show summary
     if (charge == 0) {
-        printf("B0->K0 nu nubar relative uncertainty: %lf (+-%lf +-%lf +-%lf)\n", efficiency_relative_uncertainty, efficinecy_correction[0], efficinecy_correction[1], efficinecy_correction[2]);
+        printf("B0->K0 nu nubar relative uncertainty: %lf (+-%lf +-%lf +-%lf)\n", efficiency_relative_uncertainty, efficiency_correction[0], efficiency_correction[1], efficiency_correction[2]);
     }
     else if (charge == 1 || charge == -1) {
-        printf("B+->K+ nu nubar relative uncertainty: %lf (+-%lf +-%lf +-%lf)\n", efficiency_relative_uncertainty, efficinecy_correction[0], efficinecy_correction[1], efficinecy_correction[2]);
+        printf("B+->K+ nu nubar relative uncertainty: %lf (+-%lf +-%lf +-%lf)\n", efficiency_relative_uncertainty, efficiency_correction[0], efficiency_correction[1], efficiency_correction[2]);
     }
 
     return efficiency_relative_uncertainty;
@@ -540,39 +540,39 @@ double Kstar_formfactor_uncertainty(const char* dirname, int charge, double weig
 
     // get relative uncertainty of efficiency
     double efficiency_correction[9] = { 0.0 };
-    efficinecy_correction[0] = std::max(std::abs((efficiency[0] - efficiency[1]) / efficiency[0]), std::abs((efficiency[0] - efficiency[2]) / efficiency[0]));
-    efficinecy_correction[1] = std::max(std::abs((efficiency[0] - efficiency[3]) / efficiency[0]), std::abs((efficiency[0] - efficiency[4]) / efficiency[0]));
-    efficinecy_correction[2] = std::max(std::abs((efficiency[0] - efficiency[5]) / efficiency[0]), std::abs((efficiency[0] - efficiency[6]) / efficiency[0]));
-    efficinecy_correction[3] = std::max(std::abs((efficiency[0] - efficiency[7]) / efficiency[0]), std::abs((efficiency[0] - efficiency[8]) / efficiency[0]));
-    efficinecy_correction[4] = std::max(std::abs((efficiency[0] - efficiency[9]) / efficiency[0]), std::abs((efficiency[0] - efficiency[10]) / efficiency[0]));
-    efficinecy_correction[5] = std::max(std::abs((efficiency[0] - efficiency[11]) / efficiency[0]), std::abs((efficiency[0] - efficiency[12]) / efficiency[0]));
-    efficinecy_correction[6] = std::max(std::abs((efficiency[0] - efficiency[13]) / efficiency[0]), std::abs((efficiency[0] - efficiency[14]) / efficiency[0]));
-    efficinecy_correction[7] = std::max(std::abs((efficiency[0] - efficiency[15]) / efficiency[0]), std::abs((efficiency[0] - efficiency[16]) / efficiency[0]));
-    efficinecy_correction[8] = std::max(std::abs((efficiency[0] - efficiency[17]) / efficiency[0]), std::abs((efficiency[0] - efficiency[18]) / efficiency[0]));
+    efficiency_correction[0] = std::max(std::abs((efficiency[0] - efficiency[1]) / efficiency[0]), std::abs((efficiency[0] - efficiency[2]) / efficiency[0]));
+    efficiency_correction[1] = std::max(std::abs((efficiency[0] - efficiency[3]) / efficiency[0]), std::abs((efficiency[0] - efficiency[4]) / efficiency[0]));
+    efficiency_correction[2] = std::max(std::abs((efficiency[0] - efficiency[5]) / efficiency[0]), std::abs((efficiency[0] - efficiency[6]) / efficiency[0]));
+    efficiency_correction[3] = std::max(std::abs((efficiency[0] - efficiency[7]) / efficiency[0]), std::abs((efficiency[0] - efficiency[8]) / efficiency[0]));
+    efficiency_correction[4] = std::max(std::abs((efficiency[0] - efficiency[9]) / efficiency[0]), std::abs((efficiency[0] - efficiency[10]) / efficiency[0]));
+    efficiency_correction[5] = std::max(std::abs((efficiency[0] - efficiency[11]) / efficiency[0]), std::abs((efficiency[0] - efficiency[12]) / efficiency[0]));
+    efficiency_correction[6] = std::max(std::abs((efficiency[0] - efficiency[13]) / efficiency[0]), std::abs((efficiency[0] - efficiency[14]) / efficiency[0]));
+    efficiency_correction[7] = std::max(std::abs((efficiency[0] - efficiency[15]) / efficiency[0]), std::abs((efficiency[0] - efficiency[16]) / efficiency[0]));
+    efficiency_correction[8] = std::max(std::abs((efficiency[0] - efficiency[17]) / efficiency[0]), std::abs((efficiency[0] - efficiency[18]) / efficiency[0]));
     const double efficiency_relative_uncertainty = std::sqrt(
-        efficinecy_correction[0] * efficinecy_correction[0] +
-        efficinecy_correction[1] * efficinecy_correction[1] +
-        efficinecy_correction[2] * efficinecy_correction[2] +
-        efficinecy_correction[3] * efficinecy_correction[3] +
-        efficinecy_correction[4] * efficinecy_correction[4] +
-        efficinecy_correction[5] * efficinecy_correction[5] +
-        efficinecy_correction[6] * efficinecy_correction[6] +
-        efficinecy_correction[7] * efficinecy_correction[7] +
-        efficinecy_correction[8] * efficinecy_correction[8]
+        efficiency_correction[0] * efficiency_correction[0] +
+        efficiency_correction[1] * efficiency_correction[1] +
+        efficiency_correction[2] * efficiency_correction[2] +
+        efficiency_correction[3] * efficiency_correction[3] +
+        efficiency_correction[4] * efficiency_correction[4] +
+        efficiency_correction[5] * efficiency_correction[5] +
+        efficiency_correction[6] * efficiency_correction[6] +
+        efficiency_correction[7] * efficiency_correction[7] +
+        efficiency_correction[8] * efficiency_correction[8]
     );
 
     // show summary
     if (charge == 0) {
         printf("B*0->K*0 nu nubar relative uncertainty: %lf", efficiency_relative_uncertainty);
         printf(" (");
-        for (int i = 0; i < 9; i++) printf("+-%lf ", efficinecy_correction[i]);
+        for (int i = 0; i < 9; i++) printf("+-%lf ", efficiency_correction[i]);
         printf(" )");
         printf("\n");
     }
     else if (charge == 1 || charge == -1) {
         printf("B*+->K*+ nu nubar relative uncertainty: %lf", efficiency_relative_uncertainty);
         printf(" (");
-        for (int i = 0; i < 9; i++) printf("+-%lf ", efficinecy_correction[i]);
+        for (int i = 0; i < 9; i++) printf("+-%lf ", efficiency_correction[i]);
         printf(" )");
         printf("\n");
     }
