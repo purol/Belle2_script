@@ -33,6 +33,8 @@ using namespace RooFit ;
 # define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
 # define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
 
+# define Lumi_validation_MC 0.3 // ab-1
+
 // my MC sample number
 # define N_Kplus_nunubar 10000000.0
 # define N_K0_nunubar 10000000.0
@@ -67,7 +69,7 @@ std::vector<double> KS0_3D_distance;
 
 void load_files(const char* dirname, std::vector<string>* names);
 
-std::vector<double> K_formfactor_uncertainty(const char* dirname, int charge, double weight) {
+double K_formfactor_uncertainty(const char* dirname, int charge, double weight, double N_K, double N_Kstar, double N_Xsu, double N_K0, double N_K0star, double N_Xsd) {
     if (charge == 0 || charge == 1 || charge == -1) {}
     else {
         printf("charge should be 0 or +-1 for B->K nu nubar decay\n");
@@ -92,12 +94,12 @@ std::vector<double> K_formfactor_uncertainty(const char* dirname, int charge, do
     lambda1 = 0.09274
     lambda2 = 0.01007
     */
-    double LinearCoefficients[3][3] = {
+    const double LinearCoefficients[3][3] = {
         {-0.005860659921244,   0.051812539908648,   0.998639631385367},
         {0.036811794399807,   0.997991063981209, -0.051562854912436},
         {0.999305030738039, -0.036459524432847,   0.007756198796883}
     };
-    double Lambdas[7][3] = {
+    const double Lambdas[7][3] = {
         {0.0, 0.0, 0.0},
         {0.690465567619637, 0.0, 0.0},
         {-0.690465567619637, 0.0, 0.0},
@@ -135,8 +137,10 @@ std::vector<double> K_formfactor_uncertainty(const char* dirname, int charge, do
     fluctuations[6][1] = 0.01007 * (-0.05156); // alpha1 change
     fluctuations[6][2] = 0.01007 * 0.00775; // alpha2 change
     */
-    double value[7] = { 0.0 }; // value of lambda^1.5 * fp*fp;
+    double value[7] = { 0.0 }; // value of lambda^1.5 * fp*fp
     double Nevts[7] = { 0.0 }; // number of events at each fluctuations
+    double tot_value[7] = { 0.0 }; // value of integral lambda^1.5 * fp*fp
+    double Correction_factor_BR[7] = { 0.0 }; // correction factor of BR
 
     double q2 = -1;
 
@@ -189,7 +193,49 @@ std::vector<double> K_formfactor_uncertainty(const char* dirname, int charge, do
 
     }
 
-    // show summary
+    // calculate fluctuation of total BR
+    for (int k = 0; k < 7; k++) {
+        const int step = 2000;
+        double m_b_fix = -1;
+        double m_k_fix = -1;
+        if (charge == 0) {
+            m_b_fix = 5.27965;
+            m_k_fix = 0.497611;
+        }
+        else if (charge == 1 || charge == -1) {
+            m_b_fix = 5.27934;
+            m_k_fix = 0.493677;
+        }
+        const double q2_min = 0;
+        const double q2_max = (m_b_fix - m_k_fix) * (m_b_fix - m_k_fix);
+        const double delq2 = (q2_max - q2_min) / step; // max: (mb-mk)^2
+
+        const double alpha0_fluc = alpha0 + fluctuations[k][0];
+        const double alpha1_fluc = alpha1 + fluctuations[k][1];
+        const double alpha2_fluc = alpha2 + fluctuations[k][2];
+
+        for (int i = 0; i < step; i++) {
+            const double q2_integral = q2_min + delq2 * i;
+
+            double mp = m_b_fix + 0.046;
+            double tp = (m_b_fix + m_k_fix) * (m_b_fix + m_k_fix);
+            double tm = (m_b_fix - m_k_fix) * (m_b_fix - m_k_fix);
+            double t0 = tp * (1 - sqrt(1 - tm / tp));
+            double z = (sqrt(tp - q2_integral) - sqrt(tp - t0)) / (sqrt(tp - q2_integral) + sqrt(tp - t0));
+            double fp = (1 / (1 - q2_integral / (mp * mp))) * (alpha0_fluc + alpha1_fluc * z + alpha2_fluc * z * z + (-alpha1_fluc + 2 * alpha2_fluc) * z * z * z / 3);
+            double lambda = (m_b_fix * m_b_fix * m_b_fix * m_b_fix) + (m_k_fix * m_k_fix * m_k_fix * m_k_fix) + (q2_integral * q2_integral) - 2 * (m_b_fix * m_b_fix * m_k_fix * m_k_fix + m_b_fix * m_b_fix * q2_integral + m_k_fix * m_k_fix * q2_integral);
+
+            tot_value[k] = tot_value[k] + std::pow(lambda, 1.5) * fp * fp * delq2;
+        }
+        if (charge == 0) {
+            Correction_factor_BR[k] = tot_value[k] / tot_value[0];
+        }
+        else if (charge == 1 || charge == -1) {
+            Correction_factor_BR[k] = tot_value[k] / tot_value[0];
+        }
+    }
+
+    /*
     double Min = DBL_MAX;
     double Max = -1;
     for (int i = 1; i < 7; i++) {
@@ -202,15 +248,41 @@ std::vector<double> K_formfactor_uncertainty(const char* dirname, int charge, do
     else if (charge == 1 || charge == -1) {
         printf("B+->K+ nu nubar num evt: %lf + %lf -%lf\n", Nevts[0], Max - Nevts[0], Nevts[0] - Min);
     }
+    */
 
-    std::vector<double> outputs;
-    outputs.push_back(Nevts[0]);
-    outputs.push_back(Max - Nevts[0]);
-    outputs.push_back(Nevts[0] - Min);
-    return outputs;
+    // calculate efficiency
+    double efficiency[7] = { 0.0 };
+    for (int i = 0; i < 7; i++) {
+        const double total_Xs_Num = Lumi_validation_MC * (2.0 * N_BpBp_1invab * BR_Xs_nunubar + 2.0 * N_B0B0_1invab * BR_Xs_nunubar);
+        if (charge == 0) {
+            const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0_nunubar - BR_K0_nunubar * Correction_factor_BR[k]) / BR_Xsd_nonresonant_nunubar;
+            efficiency[i] = (N_K + N_Kstar + N_Xsu + Nevts[i] + N_K0star + N_Xsd * non_res_Xsd_correction_factor) / total_Xs_Num;
+        }
+        else if (charge == 1 || charge == -1) {
+            const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplus_nunubar - BR_Kplus_nunubar * Correction_factor_BR[k]) / BR_Xsu_nonresonant_nunubar;
+            efficiency[i] = (Nevts[i] + N_Kstar + N_Xsu * non_res_Xsu_correction_factor + N_K0 + N_K0star + N_Xsd) / total_Xs_Num;
+        }
+    }
+
+    // get relative uncertainty of efficiency
+    double efficiency_correction[3] = { 0.0 };
+    efficinecy_correction[0] = std::max(std::abs((efficiency[0] - efficiency[1]) / efficiency[0]), std::abs((efficiency[0] - efficiency[2]) / efficiency[0]));
+    efficinecy_correction[1] = std::max(std::abs((efficiency[0] - efficiency[3]) / efficiency[0]), std::abs((efficiency[0] - efficiency[4]) / efficiency[0]));
+    efficinecy_correction[2] = std::max(std::abs((efficiency[0] - efficiency[5]) / efficiency[0]), std::abs((efficiency[0] - efficiency[6]) / efficiency[0]));
+    const double efficiency_relative_uncertainty = std::sqrt(efficinecy_correction[0]* efficinecy_correction[0]+ efficinecy_correction[1] * efficinecy_correction[1]+ efficinecy_correction[2] * efficinecy_correction[2]);
+
+    // show summary
+    if (charge == 0) {
+        printf("B0->K0 nu nubar relative uncertainty: %lf (+-%lf +-%lf +-%lf)\n", efficiency_relative_uncertainty, efficinecy_correction[0], efficinecy_correction[1], efficinecy_correction[2]);
+    }
+    else if (charge == 1 || charge == -1) {
+        printf("B+->K+ nu nubar relative uncertainty: %lf (+-%lf +-%lf +-%lf)\n", efficiency_relative_uncertainty, efficinecy_correction[0], efficinecy_correction[1], efficinecy_correction[2]);
+    }
+
+    return efficiency_relative_uncertainty;
 }
 
-std::vector<double> Kstar_formfactor_uncertainty(const char* dirname, int charge, double weight) {
+double Kstar_formfactor_uncertainty(const char* dirname, int charge, double weight, double N_K, double N_Kstar, double N_Xsu, double N_K0, double N_K0star, double N_Xsd) {
     if (charge == 0 || charge == 1 || charge == -1) {}
     else {
         printf("charge should be 0 or +-1 for B->K nu nubar decay\n");
@@ -254,7 +326,7 @@ std::vector<double> Kstar_formfactor_uncertainty(const char* dirname, int charge
     lambda7 = 0.00740
     lambda8 = 0.00177
     */
-    double LinearCoefficients[9][9] = {
+    const double LinearCoefficients[9][9] = {
     {-0.004767833929074,   0.013772238042338,   0.296589616507393,   0.003139670856264,   0.025743553369441,   0.118620792973715, -0.006615160985686,   0.026825078669141,   0.946739334135628},
     {0.009545743410425,   0.143364495729883,   0.833028724155009,   0.002528027950777,   0.041995533293814,   0.401904805723855,   0.013592144331223,   0.143215823688685, -0.318473920017488},
     {0.004903939104258, -0.027192276054885, -0.434636497785463, -0.004895872506074,   0.140668610588867,   0.886044604252808,   0.003208697626475,   0.070992606469561,   0.019766944252755},
@@ -265,7 +337,7 @@ std::vector<double> Kstar_formfactor_uncertainty(const char* dirname, int charge
     {-0.519183885001133,   0.030474942310095,   0.001530220137484, -0.500080935622905,   0.116801392077100, -0.015739303946084,   0.680871786694491, -0.044168374846196,   0.002926015416780},
     {-0.664990460261152,   0.118522184960495, -0.020121877756987,   0.716134125194759, -0.166939357181738,   0.027983481968456,   0.042738598277210, -0.002952732689141,   0.000271198372049}
     };
-    double Lambdas[19][9] = {
+    const double Lambdas[19][9] = {
         {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
         {1.577276362747197, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
         {-1.577276362747197, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0},
@@ -295,6 +367,8 @@ std::vector<double> Kstar_formfactor_uncertainty(const char* dirname, int charge
 
     double value[19] = { 0.0 }; // 
     double Nevts[19] = { 0.0 }; // number of events at each fluctuations
+    double tot_value[19] = { 0.0 }; // value of integral dBR/dsdcostheta
+    double Correction_factor_BR[19] = { 0.0 }; // correction factor of BR
 
     double q2 = -1;
 
@@ -367,7 +441,75 @@ std::vector<double> Kstar_formfactor_uncertainty(const char* dirname, int charge
 
     }
 
-    // show summary
+    // calculate fluctuation of total BR
+    for (int k = 0; k < 19; k++) {
+        const int step = 100;
+        double m_b_fix = -1;
+        double m_k_fix = -1;
+        if (charge == 0) {
+            m_b_fix = 5.27965;
+            m_k_fix = 0.89555;
+        }
+        else if (charge == 1 || charge == -1) {
+            m_b_fix = 5.27934;
+            m_k_fix = 0.89166;
+        }
+        const double q2_min = 0;
+        const double q2_max = (m_b_fix - m_k_fix) * (m_b_fix - m_k_fix);
+        const double delq2 = (q2_max - q2_min) / step; // max: (mb-mk)^2
+
+        const double costheta_min = -1;
+        const double costheta_max = 1;
+        const double delcostheta = (costheta_max - costheta_min) / step;
+
+        const double alpha0_A1_fluc = alpha0_A1 + fluctuations[k][0];
+        const double alpha1_A1_fluc = alpha1_A1 + fluctuations[k][1];
+        const double alpha2_A1_fluc = alpha2_A1 + fluctuations[k][2];
+        const double alpha0_A12_fluc = alpha0_A12 + fluctuations[k][3];
+        const double alpha1_A12_fluc = alpha1_A12 + fluctuations[k][4];
+        const double alpha2_A12_fluc = alpha2_A12 + fluctuations[k][5];
+        const double alpha0_v0_fluc = alpha0_v0 + fluctuations[k][6];
+        const double alpha1_v0_fluc = alpha1_v0 + fluctuations[k][7];
+        const double alpha2_v0_fluc = alpha2_v0 + fluctuations[k][8];
+
+        for (int i = 0; i < step; i++) {
+            const double q2_integral = q2_min + delq2 * i;
+
+            for (int j = 0; j < step; j++) {
+                const double costheta_integral = costheta_min + delcostheta * j;
+
+                double tp = (m_b_fix + m_k_fix) * (m_b_fix + m_k_fix);
+                double tm = (m_b_fix - m_k_fix) * (m_b_fix - m_k_fix);
+                double t0 = tp * (1 - sqrt(1 - tm / tp));
+                double z = (sqrt(tp - q2_integral) - sqrt(tp - t0)) / (sqrt(tp - q2_integral) + sqrt(tp - t0));
+                double z0 = (sqrt(tp) - sqrt(tp - t0)) / (sqrt(tp) + sqrt(tp - t0));
+
+                double v0 = (1 / (1 - q2_integral / (mR_v0 * mR_v0))) * (alpha0_v0_fluc + alpha1_v0_fluc * (z - z0) + alpha2_v0_fluc * (z - z0) * (z - z0));
+                double A1 = (1 / (1 - q2_integral / (mR_A1 * mR_A1))) * (alpha0_A1_fluc + alpha1_A1_fluc * (z - z0) + alpha2_A1_fluc * (z - z0) * (z - z0));
+                double A12 = (1 / (1 - q2_integral / (mR_A12 * mR_A12))) * (alpha0_A12_fluc + alpha1_A12_fluc * (z - z0) + alpha2_A12_fluc * (z - z0) * (z - z0));
+                double lambda = (tp - q2_integral) * (tm - q2_integral);
+                double A2 = ((m_b_fix + m_k_fix) * (m_b_fix + m_k_fix) * (m_b_fix * m_b_fix - m_k_fix * m_k_fix - q2_integral) * A1 - A12 * 16 * m_b_fix * m_k_fix * m_k_fix * (m_b_fix + m_k_fix)) / lambda;
+
+                double sB = q2_integral / (m_b_fix * m_b_fix);
+                double m_k_fix_tilda = m_k_fix / m_b_fix;
+                double Lambda = 1 + std::pow(m_k_fix_tilda, 4) + sB * sB - 2 * (m_k_fix_tilda * m_k_fix_tilda + sB + sB * m_k_fix_tilda * m_k_fix_tilda);
+
+                double Amp_parallel = -2 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (std::sqrt(2)) * (1 + m_k_fix_tilda) * A1;
+                double Amp_vertical = 2 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (std::sqrt(2)) * (std::sqrt(Lambda)) * v0 / (1 + m_k_fix_tilda);
+                double Amp_0 = -1 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (1.0 / m_k_fix_tilda) * (1.0 / std::pow(sB, 0.5)) * ((1 - m_k_fix_tilda * m_k_fix_tilda - sB) * (1 + m_k_fix_tilda) * A1 - Lambda * A2 / (1 + m_k_fix_tilda));
+
+                tot_value[k] = tot_value[k] + ((3.0 / 4.0) * (Amp_vertical * Amp_vertical + Amp_parallel * Amp_parallel) * (1 - costheta_integral * costheta_integral) + (3.0 / 2.0) * Amp_0 * Amp_0 * costheta_integral * costheta_integral) * delcostheta * (delq2 / (m_b_fix * m_b_fix));
+            }
+        }
+        if (charge == 0) {
+            Correction_factor_BR[k] = tot_value[k] / tot_value[0];
+        }
+        else if (charge == 1 || charge == -1) {
+            Correction_factor_BR[k] = tot_value[k] / tot_value[0];
+        }
+    }
+
+    /*
     double Min = DBL_MAX;
     double Max = -1;
     for (int i = 1; i < 7; i++) {
@@ -380,12 +522,62 @@ std::vector<double> Kstar_formfactor_uncertainty(const char* dirname, int charge
     else if (charge == 1 || charge == -1) {
         printf("B*+->K*+ nu nubar num evt: %lf + %lf -%lf\n", Nevts[0], Max - Nevts[0], Nevts[0] - Min);
     }
+    */
 
-    std::vector<double> outputs;
-    outputs.push_back(Nevts[0]);
-    outputs.push_back(Max - Nevts[0]);
-    outputs.push_back(Nevts[0] - Min);
-    return outputs;
+    // calculate efficiency
+    double efficiency[19] = { 0.0 };
+    for (int i = 0; i < 19; i++) {
+        const double total_Xs_Num = Lumi_validation_MC * (2.0 * N_BpBp_1invab * BR_Xs_nunubar + 2.0 * N_B0B0_1invab * BR_Xs_nunubar);
+        if (charge == 0) {
+            const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0star_nunubar - BR_K0star_nunubar * Correction_factor_BR[k]) / BR_Xsd_nonresonant_nunubar;
+            efficiency[i] = (N_K + N_Kstar + N_Xsu + N_K0 + Nevts[i] + N_Xsd * non_res_Xsd_correction_factor) / total_Xs_Num;
+        }
+        else if (charge == 1 || charge == -1) {
+            const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplusstar_nunubar - BR_Kplusstar_nunubar * Correction_factor_BR[k]) / BR_Xsu_nonresonant_nunubar;
+            efficiency[i] = (N_K + Nevts[i] + N_Xsu * non_res_Xsu_correction_factor + N_K0 + N_K0star + N_Xsd) / total_Xs_Num;
+        }
+    }
+
+    // get relative uncertainty of efficiency
+    double efficiency_correction[9] = { 0.0 };
+    efficinecy_correction[0] = std::max(std::abs((efficiency[0] - efficiency[1]) / efficiency[0]), std::abs((efficiency[0] - efficiency[2]) / efficiency[0]));
+    efficinecy_correction[1] = std::max(std::abs((efficiency[0] - efficiency[3]) / efficiency[0]), std::abs((efficiency[0] - efficiency[4]) / efficiency[0]));
+    efficinecy_correction[2] = std::max(std::abs((efficiency[0] - efficiency[5]) / efficiency[0]), std::abs((efficiency[0] - efficiency[6]) / efficiency[0]));
+    efficinecy_correction[3] = std::max(std::abs((efficiency[0] - efficiency[7]) / efficiency[0]), std::abs((efficiency[0] - efficiency[8]) / efficiency[0]));
+    efficinecy_correction[4] = std::max(std::abs((efficiency[0] - efficiency[9]) / efficiency[0]), std::abs((efficiency[0] - efficiency[10]) / efficiency[0]));
+    efficinecy_correction[5] = std::max(std::abs((efficiency[0] - efficiency[11]) / efficiency[0]), std::abs((efficiency[0] - efficiency[12]) / efficiency[0]));
+    efficinecy_correction[6] = std::max(std::abs((efficiency[0] - efficiency[13]) / efficiency[0]), std::abs((efficiency[0] - efficiency[14]) / efficiency[0]));
+    efficinecy_correction[7] = std::max(std::abs((efficiency[0] - efficiency[15]) / efficiency[0]), std::abs((efficiency[0] - efficiency[16]) / efficiency[0]));
+    efficinecy_correction[8] = std::max(std::abs((efficiency[0] - efficiency[17]) / efficiency[0]), std::abs((efficiency[0] - efficiency[18]) / efficiency[0]));
+    const double efficiency_relative_uncertainty = std::sqrt(
+        efficinecy_correction[0] * efficinecy_correction[0] +
+        efficinecy_correction[1] * efficinecy_correction[1] +
+        efficinecy_correction[2] * efficinecy_correction[2] +
+        efficinecy_correction[3] * efficinecy_correction[3] +
+        efficinecy_correction[4] * efficinecy_correction[4] +
+        efficinecy_correction[5] * efficinecy_correction[5] +
+        efficinecy_correction[6] * efficinecy_correction[6] +
+        efficinecy_correction[7] * efficinecy_correction[7] +
+        efficinecy_correction[8] * efficinecy_correction[8]
+    );
+
+    // show summary
+    if (charge == 0) {
+        printf("B*0->K*0 nu nubar relative uncertainty: %lf", efficiency_relative_uncertainty);
+        printf(" (");
+        for (int i = 0; i < 9; i++) printf("+-%lf ", efficinecy_correction[i]);
+        printf(" )");
+        printf("\n");
+    }
+    else if (charge == 1 || charge == -1) {
+        printf("B*+->K*+ nu nubar relative uncertainty: %lf", efficiency_relative_uncertainty);
+        printf(" (");
+        for (int i = 0; i < 9; i++) printf("+-%lf ", efficinecy_correction[i]);
+        printf(" )");
+        printf("\n");
+    }
+
+    return efficiency_relative_uncertainty;
 }
 
 void load_files(const char* dirname, std::vector<string>* names) {
@@ -1096,12 +1288,13 @@ void Signal_yield_fit_BDT()
     const char* DATA_dirname_K0nunu = "./SIGNAL_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
     const char* DATA_dirname_K0starnunu = "./SIGNAL_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
     const char* DATA_dirname_Xsdnunu = "./SIGNAL_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
-    SIGNAL_total_Num += LetsAdd(DATA_dirname_Knunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplus);
-    SIGNAL_total_Num += LetsAdd(DATA_dirname_Kstarnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplusstar);
-    SIGNAL_total_Num += LetsAdd(DATA_dirname_Xsununu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsu_nonresonant);
-    SIGNAL_total_Num += LetsAdd(DATA_dirname_K0nunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0);
-    SIGNAL_total_Num += LetsAdd(DATA_dirname_K0starnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0star);
-    SIGNAL_total_Num += LetsAdd(DATA_dirname_Xsdnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsd_nonresonant);
+    const double Knunu_total_num = LetsAdd(DATA_dirname_Knunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplus);
+    const double Kstarnunu_total_num = LetsAdd(DATA_dirname_Kstarnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplusstar);
+    const double Xsununu_total_num = LetsAdd(DATA_dirname_Xsununu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsu_nonresonant);
+    const double K0nunu_total_num = LetsAdd(DATA_dirname_K0nunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0);
+    const double K0starnunu_total_num = LetsAdd(DATA_dirname_K0starnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0star);
+    const double Xsdnunu_total_num = LetsAdd(DATA_dirname_Xsdnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsd_nonresonant);
+    SIGNAL_total_Num = Knunu_total_num + Kstarnunu_total_num + Xsununu_total_num + K0nunu_total_num + K0starnunu_total_num + Xsdnunu_total_num;
 
     const char* DATA_dirname_CHG = "./CHG_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     const char* DATA_dirname_MIX = "./MIX_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
@@ -1302,6 +1495,10 @@ void Signal_yield_fit_BDT()
     LetsCalculateUncertainties(MC_dirname_K0starnunu, Scale_K0star);
     LetsCalculateUncertainties(MC_dirname_Xsdnunu, Scale_Xsd_nonresonant);
     PrintUncertainties();
+    K_formfactor_uncertainty(MC_dirname_Knunu, 1, Scale_Kplus, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+    K_formfactor_uncertainty(MC_dirname_K0nunu, 0, Scale_K0, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+    Kstar_formfactor_uncertainty(MC_dirname_Kstarnunu, 1, Scale_Kplusstar, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+    Kstar_formfactor_uncertainty(MC_dirname_K0starnunu, 0, Scale_K0star, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
 
     printf("nsig: %lf +- %lf\n",nsig_val, nsig_err);
 }
