@@ -58,7 +58,7 @@ using namespace RooFit ;
 
 # define EeclBins 40
 
-# define nsig_min -100
+# define nsig_min (-80)
 # define nsig_max 130
 
 // global variables to calculate uncertainties
@@ -1053,7 +1053,7 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
 
 }
 
-void ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf ExtendedBKGPDF, RooRealVar EeclFit, double SINAL_num, double BKG_num) {
+std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf ExtendedBKGPDF, RooRealVar EeclFit, double SINAL_num, double BKG_num) {
     const int TOY_iterate_number = 1000;
 
     std::vector<double> n_sigs;
@@ -1068,21 +1068,20 @@ void ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf ExtendedBKGPDF, Roo
         //            RooDataHist gen_binned_data_Eecl("gen binned Eecl data", "gen binned Eecl data", EeclFit, *genData);
 
                     // construct fitting function
-        RooRealVar m0_TOY("m0_TOY", "m0_TOY", 0.65);
-        RooRealVar sigma_TOY("sigma_TOY", "sigma_TOY", 0.53);
-        RooRealVar alpha_TOY("alpha_TOY", "alpha_TOY", -0.85);
-        RooRealVar n_TOY("n_TOY", "n_TOY", 60);
-        RooCBShape histpdf_Eecl_signal_TOY("genpdfs_TOY", "genpdfs_TOY", EeclFit, m0_TOY, sigma_TOY, alpha_TOY, n_TOY);
-        RooRealVar nsig("nsig", "n_{sig}", 7.5, -100, 100);
+        RooRealVar cexp_TOY("cexp_TOY", "cexp_TOY", 38.13); 
+        RooRealVar fraction_TOY("fraction_TOY", "fraction_TOY", 0.6480); 
+        RooPolynomial pol0_TOY("pol0_TOY", "pol0_TOY", EeclFit, RooArgList());
+        RooExponential SIGNAL_exp_TOY("genpdfs_TOY", "genpdfs_TOY", EeclFit, cexp_TOY);
+        RooAddPdf histpdf_Eecl_signal_TOY("histpdf_Eecl_signal_TOY", "pol0+exp_TOY", RooArgList(SIGNAL_exp_TOY, pol0_TOY), RooArgList(fraction_TOY));
+        RooRealVar nsig("nsig", "n_{sig}", 20, nsig_min, nsig_max);
         RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal_TOY, nsig);
 
-        RooRealVar m0b_TOY("m0b_TOY", "m0b_TOY", 1.6);
-        RooRealVar sigmab_TOY("sigmab_TOY", "sigmab_TOY", 0.67);
-        RooRealVar alphab_TOY("alphab_TOY", "alphab_TOY", -0.368);
-        RooRealVar nb_TOY("nb_TOY", "nb_TOY", 20);
-        RooCBShape histpdf_Eecl_background_TOY("genpdfb_TOY", "genpdfb_TOY", EeclFit, m0b_TOY, sigmab_TOY, alphab_TOY, nb_TOY);
+        RooRealVar m0_TOY("m0_TOY", "m0_TOY", 1); 
+        RooRealVar c0_TOY("c0_TOY", "c0_TOY", -1.703); 
+        RooRealVar p0_TOY("p0_TOY", "p0_TOY", 0.245);
+        RooArgusBG histpdf_Eecl_background_TOY("histpdf_Eecl_background_ARGUS_TOY", "histpdf_Eecl_background_ARGUS_TOY", EeclFit, m0_TOY, c0_TOY, p0_TOY);
 
-        RooRealVar nbkg("nbkg", "number of background events", 450, 300, 600);
+        RooRealVar nbkg("nbkg", "number of background events", 1070, 820, 1320);
         RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background_TOY, nbkg);
 
         RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -1107,8 +1106,8 @@ void ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf ExtendedBKGPDF, Roo
     }
 
     // print png
-    TH1F* ToyMCnsig = new TH1F("ToyMCnsig", ";n_{sig};evt", 40, -100, 100);
-    TH1F* ToyMCnsigerror = new TH1F("ToyMCnsigerror", ";error of n_{sig};evt", 40, 5, 20);
+    TH1F* ToyMCnsig = new TH1F("ToyMCnsig", ";n_{sig};evt", 40, nsig_min, nsig_max);
+    TH1F* ToyMCnsigerror = new TH1F("ToyMCnsigerror", ";error of n_{sig};evt", 60, 0, 60);
     TH1F* ToyMCnsigpull = new TH1F("ToyMCnsigpull", ";pull of n_{sig};evt", 40, -5, 5);
 
     ToyMCnsig->SetMarkerStyle(kFullCircle);
@@ -1146,12 +1145,25 @@ void ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf ExtendedBKGPDF, Roo
     c->SaveAs("TOYMC_nsigpull.png");
     delete c;
 
+    TF1* fit_pull_gauss = ToyMCnsigpull->GetFunction("gaus");
+    const double constant_gauss = fit_pull_gauss->GetParameter(0);
+    const double mean_gauss = fit_pull_gauss->GetParameter(1);
+    const double sigma_gauss = fit_pull_gauss->GetParameter(2);
+
     delete ToyMCnsig;
     delete ToyMCnsigerror;
     delete ToyMCnsigpull;
 
     gStyle->SetOptFit(0); gStyle->SetStatH();
 
+    std::vector outputs;
+    outputs.push_back(constant_gauss);
+    outputs.push_back(mean_gauss);
+    outputs.push_back(sigma_gauss);
+
+    printf("TOY MC study pull mean: %lf\n", mean_gauss);
+    printf("TOY MC study pull sigma: %lf\n", sigma_gauss);
+    return outputs;
 }
 
 // functions for TF1. it will be used for likelihood
@@ -1167,7 +1179,7 @@ double ConvertToTF1_smeared(double *xx, double *){
     return TGraph_smeared_Likelihood->Eval(xx[0]);
 }
 
-void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Eecl, RooAddPdf totalpdf){
+void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Eecl, RooAddPdf totalpdf, double uncertainty_additive, double uncertainty_multiplicative){
     RooPlot* nllframe = nsig->frame();
     RooAbsReal* nll = totalpdf.createNLL(*d_Eecl, NumCPU(40), Verbose(false));
     RooAbsReal* pll_nsig = nll->createProfile(*nsig);
@@ -1195,8 +1207,8 @@ void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Eecl, RooAddPdf totalpdf){
     //TF1* smeared_likelihood = new TF1("smeared_likelihood", *smeared_likelihood_conv, -100, 130, smeared_likelihood_conv->GetNpar());
 
     // obtain smeared likelihood
-    double unc_add = 5;
-    double unc_mul = 0.05;
+    double unc_add = uncertainty_additive;
+    double unc_mul = uncertainty_multiplicative;
     double x_pll_smeared[Nbins] = {0};
     double y_pll_smeared[Nbins] = {0};
     for(int i=0; i<Nbins; i++){
@@ -1462,43 +1474,40 @@ void Signal_yield_fit_BDT()
     /* ============== Linearity test ============== */
 //    LinearityTest(r, EeclFit, BKG_total_Num);
 
-    /* ============== Print profile likelihood  ============== */
-    GetLikelihood(&nsig, d_Eecl, totalpdf);
-
     /* ============== toy MC study ============== */
-//    ToyMCstudy(esig, ebkg, EeclFit, SIGNAL_total_Num, BKG_total_Num);
-//    RooRealVar  Eecl_TOY("Eecl", "Eecl_TOY", 0, 4);
-//    Eecl_TOY.setBins(EeclBins);
-
-//    RooMCStudy* mcstudy = new RooMCStudy(totalpdf, Eecl_TOY, Binned(kTRUE), Silence(), Extended(),FitOptions(Save(kTRUE), PrintEvalErrors(0)));
-//    mcstudy->generateAndFit(1000);
-
-    // Make plots of the distributions of mean, the error on mean and the pull of mean
-//    RooPlot* frame1 = mcstudy->plotParam(nsig, Bins(40));
-//    RooPlot* frame2 = mcstudy->plotError(nsig, Bins(40));
-//    RooPlot* frame3 = mcstudy->plotPull(nsig, Bins(40), FitGauss(kTRUE));
-
-    // Draw all plots on a canvas
-//    gStyle->SetOptStat(0);
-//    TCanvas* cf = new TCanvas("rf801_mcstudy", "rf801_mcstudy", 1200, 400);
-//    cf->Divide(3, 1);
-//    cf->cd(1); gPad->SetLeftMargin(0.15); frame1->GetYaxis()->SetTitleOffset(1.4); frame1->Draw();
-//    cf->cd(2); gPad->SetLeftMargin(0.15); frame2->GetYaxis()->SetTitleOffset(1.4); frame2->Draw();
-//    cf->cd(3); gPad->SetLeftMargin(0.15); frame3->GetYaxis()->SetTitleOffset(1.4); frame3->Draw();
-//    cf->SaveAs("ToyStudy.png");
+    std::vector<double> pull_result = ToyMCstudy(esig, ebkg, EeclFit, SIGNAL_total_Num, BKG_total_Num); // const, mean, sigma
 
     /* ============== Uncertainty Calculation ============== */
+    printf("=================== start to calculate uncertainties ===================\n");
     LetsCalculateUncertainties(MC_dirname_Knunu, Scale_Kplus);
     LetsCalculateUncertainties(MC_dirname_Kstarnunu, Scale_Kplusstar);
     LetsCalculateUncertainties(MC_dirname_Xsununu, Scale_Xsu_nonresonant);
     LetsCalculateUncertainties(MC_dirname_K0nunu, Scale_K0);
     LetsCalculateUncertainties(MC_dirname_K0starnunu, Scale_K0star);
     LetsCalculateUncertainties(MC_dirname_Xsdnunu, Scale_Xsd_nonresonant);
-    PrintUncertainties();
-    K_formfactor_uncertainty(MC_dirname_Knunu, 1, Scale_Kplus, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
-    K_formfactor_uncertainty(MC_dirname_K0nunu, 0, Scale_K0, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
-    Kstar_formfactor_uncertainty(MC_dirname_Kstarnunu, 1, Scale_Kplusstar, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
-    Kstar_formfactor_uncertainty(MC_dirname_K0starnunu, 0, Scale_K0star, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+    std::vector<double> uncertainties_basic = PrintUncertainties();
+    const double K_ff_uncertainty = K_formfactor_uncertainty(MC_dirname_Knunu, 1, Scale_Kplus, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+    const double K0_ff_uncertainty = K_formfactor_uncertainty(MC_dirname_K0nunu, 0, Scale_K0, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+    const double Kstar_ff_uncertainty = Kstar_formfactor_uncertainty(MC_dirname_Kstarnunu, 1, Scale_Kplusstar, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+    const double K0star_ff_uncertainty = Kstar_formfactor_uncertainty(MC_dirname_K0starnunu, 0, Scale_K0star, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
 
+    const double total_uncertainty_mul = std::sqrt(
+        (uncertainties_basic.at(2) * 0.01) * (uncertainties_basic.at(2) * 0.01) +
+        (uncertainties_basic.at(3) * 0.01) * (uncertainties_basic.at(3) * 0.01) +
+        (uncertainties_basic.at(4) * 0.01) * (uncertainties_basic.at(4) * 0.01) +
+        (K_ff_uncertainty + K0_ff_uncertainty) * (K_ff_uncertainty + K0_ff_uncertainty) +
+        (Kstar_ff_uncertainty + K0star_ff_uncertainty) * (Kstar_ff_uncertainty + K0star_ff_uncertainty)
+    );
+    const double total_uncertainty_add = std::sqrt(
+        (nsig_err * pull_result.at(1)) * (nsig_err * pull_result.at(1)) +
+        (nsig_err * (pull_result.at(2) - 1)) * (nsig_err * (pull_result.at(2) - 1))
+    );
+
+    /* ============== Print profile likelihood  ============== */
+    GetLikelihood(&nsig, d_Eecl, totalpdf, total_uncertainty_add, total_uncertainty_mul);
+
+    /* ============== End!  ============== */
     printf("nsig: %lf +- %lf\n",nsig_val, nsig_err);
+    printf("total additive %lf\n", total_uncertainty_add);
+    printf("total multiplicative factor %lf\n", total_uncertainty_mul);
 }
