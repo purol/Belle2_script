@@ -255,11 +255,11 @@ double K_formfactor_uncertainty(const char* dirname, int charge, double weight, 
     for (int i = 0; i < 7; i++) {
         const double total_Xs_Num = Lumi_validation_MC * (2.0 * N_BpBp_1invab * BR_Xs_nunubar + 2.0 * N_B0B0_1invab * BR_Xs_nunubar);
         if (charge == 0) {
-            const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0_nunubar - BR_K0_nunubar * Correction_factor_BR[k]) / BR_Xsd_nonresonant_nunubar;
+            const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0_nunubar - BR_K0_nunubar * Correction_factor_BR[i]) / BR_Xsd_nonresonant_nunubar;
             efficiency[i] = (N_K + N_Kstar + N_Xsu + Nevts[i] + N_K0star + N_Xsd * non_res_Xsd_correction_factor) / total_Xs_Num;
         }
         else if (charge == 1 || charge == -1) {
-            const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplus_nunubar - BR_Kplus_nunubar * Correction_factor_BR[k]) / BR_Xsu_nonresonant_nunubar;
+            const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplus_nunubar - BR_Kplus_nunubar * Correction_factor_BR[i]) / BR_Xsu_nonresonant_nunubar;
             efficiency[i] = (Nevts[i] + N_Kstar + N_Xsu * non_res_Xsu_correction_factor + N_K0 + N_K0star + N_Xsd) / total_Xs_Num;
         }
     }
@@ -529,11 +529,11 @@ double Kstar_formfactor_uncertainty(const char* dirname, int charge, double weig
     for (int i = 0; i < 19; i++) {
         const double total_Xs_Num = Lumi_validation_MC * (2.0 * N_BpBp_1invab * BR_Xs_nunubar + 2.0 * N_B0B0_1invab * BR_Xs_nunubar);
         if (charge == 0) {
-            const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0star_nunubar - BR_K0star_nunubar * Correction_factor_BR[k]) / BR_Xsd_nonresonant_nunubar;
+            const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0star_nunubar - BR_K0star_nunubar * Correction_factor_BR[i]) / BR_Xsd_nonresonant_nunubar;
             efficiency[i] = (N_K + N_Kstar + N_Xsu + N_K0 + Nevts[i] + N_Xsd * non_res_Xsd_correction_factor) / total_Xs_Num;
         }
         else if (charge == 1 || charge == -1) {
-            const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplusstar_nunubar - BR_Kplusstar_nunubar * Correction_factor_BR[k]) / BR_Xsu_nonresonant_nunubar;
+            const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplusstar_nunubar - BR_Kplusstar_nunubar * Correction_factor_BR[i]) / BR_Xsu_nonresonant_nunubar;
             efficiency[i] = (N_K + Nevts[i] + N_Xsu * non_res_Xsu_correction_factor + N_K0 + N_K0star + N_Xsd) / total_Xs_Num;
         }
     }
