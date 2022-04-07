@@ -3183,8 +3183,8 @@ void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
         else if (decaymodeid_MC == 12)decaymodeid_MC_for_square = 10;
         else if (decaymodeid_MC == 13)decaymodeid_MC_for_square = 11;
         else if (decaymodeid_MC == 14)decaymodeid_MC_for_square = 12;
-        else if (decaymodeid_MC == 15)decaymodeid_MC_for_square = 11;
-        else if (decaymodeid_MC == 16)decaymodeid_MC_for_square = 12;
+        else if (decaymodeid_MC == 15)decaymodeid_MC_for_square = 13;
+        else if (decaymodeid_MC == 16)decaymodeid_MC_for_square = 14;
         else if (decaymodeid_MC == 17)decaymodeid_MC_for_square = 13;
         else if (decaymodeid_MC == 18)decaymodeid_MC_for_square = 14;
         else if (decaymodeid_MC == 19)decaymodeid_MC_for_square = 15;
@@ -3193,6 +3193,10 @@ void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
         else if (decaymodeid_MC == 22)decaymodeid_MC_for_square = 18;
         else if (decaymodeid_MC == 23)decaymodeid_MC_for_square = 19;
         else if (decaymodeid_MC == 24)decaymodeid_MC_for_square = 20;
+        else if (decaymodeid_MC == 25)decaymodeid_MC_for_square = 21;
+        else if (decaymodeid_MC == 26)decaymodeid_MC_for_square = 22;
+        else if (decaymodeid_MC == 27)decaymodeid_MC_for_square = 23;
+        else if (decaymodeid_MC == 28)decaymodeid_MC_for_square = 24;
         if (smartmode == false) Confusion_square[decaymodeid][decaymodeid_MC_for_square]++;
         else {
             if (filename.find("B2Knunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplus;
