@@ -288,10 +288,10 @@ private:
     int current_TH1F;
     int current_TH2F;
 
-    std::vector<int> N_events;
-    std::vector<int> N_candidates;
-    std::vector<int> N_candidates_modes[Loader::MAX_NUM_DECAYMODE];
-    std::vector<int> N_events_modes[Loader::MAX_NUM_DECAYMODE];
+    std::vector<double> N_events;
+    std::vector<double> N_candidates;
+    std::vector<double> N_candidates_modes[Loader::MAX_NUM_DECAYMODE];
+    std::vector<double> N_events_modes[Loader::MAX_NUM_DECAYMODE];
     std::vector<double> N_MC_modes[Loader::MAX_NUM_DECAYMODE_MC];
     std::vector<std::string> titles;
     int current_N_event;
@@ -365,7 +365,7 @@ public:
     void DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j);
     void DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear);
-    void PrintInformation(std::string title);
+    void PrintInformation(std::string title, std::string filename = std::string(""), bool smartmode = true);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::Variable variable_qual, int i_qual, Loader::Inequality inq_qual, double value_qual);
@@ -1112,7 +1112,7 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
     current_THStack++;
 }
 
-void Loader::PrintInformation(std::string title) {
+void Loader::PrintInformation(std::string title, std::string filename, bool smartmode) {
     typedef struct labels {
         int __experiment__;
         int __run__;
@@ -1163,7 +1163,16 @@ void Loader::PrintInformation(std::string title) {
             }
         }
         if (overlap == false) {
-            N_events.at(current_N_event) = N_events.at(current_N_event) + 1;
+            if (smartmode == false) N_events.at(current_N_event) = N_events.at(current_N_event) + 1;
+            else {
+                if (filename.find("B2Knunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplus;
+                else if (filename.find("B2Kstarnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplusstar;
+                else if (filename.find("B2Xsnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsu_nonresonant;
+                else if (filename.find("B02K0nunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0;
+                else if (filename.find("B02Kstar0nunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0star;
+                else if (filename.find("B02Xsnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsd_nonresonant;
+                else { N_events.at(current_N_event) = N_events.at(current_N_event) + 1; }
+            }
             Labels temp_Labels;
             temp_Labels.__experiment__ = temp.__experiment__;
             temp_Labels.__run__ = temp.__run__;
@@ -1226,15 +1235,42 @@ void Loader::PrintInformation(std::string title) {
             printf("ERROR! 029\n");
             exit(1);
         }
-        N_candidates_modes[decaymodeid].at(current_N_candidate)++;
+        if (smartmode == false) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0;
+        else {
+            if (filename.find("B2Knunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplus;
+            else if (filename.find("B2Kstarnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplusstar;
+            else if (filename.find("B2Xsnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsu_nonresonant;
+            else if (filename.find("B02K0nunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0;
+            else if (filename.find("B02Kstar0nunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0star;
+            else if (filename.find("B02Xsnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsd_nonresonant;
+            else { N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0; }
+        }
 
         TotalData.push(temp);
     }
-    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size();
+    if (smartmode == false) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size();
+    else {
+        if (filename.find("B2Knunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Kplus;
+        else if (filename.find("B2Kstarnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Kplusstar;
+        else if (filename.find("B2Xsnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Xsu_nonresonant;
+        else if (filename.find("B02K0nunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_K0;
+        else if (filename.find("B02Kstar0nunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_K0star;
+        else if (filename.find("B02Xsnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Xsd_nonresonant;
+        else { N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size(); }
+    }
     for (unsigned int i = 0; i < label_list.size(); i++) {
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) {
             if (label_list.at(i).IsThisModeExist[j]) {
-                N_events_modes[j].at(current_N_candidate)++;
+                if (smartmode == false) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + 1;
+                else {
+                    if (filename.find("B2Knunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Kplus;
+                    else if (filename.find("B2Kstarnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Kplusstar;
+                    else if (filename.find("B2Xsnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Xsu_nonresonant;
+                    else if (filename.find("B02K0nunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_K0;
+                    else if (filename.find("B02Kstar0nunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_K0star;
+                    else if (filename.find("B02Xsnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Xsd_nonresonant;
+                    else { N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + 1; }
+                }
             }
         }
     }
