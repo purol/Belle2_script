@@ -1660,10 +1660,10 @@ bool Loader::IsBCSValid() {
 void Loader::End() {
     for (int i = 0; i < N_events.size();i++) {
         printf("%s\n", titles.at(i).c_str());
-        printf("Number of event: %d\n", N_events.at(i));
-        printf("Number of candidate: %d\n", N_candidates.at(i));
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %d\n", j, N_candidates_modes[j].at(i));
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of event including decayID %d: %d\n", j, N_events_modes[j].at(i));
+        printf("Number of event: %lf\n", N_events.at(i));
+        printf("Number of candidate: %lf\n", N_candidates.at(i));
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %lf\n", j, N_candidates_modes[j].at(i));
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of event including decayID %d: %lf\n", j, N_events_modes[j].at(i));
         if (AllOfThemHaveXsBranch) for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i));
     }
 
