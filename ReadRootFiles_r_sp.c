@@ -330,7 +330,7 @@ private:
     Loader::ScaleFactor scaleFactor;
 
     int current_MCcount;
-    int MCcount[Loader::MAX_NUM_DECAYMODE_MC];
+    double MCcount[Loader::MAX_NUM_DECAYMODE_MC];
     bool MCcountOn;
 
     int EventDataToTree[N_event_info];
@@ -1680,7 +1680,7 @@ void Loader::End() {
 
     if (MCcountOn == true) {
         printf("--------------- number of Decay mode ---------------\n");
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event of MCdecayID %d: %d\n", j, MCcount[j]);
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event of MCdecayID %d: %lf\n", j, MCcount[j]);
         printf("--------------- number of Decay mode ---------------\n");
     }
 
