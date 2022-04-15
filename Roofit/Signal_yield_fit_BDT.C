@@ -22,6 +22,13 @@ using namespace RooFit ;
 # define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
 # define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
 
+// uncertainty of BR from parametric reason
+# define Sigma_BR_Kplus_nunubar 0.00000019
+# define Sigma_BR_K0star_nunubar 0.00000050
+# define Sigma_BR_K0_nunubar (Sigma_BR_Kplus_nunubar*TB0/TBp)
+# define Sigma_BR_Kplusstar_nunubar (Sigma_BR_K0star_nunubar*TBp/TB0)
+# define Sigma_BR_Xs_nunubar 0.000003
+
 // https://confluence.desy.de/pages/viewpage.action?pageId=107054222
 # define N_BpBp_1invab 565400000.0
 # define N_B0B0_1invab 534600000.0
@@ -55,6 +62,7 @@ using namespace RooFit ;
 # define track_rel_uncertainty 0.69 // %
 # define pi0_correction 0.932
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
+# define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
 
 # define EeclBins 40
 
@@ -66,8 +74,39 @@ std::vector<double> Ns;
 std::vector<int> ntracks;
 std::vector<int> npi0s;
 std::vector<double> KS0_3D_distance;
+std::vector<double> KaonID_correction;
+std::vector<double> KaonID_rel_up;
+std::vector<double> KaonID_rel_down;
 
 void load_files(const char* dirname, std::vector<string>* names);
+
+double fraction_uncertainty(double N_K, double N_Kstar, double N_Xsu, double N_K0, double N_K0star, double N_Xsd) {
+
+    // calculate efficiency
+    double efficiency[7] = { 0.0 };
+    const double total_Xs_Num = Lumi_validation_MC * (2.0 * N_BpBp_1invab * BR_Xs_nunubar + 2.0 * N_B0B0_1invab * BR_Xs_nunubar);
+    efficiency[0] = (N_K + N_Kstar + N_Xsu + N_K0 + N_K0star + N_Xsd) / total_Xs_Num;
+    efficiency[1] = (N_K * ((BR_Kplus_nunubar + Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar) + N_Kstar + N_Xsu * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar) + N_K0 * ((BR_K0_nunubar + Sigma_BR_K0_nunubar) / BR_K0_nunubar) + N_K0star + N_Xsd * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar)) / total_Xs_Num;
+    efficiency[2] = (N_K * ((BR_Kplus_nunubar - Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar) + N_Kstar + N_Xsu * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar) + N_K0 * ((BR_K0_nunubar - Sigma_BR_K0_nunubar) / BR_K0_nunubar) + N_K0star + N_Xsd * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar)) / total_Xs_Num;
+    efficiency[3] = (N_K + N_Kstar * ((BR_Kplusstar_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar) + N_Xsu * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar) + N_K0 + N_K0star * ((BR_K0star_nunubar + Sigma_BR_K0star_nunubar) / BR_K0star_nunubar) + N_Xsd * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar)) / total_Xs_Num;
+    efficiency[4] = (N_K + N_Kstar * ((BR_Kplusstar_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar) + N_Xsu * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar) + N_K0 + N_K0star * ((BR_K0star_nunubar - Sigma_BR_K0star_nunubar) / BR_K0star_nunubar) + N_Xsd * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar)) / total_Xs_Num;
+    const double total_Xs_Num_plus = Lumi_validation_MC * (2.0 * N_BpBp_1invab * (BR_Xs_nunubar + Sigma_BR_Xs_nunubar) + 2.0 * N_B0B0_1invab * (BR_Xs_nunubar + Sigma_BR_Xs_nunubar));
+    const double total_Xs_Num_minus = Lumi_validation_MC * (2.0 * N_BpBp_1invab * (BR_Xs_nunubar - Sigma_BR_Xs_nunubar) + 2.0 * N_B0B0_1invab * (BR_Xs_nunubar - Sigma_BR_Xs_nunubar));
+    efficiency[5] = (N_K + N_Kstar + N_Xsu * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Xs_nunubar) / BR_Xsu_nonresonant_nunubar) + N_K0 + N_K0star + N_Xsd * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_Xs_nunubar) / BR_Xsd_nonresonant_nunubar)) / total_Xs_Num_plus;
+    efficiency[6] = (N_K + N_Kstar + N_Xsu * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Xs_nunubar) / BR_Xsu_nonresonant_nunubar) + N_K0 + N_K0star + N_Xsd * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_Xs_nunubar) / BR_Xsd_nonresonant_nunubar)) / total_Xs_Num_minus;
+
+    // get relative uncertainty of efficiency
+    double efficiency_correction[3] = { 0.0 };
+    efficiency_correction[0] = std::max(std::abs((efficiency[0] - efficiency[1]) / efficiency[0]), std::abs((efficiency[0] - efficiency[2]) / efficiency[0]));
+    efficiency_correction[1] = std::max(std::abs((efficiency[0] - efficiency[3]) / efficiency[0]), std::abs((efficiency[0] - efficiency[4]) / efficiency[0]));
+    efficiency_correction[2] = std::max(std::abs((efficiency[0] - efficiency[5]) / efficiency[0]), std::abs((efficiency[0] - efficiency[6]) / efficiency[0]));
+    const double efficiency_relative_uncertainty = std::sqrt(efficiency_correction[0] * efficiency_correction[0] + efficiency_correction[1] * efficiency_correction[1] + efficiency_correction[2] * efficiency_correction[2]);
+
+    // show summary
+    printf("relative uncertainty from fraction: %lf (+-%lf +-%lf +-%lf)\n", efficiency_relative_uncertainty, efficiency_correction[0], efficiency_correction[1], efficiency_correction[2]);
+
+    return efficiency_relative_uncertainty;
+}
 
 double K_formfactor_uncertainty(const char* dirname, int charge, double weight, double N_K, double N_Kstar, double N_Xsu, double N_K0, double N_K0star, double N_Xsd) {
     if (charge == 0 || charge == 1 || charge == -1) {}
@@ -683,6 +722,10 @@ void LetsCalculateUncertainties(const char* dirname, double weight) {
         printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
 
         double temp_KS0_3D_distance = -1;
+        double temp_KaonID_correction = -1;
+        double temp_KaonID_rel_up = -1;
+        double temp_KaonID_rel_dn = -1;
+        double temp_nKaon_excep = -1;
 
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
@@ -691,6 +734,10 @@ void LetsCalculateUncertainties(const char* dirname, double weight) {
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_KS0_3D_distance);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_KaonID_rel_up);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_KaonID_rel_dn);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -800,6 +847,11 @@ void LetsCalculateUncertainties(const char* dirname, double weight) {
             }
             KS0_3D_distance.push_back(temp_KS0_3D_distance);
 
+            // correct low momentum region for KaonPID
+            KaonID_correction.push_back(temp_KaonID_correction * std::pow(-1, temp_nKaon_excep));
+            KaonID_rel_up.push_back(temp_KaonID_rel_up + std::sqrt(2) * temp_nKaon_excep + std::sqrt(2) * temp_nKaon_excep * Kaon_PID_max_uncertainty);
+            KaonID_rel_down.push_back(temp_KaonID_rel_dn + std::sqrt(2) * temp_nKaon_excep + std::sqrt(2) * temp_nKaon_excep * Kaon_PID_max_uncertainty);
+
             Ns.push_back(weight);
         }
         input_file->Close();
@@ -814,7 +866,7 @@ std::vector<double> PrintUncertainties() {
     std::vector<double> track_rel_uncertainties;
     std::vector<double> pi0_rel_uncertainties;
     for (unsigned int j = 0; j < Ns.size(); j++) {
-        corrected_Ns.push_back(pow(pi0_correction, npi0s.at(j)) * Ns.at(j) );
+        corrected_Ns.push_back(pow(pi0_correction, npi0s.at(j)) * KaonID_correction.at(j) * Ns.at(j) );
         track_rel_uncertainties.push_back(track_rel_uncertainty * ntracks.at(j));
         pi0_rel_uncertainties.push_back(pi0_rel_uncertainty * npi0s.at(j));
         KS0_rel_uncertainties.push_back(KS0_rel_uncertainty * KS0_3D_distance.at(j));
@@ -823,16 +875,22 @@ std::vector<double> PrintUncertainties() {
     double avg_track_rel_uncertainty = 0;
     double avg_pi0_rel_uncertainty = 0;
     double avg_KS0_rel_uncertainty = 0;
+    double avg_KaonID_rel_uncertainty_up = 0;
+    double avg_KaonID_rel_uncertainty_dn = 0;
 
     for (unsigned int j = 0; j < Ns.size(); j++) {
         corrected_N = corrected_N + corrected_Ns.at(j);
         avg_track_rel_uncertainty = avg_track_rel_uncertainty + corrected_Ns.at(j) * track_rel_uncertainties.at(j);
         avg_pi0_rel_uncertainty = avg_pi0_rel_uncertainty + corrected_Ns.at(j) * pi0_rel_uncertainties.at(j);
         avg_KS0_rel_uncertainty = avg_KS0_rel_uncertainty + corrected_Ns.at(j) * KS0_rel_uncertainties.at(j);
+        avg_KaonID_rel_uncertainty_up = avg_KaonID_rel_uncertainty_up + corrected_Ns.at(j) * KaonID_rel_up.at(j);
+        avg_KaonID_rel_uncertainty_dn = avg_KaonID_rel_uncertainty_dn + corrected_Ns.at(j) * KaonID_rel_dn.at(j);
     }
     avg_track_rel_uncertainty = avg_track_rel_uncertainty / corrected_N;
     avg_pi0_rel_uncertainty = avg_pi0_rel_uncertainty / corrected_N;
     avg_KS0_rel_uncertainty = avg_KS0_rel_uncertainty / corrected_N;
+    avg_KaonID_rel_uncertainty_up = avg_KaonID_rel_uncertainty_up / corrected_N;
+    avg_KaonID_rel_uncertainty_dn = avg_KaonID_rel_uncertainty_dn / corrected_N;
 
     double total_N = 0;
     for (unsigned int j = 0; j < Ns.size(); j++) total_N = total_N + Ns.at(j);
@@ -842,6 +900,7 @@ std::vector<double> PrintUncertainties() {
     printf("Average relative uncertainty from track: %lf%%\n", avg_track_rel_uncertainty);
     printf("Average relative uncertainty from pi0: %lf%%\n", avg_pi0_rel_uncertainty);
     printf("Average relative uncertainty from KS0: %lf%%\n", avg_KS0_rel_uncertainty);
+    printf("Average relative uncertainty from Kaon ID: %lf\n", std::max(avg_KaonID_rel_uncertainty_up, avg_KaonID_rel_uncertainty_dn));
 
     std::vector<double> outputs;
     outputs.push_back(total_N);
@@ -849,6 +908,7 @@ std::vector<double> PrintUncertainties() {
     outputs.push_back(avg_track_rel_uncertainty);
     outputs.push_back(avg_pi0_rel_uncertainty);
     outputs.push_back(avg_KS0_rel_uncertainty);
+    outputs.push_back(std::max(avg_KaonID_rel_uncertainty_up, avg_KaonID_rel_uncertainty_dn));
     return outputs;
 }
 
@@ -1490,13 +1550,16 @@ void Signal_yield_fit_BDT()
     const double K0_ff_uncertainty = K_formfactor_uncertainty(MC_dirname_K0nunu, 0, Scale_K0, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
     const double Kstar_ff_uncertainty = Kstar_formfactor_uncertainty(MC_dirname_Kstarnunu, 1, Scale_Kplusstar, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
     const double K0star_ff_uncertainty = Kstar_formfactor_uncertainty(MC_dirname_K0starnunu, 0, Scale_K0star, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+    const double Fraction_uncertainty = fraction_uncertainty(Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
 
     const double total_uncertainty_mul = std::sqrt(
         (uncertainties_basic.at(2) * 0.01) * (uncertainties_basic.at(2) * 0.01) +
         (uncertainties_basic.at(3) * 0.01) * (uncertainties_basic.at(3) * 0.01) +
         (uncertainties_basic.at(4) * 0.01) * (uncertainties_basic.at(4) * 0.01) +
+        uncertainties_basic.at(5) * uncertainties_basic.at(5) +
         (K_ff_uncertainty + K0_ff_uncertainty) * (K_ff_uncertainty + K0_ff_uncertainty) +
-        (Kstar_ff_uncertainty + K0star_ff_uncertainty) * (Kstar_ff_uncertainty + K0star_ff_uncertainty)
+        (Kstar_ff_uncertainty + K0star_ff_uncertainty) * (Kstar_ff_uncertainty + K0star_ff_uncertainty) +
+        Fraction_uncertainty * Fraction_uncertainty
     );
     const double total_uncertainty_add = std::sqrt(
         (nsig_err * pull_result.at(1)) * (nsig_err * pull_result.at(1)) +
@@ -1509,5 +1572,5 @@ void Signal_yield_fit_BDT()
     /* ============== End!  ============== */
     printf("nsig: %lf +- %lf\n",nsig_val, nsig_err);
     printf("total additive %lf\n", total_uncertainty_add);
-    printf("total multiplicative factor %lf\n", total_uncertainty_mul);
+    printf("total multiplicative factor +%lf -%lf\n", total_uncertainty_mul);
 }
