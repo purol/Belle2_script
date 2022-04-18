@@ -1005,7 +1005,7 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
             RooPolynomial pol0_LT("pol0_LT","pol0_LT",EeclFit,RooArgList());
             RooExponential SIGNAL_exp_LT("genpdfs_LT", "genpdfs_LT", EeclFit, cexp_LT);
             RooAddPdf histpdf_Eecl_signal_LT("histpdf_Eecl_signal_LT","pol0+exp_LT",RooArgList(SIGNAL_exp_LT,pol0_LT),RooArgList(fraction_LT));
-            RooRealVar nsig("nsig", "n_{sig}", 15, -100, 100);
+            RooRealVar nsig("nsig", "n_{sig}", 15, nsig_min, nsig_max);
             RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal_LT, nsig);
 
 //            RooRealVar p1_LT("p1_LT", "coeff #1_LT", 0.096);
@@ -1067,7 +1067,7 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
     double outputnsig[LT_number] = { 0 };
     double outputnsigerror[LT_number] = { 0 };
     for (int i = 0; i < LT_number; i++) {
-        RooRealVar  nsig_roorealvar("nsig_roorealvar", "n_{sig}", -100, 100);
+        RooRealVar  nsig_roorealvar("nsig_roorealvar", "n_{sig}", nsig_min, nsig_max);
         RooDataSet nsig_RooDataSet("nsig_RooDataSet", "nsig_RooDataSet", RooArgSet(nsig_roorealvar));
         for (int j = 0; j < LT_iterate_number; j++) {
             nsig_roorealvar = n_sigs[i].at(j);
