@@ -1,4 +1,4 @@
-// last update: 2022-04-14
+// last update: 2022-04-22
 // for Belle2 data
 
 /*
@@ -69,7 +69,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 47
+# define N_Upsilon_info 51
 # define N_Bsig_info 81
 # define N_Btag_info 9
 # define N_decay 48 // five decay mode + others + 10 variables for systematics
@@ -166,6 +166,7 @@ typedef struct data{
     // 39: MsquaredBsig_op3, 40: MsquaredBsig_op4, 41: MsquaredBsig_op7
     // 42: roeP__bocleanMask__bc, 43: roeM__bocleanMask__bc, 44: roePTheta__bocleanMask__bc
     // 45: qsquared - MB^2, 46: chiProb, 47: dr, 48: dz
+    // 49: nElectron, 50: nMuon
 
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
@@ -264,6 +265,9 @@ public:
         B2Ks0PicPicPic,
         B2KcPicPicPicPic,
         B2Ks0PicPicPicPi0,
+        B2KcPi0Pi0,
+        B2Ks0PicPi0Pi0,
+        B2KcPicPicPi0Pi0,
         B2KcKcKc,
         B2KcKcKs0Pic,
         B2KcKcKcPi0,
@@ -276,6 +280,9 @@ public:
         B02Ks0PicPicPi0,
         B02KcPicPicPicPi0,
         B02Ks0PicPicPicPic,
+        B02Ks0Pi0Pi0,
+        B02KcPicPi0Pi0,
+        B02Ks0PicPicPi0Pi0,
         B02KcKcKs0,
         B02KcKcKcPic,
         B02KcKcKs0Pi0,
@@ -293,6 +300,9 @@ public:
         Xsu2K0PicPicPic_MC,
         Xsu2KcPicPicPicPic_MC,
         Xsu2K0PicPicPicPi0_MC,
+        Xsu2KcPi0Pi0_MC,
+        Xsu2K0PicPi0Pi0_MC,
+        Xsu2KcPicPicPi0Pi0_MC,
         Xsu2KcKcKc_MC,
         Xsu2KcKcK0Pic_MC,
         Xsu2KcKcKcPi0_MC,
@@ -307,6 +317,9 @@ public:
         Xsd2K0PicPicPi0_MC,
         Xsd2KcPicPicPicPi0_MC,
         Xsd2K0PicPicPicPic_MC,
+        Xsd2K0Pi0Pi0_MC,
+        Xsd2KcPicPi0Pi0_MC,
+        Xsd2K0PicPicPi0Pi0_MC,
         Xsd2KcKcK0_MC,
         Xsd2KcKcKcPic_MC,
         Xsd2KcKcK0Pi0_MC,
@@ -605,6 +618,8 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("chiProb", &temp.Upsilon_info[46]);
     tree_upsilon->SetBranchAddress("dr", &temp.Upsilon_info[47]);
     tree_upsilon->SetBranchAddress("dz", &temp.Upsilon_info[48]);
+    tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT__bc", &temp.Upsilon_info[49]);
+    tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT__bc", &temp.Upsilon_info[50]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
@@ -1939,6 +1954,8 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("chiProb", &UpsilonDataToTree[46]);
         tree_upsilon->Branch("dr", &UpsilonDataToTree[47]);
         tree_upsilon->Branch("dz", &UpsilonDataToTree[48]);
+        tree_upsilon->Branch("nParticlesInList__boe__pl__clElectronFBDT__bc", &UpsilonDataToTree[49]);
+        tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT__bc", &UpsilonDataToTree[50]);
 
         // get Bsig_info
         tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
@@ -2297,6 +2314,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("chiProb", &temp_UpsilonDataToTree[46]);
     temp_tree_upsilon->Branch("dr", &temp_UpsilonDataToTree[47]);
     temp_tree_upsilon->Branch("dz", &temp_UpsilonDataToTree[48]);
+    temp_tree_upsilon->Branch("nParticlesInList__boe__pl__clElectronFBDT__bc", &temp_UpsilonDataToTree[49]);
+    temp_tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT__bc", &temp_UpsilonDataToTree[50]);
 
     // get Bsig_info
     temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -2649,6 +2668,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("chiProb", &temp_UpsilonDataToTree[46]);
     temp_tree->Branch("dr", &temp_UpsilonDataToTree[47]);
     temp_tree->Branch("dz", &temp_UpsilonDataToTree[48]);
+    temp_tree->Branch("nParticlesInList__boe__pl__clElectronFBDT__bc", &temp_UpsilonDataToTree[49]);
+    temp_tree->Branch("nParticlesInList__bomu__pl__clMuonFBDT__bc", &temp_UpsilonDataToTree[50]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -2954,6 +2975,18 @@ bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 7.5 && temp_data.Bsig_decayID < 8.5) return true;
         return false;
         break;
+    case Loader::B2KcPi0Pi0:
+        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 8.5 && temp_data.Bsig_decayID < 9.5) return true;
+        return false;
+        break;
+    case Loader::B2Ks0PicPi0Pi0:
+        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 9.5 && temp_data.Bsig_decayID < 10.5) return true;
+        return false;
+        break;
+    case Loader::B2KcPicPicPi0Pi0:
+        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 10.5 && temp_data.Bsig_decayID < 11.5) return true;
+        return false;
+        break;
     case Loader::B2KcKcKc:
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 11.5 && temp_data.Bsig_decayID < 12.5) return true;
         return false;
@@ -3000,6 +3033,18 @@ bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
         break;
     case Loader::B02Ks0PicPicPicPic:
         if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 7.5 && temp_data.Bsig_decayID < 8.5) return true;
+        return false;
+        break;
+    case Loader::B02Ks0Pi0Pi0:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 8.5 && temp_data.Bsig_decayID < 9.5) return true;
+        return false;
+        break;
+    case Loader::B02KcPicPi0Pi0:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 9.5 && temp_data.Bsig_decayID < 10.5) return true;
+        return false;
+        break;
+    case Loader::B02Ks0PicPicPi0Pi0:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 10.5 && temp_data.Bsig_decayID < 11.5) return true;
         return false;
         break;
     case Loader::B02KcKcKs0:
@@ -3076,6 +3121,18 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
         if (temp_data.Decay[12] > 0) return true;
         return false;
         break;
+    case Loader::Xsu2KcPi0Pi0_MC:
+        if (temp_data.Decay[13] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2K0PicPi0Pi0_MC:
+        if (temp_data.Decay[14] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcPicPicPi0Pi0_MC:
+        if (temp_data.Decay[15] > 0) return true;
+        return false;
+        break;
     case Loader::Xsu2KcKcKc_MC:
         if (temp_data.Decay[16] > 0) return true;
         return false;
@@ -3130,6 +3187,18 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
         break;
     case Loader::Xsd2K0PicPicPicPic_MC:
         if (temp_data.Decay[31] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0Pi0Pi0_MC:
+        if (temp_data.Decay[32] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcPicPi0Pi0_MC:
+        if (temp_data.Decay[33] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0PicPicPi0Pi0_MC:
+        if (temp_data.Decay[34] > 0) return true;
         return false;
         break;
     case Loader::Xsd2KcKcK0_MC:
@@ -3221,9 +3290,9 @@ void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
         else if (decaymodeid_MC == 14)decaymodeid_MC_for_square = 12;
         else if (decaymodeid_MC == 15)decaymodeid_MC_for_square = 13;
         else if (decaymodeid_MC == 16)decaymodeid_MC_for_square = 14;
-        else if (decaymodeid_MC == 17)decaymodeid_MC_for_square = 13;
-        else if (decaymodeid_MC == 18)decaymodeid_MC_for_square = 14;
-        else if (decaymodeid_MC == 19)decaymodeid_MC_for_square = 15;
+        else if (decaymodeid_MC == 17)decaymodeid_MC_for_square = 15;
+        else if (decaymodeid_MC == 18)decaymodeid_MC_for_square = 16;
+        else if (decaymodeid_MC == 19)decaymodeid_MC_for_square = 17;
         else if (decaymodeid_MC == 20)decaymodeid_MC_for_square = 16;
         else if (decaymodeid_MC == 21)decaymodeid_MC_for_square = 17;
         else if (decaymodeid_MC == 22)decaymodeid_MC_for_square = 18;
@@ -3233,6 +3302,12 @@ void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
         else if (decaymodeid_MC == 26)decaymodeid_MC_for_square = 22;
         else if (decaymodeid_MC == 27)decaymodeid_MC_for_square = 23;
         else if (decaymodeid_MC == 28)decaymodeid_MC_for_square = 24;
+        else if (decaymodeid_MC == 29)decaymodeid_MC_for_square = 25;
+        else if (decaymodeid_MC == 30)decaymodeid_MC_for_square = 26;
+        else if (decaymodeid_MC == 31)decaymodeid_MC_for_square = 27;
+        else if (decaymodeid_MC == 32)decaymodeid_MC_for_square = 28;
+        else if (decaymodeid_MC == 33)decaymodeid_MC_for_square = 29;
+        else if (decaymodeid_MC == 34)decaymodeid_MC_for_square = 30;
         if (smartmode == false) Confusion_square[decaymodeid][decaymodeid_MC_for_square]++;
         else {
             if (filename.find("B2Knunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplus;

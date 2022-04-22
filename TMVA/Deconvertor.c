@@ -1,4 +1,4 @@
-// last update: 2022-04-04
+// last update: 2022-04-22
 // for Belle2 data
 
 /*
@@ -13,7 +13,7 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 49
+# define N_Upsilon_info 51
 # define N_Bsig_info 81
 # define N_Btag_info 9
 # define N_decay 48 // five decay mode + others + 10 variables for systematics
@@ -141,6 +141,8 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree->SetBranchAddress("chiProb", &temp_UpsilonDataToTree[46]);
             temp_tree->SetBranchAddress("dr", &temp_UpsilonDataToTree[47]);
             temp_tree->SetBranchAddress("dz", &temp_UpsilonDataToTree[48]);
+            temp_tree->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT__bc", &temp_UpsilonDataToTree[49]);
+            temp_tree->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT__bc", &temp_UpsilonDataToTree[50]);
 
             // get Bsig_info
             temp_tree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -430,6 +432,8 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree_upsilon->Branch("chiProb", &temp_UpsilonDataToTree[46]);
             temp_tree_upsilon->Branch("dr", &temp_UpsilonDataToTree[47]);
             temp_tree_upsilon->Branch("dz", &temp_UpsilonDataToTree[48]);
+            temp_tree_upsilon->Branch("nParticlesInList__boe__pl__clElectronFBDT__bc", &temp_UpsilonDataToTree[49]);
+            temp_tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT__bc", &temp_UpsilonDataToTree[50]);
 
             // get Bsig_info
             temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
