@@ -76,7 +76,7 @@ std::vector<int> npi0s;
 std::vector<double> KS0_3D_distance;
 std::vector<double> KaonID_correction;
 std::vector<double> KaonID_rel_up;
-std::vector<double> KaonID_rel_down;
+std::vector<double> KaonID_rel_dn;
 
 void load_files(const char* dirname, std::vector<string>* names);
 
@@ -781,6 +781,18 @@ void LetsCalculateUncertainties(const char* dirname, double weight) {
                 ntracks.push_back(3);
                 npi0s.push_back(1);
             }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B2KcPi0Pi0
+                ntracks.push_back(1);
+                npi0s.push_back(2);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B2Ks0PicPi0Pi0
+                ntracks.push_back(1);
+                npi0s.push_back(2);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B2KcPicPicPi0Pi0
+                ntracks.push_back(3);
+                npi0s.push_back(2);
+            }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B2KcKcKc
                 ntracks.push_back(3);
                 npi0s.push_back(0);
@@ -829,6 +841,18 @@ void LetsCalculateUncertainties(const char* dirname, double weight) {
                 ntracks.push_back(4);
                 npi0s.push_back(0);
             }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B02Ks0Pi0Pi0
+                ntracks.push_back(0);
+                npi0s.push_back(2);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B02KcPicPi0Pi0
+                ntracks.push_back(2);
+                npi0s.push_back(2);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B02Ks0PicPicPi0Pi0
+            ntracks.push_back(2);
+            npi0s.push_back(2);
+            }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B02KcKcKs0
                 ntracks.push_back(2);
                 npi0s.push_back(0);
@@ -850,7 +874,7 @@ void LetsCalculateUncertainties(const char* dirname, double weight) {
             // correct low momentum region for KaonPID
             KaonID_correction.push_back(temp_KaonID_correction * std::pow(-1, temp_nKaon_excep));
             KaonID_rel_up.push_back(temp_KaonID_rel_up + std::sqrt(2) * temp_nKaon_excep + temp_nKaon_excep * Kaon_PID_max_uncertainty);
-            KaonID_rel_down.push_back(temp_KaonID_rel_dn + std::sqrt(2) * temp_nKaon_excep + temp_nKaon_excep * Kaon_PID_max_uncertainty);
+            KaonID_rel_dn.push_back(temp_KaonID_rel_dn + std::sqrt(2) * temp_nKaon_excep + temp_nKaon_excep * Kaon_PID_max_uncertainty);
 
             Ns.push_back(weight);
         }
@@ -1581,5 +1605,5 @@ void Signal_yield_fit_BDT()
     /* ============== End!  ============== */
     printf("nsig: %lf +- %lf\n",nsig_val, nsig_err);
     printf("total additive %lf\n", total_uncertainty_add);
-    printf("total multiplicative factor +%lf -%lf\n", total_uncertainty_mul);
+    printf("total multiplicative factor %lf\n", total_uncertainty_mul);
 }
