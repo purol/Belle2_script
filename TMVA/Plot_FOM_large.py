@@ -8,7 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 
-confusion_matrix = pd.read_excel("./FOM_large.xlsx", header=None, index_col=None, nrows=30)
+confusion_matrix = pd.read_excel("./FOM_large.xlsx", header=None, index_col=None, nrows=25)
 #print(confusion_matrix)
 confusion_matrix.to_numpy()
 
