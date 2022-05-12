@@ -1,5 +1,43 @@
 # define N_decay 38 // five decay mode + others
 
+// arXiv:1409.4557v2
+# define TB0 1.5195 // (Table. 1)
+# define TBp 1.6384 // (Table. 1)
+# define BR_Kplus_nunubar 0.00000398 // (eq. 10)
+# define BR_K0star_nunubar 0.00000919 // (eq. 11)
+# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15)
+# define BR_Kplusstar_nunubar (BR_K0star_nunubar*TBp/TB0) // under (eq. 15)
+# define BR_Xs_nunubar 0.000029 // (eq. 23)
+# define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
+# define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
+
+// https://confluence.desy.de/pages/viewpage.action?pageId=107054222
+# define N_BpBp_1invab 565400000.0
+# define N_B0B0_1invab 534600000.0
+
+# define N_Kplus_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplus_nunubar)
+# define N_Kplusstar_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplusstar_nunubar)
+# define N_Xsu_nonresonant_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Xsu_nonresonant_nunubar)
+# define N_K0_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0_nunubar)
+# define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
+# define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
+
+// my MC sample number
+# define N_Kplus_nunubar 10000000.0
+# define N_K0_nunubar 10000000.0
+# define N_Kplusstar_nunubar 10000000.0
+# define N_K0star_nunubar 10000000.0
+# define N_Xsu_nonresonant_nunubar 50000000.0
+# define N_Xsd_nonresonant_nunubar 50000000.0
+
+// scale factor for each MC sample
+# define Scale_Kplus (N_Kplus_nunubar_1invab/N_Kplus_nunubar)
+# define Scale_Kplusstar (N_Kplusstar_nunubar_1invab/N_Kplusstar_nunubar)
+# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar)
+# define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
+# define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
+# define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
+
 void load_files(const char *dirname, std::vector<string>* names){
    TSystemDirectory dir(dirname, dirname);
    TList *files = dir.GetListOfFiles();
@@ -63,7 +101,7 @@ public:
     void initialize();
     void GetData(TFile* input_file);
     bool event_info_is_valid();
-    void DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high);
+    void DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, std::string filename = std::string(""), bool smart_mode = true);
     void PrintInformation(std::string title);
     double Mxs(Data data);
     bool AreTheyNeutrinosAndConj(double pdg1, double pdg2);
@@ -179,7 +217,7 @@ bool Loader::event_info_is_valid() {
     return true;
 }
 
-void Loader::DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high) {
+void Loader::DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, std::string filename, bool smart_mode) {
     if (THStacks.size() == current_THStack) { // allocate new thstacks
         THStack* stack = new THStack(name, title);
         THStacks.push_back(stack);
@@ -212,7 +250,16 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
 
         int decaymodeid = PrintDecayClassification(temp_data);
 
-        temp_hist[decaymodeid]->Fill(Mxs(temp_data));
+        if (smartmode == false) temp_hist[decaymodeid]->Fill(Mxs(temp_data));
+        else {
+            if (filename.find("B2Knunu") != string::npos)  temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Kplus);
+            else if (filename.find("B2Kstarnunu") != string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Kplusstar);
+            else if (filename.find("B2Xsnunu") != string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Xsu_nonresonant);
+            else if (filename.find("B02K0nunu") != string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_K0);
+            else if (filename.find("B02Kstar0nunu") != string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_K0star);
+            else if (filename.find("B02Xsnunu") != string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Xsd_nonresonant);
+            else { temp_hist[decaymodeid]->Fill(Mxs(temp_data)); }
+        }
     }
 
     current_THStack++;
@@ -398,7 +445,7 @@ void ReadDecayFiles_r_sp(){
         if (loader.event_info_is_valid() == false) { printf("error!\n"); return; }
 
         loader.PrintInformation(std::string("========== inital =========="));
-        loader.DrawTHStack("Mxs", ";M_{Xs} [GeV]; evt", 100, 1.05, 4);
+        loader.DrawTHStack("Mxs", ";M_{Xs} [GeV]; evt", 100, 0.45, 3.5, names.at(i), true);
 
     }
     loader.End();
