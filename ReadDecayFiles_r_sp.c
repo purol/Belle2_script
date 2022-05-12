@@ -250,7 +250,7 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
 
         int decaymodeid = PrintDecayClassification(temp_data);
 
-        if (smartmode == false) temp_hist[decaymodeid]->Fill(Mxs(temp_data));
+        if (smart_mode == false) temp_hist[decaymodeid]->Fill(Mxs(temp_data));
         else {
             if (filename.find("B2Knunu") != string::npos)  temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Kplus);
             else if (filename.find("B2Kstarnunu") != string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Kplusstar);
