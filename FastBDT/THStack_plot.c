@@ -271,19 +271,19 @@ void THStack_plot() {
     }
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
-        for (int i = 0; i < (int)Knunu_values[k].size(); i++) SIGNAL_hist[k].Fill(Knunu_values[k].at(i), Scale_Kplus);
-        for (int i = 0; i < (int)Kstarnunu_values[k].size(); i++) SIGNAL_hist[k].Fill(Kstarnunu_values[k].at(i), Scale_Kplusstar);
-        for (int i = 0; i < (int)Xsununu_values[k].size(); i++) SIGNAL_hist[k].Fill(Xsununu_values[k].at(i), Scale_Xsu_nonresonant);
-        for (int i = 0; i < (int)K0nunu_values[k].size(); i++) SIGNAL_hist[k].Fill(K0nunu_values[k].at(i), Scale_K0);
-        for (int i = 0; i < (int)K0starnunu_values[k].size(); i++) SIGNAL_hist[k].Fill(K0starnunu_values[k].at(i), Scale_K0star);
-        for (int i = 0; i < (int)Xsdnunu_values[k].size(); i++) SIGNAL_hist[k].Fill(Xsdnunu_values[k].at(i), Scale_Xsd_nonresonant);
+        for (int i = 0; i < (int)Knunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(Knunu_values[k].at(i), Scale_Kplus);
+        for (int i = 0; i < (int)Kstarnunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(Kstarnunu_values[k].at(i), Scale_Kplusstar);
+        for (int i = 0; i < (int)Xsununu_values[k].size(); i++) SIGNAL_hist[k]->Fill(Xsununu_values[k].at(i), Scale_Xsu_nonresonant);
+        for (int i = 0; i < (int)K0nunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(K0nunu_values[k].at(i), Scale_K0);
+        for (int i = 0; i < (int)K0starnunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(K0starnunu_values[k].at(i), Scale_K0star);
+        for (int i = 0; i < (int)Xsdnunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(Xsdnunu_values[k].at(i), Scale_Xsd_nonresonant);
 
-        for (int i = 0; i < (int)CHG_values[k].size(); i++) CHG_hist[k].Fill(CHG_values[k].at(i));
-        for (int i = 0; i < (int)MIX_values[k].size(); i++) MIX_hist[k].Fill(MIX_values[k].at(i));
-        for (int i = 0; i < (int)UUBAR_values[k].size(); i++) UUBAR_hist[k].Fill(UUBAR_values[k].at(i));
-        for (int i = 0; i < (int)DDBAR_values[k].size(); i++) DDBAR_hist[k].Fill(DDBAR_values[k].at(i));
-        for (int i = 0; i < (int)SSBAR_values[k].size(); i++) SSBAR_hist[k].Fill(SSBAR_values[k].at(i));
-        for (int i = 0; i < (int)CHARM_values[k].size(); i++) CHARM_hist[k].Fill(CHARM_values[k].at(i));
+        for (int i = 0; i < (int)CHG_values[k].size(); i++) CHG_hist[k]->Fill(CHG_values[k].at(i));
+        for (int i = 0; i < (int)MIX_values[k].size(); i++) MIX_hist[k]->Fill(MIX_values[k].at(i));
+        for (int i = 0; i < (int)UUBAR_values[k].size(); i++) UUBAR_hist[k]->Fill(UUBAR_values[k].at(i));
+        for (int i = 0; i < (int)DDBAR_values[k].size(); i++) DDBAR_hist[k]->Fill(DDBAR_values[k].at(i));
+        for (int i = 0; i < (int)SSBAR_values[k].size(); i++) SSBAR_hist[k]->Fill(SSBAR_values[k].at(i));
+        for (int i = 0; i < (int)CHARM_values[k].size(); i++) CHARM_hist[k]->Fill(CHARM_values[k].at(i));
     }
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
