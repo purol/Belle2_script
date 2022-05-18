@@ -54,6 +54,16 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define Nvar_num 17
 
+bool hasEnding(std::string const& fullString, std::string const& ending) {
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
+    }
+    else {
+        return false;
+    }
+}
+
+
 void load_files(const char *dirname, std::vector<string>* names){
    TSystemDirectory dir(dirname, dirname);
    TList *files = dir.GetListOfFiles();
@@ -301,6 +311,23 @@ void THStack_plot() {
 
         double min = *min_element(temp_v.begin(), temp_v.end());
         double max = *max_element(temp_v.begin(), temp_v.end());
+
+        if (hasEnding(variable_names.at(k),std::string("dr"))) { // exceptions
+            max = 0.5;
+            min = 0.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("dz"))) {
+            max = 0.5;
+            min = 0.5;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("M"))) {
+            max = 2.0;
+            min = 0.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("chiProb"))) {
+            max = 1.0;
+            min = 0.0;
+        }
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";"+ variable_names.at(k) + ";arbitrary unit").c_str());
         SIGNAL_hist[k] = new TH1F("signal", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
