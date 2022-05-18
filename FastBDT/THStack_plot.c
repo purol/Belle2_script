@@ -326,7 +326,7 @@ void THStack_plot() {
         TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.7, 0.7);
         //gPad->BuildLegend();
         legend->SetFillStyle(0);
-        c_temp->SaveAs((variable_names(k)+".png").c_str());
+        c_temp->SaveAs((variable_names.at(k)+".png").c_str());
 
         delete c_temp;
     }
