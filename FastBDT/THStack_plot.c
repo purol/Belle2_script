@@ -313,12 +313,12 @@ void THStack_plot() {
         double max = *max_element(temp_v.begin(), temp_v.end());
 
         if (hasEnding(variable_names.at(k),std::string("dr"))) { // exceptions
-            max = 0.5;
+            max = 0.2;
             min = 0.0;
         }
         else if (hasEnding(variable_names.at(k), std::string("dz"))) {
-            max = 0.5;
-            min = 0.5;
+            max = 0.2;
+            min = -0.2;
         }
         else if (hasEnding(variable_names.at(k), std::string("M"))) {
             max = 2.0;
