@@ -320,13 +320,13 @@ void THStack_plot() {
         if (ymax_1 > ymax_2) real_max = ymax_1;
         else real_max = ymax_2;
 
-        Stack[k]->GetYaxis()->SetRangeUser(0, real_max * 1.1);
+        Stack[k]->SetMaximum(real_max * 1.1);
 
-        gPad->BuildLegend(0.9, 0.9, 0.7, 0.7);
-        //gPad->BuildLegend();
-        legend.SetFillStyle(0);
         Stack[k]->Draw("pfc Hist"); SIGNAL_hist[k]->Draw("HistSAME");
-        c_temp->SaveAs((variable_names+".png").c_str());
+        TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.7, 0.7);
+        //gPad->BuildLegend();
+        legend->SetFillStyle(0);
+        c_temp->SaveAs((variable_names(k)+".png").c_str());
 
         delete c_temp;
     }
