@@ -260,7 +260,7 @@ void THStack_plot() {
         temp_v.insert(temp_v.end(), SSBAR_values[k].begin(), SSBAR_values[k].end());
         temp_v.insert(temp_v.end(), CHARM_values[k].begin(), CHARM_values[k].end());
 
-        Stack[k] = new THStack(variable_names.at(k).c_str(), (";"+ variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
+        Stack[k] = new THStack(variable_names.at(k).c_str(), (";"+ variable_names.at(k) + ";arbitrary unit").c_str());
         SIGNAL_hist[k] = new THStack("signal", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
         CHG_hist[k] = new THStack("charge", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
         MIX_hist[k] = new THStack("mix", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
