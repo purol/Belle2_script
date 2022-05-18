@@ -86,15 +86,6 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-THStack* Stack = new THStack("thstack", ";M_{bc}^{tag} [GeV];arbitrary unit");
-TH1F* SIGNAL_hist = new TH1F("SIGNAL_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* CHG_hist = new TH1F("CHG_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* MIX_hist = new TH1F("MIX_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* UUBAR_hist = new TH1F("UUBAR_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* DDBAR_hist = new TH1F("DDBAR_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* SSBAR_hist = new TH1F("SSBAR_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-TH1F* CHARM_hist = new TH1F("CHARM_hist", ";M_{bc}^{tag} [GeV];arbitrary unit", 100, 5.24, 5.3);
-
 void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num]) {
     double var[Nvar_num] = { 0.0 };
 
@@ -261,13 +252,13 @@ void THStack_plot() {
         temp_v.insert(temp_v.end(), CHARM_values[k].begin(), CHARM_values[k].end());
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";"+ variable_names.at(k) + ";arbitrary unit").c_str());
-        SIGNAL_hist[k] = new THStack("signal", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
-        CHG_hist[k] = new THStack("charge", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
-        MIX_hist[k] = new THStack("mix", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
-        UUBAR_hist[k] = new THStack("uubar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
-        DDBAR_hist[k] = new THStack("ddbar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
-        SSBAR_hist[k] = new THStack("ssbar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
-        CHARM_hist[k] = new THStack("ccbar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
+        SIGNAL_hist[k] = new TH1F("signal", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
+        CHG_hist[k] = new TH1F("charge", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
+        MIX_hist[k] = new TH1F("mix", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
+        UUBAR_hist[k] = new TH1F("uubar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
+        DDBAR_hist[k] = new TH1F("ddbar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
+        SSBAR_hist[k] = new TH1F("ssbar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
+        CHARM_hist[k] = new TH1F("ccbar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
     }
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
