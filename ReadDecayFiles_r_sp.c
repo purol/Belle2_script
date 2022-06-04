@@ -38,6 +38,21 @@
 # define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
 # define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
 
+const char* decay_names[12] = {
+"K",
+"K1#pi w/o #pi^{0}",
+"K1#pi w/ 1#pi^{0}",
+"K2#pi w/o #pi^{0}",
+"K2#pi w/ 1#pi^{0}",
+"K3#pi w/o #pi^{0}",
+"K3#pi w/ 1#pi^{0}",
+"K4#pi w/o #pi^{0}",
+"K4#pi w/ 1#pi^{0}",
+"K w/ 2#pi^{0}",
+"3K w/ atmost 1#pi^{0}",
+"others"
+};
+
 void load_files(const char *dirname, std::vector<string>* names){
    TSystemDirectory dir(dirname, dirname);
    TList *files = dir.GetListOfFiles();
@@ -222,7 +237,7 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
         THStack* stack = new THStack(name, title);
         THStacks.push_back(stack);
         for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
-            TH1F* hist = new TH1F((std::string(name) + std::string("_") + std::to_string(i)).c_str(), title, nbins, x_low, x_high);
+            TH1F* hist = new TH1F(decay_names[i], title, nbins, x_low, x_high);
             TH1Fs_THStack[i].push_back(hist);
         }
     }
@@ -325,12 +340,12 @@ void Loader::End() {
 
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) {
 		THStacks.at(i)->Add(TH1Fs_THStack[j].at(i));
-                TH1Fs_THStack[j].at(i)->Draw("Hist");
-		c_temp->SaveAs( (std::string(TH1Fs_THStack[j].at(i)->GetName()) + ".png").c_str() );
+//                TH1Fs_THStack[j].at(i)->Draw("Hist");
+//		c_temp->SaveAs( (std::string(TH1Fs_THStack[j].at(i)->GetName()) + ".png").c_str() );
 	}
-        THStacks.at(i)->Draw("pfc"); 
+        THStacks.at(i)->Draw("pfc Hist"); 
         c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + ".png").c_str());
-	gPad->BuildLegend();
+	gPad->BuildLegend(0.9, 0.9, 0.6, 0.6);
 	c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + "_legend.png").c_str());
         delete c_temp;
     }
@@ -430,7 +445,7 @@ Loader::DecayMode Loader::PrintDecayClassification(Data data) {
 void ReadDecayFiles_r_sp(){
 
     std::vector<string> names;
-    const char* dirname = "/home/jwpark/storage/B02Xsnunu_decay_modes/output";
+    const char* dirname = "/home/jwpark/storage/DecayInfo/small";
 
     load_files(dirname, &names);
 

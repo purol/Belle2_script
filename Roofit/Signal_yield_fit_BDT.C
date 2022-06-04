@@ -63,6 +63,10 @@ using namespace RooFit ;
 # define pi0_correction 0.932
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
+# define FEI_cal_Bc 0.653
+# define FEI_cal_Bc_uncertainty (0.020/FEI_cal_Bc)
+# define FEI_cal_B0 0.653
+# define FEI_cal_B0_uncertainty (0.029/FEI_cal_B0)
 
 # define EeclBins 100
 
@@ -920,7 +924,7 @@ std::vector<double> PrintUncertainties() {
     for (unsigned int j = 0; j < Ns.size(); j++) total_N = total_N + Ns.at(j);
 
     printf("total uncorrected signal num: %lf\n", total_N);
-    printf("Average correction factor: %lf\n", corrected_N / total_N);
+    printf("Average correction factor from track/pi0/Ks0/Kaon ID: %lf\n", corrected_N / total_N);
     printf("Average relative uncertainty from track: %lf%%\n", avg_track_rel_uncertainty);
     printf("Average relative uncertainty from pi0: %lf%%\n", avg_pi0_rel_uncertainty);
     printf("Average relative uncertainty from KS0: %lf%%\n", avg_KS0_rel_uncertainty);
