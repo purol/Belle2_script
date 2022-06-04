@@ -52,7 +52,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
 # define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
 
-# define Nvar_num 17
+# define Nvar_num 65
 
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
@@ -311,6 +311,7 @@ void THStack_plot() {
 
         double min = *min_element(temp_v.begin(), temp_v.end());
         double max = *max_element(temp_v.begin(), temp_v.end());
+        int bins = 100;
 
         if (hasEnding(variable_names.at(k),std::string("dr"))) { // exceptions
             max = 0.2;
@@ -328,15 +329,31 @@ void THStack_plot() {
             max = 1.0;
             min = 0.0;
         }
+        else if(hasEnding(variable_names.at(k), std::string("harmonicMomentThrust1"))){
+            max = 1.0;
+            min = -1.0;
+        }
+        else if(hasEnding(variable_names.at(k), std::string("harmonicMomentThrust2"))){
+            max = 1.0;
+            min = 0.0;
+        }
+        else if(hasEnding(variable_names.at(k), std::string("harmonicMomentThrust3"))){
+            max = 1.0;
+            min = -1.0;
+        }
+        else if(hasEnding(variable_names.at(k), std::string("harmonicMomentThrust4"))){
+            max = 1.0;
+            min = -0.5;
+        }
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";"+ variable_names.at(k) + ";arbitrary unit").c_str());
-        SIGNAL_hist[k] = new TH1F("signal", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
-        CHG_hist[k] = new TH1F("charge", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
-        MIX_hist[k] = new TH1F("mix", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
-        UUBAR_hist[k] = new TH1F("uubar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
-        DDBAR_hist[k] = new TH1F("ddbar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
-        SSBAR_hist[k] = new TH1F("ssbar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
-        CHARM_hist[k] = new TH1F("ccbar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), 100, min, max);
+        SIGNAL_hist[k] = new TH1F("signal", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
+        CHG_hist[k] = new TH1F("charge", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
+        MIX_hist[k] = new TH1F("mix", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
+        UUBAR_hist[k] = new TH1F("uubar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
+        DDBAR_hist[k] = new TH1F("ddbar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
+        SSBAR_hist[k] = new TH1F("ssbar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
+        CHARM_hist[k] = new TH1F("ccbar", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
     }
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
