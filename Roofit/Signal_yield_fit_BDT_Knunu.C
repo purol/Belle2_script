@@ -688,8 +688,8 @@ double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar*  Eecl_, RooRea
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-//            if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) {} // B2Kc
-//            else continue;
+            if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) {} // B2Kc
+            else continue;
 //            if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5 && Mxs < 1.1) {} // B2KcPi0
 //            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5 && Mxs < 1.1) {} // B2Ks0Pic
 //            else continue;
@@ -999,19 +999,19 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
 //            RooPolynomial pol0_fix("pol0_fix","pol0_fix",EeclFit,RooArgList());
 //            RooExponential SIGNAL_exp_fix("genpdfs_fix", "genpdfs_fix", EeclFit, cexp_fix);
 //            RooAddPdf histpdf_Eecl_signal_fix("histpdf_Eecl_signal_fix","pol0+exp_fix",RooArgList(SIGNAL_exp_fix,pol0_fix),RooArgList(fraction_fix));
-            RooRealVar pa_fix("pa_fix", "pa_fix", 1.9);
-            RooRealVar pb_fix("pb_fix", "pb_fix", 708);
-            RooRealVar pc_fix("pc_fix", "pc_fix", 0.39);
-            RooRealVar pd_fix("pd_fix", "pd_fix", 9.24);
+            RooRealVar pa_fix("pa_fix", "pa_fix", 2.173);
+            RooRealVar pb_fix("pb_fix", "pb_fix", 645);
+            RooRealVar pc_fix("pc_fix", "pc_fix", 0.039);
+            RooRealVar pd_fix("pd_fix", "pd_fix", 20.002);
             RooGenericPdf histpdf_Eecl_signal_fix("g_fix", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(EeclFit, pa_fix, pb_fix, pc_fix, pd_fix));
             RooDataSet* d1 = histpdf_Eecl_signal_fix.generate(EeclFit, i);
 
 //            RooRealVar p1_fix("p1_fix", "coeff #1_fix", 0.096);
 //            RooChebychev histpdf_Eecl_background_fix("histpdf_Eecl_background_fix", "histpdf_Eecl_background_fix", EeclFit, p1_fix);
-            RooRealVar m0b_fix("m0b_fix", "m0b_fix", 0.9945);
-            RooRealVar sigmab_fix("sigmab_fix", "sigmab_fix", 0.0026);
-            RooRealVar alphab_fix("alphab_fix", "alphab_fix", 0.012);
-            RooRealVar nb_fix("nb_fix", "nb_fix", 0.35);
+            RooRealVar m0b_fix("m0b_fix", "m0b_fix", 0.9952);
+            RooRealVar sigmab_fix("sigmab_fix", "sigmab_fix", 0.0024);
+            RooRealVar alphab_fix("alphab_fix", "alphab_fix", 0.044);
+            RooRealVar nb_fix("nb_fix", "nb_fix", 0.65);
             RooCBShape histpdf_Eecl_background_fix("genpdfb_fix", "genpdfb_fix", EeclFit, m0b_fix, sigmab_fix, alphab_fix, nb_fix);
             int N_nbkg_int = round(BKG_num);
             RooDataSet* genData = histpdf_Eecl_background_fix.generate(EeclFit, N_nbkg_int);
@@ -1025,23 +1025,23 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
 //            RooPolynomial pol0_LT("pol0_LT","pol0_LT",EeclFit,RooArgList());
 //            RooExponential SIGNAL_exp_LT("genpdfs_LT", "genpdfs_LT", EeclFit, cexp_LT);
 //            RooAddPdf histpdf_Eecl_signal_LT("histpdf_Eecl_signal_LT","pol0+exp_LT",RooArgList(SIGNAL_exp_LT,pol0_LT),RooArgList(fraction_LT));
-            RooRealVar pa_LT("pa_LT", "pa_LT", 1.9);
-            RooRealVar pb_LT("pb_LT", "pb_LT", 708);
-            RooRealVar pc_LT("pc_LT", "pc_LT", 0.39);
-            RooRealVar pd_LT("pd_LT", "pd_LT", 9.24);
+            RooRealVar pa_LT("pa_LT", "pa_LT", 2.173);
+            RooRealVar pb_LT("pb_LT", "pb_LT", 645);
+            RooRealVar pc_LT("pc_LT", "pc_LT", 0.039);
+            RooRealVar pd_LT("pd_LT", "pd_LT", 20.002);
             RooGenericPdf histpdf_Eecl_signal_LT("g_LT", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(EeclFit, pa_LT, pb_LT, pc_LT, pd_LT));
-            RooRealVar nsig("nsig", "n_{sig}", 23, nsig_min, nsig_max);
+            RooRealVar nsig("nsig", "n_{sig}", 7, nsig_min, nsig_max);
             RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal_LT, nsig);
 
 //            RooRealVar p1_LT("p1_LT", "coeff #1_LT", 0.096);
 //            RooChebychev histpdf_Eecl_background_LT("histpdf_Eecl_background_LT", "histpdf_Eecl_background_LT", EeclFit, p1_LT);
-            RooRealVar m0b_LT("m0b_LT", "m0b_LT", 0.9945);
-            RooRealVar sigmab_LT("sigmab_LT", "sigmab_LT", 0.0026);
-            RooRealVar alphab_LT("alphab_LT", "alphab_LT", 0.012);
-            RooRealVar nb_LT("nb_LT", "nb_LT", 0.35);
+            RooRealVar m0b_LT("m0b_LT", "m0b_LT", 0.9952);
+            RooRealVar sigmab_LT("sigmab_LT", "sigmab_LT", 0.0024);
+            RooRealVar alphab_LT("alphab_LT", "alphab_LT", 0.044);
+            RooRealVar nb_LT("nb_LT", "nb_LT", 0.65);
             RooCBShape histpdf_Eecl_background_LT("genpdfb_LT", "genpdfb_LT", EeclFit, m0b_LT, sigmab_LT, alphab_LT, nb_LT);
 
-            RooRealVar nbkg("nbkg", "number of background events", 1150, 950, 1350);
+            RooRealVar nbkg("nbkg", "number of background events", 540, 390, 690);
             RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background_LT, nbkg);
 
             RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -1120,7 +1120,7 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
 
         delete c;
     }
-    gStyle->SetOptFit(11); //gStyle->SetStatH(0.05);
+    gStyle->SetOptFit(11); gStyle->SetStatH(0.05);
     TCanvas* c = new TCanvas("Linearity test canvas", "", 800, 800);
     TGraphErrors* gr = new TGraphErrors(LT_number, Inputnsig, outputnsig, Inputnsigerror, outputnsigerror);
     gr->SetMarkerStyle(21); gr->SetTitle(";input n_{sig};output n_{sig}");
@@ -1135,7 +1135,7 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
     delete gr;
     delete c;
 
-    gStyle->SetOptFit(0); //gStyle->SetStatH();
+    gStyle->SetOptFit(0); gStyle->SetStatH();
 
 }
 
@@ -1154,21 +1154,21 @@ std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf Exte
         //            RooDataHist gen_binned_data_Eecl("gen binned Eecl data", "gen binned Eecl data", EeclFit, *genData);
 
                     // construct fitting function
-        RooRealVar pa_TOY("pa_TOY", "pa_TOY", 1.9);
-        RooRealVar pb_TOY("pb_TOY", "pb_TOY", 708);
-        RooRealVar pc_TOY("pc_TOY", "pc_TOY", 0.39);
-        RooRealVar pd_TOY("pd_TOY", "pd_TOY", 9.24);
+        RooRealVar pa_TOY("pa_TOY", "pa_TOY", 2.173);
+        RooRealVar pb_TOY("pb_TOY", "pb_TOY", 645);
+        RooRealVar pc_TOY("pc_TOY", "pc_TOY", 0.039);
+        RooRealVar pd_TOY("pd_TOY", "pd_TOY", 20.002);
         RooGenericPdf histpdf_Eecl_signal_TOY("g_TOY", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(EeclFit, pa_TOY, pb_TOY, pc_TOY, pd_TOY));
-        RooRealVar nsig("nsig", "n_{sig}", 23, nsig_min, nsig_max);
+        RooRealVar nsig("nsig", "n_{sig}", 7, nsig_min, nsig_max);
         RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal_TOY, nsig);
 
-        RooRealVar m0b_TOY("m0b_TOY", "m0b_TOY", 0.9945);
-        RooRealVar sigmab_TOY("sigmab_TOY", "sigmab_TOY", 0.0026);
-        RooRealVar alphab_TOY("alphab_TOY", "alphab_TOY", 0.012);
-        RooRealVar nb_TOY("nb_TOY", "nb_TOY", 0.35);
+        RooRealVar m0b_TOY("m0b_TOY", "m0b_TOY", 0.9952);
+        RooRealVar sigmab_TOY("sigmab_TOY", "sigmab_TOY", 0.0024);
+        RooRealVar alphab_TOY("alphab_TOY", "alphab_TOY", 0.044);
+        RooRealVar nb_TOY("nb_TOY", "nb_TOY", 0.65);
         RooCBShape histpdf_Eecl_background_TOY("genpdfb_TOY", "genpdfb_TOY", EeclFit, m0b_TOY, sigmab_TOY, alphab_TOY, nb_TOY);
 
-        RooRealVar nbkg("nbkg", "number of background events", 1150, 950, 1350);
+        RooRealVar nbkg("nbkg", "number of background events", 540, 390, 690);
         RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background_TOY, nbkg);
 
         RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -1215,7 +1215,7 @@ std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf Exte
         ToyMCnsigpull->Fill((n_sigs.at(i) - SINAL_num)/ n_sigs_err.at(i));
     }
 
-//    gStyle->SetOptFit(11); gStyle->SetStatH(0.05);
+    gStyle->SetOptFit(11); gStyle->SetStatH(0.05);
     TCanvas* c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
     ToyMCnsig->Draw("PE1");
     c->SaveAs("TOYMC_nsig.png");
@@ -1241,7 +1241,7 @@ std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf Exte
     delete ToyMCnsigerror;
     delete ToyMCnsigpull;
 
-    gStyle->SetOptFit(0); //gStyle->SetStatH();
+    gStyle->SetOptFit(0); gStyle->SetStatH();
 
     std::vector<double> outputs;
     outputs.push_back(constant_gauss);
@@ -1320,7 +1320,7 @@ void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Eecl, RooAddPdf totalpdf, dou
     // calculate CL90 point
     const double total_Area_only_stat = TF1_Likelihood->Integral(0, nsig_max);
     const double total_Area = TF1_smeared_Likelihood->Integral(0, nsig_max);
-    double nsig_limit_only_stat = 40;
+    double nsig_limit_only_stat = 20;
     double nsig_limit = 20;
     while( total_Area_only_stat*0.9 > TF1_Likelihood->Integral(0, nsig_limit_only_stat) ){
         nsig_limit_only_stat = nsig_limit_only_stat + 0.002;
@@ -1336,14 +1336,14 @@ void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Eecl, RooAddPdf totalpdf, dou
     TCanvas* c_pll_again = new TCanvas("pll_again", "pll_again", 600, 600);
     TF1_Likelihood->SetLineColor(1); TF1_Likelihood->GetHistogram()->GetYaxis()->SetTitle("profile likelihood"); TF1_Likelihood->GetHistogram()->GetXaxis()->SetTitle("n_{sig}");
     TF1_smeared_Likelihood->SetLineColor(2); TF1_smeared_Likelihood->SetLineStyle(7);
-    TF1_Likelihood->Draw(""); TF1_smeared_Likelihood->Draw("SAME");
+    TF1_Likelihood->Draw(""); //TF1_smeared_Likelihood->Draw("SAME");
     TLine* line_only_stat = new TLine(nsig_limit_only_stat, 0, nsig_limit_only_stat, 0.6); line_only_stat->SetLineColor(1); line_only_stat->Draw("");
-    TLine* line = new TLine(nsig_limit, 0, nsig_limit, 0.6); line->SetLineColor(2); line->SetLineStyle(7); line->Draw("");
+    //TLine* line = new TLine(nsig_limit, 0, nsig_limit, 0.6); line->SetLineColor(2); line->SetLineStyle(7); line->Draw("");
     c_pll_again->SaveAs("Likelihood.png");
     delete c_pll_again;
 }
 
-void Signal_yield_fit_BDT()
+void Signal_yield_fit_BDT_Knunu()
 {
     // to extract signal yield
     RooRealVar EeclFit("Eecl", "BDT_{1}", 0.85, 1.0, "");
@@ -1393,7 +1393,7 @@ void Signal_yield_fit_BDT()
     const double K0nunu_total_num = LetsAdd(DATA_dirname_K0nunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0);
     const double K0starnunu_total_num = LetsAdd(DATA_dirname_K0starnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0star);
     const double Xsdnunu_total_num = LetsAdd(DATA_dirname_Xsdnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsd_nonresonant);
-    SIGNAL_total_Num = Knunu_total_num + Kstarnunu_total_num + Xsununu_total_num + K0nunu_total_num + K0starnunu_total_num + Xsdnunu_total_num;
+    SIGNAL_total_Num = Knunu_total_num;
 
     const char* DATA_dirname_CHG = "./CHG_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     const char* DATA_dirname_MIX = "./MIX_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
@@ -1407,7 +1407,7 @@ void Signal_yield_fit_BDT()
     BKG_total_Num += LetsAdd(DATA_dirname_DDBAR, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
     BKG_total_Num += LetsAdd(DATA_dirname_SSBAR, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
     BKG_total_Num += LetsAdd(DATA_dirname_CHARM, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
-
+    BKG_total_Num = BKG_total_Num + Kstarnunu_total_num + Xsununu_total_num + K0nunu_total_num + K0starnunu_total_num + Xsdnunu_total_num;
 
     // define frame and get ready to make pdfs
     Eecl_DATA.setBins(EeclBins);
@@ -1436,13 +1436,13 @@ void Signal_yield_fit_BDT()
 //    RooExponential SIGNAL_exp("genpdfs", "genpdfs", EeclFit, cexp);
 //    RooAddPdf histpdf_Eecl_signal("histpdf_Eecl_signal","pol0+exp",RooArgList(SIGNAL_exp,pol0),RooArgList(fraction));
 
-    RooRealVar pa("pa", "pa", 1.9);
-    RooRealVar pb("pb", "pb", 708);
-    RooRealVar pc("pc", "pc", 0.39);
-    RooRealVar pd("pd", "pd", 9.24);
+    RooRealVar pa("pa", "pa", 2.173);
+    RooRealVar pb("pb", "pb", 645);
+    RooRealVar pc("pc", "pc", 0.039);
+    RooRealVar pd("pd", "pd", 20.002);
     RooGenericPdf histpdf_Eecl_signal("g", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(EeclFit, pa, pb, pc, pd));
 
-    RooRealVar nsig("nsig", "n_{sig}", 23, nsig_min, nsig_max);
+    RooRealVar nsig("nsig", "n_{sig}", 7, nsig_min, nsig_max);
     RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal, nsig);
 
     //    RooRealVar p1("p1","coeff #1", 1.65, -10, 15.0);
@@ -1471,10 +1471,10 @@ void Signal_yield_fit_BDT()
 //    RooRealVar sigmab("sigmab", "sigmab", 0.0088); // 0.0083 for K
 //    RooRealVar alphab("alphab", "alphab", 0.018); // 0.172 for B->K nu nubar
 //    RooRealVar nb("nb", "nb", 79.48);
-    RooRealVar m0b("m0b", "m0b", 0.9945);
-    RooRealVar sigmab("sigmab", "sigmab", 0.0026);
-    RooRealVar alphab("alphab", "alphab", 0.012);
-    RooRealVar nb("nb", "nb", 0.35);
+    RooRealVar m0b("m0b", "m0b", 0.9952);
+    RooRealVar sigmab("sigmab", "sigmab", 0.0024);
+    RooRealVar alphab("alphab", "alphab", 0.044);
+    RooRealVar nb("nb", "nb", 0.65);
     RooCBShape histpdf_Eecl_background("genpdfb", "genpdfb", EeclFit, m0b, sigmab, alphab, nb);
 
 //    RooRealVar m0b("m0b", "m0b", 1.464);
@@ -1526,7 +1526,7 @@ void Signal_yield_fit_BDT()
 
 //    RooAddPdf histpdf_Eecl_background_a("histpdf_Eecl_background","",RooArgList(histpdf_Eecl_background, pol1),RooArgList(bkgfrac));
 
-    RooRealVar nbkg("nbkg", "number of background events", 1150, 950, 1350);
+    RooRealVar nbkg("nbkg", "number of background events", 540, 390, 690);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background, nbkg);
 
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -1565,13 +1565,13 @@ void Signal_yield_fit_BDT()
 
     
     /* ============== Linearity test ============== */
-    LinearityTest(r, EeclFit, BKG_total_Num);
+//    LinearityTest(r, EeclFit, BKG_total_Num);
 
     /* ============== toy MC study ============== */
     std::vector<double> pull_result = ToyMCstudy(esig, ebkg, EeclFit, SIGNAL_total_Num, BKG_total_Num); // const, mean, sigma
 
     /* ============== Uncertainty Calculation ============== */
-    printf("=================== start to calculate uncertainties ===================\n");
+/*    printf("=================== start to calculate uncertainties ===================\n");
     LetsCalculateUncertainties(MC_dirname_Knunu, Scale_Kplus);
     LetsCalculateUncertainties(MC_dirname_Kstarnunu, Scale_Kplusstar);
     LetsCalculateUncertainties(MC_dirname_Xsununu, Scale_Xsu_nonresonant);
@@ -1598,12 +1598,12 @@ void Signal_yield_fit_BDT()
         (nsig_err * pull_result.at(1)) * (nsig_err * pull_result.at(1)) +
         (nsig_err * (pull_result.at(2) - 1)) * (nsig_err * (pull_result.at(2) - 1))
     );
-
+*/
     /* ============== Print profile likelihood  ============== */
-    GetLikelihood(&nsig, d_Eecl, totalpdf, total_uncertainty_add, total_uncertainty_mul);
+    GetLikelihood(&nsig, d_Eecl, totalpdf, 0.765 * nsig_err, 0.0);
 
     /* ============== End!  ============== */
     printf("nsig: %lf +- %lf\n",nsig_val, nsig_err);
-    printf("total additive %lf\n", total_uncertainty_add);
-    printf("total multiplicative factor %lf\n", total_uncertainty_mul);
+//    printf("total additive %lf\n", total_uncertainty_add);
+//    printf("total multiplicative factor %lf\n", total_uncertainty_mul);
 }
