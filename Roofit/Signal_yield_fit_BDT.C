@@ -63,6 +63,24 @@ using namespace RooFit ;
 # define pi0_correction 0.932
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
+// https://indico.belle2.org/event/6872/contributions/37447/attachments/17127/25504/FEIperformance_B2GM.pdf
+# define FEI_cal_Bc 0.679
+# define FEI_cal_Bc_uncertainty (0.017/FEI_cal_Bc)
+# define FEI_cal_B0 0.713
+# define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0)
+
+# define Htransition_Xsu_change (-0.142)
+# define Htransition_Xsd_change (-0.099)
+# define Ltransition_Xsu_change (-0.002)
+# define Ltransition_Xsd_change (0.067)
+# define Hmb_Xsu_change (-0.067)
+# define Hmb_Xsd_change (-0.058)
+# define Lmb_Xsu_change (-0.062)
+# define Lmb_Xsd_change (-0.046)
+# define Hpf_Xsu_change (-0.120)
+# define Hpf_Xsd_change (-0.073)
+# define Lpf_Xsu_change (-0.014)
+# define Lpf_Xsd_change (0.019)
 
 # define EeclBins 200
 
@@ -79,6 +97,60 @@ std::vector<double> KaonID_rel_up;
 std::vector<double> KaonID_rel_dn;
 
 void load_files(const char* dirname, std::vector<string>* names);
+
+double transition_point_uncertainty(double N_K, double N_Kstar, double N_Xsu, double N_K0, double N_K0star, double N_Xsd) {
+
+    // calculate efficiency
+    double efficiency[3] = { 0.0 };
+    const double total_Xs_Num = Lumi_validation_MC * (2.0 * N_BpBp_1invab * BR_Xs_nunubar + 2.0 * N_B0B0_1invab * BR_Xs_nunubar);
+    efficiency[0] = (N_K + N_Kstar + N_Xsu + N_K0 + N_K0star + N_Xsd) / total_Xs_Num;
+    efficiency[1] = (N_K + N_Kstar + N_Xsu * (1 + Htransition_Xsu_change) + N_K0 + N_K0star + N_Xsd * (1 + Htransition_Xsd_change)) / total_Xs_Num; // High transition point
+    efficiency[2] = (N_K + N_Kstar + N_Xsu * (1 + Ltransition_Xsu_change) + N_K0 + N_K0star + N_Xsd * (1 + Ltransition_Xsd_change)) / total_Xs_Num; // Low transition point
+
+    // get relative uncertainty of efficiency
+    double efficiency_relative_uncertainty = std::max(std::abs((efficiency[0] - efficiency[1]) / efficiency[0]), std::abs((efficiency[0] - efficiency[2]) / efficiency[0]));
+
+    // show summary
+    printf("relative uncertainty from K*-Xs transition point: +-%lf\n", efficiency_relative_uncertainty);
+
+    return efficiency_relative_uncertainty;
+}
+
+double mb_uncertainty(double N_K, double N_Kstar, double N_Xsu, double N_K0, double N_K0star, double N_Xsd) {
+
+    // calculate efficiency
+    double efficiency[3] = { 0.0 };
+    const double total_Xs_Num = Lumi_validation_MC * (2.0 * N_BpBp_1invab * BR_Xs_nunubar + 2.0 * N_B0B0_1invab * BR_Xs_nunubar);
+    efficiency[0] = (N_K + N_Kstar + N_Xsu + N_K0 + N_K0star + N_Xsd) / total_Xs_Num;
+    efficiency[1] = (N_K + N_Kstar + N_Xsu * (1 + Hmb_Xsu_change) + N_K0 + N_K0star + N_Xsd * (1 + Hmb_Xsd_change)) / total_Xs_Num; // High transition point
+    efficiency[2] = (N_K + N_Kstar + N_Xsu * (1 + Lmb_Xsu_change) + N_K0 + N_K0star + N_Xsd * (1 + Lmb_Xsd_change)) / total_Xs_Num; // Low transition point
+
+    // get relative uncertainty of efficiency
+    double efficiency_relative_uncertainty = std::max(std::abs((efficiency[0] - efficiency[1]) / efficiency[0]), std::abs((efficiency[0] - efficiency[2]) / efficiency[0]));
+
+    // show summary
+    printf("relative uncertainty from mb: +-%lf\n", efficiency_relative_uncertainty);
+
+    return efficiency_relative_uncertainty;
+}
+
+double pf_uncertainty(double N_K, double N_Kstar, double N_Xsu, double N_K0, double N_K0star, double N_Xsd) {
+
+    // calculate efficiency
+    double efficiency[3] = { 0.0 };
+    const double total_Xs_Num = Lumi_validation_MC * (2.0 * N_BpBp_1invab * BR_Xs_nunubar + 2.0 * N_B0B0_1invab * BR_Xs_nunubar);
+    efficiency[0] = (N_K + N_Kstar + N_Xsu + N_K0 + N_K0star + N_Xsd) / total_Xs_Num;
+    efficiency[1] = (N_K + N_Kstar + N_Xsu * (1 + Hpf_Xsu_change) + N_K0 + N_K0star + N_Xsd * (1 + Hpf_Xsd_change)) / total_Xs_Num; // High transition point
+    efficiency[2] = (N_K + N_Kstar + N_Xsu * (1 + Lpf_Xsu_change) + N_K0 + N_K0star + N_Xsd * (1 + Lpf_Xsd_change)) / total_Xs_Num; // Low transition point
+
+    // get relative uncertainty of efficiency
+    double efficiency_relative_uncertainty = std::max(std::abs((efficiency[0] - efficiency[1]) / efficiency[0]), std::abs((efficiency[0] - efficiency[2]) / efficiency[0]));
+
+    // show summary
+    printf("relative uncertainty from pf: +-%lf\n", efficiency_relative_uncertainty);
+
+    return efficiency_relative_uncertainty;
+}
 
 double fraction_uncertainty(double N_K, double N_Kstar, double N_Xsu, double N_K0, double N_K0star, double N_Xsd) {
 
