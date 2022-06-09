@@ -91,6 +91,7 @@ using namespace RooFit ;
 std::vector<double> Ns;
 std::vector<int> ntracks;
 std::vector<int> npi0s;
+std::vector<int> dmID;
 std::vector<double> KS0_3D_distance;
 std::vector<double> KaonID_correction;
 std::vector<double> KaonID_rel_up;
@@ -803,7 +804,7 @@ void LetsCalculateUncertainties(const char* dirname, double weight) {
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_KS0_3D_distance);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
@@ -820,122 +821,152 @@ void LetsCalculateUncertainties(const char* dirname, double weight) {
             if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B2Kc
                 ntracks.push_back(1);
                 npi0s.push_back(0);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B2KcPi0
                 ntracks.push_back(1);
                 npi0s.push_back(1);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B2Ks0Pic
                 ntracks.push_back(1);
                 npi0s.push_back(0);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B2KcPicPic
                 ntracks.push_back(3);
                 npi0s.push_back(0);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B2Ks0PicPi0
                 ntracks.push_back(1);
                 npi0s.push_back(1);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B2KcPicPicPi0
                 ntracks.push_back(3);
                 npi0s.push_back(1);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B2Ks0PicPicPic
                 ntracks.push_back(3);
                 npi0s.push_back(0);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B2KcPicPicPicPic
                 ntracks.push_back(5);
                 npi0s.push_back(0);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B2Ks0PicPicPicPi0
                 ntracks.push_back(3);
                 npi0s.push_back(1);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B2KcPi0Pi0
                 ntracks.push_back(1);
                 npi0s.push_back(2);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B2Ks0PicPi0Pi0
                 ntracks.push_back(1);
                 npi0s.push_back(2);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B2KcPicPicPi0Pi0
                 ntracks.push_back(3);
                 npi0s.push_back(2);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B2KcKcKc
                 ntracks.push_back(3);
                 npi0s.push_back(0);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B2KcKcKs0Pic
                 ntracks.push_back(3);
                 npi0s.push_back(0);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B2KcKcKcPi0
                 ntracks.push_back(3);
                 npi0s.push_back(1);
+                dmID.push_back(0);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B02Ks0
                 ntracks.push_back(0);
                 npi0s.push_back(0);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B02KcPic
                 ntracks.push_back(2);
                 npi0s.push_back(0);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B02Ks0Pi0
                 ntracks.push_back(0);
                 npi0s.push_back(1);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B02KcPicPi0
                 ntracks.push_back(2);
                 npi0s.push_back(1);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B02Ks0PicPic
                 ntracks.push_back(2);
                 npi0s.push_back(0);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B02KcPicPicPic
                 ntracks.push_back(4);
                 npi0s.push_back(0);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B02Ks0PicPicPi0
                 ntracks.push_back(2);
                 npi0s.push_back(0);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B02KcPicPicPicPi0
                 ntracks.push_back(4);
                 npi0s.push_back(1);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B02Ks0PicPicPicPic
                 ntracks.push_back(4);
                 npi0s.push_back(0);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B02Ks0Pi0Pi0
                 ntracks.push_back(0);
                 npi0s.push_back(2);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B02KcPicPi0Pi0
                 ntracks.push_back(2);
                 npi0s.push_back(2);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B02Ks0PicPicPi0Pi0
-            ntracks.push_back(2);
-            npi0s.push_back(2);
+                ntracks.push_back(2);
+                npi0s.push_back(2);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B02KcKcKs0
                 ntracks.push_back(2);
                 npi0s.push_back(0);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B02KcKcKcPic
                 ntracks.push_back(4);
                 npi0s.push_back(0);
+                dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B02KcKcKs0Pi0
                 ntracks.push_back(2);
                 npi0s.push_back(1);
+                dmID.push_back(1);
             }
             else {
                 printf("[ERROR] unexpected decay ID\n");
@@ -961,11 +992,28 @@ std::vector<double> PrintUncertainties() {
     std::vector<double> KS0_rel_uncertainties;
     std::vector<double> track_rel_uncertainties;
     std::vector<double> pi0_rel_uncertainties;
+    std::vector<doube> FEI_rel_uncertainties;
     for (unsigned int j = 0; j < Ns.size(); j++) {
-        corrected_Ns.push_back(pow(pi0_correction, npi0s.at(j)) * KaonID_correction.at(j) * Ns.at(j) );
+        double FEI_rel_uncertainty = -1;
+        double FEI_correction_factor = -1;
+        if (dmID.at(j) == 0) {
+            FEI_rel_uncertainty = FEI_cal_Bc_uncertainty;
+            FEI_correction_factor = FEI_cal_Bc;
+        }
+        else if (dmID.at(j) == 1) {
+            FEI_rel_uncertainty = FEI_cal_B0_uncertainty;
+            FEI_correction_factor = FEI_cal_B0;
+        }
+        else {
+            printf("[ERROR] unexpected decay ID\n");
+            exit(1);
+        }
+
+        corrected_Ns.push_back(pow(pi0_correction, npi0s.at(j)) * KaonID_correction.at(j) * FEI_correction_factor * Ns.at(j) );
         track_rel_uncertainties.push_back(track_rel_uncertainty * ntracks.at(j));
         pi0_rel_uncertainties.push_back(pi0_rel_uncertainty * npi0s.at(j));
         KS0_rel_uncertainties.push_back(KS0_rel_uncertainty * KS0_3D_distance.at(j));
+        FEI_rel_uncertainties.push_back(FEI_rel_uncertainty);
     }
     double corrected_N = 0;
     double avg_track_rel_uncertainty = 0;
@@ -973,6 +1021,7 @@ std::vector<double> PrintUncertainties() {
     double avg_KS0_rel_uncertainty = 0;
     double avg_KaonID_rel_uncertainty_up = 0;
     double avg_KaonID_rel_uncertainty_dn = 0;
+    double avg_FEI_rel_uncertainty = 0;
 
     for (unsigned int j = 0; j < Ns.size(); j++) {
         corrected_N = corrected_N + corrected_Ns.at(j);
@@ -981,12 +1030,14 @@ std::vector<double> PrintUncertainties() {
         avg_KS0_rel_uncertainty = avg_KS0_rel_uncertainty + corrected_Ns.at(j) * KS0_rel_uncertainties.at(j);
         avg_KaonID_rel_uncertainty_up = avg_KaonID_rel_uncertainty_up + corrected_Ns.at(j) * KaonID_rel_up.at(j);
         avg_KaonID_rel_uncertainty_dn = avg_KaonID_rel_uncertainty_dn + corrected_Ns.at(j) * KaonID_rel_dn.at(j);
+        avg_FEI_rel_uncertainty = avg_FEI_rel_uncertainty + corrected_Ns.at(j) * FEI_rel_uncertainties.at(j);
     }
     avg_track_rel_uncertainty = avg_track_rel_uncertainty / corrected_N;
     avg_pi0_rel_uncertainty = avg_pi0_rel_uncertainty / corrected_N;
     avg_KS0_rel_uncertainty = avg_KS0_rel_uncertainty / corrected_N;
     avg_KaonID_rel_uncertainty_up = avg_KaonID_rel_uncertainty_up / corrected_N;
     avg_KaonID_rel_uncertainty_dn = avg_KaonID_rel_uncertainty_dn / corrected_N;
+    avg_FEI_rel_uncertainty = avg_FEI_rel_uncertainty / corrected_N;
 
     double total_N = 0;
     for (unsigned int j = 0; j < Ns.size(); j++) total_N = total_N + Ns.at(j);
@@ -997,6 +1048,7 @@ std::vector<double> PrintUncertainties() {
     printf("Average relative uncertainty from pi0: %lf%%\n", avg_pi0_rel_uncertainty);
     printf("Average relative uncertainty from KS0: %lf%%\n", avg_KS0_rel_uncertainty);
     printf("Average relative uncertainty from Kaon ID: %lf\n", std::max(avg_KaonID_rel_uncertainty_up, avg_KaonID_rel_uncertainty_dn));
+    printf("Average relative uncertainty from FEI: %lf\n", avg_FEI_rel_uncertainty);
 
     std::vector<double> outputs;
     outputs.push_back(total_N);
@@ -1005,6 +1057,7 @@ std::vector<double> PrintUncertainties() {
     outputs.push_back(avg_pi0_rel_uncertainty);
     outputs.push_back(avg_KS0_rel_uncertainty);
     outputs.push_back(std::max(avg_KaonID_rel_uncertainty_up, avg_KaonID_rel_uncertainty_dn));
+    outputs.push_back(avg_FEI_rel_uncertainty);
     return outputs;
 }
 
@@ -1657,14 +1710,22 @@ void Signal_yield_fit_BDT()
     const double K0star_ff_uncertainty = Kstar_formfactor_uncertainty(MC_dirname_K0starnunu, 0, Scale_K0star, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
     const double Fraction_uncertainty = fraction_uncertainty(Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
 
+    const double transition_point_uncertainty = transition_point_uncertainty(Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+    const double mb_uncertainty = mb_uncertainty(Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+    const double pf_uncertainty = pf_uncertainty(Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+
     const double total_uncertainty_mul = std::sqrt(
         (uncertainties_basic.at(2) * 0.01) * (uncertainties_basic.at(2) * 0.01) +
         (uncertainties_basic.at(3) * 0.01) * (uncertainties_basic.at(3) * 0.01) +
         (uncertainties_basic.at(4) * 0.01) * (uncertainties_basic.at(4) * 0.01) +
         uncertainties_basic.at(5) * uncertainties_basic.at(5) +
+        uncertainties_basic.at(6) * uncertainties_basic.at(6) +
         (K_ff_uncertainty + K0_ff_uncertainty) * (K_ff_uncertainty + K0_ff_uncertainty) +
         (Kstar_ff_uncertainty + K0star_ff_uncertainty) * (Kstar_ff_uncertainty + K0star_ff_uncertainty) +
-        Fraction_uncertainty * Fraction_uncertainty
+        Fraction_uncertainty * Fraction_uncertainty + 
+        transition_point_uncertainty * transition_point_uncertainty +
+        mb_uncertainty * mb_uncertainty +
+        pf_uncertainty * pf_uncertainty
     );
     const double total_uncertainty_add = std::sqrt(
         (nsig_err * pull_result.at(1)) * (nsig_err * pull_result.at(1)) +
