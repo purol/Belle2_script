@@ -992,7 +992,7 @@ std::vector<double> PrintUncertainties() {
     std::vector<double> KS0_rel_uncertainties;
     std::vector<double> track_rel_uncertainties;
     std::vector<double> pi0_rel_uncertainties;
-    std::vector<doube> FEI_rel_uncertainties;
+    std::vector<double> FEI_rel_uncertainties;
     for (unsigned int j = 0; j < Ns.size(); j++) {
         double FEI_rel_uncertainty = -1;
         double FEI_correction_factor = -1;
@@ -1710,9 +1710,9 @@ void Signal_yield_fit_BDT()
     const double K0star_ff_uncertainty = Kstar_formfactor_uncertainty(MC_dirname_K0starnunu, 0, Scale_K0star, Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
     const double Fraction_uncertainty = fraction_uncertainty(Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
 
-    const double transition_point_uncertainty = transition_point_uncertainty(Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
-    const double mb_uncertainty = mb_uncertainty(Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
-    const double pf_uncertainty = pf_uncertainty(Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+    const double transition_point_uncertainty_value = transition_point_uncertainty(Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+    const double mb_uncertainty_value = mb_uncertainty(Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
+    const double pf_uncertainty_value = pf_uncertainty(Knunu_total_num, Kstarnunu_total_num, Xsununu_total_num, K0nunu_total_num, K0starnunu_total_num, Xsdnunu_total_num);
 
     const double total_uncertainty_mul = std::sqrt(
         (uncertainties_basic.at(2) * 0.01) * (uncertainties_basic.at(2) * 0.01) +
@@ -1723,9 +1723,9 @@ void Signal_yield_fit_BDT()
         (K_ff_uncertainty + K0_ff_uncertainty) * (K_ff_uncertainty + K0_ff_uncertainty) +
         (Kstar_ff_uncertainty + K0star_ff_uncertainty) * (Kstar_ff_uncertainty + K0star_ff_uncertainty) +
         Fraction_uncertainty * Fraction_uncertainty + 
-        transition_point_uncertainty * transition_point_uncertainty +
-        mb_uncertainty * mb_uncertainty +
-        pf_uncertainty * pf_uncertainty
+        transition_point_uncertainty_value * transition_point_uncertainty_value +
+        mb_uncertainty_value * mb_uncertainty_value +
+        pf_uncertainty_value * pf_uncertainty_value
     );
     const double total_uncertainty_add = std::sqrt(
         (nsig_err * pull_result.at(1)) * (nsig_err * pull_result.at(1)) +
