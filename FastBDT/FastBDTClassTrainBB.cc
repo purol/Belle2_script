@@ -561,6 +561,7 @@ int main()
     }
 
     std::cout << "Test Score " << GetScore(classifier2, InputVariables2, IsSignal2) << std::endl;
+    std::cout << "Weighted Test Score " << GetWeightedScore(classifier2, InputVariables2, IsSignal2, weight2) << std::endl;
 
     classifier2.Print();
 
