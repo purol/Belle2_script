@@ -27,6 +27,7 @@
 #include <TKey.h>
 #include <TSystemFile.h>
 #include <TSystemDirectory.h>
+#include <numeric>
 
 #include "Classifier.h"
 
@@ -196,7 +197,7 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     tree_data->SetBranchAddress("Bsig_useCMSFrame_pt", &Pt);
 
     int Nevt = 0;
-    printf("%lld entries...\n", tree_data->GetEntries());
+    //printf("%lld entries...\n", tree_data->GetEntries());
     for (unsigned int j = 0; j < tree_data->GetEntries(); j++) { // Fill
         tree_data->GetEntry(j);
         if(tempissignal == true && (Decay_Kplus > 0.5 || Decay_Kplusstar_ch1 > 0.5 || Decay_Kplusstar_ch2 > 0.5 || Decay_K0 > 0.5 || Decay_K0star_ch1 > 0.5 || Decay_K0star_ch2 > 0.5) && Mxs > 1.1) continue;
@@ -247,7 +248,7 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     }
 
     input_file->Close();
-    printf("==> Total %d events survive...\n", Nevt);
+    //printf("==> Total %d events survive...\n", Nevt);
 }
 
 float GetScore(const FastBDT::Classifier& classifier, std::vector<std::vector<float>> InputVariables, std::vector<bool> IsSignal) {
@@ -371,21 +372,21 @@ int main()
     std::vector<float> input_vars[Nvar];
 
     // input file
-    const char* SIGNAL_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/train_v000/final_output";
-    const char* CHG_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHG_analysis/train_v000/final_output";
-    const char* MIX_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/MIX_analysis/train_v000/final_output";
-    const char* UUBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/UUBAR_analysis/train_v000/final_output";
-    const char* DDBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/DDBAR_analysis/train_v000/final_output";
-    const char* SSBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SSBAR_analysis/train_v000/final_output";
-    const char* CHARM_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHARM_analysis/train_v000/final_output";
+    const char* SIGNAL_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/train_v000/final_output/DataFile";
+    const char* CHG_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHG_analysis/train_v000/final_output/DataFile";
+    const char* MIX_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/MIX_analysis/train_v000/final_output/DataFile";
+    const char* UUBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/UUBAR_analysis/train_v000/final_output/DataFile";
+    const char* DDBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/DDBAR_analysis/train_v000/final_output/DataFile";
+    const char* SSBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SSBAR_analysis/train_v000/final_output/DataFile";
+    const char* CHARM_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHARM_analysis/train_v000/final_output/DataFile";
 
-    const char* SIGNAL_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/test_v000/final_output";
-    const char* CHG_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHG_analysis/test_v000/final_output";
-    const char* MIX_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/MIX_analysis/test_v000/final_output";
-    const char* UUBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/UUBAR_analysis/test_v000/final_output";
-    const char* DDBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/DDBAR_analysis/test_v000/final_output";
-    const char* SSBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SSBAR_analysis/test_v000/final_output";
-    const char* CHARM_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHARM_analysis/test_v000/final_output";
+    const char* SIGNAL_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/test_v000/final_output/DataFile";
+    const char* CHG_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHG_analysis/test_v000/final_output/DataFile";
+    const char* MIX_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/MIX_analysis/test_v000/final_output/DataFile";
+    const char* UUBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/UUBAR_analysis/test_v000/final_output/DataFile";
+    const char* DDBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/DDBAR_analysis/test_v000/final_output/DataFile";
+    const char* SSBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SSBAR_analysis/test_v000/final_output/DataFile";
+    const char* CHARM_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHARM_analysis/test_v000/final_output/DataFile";
 
     {
         std::vector<string> names;
@@ -514,84 +515,84 @@ int main()
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B2Knunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal2, &weight2, true, Scale_Kplus);
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_Kplus);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B2Kstarnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal2, &weight2, true, Scale_Kplusstar);
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_Kplusstar);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B2Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal2, &weight2, true, Scale_Xsu_nonresonant);
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_Xsu_nonresonant);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B02K0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal2, &weight2, true, Scale_K0);
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_K0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B02Kstar0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal2, &weight2, true, Scale_K0star);
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_K0star);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B02Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal2, &weight2, true, Scale_Xsd_nonresonant);
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_Xsd_nonresonant);
         }
     }
     {
         std::vector<string> names;
         load_files(CHG_input_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHG_input_test + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal2, &weight2, false);
+            FillVariables((CHG_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
         }
     }
     {
         std::vector<string> names;
         load_files(MIX_input_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((MIX_input_test + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal2, &weight2, false);
+            FillVariables((MIX_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
         }
     }
     {
         std::vector<string> names;
         load_files(UUBAR_input_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((UUBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal2, &weight2, false);
+            FillVariables((UUBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
         }
     }
     {
         std::vector<string> names;
         load_files(DDBAR_input_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((DDBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal2, &weight2, false);
+            FillVariables((DDBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
         }
     }
     {
         std::vector<string> names;
         load_files(SSBAR_input_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SSBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal2, &weight2, false);
+            FillVariables((SSBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
         }
     }
     {
         std::vector<string> names;
         load_files(CHARM_input_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHARM_input_test + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal2, &weight2, false);
+            FillVariables((CHARM_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
         }
     }
 
