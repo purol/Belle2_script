@@ -392,42 +392,42 @@ int main()
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Knunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, Scale_Kplus * (3.0 / 4.0));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 4.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Kstarnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, Scale_Kplusstar * (3.0 / 4.0));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 4.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, Scale_Xsu_nonresonant * (3.0 / 4.0));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 4.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02K0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, Scale_K0 * (3.0 / 4.0));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 4.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02Kstar0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, Scale_K0star * (3.0 / 4.0));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 4.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, Scale_Xsd_nonresonant * (3.0 / 4.0));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 4.0);
         }
     }
     {
@@ -515,42 +515,42 @@ int main()
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B2Knunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_Kplus);
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, 1.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B2Kstarnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_Kplusstar);
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, 1.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B2Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_Xsu_nonresonant);
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, 1.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B02K0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_K0);
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, 1.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B02Kstar0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_K0star);
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, 1.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B02Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_Xsd_nonresonant);
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, 1.0);
         }
     }
     {
