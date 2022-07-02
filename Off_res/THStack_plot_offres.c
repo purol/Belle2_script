@@ -402,7 +402,7 @@ void THStack_plot_offres() {
 
         double min = *min_element(temp_v.begin(), temp_v.end());
         double max = *max_element(temp_v.begin(), temp_v.end());
-        int bins = 40;
+        int bins = 100;
 
         if (hasEnding(variable_names.at(k),std::string("dr"))) { // exceptions
             max = 0.2;
