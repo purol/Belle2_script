@@ -438,17 +438,17 @@ void THStack_plot_offres() {
         }
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";"+ variable_names.at(k) + ";number of candidates").c_str());
-        uubar_hist[k] = new TH1D("u #bar{u}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        ddbar_hist[k] = new TH1D("d #bar{d}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        ssbar_hist[k] = new TH1D("s #bar{s}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        ccbar_hist[k] = new TH1D("c #bar{c}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        taupair_hist[k] = new TH1D("#tau #bar{#tau}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        mumu_hist[k] = new TH1D("#mu #bar{#mu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        uubar_hist[k] = new TH1D("u#bar{u}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        ddbar_hist[k] = new TH1D("d#bar{d}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        ssbar_hist[k] = new TH1D("s#bar{s}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        ccbar_hist[k] = new TH1D("c#bar{c}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        taupair_hist[k] = new TH1D("#tau#bar{#tau}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        mumu_hist[k] = new TH1D("#mu#bar{#mu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         gg_hist[k] = new TH1D("gg", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        ee_hist[k] = new TH1D("e #bar{e}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        eeee_hist[k] = new TH1D("ee #bar{e} #bar{e}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        eemumu_hist[k] = new TH1D("e #bar{e} #mu #bar{#mu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        llXX_hist[k] = new TH1D("#ell #bar{#ell} X X", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        ee_hist[k] = new TH1D("e#bar{e}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        eeee_hist[k] = new TH1D("ee#bar{e}#bar{e}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        eemumu_hist[k] = new TH1D("e#bar{e}#mu#bar{#mu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        llXX_hist[k] = new TH1D("\ell#bar{\ell}XX", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         hhISR_hist[k] = new TH1D("hhISR", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
     }
@@ -469,23 +469,36 @@ void THStack_plot_offres() {
         for (int i = 0; i < (int)Offres_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Offres_MC_values[k].at(i));
     }
 
+    printf("uubar: %d\n", (int)uubar_values[0].size());
+    printf("ddbar: %d\n", (int)ddbar_values[0].size());
+    printf("ssbar: %d\n", (int)ssbar_values[0].size());
+    printf("ccbar: %d\n", (int)ccbar_values[0].size());
+    printf("taupair: %d\n", (int)taupair_values[0].size());
+    printf("mumu: %d\n", (int)mumu_values[0].size());
+    printf("gg: %d\n", (int)gg_values[0].size());
+    printf("ee: %d\n", (int)ee_values[0].size());
+    printf("eeee: %d\n", (int)eeee_values[0].size());
+    printf("eemuu: %d\n", (int)eemumu_values[0].size());
+    printf("llXX: %d\n", (int)llXX_values[0].size());
+    printf("hhISR: %d\n", (int)hhISR_values[0].size());
+
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
         Stack[k]->Add(uubar_hist[k]);
         Stack[k]->Add(ddbar_hist[k]);
         Stack[k]->Add(ssbar_hist[k]);
         Stack[k]->Add(ccbar_hist[k]);
         Stack[k]->Add(taupair_hist[k]);
-        Stack[k]->Add(mumu_hist[k]);
-        Stack[k]->Add(gg_hist[k]);
-        Stack[k]->Add(ee_hist[k]);
-        Stack[k]->Add(eeee_hist[k]);
-        Stack[k]->Add(eemumu_hist[k]);
-        Stack[k]->Add(llXX_hist[k]);
-        Stack[k]->Add(hhISR_hist[k]);
+        //Stack[k]->Add(mumu_hist[k]);
+        //Stack[k]->Add(gg_hist[k]);
+        //Stack[k]->Add(ee_hist[k]);
+        //Stack[k]->Add(eeee_hist[k]);
+        //Stack[k]->Add(eemumu_hist[k]);
+        //Stack[k]->Add(llXX_hist[k]);
+        //Stack[k]->Add(hhISR_hist[k]);
 
         TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
 
-        gStyle->SetPalette(kGistEarth);
+        gStyle->SetPalette(kPastel);
 
         Stack[k]->Draw("pfc Hist");
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(2); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
