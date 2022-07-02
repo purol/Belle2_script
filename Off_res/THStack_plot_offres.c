@@ -402,7 +402,7 @@ void THStack_plot_offres() {
 
         double min = *min_element(temp_v.begin(), temp_v.end());
         double max = *max_element(temp_v.begin(), temp_v.end());
-        int bins = 100;
+        int bins = 40;
 
         if (hasEnding(variable_names.at(k),std::string("dr"))) { // exceptions
             max = 0.2;
@@ -501,7 +501,7 @@ void THStack_plot_offres() {
         gStyle->SetPalette(kPastel);
 
         Stack[k]->Draw("pfc Hist");
-        stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(2); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
+        stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.7, 0.7);
         //gPad->BuildLegend();
         legend->SetFillStyle(0);
