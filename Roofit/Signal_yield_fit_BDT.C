@@ -9,7 +9,25 @@
 #include "RooPlot.h"
 #include <cmath>
 #include <float.h>
+#include <string>
+#include "TFile.h"
+#include "TTree.h"
+#include "TSystemDirectory.h"
+#include "TSystemFile.h"
+#include "RooGenericPdf.h"
+#include "RooCBShape.h"
+#include "RooAddPdf.h"
+#include "TStyle.h"
+#include "TGraphErrors.h"
+#include "TLine.h"
+#include "RooFitResult.h"
+#include "RooExtendPdf.h"
+#include "TH1.h"
+#include "TF1.h"
+#include "RooDataHist.h"
 using namespace RooFit;
+using std::string;
+using std::to_string;
 
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
@@ -1350,7 +1368,7 @@ void LinearityTestSeparately(RooFitResult* r, RooRealVar EeclFit, int SIGNAL_num
     }
 
     // create root file
-    TFile* temp_file = new TFile(("Linearity_"+ std::string(SIGNAL_num) +".root").c_str(), "recreate");
+    TFile* temp_file = new TFile(("Linearity_"+ std::to_string(SIGNAL_num) +".root").c_str(), "recreate");
     temp_file->cd();
     TTree* temp_tree = new TTree("Linearity", "");
     double nsig_fit;
