@@ -82,15 +82,15 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
 }
 
 THStack* Stack = new THStack("thstack", ";D^{#pm} candidate mass [GeV];number of candidates");
-TH1F* SIGNAL_hist = new TH1F("signal #times 3000", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
-TH1F* CHG_hist = new TH1F("charged", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
-TH1F* MIX_hist = new TH1F("mixed", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
-TH1F* UUBAR_hist = new TH1F("u#bar{u}", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
-TH1F* DDBAR_hist = new TH1F("d#bar{d}", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
-TH1F* SSBAR_hist = new TH1F("s#bar{s}", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
-TH1F* CHARM_hist = new TH1F("c#bar{c}", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
+TH1D* SIGNAL_hist = new TH1D("signal #times 3000", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
+TH1D* CHG_hist = new TH1D("charged", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
+TH1D* MIX_hist = new TH1D("mixed", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
+TH1D* UUBAR_hist = new TH1D("u#bar{u}", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
+TH1D* DDBAR_hist = new TH1D("d#bar{d}", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
+TH1D* SSBAR_hist = new TH1D("s#bar{s}", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
+TH1D* CHARM_hist = new TH1D("c#bar{c}", ";D^{#pm} candidate mass [GeV];number of candidates", 70, 1.5, 2.0);
 
-void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
+void LetsFill(const char* dirname, TH1D* hist, double weight = 1) {
     double var = 0;
 
     std::vector<string> names;
@@ -120,7 +120,7 @@ void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
 
 }
 
-void LetsFill(const char* dirname, TH1F* hist, const char* included_string, double weight = 1) {
+void LetsFill(const char* dirname, TH1D* hist, const char* included_string, double weight = 1) {
     double var = 0;
 
     std::vector<string> names;

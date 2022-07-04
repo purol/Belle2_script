@@ -82,15 +82,15 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
 }
 
 THStack* Stack = new THStack("thstack", ";#theta_{missing} [rad];number of candidates");
-TH1F* SIGNAL_hist = new TH1F("signal #times 10000", ";#theta_{missing};number of candidates", 100, 0, 3.142);
-TH1F* CHG_hist = new TH1F("charged", ";#theta_{missing};number of candidates", 100, 0, 3.142);
-TH1F* MIX_hist = new TH1F("mixed", ";#theta_{missing};number of candidates", 100, 0, 3.142);
-TH1F* UUBAR_hist = new TH1F("u#bar{u}", ";#theta_{missing};number of candidates", 100, 0, 3.142);
-TH1F* DDBAR_hist = new TH1F("d#bar{d}", ";#theta_{missing};number of candidates", 100, 0, 3.142);
-TH1F* SSBAR_hist = new TH1F("s#bar{s}", ";#theta_{missing};number of candidates", 100, 0, 3.142);
-TH1F* CHARM_hist = new TH1F("c#bar{c}", ";#theta_{missing};number of candidates", 100, 0, 3.142);
+TH1D* SIGNAL_hist = new TH1D("signal #times 10000", ";#theta_{missing};number of candidates", 100, 0, 3.142);
+TH1D* CHG_hist = new TH1D("charged", ";#theta_{missing};number of candidates", 100, 0, 3.142);
+TH1D* MIX_hist = new TH1D("mixed", ";#theta_{missing};number of candidates", 100, 0, 3.142);
+TH1D* UUBAR_hist = new TH1D("u#bar{u}", ";#theta_{missing};number of candidates", 100, 0, 3.142);
+TH1D* DDBAR_hist = new TH1D("d#bar{d}", ";#theta_{missing};number of candidates", 100, 0, 3.142);
+TH1D* SSBAR_hist = new TH1D("s#bar{s}", ";#theta_{missing};number of candidates", 100, 0, 3.142);
+TH1D* CHARM_hist = new TH1D("c#bar{c}", ";#theta_{missing};number of candidates", 100, 0, 3.142);
 
-void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
+void LetsFill(const char* dirname, TH1D* hist, double weight = 1) {
     double var = 0;
 
     std::vector<string> names;
@@ -120,7 +120,7 @@ void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
 
 }
 
-void LetsFill(const char* dirname, TH1F* hist, const char* included_string, double weight = 1) {
+void LetsFill(const char* dirname, TH1D* hist, const char* included_string, double weight = 1) {
     double var = 0;
 
     std::vector<string> names;
@@ -197,6 +197,8 @@ void THStack_missing_theta() {
     SSBAR_hist->Scale(1.0 / BKG_int, "width");
     CHARM_hist->Scale(1.0 / BKG_int, "width");
     */
+
+    TGaxis::SetMaxDigits(3);
 
     Stack->Add(CHG_hist);
     Stack->Add(MIX_hist);

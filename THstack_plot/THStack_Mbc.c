@@ -82,15 +82,15 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
 }
 
 THStack* Stack = new THStack("thstack", ";M_{bc}^{tag} [GeV];number of candidates");
-TH1F* SIGNAL_hist = new TH1F("signal #times 5000", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
-TH1F* CHG_hist = new TH1F("charged", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
-TH1F* MIX_hist = new TH1F("mixed", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
-TH1F* UUBAR_hist = new TH1F("u#bar{u}", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
-TH1F* DDBAR_hist = new TH1F("d#bar{d}", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
-TH1F* SSBAR_hist = new TH1F("s#bar{s}", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
-TH1F* CHARM_hist = new TH1F("c#bar{c}", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
+TH1D* SIGNAL_hist = new TH1D("signal #times 5000", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
+TH1D* CHG_hist = new TH1D("charged", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
+TH1D* MIX_hist = new TH1D("mixed", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
+TH1D* UUBAR_hist = new TH1D("u#bar{u}", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
+TH1D* DDBAR_hist = new TH1D("d#bar{d}", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
+TH1D* SSBAR_hist = new TH1D("s#bar{s}", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
+TH1D* CHARM_hist = new TH1D("c#bar{c}", ";M_{bc}^{tag} [GeV];number of candidates", 100, 5.24, 5.3);
 
-void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
+void LetsFill(const char* dirname, TH1D* hist, double weight = 1) {
     double var = 0;
 
     std::vector<string> names;
@@ -120,7 +120,7 @@ void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
 
 }
 
-void LetsFill(const char* dirname, TH1F* hist, const char* included_string, double weight = 1) {
+void LetsFill(const char* dirname, TH1D* hist, const char* included_string, double weight = 1) {
     double var = 0;
 
     std::vector<string> names;
@@ -197,6 +197,8 @@ void THStack_Mbc() {
     SSBAR_hist->Scale(1.0 / BKG_int, "width");
     CHARM_hist->Scale(1.0 / BKG_int, "width");
     */
+
+    TGaxis::SetMaxDigits(3);
 
     Stack->Add(CHG_hist);
     Stack->Add(MIX_hist);

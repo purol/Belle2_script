@@ -82,15 +82,15 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
 }
 
 THStack* Stack = new THStack("thstack", ";p_{sig} [GeV];number of candidates");
-TH1F* SIGNAL_hist = new TH1F("signal #times 5000", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
-TH1F* CHG_hist = new TH1F("charged", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
-TH1F* MIX_hist = new TH1F("mixed", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
-TH1F* UUBAR_hist = new TH1F("u#bar{u}", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
-TH1F* DDBAR_hist = new TH1F("d#bar{d}", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
-TH1F* SSBAR_hist = new TH1F("s#bar{s}", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
-TH1F* CHARM_hist = new TH1F("c#bar{c}", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
+TH1D* SIGNAL_hist = new TH1D("signal #times 5000", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
+TH1D* CHG_hist = new TH1D("charged", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
+TH1D* MIX_hist = new TH1D("mixed", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
+TH1D* UUBAR_hist = new TH1D("u#bar{u}", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
+TH1D* DDBAR_hist = new TH1D("d#bar{d}", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
+TH1D* SSBAR_hist = new TH1D("s#bar{s}", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
+TH1D* CHARM_hist = new TH1D("c#bar{c}", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
 
-void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
+void LetsFill(const char* dirname, TH1D* hist, double weight = 1) {
     double var = 0;
 
     std::vector<string> names;
@@ -120,7 +120,7 @@ void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
 
 }
 
-void LetsFill(const char* dirname, TH1F* hist, const char* included_string, double weight = 1) {
+void LetsFill(const char* dirname, TH1D* hist, const char* included_string, double weight = 1) {
     double var = 0;
 
     std::vector<string> names;
