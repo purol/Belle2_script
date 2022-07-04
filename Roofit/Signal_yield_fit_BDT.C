@@ -1184,7 +1184,7 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
             RooRealVar nb_LT("nb_LT", "nb_LT", 0.35);
             RooCBShape histpdf_Eecl_background_LT("genpdfb_LT", "genpdfb_LT", EeclFit, m0b_LT, sigmab_LT, alphab_LT, nb_LT);
 
-            RooRealVar nbkg("nbkg", "number of background events", 1150, 950, 1350);
+            RooRealVar nbkg("nbkg", "number of background events", 1864, 1700, 2000);
             RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background_LT, nbkg);
 
             RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -1343,7 +1343,7 @@ void LinearityTestSeparately(RooFitResult* r, RooRealVar EeclFit, int SIGNAL_num
         RooRealVar nb_LT("nb_LT", "nb_LT", 0.35);
         RooCBShape histpdf_Eecl_background_LT("genpdfb_LT", "genpdfb_LT", EeclFit, m0b_LT, sigmab_LT, alphab_LT, nb_LT);
 
-        RooRealVar nbkg("nbkg", "number of background events", 1150, 950, 1350);
+        RooRealVar nbkg("nbkg", "number of background events", 1864, 1700, 2000);
         RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background_LT, nbkg);
 
         RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -1453,7 +1453,7 @@ std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf Exte
         RooRealVar nb_TOY("nb_TOY", "nb_TOY", 0.35);
         RooCBShape histpdf_Eecl_background_TOY("genpdfb_TOY", "genpdfb_TOY", EeclFit, m0b_TOY, sigmab_TOY, alphab_TOY, nb_TOY);
 
-        RooRealVar nbkg("nbkg", "number of background events", 1150, 950, 1350);
+        RooRealVar nbkg("nbkg", "number of background events", 1864, 1700, 2000);
         RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background_TOY, nbkg);
 
         RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -1811,7 +1811,7 @@ void Signal_yield_fit_BDT()
 
 //    RooAddPdf histpdf_Eecl_background_a("histpdf_Eecl_background","",RooArgList(histpdf_Eecl_background, pol1),RooArgList(bkgfrac));
 
-    RooRealVar nbkg("nbkg", "number of background events", 1150, 950, 1350);
+    RooRealVar nbkg("nbkg", "number of background events", 1864, 1700, 2000);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background, nbkg);
 
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));

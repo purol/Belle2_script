@@ -81,14 +81,14 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-THStack* Stack = new THStack("thstack", ";p_{sig} [GeV];arbitrary unit");
-TH1F* SIGNAL_hist = new TH1F("SIGNAL_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3.3);
-TH1F* CHG_hist = new TH1F("CHG_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3.3);
-TH1F* MIX_hist = new TH1F("MIX_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3.3);
-TH1F* UUBAR_hist = new TH1F("UUBAR_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3.3);
-TH1F* DDBAR_hist = new TH1F("DDBAR_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3.3);
-TH1F* SSBAR_hist = new TH1F("SSBAR_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3.3);
-TH1F* CHARM_hist = new TH1F("CHARM_hist", ";p_{sig} [GeV];arbitrary unit", 100, 0, 3.3);
+THStack* Stack = new THStack("thstack", ";p_{sig} [GeV];number of candidates");
+TH1F* SIGNAL_hist = new TH1F("signal #times 5000", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
+TH1F* CHG_hist = new TH1F("charged", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
+TH1F* MIX_hist = new TH1F("mixed", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
+TH1F* UUBAR_hist = new TH1F("u#bar{u}", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
+TH1F* DDBAR_hist = new TH1F("d#bar{d}", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
+TH1F* SSBAR_hist = new TH1F("s#bar{s}", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
+TH1F* CHARM_hist = new TH1F("c#bar{c}", ";p_{sig} [GeV];number of candidates", 100, 0, 3.3);
 
 void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
     double var = 0;
@@ -152,18 +152,18 @@ void LetsFill(const char* dirname, TH1F* hist, const char* included_string, doub
 
 void THStack_psig() {
 
-    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_psig_cut";
-    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_psig_cut";
-    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_psig_cut";
-    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_psig_cut";
-    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_psig_cut";
-    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SIGNAL_analysis/validation_v003/before_psig_cut";
-    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/CHG_analysis/validation_v003/before_psig_cut";
-    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/MIX_analysis/validation_v003/before_psig_cut";
-    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/UUBAR_analysis/validation_v003/before_psig_cut";
-    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/DDBAR_analysis/validation_v003/before_psig_cut";
-    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/SSBAR_analysis/validation_v003/before_psig_cut";
-    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Alice/CHARM_analysis/validation_v003/before_psig_cut";
+    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_psig_cut";
+    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_psig_cut";
+    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_psig_cut";
+    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_psig_cut";
+    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_psig_cut";
+    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_psig_cut";
+    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHG_analysis/validation_v000/before_psig_cut";
+    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/MIX_analysis/validation_v000/before_psig_cut";
+    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/UUBAR_analysis/validation_v000/before_before_psig_cut";
+    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/DDBAR_analysis/validation_v000/before_psig_cut";
+    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SSBAR_analysis/validation_v000/before_psig_cut";
+    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHARM_analysis/validation_v000/before_psig_cut";
 
     LetsFill(Knunu_dirname, SIGNAL_hist, "B2Knunu", Scale_Kplus);
     LetsFill(Kstarnunu_dirname, SIGNAL_hist, "B2Kstarnunu", Scale_Kplusstar);
@@ -178,6 +178,7 @@ void THStack_psig() {
     LetsFill(SSBAR_dirname, SSBAR_hist);
     LetsFill(CHARM_dirname, CHARM_hist);
 
+
     double CHG_int = CHG_hist->Integral();
     double MIX_int = MIX_hist->Integral();
     double UUBAR_int = UUBAR_hist->Integral();
@@ -188,12 +189,14 @@ void THStack_psig() {
 
     double BKG_int = CHG_int + MIX_int + UUBAR_int + DDBAR_int + SSBAR_int + CHARM_int;
 
+    /*
     CHG_hist->Scale(1.0 / BKG_int, "width");
     MIX_hist->Scale(1.0 / BKG_int, "width");
     UUBAR_hist->Scale(1.0 / BKG_int, "width");
     DDBAR_hist->Scale(1.0 / BKG_int, "width");
     SSBAR_hist->Scale(1.0 / BKG_int, "width");
     CHARM_hist->Scale(1.0 / BKG_int, "width");
+    */
 
     Stack->Add(CHG_hist);
     Stack->Add(MIX_hist);
@@ -203,8 +206,9 @@ void THStack_psig() {
     Stack->Add(CHARM_hist);
     //Stack->SetMaximum(100.0);
 
-    SIGNAL_hist->Scale(10000.0/BKG_int, "width");
+    //SIGNAL_hist->Scale(10000.0/BKG_int, "width");
     //SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
+    SIGNAL_hist->Scale(10000.0);
     SIGNAL_hist->SetLineWidth(3);
     SIGNAL_hist->SetLineColor(2);
     SIGNAL_hist->SetFillStyle(0);
@@ -214,6 +218,10 @@ void THStack_psig() {
     gStyle->SetPalette(kGistEarth);
 
     Stack->Draw("pfc Hist"); SIGNAL_hist->Draw("HistSAME");
+
+    TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.7, 0.7);
+    legend->SetFillStyle(0);
+
     Float_t ymax = Stack->GetMaximum();
     TLine* lineA = new TLine(0.5, 0, 0.5, ymax);
     lineA->SetLineColor(kRed);
@@ -225,8 +233,7 @@ void THStack_psig() {
     lineB->Draw();
     c_temp->SaveAs("Plot_psig.png");
 
-//    free(lineA);
-//    free(lineB);
+//    free(line);
 //    gPad->BuildLegend();
 //    c_temp->SaveAs("Plot_with_legend.png");
 }

@@ -11,7 +11,7 @@ revise void Loader::PrintSeparateRootFile(std::string output_name)
 revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double flag = 0)
 */
 
-// arXiv:1409.4557v2
+// arXiv:1609.4557v2
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
 # define BR_Kplus_nunubar 0.00000398 // (eq. 10)
@@ -23,7 +23,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
 
 // https://confluence.desy.de/pages/viewpage.action?pageId=107054222
-# define N_BpBp_1invab 565400000.0
+# define N_BpBp_1invab 565600000.0
 # define N_B0B0_1invab 534600000.0
 
 # define N_Kplus_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplus_nunubar)
@@ -81,16 +81,16 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-THStack* Stack = new THStack("thstack", ";E_{ecl} [GeV];number of candidates");
-TH1D* SIGNAL_hist = new TH1D("signal #times 10000", ";E_{ecl} [GeV];number of candidates", 100, 0, 5);
-TH1D* CHG_hist = new TH1D("charged", ";E_{ecl} [GeV];number of candidates", 100, 0, 5);
-TH1D* MIX_hist = new TH1D("mixed", ";E_{ecl} [GeV];number of candidates", 100, 0, 5);
-TH1D* UUBAR_hist = new TH1D("u#bar{u}", ";E_{ecl} [GeV];number of candidates", 100, 0, 5);
-TH1D* DDBAR_hist = new TH1D("d#bar{d}", ";E_{ecl} [GeV];number of candidates", 100, 0, 5);
-TH1D* SSBAR_hist = new TH1D("s#bar{s}", ";E_{ecl} [GeV];number of candidates", 100, 0, 5);
-TH1D* CHARM_hist = new TH1D("c#bar{c}", ";E_{ecl} [GeV];number of candidates", 100, 0, 5);
+THStack* Stack = new THStack("thstack", ";M_{Xs} [GeV];number of candidates");
+TH1F* SIGNAL_hist = new TH1F("signal #times 5000", ";M_{Xs} [GeV];number of candidates", 70, 1.5, 2.0);
+TH1F* CHG_hist = new TH1F("charged", ";M_{Xs} [GeV];number of candidates", 70, 1.5, 2.0);
+TH1F* MIX_hist = new TH1F("mixed", ";M_{Xs} [GeV];number of candidates", 70, 1.5, 2.0);
+TH1F* UUBAR_hist = new TH1F("u#bar{u}", ";M_{Xs} [GeV];number of candidates", 70, 1.5, 2.0);
+TH1F* DDBAR_hist = new TH1F("d#bar{d}", ";M_{Xs} [GeV];number of candidates", 70, 1.5, 2.0);
+TH1F* SSBAR_hist = new TH1F("s#bar{s}", ";M_{Xs} [GeV];number of candidates", 70, 1.5, 2.0);
+TH1F* CHARM_hist = new TH1F("c#bar{c}", ";M_{Xs} [GeV];number of candidates", 70, 1.5, 2.0);
 
-void LetsFill(const char* dirname, TH1D* hist, double weight = 1) {
+void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
     double var = 0;
 
     std::vector<string> names;
@@ -105,7 +105,7 @@ void LetsFill(const char* dirname, TH1D* hist, double weight = 1) {
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_upsilon->SetBranchAddress("roeEextra__bocleanMask__bc", &var);
+        tree_Bsig->SetBranchAddress("Bsig_M", &var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -120,7 +120,7 @@ void LetsFill(const char* dirname, TH1D* hist, double weight = 1) {
 
 }
 
-void LetsFill(const char* dirname, TH1D* hist, const char* included_string, double weight = 1) {
+void LetsFill(const char* dirname, TH1F* hist, const char* included_string, double weight = 1) {
     double var = 0;
 
     std::vector<string> names;
@@ -135,7 +135,7 @@ void LetsFill(const char* dirname, TH1D* hist, const char* included_string, doub
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_upsilon->SetBranchAddress("roeEextra__bocleanMask__bc", &var);
+        tree_Bsig->SetBranchAddress("Bsig_M", &var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -150,20 +150,20 @@ void LetsFill(const char* dirname, TH1D* hist, const char* included_string, doub
 
 }
 
-void THStack_Eecl() {
+void THStack_Mxs() {
 
-    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_Eecl_cut";
-    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_Eecl_cut";
-    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_Eecl_cut";
-    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_Eecl_cut";
-    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_Eecl_cut";
-    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_Eecl_cut";
-    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHG_analysis/validation_v000/before_Eecl_cut";
-    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/MIX_analysis/validation_v000/before_Eecl_cut";
-    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/UUBAR_analysis/validation_v000/before_before_Eecl_cut";
-    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/DDBAR_analysis/validation_v000/before_Eecl_cut";
-    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SSBAR_analysis/validation_v000/before_Eecl_cut";
-    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHARM_analysis/validation_v000/before_Eecl_cut";
+    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_Dveto_cut";
+    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_Dveto_cut";
+    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_Dveto_cut";
+    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_Dveto_cut";
+    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_Dveto_cut";
+    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/validation_v000/before_Dveto_cut";
+    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHG_analysis/validation_v000/before_Dveto_cut";
+    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/MIX_analysis/validation_v000/before_Dveto_cut";
+    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/UUBAR_analysis/validation_v000/before_Dveto_cut";
+    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/DDBAR_analysis/validation_v000/before_Dveto_cut";
+    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SSBAR_analysis/validation_v000/before_Dveto_cut";
+    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHARM_analysis/validation_v000/before_Dveto_cut";
 
     LetsFill(Knunu_dirname, SIGNAL_hist, "B2Knunu", Scale_Kplus);
     LetsFill(Kstarnunu_dirname, SIGNAL_hist, "B2Kstarnunu", Scale_Kplusstar);
@@ -178,7 +178,6 @@ void THStack_Eecl() {
     LetsFill(SSBAR_dirname, SSBAR_hist);
     LetsFill(CHARM_dirname, CHARM_hist);
 
-
     double CHG_int = CHG_hist->Integral();
     double MIX_int = MIX_hist->Integral();
     double UUBAR_int = UUBAR_hist->Integral();
@@ -187,7 +186,7 @@ void THStack_Eecl() {
     double CHARM_int = CHARM_hist->Integral();
     double SIGNAL_int = SIGNAL_hist->Integral();
 
-    double BKG_int = CHG_int + MIX_int + UUBAR_int + DDBAR_int + SSBAR_int + CHARM_int;
+    double BKG_int = CHG_int + MIX_int;
 
     /*
     CHG_hist->Scale(1.0 / BKG_int, "width");
@@ -206,9 +205,8 @@ void THStack_Eecl() {
     Stack->Add(CHARM_hist);
     //Stack->SetMaximum(100.0);
 
-    //SIGNAL_hist->Scale(10000.0/BKG_int, "width");
+    SIGNAL_hist->Scale(5000.0);
     //SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
-    SIGNAL_hist->Scale(10000.0);
     SIGNAL_hist->SetLineWidth(3);
     SIGNAL_hist->SetLineColor(2);
     SIGNAL_hist->SetFillStyle(0);
@@ -223,13 +221,18 @@ void THStack_Eecl() {
     legend->SetFillStyle(0);
 
     Float_t ymax = Stack->GetMaximum();
-    TLine* line = new TLine(4.0, 0, 4.0, ymax);
-    line->SetLineColor(kRed);
-    line->SetLineStyle(5);
-    line->Draw();
-    c_temp->SaveAs("Plot_Eecl.png");
+    TLine* lineA = new TLine(1.84, 0, 1.84, ymax);
+    lineA->SetLineColor(kRed);
+    lineA->SetLineStyle(5);
+    lineA->Draw();
+    TLine* lineB = new TLine(1.89, 0, 1.89, ymax);
+    lineB->SetLineColor(kRed);
+    lineB->SetLineStyle(5);
+    lineB->Draw();
+    c_temp->SaveAs("Plot_Mxs.png");
 
-//    free(line);
+//    free(lineA);
+//    free(lineB);
 //    gPad->BuildLegend();
 //    c_temp->SaveAs("Plot_with_legend.png");
 }
