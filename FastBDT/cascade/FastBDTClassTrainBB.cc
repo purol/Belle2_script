@@ -38,8 +38,8 @@
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
-# define Nvar 35
-# define DvetoNvar 12
+# define Nvar 39
+# define DvetoNvar 0
 
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
@@ -121,19 +121,6 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     double Vars[Nvar];
     int flag;
 
-    double Dc_chiProb;
-    double Dc_pvalue_med;
-    double Dc_pvalue_std;
-    double Dc_dr;
-    double Dc_dz;
-    double Dc_M;
-    double D0_chiProb;
-    double D0_pvalue_med;
-    double D0_pvalue_std;
-    double D0_dr;
-    double D0_dz;
-    double D0_M;
-
     double Decay_Kplus = -1;
     double Decay_Kplusstar_ch1 = -1;
     double Decay_Kplusstar_ch2 = -1;
@@ -142,7 +129,6 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     double Decay_K0star_ch2 = -1;
 
     double Mxs = -1;
-    double Pcms = -1;
 
     // common
     tree_data->SetBranchAddress("nRemainingTracksInEvent", &Vars[0]);
@@ -155,35 +141,39 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[7]);
 
     // cleoconethrust + harmonicthrust
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso00", &Vars[8]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso01", &Vars[9]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso03", &Vars[10]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso04", &Vars[11]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso10", &Vars[12]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso14", &Vars[13]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[14]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo1", &Vars[15]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo3", &Vars[16]);
+    tree_data->SetBranchAddress("cleoConeThrust0", &Vars[8]);
+    tree_data->SetBranchAddress("cleoConeThrust1", &Vars[9]);
+    tree_data->SetBranchAddress("cleoConeThrust2", &Vars[10]);
+    tree_data->SetBranchAddress("cleoConeThrust3", &Vars[11]);
+    tree_data->SetBranchAddress("cleoConeThrust4", &Vars[12]);
+    tree_data->SetBranchAddress("cleoConeThrust5", &Vars[13]);
+    tree_data->SetBranchAddress("cleoConeThrust6", &Vars[14]);
+    tree_data->SetBranchAddress("cleoConeThrust7", &Vars[15]);
+    tree_data->SetBranchAddress("cleoConeThrust8", &Vars[16]);
+    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[17]);
+    tree_data->SetBranchAddress("harmonicMomentThrust2", &Vars[18]);
+    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[19]);
+    tree_data->SetBranchAddress("harmonicMomentThrust4", &Vars[20]);
 
     // other variables which have correlation
-    tree_data->SetBranchAddress("roeEextra__bocleanMask__bc", &Vars[17]);
-    tree_data->SetBranchAddress("Btag_thrustOm", &Vars[18]);
-    tree_data->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT__bc", &Vars[19]);
-    tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT__bc", &Vars[20]);
+    tree_data->SetBranchAddress("sphericity", &Vars[21]);
+    tree_data->SetBranchAddress("aplanarity", &Vars[22]);
+    tree_data->SetBranchAddress("Btag_thrustBm", &Vars[23]);
+    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[24]);
+    tree_data->SetBranchAddress("Btag_cosTBz", &Vars[25]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_1", &Vars[26]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_2", &Vars[27]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_3", &Vars[28]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_4", &Vars[29]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_5", &Vars[30]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_6", &Vars[31]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_7", &Vars[32]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_8", &Vars[33]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_9", &Vars[34]);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_mychiProb", &Vars[35]);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_mydr", &Vars[36]);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_mydz", &Vars[37]);
     tree_data->SetBranchAddress("flag", &flag);
-
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &Dc_pvalue_med);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &Dc_chiProb);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &Dc_dr);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &Dc_dz);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &Dc_M);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med", &D0_pvalue_med);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std", &D0_pvalue_std);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &D0_chiProb);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &D0_dr);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &D0_dz);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &D0_M);
 
     if(tempissignal){
         tree_data->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay_Kplus);
@@ -194,7 +184,6 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
         tree_data->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay_K0star_ch2);
     }
     tree_data->SetBranchAddress("Bsig_M", &Mxs);
-    tree_data->SetBranchAddress("Bsig_useCMSFrame_p", &Pcms);
 
     int Nevt = 0;
     //printf("%lld entries...\n", tree_data->GetEntries());
@@ -204,43 +193,13 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
         else if(tempissignal == true && (Decay_Kplus < 0.5 && Decay_Kplusstar_ch1 < 0.5 && Decay_Kplusstar_ch2 < 0.5 && Decay_K0 < 0.5 &&  Decay_K0star_ch1 < 0.5 && Decay_K0star_ch2 < 0.5) && Mxs < 1.1) continue;
         Nevt++;
 
-        if(Mxs > 1.0) Vars[Nvar - DvetoNvar -2] = 0.0f;
-        else Vars[Nvar - DvetoNvar -2] = Mxs;
-        Vars[Nvar - DvetoNvar -1] = Pcms;
+        if(Mxs > 1.0) Vars[Nvar - DvetoNvar -1] = 0.0f;
+        else Vars[Nvar - DvetoNvar -1] = Mxs;
+        if(Vars[35] > 1.5) {
+            Vars[36] = -1.0;
+            Vars[37] = -100.0;
+        }
         for (unsigned int k = 0; k < Nvar - DvetoNvar; k++) input_vars[k].push_back((float) Vars[k]); 
-
-        if(Dc_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 0].push_back((float) Dc_pvalue_med);
-            input_vars[Nvar - DvetoNvar + 1].push_back((float) Dc_pvalue_std);
-            input_vars[Nvar - DvetoNvar + 2].push_back((float) Dc_chiProb);
-            input_vars[Nvar - DvetoNvar + 3].push_back((float) Dc_dr);
-            input_vars[Nvar - DvetoNvar + 4].push_back((float) Dc_dz);
-            input_vars[Nvar - DvetoNvar + 5].push_back((float) Dc_M);
-        }
-        else {
-            input_vars[Nvar - DvetoNvar + 0].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 1].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 2].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 3].push_back((float) -1.0);
-            input_vars[Nvar - DvetoNvar + 4].push_back((float) -100.0);
-            input_vars[Nvar - DvetoNvar + 5].push_back((float) 0.0);
-        }
-        if(D0_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 6].push_back((float) D0_pvalue_med);
-            input_vars[Nvar - DvetoNvar + 7].push_back((float) D0_pvalue_std);
-            input_vars[Nvar - DvetoNvar + 8].push_back((float) D0_chiProb);
-            input_vars[Nvar - DvetoNvar + 9].push_back((float) D0_dr);
-            input_vars[Nvar - DvetoNvar + 10].push_back((float) D0_dz);
-            input_vars[Nvar - DvetoNvar + 11].push_back((float) D0_M);
-        }
-        else {
-            input_vars[Nvar - DvetoNvar + 6].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 7].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 8].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 9].push_back((float) -1.0);
-            input_vars[Nvar - DvetoNvar + 10].push_back((float) -100.0);
-            input_vars[Nvar - DvetoNvar + 11].push_back((float) 0.0);
-        }
 
         IsSignal->push_back(tempissignal);
 
@@ -278,23 +237,23 @@ float GetWeightedScore(const FastBDT::Classifier& classifier, std::vector<std::v
 
 void KSTest(const FastBDT::Classifier& classifier, std::vector<std::vector<float>> InputVariables_train, std::vector<bool> IsSignal_train, std::vector<float> weight_train, std::vector<std::vector<float>> InputVariables_test, std::vector<bool> IsSignal_test, std::vector<float> weight_test){
 
-    TH1D* Oqq_BKG_train = new TH1D("FastBDT_{1} BKG train", ";FastBDT_{1};", 40, 0, 1.0);
-    TH1D* Oqq_BKG_test = new TH1D("FastBDT_{1} BKG test", ";FastBDT_{1};", 40, 0, 1.0);
-    TH1D* Oqq_SIGNAL_train = new TH1D("FastBDT_{1} SIGNAL train", ";FastBDT_{1};", 40, 0, 1.0);
-    TH1D* Oqq_SIGNAL_test = new TH1D("FastBDT_{1} SIGNAL test", ";FastBDT_{1};", 40, 0, 1.0);
+    TH1D* OBB_BKG_train = new TH1D("FastBDT_{2} BKG train", ";FastBDT_{2};", 40, 0, 1.0);
+    TH1D* OBB_BKG_test = new TH1D("FastBDT_{2} BKG test", ";FastBDT_{2};", 40, 0, 1.0);
+    TH1D* OBB_SIGNAL_train = new TH1D("FastBDT_{2} SIGNAL train", ";FastBDT_{2};", 40, 0, 1.0);
+    TH1D* OBB_SIGNAL_test = new TH1D("FastBDT_{2} SIGNAL test", ";FastBDT_{2};", 40, 0, 1.0);
 
     for (unsigned int i = 0; i < IsSignal_train.size(); ++i) {
         if(IsSignal_train.at(i) == true) {
             std::vector<float> temp;
             for (int j = 0; j < Nvar; j++) temp.push_back(InputVariables_train.at(j).at(i));
             float p = classifier.predict(temp);
-            Oqq_SIGNAL_train->Fill(p, weight_train.at(i));
+            OBB_SIGNAL_train->Fill(p, weight_train.at(i));
         }
         else if(IsSignal_train.at(i) == false) {
             std::vector<float> temp;
             for (int j = 0; j < Nvar; j++) temp.push_back(InputVariables_train.at(j).at(i));
             float p = classifier.predict(temp);
-            Oqq_BKG_train->Fill(p, weight_train.at(i));
+            OBB_BKG_train->Fill(p, weight_train.at(i));
         }
     }
 
@@ -303,60 +262,59 @@ void KSTest(const FastBDT::Classifier& classifier, std::vector<std::vector<float
             std::vector<float> temp;
             for (int j = 0; j < Nvar; j++) temp.push_back(InputVariables_test.at(j).at(i));
             float p = classifier.predict(temp);
-            Oqq_SIGNAL_test->Fill(p, weight_test.at(i));
+            OBB_SIGNAL_test->Fill(p, weight_test.at(i));
         }
         else if(IsSignal_test.at(i) == false) {
             std::vector<float> temp;
             for (int j = 0; j < Nvar; j++) temp.push_back(InputVariables_test.at(j).at(i));
             float p = classifier.predict(temp);
-            Oqq_BKG_test->Fill(p, weight_test.at(i));
+            OBB_BKG_test->Fill(p, weight_test.at(i));
         }
     }
 
-    Oqq_SIGNAL_test->SetMarkerStyle(kFullCircle);
-    Oqq_SIGNAL_test->SetLineColor(kBlue);
-    Oqq_SIGNAL_test->SetMarkerColor(kBlue);
-    Oqq_SIGNAL_test->SetLineWidth(1);
+    OBB_SIGNAL_test->SetMarkerStyle(kFullCircle);
+    OBB_SIGNAL_test->SetLineColor(kBlue);
+    OBB_SIGNAL_test->SetMarkerColor(kBlue);
+    OBB_SIGNAL_test->SetLineWidth(1);
 
-    Oqq_BKG_test->SetMarkerStyle(kFullCircle);
-    Oqq_BKG_test->SetLineColor(kRed);
-    Oqq_BKG_test->SetMarkerColor(kRed);
-    Oqq_BKG_test->SetLineWidth(1);
+    OBB_BKG_test->SetMarkerStyle(kFullCircle);
+    OBB_BKG_test->SetLineColor(kRed);
+    OBB_BKG_test->SetMarkerColor(kRed);
+    OBB_BKG_test->SetLineWidth(1);
 
-    Oqq_SIGNAL_train->SetFillStyle(3004);
-    Oqq_SIGNAL_train->SetLineColor(kBlue);
-    Oqq_SIGNAL_train->SetFillColor(kBlue);
+    OBB_SIGNAL_train->SetFillStyle(3004);
+    OBB_SIGNAL_train->SetLineColor(kBlue);
+    OBB_SIGNAL_train->SetFillColor(kBlue);
 
-    Oqq_BKG_train->SetFillStyle(3005);
-    Oqq_BKG_train->SetLineColor(kRed);
-    Oqq_BKG_train->SetFillColor(kRed);
+    OBB_BKG_train->SetFillStyle(3005);
+    OBB_BKG_train->SetLineColor(kRed);
+    OBB_BKG_train->SetFillColor(kRed);
 
     double factor = 1.0;
 
     // normalization
-    Oqq_SIGNAL_train->Scale(factor / Oqq_SIGNAL_train->Integral(), "width");
-    Oqq_SIGNAL_test->Scale(factor / Oqq_SIGNAL_test->Integral(), "width");
-    Oqq_BKG_train->Scale(factor / Oqq_BKG_train->Integral(), "width");
-    Oqq_BKG_test->Scale(factor / Oqq_BKG_test->Integral(), "width");
+    OBB_SIGNAL_train->Scale(factor / OBB_SIGNAL_train->Integral(), "width");
+    OBB_SIGNAL_test->Scale(factor / OBB_SIGNAL_test->Integral(), "width");
+    OBB_BKG_train->Scale(factor / OBB_BKG_train->Integral(), "width");
+    OBB_BKG_test->Scale(factor / OBB_BKG_test->Integral(), "width");
 
-    double p_value_SIGNAL = Oqq_SIGNAL_test->KolmogorovTest(Oqq_SIGNAL_train);
-    double p_value_BKG = Oqq_BKG_test->KolmogorovTest(Oqq_BKG_train);
+    double p_value_SIGNAL = OBB_SIGNAL_test->KolmogorovTest(OBB_SIGNAL_train);
+    double p_value_BKG = OBB_BKG_test->KolmogorovTest(OBB_BKG_train);
     printf("p value SIGNAL: %lf\n", p_value_SIGNAL);
     printf("p value BKG: %lf\n", p_value_BKG);
 
     gStyle->SetOptStat(0);
 
     TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd();
-    double Oqq_BKG_train_max = Oqq_BKG_train->GetMaximum(); double Oqq_SIGNAL_train_max = Oqq_SIGNAL_train->GetMaximum();
-    if(Oqq_BKG_train_max > Oqq_SIGNAL_train_max) Oqq_BKG_train->SetMaximum(1.05 * Oqq_BKG_train_max);
-    else Oqq_BKG_train->SetMaximum(1.05 * Oqq_SIGNAL_train_max);
-    Oqq_BKG_train->Draw("Hist"); Oqq_SIGNAL_train->Draw("HistSAME");
-    Oqq_BKG_test->Draw("AP SAME"); Oqq_SIGNAL_test->Draw("AP SAME");
+    double OBB_BKG_train_max = OBB_BKG_train->GetMaximum(); double OBB_SIGNAL_train_max = OBB_SIGNAL_train->GetMaximum();
+    if(OBB_BKG_train_max > OBB_SIGNAL_train_max) OBB_BKG_train->SetMaximum(1.05 * OBB_BKG_train_max);
+    else OBB_BKG_train->SetMaximum(1.05 * OBB_SIGNAL_train_max);
+    OBB_BKG_train->Draw("Hist"); OBB_SIGNAL_train->Draw("HistSAME");
+    OBB_BKG_test->Draw("AP SAME"); OBB_SIGNAL_test->Draw("AP SAME");
     TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.6, 0.6); legend->SetFillStyle(0);
-    c_temp->SaveAs("Oqq_Plot.png"); c_temp->SetLogy(); c_temp->SaveAs("Oqq_Plot_log.png");
+    c_temp->SaveAs("OBB_Plot.png"); c_temp->SetLogy(); c_temp->SaveAs("OBB_Plot_log.png");
     delete c_temp;
 }
-
 
 int main()
 {
@@ -486,7 +444,7 @@ int main()
     std::cout << "Train Score " << GetScore(classifier, InputVariables, IsSignal) << std::endl;
     std::cout << "Weighted Train Score " << GetWeightedScore(classifier, InputVariables, IsSignal, weight) << std::endl;
 
-    std::fstream out_stream("Continuum.weightfile", std::ios_base::out | std::ios_base::trunc);
+    std::fstream out_stream("BB.weightfile", std::ios_base::out | std::ios_base::trunc);
     out_stream << classifier << std::endl;
     out_stream.close();
 
@@ -503,7 +461,7 @@ int main()
 
 
     // print result of testing sample
-    std::fstream in_stream("Continuum.weightfile", std::ios_base::in);
+    std::fstream in_stream("BB.weightfile", std::ios_base::in);
     FastBDT::Classifier classifier2(in_stream);
 
     std::vector<std::vector<float>> InputVariables2;

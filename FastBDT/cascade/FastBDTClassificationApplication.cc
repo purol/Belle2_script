@@ -660,16 +660,11 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        if(temp_BsigDataToTree[6] > 1.0) inputs_BB.push_back(0.0f); // Mxs_indicator
        else inputs_BB.push_back(temp_BsigDataToTree[6]); // Mxs_indicator
 
+       Output_BB = classifier_BB.predict(inputs_BB);
+
        // set inputs for Continuum small Mxs
        std::vector<float> inputs_Continuum;
-       inputs_Continuum.push_back(temp_UpsilonDataToTree[10]); // nRemainingTracksInEvent
-       inputs_Continuum.push_back(temp_BtagDataToTree[6]); // Btag_chiProb
-       inputs_Continuum.push_back(temp_BtagDataToTree[5]); // Btag_extraInfo_SignalProbability
-       inputs_Continuum.push_back(temp_UpsilonDataToTree[35]); // thrustAxisCosTheta
-       inputs_Continuum.push_back(temp_UpsilonDataToTree[7]); // missingMomentumOfEvent_theta
-       inputs_Continuum.push_back(temp_BtagDataToTree[2]); // Btag_deltaE
-       inputs_Continuum.push_back(temp_DataToTree[34]); // Btag_useCMSFrame_theta
-       inputs_Continuum.push_back(temp_DataToTree[3]); // Btag_cosTBTO
+       inputs_Continuum.push_back(Output_BB); // Former FBDT output
        inputs_Continuum.push_back(temp_DataToTree[7]); // Btag_KSFWVariables_hso00
        inputs_Continuum.push_back(temp_DataToTree[8]); // Btag_KSFWVariables_hso01
        inputs_Continuum.push_back(temp_DataToTree[10]); // Btag_KSFWVariables_hso03
@@ -683,8 +678,6 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        inputs_Continuum.push_back(temp_DataToTree[2]); // Btag_thrustOm
        inputs_Continuum.push_back(temp_UpsilonDataToTree[49]); // nElectron
        inputs_Continuum.push_back(temp_UpsilonDataToTree[50]); // nMuon
-       if(temp_BsigDataToTree[6] > 1.0) inputs_Continuum.push_back(0.0f); // Mxs_indicator
-       else inputs_Continuum.push_back(temp_BsigDataToTree[6]); // Mxs_indicator
        inputs_Continuum.push_back(temp_BsigDataToTree[4]); // Bsig_pcms
        if(temp_BsigDataToTree[67] > -0.5) {
            inputs_Continuum.push_back(temp_BsigDataToTree[65]); // pValue_med
@@ -719,7 +712,6 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
            inputs_Continuum.push_back(0.0); // M
        }
 
-       Output_BB = classifier_BB.predict(inputs_BB);
        Output_Continuum = classifier_Continuum.predict(inputs_Continuum);
 
        temp_tree->Fill();
