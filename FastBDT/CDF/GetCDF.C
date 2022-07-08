@@ -75,6 +75,9 @@ private:
 	std::vector<double> m_background_output;
 	std::vector<double> m_background_weight;
 
+	const double m_max = 1.0;
+	const double m_min = 0.92;
+
 	template <typename A, typename B>
 	void zip(const std::vector<A>& a, const std::vector<B>& b, std::vector<std::pair<A, B>>& zipped)
 	{
@@ -141,12 +144,13 @@ public:
 		m_weights_sum = std::accumulate(m_weights.begin(), m_weights.end(), 0.0);
 	}
 	double GetCDFvalue(double value) {
+
 		auto larger_or_equal = std::lower_bound(m_values.begin(), m_values.end(), value);
 		auto larger = std::upper_bound(m_values.begin(), m_values.end(), value);
 
 		int until_index = -1;
 		if (larger_or_equal - m_values.begin() == larger - m_values.begin()) { // input value is not same with one of value which is saved
-			until_index = larger_or_equal - m_values.begin();
+			until_index = larger_or_equal - m_values.begin() - 1;
 		}
 		else { // input value is same with one of value which is saved
 			until_index = larger_or_equal - m_values.begin();
@@ -154,7 +158,12 @@ public:
 			return weights_partial_sum / m_weights_sum;
 		}
 
-		if (larger == m_values.end()) { // it is last
+		if (value < m_values.at(0)) {
+			int temp_index = std::upper_bound(m_values.begin(), m_values.end(), m_values.at(0)) - m_values.begin() - 1;
+			double weights_partial_sum = (value - m_min) * std::accumulate(m_weights.begin(), temp_index + m_weights.begin(), 0.0) / (m_values.at(0) - m_min);
+			return weights_partial_sum / m_weights_sum;
+		}
+		else if (value >= *(m_values.end() - 1)) {
 			return 1.0;
 		}
 
@@ -224,9 +233,6 @@ public:
 };
 
 int GetCDF() {
-
-	std::vector<double> values;
-	std::vector<double> weights;
 
 	CDF cdf;
 

@@ -395,6 +395,7 @@ public:
     void OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type);
     void DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type, double minM, double maxM);
     void PrintFOM(Loader::ScaleFactor scaleFactor_ = Loader::None);
+    void PrintFOM1D(Loader::ScaleFactor scaleFactor_ = Loader::None);
     void MVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
     void CountMCEvent(std::string filename = std::string(""), bool smartmode = true);
     void SelectDecayModeOf(Loader::DecayMode decaymode);
@@ -3479,6 +3480,64 @@ void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_) {
             }
             FOM_Matrix[i][j] = FOM_Matrix[i][j] + EVT_num;
         }
+    }
+
+    scaleFactor = scaleFactor_;
+    FOMIsOn = true;
+    current_FOM++;
+}
+
+void Loader::PrintFOM1D(Loader::ScaleFactor scaleFactor_) {
+    if (current_FOM > 0) { // allocate new int
+        printf("The number of PrintFOM should not be larger than 1\n");
+        printf("Only first PrintFOM is accepted\n");
+        return;
+    }
+    if (DoesItHaveMVAOutput == false) {
+        printf("ERROR! PrintFOM is called when the data does not have MVA output\n");
+        exit(1);
+    }
+    typedef struct labels {
+        int __experiment__;
+        int __run__;
+        int __event__;
+        int __ncandidates__;
+    } Labels;
+
+    for (int j = 0; j < Nstep; j++) {
+        std::queue<Data> temp_queue;
+        temp_queue.swap(TotalData);
+
+        double Continuum_output = start + (end - start) * j / Nstep;
+
+        std::vector<Labels> label_list;
+        double EVT_num = 0.0;
+
+        while (!temp_queue.empty()) {
+            Data temp = temp_queue.front();
+            temp_queue.pop();
+
+            if (temp.MVA_Continuum > Continuum_output) {
+                bool overlap = false;
+                for (unsigned int k = 0; k < label_list.size(); k++) {
+                    if (label_list.at(k).__experiment__ == temp.__experiment__ && label_list.at(k).__run__ == temp.__run__ && label_list.at(k).__event__ == temp.__event__ && label_list.at(k).__ncandidates__ == temp.__ncandidates__) {
+                        overlap = true;
+                    }
+                }
+                if (overlap == false) {
+                    EVT_num = EVT_num + 1.0;
+                    Labels temp_Labels;
+                    temp_Labels.__experiment__ = temp.__experiment__;
+                    temp_Labels.__run__ = temp.__run__;
+                    temp_Labels.__event__ = temp.__event__;
+                    temp_Labels.__ncandidates__ = temp.__ncandidates__;
+                    label_list.push_back(temp_Labels);
+                }
+            }
+
+            TotalData.push(temp);
+        }
+        FOM_Matrix[0][j] = FOM_Matrix[0][j] + EVT_num;
     }
 
     scaleFactor = scaleFactor_;
