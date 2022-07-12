@@ -65,6 +65,8 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define Nvar_num 65
 
+# define CAL 0.746
+
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
         return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
@@ -107,7 +109,7 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-void LetsFillOffres(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], std::vector<int>* numberings) {
+void LetsFillOffres(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], std::vector<int>* numberings, std::vector<double>* weights) {
     /*
     0: uubar
     1: ddbar
@@ -124,6 +126,8 @@ void LetsFillOffres(const char* dirname, std::vector<std::string> variable_names
     */
 
     double var[Nvar_num] = { 0.0 };
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -146,6 +150,9 @@ void LetsFillOffres(const char* dirname, std::vector<std::string> variable_names
                 exit(1);
             }
         }
+
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -173,6 +180,104 @@ void LetsFillOffres(const char* dirname, std::vector<std::string> variable_names
                 printf("undefined job id!\n");
                 exit(1);
             }
+
+            // Fill calibration factors
+            if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B2Kc
+                weights->push_back(FEI_cal_Bc);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B2KcPi0
+                weights->push_back(FEI_cal_Bc* pi0_correction);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B2Ks0Pic
+                weights->push_back(FEI_cal_Bc);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B2KcPicPic
+                weights->push_back(FEI_cal_Bc);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B2Ks0PicPi0
+                weights->push_back(FEI_cal_Bc * pi0_correction);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B2KcPicPicPi0
+                weights->push_back(FEI_cal_Bc * pi0_correction);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B2Ks0PicPicPic
+                weights->push_back(FEI_cal_Bc);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B2KcPicPicPicPic
+                weights->push_back(FEI_cal_Bc);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B2Ks0PicPicPicPi0
+                weights->push_back(FEI_cal_Bc * pi0_correction);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B2KcPi0Pi0
+                weights->push_back(FEI_cal_Bc * pi0_correction * pi0_correction);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B2Ks0PicPi0Pi0
+                weights->push_back(FEI_cal_Bc * pi0_correction * pi0_correction);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B2KcPicPicPi0Pi0
+                weights->push_back(FEI_cal_Bc * pi0_correction * pi0_correction);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B2KcKcKc
+                weights->push_back(FEI_cal_Bc);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B2KcKcKs0Pic
+                weights->push_back(FEI_cal_Bc);
+            }
+            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B2KcKcKcPi0
+                weights->push_back(FEI_cal_Bc * pi0_correction);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B02Ks0
+                weights->push_back(FEI_cal_B0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B02KcPic
+                weights->push_back(FEI_cal_B0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B02Ks0Pi0
+                weights->push_back(FEI_cal_B0 * pi0_correction);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B02KcPicPi0
+                weights->push_back(FEI_cal_B0 * pi0_correction);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B02Ks0PicPic
+                weights->push_back(FEI_cal_B0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B02KcPicPicPic
+                weights->push_back(FEI_cal_B0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B02Ks0PicPicPi0
+                weights->push_back(FEI_cal_B0* pi0_correction);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B02KcPicPicPicPi0
+                weights->push_back(FEI_cal_B0* pi0_correction);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B02Ks0PicPicPicPic
+                weights->push_back(FEI_cal_B0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B02Ks0Pi0Pi0
+                weights->push_back(FEI_cal_B0 * pi0_correction * pi0_correction);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B02KcPicPi0Pi0
+                weights->push_back(FEI_cal_B0 * pi0_correction * pi0_correction);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B02Ks0PicPicPi0Pi0
+                weights->push_back(FEI_cal_B0 * pi0_correction * pi0_correction);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B02KcKcKs0
+                weights->push_back(FEI_cal_B0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B02KcKcKcPic
+                weights->push_back(FEI_cal_B0);
+            }
+            else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B02KcKcKs0Pi0
+                weights->push_back(FEI_cal_B0 * pi0_correction);
+            }
+            else {
+                printf("[ERROR] unexpected decay ID\n");
+                exit(1);
+            }
+
+
         }
         input_file->Close();
 
@@ -261,6 +366,7 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 void THStack_plot_offres() {
 
     const char* Offres_MC_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_off_e12_c2/SIGNAL_analysis/validation_v000/final_output";
+    const char* Offres_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_off_data_e12_c2/SIGNAL_analysis/validation_v000/final_output";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
@@ -347,22 +453,75 @@ void THStack_plot_offres() {
     std::vector<double> hhISR_values[Nvar_num];
     std::vector<int> Offres_MC_numbering;
 
-    LetsFillOffres(Offres_MC_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering);
+    std::vector<double> Offres_data_values[Nvar_num];
+
+    std::vector<double> weights;
+    std::vector<double> uubar_weights;
+    std::vector<double> ddbar_weights;
+    std::vector<double> ssbar_weights;
+    std::vector<double> ccbar_weights;
+    std::vector<double> taupair_weights;
+    std::vector<double> mumu_weights;
+    std::vector<double> gg_weights;
+    std::vector<double> ee_weights;
+    std::vector<double> eeee_weights;
+    std::vector<double> eemumu_weights;
+    std::vector<double> llXX_weights;
+    std::vector<double> hhISR_weights;
+
+    LetsFillOffres(Offres_MC_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights);
+    LetsFill(Offres_data_dirname, variable_names, branch_names, Offres_data_values);
 
     // sort variables
     for (int k = 0; k < (int)Offres_MC_numbering.size(); k++) {
-        if (Offres_MC_numbering.at(k) == 0) for (int l = 0; l < (int)variable_names.size(); l++) uubar_values[l].push_back(Offres_MC_values[l].at(k));
-        else if (Offres_MC_numbering.at(k) == 1) for (int l = 0; l < (int)variable_names.size(); l++) ddbar_values[l].push_back(Offres_MC_values[l].at(k));
-        else if (Offres_MC_numbering.at(k) == 2) for (int l = 0; l < (int)variable_names.size(); l++) ssbar_values[l].push_back(Offres_MC_values[l].at(k));
-        else if (Offres_MC_numbering.at(k) == 3) for (int l = 0; l < (int)variable_names.size(); l++) ccbar_values[l].push_back(Offres_MC_values[l].at(k));
-        else if (Offres_MC_numbering.at(k) == 4) for (int l = 0; l < (int)variable_names.size(); l++) taupair_values[l].push_back(Offres_MC_values[l].at(k));
-        else if (Offres_MC_numbering.at(k) == 5) for (int l = 0; l < (int)variable_names.size(); l++) mumu_values[l].push_back(Offres_MC_values[l].at(k));
-        else if (Offres_MC_numbering.at(k) == 6) for (int l = 0; l < (int)variable_names.size(); l++) gg_values[l].push_back(Offres_MC_values[l].at(k));
-        else if (Offres_MC_numbering.at(k) == 7) for (int l = 0; l < (int)variable_names.size(); l++) ee_values[l].push_back(Offres_MC_values[l].at(k));
-        else if (Offres_MC_numbering.at(k) == 8) for (int l = 0; l < (int)variable_names.size(); l++) eeee_values[l].push_back(Offres_MC_values[l].at(k));
-        else if (Offres_MC_numbering.at(k) == 9) for (int l = 0; l < (int)variable_names.size(); l++) eemumu_values[l].push_back(Offres_MC_values[l].at(k));
-        else if (Offres_MC_numbering.at(k) == 10) for (int l = 0; l < (int)variable_names.size(); l++) llXX_values[l].push_back(Offres_MC_values[l].at(k));
-        else if (Offres_MC_numbering.at(k) == 11) for (int l = 0; l < (int)variable_names.size(); l++) hhISR_values[l].push_back(Offres_MC_values[l].at(k));
+        if (Offres_MC_numbering.at(k) == 0) {
+            for (int l = 0; l < (int)variable_names.size(); l++) uubar_values[l].push_back(Offres_MC_values[l].at(k));
+            uubar_weights.push_back(weights.at(k));
+        }
+        else if (Offres_MC_numbering.at(k) == 1) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ddbar_values[l].push_back(Offres_MC_values[l].at(k));
+            ddbar_weights.push_back(weights.at(k));
+        }
+        else if (Offres_MC_numbering.at(k) == 2) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ssbar_values[l].push_back(Offres_MC_values[l].at(k));
+            ssbar_weights.push_back(weights.at(k));
+        }
+        else if (Offres_MC_numbering.at(k) == 3) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ccbar_values[l].push_back(Offres_MC_values[l].at(k));
+            ccbar_weights.push_back(weights.at(k));
+        }
+        else if (Offres_MC_numbering.at(k) == 4) {
+            for (int l = 0; l < (int)variable_names.size(); l++) taupair_values[l].push_back(Offres_MC_values[l].at(k));
+            taupair_weights.push_back(weights.at(k));
+        }
+        else if (Offres_MC_numbering.at(k) == 5) {
+            for (int l = 0; l < (int)variable_names.size(); l++) mumu_values[l].push_back(Offres_MC_values[l].at(k));
+            mumu_weights.push_back(weights.at(k));
+        }
+        else if (Offres_MC_numbering.at(k) == 6) {
+            for (int l = 0; l < (int)variable_names.size(); l++) gg_values[l].push_back(Offres_MC_values[l].at(k));
+            gg_weights.push_back(weights.at(k));
+        }
+        else if (Offres_MC_numbering.at(k) == 7) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ee_values[l].push_back(Offres_MC_values[l].at(k));
+            ee_weights.push_back(weights.at(k));
+        }
+        else if (Offres_MC_numbering.at(k) == 8) {
+            for (int l = 0; l < (int)variable_names.size(); l++) eeee_values[l].push_back(Offres_MC_values[l].at(k));
+            eeee_weights.push_back(weights.at(k));
+        }
+        else if (Offres_MC_numbering.at(k) == 9) {
+            for (int l = 0; l < (int)variable_names.size(); l++) eemumu_values[l].push_back(Offres_MC_values[l].at(k));
+            eemumu_weights.push_back(weights.at(k));
+        }
+        else if (Offres_MC_numbering.at(k) == 10) {
+            for (int l = 0; l < (int)variable_names.size(); l++) llXX_values[l].push_back(Offres_MC_values[l].at(k));
+            llXX_weights.push_back(weights.at(k));
+        }
+        else if (Offres_MC_numbering.at(k) == 11) {
+            for (int l = 0; l < (int)variable_names.size(); l++) hhISR_values[l].push_back(Offres_MC_values[l].at(k));
+            hhISR_weights.push_back(weights.at(k));
+        }
         else {
             printf("undefined numbering!\n");
             exit(1);
@@ -383,6 +542,8 @@ void THStack_plot_offres() {
     TH1D* llXX_hist[Nvar_num];
     TH1D* hhISR_hist[Nvar_num];
     TH1D* stat_error_hist[Nvar_num];
+    TH1D* data_hist[Nvar_num];
+    TH1D* Ratio_hist[Nvar_num];
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // malloc TH1D
         std::vector<double> temp_v;
@@ -398,6 +559,7 @@ void THStack_plot_offres() {
         temp_v.insert(temp_v.end(), eemumu_values[k].begin(), eemumu_values[k].end());
         temp_v.insert(temp_v.end(), llXX_values[k].begin(), llXX_values[k].end());
         temp_v.insert(temp_v.end(), hhISR_values[k].begin(), hhISR_values[k].end());
+        temp_v.insert(temp_v.end(), Offres_data_values[k].begin(), Offres_data_values[k].end());
 
 
         double min = *min_element(temp_v.begin(), temp_v.end());
@@ -451,22 +613,25 @@ void THStack_plot_offres() {
         llXX_hist[k] = new TH1D("\ell#bar{\ell}XX", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         hhISR_hist[k] = new TH1D("hhISR", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;MC/data", bins, min, max);
     }
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
-        for (int i = 0; i < (int)uubar_values[k].size(); i++) uubar_hist[k]->Fill(uubar_values[k].at(i));
-        for (int i = 0; i < (int)ddbar_values[k].size(); i++) ddbar_hist[k]->Fill(ddbar_values[k].at(i));
-        for (int i = 0; i < (int)ssbar_values[k].size(); i++) ssbar_hist[k]->Fill(ssbar_values[k].at(i));
-        for (int i = 0; i < (int)ccbar_values[k].size(); i++) ccbar_hist[k]->Fill(ccbar_values[k].at(i));
-        for (int i = 0; i < (int)taupair_values[k].size(); i++) taupair_hist[k]->Fill(taupair_values[k].at(i));
-        for (int i = 0; i < (int)mumu_values[k].size(); i++) mumu_hist[k]->Fill(mumu_values[k].at(i));
-        for (int i = 0; i < (int)gg_values[k].size(); i++) gg_hist[k]->Fill(gg_values[k].at(i));
-        for (int i = 0; i < (int)ee_values[k].size(); i++) ee_hist[k]->Fill(ee_values[k].at(i));
-        for (int i = 0; i < (int)eeee_values[k].size(); i++) eeee_hist[k]->Fill(eeee_values[k].at(i));
-        for (int i = 0; i < (int)eemumu_values[k].size(); i++) eemumu_hist[k]->Fill(eemumu_values[k].at(i));
-        for (int i = 0; i < (int)llXX_values[k].size(); i++) llXX_hist[k]->Fill(llXX_values[k].at(i));
-        for (int i = 0; i < (int)hhISR_values[k].size(); i++) hhISR_hist[k]->Fill(hhISR_values[k].at(i));
-        for (int i = 0; i < (int)Offres_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Offres_MC_values[k].at(i));
+        for (int i = 0; i < (int)uubar_values[k].size(); i++) uubar_hist[k]->Fill(uubar_values[k].at(i), uubar_weights.at(i));
+        for (int i = 0; i < (int)ddbar_values[k].size(); i++) ddbar_hist[k]->Fill(ddbar_values[k].at(i), ddbar_weights.at(i));
+        for (int i = 0; i < (int)ssbar_values[k].size(); i++) ssbar_hist[k]->Fill(ssbar_values[k].at(i), ssbar_weights.at(i));
+        for (int i = 0; i < (int)ccbar_values[k].size(); i++) ccbar_hist[k]->Fill(ccbar_values[k].at(i), ccbar_weights.at(i));
+        for (int i = 0; i < (int)taupair_values[k].size(); i++) taupair_hist[k]->Fill(taupair_values[k].at(i), taupair_weights.at(i));
+        for (int i = 0; i < (int)mumu_values[k].size(); i++) mumu_hist[k]->Fill(mumu_values[k].at(i), mumu_weights.at(i));
+        for (int i = 0; i < (int)gg_values[k].size(); i++) gg_hist[k]->Fill(gg_values[k].at(i), gg_weights.at(i));
+        for (int i = 0; i < (int)ee_values[k].size(); i++) ee_hist[k]->Fill(ee_values[k].at(i), ee_weights.at(i));
+        for (int i = 0; i < (int)eeee_values[k].size(); i++) eeee_hist[k]->Fill(eeee_values[k].at(i), eeee_weights.at(i));
+        for (int i = 0; i < (int)eemumu_values[k].size(); i++) eemumu_hist[k]->Fill(eemumu_values[k].at(i), eemumu_weights.at(i));
+        for (int i = 0; i < (int)llXX_values[k].size(); i++) llXX_hist[k]->Fill(llXX_values[k].at(i), llXX_weights.at(i));
+        for (int i = 0; i < (int)hhISR_values[k].size(); i++) hhISR_hist[k]->Fill(hhISR_values[k].at(i), hhISR_weights.at(i));
+        for (int i = 0; i < (int)Offres_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Offres_MC_values[k].at(i), weights.at(i));
+        for (int i = 0; i < (int)Offres_data_values[k].size(); i++) data_hist[k]->Fill(Offres_data_values[k].at(i));
     }
 
     printf("uubar: %d\n", (int)uubar_values[0].size());
@@ -481,6 +646,7 @@ void THStack_plot_offres() {
     printf("eemuu: %d\n", (int)eemumu_values[0].size());
     printf("llXX: %d\n", (int)llXX_values[0].size());
     printf("hhISR: %d\n", (int)hhISR_values[0].size());
+    printf("data: %d\n", (int)Offres_data_values[0].size());
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
         Stack[k]->Add(uubar_hist[k]);
@@ -496,17 +662,48 @@ void THStack_plot_offres() {
         //Stack[k]->Add(llXX_hist[k]);
         //Stack[k]->Add(hhISR_hist[k]);
 
+        Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
+        Ratio_hist[k]->Divide(stat_error_hist[k], data_hist[k]);
+
         TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
+
+        TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
+        pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
+        pad1->SetGridx(); pad1->Draw(); pad1->cd();
 
         gStyle->SetPalette(kPastel);
 
-        Stack[k]->Draw("pfc Hist");
+        Float_t ymax_1 = Stack[k]->GetMaximum();
+        Float_t ymax_2 = data_hist[k]->GetMaximum();
+        double real_max = 0;
+        if (ymax_1 > ymax_2) real_max = ymax_1;
+        else real_max = ymax_2;
+
+        Stack[k]->SetMaximum(real_max * 1.1);
+
+        Stack[k]->Draw("pfc Hist"); 
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
-        TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.7, 0.7);
-        //gPad->BuildLegend();
+        data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP");
+        TLegend* legend = pad1->BuildLegend(0.9, 0.9, 0.7, 0.7);
         legend->SetFillStyle(0);
+
+
+        c_temp->cd();
+        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.05); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+        Ratio_hist[k]->SetMinimum(0.9); Ratio_hist[k]->SetMaximum(1.5); Ratio_hist[k]->SetLineWidth(2); Ratio_hist[k]->Draw("ep");
+        TLine* line = new TLine(Ratio_hist[k]->GetXaxis()->GetXmin(), 1.0, Ratio_hist[k]->GetXaxis()->GetXmax(), 1.0);
+        line->SetLineColor(kRed);
+        line->SetLineStyle(1); line->SetLineWidth(3);
+        line->Draw();
+
         c_temp->SaveAs((variable_names.at(k)+"_offres.png").c_str());
 
         delete c_temp;
     }
+
+    // Print data-MC discrepancy
+    double MC_sum = 0;
+    for (int i = 0; i < (int)Offres_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
+    printf("data num: %ld\n", Offres_data_values[0].size());
+    printf("MC num with calibration: %lf\n", MC_sum);
 }

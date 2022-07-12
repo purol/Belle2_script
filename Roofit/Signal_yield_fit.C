@@ -222,7 +222,7 @@ void LetsCalculateUncertainties(const char* dirname, double weight) {
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B02Ks0PicPicPi0
                 ntracks.push_back(2);
-                npi0s.push_back(0);
+                npi0s.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B02KcKcKs0
                 ntracks.push_back(2);

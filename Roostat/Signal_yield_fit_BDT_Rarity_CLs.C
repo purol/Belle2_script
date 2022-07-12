@@ -82,28 +82,244 @@ using std::to_string;
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
 // https://indico.belle2.org/event/6872/contributions/37447/attachments/17127/25504/FEIperformance_B2GM.pdf
-# define FEI_cal_Bc 0.679
-# define FEI_cal_Bc_uncertainty (0.017/FEI_cal_Bc)
-# define FEI_cal_B0 0.713
-# define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0)
+//# define FEI_cal_Bc 0.679
+//# define FEI_cal_Bc_uncertainty (0.017/FEI_cal_Bc)
+//# define FEI_cal_B0 0.713
+//# define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0)
+//
+//# define Htransition_Xsu_change (-0.142)
+//# define Htransition_Xsd_change (-0.099)
+//# define Ltransition_Xsu_change (-0.002)
+//# define Ltransition_Xsd_change (0.067)
+//# define Hmb_Xsu_change (-0.067)
+//# define Hmb_Xsd_change (-0.058)
+//# define Lmb_Xsu_change (-0.062)
+//# define Lmb_Xsd_change (-0.046)
+//# define Hpf_Xsu_change (-0.120)
+//# define Hpf_Xsd_change (-0.073)
+//# define Lpf_Xsu_change (-0.014)
+//# define Lpf_Xsd_change (0.019)
 
-# define Htransition_Xsu_change (-0.142)
-# define Htransition_Xsd_change (-0.099)
-# define Ltransition_Xsu_change (-0.002)
-# define Ltransition_Xsd_change (0.067)
-# define Hmb_Xsu_change (-0.067)
-# define Hmb_Xsd_change (-0.058)
-# define Lmb_Xsu_change (-0.062)
-# define Lmb_Xsd_change (-0.046)
-# define Hpf_Xsu_change (-0.120)
-# define Hpf_Xsd_change (-0.073)
-# define Lpf_Xsu_change (-0.014)
-# define Lpf_Xsd_change (0.019)
+# define FEI_cal_Bc 1.0
+# define FEI_cal_Bc_uncertainty 0.0
+# define FEI_cal_B0 1.0
+# define FEI_cal_B0_uncertainty 0.0
 
-# define EeclBins 200
+# define Htransition_Xsu_change 0.0
+# define Htransition_Xsd_change 0.0
+# define Ltransition_Xsu_change 0.0
+# define Ltransition_Xsd_change 0.0
+# define Hmb_Xsu_change 0.0
+# define Hmb_Xsd_change 0.0
+# define Lmb_Xsu_change 0.0
+# define Lmb_Xsd_change 0.0
+# define Hpf_Xsu_change 0.0
+# define Hpf_Xsd_change 0.0
+# define Lpf_Xsu_change 0.0
+# define Lpf_Xsd_change 0.0
 
-# define nsig_min (-100)
-# define nsig_max 140
+# define RarityBins 100
+
+# define nsig_min (-280)
+# define nsig_max 200
+
+/* ====================================== */
+// Rarity module
+bool sorting(pair<double, double> a, pair<double, double> b) {
+
+    return a.first < b.first;
+
+}
+
+class CDF {
+private:
+    std::vector<double> m_values;
+    std::vector<double> m_weights;
+    double m_weights_sum;
+
+    std::vector<double> m_signal_output;
+    std::vector<double> m_signal_weight;
+    std::vector<double> m_background_output;
+    std::vector<double> m_background_weight;
+
+    const double m_max = 1.0;
+    const double m_min = 0.92;
+
+    template <typename A, typename B>
+    void zip(const std::vector<A>& a, const std::vector<B>& b, std::vector<std::pair<A, B>>& zipped)
+    {
+        for (size_t i = 0; i < a.size(); ++i)
+        {
+            zipped.push_back(std::make_pair(a[i], b[i]));
+        }
+    }
+
+    template <typename A, typename B>
+    void unzip(const std::vector<std::pair<A, B>>& zipped, std::vector<A>& a, std::vector<B>& b)
+    {
+        for (size_t i = 0; i < a.size(); i++)
+        {
+            a[i] = zipped[i].first;
+            b[i] = zipped[i].second;
+        }
+    }
+
+    void m_load_files(const char* dirname, std::vector<std::string>* names) {
+        TSystemDirectory dir(dirname, dirname);
+        TList* files = dir.GetListOfFiles();
+        if (files) {
+            TSystemFile* file;
+            TString fname;
+            TIter next(files);
+            while ((file = (TSystemFile*)next())) {
+                fname = file->GetName();
+                if (!file->IsDirectory() && fname.EndsWith(".root")) {
+                    names->push_back(fname.Data());
+                }
+            }
+        }
+    }
+
+
+public:
+    void init(std::vector<double> values, std::vector<double> weights) {
+        // Zip the vectors together
+        std::vector<std::pair<double, double>> zipped;
+        zip(values, weights, zipped);
+
+        sort(zipped.begin(), zipped.end(), sorting);
+
+        // Write the sorted pairs back to the vectors
+        unzip(zipped, m_values, m_weights);
+        m_weights_sum = std::accumulate(m_weights.begin(), m_weights.end(), 0.0);
+    }
+    void initbypath(const char* dirname, double weight) {
+        std::vector<string> names;
+
+       m_load_files(dirname, &names);
+
+        for (unsigned int i = 0; i < names.size(); i++) {
+            float MVA_Continuum = 0;
+
+            TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+
+            TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+            tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_Continuum);
+
+            for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+                tree_upsilon->GetEntry(j);
+
+                m_values.push_back(MVA_Continuum);
+                m_weights.push_back(weight);
+
+            }
+            input_file->Close();
+        }
+
+        // Zip the vectors together
+        std::vector<std::pair<double, double>> zipped;
+        zip(m_values, m_weights, zipped);
+
+        sort(zipped.begin(), zipped.end(), sorting);
+
+        // Write the sorted pairs back to the vectors
+        unzip(zipped, m_values, m_weights);
+        m_weights_sum = std::accumulate(m_weights.begin(), m_weights.end(), 0.0);
+    }
+    double GetCDFvalue(float value) {
+        const double max = 1.0;
+        const double min = 0.85;
+
+        auto larger_or_equal = std::lower_bound(m_values.begin(), m_values.end(), value);
+        auto larger = std::upper_bound(m_values.begin(), m_values.end(), value);
+
+        int until_index = -1;
+        if (larger_or_equal - m_values.begin() == larger - m_values.begin()) { // input value is not same with one of value which is saved
+            until_index = larger_or_equal - m_values.begin() - 1;
+        }
+        else { // input value is same with one of value which is saved
+            until_index = larger_or_equal - m_values.begin();
+            double weights_partial_sum = std::accumulate(m_weights.begin(), until_index + m_weights.begin(), 0.0);
+            return weights_partial_sum / m_weights_sum;
+        }
+
+        if (value < m_values.at(0)) {
+            int temp_index = std::upper_bound(m_values.begin(), m_values.end(), m_values.at(0)) - m_values.begin() - 1;
+            double weights_partial_sum = (value - m_min) * std::accumulate(m_weights.begin(), temp_index + m_weights.begin(), 0.0) / (m_values.at(0) - m_min);
+            return weights_partial_sum / m_weights_sum;
+        }
+        else if (value >= *(m_values.end() - 1)) {
+            return 1.0;
+        }
+
+        double weights_partial_sum_back = std::accumulate(m_weights.begin(), until_index + m_weights.begin(), 0.0);
+        double weights_partial_sum_front = std::accumulate(m_weights.begin(), until_index + m_weights.begin() + 1, 0.0);
+
+        int index_back = until_index;
+        int index_front = until_index + 1;
+
+        double weights_partial_sum = weights_partial_sum_back + (value - m_values.at(index_back)) * (weights_partial_sum_front - weights_partial_sum_back) / (m_values.at(index_front) - m_values.at(index_back));
+
+        return weights_partial_sum / m_weights_sum;
+
+    }
+    void print() {
+        for (unsigned int i = 0; i < m_values.size(); i++) {
+            printf("[%lf, %lf] ", m_values.at(i), m_weights.at(i));
+        }
+        printf("\n");
+    }
+    void Evaluate(const char* dirname, double weight, bool IsSignal) {
+        std::vector<string> names;
+
+        m_load_files(dirname, &names);
+
+        for (unsigned int i = 0; i < names.size(); i++) {
+            float MVA_Continuum = 0;
+
+            TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+
+            TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+            tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_Continuum);
+
+            for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+                tree_upsilon->GetEntry(j);
+
+                if (IsSignal) {
+                    m_signal_output.push_back(GetCDFvalue(MVA_Continuum));
+                    m_signal_weight.push_back(weight);
+                }
+                else {
+                    m_background_output.push_back(GetCDFvalue(MVA_Continuum));
+                    m_background_weight.push_back(weight);
+                }
+            }
+            input_file->Close();
+
+        }
+    }
+    void PrintPNG() {
+        TH1D* temp_signal_hist = new TH1D("CDF_signal", ";CDF;arbitrary unit", 100, 0.0, 1.0);
+        TH1D* temp_background_hist = new TH1D("CDF_background", ";CDF;arbitrary unit", 100, 0.0, 1.0);
+
+        for (unsigned int i = 0; i < m_signal_output.size(); i++) temp_signal_hist->Fill(m_signal_output.at(i), m_signal_weight.at(i));
+        for (unsigned int i = 0; i < m_background_output.size(); i++) temp_background_hist->Fill(m_background_output.at(i), m_background_weight.at(i));
+
+        temp_signal_hist->Scale(1.0 / temp_signal_hist->Integral(), "width");
+        temp_background_hist->Scale(1.0 / temp_background_hist->Integral(), "width");
+
+        TCanvas* c_temp = new TCanvas("c", "", 800, 800);
+
+        temp_signal_hist->Draw("hist"); c_temp->SaveAs("signal_cdf.png");
+        temp_background_hist->Draw("hist"); c_temp->SaveAs("background_cdf.png");
+
+        delete c_temp;
+    }
+};
+
+CDF cdf;
+
+/* ====================================== */
 
 // global variables to calculate uncertainties
 std::vector<double> Ns;
@@ -726,30 +942,23 @@ void load_files(const char* dirname, std::vector<string>* names) {
     }
 }
 
-RooRealVar  Mbc_DATA("Mbc", "Mbc_DATA", 5.27, 5.29);
-RooRealVar  Eecl_DATA("Eecl", "Eecl_DATA", 0.85, 1.0);
+RooRealVar  Rarity_DATA("Rarity", "Rarity_DATA", 0.0, 1.0);
 RooRealVar weight_DATA("weight", "weight_DATA", 0.0, 1.0);
-RooDataSet info_DATA("2Dinfo", "2Dinfo_DATA", RooArgSet(Mbc_DATA, Eecl_DATA, weight_DATA), WeightVar("weight"));
+RooDataSet info_DATA("info", "info_DATA", RooArgSet(Rarity_DATA, weight_DATA), WeightVar("weight"));
 
-RooRealVar  Mbc_MC_signal("Mbc", "Mbc_MC_signal", 5.27, 5.29);
-RooRealVar  Eecl_MC_signal("Eecl", "Eecl_MC_signal", 0.85, 1.0);
+RooRealVar  Rarity_MC_signal("Rarity", "Rarity_MC_signal", 0.0, 1.0);
 RooRealVar weight_MC_signal("weight", "weight_MC_signal", 0.0, 1.0);
-RooDataSet info_MC_signal("2Dinfo", "2Dinfo_MC_signal", RooArgSet(Mbc_MC_signal, Eecl_MC_signal, weight_MC_signal), WeightVar("weight"));
+RooDataSet info_MC_signal("info", "info_MC_signal", RooArgSet(Rarity_MC_signal, weight_MC_signal), WeightVar("weight"));
 
-RooRealVar  Mbc_MC_background("Mbc", "Mbc_MC_background", 5.27, 5.29);
-RooRealVar  Eecl_MC_background("Eecl", "Eecl_MC_background", 0.85, 1.0);
+RooRealVar  Rarity_MC_background("Rarity", "Rarity_MC_background", 0.0, 1.0);
 RooRealVar weight_MC_background("weight", "weight_MC_background", 0.0, 1.0);
-RooDataSet info_MC_background("2Dinfo", "2Dinfo_MC_background", RooArgSet(Mbc_MC_background, Eecl_MC_background, weight_MC_background), WeightVar("weight"));
+RooDataSet info_MC_background("info", "info_MC_background", RooArgSet(Rarity_MC_background, weight_MC_background), WeightVar("weight"));
 
-double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar*  Eecl_, RooRealVar* weight_, RooDataSet* info_, double weight_var = 1.0) {
-    float Eecl_var = 0;
-    float MVA_BB = 0;
-    double Mbc_var = 0;
+double LetsAdd_Rarity(const char* dirname, RooRealVar* Rarity_, RooRealVar* weight_, RooDataSet* info_, double weight_var = 1.0) {
+    float MVA_var = 0;
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
-
-    double Mxs = -1;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -764,14 +973,10 @@ double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar*  Eecl_, RooRea
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_upsilon->SetBranchAddress("MVA_Continuum", &Eecl_var); // Eecl
-        tree_Btag->SetBranchAddress("Btag_Mbc", &Mbc_var); // Mbc
-        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_BB);
+        tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-
-        tree_Bsig->SetBranchAddress("Bsig_M", &Mxs);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -779,21 +984,20 @@ double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar*  Eecl_, RooRea
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-//            if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) {} // B2Kc
-//            else continue;
-//            if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5 && Mxs < 1.1) {} // B2KcPi0
-//            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5 && Mxs < 1.1) {} // B2Ks0Pic
-//            else continue;
+            //            if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) {} // B2Kc
+            //            else continue;
+            //            if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5 && Mxs < 1.1) {} // B2KcPi0
+            //            else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5 && Mxs < 1.1) {} // B2Ks0Pic
+            //            else continue;
             Nevt = Nevt + weight_var;
 
-            *Eecl_ = Eecl_var;
-            *Mbc_ = Mbc_var;
+            *Rarity_ = cdf.GetCDFvalue(MVA_var);
             *weight_ = weight_var;
-            info_->add(RooArgSet(*Mbc_, *Eecl_), weight_->getVal());
+            info_->add(RooArgSet(*Rarity_), weight_->getVal());
         }
         input_file->Close();
 
-    printf("%s has %lf events\n", dirname, Nevt);
+        printf("%s has %lf events\n", dirname, Nevt);
 
     }
     return Nevt;
@@ -1104,8 +1308,8 @@ double GetEvtNum(const char* dirname, double weight_var = 1.0) {
 
 }
 
-void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
-    const int LT_number = 30;
+void LinearityTest(RooFitResult* r, RooRealVar RarityFit, double BKG_num) {
+    const int LT_number = 35;
     const int LT_iterate_number = 1000;
 
     RooArgSet fitargs = r->floatParsFinal();
@@ -1137,55 +1341,30 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
 
         for (int j = 0; j < LT_iterate_number; j++) {
             // produce toy MC sample
-//            RooRealVar cexp_fix("cexp_fix", "cexp_fix", 46.3);
-//            RooRealVar fraction_fix("fraction_fix","fraction_fix",0.6837);
-//            RooPolynomial pol0_fix("pol0_fix","pol0_fix",EeclFit,RooArgList());
-//            RooExponential SIGNAL_exp_fix("genpdfs_fix", "genpdfs_fix", EeclFit, cexp_fix);
-//            RooAddPdf histpdf_Eecl_signal_fix("histpdf_Eecl_signal_fix","pol0+exp_fix",RooArgList(SIGNAL_exp_fix,pol0_fix),RooArgList(fraction_fix));
-            RooRealVar pa_fix("pa_fix", "pa_fix", 1.450);
-            RooRealVar pb_fix("pb_fix", "pb_fix", 753);
-            RooRealVar pc_fix("pc_fix", "pc_fix", 0.339);
-            RooRealVar pd_fix("pd_fix", "pd_fix", 10.0);
-            RooGenericPdf histpdf_Eecl_signal_fix("g_fix", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(EeclFit, pa_fix, pb_fix, pc_fix, pd_fix));
-            RooDataSet* d1 = histpdf_Eecl_signal_fix.generate(EeclFit, i);
 
-//            RooRealVar p1_fix("p1_fix", "coeff #1_fix", 0.096);
-//            RooChebychev histpdf_Eecl_background_fix("histpdf_Eecl_background_fix", "histpdf_Eecl_background_fix", EeclFit, p1_fix);
-            RooRealVar m0b_fix("m0b_fix", "m0b_fix", 0.99637);
-            RooRealVar sigmab_fix("sigmab_fix", "sigmab_fix", 0.00143);
-            RooRealVar alphab_fix("alphab_fix", "alphab_fix", 0.0087);
-            RooRealVar nb_fix("nb_fix", "nb_fix", 0.35);
-            RooCBShape histpdf_Eecl_background_fix("genpdfb_fix", "genpdfb_fix", EeclFit, m0b_fix, sigmab_fix, alphab_fix, nb_fix);
+            RooPolynomial histpdf_Rarity_signal_fix("pol0_fix", "pol0_fix", RarityFit, RooArgList());
+            RooDataSet* d1 = histpdf_Rarity_signal_fix.generate(RarityFit, i);
+
+            RooRealVar pa_fix("pa_fix", "pa_fix", -1.883); // -2.286 -5 0
+            RooRealVar pb_fix("pb_fix", "pb_fix", 1.09); // 1.33 -5 5
+            RooGenericPdf histpdf_Rarity_background_fix("g_fix", "(1-@0)*exp(@0*@1+@0*@0*@0*@2)", RooArgList(RarityFit, pa_fix, pb_fix));
             int N_nbkg_int = round(BKG_num);
-            RooDataSet* genData = histpdf_Eecl_background_fix.generate(EeclFit, N_nbkg_int);
+            RooDataSet* genData = histpdf_Rarity_background_fix.generate(RarityFit, N_nbkg_int);
 
             genData->append(*d1);
-//            RooDataHist gen_binned_data_Eecl("gen binned Eecl data", "gen binned Eecl data", EeclFit, *genData);
+//            RooDataHist gen_binned_data_Rarity("gen binned Rarity data", "gen binned Rarity data", RarityFit, *genData);
 
             // construct fitting function
-//            RooRealVar cexp_LT("cexp_LT", "cexp_LT", 46.3);
-//            RooRealVar fraction_LT("fraction_LT","fraction_LT",0.6837);
-//            RooPolynomial pol0_LT("pol0_LT","pol0_LT",EeclFit,RooArgList());
-//            RooExponential SIGNAL_exp_LT("genpdfs_LT", "genpdfs_LT", EeclFit, cexp_LT);
-//            RooAddPdf histpdf_Eecl_signal_LT("histpdf_Eecl_signal_LT","pol0+exp_LT",RooArgList(SIGNAL_exp_LT,pol0_LT),RooArgList(fraction_LT));
-            RooRealVar pa_LT("pa_LT", "pa_LT", 1.450);
-            RooRealVar pb_LT("pb_LT", "pb_LT", 753);
-            RooRealVar pc_LT("pc_LT", "pc_LT", 0.339);
-            RooRealVar pd_LT("pd_LT", "pd_LT", 10.0);
-            RooGenericPdf histpdf_Eecl_signal_LT("g_LT", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(EeclFit, pa_LT, pb_LT, pc_LT, pd_LT));
+            RooPolynomial histpdf_Rarity_signal_LT("pol0_LT", "pol0_LT", RarityFit, RooArgList());
             RooRealVar nsig("nsig", "n_{sig}", 26, nsig_min, nsig_max);
-            RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal_LT, nsig);
+            RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Rarity_signal_LT, nsig);
 
-//            RooRealVar p1_LT("p1_LT", "coeff #1_LT", 0.096);
-//            RooChebychev histpdf_Eecl_background_LT("histpdf_Eecl_background_LT", "histpdf_Eecl_background_LT", EeclFit, p1_LT);
-            RooRealVar m0b_LT("m0b_LT", "m0b_LT", 0.99637);
-            RooRealVar sigmab_LT("sigmab_LT", "sigmab_LT", 0.00143);
-            RooRealVar alphab_LT("alphab_LT", "alphab_LT", 0.0087);
-            RooRealVar nb_LT("nb_LT", "nb_LT", 0.35);
-            RooCBShape histpdf_Eecl_background_LT("genpdfb_LT", "genpdfb_LT", EeclFit, m0b_LT, sigmab_LT, alphab_LT, nb_LT);
+            RooRealVar pa_LT("pa_LT", "pa_LT", -1.883); // -2.286 -5 0
+            RooRealVar pb_LT("pb_LT", "pb_LT", 1.09); // 1.33 -5 5
+            RooGenericPdf histpdf_Rarity_background_LT("g_LT", "(1-@0)*exp(@0*@1+@0*@0*@0*@2)", RooArgList(RarityFit, pa_LT, pb_LT));
 
-            RooRealVar nbkg("nbkg", "number of background events", 1864, 1700, 2000);
-            RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background_LT, nbkg);
+            RooRealVar nbkg("nbkg", "number of background events", 1900, 1700, 2100);
+            RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Rarity_background_LT, nbkg);
 
             RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
 
@@ -1282,7 +1461,7 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
 
 }
 
-void LinearityTestSeparately(RooFitResult* r, RooRealVar EeclFit, int SIGNAL_num, double BKG_num) {
+void LinearityTestSeparately(RooFitResult* r, RooRealVar RarityFit, int SIGNAL_num, double BKG_num) {
     const int LT_iterate_number = 1000;
 
     RooArgSet fitargs = r->floatParsFinal();
@@ -1316,16 +1495,16 @@ void LinearityTestSeparately(RooFitResult* r, RooRealVar EeclFit, int SIGNAL_num
         RooRealVar pb_fix("pb_fix", "pb_fix", 753);
         RooRealVar pc_fix("pc_fix", "pc_fix", 0.339);
         RooRealVar pd_fix("pd_fix", "pd_fix", 10.0);
-        RooGenericPdf histpdf_Eecl_signal_fix("g_fix", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(EeclFit, pa_fix, pb_fix, pc_fix, pd_fix));
-        RooDataSet* d1 = histpdf_Eecl_signal_fix.generate(EeclFit, SIGNAL_num);
+        RooGenericPdf histpdf_Rarity_signal_fix("g_fix", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(RarityFit, pa_fix, pb_fix, pc_fix, pd_fix));
+        RooDataSet* d1 = histpdf_Rarity_signal_fix.generate(RarityFit, SIGNAL_num);
 
         RooRealVar m0b_fix("m0b_fix", "m0b_fix", 0.99637);
         RooRealVar sigmab_fix("sigmab_fix", "sigmab_fix", 0.00143);
         RooRealVar alphab_fix("alphab_fix", "alphab_fix", 0.0087);
         RooRealVar nb_fix("nb_fix", "nb_fix", 0.35);
-        RooCBShape histpdf_Eecl_background_fix("genpdfb_fix", "genpdfb_fix", EeclFit, m0b_fix, sigmab_fix, alphab_fix, nb_fix);
+        RooCBShape histpdf_Rarity_background_fix("genpdfb_fix", "genpdfb_fix", RarityFit, m0b_fix, sigmab_fix, alphab_fix, nb_fix);
         int N_nbkg_int = round(BKG_num);
-        RooDataSet* genData = histpdf_Eecl_background_fix.generate(EeclFit, N_nbkg_int);
+        RooDataSet* genData = histpdf_Rarity_background_fix.generate(RarityFit, N_nbkg_int);
 
         genData->append(*d1);
 
@@ -1333,18 +1512,18 @@ void LinearityTestSeparately(RooFitResult* r, RooRealVar EeclFit, int SIGNAL_num
         RooRealVar pb_LT("pb_LT", "pb_LT", 753);
         RooRealVar pc_LT("pc_LT", "pc_LT", 0.339);
         RooRealVar pd_LT("pd_LT", "pd_LT", 10.0);
-        RooGenericPdf histpdf_Eecl_signal_LT("g_LT", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(EeclFit, pa_LT, pb_LT, pc_LT, pd_LT));
+        RooGenericPdf histpdf_Rarity_signal_LT("g_LT", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(RarityFit, pa_LT, pb_LT, pc_LT, pd_LT));
         RooRealVar nsig("nsig", "n_{sig}", 26, nsig_min, nsig_max);
-        RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal_LT, nsig);
+        RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Rarity_signal_LT, nsig);
 
         RooRealVar m0b_LT("m0b_LT", "m0b_LT", 0.99637);
         RooRealVar sigmab_LT("sigmab_LT", "sigmab_LT", 0.00143);
         RooRealVar alphab_LT("alphab_LT", "alphab_LT", 0.0087);
         RooRealVar nb_LT("nb_LT", "nb_LT", 0.35);
-        RooCBShape histpdf_Eecl_background_LT("genpdfb_LT", "genpdfb_LT", EeclFit, m0b_LT, sigmab_LT, alphab_LT, nb_LT);
+        RooCBShape histpdf_Rarity_background_LT("genpdfb_LT", "genpdfb_LT", RarityFit, m0b_LT, sigmab_LT, alphab_LT, nb_LT);
 
-        RooRealVar nbkg("nbkg", "number of background events", 1864, 1700, 2000);
-        RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background_LT, nbkg);
+        RooRealVar nbkg("nbkg", "number of background events", 1900, 1700, 2100);
+        RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Rarity_background_LT, nbkg);
 
         RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
 
@@ -1424,7 +1603,7 @@ void LinearityTestSeparately(RooFitResult* r, RooRealVar EeclFit, int SIGNAL_num
 
 }
 
-std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf ExtendedBKGPDF, RooRealVar EeclFit, double SINAL_num, double BKG_num) {
+std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf ExtendedBKGPDF, RooRealVar RarityFit, double SIGNAL_num, double BKG_num) {
     const int TOY_iterate_number = 1000;
 
     std::vector<double> n_sigs;
@@ -1432,29 +1611,23 @@ std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf Exte
 
     for (int j = 0; j < TOY_iterate_number; j++) {
         // produce toy MC sample
-        RooDataSet* d1 = ExtendedSIGNALPDF.generate(EeclFit, SINAL_num, false, true, "", false, true);
-        RooDataSet* genData = ExtendedBKGPDF.generate(EeclFit, BKG_num, false, true, "", false, true);
+        RooDataSet* d1 = ExtendedSIGNALPDF.generate(RarityFit, SIGNAL_num, false, true, "", false, true);
+        RooDataSet* genData = ExtendedBKGPDF.generate(RarityFit, BKG_num, false, true, "", false, true);
 
         genData->append(*d1);
-        //            RooDataHist gen_binned_data_Eecl("gen binned Eecl data", "gen binned Eecl data", EeclFit, *genData);
+        //            RooDataHist gen_binned_data_Rarity("gen binned Rarity data", "gen binned Rarity data", RarityFit, *genData);
 
                     // construct fitting function
-        RooRealVar pa_TOY("pa_TOY", "pa_TOY", 1.450);
-        RooRealVar pb_TOY("pb_TOY", "pb_TOY", 753);
-        RooRealVar pc_TOY("pc_TOY", "pc_TOY", 0.339);
-        RooRealVar pd_TOY("pd_TOY", "pd_TOY", 10.0);
-        RooGenericPdf histpdf_Eecl_signal_TOY("g_TOY", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(EeclFit, pa_TOY, pb_TOY, pc_TOY, pd_TOY));
-        RooRealVar nsig("nsig", "n_{sig}", 26, nsig_min, nsig_max);
-        RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal_TOY, nsig);
+        RooPolynomial histpdf_Rarity_signal_TOY("pol0_TOY", "pol0_TOY", RarityFit, RooArgList());
+        RooRealVar nsig("nsig", "n_{sig}", 26.0, nsig_min, nsig_max);
+        RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Rarity_signal_TOY, nsig);
 
-        RooRealVar m0b_TOY("m0b_TOY", "m0b_TOY", 0.99637);
-        RooRealVar sigmab_TOY("sigmab_TOY", "sigmab_TOY", 0.00143);
-        RooRealVar alphab_TOY("alphab_TOY", "alphab_TOY", 0.0087);
-        RooRealVar nb_TOY("nb_TOY", "nb_TOY", 0.35);
-        RooCBShape histpdf_Eecl_background_TOY("genpdfb_TOY", "genpdfb_TOY", EeclFit, m0b_TOY, sigmab_TOY, alphab_TOY, nb_TOY);
+        RooRealVar pa_TOY("pa_TOY", "pa_TOY", -1.883); // -2.286 -5 0
+        RooRealVar pb_TOY("pb_TOY", "pb_TOY", 1.09); // 1.33 -5 5
+        RooGenericPdf histpdf_Rarity_background_TOY("g_TOY", "(1-@0)*exp(@0*@1+@0*@0*@0*@2)", RooArgList(RarityFit, pa_TOY, pb_TOY));
 
-        RooRealVar nbkg("nbkg", "number of background events", 1864, 1700, 2000);
-        RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background_TOY, nbkg);
+        RooRealVar nbkg("nbkg", "number of background events", 1900, 1700, 2100); // 1900 1700 2100
+        RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Rarity_background_TOY, nbkg);
 
         RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
 
@@ -1497,7 +1670,7 @@ std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf Exte
     for (int i = 0; i < TOY_iterate_number; i++) {
         ToyMCnsig->Fill(n_sigs.at(i));
         ToyMCnsigerror->Fill(n_sigs_err.at(i));
-        ToyMCnsigpull->Fill((n_sigs.at(i) - SINAL_num)/ n_sigs_err.at(i));
+        ToyMCnsigpull->Fill((n_sigs.at(i) - SIGNAL_num)/ n_sigs_err.at(i));
     }
 
 //    gStyle->SetOptFit(11); gStyle->SetStatH(0.05);
@@ -1551,9 +1724,9 @@ double ConvertToTF1_smeared(double *xx, double *){
     return TGraph_smeared_Likelihood->Eval(xx[0]);
 }
 
-void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Eecl, RooAddPdf totalpdf, double uncertainty_additive, double uncertainty_multiplicative){
+void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Rarity, RooAddPdf totalpdf, double uncertainty_additive, double uncertainty_multiplicative){
     RooPlot* nllframe = nsig->frame();
-    RooAbsReal* nll = totalpdf.createNLL(*d_Eecl, NumCPU(40), Verbose(false));
+    RooAbsReal* nll = totalpdf.createNLL(*d_Rarity, NumCPU(40), Verbose(false));
     RooAbsReal* pll_nsig = nll->createProfile(*nsig);
     pll_nsig->plotOn(nllframe);
 
@@ -1569,7 +1742,7 @@ void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Eecl, RooAddPdf totalpdf, dou
 
     for(int i=0; i<Nbins; i++){
       x_pll[i] = xmin + ((xmax - xmin)*i)/Nbins;
-      if(isnan(pll_tf->Eval(x_pll[i])) == 0) y_pll[i] = 1.0/std::exp(pll_tf->Eval(x_pll[i]));
+      if(isnan(pll_tf->Eval(x_pll[i])) == 0) { y_pll[i] = 1.0/std::exp(pll_tf->Eval(x_pll[i])); printf("%lf %lf %lf\n",x_pll[i], pll_tf->Eval(x_pll[i]), y_pll[i]); }
       else y_pll[i] = 0.0;
     }
     TGraph_Likelihood = new TGraph(Nbins, x_pll, y_pll);
@@ -1628,13 +1801,23 @@ void GetLikelihood(RooRealVar* nsig, RooDataSet* d_Eecl, RooAddPdf totalpdf, dou
     delete c_pll_again;
 }
 
-void Signal_yield_fit_BDT()
+void Signal_yield_fit_BDT_Rarity_CLs()
 {
+    /* ====================================== */
+    // Seting CDF module
+    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu", Scale_Kplus);
+    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu", Scale_Kplusstar);
+    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu", Scale_Xsu_nonresonant);
+    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu", Scale_K0);
+    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu", Scale_K0star);
+    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu", Scale_Xsd_nonresonant);
+    /* ====================================== */
+
     // to extract signal yield
-    RooRealVar EeclFit("Eecl", "BDT_{1}", 0.85, 1.0, "");
-    EeclFit.setBins(EeclBins);
-    RooPlot* Eeclframe = EeclFit.frame(Bins(EeclBins), Title(" "));
-//    RooPlot* Eeclframe = EeclFit.frame(Title(" "));
+    RooRealVar RarityFit("Rarity", "Transformed BDT_{1}", 0.0, 1.0, "");
+    RarityFit.setBins(RarityBins);
+    RooPlot* Rarityframe = RarityFit.frame(Bins(RarityBins), Title(" "));
+//    RooPlot* Rarityframe = RarityFit.frame(Title(" "));
 
     // get data from root files
     double BKG_total_Num = 0;
@@ -1646,12 +1829,12 @@ void Signal_yield_fit_BDT()
     const char* MC_dirname_K0nunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
     const char* MC_dirname_K0starnunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
     const char* MC_dirname_Xsdnunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
-    LetsAdd(MC_dirname_Knunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Kplus);
-    LetsAdd(MC_dirname_Kstarnunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Kplusstar);
-    LetsAdd(MC_dirname_Xsununu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Xsu_nonresonant);
-    LetsAdd(MC_dirname_K0nunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_K0);
-    LetsAdd(MC_dirname_K0starnunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_K0star);
-    LetsAdd(MC_dirname_Xsdnunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Xsd_nonresonant);
+    LetsAdd_Rarity(MC_dirname_Knunu, &Rarity_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Kplus);
+    LetsAdd_Rarity(MC_dirname_Kstarnunu, &Rarity_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Kplusstar);
+    LetsAdd_Rarity(MC_dirname_Xsununu, &Rarity_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Xsu_nonresonant);
+    LetsAdd_Rarity(MC_dirname_K0nunu, &Rarity_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_K0);
+    LetsAdd_Rarity(MC_dirname_K0starnunu, &Rarity_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_K0star);
+    LetsAdd_Rarity(MC_dirname_Xsdnunu, &Rarity_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Xsd_nonresonant);
 
     const char* MC_dirname_CHG = "./CHG_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     const char* MC_dirname_MIX = "./MIX_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
@@ -1659,12 +1842,12 @@ void Signal_yield_fit_BDT()
     const char* MC_dirname_DDBAR = "./DDBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     const char* MC_dirname_SSBAR = "./SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     const char* MC_dirname_CHARM = "./CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    LetsAdd(MC_dirname_CHG, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_MIX, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_UUBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_DDBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_SSBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
-    LetsAdd(MC_dirname_CHARM, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd_Rarity(MC_dirname_CHG, &Rarity_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd_Rarity(MC_dirname_MIX, &Rarity_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd_Rarity(MC_dirname_UUBAR, &Rarity_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd_Rarity(MC_dirname_DDBAR, &Rarity_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd_Rarity(MC_dirname_SSBAR, &Rarity_MC_background, &weight_MC_background, &info_MC_background);
+    LetsAdd_Rarity(MC_dirname_CHARM, &Rarity_MC_background, &weight_MC_background, &info_MC_background);
 
     const char* DATA_dirname_Knunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
     const char* DATA_dirname_Kstarnunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
@@ -1672,12 +1855,12 @@ void Signal_yield_fit_BDT()
     const char* DATA_dirname_K0nunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
     const char* DATA_dirname_K0starnunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
     const char* DATA_dirname_Xsdnunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
-    const double Knunu_total_num = LetsAdd(DATA_dirname_Knunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplus);
-    const double Kstarnunu_total_num = LetsAdd(DATA_dirname_Kstarnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplusstar);
-    const double Xsununu_total_num = LetsAdd(DATA_dirname_Xsununu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsu_nonresonant);
-    const double K0nunu_total_num = LetsAdd(DATA_dirname_K0nunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0);
-    const double K0starnunu_total_num = LetsAdd(DATA_dirname_K0starnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0star);
-    const double Xsdnunu_total_num = LetsAdd(DATA_dirname_Xsdnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsd_nonresonant);
+    const double Knunu_total_num = LetsAdd_Rarity(DATA_dirname_Knunu, &Rarity_DATA, &weight_DATA, &info_DATA, Scale_Kplus);
+    const double Kstarnunu_total_num = LetsAdd_Rarity(DATA_dirname_Kstarnunu, &Rarity_DATA, &weight_DATA, &info_DATA, Scale_Kplusstar);
+    const double Xsununu_total_num = LetsAdd_Rarity(DATA_dirname_Xsununu, &Rarity_DATA, &weight_DATA, &info_DATA, Scale_Xsu_nonresonant);
+    const double K0nunu_total_num = LetsAdd_Rarity(DATA_dirname_K0nunu, &Rarity_DATA, &weight_DATA, &info_DATA, Scale_K0);
+    const double K0starnunu_total_num = LetsAdd_Rarity(DATA_dirname_K0starnunu, &Rarity_DATA, &weight_DATA, &info_DATA, Scale_K0star);
+    const double Xsdnunu_total_num = LetsAdd_Rarity(DATA_dirname_Xsdnunu, &Rarity_DATA, &weight_DATA, &info_DATA, Scale_Xsd_nonresonant);
     SIGNAL_total_Num = Knunu_total_num + Kstarnunu_total_num + Xsununu_total_num + K0nunu_total_num + K0starnunu_total_num + Xsdnunu_total_num;
 
     const char* DATA_dirname_CHG = "./CHG_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
@@ -1686,138 +1869,42 @@ void Signal_yield_fit_BDT()
     const char* DATA_dirname_DDBAR = "./DDBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     const char* DATA_dirname_SSBAR = "./SSBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     const char* DATA_dirname_CHARM = "./CHARM_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    BKG_total_Num += LetsAdd(DATA_dirname_CHG, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
-    BKG_total_Num += LetsAdd(DATA_dirname_MIX, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
-    BKG_total_Num += LetsAdd(DATA_dirname_UUBAR, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
-    BKG_total_Num += LetsAdd(DATA_dirname_DDBAR, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
-    BKG_total_Num += LetsAdd(DATA_dirname_SSBAR, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
-    BKG_total_Num += LetsAdd(DATA_dirname_CHARM, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
+    BKG_total_Num += LetsAdd_Rarity(DATA_dirname_CHG, &Rarity_DATA, &weight_DATA, &info_DATA);
+    BKG_total_Num += LetsAdd_Rarity(DATA_dirname_MIX, &Rarity_DATA, &weight_DATA, &info_DATA);
+    BKG_total_Num += LetsAdd_Rarity(DATA_dirname_UUBAR, &Rarity_DATA, &weight_DATA, &info_DATA);
+    BKG_total_Num += LetsAdd_Rarity(DATA_dirname_DDBAR, &Rarity_DATA, &weight_DATA, &info_DATA);
+    BKG_total_Num += LetsAdd_Rarity(DATA_dirname_SSBAR, &Rarity_DATA, &weight_DATA, &info_DATA);
+    BKG_total_Num += LetsAdd_Rarity(DATA_dirname_CHARM, &Rarity_DATA, &weight_DATA, &info_DATA);
 
 
     // define frame and get ready to make pdfs
-    Eecl_DATA.setBins(EeclBins);
-    RooDataSet* d_Eecl = (RooDataSet*)info_DATA.reduce(RooArgSet(Eecl_DATA));
-    RooDataHist binned_data_Eecl("binned Eecl data", "binned Eecl data", EeclFit, *d_Eecl);
+    Rarity_DATA.setBins(RarityBins);
+    RooDataSet* d_Rarity = (RooDataSet*)info_DATA.reduce(RooArgSet(Rarity_DATA));
+    // RooDataHist binned_data_Rarity("binned Rarity data", "binned Rarity data", RarityFit, *d_Rarity);
 
-    Eecl_MC_signal.setBins(EeclBins);
-    Eecl_MC_background.setBins(EeclBins);
+    Rarity_MC_signal.setBins(RarityBins);
+    Rarity_MC_background.setBins(RarityBins);
 
-    // define pdf and extended pdf
-//    RooRealVar m0("m0", "m0", 0.577);
-//    RooRealVar sigma("sigma", "sigma", 0.437);
-//    RooRealVar alpha("alpha", "alpha", -1.10);
-//    RooRealVar n("n", "n", 130);
-//    RooCBShape histpdf_Eecl_signal("genpdfs", "genpdfs", EeclFit, m0, sigma, alpha, n);
+    RooPolynomial histpdf_Rarity_signal("pol0", "pol0", RarityFit, RooArgList());
 
-//    RooDataSet* dataset_Eecl_MC_signal = (RooDataSet*)info_MC_signal.reduce(RooArgSet(Eecl_MC_signal));
-//    RooDataHist hist_Eecl_MC_signal("hist_Eecl_MC_signal", "histogram for Eecl of MC signal samples", EeclFit, *dataset_Eecl_MC_signal);
-//    RooHistPdf histpdf_Eecl_signal("histpdf_Eecl_signal", "histpdf_Eecl_signal", EeclFit, hist_Eecl_MC_signal, 0);
+    RooRealVar nsig("nsig", "n_{sig}", 26.0, nsig_min, nsig_max);
+    RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Rarity_signal, nsig);
 
-//    RooRealVar cexp("cexp", "cexp", 38.13); // 51.93, 79.96 for K+,
-//    RooRealVar fraction("fraction","fraction", 0.6480); //0.7061, 0.8483 for K+
-//    RooRealVar cexp("cexp", "cexp", 46.45, 35, 100);
-//    RooRealVar fraction("fraction","fraction",0.6842, 0.0, 1.0);
-//    RooPolynomial pol0("pol0","pol0",EeclFit,RooArgList());
-//    RooExponential SIGNAL_exp("genpdfs", "genpdfs", EeclFit, cexp);
-//    RooAddPdf histpdf_Eecl_signal("histpdf_Eecl_signal","pol0+exp",RooArgList(SIGNAL_exp,pol0),RooArgList(fraction));
+//    RooRealVar pa("pa", "pa", -5.56);
+//    RooRealVar pb("pb", "pb", -3.079);
+//    RooGenericPdf histpdf_Rarity_background("g", "exp(@0*@1)+exp(@0*@0*@2)", RooArgList(RarityFit, pa, pb));
 
-    RooRealVar pa("pa", "pa", 1.450);
-    RooRealVar pb("pb", "pb", 753);
-    RooRealVar pc("pc", "pc", 0.339);
-    RooRealVar pd("pd", "pd", 10.0);
-    RooGenericPdf histpdf_Eecl_signal("g", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(EeclFit, pa, pb, pc, pd));
+    RooRealVar pa("pa", "pa", -1.883); // -2.286 -5 0
+    RooRealVar pb("pb", "pb", 1.09); // 1.33 -5 5
+    RooGenericPdf histpdf_Rarity_background("g", "(1-@0)*exp(@0*@1+@0*@0*@0*@2)", RooArgList(RarityFit, pa, pb));
 
-    RooRealVar nsig("nsig", "n_{sig}", 26, nsig_min, nsig_max);
-    RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal, nsig);
-
-    //    RooRealVar p1("p1","coeff #1", 1.65, -10, 15.0);
-    //    RooPolynomial bkg_linear("bkg_linear","bkg_linear", EeclFit, RooArgList(p1));
-//        RooRealVar gausmean("gausmean","",1.5, 1.0, 2.0);
-//        RooRealVar gauswidth("gauswidth","", 0.547, 0.2, 2.0);
-//        RooGaussian histpdf_Eecl_background("bkg_gauss","bkg_gauss",EeclFit,gausmean,gauswidth);
-    //    RooRealVar bkgfrac("bkgfrac","fraction in bkg",0.589,0.,1.);   
-    //    RooAddPdf histpdf_Eecl_background("int","int",RooArgList(bkg_gauss,bkg_linear),bkgfrac);
-//        RooRealVar p1("p1","coeff #1", 153);
-//        RooRealVar p2("p2","coeff #2", -48);
-//        RooRealVar p3("p3","coeff #3", 2.6);
-//        RooRealVar p1("p1","coeff #1", 153, 40.0, 190);
-//        RooRealVar p2("p2","coeff #2", -48, -80, -30);
-//        RooRealVar p3("p3","coeff #3", 2.6, -4.0, 10.0);
-
-//    RooRealVar p1("p1", "coeff #1", 23.4);
-//       RooRealVar p2("p2","coeff #2", -10.5);
-//    RooRealVar p3("p3", "coeff #3", 1.2);
-//        RooRealVar p1("p1","coeff #1", 90, 20, 1000.0);
-//    RooRealVar p2("p2", "coeff #2", -10, -70, 10);
-//        RooRealVar p3("p3","coeff #3", 1.5, -20, 50);
-//     RooPolynomial histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, RooArgList(p1, p2, p3, p4));
-
-//    RooRealVar m0b("m0b", "m0b", 0.9873); // 0.9880 for K
-//    RooRealVar sigmab("sigmab", "sigmab", 0.0088); // 0.0083 for K
-//    RooRealVar alphab("alphab", "alphab", 0.018); // 0.172 for B->K nu nubar
-//    RooRealVar nb("nb", "nb", 79.48);
-    RooRealVar m0b("m0b", "m0b", 0.99637);
-    RooRealVar sigmab("sigmab", "sigmab", 0.00143);
-    RooRealVar alphab("alphab", "alphab", 0.0087);
-    RooRealVar nb("nb", "nb", 0.35);
-    RooCBShape histpdf_Eecl_background("genpdfb", "genpdfb", EeclFit, m0b, sigmab, alphab, nb);
-
-//    RooRealVar m0b("m0b", "m0b", 1.464);
-//    RooRealVar sigmab("sigmab", "sigmab", 0.716);
-//    RooRealVar alphab("alphab", "alphab", -0.785);
-//    RooRealVar nb("nb", "nb", 137);
-//    RooRealVar meanb("meanb", "meanb", 0.98, 0.8, 1.1);
-//    RooRealVar sigmaLb("sigmaLb", "sigmaLb", 0.1, 0.0, 1.5);
-//    RooRealVar sigmaRb("sigmaRb", "sigmaRb", 0.1, 0.0, 1.5);
-//    RooBifurGauss histpdf_Eecl_background("genpdfb", "genpdfb", EeclFit, meanb, sigmaLb, sigmaRb);
-
-//        RooRealVar p1("p1","coeff #1", 0.068);
-//        RooRealVar p2("p2","coeff #2", -0.0952);
-//        RooRealVar p3("p3","coeff #3", 0.264);
-//       RooRealVar p1("p1", "coeff #1", 6.65e-02, -2.0, 2.0);
-//        RooRealVar p2("p2", "coeff #2", -8.67e-01, -9.0, 3.0);
-//        RooRealVar p3("p3", "coeff #3", 8.73e-02, -2.5, 8.5);
-//        RooChebychev histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, RooArgList(p1, p2));
-
-//    RooDataSet* dataset_Eecl_MC_background = (RooDataSet*)info_MC_background.reduce(RooArgSet(Eecl_MC_background));
-//    RooDataHist hist_Eecl_MC_background("hist_Eecl_MC_background", "histogram for Eecl of MC background samples", EeclFit, *dataset_Eecl_MC_background);
-//    RooHistPdf histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, hist_Eecl_MC_background, 0);
-
-//    RooRealVar p1("p1", "coeff #1", 39.89);
-//       RooRealVar p2("p2","coeff #2", -26.03);
-//        RooRealVar p1("p1","coeff #1", 40, 0.0, 4000.0);
-//    RooRealVar p2("p2", "coeff #2", -10, -1000, -1);
-//    RooPolynomial histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, RooArgList(p1, p2));
-
-//    RooRealVar p1("p1", "coeff #1", 39.89);
-//        RooRealVar p1("p1","coeff #1", 20000);
-//    RooPolynomial histpdf_Eecl_background("histpdf_Eecl_background", "histpdf_Eecl_background", EeclFit, p1);
-
-//  RooRealVar p1("p1", "coeff #1", 0.3,-10.0,10.0);
-//  RooChebychev pol1("pol1", "pol1", EeclFit, p1);
-
-//    RooRealVar poly1("poly1", "poly1", 0, -10, 100);
-//    RooPolynomial pol1("pol1","pol1",EeclFit,RooArgList(poly1));
-
-//    RooRealVar m0("m0", "m0", 1); // 1
-//    RooRealVar c0("c0", "c0", -1.703); // -6.79
-//    RooRealVar p0("p0", "p0", 0.245); // 0.35
-//    RooArgusBG histpdf_Eecl_background("histpdf_Eecl_background_ARGUS", "histpdf_Eecl_background_ARGUS", EeclFit, m0, c0, p0);
-
-//        RooRealVar gausmean("gausmean","", 0.896);
-//        RooRealVar gauswidth("gauswidth","", 0.047);
-//        RooGaussian histpdf_gauss_background("bkg_gauss","bkg_gauss",EeclFit,gausmean,gauswidth);
-//        RooRealVar bkgfrac("bkgfrac","fraction in bkg",0.36,0.0,1.0);
-
-//    RooAddPdf histpdf_Eecl_background_a("histpdf_Eecl_background","",RooArgList(histpdf_Eecl_background, pol1),RooArgList(bkgfrac));
-
-    RooRealVar nbkg("nbkg", "number of background events", 1864, 1700, 2000);
-    RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background, nbkg);
+    RooRealVar nbkg("nbkg", "number of background events", 1900, 1700, 2100); // 1900 1700 2100
+    RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Rarity_background, nbkg);
 
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
 
     // fit
-    RooFitResult* r = totalpdf.fitTo(*d_Eecl, Save(), SumW2Error(true));
+    RooFitResult* r = totalpdf.fitTo(*d_Rarity, Save(), SumW2Error(true));
     RooArgSet fitargs = r->floatParsFinal();
     TIterator* iter(fitargs.createIterator());
 
@@ -1835,25 +1922,33 @@ void Signal_yield_fit_BDT()
         }
     }
 
-
     // Draw result
-//    d_Eecl->plotOn(Eeclframe, DataError(RooAbsData::Poisson));
-    d_Eecl->plotOn(Eeclframe);
-    totalpdf.plotOn(Eeclframe, LineColor(kRed));
-    totalpdf.plotOn(Eeclframe, Components(esig), LineColor(kBlue), LineStyle(kDashed));
-    totalpdf.plotOn(Eeclframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed));
-    totalpdf.paramOn(Eeclframe);
-
-    TCanvas* c = new TCanvas("Eecl", "Eecl", 900, 600);
-    gPad->SetLeftMargin(0.15); Eeclframe->GetYaxis()->SetTitleOffset(1.4); Eeclframe->Draw(); c->SaveAs("Eecl_distribution.png");
+//    d_Rarity->plotOn(Rarityframe, DataError(RooAbsData::Poisson));
+    d_Rarity->plotOn(Rarityframe, DataError(RooAbsData::SumW2));
+    totalpdf.plotOn(Rarityframe, LineColor(kRed));
+    totalpdf.plotOn(Rarityframe, Components(esig), LineColor(kBlue), LineStyle(kDashed));
+    totalpdf.plotOn(Rarityframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed));
+    totalpdf.paramOn(Rarityframe);
+    
+    TCanvas* c = new TCanvas("Rarity", "Rarity", 900, 600);
+    gPad->SetLeftMargin(0.15); Rarityframe->GetYaxis()->SetTitleOffset(1.4); Rarityframe->Draw(); c->SaveAs("Rarity_distribution.png");
     delete c;
 
     
     /* ============== Linearity test ============== */
-    LinearityTest(r, EeclFit, BKG_total_Num);
+    //LinearityTest(r, RarityFit, BKG_total_Num);
 
     /* ============== toy MC study ============== */
-    std::vector<double> pull_result = ToyMCstudy(esig, ebkg, EeclFit, SIGNAL_total_Num, BKG_total_Num); // const, mean, sigma
+    RooPolynomial histpdf_Rarity_signal_TOY_basis("pol0_TOY_basis", "pol0_TOY_basis", RarityFit, RooArgList());
+    RooRealVar nsig_TOY_basis("nsig_TOY_basis", "n_{sig}_TOY_basis", SIGNAL_total_Num);
+    RooExtendPdf esig_TOY_basis("esignal_TOY_basis", "extended signal p.d.f_TOY_basis", histpdf_Rarity_signal_TOY_basis, nsig_TOY_basis);
+
+    RooRealVar pa_TOY_basis("pa_TOY_basis", "pa_TOY_basis", -1.883); // -2.29 -5 0
+    RooRealVar pb_TOY_basis("pb_TOY_basis", "pb_TOY_basis", 1.09); // 1.33 -5 5
+    RooGenericPdf histpdf_Rarity_background_TOY_basis("g_TOY_basis", "(1-@0)*exp(@0*@1+@0*@0*@0*@2)", RooArgList(RarityFit, pa_TOY_basis, pb_TOY_basis));
+    RooRealVar nbkg_TOY_basis("nbkg_TOY_basis", "number of background events_TOY_basis", BKG_total_Num); // 1900 1700 2100
+    RooExtendPdf ebkg_TOY_basis("ebkg_TOY_basis", "extended background p.d.f_TOY_basis", histpdf_Rarity_background_TOY_basis, nbkg_TOY_basis);
+    std::vector<double> pull_result = ToyMCstudy(esig_TOY_basis, ebkg_TOY_basis, RarityFit, SIGNAL_total_Num, BKG_total_Num); // const, mean, sigma
 
     /* ============== Uncertainty Calculation ============== */
     printf("=================== start to calculate uncertainties ===================\n");
@@ -1893,10 +1988,43 @@ void Signal_yield_fit_BDT()
     );
 
     /* ============== Print profile likelihood  ============== */
-    GetLikelihood(&nsig, d_Eecl, totalpdf, total_uncertainty_add, total_uncertainty_mul);
+    GetLikelihood(&nsig, d_Rarity, totalpdf, total_uncertainty_add, total_uncertainty_mul);
 
     /* ============== End!  ============== */
     printf("nsig: %lf +- %lf\n",nsig_val, nsig_err);
     printf("total additive %lf\n", total_uncertainty_add);
     printf("total multiplicative factor %lf\n", total_uncertainty_mul);
+
+    /* ============== Work space  ============== */
+    RooWorkspace* w = new RooWorkspace("w", "workspace");
+
+    // obs
+    w->factory("Rarity[0,1]");
+
+    // pdfs
+    w->factory("EXPR::bkg('(1-Rarity)*exp(Rarity*a+Rarity*Rarity*b)',Rarity,a[-1.883],b[1.09])");
+    w->factory("Polynomial::sig(Rarity)");
+
+    // systematics
+    w->factory("Gaussian::add_sub(0,alpha[-10.0,10.0],1.39)");
+    w->factory("Gaussian::mul_sub(0,beta[-0.5,0.5],0.0555)");
+
+    w->factory("sig_eff[0.0014]");
+    w->factory("NBB[330000000]");
+    w->factory("sigBR[0.00008, 0.0, 0.0005]");
+    w->factory("prod::sig_yield(2,NBB,sig_eff,sigBR)");
+    w->factory("expr::sig_yield_with_unc('sig_yield*(1+beta)+alpha', sig_yield, alpha, beta)");
+    w->factory("bkg_yield[1900, 1700, 2100]");
+    w->factory("SUM::model(sig_yield*sig, bkg_yield*bkg)");
+    w->factory("PROD::model_with_unc(model,add_sub,mul_sub)");
+
+    RooStats::ModelConfig mc("ModelConfig", w);
+    mc.SetPdf(*w->pdf("model_with_unc"));
+    mc.SetParametersOfInterest(*w->var("sigBR"));
+    mc.SetNuisanceParameters(RooArgSet(*w->var("alpha"), *w->var("beta"), *w->var("bkg_yield")));
+
+    w->import(*d_Rarity, RooFit::Rename("observed_data"));
+    w->import(mc);
+    w->Print();
+    w->writeToFile("CLs_test.root");
 }

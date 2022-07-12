@@ -102,8 +102,8 @@ using std::to_string;
 
 # define EeclBins 100
 
-# define nsig_min (-100)
-# define nsig_max 140
+# define nsig_min (-280)
+# define nsig_max 200
 
 /* ====================================== */
 // Rarity module
@@ -210,7 +210,7 @@ public:
     }
     double GetCDFvalue(float value) {
         const double max = 1.0;
-        const double min = 0.92;
+        const double min = 0.85;
 
         auto larger_or_equal = std::lower_bound(m_values.begin(), m_values.end(), value);
         auto larger = std::upper_bound(m_values.begin(), m_values.end(), value);
@@ -1199,7 +1199,7 @@ void LetsCalculateUncertainties(const char* dirname, double weight) {
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B02Ks0PicPicPi0
                 ntracks.push_back(2);
-                npi0s.push_back(0);
+                npi0s.push_back(1);
                 dmID.push_back(1);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B02KcPicPicPicPi0
@@ -1361,7 +1361,7 @@ double GetEvtNum(const char* dirname, double weight_var = 1.0) {
 }
 
 void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
-    const int LT_number = 30;
+    const int LT_number = 35;
     const int LT_iterate_number = 1000;
 
     RooArgSet fitargs = r->floatParsFinal();
@@ -1393,25 +1393,13 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
 
         for (int j = 0; j < LT_iterate_number; j++) {
             // produce toy MC sample
-//            RooRealVar cexp_fix("cexp_fix", "cexp_fix", 46.3);
-//            RooRealVar fraction_fix("fraction_fix","fraction_fix",0.6837);
-//            RooPolynomial pol0_fix("pol0_fix","pol0_fix",EeclFit,RooArgList());
-//            RooExponential SIGNAL_exp_fix("genpdfs_fix", "genpdfs_fix", EeclFit, cexp_fix);
-//            RooAddPdf histpdf_Eecl_signal_fix("histpdf_Eecl_signal_fix","pol0+exp_fix",RooArgList(SIGNAL_exp_fix,pol0_fix),RooArgList(fraction_fix));
-            RooRealVar pa_fix("pa_fix", "pa_fix", 1.450);
-            RooRealVar pb_fix("pb_fix", "pb_fix", 753);
-            RooRealVar pc_fix("pc_fix", "pc_fix", 0.339);
-            RooRealVar pd_fix("pd_fix", "pd_fix", 10.0);
-            RooGenericPdf histpdf_Eecl_signal_fix("g_fix", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(EeclFit, pa_fix, pb_fix, pc_fix, pd_fix));
+
+            RooPolynomial histpdf_Eecl_signal_fix("pol0_fix", "pol0_fix", EeclFit, RooArgList());
             RooDataSet* d1 = histpdf_Eecl_signal_fix.generate(EeclFit, i);
 
-//            RooRealVar p1_fix("p1_fix", "coeff #1_fix", 0.096);
-//            RooChebychev histpdf_Eecl_background_fix("histpdf_Eecl_background_fix", "histpdf_Eecl_background_fix", EeclFit, p1_fix);
-            RooRealVar m0b_fix("m0b_fix", "m0b_fix", 0.99637);
-            RooRealVar sigmab_fix("sigmab_fix", "sigmab_fix", 0.00143);
-            RooRealVar alphab_fix("alphab_fix", "alphab_fix", 0.0087);
-            RooRealVar nb_fix("nb_fix", "nb_fix", 0.35);
-            RooCBShape histpdf_Eecl_background_fix("genpdfb_fix", "genpdfb_fix", EeclFit, m0b_fix, sigmab_fix, alphab_fix, nb_fix);
+            RooRealVar pa_fix("pa_fix", "pa_fix", -1.883); // -2.286 -5 0
+            RooRealVar pb_fix("pb_fix", "pb_fix", 1.09); // 1.33 -5 5
+            RooGenericPdf histpdf_Eecl_background_fix("g_fix", "(1-@0)*exp(@0*@1+@0*@0*@0*@2)", RooArgList(EeclFit, pa_fix, pb_fix));
             int N_nbkg_int = round(BKG_num);
             RooDataSet* genData = histpdf_Eecl_background_fix.generate(EeclFit, N_nbkg_int);
 
@@ -1419,28 +1407,15 @@ void LinearityTest(RooFitResult* r, RooRealVar EeclFit, double BKG_num) {
 //            RooDataHist gen_binned_data_Eecl("gen binned Eecl data", "gen binned Eecl data", EeclFit, *genData);
 
             // construct fitting function
-//            RooRealVar cexp_LT("cexp_LT", "cexp_LT", 46.3);
-//            RooRealVar fraction_LT("fraction_LT","fraction_LT",0.6837);
-//            RooPolynomial pol0_LT("pol0_LT","pol0_LT",EeclFit,RooArgList());
-//            RooExponential SIGNAL_exp_LT("genpdfs_LT", "genpdfs_LT", EeclFit, cexp_LT);
-//            RooAddPdf histpdf_Eecl_signal_LT("histpdf_Eecl_signal_LT","pol0+exp_LT",RooArgList(SIGNAL_exp_LT,pol0_LT),RooArgList(fraction_LT));
-            RooRealVar pa_LT("pa_LT", "pa_LT", 1.450);
-            RooRealVar pb_LT("pb_LT", "pb_LT", 753);
-            RooRealVar pc_LT("pc_LT", "pc_LT", 0.339);
-            RooRealVar pd_LT("pd_LT", "pd_LT", 10.0);
-            RooGenericPdf histpdf_Eecl_signal_LT("g_LT", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(EeclFit, pa_LT, pb_LT, pc_LT, pd_LT));
+            RooPolynomial histpdf_Eecl_signal_LT("pol0_LT", "pol0_LT", EeclFit, RooArgList());
             RooRealVar nsig("nsig", "n_{sig}", 26, nsig_min, nsig_max);
             RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal_LT, nsig);
 
-//            RooRealVar p1_LT("p1_LT", "coeff #1_LT", 0.096);
-//            RooChebychev histpdf_Eecl_background_LT("histpdf_Eecl_background_LT", "histpdf_Eecl_background_LT", EeclFit, p1_LT);
-            RooRealVar m0b_LT("m0b_LT", "m0b_LT", 0.99637);
-            RooRealVar sigmab_LT("sigmab_LT", "sigmab_LT", 0.00143);
-            RooRealVar alphab_LT("alphab_LT", "alphab_LT", 0.0087);
-            RooRealVar nb_LT("nb_LT", "nb_LT", 0.35);
-            RooCBShape histpdf_Eecl_background_LT("genpdfb_LT", "genpdfb_LT", EeclFit, m0b_LT, sigmab_LT, alphab_LT, nb_LT);
+            RooRealVar pa_LT("pa_LT", "pa_LT", -1.883); // -2.286 -5 0
+            RooRealVar pb_LT("pb_LT", "pb_LT", 1.09); // 1.33 -5 5
+            RooGenericPdf histpdf_Eecl_background_LT("g_LT", "(1-@0)*exp(@0*@1+@0*@0*@0*@2)", RooArgList(EeclFit, pa_LT, pb_LT));
 
-            RooRealVar nbkg("nbkg", "number of background events", 1864, 1700, 2000);
+            RooRealVar nbkg("nbkg", "number of background events", 1900, 1700, 2100);
             RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background_LT, nbkg);
 
             RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -1680,7 +1655,7 @@ void LinearityTestSeparately(RooFitResult* r, RooRealVar EeclFit, int SIGNAL_num
 
 }
 
-std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf ExtendedBKGPDF, RooRealVar EeclFit, double SINAL_num, double BKG_num) {
+std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf ExtendedBKGPDF, RooRealVar EeclFit, double SIGNAL_num, double BKG_num) {
     const int TOY_iterate_number = 1000;
 
     std::vector<double> n_sigs;
@@ -1688,28 +1663,22 @@ std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf Exte
 
     for (int j = 0; j < TOY_iterate_number; j++) {
         // produce toy MC sample
-        RooDataSet* d1 = ExtendedSIGNALPDF.generate(EeclFit, SINAL_num, false, true, "", false, true);
+        RooDataSet* d1 = ExtendedSIGNALPDF.generate(EeclFit, SIGNAL_num, false, true, "", false, true);
         RooDataSet* genData = ExtendedBKGPDF.generate(EeclFit, BKG_num, false, true, "", false, true);
 
         genData->append(*d1);
         //            RooDataHist gen_binned_data_Eecl("gen binned Eecl data", "gen binned Eecl data", EeclFit, *genData);
 
                     // construct fitting function
-        RooRealVar pa_TOY("pa_TOY", "pa_TOY", 1.450);
-        RooRealVar pb_TOY("pb_TOY", "pb_TOY", 753);
-        RooRealVar pc_TOY("pc_TOY", "pc_TOY", 0.339);
-        RooRealVar pd_TOY("pd_TOY", "pd_TOY", 10.0);
-        RooGenericPdf histpdf_Eecl_signal_TOY("g_TOY", "((1-exp(@2*(@0-1)))^@1)*((1-@0)^(@3-1))*exp(@0^@4)", RooArgList(EeclFit, pa_TOY, pb_TOY, pc_TOY, pd_TOY));
-        RooRealVar nsig("nsig", "n_{sig}", 26, nsig_min, nsig_max);
+        RooPolynomial histpdf_Eecl_signal_TOY("pol0_TOY", "pol0_TOY", EeclFit, RooArgList());
+        RooRealVar nsig("nsig", "n_{sig}", 26.0, nsig_min, nsig_max);
         RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal_TOY, nsig);
 
-        RooRealVar m0b_TOY("m0b_TOY", "m0b_TOY", 0.99637);
-        RooRealVar sigmab_TOY("sigmab_TOY", "sigmab_TOY", 0.00143);
-        RooRealVar alphab_TOY("alphab_TOY", "alphab_TOY", 0.0087);
-        RooRealVar nb_TOY("nb_TOY", "nb_TOY", 0.35);
-        RooCBShape histpdf_Eecl_background_TOY("genpdfb_TOY", "genpdfb_TOY", EeclFit, m0b_TOY, sigmab_TOY, alphab_TOY, nb_TOY);
+        RooRealVar pa_TOY("pa_TOY", "pa_TOY", -1.883); // -2.286 -5 0
+        RooRealVar pb_TOY("pb_TOY", "pb_TOY", 1.09); // 1.33 -5 5
+        RooGenericPdf histpdf_Eecl_background_TOY("g_TOY", "(1-@0)*exp(@0*@1+@0*@0*@0*@2)", RooArgList(EeclFit, pa_TOY, pb_TOY));
 
-        RooRealVar nbkg("nbkg", "number of background events", 1864, 1700, 2000);
+        RooRealVar nbkg("nbkg", "number of background events", 1900, 1700, 2100); // 1900 1700 2100
         RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background_TOY, nbkg);
 
         RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -1753,7 +1722,7 @@ std::vector<double> ToyMCstudy(RooExtendPdf ExtendedSIGNALPDF, RooExtendPdf Exte
     for (int i = 0; i < TOY_iterate_number; i++) {
         ToyMCnsig->Fill(n_sigs.at(i));
         ToyMCnsigerror->Fill(n_sigs_err.at(i));
-        ToyMCnsigpull->Fill((n_sigs.at(i) - SINAL_num)/ n_sigs_err.at(i));
+        ToyMCnsigpull->Fill((n_sigs.at(i) - SIGNAL_num)/ n_sigs_err.at(i));
     }
 
 //    gStyle->SetOptFit(11); gStyle->SetStatH(0.05);
@@ -1888,12 +1857,12 @@ void Signal_yield_fit_BDT_Rarity()
 {
     /* ====================================== */
     // Seting CDF module
-    cdf.initbypath("./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu", Scale_Kplus);
-    cdf.initbypath("./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu", Scale_Kplusstar);
-    cdf.initbypath("./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu", Scale_Xsu_nonresonant);
-    cdf.initbypath("./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu", Scale_K0);
-    cdf.initbypath("./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu", Scale_K0star);
-    cdf.initbypath("./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu", Scale_Xsd_nonresonant);
+    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu", Scale_Kplus);
+    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu", Scale_Kplusstar);
+    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu", Scale_Xsu_nonresonant);
+    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu", Scale_K0);
+    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu", Scale_K0star);
+    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu", Scale_Xsd_nonresonant);
     /* ====================================== */
 
     // to extract signal yield
@@ -1906,12 +1875,12 @@ void Signal_yield_fit_BDT_Rarity()
     double BKG_total_Num = 0;
     double SIGNAL_total_Num = 0;
 
-    const char* MC_dirname_Knunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* MC_dirname_Kstarnunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* MC_dirname_Xsununu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* MC_dirname_K0nunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* MC_dirname_K0starnunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* MC_dirname_Xsdnunu = "./SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* MC_dirname_Knunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* MC_dirname_Kstarnunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
+    const char* MC_dirname_Xsununu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
+    const char* MC_dirname_K0nunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
+    const char* MC_dirname_K0starnunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
+    const char* MC_dirname_Xsdnunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
     LetsAdd_Rarity(MC_dirname_Knunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Kplus);
     LetsAdd_Rarity(MC_dirname_Kstarnunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Kplusstar);
     LetsAdd_Rarity(MC_dirname_Xsununu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Xsu_nonresonant);
@@ -1919,12 +1888,12 @@ void Signal_yield_fit_BDT_Rarity()
     LetsAdd_Rarity(MC_dirname_K0starnunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_K0star);
     LetsAdd_Rarity(MC_dirname_Xsdnunu, &Mbc_MC_signal, &Eecl_MC_signal, &weight_MC_signal, &info_MC_signal, Scale_Xsd_nonresonant);
 
-    const char* MC_dirname_CHG = "./CHG_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_MIX = "./MIX_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_UUBAR = "./UUBAR_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_DDBAR = "./DDBAR_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_SSBAR = "./SSBAR_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_CHARM = "./CHARM_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHG = "./CHG_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_MIX = "./MIX_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_UUBAR = "./UUBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_DDBAR = "./DDBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_SSBAR = "./SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHARM = "./CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     LetsAdd_Rarity(MC_dirname_CHG, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd_Rarity(MC_dirname_MIX, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd_Rarity(MC_dirname_UUBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
@@ -1932,26 +1901,26 @@ void Signal_yield_fit_BDT_Rarity()
     LetsAdd_Rarity(MC_dirname_SSBAR, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
     LetsAdd_Rarity(MC_dirname_CHARM, &Mbc_MC_background, &Eecl_MC_background, &weight_MC_background, &info_MC_background);
 
-    const char* DATA_dirname_Knunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* DATA_dirname_Kstarnunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* DATA_dirname_Xsununu = "./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* DATA_dirname_K0nunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* DATA_dirname_K0starnunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* DATA_dirname_Xsdnunu = "./SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
-    //const double Knunu_total_num = LetsAdd_Rarity(DATA_dirname_Knunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplus);
-    //const double Kstarnunu_total_num = LetsAdd_Rarity(DATA_dirname_Kstarnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplusstar);
-    //const double Xsununu_total_num = LetsAdd_Rarity(DATA_dirname_Xsununu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsu_nonresonant);
-    //const double K0nunu_total_num = LetsAdd_Rarity(DATA_dirname_K0nunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0);
-    //const double K0starnunu_total_num = LetsAdd_Rarity(DATA_dirname_K0starnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0star);
-    //const double Xsdnunu_total_num = LetsAdd_Rarity(DATA_dirname_Xsdnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsd_nonresonant);
-    //SIGNAL_total_Num = Knunu_total_num + Kstarnunu_total_num + Xsununu_total_num + K0nunu_total_num + K0starnunu_total_num + Xsdnunu_total_num;
+    const char* DATA_dirname_Knunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* DATA_dirname_Kstarnunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
+    const char* DATA_dirname_Xsununu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
+    const char* DATA_dirname_K0nunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
+    const char* DATA_dirname_K0starnunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
+    const char* DATA_dirname_Xsdnunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const double Knunu_total_num = LetsAdd_Rarity(DATA_dirname_Knunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplus);
+    const double Kstarnunu_total_num = LetsAdd_Rarity(DATA_dirname_Kstarnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Kplusstar);
+    const double Xsununu_total_num = LetsAdd_Rarity(DATA_dirname_Xsununu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsu_nonresonant);
+    const double K0nunu_total_num = LetsAdd_Rarity(DATA_dirname_K0nunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0);
+    const double K0starnunu_total_num = LetsAdd_Rarity(DATA_dirname_K0starnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_K0star);
+    const double Xsdnunu_total_num = LetsAdd_Rarity(DATA_dirname_Xsdnunu, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA, Scale_Xsd_nonresonant);
+    SIGNAL_total_Num = Knunu_total_num + Kstarnunu_total_num + Xsununu_total_num + K0nunu_total_num + K0starnunu_total_num + Xsdnunu_total_num;
 
-    const char* DATA_dirname_CHG = "./CHG_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_MIX = "./MIX_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_UUBAR = "./UUBAR_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_DDBAR = "./DDBAR_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_SSBAR = "./SSBAR_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_CHARM = "./CHARM_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_CHG = "./CHG_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_MIX = "./MIX_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_UUBAR = "./UUBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_DDBAR = "./DDBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_SSBAR = "./SSBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_CHARM = "./CHARM_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     BKG_total_Num += LetsAdd_Rarity(DATA_dirname_CHG, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
     BKG_total_Num += LetsAdd_Rarity(DATA_dirname_MIX, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
     BKG_total_Num += LetsAdd_Rarity(DATA_dirname_UUBAR, &Mbc_DATA, &Eecl_DATA, &weight_DATA, &info_DATA);
@@ -1970,14 +1939,18 @@ void Signal_yield_fit_BDT_Rarity()
 
     RooPolynomial histpdf_Eecl_signal("pol0", "pol0", EeclFit, RooArgList());
 
-    RooRealVar nsig("nsig", "n_{sig}", 0.0);
+    RooRealVar nsig("nsig", "n_{sig}", 26.0, nsig_min, nsig_max);
     RooExtendPdf esig("esignal", "extended signal p.d.f", histpdf_Eecl_signal, nsig);
 
-    RooRealVar pa("pa", "pa", -3.0, -50.0, 0.0);
-    RooRealVar pb("pb", "pb", 0.0, -50.0, 0.0);
-    RooGenericPdf histpdf_Eecl_background("g", "exp(@0*@1)*exp(@0*@0*@2)", RooArgList(EeclFit, pa, pb));
+//    RooRealVar pa("pa", "pa", -5.56);
+//    RooRealVar pb("pb", "pb", -3.079);
+//    RooGenericPdf histpdf_Eecl_background("g", "exp(@0*@1)+exp(@0*@0*@2)", RooArgList(EeclFit, pa, pb));
 
-    RooRealVar nbkg("nbkg", "number of background events", 4500, 4300, 4700);
+    RooRealVar pa("pa", "pa", -1.883); // -2.286 -5 0
+    RooRealVar pb("pb", "pb", 1.09); // 1.33 -5 5
+    RooGenericPdf histpdf_Eecl_background("g", "(1-@0)*exp(@0*@1+@0*@0*@0*@2)", RooArgList(EeclFit, pa, pb));
+
+    RooRealVar nbkg("nbkg", "number of background events", 1900, 1700, 2100); // 1900 1700 2100
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", histpdf_Eecl_background, nbkg);
 
     RooAddPdf  totalpdf("model", "b+n", RooArgList(ebkg, esig));
@@ -2001,15 +1974,14 @@ void Signal_yield_fit_BDT_Rarity()
         }
     }
 
-
     // Draw result
 //    d_Eecl->plotOn(Eeclframe, DataError(RooAbsData::Poisson));
-    d_Eecl->plotOn(Eeclframe);
+    d_Eecl->plotOn(Eeclframe, DataError(RooAbsData::SumW2));
     totalpdf.plotOn(Eeclframe, LineColor(kRed));
     totalpdf.plotOn(Eeclframe, Components(esig), LineColor(kBlue), LineStyle(kDashed));
     totalpdf.plotOn(Eeclframe, Components(ebkg), LineColor(kViolet), LineStyle(kDashed));
     totalpdf.paramOn(Eeclframe);
-
+    
     TCanvas* c = new TCanvas("Eecl", "Eecl", 900, 600);
     gPad->SetLeftMargin(0.15); Eeclframe->GetYaxis()->SetTitleOffset(1.4); Eeclframe->Draw(); c->SaveAs("Eecl_distribution.png");
     delete c;
@@ -2019,7 +1991,16 @@ void Signal_yield_fit_BDT_Rarity()
     //LinearityTest(r, EeclFit, BKG_total_Num);
 
     /* ============== toy MC study ============== */
-    //std::vector<double> pull_result = ToyMCstudy(esig, ebkg, EeclFit, SIGNAL_total_Num, BKG_total_Num); // const, mean, sigma
+    RooPolynomial histpdf_Eecl_signal_TOY_basis("pol0_TOY_basis", "pol0_TOY_basis", EeclFit, RooArgList());
+    RooRealVar nsig_TOY_basis("nsig_TOY_basis", "n_{sig}_TOY_basis", SIGNAL_total_Num);
+    RooExtendPdf esig_TOY_basis("esignal_TOY_basis", "extended signal p.d.f_TOY_basis", histpdf_Eecl_signal_TOY_basis, nsig_TOY_basis);
+
+    RooRealVar pa_TOY_basis("pa_TOY_basis", "pa_TOY_basis", -1.883); // -2.29 -5 0
+    RooRealVar pb_TOY_basis("pb_TOY_basis", "pb_TOY_basis", 1.09); // 1.33 -5 5
+    RooGenericPdf histpdf_Eecl_background_TOY_basis("g_TOY_basis", "(1-@0)*exp(@0*@1+@0*@0*@0*@2)", RooArgList(EeclFit, pa_TOY_basis, pb_TOY_basis));
+    RooRealVar nbkg_TOY_basis("nbkg_TOY_basis", "number of background events_TOY_basis", BKG_total_Num); // 1900 1700 2100
+    RooExtendPdf ebkg_TOY_basis("ebkg_TOY_basis", "extended background p.d.f_TOY_basis", histpdf_Eecl_background_TOY_basis, nbkg_TOY_basis);
+    std::vector<double> pull_result = ToyMCstudy(esig_TOY_basis, ebkg_TOY_basis, EeclFit, SIGNAL_total_Num, BKG_total_Num); // const, mean, sigma
 
     /* ============== Uncertainty Calculation ============== *//*
     printf("=================== start to calculate uncertainties ===================\n");
