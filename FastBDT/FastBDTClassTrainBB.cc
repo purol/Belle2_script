@@ -81,6 +81,8 @@
 
 using std::string;
 
+std::vector<std::string> var_names;
+
 void load_files(const char* dirname, std::vector<string>* names) {
     TSystemDirectory dir(dirname, dirname);
     TList* files = dir.GetListOfFiles();
@@ -318,6 +320,53 @@ void KSTest(const FastBDT::Classifier& classifier, std::vector<std::vector<float
 
 int main()
 {
+    var_names.push_back("nRemainingTracksInEvent");
+    var_names.push_back("Btag_chiProb");
+    var_names.push_back("Btag_extraInfo_SignalProbability");
+    var_names.push_back("thrustAxisCosTheta");
+    var_names.push_back("missingMomentumOfEvent_theta");
+    var_names.push_back("Btag_deltaE");
+    var_names.push_back("Btag_useCMSFrame_theta");
+    var_names.push_back("Btag_cosTBTO");
+
+    var_names.push_back("cleoConeThrust0");
+    var_names.push_back("cleoConeThrust1");
+    var_names.push_back("cleoConeThrust2");
+    var_names.push_back("cleoConeThrust3");
+    var_names.push_back("cleoConeThrust4");
+    var_names.push_back("cleoConeThrust5");
+    var_names.push_back("cleoConeThrust6");
+    var_names.push_back("cleoConeThrust7");
+    var_names.push_back("cleoConeThrust8");
+    var_names.push_back("harmonicMomentThrust1");
+    var_names.push_back("harmonicMomentThrust2");
+    var_names.push_back("harmonicMomentThrust3");
+    var_names.push_back("harmonicMomentThrust4");
+
+    var_names.push_back("sphericity");
+    var_names.push_back("aplanarity");
+    var_names.push_back("Btag_thrustBm");
+    var_names.push_back("roePTheta__bocleanMask__bc");
+    var_names.push_back("Btag_cosTBz");
+    var_names.push_back("Btag_CleoConeCS_1");
+    var_names.push_back("Btag_CleoConeCS_2");
+    var_names.push_back("Btag_CleoConeCS_3");
+    var_names.push_back("Btag_CleoConeCS_4");
+    var_names.push_back("Btag_CleoConeCS_5");
+    var_names.push_back("Btag_CleoConeCS_6");
+    var_names.push_back("Btag_CleoConeCS_7");
+    var_names.push_back("Btag_CleoConeCS_8");
+    var_names.push_back("Btag_CleoConeCS_9");
+    var_names.push_back("Bsig_daughter_0_extraInfo_mychiProb");
+    var_names.push_back("Bsig_daughter_0_extraInfo_mydr");
+    var_names.push_back("Bsig_daughter_0_extraInfo_mydz");
+
+    var_names.push_back("Bsig_M");
+    if (Nvar != var_names.size()) {
+        printf("ERROR!\n");
+        exit(1);
+    }
+
     // define classifier and set options
     FastBDT::Classifier classifier;
     classifier.SetNTrees(2200);
@@ -457,6 +506,19 @@ int main()
     {
         std::cout << "[" << iter->first << ", " << iter->second << "]" << " ";
     }
+    printf("\n\n");
+    printf("Variable importance for plot:\n");
+    printf("[");
+    for (auto iter = rank.begin(); iter != rank.end(); iter++)
+    {
+        int index = std::distance(rank.begin(), iter);
+        std::cout << "(\'" << var_names.at(index) << "\'," << iter->second << ")";
+        if (index == Nvar - 1) {}
+        else {
+            std::cout << "," << std::endl;
+        }
+    }
+    printf("]");
     printf("\n\n");
 
 

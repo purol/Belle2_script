@@ -81,6 +81,8 @@
 
 using std::string;
 
+std::vector<std::string> var_names;
+
 void load_files(const char* dirname, std::vector<string>* names) {
     TSystemDirectory dir(dirname, dirname);
     TList* files = dir.GetListOfFiles();
@@ -360,6 +362,50 @@ void KSTest(const FastBDT::Classifier& classifier, std::vector<std::vector<float
 
 int main()
 {
+    var_names.push_back("nRemainingTracksInEvent");
+    var_names.push_back("Btag_chiProb");
+    var_names.push_back("Btag_extraInfo_SignalProbability");
+    var_names.push_back("thrustAxisCosTheta");
+    var_names.push_back("missingMomentumOfEvent_theta");
+    var_names.push_back("Btag_deltaE");
+    var_names.push_back("Btag_useCMSFrame_theta");
+    var_names.push_back("Btag_cosTBTO");
+
+    var_names.push_back("Btag_KSFWVariables_hso00");
+    var_names.push_back("Btag_KSFWVariables_hso01");
+    var_names.push_back("Btag_KSFWVariables_hso03");
+    var_names.push_back("Btag_KSFWVariables_hso04");
+    var_names.push_back("Btag_KSFWVariables_hso10");
+    var_names.push_back("Btag_KSFWVariables_hso14");
+    var_names.push_back("Btag_KSFWVariables_hso24");
+    var_names.push_back("Btag_KSFWVariables_hoo1");
+    var_names.push_back("Btag_KSFWVariables_hoo3");
+
+    var_names.push_back("roeEextra__bocleanMask__bc");
+    var_names.push_back("Btag_thrustOm");
+    var_names.push_back("nParticlesInList__boe__pl__clElectronFBDT__bc");
+    var_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT__bc");
+
+    var_names.push_back("Bsig_M");
+    var_names.push_back("Bsig_useCMSFrame_p");
+
+    var_names.push_back("Bsig_daughter_0_extraInfo_Dc_pValue_med");
+    var_names.push_back("Bsig_daughter_0_extraInfo_Dc_pValue_std");
+    var_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb");
+    var_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr");
+    var_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz");
+    var_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_M");
+    var_names.push_back("Bsig_daughter_0_extraInfo_D0_pValue_med");
+    var_names.push_back("Bsig_daughter_0_extraInfo_D0_pValue_std");
+    var_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb");
+    var_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dr");
+    var_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dz");
+    var_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_M");
+    if (Nvar != var_names.size()) {
+        printf("ERROR!\n");
+        exit(1);
+    }
+
     // define classifier and set options
     FastBDT::Classifier classifier;
     classifier.SetNTrees(2200);
@@ -495,10 +541,24 @@ int main()
     std::map<unsigned int, double> rank;
     rank = classifier.GetVariableRanking();
     printf("Variable importance:\n");
+    
     for (auto iter = rank.begin(); iter != rank.end(); iter++)
     {
         std::cout << "[" << iter->first << ", " << iter->second << "]" << " ";
     }
+    printf("\n\n");
+    printf("Variable importance for plot:\n");
+    printf("[");
+    for (auto iter = rank.begin(); iter != rank.end(); iter++)
+    {
+        int index = std::distance(rank.begin(), iter);
+        std::cout << "(\'" << var_names.at(index) << "\'," << iter->second << ")";
+        if (index == Nvar - 1) {}
+        else {
+            std::cout << "," << std::endl;
+        }
+    }
+    printf("]");
     printf("\n\n");
 
 
