@@ -140,10 +140,7 @@ using std::to_string;
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define RarityBins 10
-
-# define nsig_min (-280)
-# define nsig_max 200
+# define RarityBins 20
 
 int WorkSpace() {
 

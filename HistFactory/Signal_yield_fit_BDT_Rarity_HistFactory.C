@@ -119,10 +119,7 @@ using std::to_string;
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define RarityBins 10
-
-# define nsig_min (-280)
-# define nsig_max 200
+# define RarityBins 20
 
 /* ====================================== */
 // Rarity module
@@ -1987,32 +1984,26 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
 
     /* ====================================== */
     // Define histograms for Data
-    TH1D* Signal_DATA = new TH1D("Signal_DATA", "Signal_DATA", RarityBins, 0.0, 1.0);
-    TH1D* CHG_DATA = new TH1D("CHG_DATA", "CHG_DATA", RarityBins, 0.0, 1.0);
-    TH1D* MIX_DATA = new TH1D("MIX_DATA", "MIX_DATA", RarityBins, 0.0, 1.0);
-    TH1D* UUBAR_DATA = new TH1D("UUBAR_DATA", "UUBAR_DATA", RarityBins, 0.0, 1.0);
-    TH1D* DDBAR_DATA = new TH1D("DDBAR_DATA", "DDBAR_DATA", RarityBins, 0.0, 1.0);
-    TH1D* SSBAR_DATA = new TH1D("SSBAR_DATA", "SSBAR_DATA", RarityBins, 0.0, 1.0);
-    TH1D* CHARM_DATA = new TH1D("CHARM_DATA", "CHARM_DATA", RarityBins, 0.0, 1.0);
+    TH1D* total_DATA = new TH1D("total_DATA", "total_DATA", RarityBins, 0.0, 1.0);
     /* ====================================== */
 
 
 
     /* ====================================== */
     // Save data
-    GetNominalPDFs(DATA_dirname_Knunu, Signal_DATA, "Bplus", Scale_Kplus);
-    GetNominalPDFs(DATA_dirname_Kstarnunu, Signal_DATA, "Bplus", Scale_Kplusstar);
-    GetNominalPDFs(DATA_dirname_Xsununu, Signal_DATA, "Bplus", Scale_Xsu_nonresonant);
-    GetNominalPDFs(DATA_dirname_K0nunu, Signal_DATA, "Bzero", Scale_K0);
-    GetNominalPDFs(DATA_dirname_K0starnunu, Signal_DATA, "Bzero", Scale_K0star);
-    GetNominalPDFs(DATA_dirname_Xsdnunu, Signal_DATA, "Bzero", Scale_Xsd_nonresonant);
+    GetNominalPDFs(DATA_dirname_Knunu, total_DATA, "Bplus", Scale_Kplus);
+    GetNominalPDFs(DATA_dirname_Kstarnunu, total_DATA, "Bplus", Scale_Kplusstar);
+    GetNominalPDFs(DATA_dirname_Xsununu, total_DATA, "Bplus", Scale_Xsu_nonresonant);
+    GetNominalPDFs(DATA_dirname_K0nunu, total_DATA, "Bzero", Scale_K0);
+    GetNominalPDFs(DATA_dirname_K0starnunu, total_DATA, "Bzero", Scale_K0star);
+    GetNominalPDFs(DATA_dirname_Xsdnunu, total_DATA, "Bzero", Scale_Xsd_nonresonant);
 
-    GetNominalPDFs(DATA_dirname_CHG, CHG_DATA, "Bplus", 1.0);
-    GetNominalPDFs(DATA_dirname_MIX, MIX_DATA, "Bzero", 1.0);
-    GetNominalPDFs(DATA_dirname_UUBAR, UUBAR_DATA, "Continuum", 1.0);
-    GetNominalPDFs(DATA_dirname_DDBAR, DDBAR_DATA, "Continuum", 1.0);
-    GetNominalPDFs(DATA_dirname_SSBAR, SSBAR_DATA, "Continuum", 1.0);
-    GetNominalPDFs(DATA_dirname_CHARM, CHARM_DATA, "Continuum", 1.0);
+    GetNominalPDFs(DATA_dirname_CHG, total_DATA, "Bplus", 1.0);
+    GetNominalPDFs(DATA_dirname_MIX, total_DATA, "Bzero", 1.0);
+    GetNominalPDFs(DATA_dirname_UUBAR, total_DATA, "Continuum", 1.0);
+    GetNominalPDFs(DATA_dirname_DDBAR, total_DATA, "Continuum", 1.0);
+    GetNominalPDFs(DATA_dirname_SSBAR, total_DATA, "Continuum", 1.0);
+    GetNominalPDFs(DATA_dirname_CHARM, total_DATA, "Continuum", 1.0);
     /* ====================================== */
 
 
@@ -2135,13 +2126,7 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     Signal_Xsfrac_p->Write();
     Signal_Xsfrac_m->Write();
 
-    Signal_DATA->Write();
-    CHG_DATA->Write();
-    MIX_DATA->Write();
-    UUBAR_DATA->Write();
-    DDBAR_DATA->Write();
-    SSBAR_DATA->Write();
-    CHARM_DATA->Write();
+    total_DATA->Write();
 
     file->Close();
     /* ====================================== */

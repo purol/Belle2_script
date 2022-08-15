@@ -140,10 +140,7 @@ using std::to_string;
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define RarityBins 10
-
-# define nsig_min (-280)
-# define nsig_max 200
+# define RarityBins 20
 
 int HypoCal() {
 
@@ -174,20 +171,33 @@ int HypoCal() {
 	RooPlot* x_frame = x->frame(Title("Tramsformed FBDT_{1}"));
 
 	// draw
-	data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
-	model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed + 1));
-	model->plotOn(x_frame, Slice(*idx),ProjWData(*idx,*data),DrawOption("F"),FillColor(kViolet + 1),Components("*CHG*, *MIX*, *UUBAR*, *DDBAR*, *SSBAR*, *CHARM*"));
-	model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kBlue + 1), Components("*MIX*, *UUBAR*, *DDBAR*, *SSBAR*, *CHARM*"));
-	model->plotOn(x_frame, Slice(*idx),ProjWData(*idx,*data),DrawOption("F"),FillColor(kOrange + 1),Components("*UUBAR*, *DDBAR*, *SSBAR*, *CHARM*"));
-	model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kGreen + 1), Components("*DDBAR*, *SSBAR*, *CHARM*"));
-	model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kYellow + 1), Components("*SSBAR*, *CHARM*"));
-	model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kPink + 1), Components("*CHARM*"));
+	data->plotOn(x_frame, Name("data_name"), DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
+	model->plotOn(x_frame, Name("CHG_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed + 1), LineWidth(0));
+	model->plotOn(x_frame, Name("MIX_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kViolet + 1), LineWidth(0), Components("*MIX*, *UUBAR*, *DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
+	model->plotOn(x_frame, Name("UUBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kBlue + 1), LineWidth(0), Components("*UUBAR*, *DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
+	model->plotOn(x_frame, Name("DDBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kOrange + 1), LineWidth(0), Components("*DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
+	model->plotOn(x_frame, Name("SSBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kGreen + 1), LineWidth(0), Components("*SSBAR*, *CHARM*, *Signal*"));
+	model->plotOn(x_frame, Name("CHARM_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kYellow + 1), LineWidth(0), Components("*CHARM*, *Signal*"));
+	model->plotOn(x_frame, Name("signal_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kPink + 1), LineWidth(0), Components("*Signal*"));
 	data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
 
 	TCanvas* cdata = new TCanvas("sPlot", "sPlot demo", 700, 700);
 	x_frame->Draw();
 
+	TLegend* leg = new TLegend(0.7, 0.6, 0.9, 0.9);
+	leg->SetFillStyle(0);
+	leg->SetLineWidth(0);
+	leg->AddEntry("data_name", "Data", "LP");
+	leg->AddEntry("CHG_name", "charged", "F");
+	leg->AddEntry("MIX_name", "mixed", "F");
+	leg->AddEntry("UUBAR_name", "u#bar{u}", "F");
+	leg->AddEntry("DDBAR_name", "d#bar{d}", "F");
+	leg->AddEntry("SSBAR_name", "s#bar{s}", "F");
+	leg->AddEntry("CHARM_name", "c#bar{c}", "F");
+	leg->AddEntry("signal_name", "signal", "F");
+	leg->Draw();
 
+	cdata->SaveAs("FitResult.png");
 	/* ======================== CLS ======================== */
 
 	if (data->isWeighted()) {
