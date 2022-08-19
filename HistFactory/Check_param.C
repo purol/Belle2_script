@@ -142,9 +142,9 @@ using std::to_string;
 
 # define RarityBins 20
 
-int HypoCal() {
+int Check_param() {
 
-	const char* fname = "PDFandDATA_workspace.root";
+	const char* fname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/HistFactory/10/mu/PDFandDATA_workspace_10_mu.root";
 
 	TFile* f = TFile::Open(fname);
 
@@ -153,6 +153,11 @@ int HypoCal() {
 	w->Print();
 	ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
 	RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+
+        // test
+        RooRealVar *alpha = w->var("nom_gamma_stat_channel_bin_0");
+        printf("%lf", alpha->getValV());
 
 	// Lets tell roofit the right names for our histogram variables //
 	RooArgSet* obs = (RooArgSet*)mc->GetObservables();
@@ -165,13 +170,103 @@ int HypoCal() {
 	RooAbsData* data = (RooAbsData*)w->data("obsData");
 
 	// fit
-	RooFitResult* fitres = model->fitTo(*data, RooFit::SumW2Error(true));
+	RooFitResult* fitres = model->fitTo(*data, Save());
+
+        RooArgSet fitargs = fitres->floatParsFinal();
+        TIterator* iter(fitargs.createIterator());
+
+
+        std::vector<double> pulls;
+        std::vector<double> pull_errors;
+        std::vector<std::string> names;
+
+        for (TObject* Tobj = iter->Next(); Tobj != 0; Tobj = iter->Next()) {
+            RooRealVar* rrv = dynamic_cast<RooRealVar*>(Tobj);
+            std::string name = rrv->GetName();
+            double val = rrv->getVal();
+            double err = rrv->getError();
+
+            std::cout.width(25);
+            std::cout << name;
+            std::cout.width(15);
+            std::cout << val;
+            std::cout.width(5);
+            std::cout << "+-" << err << std::endl;
+
+            if (name.find("alpha") != std::string::npos) {
+                pulls.push_back((val - 0.0)/1.0);
+                pull_errors.push_back(err/1.0);
+                names.push_back(name);
+            }
+            else if(name.find("gamma") != std::string::npos){
+                RooRealVar *norm = w->var(("nom_"+name).c_str());
+                double width = std::pow(norm->getValV(), -0.5);
+                pulls.push_back((val - 1.0)/width);
+                pull_errors.push_back(err/width);
+                names.push_back(name);
+            }
+        }
+
+        for(unsigned int i=0; i < names.size(); i++){
+            std::cout << names.at(i) << " " << pulls.at(i) << "+-" << pull_errors.at(i) << std::endl;
+        }
+
+        // draw pull
+        int size_pull = pulls.size();
+
+        TH1D* pull_ht = new TH1D("pull data hist", "pull of parameters;;", size_pull,0,size_pull);
+        for(int i=0;i<size_pull;i++) {
+            pull_ht->SetBinContent(i+1,pulls.at(i));
+            pull_ht->SetBinError(i+1, pull_errors.at(i));
+        }
+        pull_ht->SetLineWidth(2.0);
+        pull_ht->SetMarkerColor(1);
+        pull_ht->SetMarkerStyle(21);
+        pull_ht->SetLineColor(1);
+        char ** label_name = (char **) malloc(sizeof(char *) * size_pull);
+        for(int i=0;i<size_pull;i++) {
+            label_name[i] = (char*) malloc(sizeof(char) * names.at(i).size() + 1);
+            memcpy(label_name[i], names.at(i).c_str(), names.at(i).size() + 1);
+        }
+
+        TH1D* pull_one_sigma = new TH1D("1sig hist", "1sig;;", size_pull,0.0,size_pull);
+        for(int i=0;i<size_pull;i++) {
+            pull_one_sigma->SetBinContent(i+1, 0.0);
+            pull_one_sigma->SetBinError(i+1, 1.0);
+        }
+        pull_one_sigma->SetFillColor(kGreen);
+        pull_one_sigma->SetFillStyle(1001);
+
+        TH1D* pull_two_sigma = new TH1D("2sig hist", "2sig;;", size_pull,0.0,size_pull);
+        for(int i=0;i<size_pull;i++) {
+            pull_two_sigma->SetBinContent(i+1, 0.0);
+            pull_two_sigma->SetBinError(i+1, 2.0);
+        }
+        pull_two_sigma->SetFillColor(kYellow);
+        pull_two_sigma->SetFillStyle(1001);
+        for (int i=0;i<size_pull;i++) {
+             pull_two_sigma->GetXaxis()->SetBinLabel(i+1,names.at(i).c_str());
+        }
+        pull_two_sigma->SetStats(false);
+        pull_two_sigma->GetYaxis()->SetTitle("(#hat{#theta}-#theta)/#Delta#theta");
+        pull_two_sigma->GetYaxis()->SetTitleOffset(1.4);
+        pull_two_sigma->GetXaxis()->LabelsOption("v");
+
+        TLine* line = new TLine(0.0, 0.0, size_pull, 0.0);
+        line->SetLineColor(kBlack);
+        line->SetLineStyle(2); line->SetLineWidth(1);
+
+        TCanvas* cpull = new TCanvas("pull_Plot", "pull Plot", 700, 800); cpull->SetBottomMargin(0.3);
+        pull_two_sigma->Draw("E2");
+        pull_one_sigma->Draw("E2 same");
+        pull_ht->Draw("e1 same");
+        line->Draw();
 
 	// define frame
 	RooPlot* x_frame = x->frame(Title("Tramsformed FBDT_{1}"));
 
 	// draw
-	data->plotOn(x_frame, Name("data_name"), DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
+	data->plotOn(x_frame, Name("data_name"), DataError(RooAbsData::SumW2), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
 	model->plotOn(x_frame, Name("CHG_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed + 1), LineWidth(0));
 	model->plotOn(x_frame, Name("MIX_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kViolet + 1), LineWidth(0), Components("*MIX*, *UUBAR*, *DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
 	model->plotOn(x_frame, Name("UUBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kBlue + 1), LineWidth(0), Components("*UUBAR*, *DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
@@ -179,8 +274,8 @@ int HypoCal() {
 	model->plotOn(x_frame, Name("SSBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kGreen + 1), LineWidth(0), Components("*SSBAR*, *CHARM*, *Signal*"));
 	model->plotOn(x_frame, Name("CHARM_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kYellow + 1), LineWidth(0), Components("*CHARM*, *Signal*"));
 	model->plotOn(x_frame, Name("signal_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kPink + 1), LineWidth(0), Components("*Signal*"));
-	data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
-
+	data->plotOn(x_frame, DataError(RooAbsData::SumW2), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
+        //model->paramOn(x_frame);
 	TCanvas* cdata = new TCanvas("sPlot", "sPlot demo", 700, 700);
 	x_frame->Draw();
 
@@ -199,52 +294,6 @@ int HypoCal() {
 
 	cdata->SaveAs("FitResult.png");
 	/* ======================== CLS ======================== */
-
-	if (data->isWeighted()) {
-		Info("Hypocal", "Data set is weighted, nentries = %d and sum of weights = %8.1f.\n", data->numEntries(), data->sumEntries());
-	}
-
-	RooStats::ModelConfig* sbModel = (RooStats::ModelConfig*)w->obj("ModelConfig");
-	RooStats::ModelConfig* bModel = (RooStats::ModelConfig*)sbModel->Clone("BonlyModel");
-	RooRealVar* poi = (RooRealVar*)bModel->GetParametersOfInterest()->first();
-	poi->setVal(0);
-	bModel->SetSnapshot(*poi);
-
-	RooStats::FrequentistCalculator FreqCalc(*data, *bModel, *sbModel);
-	RooStats::ProfileLikelihoodTestStat* plr = new RooStats::ProfileLikelihoodTestStat(*sbModel->GetPdf());
-	plr->SetOneSided(true);
-
-	RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)FreqCalc.GetTestStatSampler();
-	toymcs->SetTestStatistic(plr);
-	FreqCalc.SetToys(1000, 1000);
-
-	RooStats::HypoTestInverter inverter(FreqCalc);
-	inverter.SetConfidenceLevel(0.90);
-	inverter.UseCLs(true);
-	inverter.SetVerbose(false);
-	inverter.SetFixedScan(30, 0.0, 10); // set number of points , xmin and xmax
-
-	TStopwatch sw;
-	sw.Start();
-
-	RooStats::HypoTestInverterResult* result = inverter.GetInterval();
-
-	sw.Stop();
-	printf("consumed time: %lf (s)\n", sw.RealTime());
-
-	cout << 100 * inverter.ConfidenceLevel() << "%  upper limit : " << result->UpperLimit() << endl;
-
-	std::cout << "Expected upper limits, using the B (alternate) model : " << std::endl;
-	std::cout << " expected limit (median) " << result->GetExpectedUpperLimit(0) << std::endl;
-	std::cout << " expected limit (-1 sig) " << result->GetExpectedUpperLimit(-1) << std::endl;
-	std::cout << " expected limit (+1 sig) " << result->GetExpectedUpperLimit(1) << std::endl;
-	std::cout << " expected limit (-2 sig) " << result->GetExpectedUpperLimit(-2) << std::endl;
-	std::cout << " expected limit (+2 sig) " << result->GetExpectedUpperLimit(2) << std::endl;
-
-	TCanvas* c1 = new TCanvas();
-	RooStats::HypoTestInverterPlot* plot = new RooStats::HypoTestInverterPlot("HTI_Result_Plot", "HypoTest Scan Result", result);
-	plot->Draw("CLb 2CL");  // plot also CLb and CLs+b 
-	c1->Draw(); c1->SaveAs("CLs_hyb.png");
 
 	return 0;
 }
