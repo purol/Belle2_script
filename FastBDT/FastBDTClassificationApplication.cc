@@ -1,6 +1,6 @@
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 55
+# define N_Upsilon_info 51
 # define N_Bsig_info 81
 # define N_Btag_info 9
 # define N_decay 48 // five decay mode + others + 10 variables for systematics
@@ -150,10 +150,6 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    theTree->SetBranchAddress("dz", &temp_UpsilonDataToTree[48]);
    theTree->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT__bc", &temp_UpsilonDataToTree[49]);
    theTree->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT__bc", &temp_UpsilonDataToTree[50]);
-   theTree->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_loose__bc", &temp_UpsilonDataToTree[51]);
-   theTree->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &temp_UpsilonDataToTree[52]);
-   theTree->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &temp_UpsilonDataToTree[53]);
-   theTree->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp_UpsilonDataToTree[54]);
 
    // get Bsig_info
    theTree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -416,10 +412,6 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    temp_tree->Branch("dz", &temp_UpsilonDataToTree[48]);
    temp_tree->Branch("nParticlesInList__boe__pl__clElectronFBDT__bc", &temp_UpsilonDataToTree[49]);
    temp_tree->Branch("nParticlesInList__bomu__pl__clMuonFBDT__bc", &temp_UpsilonDataToTree[50]);
-   temp_tree->Branch("nParticlesInList__boe__pl__clElectronFBDT_loose__bc", &temp_UpsilonDataToTree[51]);
-   temp_tree->Branch("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &temp_UpsilonDataToTree[52]);
-   temp_tree->Branch("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &temp_UpsilonDataToTree[53]);
-   temp_tree->Branch("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp_UpsilonDataToTree[54]);
 
    // get Bsig_info
    temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -619,116 +611,45 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
 
        theTree->GetEntry(ievt);
 
-       // set inputs for BB small Mxs
-       std::vector<float> inputs_BB;
-       inputs_BB.push_back(temp_UpsilonDataToTree[10]); // nRemainingTracksInEvent
-       inputs_BB.push_back(temp_BtagDataToTree[6]); // Btag_chiProb
-       inputs_BB.push_back(temp_BtagDataToTree[5]); // Btag_extraInfo_SignalProbability
-       inputs_BB.push_back(temp_UpsilonDataToTree[35]); // thrustAxisCosTheta
-       inputs_BB.push_back(temp_UpsilonDataToTree[7]); // missingMomentumOfEvent_theta
-       inputs_BB.push_back(temp_BtagDataToTree[2]); // Btag_deltaE
-       inputs_BB.push_back(temp_DataToTree[34]); // Btag_useCMSFrame_theta
-       inputs_BB.push_back(temp_DataToTree[3]); // Btag_cosTBTO
-       inputs_BB.push_back(temp_UpsilonDataToTree[23]); // cleoConeThrust0
-       inputs_BB.push_back(temp_UpsilonDataToTree[24]); // cleoConeThrust1
-       inputs_BB.push_back(temp_UpsilonDataToTree[25]); // cleoConeThrust2
-       inputs_BB.push_back(temp_UpsilonDataToTree[26]); // cleoConeThrust3
-       inputs_BB.push_back(temp_UpsilonDataToTree[27]); // cleoConeThrust4
-       inputs_BB.push_back(temp_UpsilonDataToTree[28]); // cleoConeThrust5
-       inputs_BB.push_back(temp_UpsilonDataToTree[29]); // cleoConeThrust6
-       inputs_BB.push_back(temp_UpsilonDataToTree[30]); // cleoConeThrust7
-       inputs_BB.push_back(temp_UpsilonDataToTree[31]); // cleoConeThrust8
-       inputs_BB.push_back(temp_UpsilonDataToTree[19]); // harmonicMomentThrust1
-       inputs_BB.push_back(temp_UpsilonDataToTree[20]); // harmonicMomentThrust2
-       inputs_BB.push_back(temp_UpsilonDataToTree[21]); // harmonicMomentThrust3
-       inputs_BB.push_back(temp_UpsilonDataToTree[22]); // harmonicMomentThrust4
-       inputs_BB.push_back(temp_UpsilonDataToTree[32]); // sphericity
-       inputs_BB.push_back(temp_UpsilonDataToTree[33]); // aplanarity
-       inputs_BB.push_back(temp_DataToTree[1]); // Btag_thrustBm
-       inputs_BB.push_back(temp_UpsilonDataToTree[44]); // roePTheta__bocleanMask__bc
-       inputs_BB.push_back(temp_DataToTree[4]); // Btag_cosTBz
-       inputs_BB.push_back(temp_DataToTree[23]); // Btag_CleoConeCS_1
-       inputs_BB.push_back(temp_DataToTree[24]); // Btag_CleoConeCS_2
-       inputs_BB.push_back(temp_DataToTree[25]); // Btag_CleoConeCS_3
-       inputs_BB.push_back(temp_DataToTree[26]); // Btag_CleoConeCS_4
-       inputs_BB.push_back(temp_DataToTree[27]); // Btag_CleoConeCS_5
-       inputs_BB.push_back(temp_DataToTree[28]); // Btag_CleoConeCS_6
-       inputs_BB.push_back(temp_DataToTree[29]); // Btag_CleoConeCS_7
-       inputs_BB.push_back(temp_DataToTree[30]); // Btag_CleoConeCS_8
-       inputs_BB.push_back(temp_DataToTree[31]); // Btag_CleoConeCS_9
-       inputs_BB.push_back(temp_BsigDataToTree[78]); // Bsig_daughter_0_extraInfo_mychiProb
-       if(temp_BsigDataToTree[78] > 1.5){
-           inputs_BB.push_back(-1.0); // dr
-           inputs_BB.push_back(-100.0); // dz
-       }
-       else{
-           inputs_BB.push_back(temp_BsigDataToTree[79]); // dr
-           inputs_BB.push_back(temp_BsigDataToTree[80]); // dz
-       }
-       if(temp_BsigDataToTree[6] > 1.0) inputs_BB.push_back(0.0f); // Mxs_indicator
-       else inputs_BB.push_back(temp_BsigDataToTree[6]); // Mxs_indicator
+       std::vector<float> inputs;
+       inputs.push_back(temp_BsigDataToTree[4]); // Bsig_useCMSFrame_p
+       inputs.push_back(temp_BtagDataToTree[6]); // Btag_chiProb
+       inputs.push_back(temp_DataToTree[23]); // Btag_CleoConeCS_1
+       inputs.push_back(temp_DataToTree[25]); // Btag_CleoConeCS_3
+       inputs.push_back(temp_DataToTree[26]); // Btag_CleoConeCS_4
+       inputs.push_back(temp_DataToTree[27]); // Btag_CleoConeCS_5
+       inputs.push_back(temp_DataToTree[4]); // Btag_cosTBz
+       inputs.push_back(temp_BtagDataToTree[2]); // Btag_deltaE
+       inputs.push_back(temp_DataToTree[7]); // Btag_KSFWVariables_hso00
+       inputs.push_back(temp_DataToTree[8]); // Btag_KSFWVariables_hso01
+       inputs.push_back(temp_DataToTree[10]); // Btag_KSFWVariables_hso03
+       inputs.push_back(temp_DataToTree[11]); // Btag_KSFWVariables_hso04
+       inputs.push_back(temp_DataToTree[12]); // Btag_KSFWVariables_hso10
+       inputs.push_back(temp_DataToTree[14]); // Btag_KSFWVariables_hso14
+       inputs.push_back(temp_DataToTree[17]); // Btag_KSFWVariables_hso24
+       inputs.push_back(temp_UpsilonDataToTree[25]); // cleoConeThrust2
+       inputs.push_back(temp_UpsilonDataToTree[26]); // cleoConeThrust3
+       inputs.push_back(temp_UpsilonDataToTree[27]); // cleoConeThrust4
+       inputs.push_back(temp_UpsilonDataToTree[28]); // cleoConeThrust5
+       inputs.push_back(temp_UpsilonDataToTree[19]); // harmonicMomentThrust1
+       inputs.push_back(temp_UpsilonDataToTree[21]); // harmonicMomentThrust3
+       inputs.push_back(temp_BtagDataToTree[5]); // Btag_extraInfo_SignalProbability
+       inputs.push_back(temp_UpsilonDataToTree[3]); // roeEextra__bocleanMask__bc
+       inputs.push_back(temp_UpsilonDataToTree[44]); // roePTheta__bocleanMask__bc
+       inputs.push_back(temp_DataToTree[34]); // Btag_useCMSFrame_theta
+       inputs.push_back(temp_UpsilonDataToTree[7]); // missingMomentumOfEvent_theta
+       inputs.push_back(temp_UpsilonDataToTree[9]); // missingEnergyOfEventCMS
+       inputs.push_back(temp_UpsilonDataToTree[35]); // thrustAxisCosTheta
 
-       // set inputs for Continuum small Mxs
-       std::vector<float> inputs_Continuum;
-       inputs_Continuum.push_back(temp_UpsilonDataToTree[10]); // nRemainingTracksInEvent
-       inputs_Continuum.push_back(temp_BtagDataToTree[6]); // Btag_chiProb
-       inputs_Continuum.push_back(temp_BtagDataToTree[5]); // Btag_extraInfo_SignalProbability
-       inputs_Continuum.push_back(temp_UpsilonDataToTree[35]); // thrustAxisCosTheta
-       inputs_Continuum.push_back(temp_UpsilonDataToTree[7]); // missingMomentumOfEvent_theta
-       inputs_Continuum.push_back(temp_BtagDataToTree[2]); // Btag_deltaE
-       inputs_Continuum.push_back(temp_DataToTree[34]); // Btag_useCMSFrame_theta
-       inputs_Continuum.push_back(temp_DataToTree[3]); // Btag_cosTBTO
-       inputs_Continuum.push_back(temp_DataToTree[7]); // Btag_KSFWVariables_hso00
-       inputs_Continuum.push_back(temp_DataToTree[8]); // Btag_KSFWVariables_hso01
-       inputs_Continuum.push_back(temp_DataToTree[10]); // Btag_KSFWVariables_hso03
-       inputs_Continuum.push_back(temp_DataToTree[11]); // Btag_KSFWVariables_hso04
-       inputs_Continuum.push_back(temp_DataToTree[12]); // Btag_KSFWVariables_hso10
-       inputs_Continuum.push_back(temp_DataToTree[14]); // Btag_KSFWVariables_hso14
-       inputs_Continuum.push_back(temp_DataToTree[17]); // Btag_KSFWVariables_hso24
-       inputs_Continuum.push_back(temp_DataToTree[19]); // Btag_KSFWVariables_hoo1
-       inputs_Continuum.push_back(temp_DataToTree[21]); // Btag_KSFWVariables_hoo3
-       inputs_Continuum.push_back(temp_UpsilonDataToTree[3]); // roeEextra__bocleanMask__bc
-       inputs_Continuum.push_back(temp_DataToTree[2]); // Btag_thrustOm
-       inputs_Continuum.push_back(temp_UpsilonDataToTree[49]); // nElectron
-       inputs_Continuum.push_back(temp_UpsilonDataToTree[50]); // nMuon
-       if(temp_BsigDataToTree[6] > 1.0) inputs_Continuum.push_back(0.0f); // Mxs_indicator
-       else inputs_Continuum.push_back(temp_BsigDataToTree[6]); // Mxs_indicator
-       inputs_Continuum.push_back(temp_BsigDataToTree[4]); // Bsig_pcms
-       if(temp_BsigDataToTree[67] > -0.5) {
-           inputs_Continuum.push_back(temp_BsigDataToTree[65]); // pValue_med
-           inputs_Continuum.push_back(temp_BsigDataToTree[66]); // pValue_std
-           inputs_Continuum.push_back(temp_BsigDataToTree[67]); // chiProb
-           inputs_Continuum.push_back(temp_BsigDataToTree[68]); // dr
-           inputs_Continuum.push_back(temp_BsigDataToTree[69]); // dz
-           inputs_Continuum.push_back(temp_BsigDataToTree[70]); // M
-       }
-       else{
-           inputs_Continuum.push_back(0.0); // pValue_med
-           inputs_Continuum.push_back(0.0); // pValue_std
-           inputs_Continuum.push_back(0.0); // chiProb
-           inputs_Continuum.push_back(-1.0); // dr
-           inputs_Continuum.push_back(-100.0); // dz
-           inputs_Continuum.push_back(0.0); // M
-       }
-       if(temp_BsigDataToTree[74] > -0.5) {
-           inputs_Continuum.push_back(temp_BsigDataToTree[72]); // pValue_med
-           inputs_Continuum.push_back(temp_BsigDataToTree[73]); // pValue_std
-           inputs_Continuum.push_back(temp_BsigDataToTree[74]); // chiProb
-           inputs_Continuum.push_back(temp_BsigDataToTree[75]); // dr
-           inputs_Continuum.push_back(temp_BsigDataToTree[76]); // dz
-           inputs_Continuum.push_back(temp_BsigDataToTree[77]); // M
-       }
-       else{
-           inputs_Continuum.push_back(0.0); // pValue_med
-           inputs_Continuum.push_back(0.0); // pValue_std
-           inputs_Continuum.push_back(0.0); // chiProb
-           inputs_Continuum.push_back(-1.0); // dr
-           inputs_Continuum.push_back(-100.0); // dz
-           inputs_Continuum.push_back(0.0); // M
-       }
+       inputs.push_back(temp_BsigDataToTree[67]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb
+       inputs.push_back(temp_BsigDataToTree[68]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_dr
+       inputs.push_back(temp_BsigDataToTree[70]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_M
+       inputs.push_back(temp_BsigDataToTree[74]); // Bsig_daughter_0_extraInfo_D0simpleveto_chiProb
+       inputs.push_back(temp_BsigDataToTree[75]); // Bsig_daughter_0_extraInfo_D0simpleveto_dr
+       inputs.push_back(temp_BsigDataToTree[77]); // Bsig_daughter_0_extraInfo_D0simpleveto_M
 
-       Output_BB = classifier_BB.predict(inputs_BB);
-       Output_Continuum = classifier_Continuum.predict(inputs_Continuum);
+       Output_BB = classifier_BB.predict(inputs);
+       Output_Continuum = classifier_Continuum.predict(inputs);
 
        temp_tree->Fill();
    }

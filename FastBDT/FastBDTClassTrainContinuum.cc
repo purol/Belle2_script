@@ -38,8 +38,8 @@
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
-# define Nvar 35
-# define DvetoNvar 12
+# define Nvar 34
+# define DvetoNvar 6
 
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
@@ -146,17 +146,14 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     double Mxs = -1;
     double Pcms = -1;
 
-    // common
-    tree_data->SetBranchAddress("nRemainingTracksInEvent", &Vars[0]);
+    tree_data->SetBranchAddress("Bsig_useCMSFrame_p", &Vars[0]);
     tree_data->SetBranchAddress("Btag_chiProb", &Vars[1]);
-    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[2]);
-    tree_data->SetBranchAddress("thrustAxisCosTheta", &Vars[3]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[4]);
-    tree_data->SetBranchAddress("Btag_deltaE", &Vars[5]);
-    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[6]);
-    tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[7]);
-
-    // cleoconethrust + harmonicthrust
+    tree_data->SetBranchAddress("Btag_CleoConeCS_1", &Vars[2]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_3", &Vars[3]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_4", &Vars[4]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_5", &Vars[5]);
+    tree_data->SetBranchAddress("Btag_cosTBz", &Vars[6]);
+    tree_data->SetBranchAddress("Btag_deltaE", &Vars[7]);
     tree_data->SetBranchAddress("Btag_KSFWVariables_hso00", &Vars[8]);
     tree_data->SetBranchAddress("Btag_KSFWVariables_hso01", &Vars[9]);
     tree_data->SetBranchAddress("Btag_KSFWVariables_hso03", &Vars[10]);
@@ -164,28 +161,28 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     tree_data->SetBranchAddress("Btag_KSFWVariables_hso10", &Vars[12]);
     tree_data->SetBranchAddress("Btag_KSFWVariables_hso14", &Vars[13]);
     tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[14]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo1", &Vars[15]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo3", &Vars[16]);
+    tree_data->SetBranchAddress("cleoConeThrust2", &Vars[15]);
+    tree_data->SetBranchAddress("cleoConeThrust3", &Vars[16]);
+    tree_data->SetBranchAddress("cleoConeThrust4", &Vars[17]);
+    tree_data->SetBranchAddress("cleoConeThrust5", &Vars[18]);
+    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[19]);
+    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[20]);
+    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[21]);
+    tree_data->SetBranchAddress("roeEextra__bocleanMask__bc", &Vars[22]);
+    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[23]);
+    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[24]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[25]);
+    tree_data->SetBranchAddress("missingEnergyOfEventCMS", &Vars[26]);
+    tree_data->SetBranchAddress("thrustAxisCosTheta", &Vars[27]);
 
-    // other variables which have correlation
-    tree_data->SetBranchAddress("roeEextra__bocleanMask__bc", &Vars[17]);
-    tree_data->SetBranchAddress("Btag_thrustOm", &Vars[18]);
-    tree_data->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT__bc", &Vars[19]);
-    tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT__bc", &Vars[20]);
-    tree_data->SetBranchAddress("flag", &flag);
-
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &Dc_pvalue_med);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &Dc_chiProb);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &Dc_dr);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &Dc_dz);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &Dc_M);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med", &D0_pvalue_med);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std", &D0_pvalue_std);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &D0_chiProb);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &D0_dr);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &D0_dz);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &D0_M);
+
+    tree_data->SetBranchAddress("flag", &flag);
 
     if(tempissignal){
         tree_data->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay_Kplus);
@@ -206,42 +203,27 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
         else if(tempissignal == true && (Decay_Kplus < 0.5 && Decay_Kplusstar_ch1 < 0.5 && Decay_Kplusstar_ch2 < 0.5 && Decay_K0 < 0.5 &&  Decay_K0star_ch1 < 0.5 && Decay_K0star_ch2 < 0.5) && Mxs < 1.1) continue;
         Nevt++;
 
-        if(Mxs > 1.0) Vars[Nvar - DvetoNvar -2] = 0.0f;
-        else Vars[Nvar - DvetoNvar -2] = Mxs;
-        Vars[Nvar - DvetoNvar -1] = Pcms;
         for (unsigned int k = 0; k < Nvar - DvetoNvar; k++) input_vars[k].push_back((float) Vars[k]); 
 
         if(Dc_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 0].push_back((float) Dc_pvalue_med);
-            input_vars[Nvar - DvetoNvar + 1].push_back((float) Dc_pvalue_std);
-            input_vars[Nvar - DvetoNvar + 2].push_back((float) Dc_chiProb);
-            input_vars[Nvar - DvetoNvar + 3].push_back((float) Dc_dr);
-            input_vars[Nvar - DvetoNvar + 4].push_back((float) Dc_dz);
-            input_vars[Nvar - DvetoNvar + 5].push_back((float) Dc_M);
+            input_vars[Nvar - DvetoNvar + 0].push_back((float) Dc_chiProb);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float) Dc_dr);
+            input_vars[Nvar - DvetoNvar + 2].push_back((float) Dc_M);
         }
         else {
             input_vars[Nvar - DvetoNvar + 0].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 1].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float) -1.0);
             input_vars[Nvar - DvetoNvar + 2].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 3].push_back((float) -1.0);
-            input_vars[Nvar - DvetoNvar + 4].push_back((float) -100.0);
-            input_vars[Nvar - DvetoNvar + 5].push_back((float) 0.0);
         }
         if(D0_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 6].push_back((float) D0_pvalue_med);
-            input_vars[Nvar - DvetoNvar + 7].push_back((float) D0_pvalue_std);
-            input_vars[Nvar - DvetoNvar + 8].push_back((float) D0_chiProb);
-            input_vars[Nvar - DvetoNvar + 9].push_back((float) D0_dr);
-            input_vars[Nvar - DvetoNvar + 10].push_back((float) D0_dz);
-            input_vars[Nvar - DvetoNvar + 11].push_back((float) D0_M);
+            input_vars[Nvar - DvetoNvar + 3].push_back((float) D0_chiProb);
+            input_vars[Nvar - DvetoNvar + 4].push_back((float) D0_dr);
+            input_vars[Nvar - DvetoNvar + 5].push_back((float) D0_M);
         }
         else {
-            input_vars[Nvar - DvetoNvar + 6].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 7].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 8].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 9].push_back((float) -1.0);
-            input_vars[Nvar - DvetoNvar + 10].push_back((float) -100.0);
-            input_vars[Nvar - DvetoNvar + 11].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 3].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 4].push_back((float) -1.0);
+            input_vars[Nvar - DvetoNvar + 5].push_back((float) 0.0);
         }
 
         IsSignal->push_back(tempissignal);
@@ -362,15 +344,14 @@ void KSTest(const FastBDT::Classifier& classifier, std::vector<std::vector<float
 
 int main()
 {
-    var_names.push_back("nRemainingTracksInEvent");
+    var_names.push_back("Bsig_useCMSFrame_p");
     var_names.push_back("Btag_chiProb");
-    var_names.push_back("Btag_extraInfo_SignalProbability");
-    var_names.push_back("thrustAxisCosTheta");
-    var_names.push_back("missingMomentumOfEvent_theta");
+    var_names.push_back("Btag_CleoConeCS_1");
+    var_names.push_back("Btag_CleoConeCS_3");
+    var_names.push_back("Btag_CleoConeCS_4");
+    var_names.push_back("Btag_CleoConeCS_5");
+    var_names.push_back("Btag_cosTBz");
     var_names.push_back("Btag_deltaE");
-    var_names.push_back("Btag_useCMSFrame_theta");
-    var_names.push_back("Btag_cosTBTO");
-
     var_names.push_back("Btag_KSFWVariables_hso00");
     var_names.push_back("Btag_KSFWVariables_hso01");
     var_names.push_back("Btag_KSFWVariables_hso03");
@@ -378,29 +359,27 @@ int main()
     var_names.push_back("Btag_KSFWVariables_hso10");
     var_names.push_back("Btag_KSFWVariables_hso14");
     var_names.push_back("Btag_KSFWVariables_hso24");
-    var_names.push_back("Btag_KSFWVariables_hoo1");
-    var_names.push_back("Btag_KSFWVariables_hoo3");
-
+    var_names.push_back("cleoConeThrust2");
+    var_names.push_back("cleoConeThrust3");
+    var_names.push_back("cleoConeThrust4");
+    var_names.push_back("cleoConeThrust5");
+    var_names.push_back("harmonicMomentThrust1");
+    var_names.push_back("harmonicMomentThrust3");
+    var_names.push_back("Btag_extraInfo_SignalProbability");
     var_names.push_back("roeEextra__bocleanMask__bc");
-    var_names.push_back("Btag_thrustOm");
-    var_names.push_back("nParticlesInList__boe__pl__clElectronFBDT__bc");
-    var_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT__bc");
+    var_names.push_back("roePTheta__bocleanMask__bc");
+    var_names.push_back("Btag_useCMSFrame_theta");
+    var_names.push_back("missingMomentumOfEvent_theta");
+    var_names.push_back("missingEnergyOfEventCMS");
+    var_names.push_back("thrustAxisCosTheta");
 
-    var_names.push_back("Bsig_M");
-    var_names.push_back("Bsig_useCMSFrame_p");
-
-    var_names.push_back("Bsig_daughter_0_extraInfo_Dc_pValue_med");
-    var_names.push_back("Bsig_daughter_0_extraInfo_Dc_pValue_std");
     var_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb");
     var_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr");
-    var_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz");
     var_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_M");
-    var_names.push_back("Bsig_daughter_0_extraInfo_D0_pValue_med");
-    var_names.push_back("Bsig_daughter_0_extraInfo_D0_pValue_std");
     var_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb");
     var_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dr");
-    var_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dz");
     var_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_M");
+
     if (Nvar != var_names.size()) {
         printf("ERROR!\n");
         exit(1);
@@ -408,7 +387,7 @@ int main()
 
     // define classifier and set options
     FastBDT::Classifier classifier;
-    classifier.SetNTrees(2200);
+    classifier.SetNTrees(2000);
 
     // define input of the classifier
     std::vector<std::vector<float>> InputVariables;
@@ -419,21 +398,21 @@ int main()
     std::vector<float> input_vars[Nvar];
 
     // input file
-    const char* SIGNAL_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/train_v000/final_output/DataFile";
-    const char* CHG_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHG_analysis/train_v000/final_output/DataFile";
-    const char* MIX_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/MIX_analysis/train_v000/final_output/DataFile";
-    const char* UUBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/UUBAR_analysis/train_v000/final_output/DataFile";
-    const char* DDBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/DDBAR_analysis/train_v000/final_output/DataFile";
-    const char* SSBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SSBAR_analysis/train_v000/final_output/DataFile";
-    const char* CHARM_input_train = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHARM_analysis/train_v000/final_output/DataFile";
+    const char* SIGNAL_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/SIGNAL_analysis/train_v000/final_output/DataFile";
+    const char* CHG_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/CHG_analysis/train_v000/final_output/DataFile";
+    const char* MIX_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/MIX_analysis/train_v000/final_output/DataFile";
+    const char* UUBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/UUBAR_analysis/train_v000/final_output/DataFile";
+    const char* DDBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/DDBAR_analysis/train_v000/final_output/DataFile";
+    const char* SSBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/SSBAR_analysis/train_v000/final_output/DataFile";
+    const char* CHARM_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/CHARM_analysis/train_v000/final_output/DataFile";
 
-    const char* SIGNAL_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SIGNAL_analysis/test_v000/final_output/DataFile";
-    const char* CHG_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHG_analysis/test_v000/final_output/DataFile";
-    const char* MIX_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/MIX_analysis/test_v000/final_output/DataFile";
-    const char* UUBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/UUBAR_analysis/test_v000/final_output/DataFile";
-    const char* DDBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/DDBAR_analysis/test_v000/final_output/DataFile";
-    const char* SSBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SSBAR_analysis/test_v000/final_output/DataFile";
-    const char* CHARM_input_test = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHARM_analysis/test_v000/final_output/DataFile";
+    const char* SIGNAL_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/SIGNAL_analysis/test_v000/final_output/DataFile";
+    const char* CHG_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/CHG_analysis/test_v000/final_output/DataFile";
+    const char* MIX_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/MIX_analysis/test_v000/final_output/DataFile";
+    const char* UUBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/UUBAR_analysis/test_v000/final_output/DataFile";
+    const char* DDBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/DDBAR_analysis/test_v000/final_output/DataFile";
+    const char* SSBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/SSBAR_analysis/test_v000/final_output/DataFile";
+    const char* CHARM_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/CHARM_analysis/test_v000/final_output/DataFile";
 
     {
         std::vector<string> names;
