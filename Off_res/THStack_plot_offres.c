@@ -58,14 +58,14 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
 // https://indico.belle2.org/event/6872/contributions/37447/attachments/17127/25504/FEIperformance_B2GM.pdf
-# define FEI_cal_Bc 0.679
+# define FEI_cal_Bc 1.0 
 # define FEI_cal_Bc_uncertainty (0.017/FEI_cal_Bc)
-# define FEI_cal_B0 0.713
+# define FEI_cal_B0 1.0
 # define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0)
 
-# define Nvar_num 65
+# define Nvar_num 72
 
-# define CAL 0.746
+# define CAL 0.1806
 
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
@@ -163,19 +163,19 @@ void LetsFillOffres(const char* dirname, std::vector<std::string> variable_names
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
 
             // Fill numberings
-            int job_id = stoi(names.at(i).substr(14, 9));
-            if (job_id >= 256844314 && job_id <= 256844816) numberings->push_back(0);
-            else if (job_id >= 256844817 && job_id <= 256845205) numberings->push_back(1);
-            else if (job_id >= 256845704 && job_id <= 256846089) numberings->push_back(2);
-            else if (job_id >= 256845206 && job_id <= 256845703) numberings->push_back(3);
-            else if (job_id >= 256846090 && job_id <= 256846478) numberings->push_back(4);
-            else if (job_id >= 256846479 && job_id <= 256846857) numberings->push_back(5);
-            else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
-            else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
-            else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
-            else if (job_id >= 256848292 && job_id <= 256848743) numberings->push_back(9);
-            else if (job_id >= 256848744 && job_id <= 256849128) numberings->push_back(10);
-            else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
+            int job_id = stoi(names.at(i).substr(16, 9));
+            if (job_id >= 265736574 && job_id <= 265736629) numberings->push_back(0);
+            else if (job_id >= 265736630 && job_id <= 265736675) numberings->push_back(1);
+            else if (job_id >= 265736722 && job_id <= 265736767) numberings->push_back(2);
+            else if (job_id >= 265736676 && job_id <= 265736721) numberings->push_back(3);
+            //else if (job_id >= 256846090 && job_id <= 256846478) numberings->push_back(4);
+            //else if (job_id >= 256846479 && job_id <= 256846857) numberings->push_back(5);
+            //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
+            //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
+            //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
+            //else if (job_id >= 256848292 && job_id <= 256848743) numberings->push_back(9);
+            //else if (job_id >= 256848744 && job_id <= 256849128) numberings->push_back(10);
+            //else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
             else {
                 printf("undefined job id!\n");
                 exit(1);
@@ -183,94 +183,94 @@ void LetsFillOffres(const char* dirname, std::vector<std::string> variable_names
 
             // Fill calibration factors
             if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B2Kc
-                weights->push_back(FEI_cal_Bc);
+                weights->push_back(FEI_cal_Bc*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B2KcPi0
-                weights->push_back(FEI_cal_Bc* pi0_correction);
+                weights->push_back(FEI_cal_Bc* pi0_correction*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B2Ks0Pic
-                weights->push_back(FEI_cal_Bc);
+                weights->push_back(FEI_cal_Bc*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B2KcPicPic
-                weights->push_back(FEI_cal_Bc);
+                weights->push_back(FEI_cal_Bc*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B2Ks0PicPi0
-                weights->push_back(FEI_cal_Bc * pi0_correction);
+                weights->push_back(FEI_cal_Bc * pi0_correction*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B2KcPicPicPi0
-                weights->push_back(FEI_cal_Bc * pi0_correction);
+                weights->push_back(FEI_cal_Bc * pi0_correction*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B2Ks0PicPicPic
-                weights->push_back(FEI_cal_Bc);
+                weights->push_back(FEI_cal_Bc*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B2KcPicPicPicPic
-                weights->push_back(FEI_cal_Bc);
+                weights->push_back(FEI_cal_Bc*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B2Ks0PicPicPicPi0
-                weights->push_back(FEI_cal_Bc * pi0_correction);
+                weights->push_back(FEI_cal_Bc * pi0_correction*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B2KcPi0Pi0
-                weights->push_back(FEI_cal_Bc * pi0_correction * pi0_correction);
+                weights->push_back(FEI_cal_Bc * pi0_correction * pi0_correction*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B2Ks0PicPi0Pi0
-                weights->push_back(FEI_cal_Bc * pi0_correction * pi0_correction);
+                weights->push_back(FEI_cal_Bc * pi0_correction * pi0_correction*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B2KcPicPicPi0Pi0
-                weights->push_back(FEI_cal_Bc * pi0_correction * pi0_correction);
+                weights->push_back(FEI_cal_Bc * pi0_correction * pi0_correction*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B2KcKcKc
-                weights->push_back(FEI_cal_Bc);
+                weights->push_back(FEI_cal_Bc*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B2KcKcKs0Pic
-                weights->push_back(FEI_cal_Bc);
+                weights->push_back(FEI_cal_Bc*CAL);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B2KcKcKcPi0
-                weights->push_back(FEI_cal_Bc * pi0_correction);
+                weights->push_back(FEI_cal_Bc * pi0_correction*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B02Ks0
-                weights->push_back(FEI_cal_B0);
+                weights->push_back(FEI_cal_B0*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B02KcPic
-                weights->push_back(FEI_cal_B0);
+                weights->push_back(FEI_cal_B0*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B02Ks0Pi0
-                weights->push_back(FEI_cal_B0 * pi0_correction);
+                weights->push_back(FEI_cal_B0 * pi0_correction*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B02KcPicPi0
-                weights->push_back(FEI_cal_B0 * pi0_correction);
+                weights->push_back(FEI_cal_B0 * pi0_correction*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B02Ks0PicPic
-                weights->push_back(FEI_cal_B0);
+                weights->push_back(FEI_cal_B0*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B02KcPicPicPic
-                weights->push_back(FEI_cal_B0);
+                weights->push_back(FEI_cal_B0*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B02Ks0PicPicPi0
-                weights->push_back(FEI_cal_B0* pi0_correction);
+                weights->push_back(FEI_cal_B0* pi0_correction*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B02KcPicPicPicPi0
-                weights->push_back(FEI_cal_B0* pi0_correction);
+                weights->push_back(FEI_cal_B0* pi0_correction*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B02Ks0PicPicPicPic
-                weights->push_back(FEI_cal_B0);
+                weights->push_back(FEI_cal_B0*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B02Ks0Pi0Pi0
-                weights->push_back(FEI_cal_B0 * pi0_correction * pi0_correction);
+                weights->push_back(FEI_cal_B0 * pi0_correction * pi0_correction*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B02KcPicPi0Pi0
-                weights->push_back(FEI_cal_B0 * pi0_correction * pi0_correction);
+                weights->push_back(FEI_cal_B0 * pi0_correction * pi0_correction*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B02Ks0PicPicPi0Pi0
-                weights->push_back(FEI_cal_B0 * pi0_correction * pi0_correction);
+                weights->push_back(FEI_cal_B0 * pi0_correction * pi0_correction*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B02KcKcKs0
-                weights->push_back(FEI_cal_B0);
+                weights->push_back(FEI_cal_B0*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B02KcKcKcPic
-                weights->push_back(FEI_cal_B0);
+                weights->push_back(FEI_cal_B0*CAL);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B02KcKcKs0Pi0
-                weights->push_back(FEI_cal_B0 * pi0_correction);
+                weights->push_back(FEI_cal_B0 * pi0_correction*CAL);
             }
             else {
                 printf("[ERROR] unexpected decay ID\n");
@@ -365,8 +365,8 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
 void THStack_plot_offres() {
 
-    const char* Offres_MC_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_off_e12_c2/SIGNAL_analysis/validation_v000/final_output";
-    const char* Offres_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_off_data_e12_c2/SIGNAL_analysis/validation_v000/final_output";
+    const char* Offres_MC_dirname = "/home/jwpark/storage/BKG_gbasf2/Izayoi_p12c1_off_MC/SIGNAL_analysis/validation_v000/final_output";
+    const char* Offres_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Izayoi_p12c1_off_data/SIGNAL_analysis/validation_v000/final_output";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
@@ -375,7 +375,10 @@ void THStack_plot_offres() {
     variable_names.push_back("Btag_extraInfo_SignalProbability"); branch_names.push_back("Btag");
     variable_names.push_back("thrustAxisCosTheta"); branch_names.push_back("Upsilon");
     variable_names.push_back("missingMomentumOfEvent_theta"); branch_names.push_back("Upsilon");
+    variable_names.push_back("missingEnergyOfEventCMS"); branch_names.push_back("Upsilon");
+    variable_names.push_back("missingMomentumOfEvent"); branch_names.push_back("Upsilon");
     variable_names.push_back("Btag_deltaE"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_Mbc"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_useCMSFrame_theta"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_cosTBTO"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso00"); branch_names.push_back("Btag");
@@ -391,6 +394,10 @@ void THStack_plot_offres() {
     variable_names.push_back("Btag_thrustOm"); branch_names.push_back("Btag");
     variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT_loose__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT_tight__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("Bsig_M"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_useCMSFrame_p"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_Dc_pValue_med"); branch_names.push_back("Bsig");
@@ -598,6 +605,20 @@ void THStack_plot_offres() {
             max = 1.0;
             min = -0.5;
         }
+        else if(hasEnding(variable_names.at(k), std::string("missingMomentumOfEvent"))){
+            max = 5.0;
+        }
+        else if(hasEnding(variable_names.at(k), std::string("missingEnergyOfEventCMS"))){
+            min = -1.5;
+        }
+        else if(hasEnding(variable_names.at(k), std::string("Btag_extraInfo_SignalProbability"))){
+            max = 0;
+            min = -3;
+            variable_names.at(k) = std::string("log_{10}SignalProbability");
+        }
+        else if(hasEnding(variable_names.at(k), std::string("Btag_thrustOm"))){
+            min = 0.5;
+        }
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";"+ variable_names.at(k) + ";number of candidates").c_str());
         uubar_hist[k] = new TH1D("u#bar{u}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
@@ -616,6 +637,22 @@ void THStack_plot_offres() {
         data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;MC/data", bins, min, max);
     }
+
+    int index = std::find(variable_names.begin(), variable_names.end(), std::string("log_{10}SignalProbability")) - variable_names.begin();
+    for (int i = 0; i < (int)uubar_values[index].size(); i++) uubar_values[index].at(i) = log10l(uubar_values[index].at(i));
+    for (int i = 0; i < (int)ddbar_values[index].size(); i++) ddbar_values[index].at(i) = log10l(ddbar_values[index].at(i));
+    for (int i = 0; i < (int)ssbar_values[index].size(); i++) ssbar_values[index].at(i) = log10l(ssbar_values[index].at(i));
+    for (int i = 0; i < (int)ccbar_values[index].size(); i++) ccbar_values[index].at(i) = log10l(ccbar_values[index].at(i));
+    for (int i = 0; i < (int)taupair_values[index].size(); i++) taupair_values[index].at(i) = log10l(taupair_values[index].at(i));
+    for (int i = 0; i < (int)mumu_values[index].size(); i++) mumu_values[index].at(i) = log10l(mumu_values[index].at(i));
+    for (int i = 0; i < (int)gg_values[index].size(); i++) gg_values[index].at(i) = log10l(gg_values[index].at(i));
+    for (int i = 0; i < (int)ee_values[index].size(); i++) ee_values[index].at(i) = log10l(ee_values[index].at(i));
+    for (int i = 0; i < (int)eeee_values[index].size(); i++) eeee_values[index].at(i) = log10l(eeee_values[index].at(i));
+    for (int i = 0; i < (int)eemumu_values[index].size(); i++) eemumu_values[index].at(i) = log10l(eemumu_values[index].at(i));
+    for (int i = 0; i < (int)llXX_values[index].size(); i++) llXX_values[index].at(i) = log10l(llXX_values[index].at(i));
+    for (int i = 0; i < (int)hhISR_values[index].size(); i++) hhISR_values[index].at(i) = log10l(hhISR_values[index].at(i));
+    for (int i = 0; i < (int)Offres_MC_values[index].size(); i++) Offres_MC_values[index].at(i) = log10l(Offres_MC_values[index].at(i));
+    for (int i = 0; i < (int)Offres_data_values[index].size(); i++) Offres_data_values[index].at(i) = log10l(Offres_data_values[index].at(i));
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
         for (int i = 0; i < (int)uubar_values[k].size(); i++) uubar_hist[k]->Fill(uubar_values[k].at(i), uubar_weights.at(i));
@@ -653,7 +690,7 @@ void THStack_plot_offres() {
         Stack[k]->Add(ddbar_hist[k]);
         Stack[k]->Add(ssbar_hist[k]);
         Stack[k]->Add(ccbar_hist[k]);
-        Stack[k]->Add(taupair_hist[k]);
+        //Stack[k]->Add(taupair_hist[k]);
         //Stack[k]->Add(mumu_hist[k]);
         //Stack[k]->Add(gg_hist[k]);
         //Stack[k]->Add(ee_hist[k]);
@@ -665,7 +702,7 @@ void THStack_plot_offres() {
         Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
         Ratio_hist[k]->Divide(stat_error_hist[k], data_hist[k]);
 
-        TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
+        TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
         TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
         pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
@@ -685,17 +722,21 @@ void THStack_plot_offres() {
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP");
         TLegend* legend = pad1->BuildLegend(0.9, 0.9, 0.7, 0.7);
-        legend->SetFillStyle(0);
-
+        legend->SetFillStyle(0); legend->SetLineWidth(0);
+        TPaveText *pt = new TPaveText(0.135,0.88,0.5, 1.0,"NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText( ("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str() ); pt->Draw();
 
         c_temp->cd();
-        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.05); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
-        Ratio_hist[k]->SetMinimum(0.9); Ratio_hist[k]->SetMaximum(1.5); Ratio_hist[k]->SetLineWidth(2); Ratio_hist[k]->Draw("ep");
+        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+        Ratio_hist[k]->SetMinimum(0.5); Ratio_hist[k]->SetMaximum(1.5); Ratio_hist[k]->SetLineWidth(2);
+        Ratio_hist[k]->GetYaxis()->SetTitleSize(0.08); Ratio_hist[k]->GetYaxis()->SetTitleOffset(0.5);
+        Ratio_hist[k]->GetXaxis()->SetLabelSize(0.08); Ratio_hist[k]->GetYaxis()->SetLabelSize(0.08);
+        Ratio_hist[k]->Draw("ep");
         TLine* line = new TLine(Ratio_hist[k]->GetXaxis()->GetXmin(), 1.0, Ratio_hist[k]->GetXaxis()->GetXmax(), 1.0);
         line->SetLineColor(kRed);
         line->SetLineStyle(1); line->SetLineWidth(3);
         line->Draw();
 
+        c_temp->SetBottomMargin(0.0);
         c_temp->SaveAs((variable_names.at(k)+"_offres.png").c_str());
 
         delete c_temp;
