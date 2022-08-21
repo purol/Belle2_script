@@ -237,7 +237,7 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
 }
 
 double PrintMaximumFOM(const FastBDT::Classifier& classifier, std::vector<std::vector<float>> InputVariables, std::vector<bool> IsSignal, std::vector<float> weight) {
-    const int step = 50;
+    const int step = 100;
     double FOM_max = -1;
 
     for (int i = 0; i < step; i++) {

@@ -37,6 +37,15 @@ void ReadFOMFiles1D(){
 
     double FOM_Matrix_large[Nstep];
     for (int i = 0; i < Nstep; i++) FOM_Matrix_large[i] = 0;
+
+    double Matrix_SIGNAL[Nstep];
+    for (int i = 0; i < Nstep; i++) Matrix_SIGNAL[i] = 0;
+
+    double Matrix_BKG[Nstep];
+    for (int i = 0; i < Nstep; i++) Matrix_BKG[i] = 0;
+
+    double FOM_Matrix[Nstep];
+    for (int i = 0; i < Nstep; i++) FOM_Matrix[i] = 0;
     
     /* ========================== read FOM files ========================== */
     FILE* pf;
@@ -45,6 +54,7 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_SIGNAL_small[i] = Matrix_SIGNAL_small[i] + temp_var;
+        Matrix_SIGNAL[i] = Matrix_SIGNAL[i] + temp_var;
     }
     fclose(pf);
 
@@ -52,6 +62,7 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_SIGNAL_small[i] = Matrix_SIGNAL_small[i] + temp_var;
+        Matrix_SIGNAL[i] = Matrix_SIGNAL[i] + temp_var;
     }
     fclose(pf);
 
@@ -59,6 +70,7 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_SIGNAL_small[i] = Matrix_SIGNAL_small[i] + temp_var;
+        Matrix_SIGNAL[i] = Matrix_SIGNAL[i] + temp_var;
     }
     fclose(pf);
 
@@ -66,6 +78,7 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_SIGNAL_small[i] = Matrix_SIGNAL_small[i] + temp_var;
+        Matrix_SIGNAL[i] = Matrix_SIGNAL[i] + temp_var;
     }
     fclose(pf);
 
@@ -73,6 +86,7 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_SIGNAL_small[i] = Matrix_SIGNAL_small[i] + temp_var;
+        Matrix_SIGNAL[i] = Matrix_SIGNAL[i] + temp_var;
     }
     fclose(pf);
 
@@ -80,6 +94,7 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_SIGNAL_small[i] = Matrix_SIGNAL_small[i] + temp_var;
+        Matrix_SIGNAL[i] = Matrix_SIGNAL[i] + temp_var;
     }
     fclose(pf);
 
@@ -87,6 +102,7 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_BKG_small[i] = Matrix_BKG_small[i] + temp_var;
+        Matrix_BKG[i] = Matrix_BKG[i] + temp_var;
     }
     fclose(pf);
 
@@ -95,6 +111,7 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_SIGNAL_large[i] = Matrix_SIGNAL_large[i] + temp_var;
+        Matrix_SIGNAL[i] = Matrix_SIGNAL[i] + temp_var;
     }
     fclose(pf);
 
@@ -102,6 +119,7 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_SIGNAL_large[i] = Matrix_SIGNAL_large[i] + temp_var;
+        Matrix_SIGNAL[i] = Matrix_SIGNAL[i] + temp_var;
     }
     fclose(pf);
 
@@ -109,6 +127,7 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_SIGNAL_large[i] = Matrix_SIGNAL_large[i] + temp_var;
+        Matrix_SIGNAL[i] = Matrix_SIGNAL[i] + temp_var;
     }
     fclose(pf);
 
@@ -116,6 +135,7 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_SIGNAL_large[i] = Matrix_SIGNAL_large[i] + temp_var;
+        Matrix_SIGNAL[i] = Matrix_SIGNAL[i] + temp_var;
     }
     fclose(pf);
 
@@ -123,6 +143,7 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_SIGNAL_large[i] = Matrix_SIGNAL_large[i] + temp_var;
+        Matrix_SIGNAL[i] = Matrix_SIGNAL[i] + temp_var;
     }
     fclose(pf);
 
@@ -130,6 +151,7 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_SIGNAL_large[i] = Matrix_SIGNAL_large[i] + temp_var;
+        Matrix_SIGNAL[i] = Matrix_SIGNAL[i] + temp_var;
     }
     fclose(pf);
 
@@ -137,12 +159,14 @@ void ReadFOMFiles1D(){
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
         Matrix_BKG_large[i] = Matrix_BKG_large[i] + temp_var;
+        Matrix_BKG[i] = Matrix_BKG[i] + temp_var;
     }
     fclose(pf);
     /* ========================== read FOM files ========================== */
     
     for (int i = 0; i < Nstep; i++) FOM_Matrix_small[i] = Matrix_SIGNAL_small[i] / sqrt(Matrix_SIGNAL_small[i] + Matrix_BKG_small[i]);
     for (int i = 0; i < Nstep; i++) FOM_Matrix_large[i] = Matrix_SIGNAL_large[i] / sqrt(Matrix_SIGNAL_large[i] + Matrix_BKG_large[i]);
+    for (int i = 0; i < Nstep; i++) FOM_Matrix[i] = Matrix_SIGNAL[i] / sqrt(Matrix_SIGNAL[i] + Matrix_BKG[i]);
 
     for (int i = 0; i < Nstep; i++) {
         printf("%f ", FOM_Matrix_small[i]);
@@ -153,6 +177,13 @@ void ReadFOMFiles1D(){
 
     for (int i = 0; i < Nstep; i++) {
         printf("%f ", FOM_Matrix_large[i]);
+        printf("\n");
+    }
+
+    printf("\n\n\n");
+
+    for (int i = 0; i < Nstep; i++) {
+        printf("%f ", FOM_Matrix[i]);
         printf("\n");
     }
 
@@ -175,4 +206,13 @@ void ReadFOMFiles1D(){
     gr2->SetMarkerStyle(0);
     gr2->Draw("");
     c2->SaveAs("FOM_large.png");
+
+
+    TCanvas* c3 = new TCanvas("c3", "Graph Draw Options", 200, 10, 600, 600);
+
+    TGraph* gr3 = new TGraph(Nstep, O_Continuum, FOM_Matrix);
+    gr3->SetTitle(";FBDT;#frac{S}{#sqrt{S+B}}");
+    gr3->SetMarkerStyle(0);
+    gr3->Draw("");
+    c3->SaveAs("FOM_total.png");
 }
