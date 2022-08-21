@@ -256,7 +256,7 @@ double PrintMaximumFOM(const FastBDT::Classifier& classifier, std::vector<std::v
         }
 
         double FOM = NSIG / std::sqrt(NBKG + NSIG);
-        if (FOM > FOM_max) FOM = FOM_max;
+        if (FOM > FOM_max) FOM_max = FOM;
 
     }
 
