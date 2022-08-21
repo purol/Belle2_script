@@ -266,22 +266,45 @@ double PrintMaximumFOM(const FastBDT::Classifier& classifier, std::vector<std::v
 
 int main(int argc, char* argv[])
 {
-    // input file
-    const char* SIGNAL_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/SIGNAL_analysis/train_v000/final_output/DataFile";
-    const char* CHG_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/CHG_analysis/train_v000/final_output/DataFile";
-    const char* MIX_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/MIX_analysis/train_v000/final_output/DataFile";
-    const char* UUBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/UUBAR_analysis/train_v000/final_output/DataFile";
-    const char* DDBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/DDBAR_analysis/train_v000/final_output/DataFile";
-    const char* SSBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/SSBAR_analysis/train_v000/final_output/DataFile";
-    const char* CHARM_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/CHARM_analysis/train_v000/final_output/DataFile";
+    // grid search
+    // unsigned int nTrees[5] = { 100, 500, 1000, 1500, 2000 };  default is 100
+    // unsigned int depth[3] = { 2, 3, 4 };  default is 3 
+    // double shrinkage[4] = { 0.05, 0.1, 0.15, 0.2 };  default is 0.1
+    // double subsample[5] = { 0.3, 0.4, 0.5, 0.6, 0.7 };  default is 0.5
+    // unsigned int binning[4] = { 6, 7, 8, 9 };  default is 2^8 bins per feature
 
-    const char* SIGNAL_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/SIGNAL_analysis/test_v000/final_output/DataFile";
-    const char* CHG_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/CHG_analysis/test_v000/final_output/DataFile";
-    const char* MIX_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/MIX_analysis/test_v000/final_output/DataFile";
-    const char* UUBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/UUBAR_analysis/test_v000/final_output/DataFile";
-    const char* DDBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/DDBAR_analysis/test_v000/final_output/DataFile";
-    const char* SSBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/SSBAR_analysis/test_v000/final_output/DataFile";
-    const char* CHARM_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/CHARM_analysis/test_v000/final_output/DataFile";
+    unsigned int nTrees = (unsigned int)atoi(argv[1]);
+    unsigned int depth = (unsigned int)atoi(argv[2]);
+    double shrinkage = atof(argv[3]);
+    double subsample = atof(argv[4]);
+    unsigned int binning_num = (unsigned int)atoi(argv[5]);
+
+    // set classifier option
+    FastBDT::Classifier classifier;
+    classifier.SetNTrees(nTrees);
+    classifier.SetDepth(depth);
+    classifier.SetShrinkage(shrinkage);
+    classifier.SetSubsample(subsample);
+    std::vector<unsigned int> binning(Nvar, binning_num); classifier.SetBinning(binning);
+
+
+
+    // input file
+    const char* SIGNAL_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/SIGNAL_analysis/train_v000/final_output/DataFile";
+    const char* CHG_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/CHG_analysis/train_v000/final_output/DataFile";
+    const char* MIX_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/MIX_analysis/train_v000/final_output/DataFile";
+    const char* UUBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/UUBAR_analysis/train_v000/final_output/DataFile";
+    const char* DDBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/DDBAR_analysis/train_v000/final_output/DataFile";
+    const char* SSBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/SSBAR_analysis/train_v000/final_output/DataFile";
+    const char* CHARM_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/CHARM_analysis/train_v000/final_output/DataFile";
+
+    const char* SIGNAL_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/SIGNAL_analysis/test_v000/final_output/DataFile";
+    const char* CHG_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/CHG_analysis/test_v000/final_output/DataFile";
+    const char* MIX_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/MIX_analysis/test_v000/final_output/DataFile";
+    const char* UUBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/UUBAR_analysis/test_v000/final_output/DataFile";
+    const char* DDBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/DDBAR_analysis/test_v000/final_output/DataFile";
+    const char* SSBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/SSBAR_analysis/test_v000/final_output/DataFile";
+    const char* CHARM_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/CHARM_analysis/test_v000/final_output/DataFile";
 
 
 
@@ -385,6 +408,16 @@ int main(int argc, char* argv[])
 
 
 
+    // fit
+    classifier.fit(InputVariables, IsSignal, weight);
+
+    // clear vector to save memory
+    for (unsigned int i = 0; i < InputVariables.size(); ++i) std::vector<float>().swap(InputVariables.at(i));
+    std::vector<std::vector<float>>().swap(InputVariables);
+    std::vector<bool>().swap(IsSignal);
+    std::vector<float>().swap(weight);
+    for (int i = 0; i < Nvar; i++) std::vector<float>().swap(input_vars[i]);
+
 
 
     // test sample
@@ -486,6 +519,17 @@ int main(int argc, char* argv[])
 
 
 
+    // get FOM for testing sample
+    double test_FOM = PrintMaximumFOM(classifier, InputVariables2, IsSignal2, weight2);
+
+    // clear vector to save memory
+    for (unsigned int i = 0; i < InputVariables2.size(); ++i) std::vector<float>().swap(InputVariables2.at(i));
+    std::vector<std::vector<float>>().swap(InputVariables2);
+    std::vector<bool>().swap(IsSignal2);
+    std::vector<float>().swap(weight2);
+    for (int i = 0; i < Nvar; i++) std::vector<float>().swap(input_vars2[i]);
+
+
 
     // train sample with proper weight
     std::vector<std::vector<float>> InputVariables3;
@@ -585,34 +629,25 @@ int main(int argc, char* argv[])
     }
 
 
-    // grid search
-    // unsigned int nTrees[5] = { 100, 500, 1000, 1500, 2000 };  default is 100
-    // unsigned int depth[3] = { 2, 3, 4 };  default is 3 
-    // double shrinkage[4] = { 0.05, 0.1, 0.15, 0.2 };  default is 0.1
-    // double subsample[5] = { 0.3, 0.4, 0.5, 0.6, 0.7 };  default is 0.5
-    // unsigned int binning[4] = { 6, 7, 8, 9 };  default is 2^8 bins per feature
 
-    unsigned int nTrees = (unsigned int)atoi(argv[1]);
-    unsigned int depth = (unsigned int)atoi(argv[2]);
-    double shrinkage = atof(argv[3]);
-    double subsample = atof(argv[4]);
-    unsigned int binning_num = (unsigned int)atoi(argv[5]);
-
-    // set classifier option
-    FastBDT::Classifier classifier;
-    classifier.SetNTrees(nTrees);
-    classifier.SetDepth(depth);
-    classifier.SetShrinkage(shrinkage);
-    classifier.SetSubsample(subsample);
-    std::vector<unsigned int> binning(Nvar, binning_num); classifier.SetBinning(binning);
-
-    // fit
-    classifier.fit(InputVariables, IsSignal, weight);
-
+    // get FOM for training sample
     double train_FOM = PrintMaximumFOM(classifier, InputVariables3, IsSignal3, weight3);
-    double test_FOM = PrintMaximumFOM(classifier, InputVariables2, IsSignal2, weight2);
+
+    // clear vector to save memory
+    for (unsigned int i = 0; i < InputVariables3.size(); ++i) std::vector<float>().swap(InputVariables3.at(i));
+    std::vector<std::vector<float>>().swap(InputVariables3);
+    std::vector<bool>().swap(IsSignal3);
+    std::vector<float>().swap(weight3);
+    for (int i = 0; i < Nvar; i++) std::vector<float>().swap(input_vars3[i]);
+
+
 
     printf("%u_%u_%lf_%lf_%u %lf %lf\n", nTrees, depth, shrinkage, subsample, binning_num, train_FOM, test_FOM);
+
+    FILE* fp;
+    fp = fopen(("/home/belle2/junewoo/storage_b1/GridSearch/out/Result_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])).c_str(), "w");
+    fprintf(fp, "%u_%u_%lf_%lf_%u %lf %lf\n", nTrees, depth, shrinkage, subsample, binning_num, train_FOM, test_FOM);
+    fclose(fp);
 
     return 0;
 }
