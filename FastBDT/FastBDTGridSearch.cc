@@ -263,6 +263,57 @@ double PrintMaximumFOM(const FastBDT::Classifier& classifier, std::vector<std::v
     return FOM_max;
 }
 
+double PrintAUC(const FastBDT::Classifier& classifier, std::vector<std::vector<float>> InputVariables, std::vector<bool> IsSignal, std::vector<float> weight) {
+    const int step = 100;
+    double AUC = 0;
+    double NBKG_total = 0;
+    double NSIG_total = 0;
+    std::vector<double> TPRs;
+    std::vector<double> FPRs;
+
+    for (unsigned int i = 0; i < IsSignal.size(); ++i) {
+        if (IsSignal[i]) NSIG_total = NSIG_total + weight[i];
+        else NBKG_total = NBKG_total + weight[i];
+    }
+
+    for (int i = 0; i < step; i++) {
+        float value = ((float)i) / ((float)step);
+        double NBKG = 0;
+        double NSIG = 0;
+
+        for (unsigned int i = 0; i < IsSignal.size(); ++i) {
+            std::vector<float> temp;
+            for (int j = 0; j < Nvar; j++) temp.push_back(InputVariables.at(j).at(i));
+            float p = classifier.predict(temp);
+            if (p >= value) {
+                if (IsSignal[i]) NSIG = NSIG + weight[i];
+                else NBKG = NBKG + weight[i];
+            }
+        }
+
+        double TPR = NSIG / NSIG_total;
+        double FPR = NBKG / NBKG_total;
+
+        TPRs.push_back(TPR);
+        FPRs.push_back(FPR);
+    }
+
+    for (unsigned int i = 0; i < TPRs.size(); ++i) {
+        if ( i != TPRs.size() - 1) {
+            double del_FPR = FPRs.at(i) - FPRs.at(i + 1);
+            double avg_TPR = (TPRs.at(i) + TPRs.at(i + 1)) / 2.0;
+            AUC = AUC + del_FPR * avg_TPR;
+        }
+        else {
+            double del_FPR = FPRs.at(i) - 0.0;
+            double avg_TPR = (TPRs.at(i) + 0.0) / 2.0;
+            AUC = AUC + del_FPR * avg_TPR;
+        }
+    }
+
+    return AUC;
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -520,7 +571,10 @@ int main(int argc, char* argv[])
 
 
     // get FOM for testing sample
-    double test_FOM = PrintMaximumFOM(classifier, InputVariables2, IsSignal2, weight2);
+    // double test_FOM = PrintMaximumFOM(classifier, InputVariables2, IsSignal2, weight2);
+
+    // get AUC for testing sample
+    double test_AUC = PrintAUC(classifier, InputVariables2, IsSignal2, weight2);
 
     // clear vector to save memory
     for (unsigned int i = 0; i < InputVariables2.size(); ++i) std::vector<float>().swap(InputVariables2.at(i));
@@ -631,7 +685,10 @@ int main(int argc, char* argv[])
 
 
     // get FOM for training sample
-    double train_FOM = PrintMaximumFOM(classifier, InputVariables3, IsSignal3, weight3);
+    // double train_FOM = PrintMaximumFOM(classifier, InputVariables3, IsSignal3, weight3);
+
+    // get AUC for training sample
+    double train_AUC = PrintAUC(classifier, InputVariables3, IsSignal3, weight3);
 
     // clear vector to save memory
     for (unsigned int i = 0; i < InputVariables3.size(); ++i) std::vector<float>().swap(InputVariables3.at(i));
@@ -642,7 +699,7 @@ int main(int argc, char* argv[])
 
 
 
-    printf("%u_%u_%lf_%lf_%u %lf %lf\n", nTrees, depth, shrinkage, subsample, binning_num, train_FOM, test_FOM);
+    printf("%u_%u_%lf_%lf_%u %lf %lf\n", nTrees, depth, shrinkage, subsample, binning_num, train_AUC, test_AUC);
 
     FILE* fp;
     fp = fopen(("/home/belle2/junewoo/storage_b1/GridSearch/out/Result_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])).c_str(), "w");
