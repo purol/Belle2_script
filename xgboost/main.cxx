@@ -180,7 +180,7 @@ int GetEntryNum(const char* dirname, bool tempissignal) {
 
 }
 
-void FillVariables(const char* filename, float ** input_data, float* IsSignal, float* weight, bool tempissignal, int* indicator, float weight_N = 1.0) {
+void FillVariables(const char* filename, float * input_data, float* IsSignal, float* weight, bool tempissignal, int* indicator, float weight_N = 1.0) {
     TFile* input_file = new TFile(filename, "read");
 
     TTree* tree_data = (TTree*)input_file->Get("data");
@@ -265,34 +265,48 @@ void FillVariables(const char* filename, float ** input_data, float* IsSignal, f
         if (tempissignal == true && (Decay_Kplus > 0.5 || Decay_Kplusstar_ch1 > 0.5 || Decay_Kplusstar_ch2 > 0.5 || Decay_K0 > 0.5 || Decay_K0star_ch1 > 0.5 || Decay_K0star_ch2 > 0.5) && Mxs > 1.1) continue;
         else if (tempissignal == true && (Decay_Kplus < 0.5 && Decay_Kplusstar_ch1 < 0.5 && Decay_Kplusstar_ch2 < 0.5 && Decay_K0 < 0.5 && Decay_K0star_ch1 < 0.5 && Decay_K0star_ch2 < 0.5) && Mxs < 1.1) continue;
 
-        for (unsigned int k = 0; k < Nvar - DvetoNvar; k++) input_data[*indicator][k] = (float)Vars[k];
+        for (unsigned int k = 0; k < Nvar - DvetoNvar; k++) {
+            input_data[*indicator] = (float)Vars[k];
+            *indicator = *indicator + 1;
+        }
 
         if (Dc_chiProb > -0.5) {
-            input_data[*indicator][Nvar - DvetoNvar + 0] = (float)Dc_chiProb;
-            input_data[*indicator][Nvar - DvetoNvar + 1] = (float)Dc_dr;
-            input_data[*indicator][Nvar - DvetoNvar + 2] = (float)Dc_M;
+            input_data[*indicator] = (float)Dc_chiProb;
+            *indicator = *indicator + 1;
+            input_data[*indicator] = (float)Dc_dr;
+            *indicator = *indicator + 1;
+            input_data[*indicator] = (float)Dc_M;
+            *indicator = *indicator + 1;
         }
         else {
-            input_data[*indicator][Nvar - DvetoNvar + 0] = 0.0f;
-            input_data[*indicator][Nvar - DvetoNvar + 1] = -1.0f;
-            input_data[*indicator][Nvar - DvetoNvar + 2] = 0.0f;
+            input_data[*indicator] = 0.0f;
+            *indicator = *indicator + 1;
+            input_data[*indicator] = -1.0f;
+            *indicator = *indicator + 1;
+            input_data[*indicator] = 0.0f;
+            *indicator = *indicator + 1;
         }
         if (D0_chiProb > -0.5) {
-            input_data[*indicator][Nvar - DvetoNvar + 3] = (float)D0_chiProb;
-            input_data[*indicator][Nvar - DvetoNvar + 4] = (float)D0_dr;
-            input_data[*indicator][Nvar - DvetoNvar + 5] = (float)D0_M;
+            input_data[*indicator] = (float)D0_chiProb;
+            *indicator = *indicator + 1;
+            input_data[*indicator] = (float)D0_dr;
+            *indicator = *indicator + 1;
+            input_data[*indicator] = (float)D0_M;
+            *indicator = *indicator + 1;
         }
         else {
-            input_data[*indicator][Nvar - DvetoNvar + 3] = 0.0f;
-            input_data[*indicator][Nvar - DvetoNvar + 4] = -1.0f;
-            input_data[*indicator][Nvar - DvetoNvar + 5] = 0.0f;
+            input_data[*indicator] = 0.0f;
+            *indicator = *indicator + 1;
+            input_data[*indicator] = -1.0f;
+            *indicator = *indicator + 1;
+            input_data[*indicator] = 0.0f;
+            *indicator = *indicator + 1;
         }
 
-        if (tempissignal) IsSignal[*indicator] = 1.0f;
-        else IsSignal[*indicator] = 0.0f;
-        weight[*indicator] = weight_N;
+        if (tempissignal) IsSignal[(*indicator - 1) / Nvar] = 1.0f;
+        else IsSignal[(*indicator - 1) / (int) Nvar] = 0.0f;
+        weight[(*indicator - 1) / (int) Nvar] = weight_N;
 
-        *indicator = *indicator + 1;
     }
 
     input_file->Close();
@@ -400,9 +414,8 @@ int main(int argc, char** argv) {
 
 
     // set training sample
-    float** train_set; int train_indicator = 0; float* train_weight; float* train_IsSignal;
-    train_set = (float**)malloc(sizeof(float*) * N_entry_train);
-    for (int i = 0; i < N_entry_train; i++) train_set[i] = (float*)malloc(sizeof(float) * Nvar);
+    float* train_set; int train_indicator = 0; float* train_weight; float* train_IsSignal;
+    train_set = (float*)malloc(sizeof(float*) * N_entry_train * Nvar);
     train_weight = (float*)malloc(sizeof(float) * N_entry_train);
     train_IsSignal = (float*)malloc(sizeof(float) * N_entry_train);
 
@@ -494,7 +507,7 @@ int main(int argc, char** argv) {
 
     // convert to DMatrix
     DMatrixHandle h_train;
-    safe_xgboost(XGDMatrixCreateFromMat((float*)train_set, N_entry_train, Nvar, FLT_MAX, &h_train));
+    safe_xgboost(XGDMatrixCreateFromMat(train_set, N_entry_train, Nvar, FLT_MAX, &h_train));
 
     // load the labels
     safe_xgboost(XGDMatrixSetFloatInfo(h_train, "label", train_IsSignal, N_entry_train));
@@ -531,7 +544,6 @@ int main(int argc, char** argv) {
     safe_xgboost(XGDMatrixFree(h_train));
     free(train_IsSignal);
     free(train_weight);
-    for (int i = 0; i < N_entry_train; i++) free(train_set[i]);
     free(train_set);
 
 
@@ -539,8 +551,7 @@ int main(int argc, char** argv) {
 
     // set training sample2
     float** train_set2; int train_indicator2 = 0; float* train_weight2; float* train_IsSignal2;
-    train_set2 = (float**)malloc(sizeof(float*) * N_entry_train);
-    for (int i = 0; i < N_entry_train; i++) train_set2[i] = (float*)malloc(sizeof(float) * Nvar);
+    train_set2 = (float**)malloc(sizeof(float*) * N_entry_train * Nvar);
     train_weight2 = (float*)malloc(sizeof(float) * N_entry_train);
     train_IsSignal2 = (float*)malloc(sizeof(float) * N_entry_train);
 
@@ -650,7 +661,6 @@ int main(int argc, char** argv) {
     safe_xgboost(XGDMatrixFree(h_train2));
     free(train_IsSignal2);
     free(train_weight2);
-    for (int i = 0; i < N_entry_train; i++) free(train_set2[i]);
     free(train_set2);
 
 
@@ -658,8 +668,7 @@ int main(int argc, char** argv) {
 
     // set testing sample
     float** test_set; int test_indicator = 0; float* test_weight; float* test_IsSignal;
-    test_set = (float**)malloc(sizeof(float*) * N_entry_test);
-    for (int i = 0; i < N_entry_test; i++) test_set[i] = (float*)malloc(sizeof(float) * Nvar);
+    test_set = (float**)malloc(sizeof(float*) * N_entry_test * Nvar);
     test_weight = (float*)malloc(sizeof(float) * N_entry_test);
     test_IsSignal = (float*)malloc(sizeof(float) * N_entry_test);
 
@@ -769,7 +778,6 @@ int main(int argc, char** argv) {
     safe_xgboost(XGDMatrixFree(h_test));
     free(test_IsSignal);
     free(test_weight);
-    for (int i = 0; i < N_entry_test; i++) free(test_set[i]);
     free(test_set);
 
 
