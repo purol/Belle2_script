@@ -550,7 +550,7 @@ int main(int argc, char** argv) {
 
 
     // set training sample2
-    float** train_set2; int train_indicator2 = 0; float* train_weight2; float* train_IsSignal2;
+    float* train_set2; int train_indicator2 = 0; float* train_weight2; float* train_IsSignal2;
     train_set2 = (float**)malloc(sizeof(float*) * N_entry_train * Nvar);
     train_weight2 = (float*)malloc(sizeof(float) * N_entry_train);
     train_IsSignal2 = (float*)malloc(sizeof(float) * N_entry_train);
@@ -667,7 +667,7 @@ int main(int argc, char** argv) {
 
 
     // set testing sample
-    float** test_set; int test_indicator = 0; float* test_weight; float* test_IsSignal;
+    float* test_set; int test_indicator = 0; float* test_weight; float* test_IsSignal;
     test_set = (float**)malloc(sizeof(float*) * N_entry_test * Nvar);
     test_weight = (float*)malloc(sizeof(float) * N_entry_test);
     test_IsSignal = (float*)malloc(sizeof(float) * N_entry_test);
