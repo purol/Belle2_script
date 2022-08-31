@@ -38,7 +38,7 @@
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
-# define Nvar 34
+# define Nvar 46
 # define DvetoNvar 6
 
 // arXiv:1409.4557v2
@@ -146,40 +146,52 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     double Mxs = -1;
     double Pcms = -1;
 
-    tree_data->SetBranchAddress("Bsig_useCMSFrame_p", &Vars[0]);
-    tree_data->SetBranchAddress("Btag_chiProb", &Vars[1]);
+    tree_data->SetBranchAddress("aplanarity", &Vars[0]);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_mydz", &Vars[1]);
     tree_data->SetBranchAddress("Btag_CleoConeCS_1", &Vars[2]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_3", &Vars[3]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_4", &Vars[4]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_5", &Vars[5]);
-    tree_data->SetBranchAddress("Btag_cosTBz", &Vars[6]);
-    tree_data->SetBranchAddress("Btag_deltaE", &Vars[7]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso00", &Vars[8]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso01", &Vars[9]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso03", &Vars[10]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso04", &Vars[11]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso10", &Vars[12]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso14", &Vars[13]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[14]);
-    tree_data->SetBranchAddress("cleoConeThrust2", &Vars[15]);
-    tree_data->SetBranchAddress("cleoConeThrust3", &Vars[16]);
-    tree_data->SetBranchAddress("cleoConeThrust4", &Vars[17]);
-    tree_data->SetBranchAddress("cleoConeThrust5", &Vars[18]);
-    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[19]);
-    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[20]);
-    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[21]);
-    tree_data->SetBranchAddress("roeEextra__bocleanMask__bc", &Vars[22]);
-    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[23]);
-    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[24]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[25]);
-    tree_data->SetBranchAddress("missingEnergyOfEventCMS", &Vars[26]);
-    tree_data->SetBranchAddress("thrustAxisCosTheta", &Vars[27]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_2", &Vars[3]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_3", &Vars[4]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_4", &Vars[5]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_5", &Vars[6]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_6", &Vars[7]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_7", &Vars[8]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_8", &Vars[9]);
+    tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[10]);
+    tree_data->SetBranchAddress("Btag_cosTBz", &Vars[11]);
+    tree_data->SetBranchAddress("Btag_deltaE", &Vars[12]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso01", &Vars[13]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso03", &Vars[14]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso04", &Vars[15]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso14", &Vars[16]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[17]);
+    tree_data->SetBranchAddress("Btag_thrustBm", &Vars[18]);
+    tree_data->SetBranchAddress("Btag_thrustOm", &Vars[19]);
+    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[20]);
+    tree_data->SetBranchAddress("cleoConeThrust0", &Vars[21]);
+    tree_data->SetBranchAddress("cleoConeThrust1", &Vars[22]);
+    tree_data->SetBranchAddress("cleoConeThrust2", &Vars[23]);
+    tree_data->SetBranchAddress("cleoConeThrust3", &Vars[24]);
+    tree_data->SetBranchAddress("cleoConeThrust4", &Vars[25]);
+    tree_data->SetBranchAddress("cleoConeThrust5", &Vars[26]);
+    tree_data->SetBranchAddress("cleoConeThrust6", &Vars[27]);
+    tree_data->SetBranchAddress("cleoConeThrust7", &Vars[28]);
+    tree_data->SetBranchAddress("cleoConeThrust8", &Vars[29]);
+    tree_data->SetBranchAddress("harmonicMomentThrust2", &Vars[30]);
+    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[31]);
+    tree_data->SetBranchAddress("harmonicMomentThrust4", &Vars[32]);
+    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[33]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[34]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[35]);
+    tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &Vars[36]);
+    tree_data->SetBranchAddress("roeEextra__bocleanMask__bc", &Vars[37]);
+    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[38]);
 
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &Dc_chiProb);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &Dc_dr);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &Dc_dz);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &Dc_M);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &D0_chiProb);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &D0_dr);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &D0_dz);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &D0_M);
 
     tree_data->SetBranchAddress("flag", &flag);
@@ -371,84 +383,84 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Knunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 4.0);
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 7.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Kstarnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 4.0);
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 7.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 4.0);
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 7.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02K0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 4.0);
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 7.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02Kstar0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 4.0);
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 7.0);
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 4.0);
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 3.0 / 7.0);
         }
     }
     {
         std::vector<string> names;
         load_files(CHG_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, (0.3 / 1.6));
+            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, (0.3 / 1.0));
         }
     }
     {
         std::vector<string> names;
         load_files(MIX_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, (0.3 / 1.6));
+            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, (0.3 / 1.0));
         }
     }
     {
         std::vector<string> names;
         load_files(UUBAR_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, (0.3 / 1.7));
+            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, (0.3 / 1.1));
         }
     }
     {
         std::vector<string> names;
         load_files(DDBAR_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, (0.3 / 1.7));
+            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, (0.3 / 1.1));
         }
     }
     {
         std::vector<string> names;
         load_files(SSBAR_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, (0.3 / 1.7));
+            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, (0.3 / 1.1));
         }
     }
     {
         std::vector<string> names;
         load_files(CHARM_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, (0.3 / 1.7));
+            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, (0.3 / 1.1));
         }
     }
 
@@ -538,7 +550,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((CHG_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
+            FillVariables((CHG_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.5);
         }
     }
     {
@@ -547,7 +559,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((MIX_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
+            FillVariables((MIX_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.5);
         }
     }
     {
@@ -556,7 +568,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((UUBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
+            FillVariables((UUBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.5);
         }
     }
     {
@@ -565,7 +577,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((DDBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
+            FillVariables((DDBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.5);
         }
     }
     {
@@ -574,7 +586,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SSBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
+            FillVariables((SSBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.5);
         }
     }
     {
@@ -583,7 +595,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((CHARM_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
+            FillVariables((CHARM_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.5);
         }
     }
 
@@ -620,84 +632,84 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Knunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, Scale_Kplus);
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, Scale_Kplus* (3.0 / 7.0));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Kstarnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, Scale_Kplusstar);
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, Scale_Kplusstar* (3.0 / 7.0));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, Scale_Xsu_nonresonant);
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, Scale_Xsu_nonresonant* (3.0 / 7.0));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02K0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, Scale_K0);
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, Scale_K0 * (3.0 / 7.0));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02Kstar0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, Scale_K0star);
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, Scale_K0star* (3.0 / 7.0));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, Scale_Xsd_nonresonant);
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, Scale_Xsd_nonresonant * (3.0/7.0));
         }
     }
     {
         std::vector<string> names;
         load_files(CHG_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, (0.3 / 1.6));
+            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, (0.3 / 1.0));
         }
     }
     {
         std::vector<string> names;
         load_files(MIX_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, (0.3 / 1.6));
+            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, (0.3 / 1.0));
         }
     }
     {
         std::vector<string> names;
         load_files(UUBAR_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, (0.3 / 1.7));
+            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, (0.3 / 1.1));
         }
     }
     {
         std::vector<string> names;
         load_files(DDBAR_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, (0.3 / 1.7));
+            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, (0.3 / 1.1));
         }
     }
     {
         std::vector<string> names;
         load_files(SSBAR_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, (0.3 / 1.7));
+            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, (0.3 / 1.1));
         }
     }
     {
         std::vector<string> names;
         load_files(CHARM_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, (0.3 / 1.7));
+            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, (0.3 / 1.1));
         }
     }
 
