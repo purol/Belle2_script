@@ -79,7 +79,7 @@
 # define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
 # define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
 
-# define Niter 2000
+# define Niter 250
 
 using std::string;
 
@@ -178,6 +178,30 @@ int GetEntryNum(const char* dirname, bool tempissignal) {
 
     return (int)N_Entry;
 
+}
+
+int FindOptimizedIter(double AUC_train[Niter], double AUC_test[Niter], const int N_check = 5) {
+    double AUCs[N_check] = { 0.0 };
+
+    for (int i = 0; i < Niter - N_check + 1; i++) {
+        bool IsItOverfitted = false;
+
+        // initialization
+        for (int j = 0; j < N_check; j++) AUCs[j] = AUC_Test[i + j];
+
+        for (int j = 0; j < N_check - 1; j++) {
+            if (AUCs[j] < AUCs[j + 1]) {
+                IsItOverfitted = false;
+                break;
+            }
+            IsItOverfitted = true;
+        }
+
+        if (IsItOverfitted) return i + 1;
+
+    }
+
+    return Niter;
 }
 
 void FillVariables(const char* filename, float * input_data, float* IsSignal, float* weight, bool tempissignal, int* indicator, float weight_N = 1.0) {
@@ -371,6 +395,10 @@ double CalculateAUC(bst_ulong out_len, const float* f, float* IsSignal, float* w
 }
 
 int main(int argc, char** argv) {
+    // set name
+    std::string model_name = std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5]) + "_" + std::string(argv[6]);
+
+    
     // AUCs
     double AUC_train[Niter] = { 0 };
     double AUC_test[Niter] = { 0 };
@@ -518,14 +546,14 @@ int main(int argc, char** argv) {
     safe_xgboost(XGBoosterCreate(&h_train, 1, &h_booster));
     safe_xgboost(XGBoosterSetParam(h_booster, "booster", "gbtree"));
     safe_xgboost(XGBoosterSetParam(h_booster, "objective", "binary:logistic"));
-    safe_xgboost(XGBoosterSetParam(h_booster, "eta", "0.3"));
-    safe_xgboost(XGBoosterSetParam(h_booster, "gamma", "0"));
-    safe_xgboost(XGBoosterSetParam(h_booster, "max_depth", "6"));
-    safe_xgboost(XGBoosterSetParam(h_booster, "min_child_weight", "1"));
+    safe_xgboost(XGBoosterSetParam(h_booster, "eta", argv[1])); // 0.1 0.2 0.3 0.4 0.5 | 0.3
+    safe_xgboost(XGBoosterSetParam(h_booster, "gamma", argv[2])); // 0 1 10 | 0
+    safe_xgboost(XGBoosterSetParam(h_booster, "max_depth", argv[3])); // 3 4 5 6 7 | 6
+    safe_xgboost(XGBoosterSetParam(h_booster, "min_child_weight", argv[4])); // 0.5 1.0 1.5 | 1
     safe_xgboost(XGBoosterSetParam(h_booster, "max_delta_step", "0"));
-    safe_xgboost(XGBoosterSetParam(h_booster, "subsample", "1"));
+    safe_xgboost(XGBoosterSetParam(h_booster, "subsample", argv[5])); // 0.3 0.6 1.0 | 1
     safe_xgboost(XGBoosterSetParam(h_booster, "sampling_method", "uniform"));
-    safe_xgboost(XGBoosterSetParam(h_booster, "colsample_bytree", "1"));
+    safe_xgboost(XGBoosterSetParam(h_booster, "colsample_bytree", argv[6])); // 0.5 1.0 | 1
     safe_xgboost(XGBoosterSetParam(h_booster, "colsample_bylevel", "1"));
     safe_xgboost(XGBoosterSetParam(h_booster, "colsample_bynode", "1"));
     safe_xgboost(XGBoosterSetParam(h_booster, "lambda", "1"));
@@ -540,7 +568,7 @@ int main(int argc, char** argv) {
 
 
 
-    // free training sample2
+    // free training sample
     safe_xgboost(XGDMatrixFree(h_train));
     free(train_IsSignal);
     free(train_weight);
@@ -774,13 +802,19 @@ int main(int argc, char** argv) {
 
 
 
-    // free testing sample2
+    // free testing sample
     safe_xgboost(XGDMatrixFree(h_test));
     free(test_IsSignal);
     free(test_weight);
     free(test_set);
 
 
+
+
+    // save model
+    safe_xgboost(XGBoosterSaveModel(h_booster, (model_name+".model").c_str() ));
+    int best_iteration = FindOptimizedIter(AUC_train, AUC_test);
+    printf("%s_%s_%s_%s_%s_%s %lf %lf %d\n", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], train_AUC[best_iteration - 1], test_AUC[best_iteration - 1], best_iteration);
 
 
 
@@ -807,7 +841,7 @@ int main(int argc, char** argv) {
     TLegend* legend = new TLegend(0.15, 0.8, 0.35, 0.9); legend->SetFillStyle(0); legend->SetLineWidth(0);
     legend->AddEntry(gr_train, "train", "P"); legend->AddEntry(gr_test, "test", "P");
     legend->Draw();
-    c->SaveAs("AUC_iter.png");
+    c->SaveAs( (model_name+"_AUC_iter.png").c_str() );
 
 
 
