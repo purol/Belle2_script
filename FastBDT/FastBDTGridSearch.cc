@@ -39,7 +39,7 @@
 # define N_decay 38 // five decay mode + others
 
 # define Nvar 46
-# define DvetoNvar 6
+# define DvetoNvar 7
 
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
@@ -218,24 +218,26 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
         for (unsigned int k = 0; k < Nvar - DvetoNvar; k++) input_vars[k].push_back((float) Vars[k]); 
 
         if(Dc_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 0].push_back((float) Dc_chiProb);
+            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_pvalue_std);
             input_vars[Nvar - DvetoNvar + 1].push_back((float) Dc_dr);
-            input_vars[Nvar - DvetoNvar + 2].push_back((float) Dc_M);
+            input_vars[Nvar - DvetoNvar + 2].push_back((float)Dc_dz);
+            input_vars[Nvar - DvetoNvar + 3].push_back((float)Dc_M);
         }
         else {
             input_vars[Nvar - DvetoNvar + 0].push_back((float) 0.0);
             input_vars[Nvar - DvetoNvar + 1].push_back((float) -1.0);
-            input_vars[Nvar - DvetoNvar + 2].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 2].push_back((float) -100.0);
+            input_vars[Nvar - DvetoNvar + 3].push_back((float) 0.0);
         }
         if(D0_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 3].push_back((float) D0_chiProb);
-            input_vars[Nvar - DvetoNvar + 4].push_back((float) D0_dr);
-            input_vars[Nvar - DvetoNvar + 5].push_back((float) D0_M);
+            input_vars[Nvar - DvetoNvar + 4].push_back((float) D0_chiProb);
+            input_vars[Nvar - DvetoNvar + 5].push_back((float) D0_dz);
+            input_vars[Nvar - DvetoNvar + 6].push_back((float) D0_M);
         }
         else {
-            input_vars[Nvar - DvetoNvar + 3].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 4].push_back((float) -1.0);
-            input_vars[Nvar - DvetoNvar + 5].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 4].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 5].push_back((float) -100.0);
+            input_vars[Nvar - DvetoNvar + 6].push_back((float) 0.0);
         }
 
         IsSignal->push_back(tempissignal);
@@ -741,6 +743,13 @@ int main(int argc, char* argv[])
     fp = fopen(("/home/belle2/junewoo/storage_b1/GridSearch/out/Result_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])).c_str(), "w");
     fprintf(fp, "%u_%u_%lf_%lf_%u %lf %lf\n", nTrees, depth, shrinkage, subsample, binning_num, train_AUC, test_AUC);
     fclose(fp);
+
+
+
+    // save model
+    std::fstream out_stream(("/home/belle2/junewoo/storage_b1/GridSearch/out/classifier_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])+".weightfile").c_str(), std::ios_base::out | std::ios_base::trunc);
+    out_stream << classifier << std::endl;
+    out_stream.close();
 
     return 0;
 }
