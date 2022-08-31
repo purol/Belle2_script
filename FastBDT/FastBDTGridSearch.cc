@@ -482,6 +482,8 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B2Knunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
+            // take even only
+            if (i % 2 == 1) continue;
             FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_Kplus);
         }
     }
@@ -489,6 +491,8 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B2Kstarnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
+            // take even only
+            if (i % 2 == 1) continue;
             FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_Kplusstar);
         }
     }
@@ -496,6 +500,8 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B2Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
+            // take even only
+            if (i % 2 == 1) continue;
             FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_Xsu_nonresonant);
         }
     }
@@ -503,6 +509,8 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B02K0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
+            // take even only
+            if (i % 2 == 1) continue;
             FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_K0);
         }
     }
@@ -510,6 +518,8 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B02Kstar0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
+            // take even only
+            if (i % 2 == 1) continue;
             FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_K0star);
         }
     }
@@ -517,6 +527,8 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(SIGNAL_input_test, &names, "B02Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
+            // take even only
+            if (i % 2 == 1) continue;
             FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, Scale_Xsd_nonresonant);
         }
     }
@@ -524,6 +536,8 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(CHG_input_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
+            // take even only
+            if (i % 2 == 1) continue;
             FillVariables((CHG_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
         }
     }
@@ -531,6 +545,8 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(MIX_input_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
+            // take even only
+            if (i % 2 == 1) continue;
             FillVariables((MIX_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
         }
     }
@@ -538,6 +554,8 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(UUBAR_input_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
+            // take even only
+            if (i % 2 == 1) continue;
             FillVariables((UUBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
         }
     }
@@ -545,6 +563,8 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(DDBAR_input_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
+            // take even only
+            if (i % 2 == 1) continue;
             FillVariables((DDBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
         }
     }
@@ -552,6 +572,8 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(SSBAR_input_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
+            // take even only
+            if (i % 2 == 1) continue;
             FillVariables((SSBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
         }
     }
@@ -559,6 +581,8 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(CHARM_input_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
+            // take even only
+            if (i % 2 == 1) continue;
             FillVariables((CHARM_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false);
         }
     }
