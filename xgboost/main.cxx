@@ -406,21 +406,21 @@ int main(int argc, char** argv) {
 
 
     // input file
-    const char* SIGNAL_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/SIGNAL_analysis/train_v000/final_output/DataFile";
-    const char* CHG_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/CHG_analysis/train_v000/final_output/DataFile";
-    const char* MIX_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/MIX_analysis/train_v000/final_output/DataFile";
-    const char* UUBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/UUBAR_analysis/train_v000/final_output/DataFile";
-    const char* DDBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/DDBAR_analysis/train_v000/final_output/DataFile";
-    const char* SSBAR_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/SSBAR_analysis/train_v000/final_output/DataFile";
-    const char* CHARM_input_train = "/home/jwpark/storage/BKG_gbasf2/Izayoi/CHARM_analysis/train_v000/final_output/DataFile";
+    const char* SIGNAL_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/SIGNAL_analysis/train_v001/final_output/DataFile";
+    const char* CHG_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/CHG_analysis/train_v001/final_output/DataFile";
+    const char* MIX_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/MIX_analysis/train_v001/final_output/DataFile";
+    const char* UUBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/UUBAR_analysis/train_v001/final_output/DataFile";
+    const char* DDBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/DDBAR_analysis/train_v001/final_output/DataFile";
+    const char* SSBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/SSBAR_analysis/train_v001/final_output/DataFile";
+    const char* CHARM_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/CHARM_analysis/train_v001/final_output/DataFile";
 
-    const char* SIGNAL_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/SIGNAL_analysis/test_v000/final_output/DataFile";
-    const char* CHG_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/CHG_analysis/test_v000/final_output/DataFile";
-    const char* MIX_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/MIX_analysis/test_v000/final_output/DataFile";
-    const char* UUBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/UUBAR_analysis/test_v000/final_output/DataFile";
-    const char* DDBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/DDBAR_analysis/test_v000/final_output/DataFile";
-    const char* SSBAR_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/SSBAR_analysis/test_v000/final_output/DataFile";
-    const char* CHARM_input_test = "/home/jwpark/storage/BKG_gbasf2/Izayoi/CHARM_analysis/test_v000/final_output/DataFile";
+    const char* SIGNAL_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/SIGNAL_analysis/test_v001/final_output/DataFile";
+    const char* CHG_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/CHG_analysis/test_v001/final_output/DataFile";
+    const char* MIX_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/MIX_analysis/test_v001/final_output/DataFile";
+    const char* UUBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/UUBAR_analysis/test_v001/final_output/DataFile";
+    const char* DDBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/DDBAR_analysis/test_v001/final_output/DataFile";
+    const char* SSBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/SSBAR_analysis/test_v001/final_output/DataFile";
+    const char* CHARM_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/CHARM_analysis/test_v001/final_output/DataFile";
 
     int N_entry_train = GetEntryNum(SIGNAL_input_train, true) +
         GetEntryNum(CHG_input_train, false) +
@@ -812,9 +812,12 @@ int main(int argc, char** argv) {
 
 
     // save model
-    safe_xgboost(XGBoosterSaveModel(h_booster, (model_name+".model").c_str() ));
+    safe_xgboost(XGBoosterSaveModel(h_booster, ("/home/belle2/junewoo/storage_b1/GridSearch/out/xgboost_" + model_name+".model").c_str() ));
     int best_iteration = FindOptimizedIter(AUC_train, AUC_test);
-    printf("%s_%s_%s_%s_%s_%s %lf %lf %d\n", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], train_AUC[best_iteration - 1], test_AUC[best_iteration - 1], best_iteration);
+    FILE* fp;
+    fp = fopen(("/home/belle2/junewoo/storage_b1/GridSearch/out/Result_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5]) + "_" + std::string(argv[6])).c_str(), "w");
+    fprintf(fp, "%s_%s_%s_%s_%s_%s %lf %lf %d\n", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], train_AUC[best_iteration - 1], test_AUC[best_iteration - 1], best_iteration);
+    fclose(fp);
 
 
 
@@ -841,7 +844,7 @@ int main(int argc, char** argv) {
     TLegend* legend = new TLegend(0.15, 0.8, 0.35, 0.9); legend->SetFillStyle(0); legend->SetLineWidth(0);
     legend->AddEntry(gr_train, "train", "P"); legend->AddEntry(gr_test, "test", "P");
     legend->Draw();
-    c->SaveAs( (model_name+"_AUC_iter.png").c_str() );
+    c->SaveAs( ("/home/belle2/junewoo/storage_b1/GridSearch/out/" + model_name+"_AUC_iter.png").c_str() );
 
 
 
