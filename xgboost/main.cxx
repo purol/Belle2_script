@@ -553,7 +553,7 @@ int main(int argc, char** argv) {
     safe_xgboost(XGBoosterSetParam(h_booster, "max_delta_step", "0"));
     safe_xgboost(XGBoosterSetParam(h_booster, "subsample", argv[5])); // 0.3 0.6 1.0 | 1
     safe_xgboost(XGBoosterSetParam(h_booster, "sampling_method", "uniform"));
-    safe_xgboost(XGBoosterSetParam(h_booster, "colsample_bytree", argv[6])); // 0.5 1.0 | 1
+    safe_xgboost(XGBoosterSetParam(h_booster, "colsample_bytree", argv[6])); // 0.3 0.5 1.0 | 1
     safe_xgboost(XGBoosterSetParam(h_booster, "colsample_bylevel", "1"));
     safe_xgboost(XGBoosterSetParam(h_booster, "colsample_bynode", "1"));
     safe_xgboost(XGBoosterSetParam(h_booster, "lambda", "1"));
