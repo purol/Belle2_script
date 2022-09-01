@@ -187,7 +187,7 @@ int FindOptimizedIter(double AUC_train[Niter], double AUC_test[Niter], const int
         bool IsItOverfitted = false;
 
         // initialization
-        for (int j = 0; j < N_check; j++) AUCs[j] = AUC_Test[i + j];
+        for (int j = 0; j < N_check; j++) AUCs[j] = AUC_test[i + j];
 
         for (int j = 0; j < N_check - 1; j++) {
             if (AUCs[j] < AUCs[j + 1]) {
@@ -816,7 +816,7 @@ int main(int argc, char** argv) {
     int best_iteration = FindOptimizedIter(AUC_train, AUC_test);
     FILE* fp;
     fp = fopen(("/home/belle2/junewoo/storage_b1/GridSearch/out/Result_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5]) + "_" + std::string(argv[6])).c_str(), "w");
-    fprintf(fp, "%s_%s_%s_%s_%s_%s %lf %lf %d\n", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], train_AUC[best_iteration - 1], test_AUC[best_iteration - 1], best_iteration);
+    fprintf(fp, "%s_%s_%s_%s_%s_%s %lf %lf %d\n", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], AUC_train[best_iteration - 1], AUC_test[best_iteration - 1], best_iteration);
     fclose(fp);
 
 
