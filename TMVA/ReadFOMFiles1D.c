@@ -1,5 +1,5 @@
-# define Nstep 20
-# define start 0.9
+# define Nstep 30
+# define start 0.7
 # define end 1.0
 
 void ReadFOMFiles1D(){
@@ -101,8 +101,8 @@ void ReadFOMFiles1D(){
     pf = fopen(BKG_small, "r");
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
-        Matrix_BKG_small[i] = Matrix_BKG_small[i] + temp_var;
-        Matrix_BKG[i] = Matrix_BKG[i] + temp_var;
+        Matrix_BKG_small[i] = Matrix_BKG_small[i] + temp_var * 0.5;
+        Matrix_BKG[i] = Matrix_BKG[i] + temp_var * 0.5;
     }
     fclose(pf);
 
@@ -158,8 +158,8 @@ void ReadFOMFiles1D(){
     pf = fopen(BKG_large, "r");
     for (int i = 0; i < Nstep; i++) {
         fscanf(pf, "%lf ", &temp_var);
-        Matrix_BKG_large[i] = Matrix_BKG_large[i] + temp_var;
-        Matrix_BKG[i] = Matrix_BKG[i] + temp_var;
+        Matrix_BKG_large[i] = Matrix_BKG_large[i] + temp_var * 0.5;
+        Matrix_BKG[i] = Matrix_BKG[i] + temp_var * 0.5;
     }
     fclose(pf);
     /* ========================== read FOM files ========================== */
@@ -213,6 +213,13 @@ void ReadFOMFiles1D(){
     TGraph* gr3 = new TGraph(Nstep, O_Continuum, FOM_Matrix);
     gr3->SetTitle(";FBDT;#frac{S}{#sqrt{S+B}}");
     gr3->SetMarkerStyle(0);
+    gr3->SetMinimum(0.48);
     gr3->Draw("");
+
+    TLine* line = new TLine(0.9, 0.48, 0.9, 0.64);
+    line->SetLineColor(kRed);
+    line->SetLineStyle(5);
+    line->Draw();
+
     c3->SaveAs("FOM_total.png");
 }
