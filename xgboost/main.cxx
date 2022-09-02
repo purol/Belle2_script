@@ -345,7 +345,7 @@ double CalculateAUC(bst_ulong out_len, const float* f, float* IsSignal, float* w
     std::vector<double> FPRs;
 
     for (unsigned int i = 0; i < out_len; i++) {
-        if (IsSignal[i] > 0.5) NSIG_total = NSIG_total + weight[i];
+        if (IsSignal[i] > 0.5f) NSIG_total = NSIG_total + weight[i];
         else NBKG_total = NBKG_total + weight[i];
     }
 
@@ -357,7 +357,7 @@ double CalculateAUC(bst_ulong out_len, const float* f, float* IsSignal, float* w
         for (unsigned int k = 0; k < out_len; k++) {
             float p = f[k];
             if (p >= value) {
-                if (IsSignal[k]) NSIG = NSIG + weight[k];
+                if (IsSignal[k] > 0.5f) NSIG = NSIG + weight[k];
                 else NBKG = NBKG + weight[k];
             }
         }

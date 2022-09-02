@@ -144,7 +144,7 @@ using std::to_string;
 
 int template_draw() {
 
-	const char* fname = "PDFandDATA_10.root";
+	const char* fname = "PDFandDATA.root";
 
 	TFile* f = new TFile(fname, "read");
 
@@ -162,10 +162,12 @@ int template_draw() {
 	signal_hist->GetYaxis()->SetRangeUser(0., 2.3);
 	signal_hist->SetFillColor(kBlue + 1);
 	signal_hist->SetLineWidth(0);
+	signal_hist->GetXaxis()->SetTitle("transformed FBDT output");
+	signal_hist->GetYaxis()->SetTitle("number of events");
 	signal_hist->Draw("hist");
 	c_temp->SaveAs("signal_hist.png");
 
-	THStack* Stack = new THStack("thstack", ";transformed FBDT_{1};number of candidates");
+	THStack* Stack = new THStack("thstack", ";transformed FBDT output;number of events");
 
 	chg_hist->SetFillColor(kRed + 1);
 	chg_hist->SetLineWidth(0);
