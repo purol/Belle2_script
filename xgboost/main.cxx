@@ -38,8 +38,8 @@
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
-# define Nvar 34
-# define DvetoNvar 6
+# define Nvar 45
+# define DvetoNvar 7
 
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
@@ -78,8 +78,6 @@
 # define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
 # define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
 # define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
-
-# define Niter 250
 
 using std::string;
 
@@ -180,30 +178,6 @@ int GetEntryNum(const char* dirname, bool tempissignal) {
 
 }
 
-int FindOptimizedIter(double AUC_train[Niter], double AUC_test[Niter], const int N_check = 5) {
-    double AUCs[N_check] = { 0.0 };
-
-    for (int i = 0; i < Niter - N_check + 1; i++) {
-        bool IsItOverfitted = false;
-
-        // initialization
-        for (int j = 0; j < N_check; j++) AUCs[j] = AUC_test[i + j];
-
-        for (int j = 0; j < N_check - 1; j++) {
-            if (AUCs[j] < AUCs[j + 1]) {
-                IsItOverfitted = false;
-                break;
-            }
-            IsItOverfitted = true;
-        }
-
-        if (IsItOverfitted) return i + 1;
-
-    }
-
-    return Niter;
-}
-
 void FillVariables(const char* filename, float * input_data, float* IsSignal, float* weight, bool tempissignal, int* indicator, float weight_N = 1.0) {
     TFile* input_file = new TFile(filename, "read");
 
@@ -235,40 +209,51 @@ void FillVariables(const char* filename, float * input_data, float* IsSignal, fl
     double Mxs = -1;
     double Pcms = -1;
 
-    tree_data->SetBranchAddress("Bsig_useCMSFrame_p", &Vars[0]);
-    tree_data->SetBranchAddress("Btag_chiProb", &Vars[1]);
+    tree_data->SetBranchAddress("aplanarity", &Vars[0]);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_mydz", &Vars[1]);
     tree_data->SetBranchAddress("Btag_CleoConeCS_1", &Vars[2]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_3", &Vars[3]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_4", &Vars[4]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_5", &Vars[5]);
-    tree_data->SetBranchAddress("Btag_cosTBz", &Vars[6]);
-    tree_data->SetBranchAddress("Btag_deltaE", &Vars[7]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso00", &Vars[8]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso01", &Vars[9]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso03", &Vars[10]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso04", &Vars[11]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso10", &Vars[12]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso14", &Vars[13]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[14]);
-    tree_data->SetBranchAddress("cleoConeThrust2", &Vars[15]);
-    tree_data->SetBranchAddress("cleoConeThrust3", &Vars[16]);
-    tree_data->SetBranchAddress("cleoConeThrust4", &Vars[17]);
-    tree_data->SetBranchAddress("cleoConeThrust5", &Vars[18]);
-    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[19]);
-    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[20]);
-    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[21]);
-    tree_data->SetBranchAddress("roeEextra__bocleanMask__bc", &Vars[22]);
-    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[23]);
-    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[24]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[25]);
-    tree_data->SetBranchAddress("missingEnergyOfEventCMS", &Vars[26]);
-    tree_data->SetBranchAddress("thrustAxisCosTheta", &Vars[27]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_2", &Vars[3]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_3", &Vars[4]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_4", &Vars[5]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_5", &Vars[6]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_6", &Vars[7]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_7", &Vars[8]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_8", &Vars[9]);
+    tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[10]);
+    tree_data->SetBranchAddress("Btag_cosTBz", &Vars[11]);
+    tree_data->SetBranchAddress("Btag_deltaE", &Vars[12]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso01", &Vars[13]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso03", &Vars[14]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso04", &Vars[15]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso14", &Vars[16]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[17]);
+    tree_data->SetBranchAddress("Btag_thrustBm", &Vars[18]);
+    tree_data->SetBranchAddress("Btag_thrustOm", &Vars[19]);
+    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[20]);
+    tree_data->SetBranchAddress("cleoConeThrust0", &Vars[21]);
+    tree_data->SetBranchAddress("cleoConeThrust1", &Vars[22]);
+    tree_data->SetBranchAddress("cleoConeThrust2", &Vars[23]);
+    tree_data->SetBranchAddress("cleoConeThrust3", &Vars[24]);
+    tree_data->SetBranchAddress("cleoConeThrust4", &Vars[25]);
+    tree_data->SetBranchAddress("cleoConeThrust5", &Vars[26]);
+    tree_data->SetBranchAddress("cleoConeThrust6", &Vars[27]);
+    tree_data->SetBranchAddress("cleoConeThrust7", &Vars[28]);
+    tree_data->SetBranchAddress("cleoConeThrust8", &Vars[29]);
+    tree_data->SetBranchAddress("harmonicMomentThrust2", &Vars[30]);
+    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[31]);
+    tree_data->SetBranchAddress("harmonicMomentThrust4", &Vars[32]);
+    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[33]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[34]);
+    tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &Vars[35]);
+    tree_data->SetBranchAddress("roeEextra__bocleanMask__bc", &Vars[36]);
+    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[37]);
 
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &Dc_chiProb);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &Dc_dr);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &Dc_dz);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &Dc_M);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &D0_chiProb);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &D0_dr);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &D0_dz);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &D0_M);
 
     tree_data->SetBranchAddress("flag", &flag);
@@ -282,6 +267,7 @@ void FillVariables(const char* filename, float * input_data, float* IsSignal, fl
         tree_data->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay_K0star_ch2);
     }
     tree_data->SetBranchAddress("Bsig_M", &Mxs);
+    tree_data->SetBranchAddress("Bsig_useCMSFrame_p", &Pcms);
 
     //printf("%lld entries...\n", tree_data->GetEntries());
     for (unsigned int j = 0; j < tree_data->GetEntries(); j++) { // Fill
@@ -295,9 +281,11 @@ void FillVariables(const char* filename, float * input_data, float* IsSignal, fl
         }
 
         if (Dc_chiProb > -0.5) {
-            input_data[*indicator] = (float)Dc_chiProb;
+            input_data[*indicator] = (float)Dc_pvalue_std;
             *indicator = *indicator + 1;
             input_data[*indicator] = (float)Dc_dr;
+            *indicator = *indicator + 1;
+            input_data[*indicator] = (float)Dc_dz;
             *indicator = *indicator + 1;
             input_data[*indicator] = (float)Dc_M;
             *indicator = *indicator + 1;
@@ -307,13 +295,15 @@ void FillVariables(const char* filename, float * input_data, float* IsSignal, fl
             *indicator = *indicator + 1;
             input_data[*indicator] = -1.0f;
             *indicator = *indicator + 1;
+            input_data[*indicator] = -100.0f;
+            *indicator = *indicator + 1;
             input_data[*indicator] = 0.0f;
             *indicator = *indicator + 1;
         }
         if (D0_chiProb > -0.5) {
             input_data[*indicator] = (float)D0_chiProb;
             *indicator = *indicator + 1;
-            input_data[*indicator] = (float)D0_dr;
+            input_data[*indicator] = (float)D0_dz;
             *indicator = *indicator + 1;
             input_data[*indicator] = (float)D0_M;
             *indicator = *indicator + 1;
@@ -321,7 +311,7 @@ void FillVariables(const char* filename, float * input_data, float* IsSignal, fl
         else {
             input_data[*indicator] = 0.0f;
             *indicator = *indicator + 1;
-            input_data[*indicator] = -1.0f;
+            input_data[*indicator] = -100.0f;
             *indicator = *indicator + 1;
             input_data[*indicator] = 0.0f;
             *indicator = *indicator + 1;
@@ -396,12 +386,13 @@ double CalculateAUC(bst_ulong out_len, const float* f, float* IsSignal, float* w
 
 int main(int argc, char** argv) {
     // set name
-    std::string model_name = std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5]) + "_" + std::string(argv[6]);
+    std::string model_name = std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5]) + "_" + std::string(argv[6]) + "_" + std::string(argv[7]);
 
-    
+
+
     // AUCs
-    double AUC_train[Niter] = { 0 };
-    double AUC_test[Niter] = { 0 };
+    double AUC_train = 0.0;
+    double AUC_test = 0.0;
 
 
 
@@ -559,6 +550,7 @@ int main(int argc, char** argv) {
     safe_xgboost(XGBoosterSetParam(h_booster, "lambda", "1"));
     safe_xgboost(XGBoosterSetParam(h_booster, "alpha", "0"));
     safe_xgboost(XGBoosterSetParam(h_booster, "num_parallel_tree", "1"));
+    const int Niter = atoi(argv[7]); // 100 500 1000 1500 2000
 
 
 
@@ -595,35 +587,35 @@ int main(int argc, char** argv) {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Kstarnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), train_set2, train_IsSignal2, train_weight2, true, &train_indicator2, Scale_Kplusstar* (3.0 / 7.0));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), train_set2, train_IsSignal2, train_weight2, true, &train_indicator2, Scale_Kplusstar * (3.0 / 7.0));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), train_set2, train_IsSignal2, train_weight2, true, &train_indicator2, Scale_Xsu_nonresonant* (3.0 / 7.0));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), train_set2, train_IsSignal2, train_weight2, true, &train_indicator2, Scale_Xsu_nonresonant * (3.0 / 7.0));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02K0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), train_set2, train_IsSignal2, train_weight2, true, &train_indicator2, Scale_K0* (3.0 / 7.0));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), train_set2, train_IsSignal2, train_weight2, true, &train_indicator2, Scale_K0 * (3.0 / 7.0));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02Kstar0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), train_set2, train_IsSignal2, train_weight2, true, &train_indicator2, Scale_K0star* (3.0 / 7.0));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), train_set2, train_IsSignal2, train_weight2, true, &train_indicator2, Scale_K0star * (3.0 / 7.0));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), train_set2, train_IsSignal2, train_weight2, true, &train_indicator2, Scale_Xsd_nonresonant* (3.0 / 7.0));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), train_set2, train_IsSignal2, train_weight2, true, &train_indicator2, Scale_Xsd_nonresonant * (3.0 / 7.0));
         }
     }
     {
@@ -675,13 +667,12 @@ int main(int argc, char** argv) {
 
 
 
-    // perform 200 AUC calculation
-    for (int iter = 0; iter < Niter; iter++) {
-        bst_ulong out_len;
-        const float* f;
-        safe_xgboost(XGBoosterPredict(h_booster, h_train2, 0, iter + 1, 0, &out_len, &f));
-        AUC_train[iter] = CalculateAUC(out_len, f, train_IsSignal2, train_weight2);
-    }
+    // perform AUC calculation
+    bst_ulong out_len;
+    const float* f;
+    safe_xgboost(XGBoosterPredict(h_booster, h_train2, 0, Niter, 0, &out_len, &f));
+    AUC_train = CalculateAUC(out_len, f, train_IsSignal2, train_weight2);
+
 
 
 
@@ -792,12 +783,10 @@ int main(int argc, char** argv) {
 
 
     // perform AUC calculation
-    for (int iter = 0; iter < Niter; iter++) {
-        bst_ulong out_len;
-        const float* f;
-        safe_xgboost(XGBoosterPredict(h_booster, h_test, 0, iter + 1, 0, &out_len, &f));
-        AUC_test[iter] = CalculateAUC(out_len, f, test_IsSignal, test_weight);
-    }
+    bst_ulong out_len;
+    const float* f;
+    safe_xgboost(XGBoosterPredict(h_booster, h_test, 0, Niter, 0, &out_len, &f));
+    AUC_test = CalculateAUC(out_len, f, test_IsSignal, test_weight);
 
 
 
@@ -812,39 +801,11 @@ int main(int argc, char** argv) {
 
 
     // save model
-    safe_xgboost(XGBoosterSaveModel(h_booster, ("/home/belle2/junewoo/storage_b1/GridSearch/out/xgboost_" + model_name+".model").c_str() ));
-    int best_iteration = FindOptimizedIter(AUC_train, AUC_test);
+    safe_xgboost(XGBoosterSaveModel(h_booster, ("/home/belle2/junewoo/storage_b1/GridSearch/out/xgboost_" + model_name + ".model").c_str()));
     FILE* fp;
     fp = fopen(("/home/belle2/junewoo/storage_b1/GridSearch/out/Result_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5]) + "_" + std::string(argv[6])).c_str(), "w");
-    fprintf(fp, "%s_%s_%s_%s_%s_%s %lf %lf %d\n", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], AUC_train[best_iteration - 1], AUC_test[best_iteration - 1], best_iteration);
+    fprintf(fp, "%s_%s_%s_%s_%s_%s_%s %lf %lf %d\n", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], AUC_train, AUC_test);
     fclose(fp);
-
-
-
-    // draw plot
-    double x_iter[Niter];
-    for (int i = 0; i < Niter; i++) x_iter[i] = i;
-
-    TGraph* gr_train = new TGraph(Niter, x_iter, AUC_train);
-    TGraph* gr_test = new TGraph(Niter, x_iter, AUC_test);
-
-    gr_train->SetMarkerStyle(8); gr_train->SetMarkerSize(0.8);
-    gr_test->SetMarkerStyle(8); gr_test->SetMarkerSize(0.8);
-
-    gr_train->SetMarkerColor(kRed + 1);
-    gr_test->SetMarkerColor(kBlue + 1);
-
-    gr_train->SetTitle(";iteration;AUC");
-
-    TCanvas* c = new TCanvas("c1", "AUC", 200, 10, 600, 600);
-
-    gr_train->Draw("AP");
-    gr_test->Draw("P");
-
-    TLegend* legend = new TLegend(0.15, 0.8, 0.35, 0.9); legend->SetFillStyle(0); legend->SetLineWidth(0);
-    legend->AddEntry(gr_train, "train", "P"); legend->AddEntry(gr_test, "test", "P");
-    legend->Draw();
-    c->SaveAs( ("/home/belle2/junewoo/storage_b1/GridSearch/out/" + model_name+"_AUC_iter.png").c_str() );
 
 
 
