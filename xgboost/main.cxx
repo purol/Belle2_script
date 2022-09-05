@@ -668,10 +668,10 @@ int main(int argc, char** argv) {
 
 
     // perform AUC calculation
-    bst_ulong out_len;
-    const float* f;
-    safe_xgboost(XGBoosterPredict(h_booster, h_train2, 0, Niter, 0, &out_len, &f));
-    AUC_train = CalculateAUC(out_len, f, train_IsSignal2, train_weight2);
+    bst_ulong out_len_train;
+    const float* f_train;
+    safe_xgboost(XGBoosterPredict(h_booster, h_train2, 0, Niter, 0, &out_len_train, &f_train));
+    AUC_train = CalculateAUC(out_len_train, f_train, train_IsSignal2, train_weight2);
 
 
 
@@ -783,10 +783,10 @@ int main(int argc, char** argv) {
 
 
     // perform AUC calculation
-    bst_ulong out_len;
-    const float* f;
-    safe_xgboost(XGBoosterPredict(h_booster, h_test, 0, Niter, 0, &out_len, &f));
-    AUC_test = CalculateAUC(out_len, f, test_IsSignal, test_weight);
+    bst_ulong out_len_test;
+    const float* f_test;
+    safe_xgboost(XGBoosterPredict(h_booster, h_test, 0, Niter, 0, &out_len_test, &f_test));
+    AUC_test = CalculateAUC(out_len_test, f_test, test_IsSignal, test_weight);
 
 
 
