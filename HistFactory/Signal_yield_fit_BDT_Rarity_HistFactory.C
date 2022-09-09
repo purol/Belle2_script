@@ -253,34 +253,49 @@ double GetFragmentationWeight(const char* type, DecayModeMC SelectedDecayMode, b
         switch (SelectedDecayMode) {
         case Xsu2KcPi0_MC:
             Selected_Decay_Num = Xsu_frag_decay1;
+            break;
         case Xsu2K0Pic_MC:
             Selected_Decay_Num = Xsu_frag_decay2;
+            break;
         case Xsu2KcPicPic_MC:
             Selected_Decay_Num = Xsu_frag_decay3;
+            break;
         case Xsu2K0PicPi0_MC:
             Selected_Decay_Num = Xsu_frag_decay4;
+            break;
         case Xsu2KcPicPicPi0_MC:
             Selected_Decay_Num = Xsu_frag_decay5;
+            break;
         case Xsu2K0PicPicPic_MC:
             Selected_Decay_Num = Xsu_frag_decay6;
+            break;
         case Xsu2KcPicPicPicPic_MC:
             Selected_Decay_Num = Xsu_frag_decay7;
+            break;
         case Xsu2K0PicPicPicPi0_MC:
             Selected_Decay_Num = Xsu_frag_decay8;
+            break;
         case Xsu2KcPi0Pi0_MC:
             Selected_Decay_Num = Xsu_frag_decay9;
+            break;
         case Xsu2K0PicPi0Pi0_MC:
             Selected_Decay_Num = Xsu_frag_decay10;
+            break;
         case Xsu2KcPicPicPi0Pi0_MC:
             Selected_Decay_Num = Xsu_frag_decay11;
+            break;
         case Xsu2KcKcKc_MC:
             Selected_Decay_Num = Xsu_frag_decay12;
+            break;
         case Xsu2KcKcK0Pic_MC:
             Selected_Decay_Num = Xsu_frag_decay13;
+            break;
         case Xsu2KcKcKcPi0_MC:
             Selected_Decay_Num = Xsu_frag_decay14;
+            break;
         case other:
             Selected_Decay_Num = Xsu_frag_decay30;
+            break;
         default:
             printf("[ERROR] Input value of SelectedDecayMode is not appropriate!\n");
             exit(1);
@@ -307,34 +322,49 @@ double GetFragmentationWeight(const char* type, DecayModeMC SelectedDecayMode, b
         switch (SelectedDecayMode) {
         case Xsd2KcPic_MC:
             Selected_Decay_Num = Xsd_frag_decay16;
+            break;
         case Xsd2K0Pi0_MC:
             Selected_Decay_Num = Xsd_frag_decay17;
+            break;
         case Xsd2KcPicPi0_MC:
             Selected_Decay_Num = Xsd_frag_decay18;
+            break;
         case Xsd2K0PicPic_MC:
             Selected_Decay_Num = Xsd_frag_decay19;
+            break;
         case Xsd2KcPicPicPic_MC:
             Selected_Decay_Num = Xsd_frag_decay20;
+            break;
         case Xsd2K0PicPicPi0_MC:
             Selected_Decay_Num = Xsd_frag_decay21;
+            break;
         case Xsd2KcPicPicPicPi0_MC:
             Selected_Decay_Num = Xsd_frag_decay22;
+            break;
         case Xsd2K0PicPicPicPic_MC:
             Selected_Decay_Num = Xsd_frag_decay23;
+            break;
         case Xsd2K0Pi0Pi0_MC:
             Selected_Decay_Num = Xsd_frag_decay24;
+            break;
         case Xsd2KcPicPi0Pi0_MC:
             Selected_Decay_Num = Xsd_frag_decay25;
+            break;
         case Xsd2K0PicPicPi0Pi0_MC:
             Selected_Decay_Num = Xsd_frag_decay26;
+            break;
         case Xsd2KcKcK0_MC:
             Selected_Decay_Num = Xsd_frag_decay27;
+            break;
         case Xsd2KcKcKcPic_MC:
             Selected_Decay_Num = Xsd_frag_decay28;
+            break;
         case Xsd2KcKcK0Pi0_MC:
             Selected_Decay_Num = Xsd_frag_decay29;
+            break;
         case other:
             Selected_Decay_Num = Xsd_frag_decay30;
+            break;
         default:
             printf("[ERROR] Input value of SelectedDecayMode is not appropriate!\n");
             exit(1);
