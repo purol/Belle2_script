@@ -421,7 +421,7 @@ double GetFragmentationWeight(const char* type, DecayModeMC SelectedDecayMode, b
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define RarityBins 20
+# define RarityBins 10
 
 /* ====================================== */
 // Rarity module
