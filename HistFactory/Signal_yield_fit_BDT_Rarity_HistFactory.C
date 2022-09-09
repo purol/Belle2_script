@@ -88,6 +88,278 @@ using std::to_string;
 # define FEI_cal_B0 0.713
 # define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
 
+# define Xsu_frag_decay1 531.4
+# define Xsu_frag_decay2 1062.1
+# define Xsu_frag_decay3 673.9
+# define Xsu_frag_decay4 825.3
+# define Xsu_frag_decay5 473.3
+# define Xsu_frag_decay6 119.1
+# define Xsu_frag_decay7 24.6
+# define Xsu_frag_decay8 148.2
+# define Xsu_frag_decay9 127.6
+# define Xsu_frag_decay10 102.9
+# define Xsu_frag_decay11 91.8
+# define Xsu_frag_decay12 54.8
+# define Xsu_frag_decay13 21.7
+# define Xsu_frag_decay14 11.0
+# define Xsu_frag_decay30 858.4
+
+# define Xsd_frag_decay16 1072.6
+# define Xsd_frag_decay17 536.2
+# define Xsd_frag_decay18 835.5
+# define Xsd_frag_decay19 677.4
+# define Xsd_frag_decay20 120.5
+# define Xsd_frag_decay21 475.9
+# define Xsd_frag_decay22 149.8
+# define Xsd_frag_decay23 25.0
+# define Xsd_frag_decay24 129.2
+# define Xsd_frag_decay25 104.4
+# define Xsd_frag_decay26 92.4
+# define Xsd_frag_decay27 54.9
+# define Xsd_frag_decay28 14.5
+# define Xsd_frag_decay29 10.9
+# define Xsd_frag_decay30 871.0
+
+enum DecayMode { // reco level
+    B2Kc = 0,
+    B2KcPi0,
+    B2Ks0Pic,
+    B2KcPicPic,
+    B2Ks0PicPi0,
+    B2KcPicPicPi0,
+    B2Ks0PicPicPic,
+    B2KcPicPicPicPic,
+    B2Ks0PicPicPicPi0,
+    B2KcPi0Pi0,
+    B2Ks0PicPi0Pi0,
+    B2KcPicPicPi0Pi0,
+    B2KcKcKc,
+    B2KcKcKs0Pic,
+    B2KcKcKcPi0,
+    B02Ks0,
+    B02KcPic,
+    B02Ks0Pi0,
+    B02KcPicPi0,
+    B02Ks0PicPic,
+    B02KcPicPicPic,
+    B02Ks0PicPicPi0,
+    B02KcPicPicPicPi0,
+    B02Ks0PicPicPicPic,
+    B02Ks0Pi0Pi0,
+    B02KcPicPi0Pi0,
+    B02Ks0PicPicPi0Pi0,
+    B02KcKcKs0,
+    B02KcKcKcPic,
+    B02KcKcKs0Pi0,
+    MAX_NUM_DECAYMODE
+};
+enum DecayModeMC { // MC level
+    Xsu2Kc_MC = 0,
+    Xsu2Kcstar2KcPi0_MC,
+    Xsu2Kcstar2K0Pic_MC,
+    Xsu2KcPi0_MC,
+    Xsu2K0Pic_MC,
+    Xsu2KcPicPic_MC,
+    Xsu2K0PicPi0_MC,
+    Xsu2KcPicPicPi0_MC,
+    Xsu2K0PicPicPic_MC,
+    Xsu2KcPicPicPicPic_MC,
+    Xsu2K0PicPicPicPi0_MC,
+    Xsu2KcPi0Pi0_MC,
+    Xsu2K0PicPi0Pi0_MC,
+    Xsu2KcPicPicPi0Pi0_MC,
+    Xsu2KcKcKc_MC,
+    Xsu2KcKcK0Pic_MC,
+    Xsu2KcKcKcPi0_MC,
+    Xsd2K0_MC,
+    Xsd2K0star2KcPic_MC,
+    Xsd2K0star2K0Pi0_MC,
+    Xsd2KcPic_MC,
+    Xsd2K0Pi0_MC,
+    Xsd2KcPicPi0_MC,
+    Xsd2K0PicPic_MC,
+    Xsd2KcPicPicPic_MC,
+    Xsd2K0PicPicPi0_MC,
+    Xsd2KcPicPicPicPi0_MC,
+    Xsd2K0PicPicPicPic_MC,
+    Xsd2K0Pi0Pi0_MC,
+    Xsd2KcPicPi0Pi0_MC,
+    Xsd2K0PicPicPi0Pi0_MC,
+    Xsd2KcKcK0_MC,
+    Xsd2KcKcKcPic_MC,
+    Xsd2KcKcK0Pi0_MC,
+    other,
+    MAX_NUM_DECAYMODE_MC
+};
+
+# define N_decay 38 // five decay mode + others
+
+void DecayArrayToXsOutputDecay(double Decay[N_decay], double output_Decay[MAX_NUM_DECAYMODE_MC]) {
+    output_Decay[Xsu2Kc_MC] = 0;
+    output_Decay[Xsu2Kcstar2KcPi0_MC] = 0;
+    output_Decay[Xsu2Kcstar2K0Pic_MC] = 0;
+    output_Decay[Xsu2KcPi0_MC] = Decay[5];
+    output_Decay[Xsu2K0Pic_MC] = Decay[6];
+    output_Decay[Xsu2KcPicPic_MC] = Decay[7];
+    output_Decay[Xsu2K0PicPi0_MC] = Decay[8];
+    output_Decay[Xsu2KcPicPicPi0_MC] = Decay[9];
+    output_Decay[Xsu2K0PicPicPic_MC] = Decay[10];
+    output_Decay[Xsu2KcPicPicPicPic_MC] = Decay[11];
+    output_Decay[Xsu2K0PicPicPicPi0_MC] = Decay[12];
+    output_Decay[Xsu2KcPi0Pi0_MC] = Decay[13];
+    output_Decay[Xsu2K0PicPi0Pi0_MC] = Decay[14];
+    output_Decay[Xsu2KcPicPicPi0Pi0_MC] = Decay[15];
+    output_Decay[Xsu2KcKcKc_MC] = Decay[16];
+    output_Decay[Xsu2KcKcK0Pic_MC] = Decay[17];
+    output_Decay[Xsu2KcKcKcPi0_MC] = Decay[18];
+    output_Decay[Xsd2K0_MC] = 0;
+    output_Decay[Xsd2K0star2KcPic_MC] = 0;
+    output_Decay[Xsd2K0star2K0Pi0_MC] = 0;
+    output_Decay[Xsd2KcPic_MC] = Decay[24];
+    output_Decay[Xsd2K0Pi0_MC] = Decay[25];
+    output_Decay[Xsd2KcPicPi0_MC] = Decay[26];
+    output_Decay[Xsd2K0PicPic_MC] = Decay[27];
+    output_Decay[Xsd2KcPicPicPic_MC] = Decay[28];
+    output_Decay[Xsd2K0PicPicPi0_MC] = Decay[29];
+    output_Decay[Xsd2KcPicPicPicPi0_MC] = Decay[30];
+    output_Decay[Xsd2K0PicPicPicPic_MC] = Decay[31];
+    output_Decay[Xsd2K0Pi0Pi0_MC] = Decay[32];
+    output_Decay[Xsd2KcPicPi0Pi0_MC] = Decay[33];
+    output_Decay[Xsd2K0PicPicPi0Pi0_MC] = Decay[34];
+    output_Decay[Xsd2KcKcK0_MC] = Decay[35];
+    output_Decay[Xsd2KcKcKcPic_MC] = Decay[36];
+    output_Decay[Xsd2KcKcK0Pi0_MC] = Decay[37];
+
+    output_Decay[other] = 0.0;
+    for (int i = 0; i < MAX_NUM_DECAYMODE_MC; i++) {
+        if (output_Decay[i] > 0.5) return;
+    }
+
+    output_Decay[other] = 1.0;
+}
+
+double GetFragmentationWeight(const char* type, DecayModeMC SelectedDecayMode, bool IsItUp) {
+    if (strcmp(type, "Bplus") == 0 && ((SelectedDecayMode >= Xsu2KcPi0_MC && SelectedDecayMode <= Xsu2KcKcKcPi0_MC) || (SelectedDecayMode == other))) {
+        double Decay_Num[MAX_NUM_DECAYMODE_MC] = { 0.0, 0.0, 0.0, 
+            Xsu_frag_decay1, Xsu_frag_decay2, Xsu_frag_decay3, Xsu_frag_decay4, 
+            Xsu_frag_decay5, Xsu_frag_decay6, Xsu_frag_decay7, Xsu_frag_decay8, 
+            Xsu_frag_decay9, Xsu_frag_decay10, Xsu_frag_decay11, Xsu_frag_decay12, 
+            Xsu_frag_decay13, Xsu_frag_decay14, 0.0, 0.0, 0.0, 0.0,
+            0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Xsu_frag_decay30 };
+        double Total_Decay_Num = 0;
+        for (int i = 0; i < MAX_NUM_DECAYMODE_MC; i++) Total_Decay_Num = Total_Decay_Num + Decay_Num[i];
+
+        double Selected_Decay_Num = 0;
+        switch (SelectedDecayMode) {
+        case Xsu2KcPi0_MC:
+            Selected_Decay_Num = Xsu_frag_decay1;
+        case Xsu2K0Pic_MC:
+            Selected_Decay_Num = Xsu_frag_decay2;
+        case Xsu2KcPicPic_MC:
+            Selected_Decay_Num = Xsu_frag_decay3;
+        case Xsu2K0PicPi0_MC:
+            Selected_Decay_Num = Xsu_frag_decay4;
+        case Xsu2KcPicPicPi0_MC:
+            Selected_Decay_Num = Xsu_frag_decay5;
+        case Xsu2K0PicPicPic_MC:
+            Selected_Decay_Num = Xsu_frag_decay6;
+        case Xsu2KcPicPicPicPic_MC:
+            Selected_Decay_Num = Xsu_frag_decay7;
+        case Xsu2K0PicPicPicPi0_MC:
+            Selected_Decay_Num = Xsu_frag_decay8;
+        case Xsu2KcPi0Pi0_MC:
+            Selected_Decay_Num = Xsu_frag_decay9;
+        case Xsu2K0PicPi0Pi0_MC:
+            Selected_Decay_Num = Xsu_frag_decay10;
+        case Xsu2KcPicPicPi0Pi0_MC:
+            Selected_Decay_Num = Xsu_frag_decay11;
+        case Xsu2KcKcKc_MC:
+            Selected_Decay_Num = Xsu_frag_decay12;
+        case Xsu2KcKcK0Pic_MC:
+            Selected_Decay_Num = Xsu_frag_decay13;
+        case Xsu2KcKcKcPi0_MC:
+            Selected_Decay_Num = Xsu_frag_decay14;
+        case other:
+            Selected_Decay_Num = Xsu_frag_decay30;
+        default:
+            printf("[ERROR] Input value of SelectedDecayMode is not appropriate!\n");
+            exit(1);
+        }
+
+        if (IsItUp) return ((Total_Decay_Num - 1.5 * Selected_Decay_Num) / (Total_Decay_Num - Selected_Decay_Num));
+        else return ((Total_Decay_Num - 0.5 * Selected_Decay_Num) / (Total_Decay_Num - Selected_Decay_Num));
+    
+    }
+    else if (strcmp(type, "Bzero") == 0 && (SelectedDecayMode >= Xsd2KcPic_MC && SelectedDecayMode <= other)) {
+
+        double Decay_Num[MAX_NUM_DECAYMODE_MC] = { 0.0, 0.0, 0.0,
+          0.0, 0.0, 0.0, 0.0,
+          0.0, 0.0, 0.0, 0.0,
+          0.0, 0.0, 0.0, 0.0,
+          0.0, 0.0, 0.0, 0.0, 0.0, Xsd_frag_decay16,
+          Xsd_frag_decay17, Xsd_frag_decay18, Xsd_frag_decay19, Xsd_frag_decay20, Xsd_frag_decay21, Xsd_frag_decay22,
+          Xsd_frag_decay23, Xsd_frag_decay24, Xsd_frag_decay25, Xsd_frag_decay26, Xsd_frag_decay27,
+          Xsd_frag_decay28, Xsd_frag_decay29, Xsd_frag_decay30 };
+        double Total_Decay_Num = 0;
+        for (int i = 0; i < MAX_NUM_DECAYMODE_MC; i++) Total_Decay_Num = Total_Decay_Num + Decay_Num[i];
+
+        double Selected_Decay_Num = 0;
+        switch (SelectedDecayMode) {
+        case Xsd2KcPic_MC:
+            Selected_Decay_Num = Xsd_frag_decay16;
+        case Xsd2K0Pi0_MC:
+            Selected_Decay_Num = Xsd_frag_decay17;
+        case Xsd2KcPicPi0_MC:
+            Selected_Decay_Num = Xsd_frag_decay18;
+        case Xsd2K0PicPic_MC:
+            Selected_Decay_Num = Xsd_frag_decay19;
+        case Xsd2KcPicPicPic_MC:
+            Selected_Decay_Num = Xsd_frag_decay20;
+        case Xsd2K0PicPicPi0_MC:
+            Selected_Decay_Num = Xsd_frag_decay21;
+        case Xsd2KcPicPicPicPi0_MC:
+            Selected_Decay_Num = Xsd_frag_decay22;
+        case Xsd2K0PicPicPicPic_MC:
+            Selected_Decay_Num = Xsd_frag_decay23;
+        case Xsd2K0Pi0Pi0_MC:
+            Selected_Decay_Num = Xsd_frag_decay24;
+        case Xsd2KcPicPi0Pi0_MC:
+            Selected_Decay_Num = Xsd_frag_decay25;
+        case Xsd2K0PicPicPi0Pi0_MC:
+            Selected_Decay_Num = Xsd_frag_decay26;
+        case Xsd2KcKcK0_MC:
+            Selected_Decay_Num = Xsd_frag_decay27;
+        case Xsd2KcKcKcPic_MC:
+            Selected_Decay_Num = Xsd_frag_decay28;
+        case Xsd2KcKcK0Pi0_MC:
+            Selected_Decay_Num = Xsd_frag_decay29;
+        case other:
+            Selected_Decay_Num = Xsd_frag_decay30;
+        default:
+            printf("[ERROR] Input value of SelectedDecayMode is not appropriate!\n");
+            exit(1);
+        }
+
+        if (IsItUp) return ((Total_Decay_Num - 1.5 * Selected_Decay_Num) / (Total_Decay_Num - Selected_Decay_Num));
+        else return ((Total_Decay_Num - 0.5 * Selected_Decay_Num) / (Total_Decay_Num - Selected_Decay_Num));
+
+    }
+    else if (strcmp(type, "Continuum") == 0) {
+        printf("[ERROR] unexpected type name\n");
+        printf("[ERROR] Continuum type cannot be selected for fragmentation pdf\n");
+        exit(1);
+    }
+    else {
+        printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    printf("[ERROR] unexpected error\n");
+    exit(1);
+    return 0;
+}
+
+
 //# define Htransition_Xsu_change (-0.142)
 //# define Htransition_Xsd_change (-0.099)
 //# define Ltransition_Xsu_change (-0.002)
@@ -1546,16 +1818,147 @@ void GetKstarffPDFs(const char* dirname, TH1D* hist[19], double Correction_facto
     return Nevt;
 }
 
+double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, DecayModeMC SelectedDecayMode, bool IsItUp, double weight_var = 1.0) { // get fragmentation uncertainty PDF with appropriate correction
+    // Be careful! You should combine this function with `GetNominalPDFs` function!
+    if (strcmp(type, "Bplus") == 0 && ( (SelectedDecayMode >= Xsu2KcPi0_MC && SelectedDecayMode <= Xsu2KcKcKcPi0_MC) || (SelectedDecayMode == other) ) ) {}
+    else if (strcmp(type, "Bzero") == 0 && (SelectedDecayMode >= Xsd2KcPic_MC && SelectedDecayMode <= other) ) {}
+    else if (strcmp(type, "Continuum") == 0) {
+        printf("[ERROR] unexpected type name\n");
+        printf("[ERROR] Continuum type cannot be selected for fragmentation pdf\n");
+        exit(1);
+    }
+    else {
+        printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    float MVA_var = 0;
+
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double temp_KaonID_correction = -1;
+    double temp_nKaon_excep = -1;
+    double temp_KaonID_rel_up = -1;
+    double temp_KaonID_rel_dn = -1;
+    double Decay[N_decay] = { 0.0 };
+
+    double weight_not_Selected = GetFragmentationWeight(type, SelectedDecayMode, IsItUp);
+
+    std::vector<string> names;
+    load_files(dirname, &names);
+
+    double Nevt = 0;
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+        TTree* tree_Xs = (TTree*)input_file->Get("Xs");
+
+        tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_var); // MVA
+
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_KaonID_rel_up);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_KaonID_rel_dn);
+
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clcomb__bc", &Decay[3]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch1__bc", &Decay[4]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch2__bc", &Decay[5]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch3__bc", &Decay[6]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch4__bc", &Decay[7]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch5__bc", &Decay[8]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch6__bc", &Decay[9]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch7__bc", &Decay[10]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch8__bc", &Decay[11]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch9__bc", &Decay[12]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch10__bc", &Decay[13]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch11__bc", &Decay[14]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch12__bc", &Decay[15]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch13__bc", &Decay[16]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch14__bc", &Decay[17]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch15__bc", &Decay[18]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &Decay[19]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &Decay[20]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay[21]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clcomb__bc", &Decay[22]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch16__bc", &Decay[23]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch17__bc", &Decay[24]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch18__bc", &Decay[25]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch19__bc", &Decay[26]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch20__bc", &Decay[27]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch21__bc", &Decay[28]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch22__bc", &Decay[29]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch23__bc", &Decay[30]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch24__bc", &Decay[31]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch25__bc", &Decay[32]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch26__bc", &Decay[33]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch27__bc", &Decay[34]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch28__bc", &Decay[35]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch29__bc", &Decay[36]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch30__bc", &Decay[37]);
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+            tree_upsilon->GetEntry(j);
+            tree_Bsig->GetEntry(j);
+            tree_Btag->GetEntry(j);
+            tree_Xs->GetEntry(j);
+
+            double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
+
+            double Correction_pi0 = std::pow(pi0_correction, Npi0);
+            double Correction_FEI = 1.0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
+            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+
+            double output_Decay[MAX_NUM_DECAYMODE_MC] = { 0.0 };
+            DecayArrayToXsOutputDecay(Decay, output_Decay);
+            double fragmentation_weight = 1.0;
+            for (int k = 0; k < MAX_NUM_DECAYMODE_MC; k++) {
+                if (k == static_cast<int>SelectedDecayMode) {
+                    if(IsItUp) fragmentation_weight = fragmentation_weight * 1.5;
+                    else fragmentation_weight = fragmentation_weight * 0.5;
+                }
+                else {
+                    fragmentation_weight = fragmentation_weight * std::pow(weight_not_Selected, output_Decay[k]);
+                }
+            }
+
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * fragmentation_weight;
+
+            Nevt = Nevt + total_weight;
+
+            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+        }
+        input_file->Close();
+
+        printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
+    }
+    return Nevt;
+}
+
 void Signal_yield_fit_BDT_Rarity_HistFactory()
 {
     /* ====================================== */
     // Seting CDF module
-    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu", Scale_Kplus);
-    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu", Scale_Kplusstar);
-    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu", Scale_Xsu_nonresonant);
-    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu", Scale_K0);
-    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu", Scale_K0star);
-    cdf.initbypath("./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu", Scale_Xsd_nonresonant);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu", Scale_Kplus);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu", Scale_Kplusstar);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu", Scale_Xsu_nonresonant);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu", Scale_K0);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu", Scale_K0star);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu", Scale_Xsd_nonresonant);
     /* ====================================== */
 
 
@@ -1680,26 +2083,52 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     // signal modeling
 
     // fragmentation
-
+    std::vector<std::string> name_Signal_Fragmentation = {
+        "Signal_Xsu_frag_decay1_p", "Signal_Xsu_frag_decay2_p", "Signal_Xsu_frag_decay3_p",
+        "Signal_Xsu_frag_decay4_p", "Signal_Xsu_frag_decay5_p", "Signal_Xsu_frag_decay6_p",
+        "Signal_Xsu_frag_decay7_p", "Signal_Xsu_frag_decay8_p", "Signal_Xsu_frag_decay9_p",
+        "Signal_Xsu_frag_decay10_p", "Signal_Xsu_frag_decay11_p", "Signal_Xsu_frag_decay12_p",
+        "Signal_Xsu_frag_decay13_p", "Signal_Xsu_frag_decay14_p", "Signal_Xsu_frag_decay30_p",
+        "Signal_Xsd_frag_decay16_p", "Signal_Xsd_frag_decay17_p", "Signal_Xsd_frag_decay18_p",
+        "Signal_Xsd_frag_decay19_p", "Signal_Xsd_frag_decay20_p", "Signal_Xsd_frag_decay21_p",
+        "Signal_Xsd_frag_decay22_p", "Signal_Xsd_frag_decay23_p", "Signal_Xsd_frag_decay24_p",
+        "Signal_Xsd_frag_decay25_p", "Signal_Xsd_frag_decay26_p", "Signal_Xsd_frag_decay27_p",
+        "Signal_Xsd_frag_decay28_p", "Signal_Xsd_frag_decay29_p", "Signal_Xsd_frag_decay30_p",
+        "Signal_Xsu_frag_decay1_m", "Signal_Xsu_frag_decay2_m", "Signal_Xsu_frag_decay3_m",
+        "Signal_Xsu_frag_decay4_m", "Signal_Xsu_frag_decay5_m", "Signal_Xsu_frag_decay6_m",
+        "Signal_Xsu_frag_decay7_m", "Signal_Xsu_frag_decay8_m", "Signal_Xsu_frag_decay9_m",
+        "Signal_Xsu_frag_decay10_m", "Signal_Xsu_frag_decay11_m", "Signal_Xsu_frag_decay12_m",
+        "Signal_Xsu_frag_decay13_m", "Signal_Xsu_frag_decay14_m", "Signal_Xsu_frag_decay30_m",
+        "Signal_Xsd_frag_decay16_m", "Signal_Xsd_frag_decay17_m", "Signal_Xsd_frag_decay18_m",
+        "Signal_Xsd_frag_decay19_m", "Signal_Xsd_frag_decay20_m", "Signal_Xsd_frag_decay21_m",
+        "Signal_Xsd_frag_decay22_m", "Signal_Xsd_frag_decay23_m", "Signal_Xsd_frag_decay24_m",
+        "Signal_Xsd_frag_decay25_m", "Signal_Xsd_frag_decay26_m", "Signal_Xsd_frag_decay27_m",
+        "Signal_Xsd_frag_decay28_m", "Signal_Xsd_frag_decay29_m", "Signal_Xsd_frag_decay30_m",
+    };
+    std::vector<TH1D*> Signal_Fragmentaions;
+    for (unsigned int i; i < name_Signal_Fragmentation.size(); i++) {
+        TH1D* temp = new TH1D(name_Signal_Fragmentation.at(i).c_str(), name_Signal_Fragmentation.at(i).c_str(), RarityBins, 0.0, 1.0);
+        Signal_Fragmentaions.push_back(temp);
+    }
     /* ====================================== */
 
 
 
     /* ====================================== */
     // define path for Ntuple
-    const char* MC_dirname_Knunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* MC_dirname_Kstarnunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* MC_dirname_Xsununu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* MC_dirname_K0nunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* MC_dirname_K0starnunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* MC_dirname_Xsdnunu = "./SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* MC_dirname_Knunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* MC_dirname_Kstarnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
+    const char* MC_dirname_Xsununu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
+    const char* MC_dirname_K0nunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
+    const char* MC_dirname_K0starnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
+    const char* MC_dirname_Xsdnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
 
-    const char* MC_dirname_CHG = "./CHG_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_MIX = "./MIX_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_UUBAR = "./UUBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_DDBAR = "./DDBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_SSBAR = "./SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_CHARM = "./CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHG = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHG_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_MIX = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/MIX_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_UUBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/UUBAR_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_DDBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/DDBAR_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SSBAR_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHARM_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     /* ====================================== */
 
 
@@ -1959,25 +2388,72 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNominalPDFs(MC_dirname_K0nunu, Signal_Xsfrac_m, "Bzero", Scale_K0 * ((BR_Xs_nunubar - BR_Xsd_nonresonant_nunubar + Sigma_BR_Xs_nunubar) / (BR_Xs_nunubar - BR_Xsd_nonresonant_nunubar)));
     GetNominalPDFs(MC_dirname_K0starnunu, Signal_Xsfrac_m, "Bzero", Scale_K0star * ((BR_Xs_nunubar - BR_Xsd_nonresonant_nunubar + Sigma_BR_Xs_nunubar) / (BR_Xs_nunubar - BR_Xsd_nonresonant_nunubar)));
     GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Xsfrac_m, "Bzero", Scale_Xsd_nonresonant * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_Xs_nunubar) / BR_Xsd_nonresonant_nunubar));
+
+    // get fragmentation uncertainty pdfs
+    DecayModeMC Fragmentation_types[2 * (MAX_NUM_DECAYMODE_MC - 6 + 1)] = {
+        Xsu2KcPi0_MC, Xsu2K0Pic_MC, Xsu2KcPicPic_MC, Xsu2K0PicPi0_MC,
+        Xsu2KcPicPicPi0_MC, Xsu2K0PicPicPic_MC, Xsu2KcPicPicPicPic_MC, Xsu2K0PicPicPicPi0_MC,
+        Xsu2KcPi0Pi0_MC, Xsu2K0PicPi0Pi0_MC, Xsu2KcPicPicPi0Pi0_MC, Xsu2KcKcKc_MC,
+        Xsu2KcKcK0Pic_MC, Xsu2KcKcKcPi0_MC, other,
+        Xsd2KcPic_MC, Xsd2K0Pi0_MC, Xsd2KcPicPi0_MC, Xsd2K0PicPic_MC,
+        Xsd2KcPicPicPic_MC, Xsd2K0PicPicPi0_MC, Xsd2KcPicPicPicPi0_MC, Xsd2K0PicPicPicPic_MC,
+        Xsd2K0Pi0Pi0_MC, Xsd2KcPicPi0Pi0_MC, Xsd2K0PicPicPi0Pi0_MC, Xsd2KcKcK0_MC,
+        Xsd2KcKcKcPic_MC, Xsd2KcKcK0Pi0_MC, other,
+        Xsu2KcPi0_MC, Xsu2K0Pic_MC, Xsu2KcPicPic_MC, Xsu2K0PicPi0_MC,
+        Xsu2KcPicPicPi0_MC, Xsu2K0PicPicPic_MC, Xsu2KcPicPicPicPic_MC, Xsu2K0PicPicPicPi0_MC,
+        Xsu2KcPi0Pi0_MC, Xsu2K0PicPi0Pi0_MC, Xsu2KcPicPicPi0Pi0_MC, Xsu2KcKcKc_MC,
+        Xsu2KcKcK0Pic_MC, Xsu2KcKcKcPi0_MC, other,
+        Xsd2KcPic_MC, Xsd2K0Pi0_MC, Xsd2KcPicPi0_MC, Xsd2K0PicPic_MC,
+        Xsd2KcPicPicPic_MC, Xsd2K0PicPicPi0_MC, Xsd2KcPicPicPicPi0_MC, Xsd2K0PicPicPicPic_MC,
+        Xsd2K0Pi0Pi0_MC, Xsd2KcPicPi0Pi0_MC, Xsd2K0PicPicPi0Pi0_MC, Xsd2KcKcK0_MC,
+        Xsd2KcKcKcPic_MC, Xsd2KcKcK0Pi0_MC, other
+    };
+    for (unsigned int i = 0; i < name_Signal_Fragmentation.size(); i++) {
+        bool IsItUp = true;
+        if(name_Signal_Fragmentation.at(i).find("_p") != string::npos) IsItUp = true;
+        else if(name_Signal_Fragmentation.at(i).find("_m") != string::npos) IsItUp = false;
+        else {
+            printf("[ERROR] unexpected error!\n");
+            exit(1);
+        }
+
+        GetNominalPDFs(MC_dirname_Knunu, Signal_Fragmentaions.at(i), "Bplus", Scale_Kplus);
+        GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Fragmentaions.at(i), "Bplus", Scale_Kplusstar);
+        if(name_Signal_Fragmentation.at(i).find("Xsu") != string::npos) {
+            GetFragmentationPDFs(MC_dirname_Xsununu, Signal_Fragmentaions.at(i), "Bplus", Fragmentation_types[i], IsItUp, Scale_Xsu_nonresonant);
+        }
+        else {
+            GetNominalPDFs(MC_dirname_Xsununu, Signal_Fragmentaions.at(i), "Bplus", Scale_Xsu_nonresonant);
+        }
+        GetNominalPDFs(MC_dirname_K0nunu, Signal_Fragmentaions.at(i), "Bzero", Scale_K0);
+        GetNominalPDFs(MC_dirname_K0starnunu, Signal_Fragmentaions.at(i), "Bzero", Scale_K0star);
+        if (name_Signal_Fragmentation.at(i).find("Xsd") != string::npos) {
+            GetFragmentationPDFs(MC_dirname_Xsdnunu, Signal_Fragmentaions.at(i), "Bzero", Fragmentation_types[i], IsItUp, Scale_Xsd_nonresonant);
+        }
+        else {
+            GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Fragmentaions.at(i), "Bzero", Scale_Xsd_nonresonant);
+        }
+
+    }
     /* ====================================== */
 
 
 
     /* ====================================== */
     // define path for Data
-    const char* DATA_dirname_Knunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* DATA_dirname_Kstarnunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* DATA_dirname_Xsununu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* DATA_dirname_K0nunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* DATA_dirname_K0starnunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* DATA_dirname_Xsdnunu = "./SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* DATA_dirname_Knunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* DATA_dirname_Kstarnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
+    const char* DATA_dirname_Xsununu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
+    const char* DATA_dirname_K0nunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
+    const char* DATA_dirname_K0starnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
+    const char* DATA_dirname_Xsdnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
 
-    const char* DATA_dirname_CHG = "./CHG_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_MIX = "./MIX_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_UUBAR = "./UUBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_DDBAR = "./DDBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_SSBAR = "./SSBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_CHARM = "./CHARM_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_CHG = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHG_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_MIX = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/MIX_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_UUBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/UUBAR_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_DDBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/DDBAR_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SSBAR_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHARM_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     /* ====================================== */
 
 
@@ -2125,6 +2601,9 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     Signal_Kstarfrac_m->Write();
     Signal_Xsfrac_p->Write();
     Signal_Xsfrac_m->Write();
+
+    // fragmentation uncertainty
+    for (unsigned int i; i < Signal_Fragmentaions.size(); i++) Signal_Fragmentaions.at(i)->Write();
 
     total_DATA->Write();
 
