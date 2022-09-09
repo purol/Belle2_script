@@ -1956,12 +1956,14 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
             DecayArrayToXsOutputDecay(Decay, output_Decay);
             double fragmentation_weight = 1.0;
             for (int k = 0; k < MAX_NUM_DECAYMODE_MC; k++) {
-                if (k == static_cast<int>(SelectedDecayMode)) {
-                    if(IsItUp) fragmentation_weight = fragmentation_weight * 1.5;
-                    else fragmentation_weight = fragmentation_weight * 0.5;
-                }
-                else {
-                    fragmentation_weight = fragmentation_weight * std::pow(weight_not_Selected, output_Decay[k]);
+                if (output_Decay[k] > 0.5) {
+                    if (k == static_cast<int>(SelectedDecayMode)) {
+                        if (IsItUp) fragmentation_weight = fragmentation_weight * std::pow(1.5, output_Decay[k]);
+                        else fragmentation_weight = fragmentation_weight * std::pow(0.5, output_Decay[k]);
+                    }
+                    else {
+                        fragmentation_weight = fragmentation_weight * std::pow(weight_not_Selected, output_Decay[k]);
+                    }
                 }
             }
 
