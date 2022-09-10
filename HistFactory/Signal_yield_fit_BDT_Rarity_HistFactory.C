@@ -2175,12 +2175,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNominalPDFs(MC_dirname_K0starnunu, Signal_nominal, "Bzero", Scale_K0star);
     GetNominalPDFs(MC_dirname_Xsdnunu, Signal_nominal, "Bzero", Scale_Xsd_nonresonant);
 
-    GetNominalPDFs(MC_dirname_CHG, CHG_nominal, "Bplus", 1.0);
-    GetNominalPDFs(MC_dirname_MIX, MIX_nominal, "Bzero", 1.0);
-    GetNominalPDFs(MC_dirname_UUBAR, UUBAR_nominal, "Continuum", 1.0);
-    GetNominalPDFs(MC_dirname_DDBAR, DDBAR_nominal, "Continuum", 1.0);
-    GetNominalPDFs(MC_dirname_SSBAR, SSBAR_nominal, "Continuum", 1.0);
-    GetNominalPDFs(MC_dirname_CHARM, CHARM_nominal, "Continuum", 1.0);
+    GetNominalPDFs(MC_dirname_CHG, CHG_nominal, "Bplus", 0.5);
+    GetNominalPDFs(MC_dirname_MIX, MIX_nominal, "Bzero", 0.5);
+    GetNominalPDFs(MC_dirname_UUBAR, UUBAR_nominal, "Continuum", 0.5);
+    GetNominalPDFs(MC_dirname_DDBAR, DDBAR_nominal, "Continuum", 0.5);
+    GetNominalPDFs(MC_dirname_SSBAR, SSBAR_nominal, "Continuum", 0.5);
+    GetNominalPDFs(MC_dirname_CHARM, CHARM_nominal, "Continuum", 0.5);
 
     // get FEI uncertainty pdfs
     GetFEIPDFs(MC_dirname_Knunu, Signal_FEI_charged_p, "Bplus", true, Scale_Kplus);
@@ -2219,12 +2219,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetPi0PDFs(MC_dirname_K0starnunu, Signal_pi0_p, "Bzero", true, Scale_K0star);
     GetPi0PDFs(MC_dirname_Xsdnunu, Signal_pi0_p, "Bzero", true, Scale_Xsd_nonresonant);
 
-    GetPi0PDFs(MC_dirname_CHG, CHG_pi0_p, "Bplus", true, 1.0);
-    GetPi0PDFs(MC_dirname_MIX, MIX_pi0_p, "Bzero", true, 1.0);
-    GetPi0PDFs(MC_dirname_UUBAR, UUBAR_pi0_p, "Continuum", true, 1.0);
-    GetPi0PDFs(MC_dirname_DDBAR, DDBAR_pi0_p, "Continuum", true, 1.0);
-    GetPi0PDFs(MC_dirname_SSBAR, SSBAR_pi0_p, "Continuum", true, 1.0);
-    GetPi0PDFs(MC_dirname_CHARM, CHARM_pi0_p, "Continuum", true, 1.0);
+    GetPi0PDFs(MC_dirname_CHG, CHG_pi0_p, "Bplus", true, 0.5);
+    GetPi0PDFs(MC_dirname_MIX, MIX_pi0_p, "Bzero", true, 0.5);
+    GetPi0PDFs(MC_dirname_UUBAR, UUBAR_pi0_p, "Continuum", true, 0.5);
+    GetPi0PDFs(MC_dirname_DDBAR, DDBAR_pi0_p, "Continuum", true, 0.5);
+    GetPi0PDFs(MC_dirname_SSBAR, SSBAR_pi0_p, "Continuum", true, 0.5);
+    GetPi0PDFs(MC_dirname_CHARM, CHARM_pi0_p, "Continuum", true, 0.5);
 
     GetPi0PDFs(MC_dirname_Knunu, Signal_pi0_m, "Bplus", false, Scale_Kplus);
     GetPi0PDFs(MC_dirname_Kstarnunu, Signal_pi0_m, "Bplus", false, Scale_Kplusstar);
@@ -2233,12 +2233,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetPi0PDFs(MC_dirname_K0starnunu, Signal_pi0_m, "Bzero", false, Scale_K0star);
     GetPi0PDFs(MC_dirname_Xsdnunu, Signal_pi0_m, "Bzero", false, Scale_Xsd_nonresonant);
 
-    GetPi0PDFs(MC_dirname_CHG, CHG_pi0_m, "Bplus", false, 1.0);
-    GetPi0PDFs(MC_dirname_MIX, MIX_pi0_m, "Bzero", false, 1.0);
-    GetPi0PDFs(MC_dirname_UUBAR, UUBAR_pi0_m, "Continuum", false, 1.0);
-    GetPi0PDFs(MC_dirname_DDBAR, DDBAR_pi0_m, "Continuum", false, 1.0);
-    GetPi0PDFs(MC_dirname_SSBAR, SSBAR_pi0_m, "Continuum", false, 1.0);
-    GetPi0PDFs(MC_dirname_CHARM, CHARM_pi0_m, "Continuum", false, 1.0);
+    GetPi0PDFs(MC_dirname_CHG, CHG_pi0_m, "Bplus", false, 0.5);
+    GetPi0PDFs(MC_dirname_MIX, MIX_pi0_m, "Bzero", false, 0.5);
+    GetPi0PDFs(MC_dirname_UUBAR, UUBAR_pi0_m, "Continuum", false, 0.5);
+    GetPi0PDFs(MC_dirname_DDBAR, DDBAR_pi0_m, "Continuum", false, 0.5);
+    GetPi0PDFs(MC_dirname_SSBAR, SSBAR_pi0_m, "Continuum", false, 0.5);
+    GetPi0PDFs(MC_dirname_CHARM, CHARM_pi0_m, "Continuum", false, 0.5);
 
     // get track uncertainty pdfs
     GetTrackPDFs(MC_dirname_Knunu, Signal_track_p, "Bplus", true, Scale_Kplus);
@@ -2248,12 +2248,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetTrackPDFs(MC_dirname_K0starnunu, Signal_track_p, "Bzero", true, Scale_K0star);
     GetTrackPDFs(MC_dirname_Xsdnunu, Signal_track_p, "Bzero", true, Scale_Xsd_nonresonant);
 
-    GetTrackPDFs(MC_dirname_CHG, CHG_track_p, "Bplus", true, 1.0);
-    GetTrackPDFs(MC_dirname_MIX, MIX_track_p, "Bzero", true, 1.0);
-    GetTrackPDFs(MC_dirname_UUBAR, UUBAR_track_p, "Continuum", true, 1.0);
-    GetTrackPDFs(MC_dirname_DDBAR, DDBAR_track_p, "Continuum", true, 1.0);
-    GetTrackPDFs(MC_dirname_SSBAR, SSBAR_track_p, "Continuum", true, 1.0);
-    GetTrackPDFs(MC_dirname_CHARM, CHARM_track_p, "Continuum", true, 1.0);
+    GetTrackPDFs(MC_dirname_CHG, CHG_track_p, "Bplus", true, 0.5);
+    GetTrackPDFs(MC_dirname_MIX, MIX_track_p, "Bzero", true, 0.5);
+    GetTrackPDFs(MC_dirname_UUBAR, UUBAR_track_p, "Continuum", true, 0.5);
+    GetTrackPDFs(MC_dirname_DDBAR, DDBAR_track_p, "Continuum", true, 0.5);
+    GetTrackPDFs(MC_dirname_SSBAR, SSBAR_track_p, "Continuum", true, 0.5);
+    GetTrackPDFs(MC_dirname_CHARM, CHARM_track_p, "Continuum", true, 0.5);
 
     GetTrackPDFs(MC_dirname_Knunu, Signal_track_m, "Bplus", false, Scale_Kplus);
     GetTrackPDFs(MC_dirname_Kstarnunu, Signal_track_m, "Bplus", false, Scale_Kplusstar);
@@ -2262,12 +2262,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetTrackPDFs(MC_dirname_K0starnunu, Signal_track_m, "Bzero", false, Scale_K0star);
     GetTrackPDFs(MC_dirname_Xsdnunu, Signal_track_m, "Bzero", false, Scale_Xsd_nonresonant);
 
-    GetTrackPDFs(MC_dirname_CHG, CHG_track_m, "Bplus", false, 1.0);
-    GetTrackPDFs(MC_dirname_MIX, MIX_track_m, "Bzero", false, 1.0);
-    GetTrackPDFs(MC_dirname_UUBAR, UUBAR_track_m, "Continuum", false, 1.0);
-    GetTrackPDFs(MC_dirname_DDBAR, DDBAR_track_m, "Continuum", false, 1.0);
-    GetTrackPDFs(MC_dirname_SSBAR, SSBAR_track_m, "Continuum", false, 1.0);
-    GetTrackPDFs(MC_dirname_CHARM, CHARM_track_m, "Continuum", false, 1.0);
+    GetTrackPDFs(MC_dirname_CHG, CHG_track_m, "Bplus", false, 0.5);
+    GetTrackPDFs(MC_dirname_MIX, MIX_track_m, "Bzero", false, 0.5);
+    GetTrackPDFs(MC_dirname_UUBAR, UUBAR_track_m, "Continuum", false, 0.5);
+    GetTrackPDFs(MC_dirname_DDBAR, DDBAR_track_m, "Continuum", false, 0.5);
+    GetTrackPDFs(MC_dirname_SSBAR, SSBAR_track_m, "Continuum", false, 0.5);
+    GetTrackPDFs(MC_dirname_CHARM, CHARM_track_m, "Continuum", false, 0.5);
 
     // get KS0 uncertainty pdfs
     GetKS0PDFs(MC_dirname_Knunu, Signal_KS0_p, "Bplus", true, Scale_Kplus);
@@ -2277,12 +2277,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetKS0PDFs(MC_dirname_K0starnunu, Signal_KS0_p, "Bzero", true, Scale_K0star);
     GetKS0PDFs(MC_dirname_Xsdnunu, Signal_KS0_p, "Bzero", true, Scale_Xsd_nonresonant);
 
-    GetKS0PDFs(MC_dirname_CHG, CHG_KS0_p, "Bplus", true, 1.0);
-    GetKS0PDFs(MC_dirname_MIX, MIX_KS0_p, "Bzero", true, 1.0);
-    GetKS0PDFs(MC_dirname_UUBAR, UUBAR_KS0_p, "Continuum", true, 1.0);
-    GetKS0PDFs(MC_dirname_DDBAR, DDBAR_KS0_p, "Continuum", true, 1.0);
-    GetKS0PDFs(MC_dirname_SSBAR, SSBAR_KS0_p, "Continuum", true, 1.0);
-    GetKS0PDFs(MC_dirname_CHARM, CHARM_KS0_p, "Continuum", true, 1.0);
+    GetKS0PDFs(MC_dirname_CHG, CHG_KS0_p, "Bplus", true, 0.5);
+    GetKS0PDFs(MC_dirname_MIX, MIX_KS0_p, "Bzero", true, 0.5);
+    GetKS0PDFs(MC_dirname_UUBAR, UUBAR_KS0_p, "Continuum", true, 0.5);
+    GetKS0PDFs(MC_dirname_DDBAR, DDBAR_KS0_p, "Continuum", true, 0.5);
+    GetKS0PDFs(MC_dirname_SSBAR, SSBAR_KS0_p, "Continuum", true, 0.5);
+    GetKS0PDFs(MC_dirname_CHARM, CHARM_KS0_p, "Continuum", true, 0.5);
 
     GetKS0PDFs(MC_dirname_Knunu, Signal_KS0_m, "Bplus", false, Scale_Kplus);
     GetKS0PDFs(MC_dirname_Kstarnunu, Signal_KS0_m, "Bplus", false, Scale_Kplusstar);
@@ -2291,12 +2291,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetKS0PDFs(MC_dirname_K0starnunu, Signal_KS0_m, "Bzero", false, Scale_K0star);
     GetKS0PDFs(MC_dirname_Xsdnunu, Signal_KS0_m, "Bzero", false, Scale_Xsd_nonresonant);
 
-    GetKS0PDFs(MC_dirname_CHG, CHG_KS0_m, "Bplus", false, 1.0);
-    GetKS0PDFs(MC_dirname_MIX, MIX_KS0_m, "Bzero", false, 1.0);
-    GetKS0PDFs(MC_dirname_UUBAR, UUBAR_KS0_m, "Continuum", false, 1.0);
-    GetKS0PDFs(MC_dirname_DDBAR, DDBAR_KS0_m, "Continuum", false, 1.0);
-    GetKS0PDFs(MC_dirname_SSBAR, SSBAR_KS0_m, "Continuum", false, 1.0);
-    GetKS0PDFs(MC_dirname_CHARM, CHARM_KS0_m, "Continuum", false, 1.0);
+    GetKS0PDFs(MC_dirname_CHG, CHG_KS0_m, "Bplus", false, 0.5);
+    GetKS0PDFs(MC_dirname_MIX, MIX_KS0_m, "Bzero", false, 0.5);
+    GetKS0PDFs(MC_dirname_UUBAR, UUBAR_KS0_m, "Continuum", false, 0.5);
+    GetKS0PDFs(MC_dirname_DDBAR, DDBAR_KS0_m, "Continuum", false, 0.5);
+    GetKS0PDFs(MC_dirname_SSBAR, SSBAR_KS0_m, "Continuum", false, 0.5);
+    GetKS0PDFs(MC_dirname_CHARM, CHARM_KS0_m, "Continuum", false, 0.5);
 
     // get KID uncertainty pdfs
     GetKIDPDFs(MC_dirname_Knunu, Signal_KID_p, "Bplus", true, Scale_Kplus);
@@ -2306,12 +2306,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetKIDPDFs(MC_dirname_K0starnunu, Signal_KID_p, "Bzero", true, Scale_K0star);
     GetKIDPDFs(MC_dirname_Xsdnunu, Signal_KID_p, "Bzero", true, Scale_Xsd_nonresonant);
 
-    GetKIDPDFs(MC_dirname_CHG, CHG_KID_p, "Bplus", true, 1.0);
-    GetKIDPDFs(MC_dirname_MIX, MIX_KID_p, "Bzero", true, 1.0);
-    GetKIDPDFs(MC_dirname_UUBAR, UUBAR_KID_p, "Continuum", true, 1.0);
-    GetKIDPDFs(MC_dirname_DDBAR, DDBAR_KID_p, "Continuum", true, 1.0);
-    GetKIDPDFs(MC_dirname_SSBAR, SSBAR_KID_p, "Continuum", true, 1.0);
-    GetKIDPDFs(MC_dirname_CHARM, CHARM_KID_p, "Continuum", true, 1.0);
+    GetKIDPDFs(MC_dirname_CHG, CHG_KID_p, "Bplus", true, 0.5);
+    GetKIDPDFs(MC_dirname_MIX, MIX_KID_p, "Bzero", true, 0.5);
+    GetKIDPDFs(MC_dirname_UUBAR, UUBAR_KID_p, "Continuum", true, 0.5);
+    GetKIDPDFs(MC_dirname_DDBAR, DDBAR_KID_p, "Continuum", true, 0.5);
+    GetKIDPDFs(MC_dirname_SSBAR, SSBAR_KID_p, "Continuum", true, 0.5);
+    GetKIDPDFs(MC_dirname_CHARM, CHARM_KID_p, "Continuum", true, 0.5);
 
     GetKIDPDFs(MC_dirname_Knunu, Signal_KID_m, "Bplus", false, Scale_Kplus);
     GetKIDPDFs(MC_dirname_Kstarnunu, Signal_KID_m, "Bplus", false, Scale_Kplusstar);
@@ -2320,12 +2320,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetKIDPDFs(MC_dirname_K0starnunu, Signal_KID_m, "Bzero", false, Scale_K0star);
     GetKIDPDFs(MC_dirname_Xsdnunu, Signal_KID_m, "Bzero", false, Scale_Xsd_nonresonant);
 
-    GetKIDPDFs(MC_dirname_CHG, CHG_KID_m, "Bplus", false, 1.0);
-    GetKIDPDFs(MC_dirname_MIX, MIX_KID_m, "Bzero", false, 1.0);
-    GetKIDPDFs(MC_dirname_UUBAR, UUBAR_KID_m, "Continuum", false, 1.0);
-    GetKIDPDFs(MC_dirname_DDBAR, DDBAR_KID_m, "Continuum", false, 1.0);
-    GetKIDPDFs(MC_dirname_SSBAR, SSBAR_KID_m, "Continuum", false, 1.0);
-    GetKIDPDFs(MC_dirname_CHARM, CHARM_KID_m, "Continuum", false, 1.0);
+    GetKIDPDFs(MC_dirname_CHG, CHG_KID_m, "Bplus", false, 0.5);
+    GetKIDPDFs(MC_dirname_MIX, MIX_KID_m, "Bzero", false, 0.5);
+    GetKIDPDFs(MC_dirname_UUBAR, UUBAR_KID_m, "Continuum", false, 0.5);
+    GetKIDPDFs(MC_dirname_DDBAR, DDBAR_KID_m, "Continuum", false, 0.5);
+    GetKIDPDFs(MC_dirname_SSBAR, SSBAR_KID_m, "Continuum", false, 0.5);
+    GetKIDPDFs(MC_dirname_CHARM, CHARM_KID_m, "Continuum", false, 0.5);
 
     // get Kff uncertainty pdfs
     TH1D* Signal_Kff_temp = new TH1D("Signal_Kff_temp", "Signal_Kff_temp", RarityBins, 0.0, 1.0);
