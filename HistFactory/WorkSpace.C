@@ -216,6 +216,9 @@ int WorkSpace() {
 	sig_temp.AddHistoSys("Xsd_fragmentation28_uncer", "Signal_Xsd_frag_decay28_m", fname, "", "Signal_Xsd_frag_decay28_p", fname, "");
 	sig_temp.AddHistoSys("Xsd_fragmentation29_uncer", "Signal_Xsd_frag_decay29_m", fname, "", "Signal_Xsd_frag_decay29_p", fname, "");
 	sig_temp.AddHistoSys("Xsd_fragmentation30_uncer", "Signal_Xsd_frag_decay30_m", fname, "", "Signal_Xsd_frag_decay30_p", fname, "");
+	sig_temp.AddHistoSys("pf_uncer", "Signal_pf_m", fname, "", "Signal_pf_p", fname, "");
+	sig_temp.AddHistoSys("mb_uncer", "Signal_mb_m", fname, "", "Signal_mb_p", fname, "");
+	sig_temp.AddHistoSys("transition_uncer", "Signal_transition_m", fname, "", "Signal_transition_p", fname, "");
 	sig_temp.ActivateStatError();
 	sig_temp.SetNormalizeByTheory(kFALSE);
 	sig_temp.AddNormFactor("mu", expmu, 0.0, 100.0);

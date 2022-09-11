@@ -2112,8 +2112,6 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     TH1D* Signal_Xsfrac_p = new TH1D("Signal_Xsfrac_p", "Signal_Xsfrac_p", RarityBins, 0.0, 1.0);
     TH1D* Signal_Xsfrac_m = new TH1D("Signal_Xsfrac_m", "Signal_Xsfrac_m", RarityBins, 0.0, 1.0);
 
-    // signal modeling
-
     // fragmentation
     std::vector<std::string> name_Signal_Fragmentation = {
         "Signal_Xsu_frag_decay1_p", "Signal_Xsu_frag_decay2_p", "Signal_Xsu_frag_decay3_p",
@@ -2142,6 +2140,18 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
         TH1D* temp = new TH1D(name_Signal_Fragmentation.at(i).c_str(), name_Signal_Fragmentation.at(i).c_str(), RarityBins, 0.0, 1.0);
         Signal_Fragmentaions.push_back(temp);
     }
+
+    // pf
+    TH1D* Signal_pf_p = new TH1D("Signal_pf_p", "Signal_pf_p", RarityBins, 0.0, 1.0);
+    TH1D* Signal_pf_m = new TH1D("Signal_pf_m", "Signal_pf_m", RarityBins, 0.0, 1.0);
+
+    // mb
+    TH1D* Signal_mb_p = new TH1D("Signal_mb_p", "Signal_mb_p", RarityBins, 0.0, 1.0);
+    TH1D* Signal_mb_m = new TH1D("Signal_mb_m", "Signal_mb_m", RarityBins, 0.0, 1.0);
+
+    // transition
+    TH1D* Signal_transition_p = new TH1D("Signal_transition_p", "Signal_transition_p", RarityBins, 0.0, 1.0);
+    TH1D* Signal_transition_m = new TH1D("Signal_transition_m", "Signal_transition_m", RarityBins, 0.0, 1.0);
     /* ====================================== */
 
 
@@ -2161,6 +2171,20 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     const char* MC_dirname_DDBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/DDBAR_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     const char* MC_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SSBAR_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     const char* MC_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHARM_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+
+    // for signal modeling
+    const char* MC_dirname_Xsununu_Hpf = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsu_Hpf";
+    const char* MC_dirname_Xsdnunu_Hpf = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsd_Hpf";
+    const char* MC_dirname_Xsununu_Lpf = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsu_Lpf";
+    const char* MC_dirname_Xsdnunu_Lpf = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsd_Lpf";
+    const char* MC_dirname_Xsununu_Hmb = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsu_Hmb";
+    const char* MC_dirname_Xsdnunu_Hmb = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsd_Hmb";
+    const char* MC_dirname_Xsununu_Lmb = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsu_Lmb";
+    const char* MC_dirname_Xsdnunu_Lmb = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsd_Lmb";
+    const char* MC_dirname_Xsununu_Htransition = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsu_Htransition";
+    const char* MC_dirname_Xsdnunu_Htransition = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsd_Htransition";
+    const char* MC_dirname_Xsununu_Ltransition = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsu_Ltransition";
+    const char* MC_dirname_Xsdnunu_Ltransition = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsd_Ltransition";
     /* ====================================== */
 
 
@@ -2467,6 +2491,51 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
         }
 
     }
+
+    // get pf uncertainty pdfs
+    GetNominalPDFs(MC_dirname_Knunu, Signal_pf_p, "Bplus", Scale_Kplus);
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_pf_p, "Bplus", Scale_Kplusstar);
+    GetNominalPDFs(MC_dirname_Xsununu_Hpf, Signal_pf_p, "Bplus", Scale_Xsu_nonresonant* (15.0 / 10.0));
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_pf_p, "Bzero", Scale_K0);
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_pf_p, "Bzero", Scale_K0star);
+    GetNominalPDFs(MC_dirname_Xsdnunu_Hpf, Signal_pf_p, "Bzero", Scale_Xsd_nonresonant * (15.0 / 10.0));
+
+    GetNominalPDFs(MC_dirname_Knunu, Signal_pf_m, "Bplus", Scale_Kplus);
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_pf_m, "Bplus", Scale_Kplusstar);
+    GetNominalPDFs(MC_dirname_Xsununu_Lpf, Signal_pf_m, "Bplus", Scale_Xsu_nonresonant * (15.0 / 10.0));
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_pf_m, "Bzero", Scale_K0);
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_pf_m, "Bzero", Scale_K0star);
+    GetNominalPDFs(MC_dirname_Xsdnunu_Lpf, Signal_pf_m, "Bzero", Scale_Xsd_nonresonant * (15.0 / 10.0));
+
+    // mb
+    GetNominalPDFs(MC_dirname_Knunu, Signal_mb_p, "Bplus", Scale_Kplus);
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_mb_p, "Bplus", Scale_Kplusstar);
+    GetNominalPDFs(MC_dirname_Xsununu_Hmb, Signal_mb_p, "Bplus", Scale_Xsu_nonresonant * (15.0 / 10.0));
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_mb_p, "Bzero", Scale_K0);
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_mb_p, "Bzero", Scale_K0star);
+    GetNominalPDFs(MC_dirname_Xsdnunu_Hmb, Signal_mb_p, "Bzero", Scale_Xsd_nonresonant * (15.0 / 10.0));
+
+    GetNominalPDFs(MC_dirname_Knunu, Signal_mb_m, "Bplus", Scale_Kplus);
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_mb_m, "Bplus", Scale_Kplusstar);
+    GetNominalPDFs(MC_dirname_Xsununu_Lmb, Signal_mb_m, "Bplus", Scale_Xsu_nonresonant * (15.0 / 10.0));
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_mb_m, "Bzero", Scale_K0);
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_mb_m, "Bzero", Scale_K0star);
+    GetNominalPDFs(MC_dirname_Xsdnunu_Lmb, Signal_mb_m, "Bzero", Scale_Xsd_nonresonant * (15.0 / 10.0));
+
+    // transition
+    GetNominalPDFs(MC_dirname_Knunu, Signal_transition_p, "Bplus", Scale_Kplus);
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_transition_p, "Bplus", Scale_Kplusstar);
+    GetNominalPDFs(MC_dirname_Xsununu_Htransition, Signal_transition_p, "Bplus", Scale_Xsu_nonresonant * (15.0 / 10.0));
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_transition_p, "Bzero", Scale_K0);
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_transition_p, "Bzero", Scale_K0star);
+    GetNominalPDFs(MC_dirname_Xsdnunu_Htransition, Signal_transition_p, "Bzero", Scale_Xsd_nonresonant * (15.0 / 10.0));
+
+    GetNominalPDFs(MC_dirname_Knunu, Signal_transition_m, "Bplus", Scale_Kplus);
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_transition_m, "Bplus", Scale_Kplusstar);
+    GetNominalPDFs(MC_dirname_Xsununu_Ltransition, Signal_transition_m, "Bplus", Scale_Xsu_nonresonant * (15.0 / 10.0));
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_transition_m, "Bzero", Scale_K0);
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_transition_m, "Bzero", Scale_K0star);
+    GetNominalPDFs(MC_dirname_Xsdnunu_Ltransition, Signal_transition_m, "Bzero", Scale_Xsd_nonresonant * (15.0 / 10.0));
     /* ====================================== */
 
 
@@ -2636,6 +2705,18 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
 
     // fragmentation uncertainty
     for (unsigned int i; i < Signal_Fragmentaions.size(); i++) Signal_Fragmentaions.at(i)->Write();
+
+    // pf uncertainty
+    Signal_pf_p->Write();
+    Signal_pf_m->Write();
+
+    // mb uncertainty
+    Signal_mb_p->Write();
+    Signal_mb_m->Write();
+
+    // transition uncertainty
+    Signal_transition_p->Write();
+    Signal_transition_m->Write();
 
     total_DATA->Write();
 
