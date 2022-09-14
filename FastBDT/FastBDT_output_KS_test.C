@@ -216,7 +216,7 @@ void FastBDT_output_KS_test()
 
     gStyle->SetOptStat(0);
 
-    TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd();
+    TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd(); gPad->SetLogy();
     double OBB_BKG_train_max = OBB_BKG_train->GetMaximum(); double OBB_SIGNAL_train_max = OBB_SIGNAL_train->GetMaximum();
     if(OBB_BKG_train_max > OBB_SIGNAL_train_max) OBB_BKG_train->SetMaximum(1.05 * OBB_BKG_train_max);
     else OBB_BKG_train->SetMaximum(1.05 * OBB_SIGNAL_train_max);
@@ -225,7 +225,7 @@ void FastBDT_output_KS_test()
     gPad->BuildLegend(0.9, 0.9, 0.6, 0.6);
     c_temp->SaveAs("OBB_Plot.png");
 
-    TCanvas* c_temp_2 = new TCanvas("c2", "", 600, 600); c_temp_2->cd();
+    TCanvas* c_temp_2 = new TCanvas("c2", "", 600, 600); c_temp_2->cd(); gPad->SetLogy();
     double Oqq_BKG_train_max = Oqq_BKG_train->GetMaximum(); double Oqq_SIGNAL_train_max = Oqq_SIGNAL_train->GetMaximum();
     if(Oqq_BKG_train_max > Oqq_SIGNAL_train_max) Oqq_BKG_train->SetMaximum(1.05 * Oqq_BKG_train_max);
     else Oqq_BKG_train->SetMaximum(1.05 * Oqq_SIGNAL_train_max);

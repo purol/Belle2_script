@@ -221,7 +221,7 @@ int WorkSpace() {
 	sig_temp.AddHistoSys("transition_uncer", "Signal_transition_m", fname, "", "Signal_transition_p", fname, "");
 	sig_temp.ActivateStatError();
 	sig_temp.SetNormalizeByTheory(kFALSE);
-	sig_temp.AddNormFactor("mu", expmu, 0.0, 100.0);
+	sig_temp.AddNormFactor("mu", expmu, -100.0, 100.0);
 	channel.AddSample(sig_temp);
 
 	// read background template
