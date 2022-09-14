@@ -434,7 +434,7 @@ void MyLinearityTest(RooWorkspace* w, double Nevt_signal_1mu, double Nevt_backgr
             if (name_LT == std::string("mu")) {
                 mus.push_back(val_LT);
                 mu_errors.push_back(err_LT);
-                mu_pulls.push_back((val_LT - 1.0) / err_LT);
+                mu_pulls.push_back((val_LT - mu_injected) / err_LT);
             }
             else if (name_LT == std::string("alpha_mu_CHG")) {
                 alpha_mu_CHGs.push_back(val_LT);
