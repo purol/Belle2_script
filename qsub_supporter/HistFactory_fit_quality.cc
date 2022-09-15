@@ -463,8 +463,8 @@ void MyLinearityTest(RooWorkspace* w, double Nevt_signal_1mu, double Nevt_backgr
 
     for (int i = 0; i < LT_iter_num; i++) { // Do LT MC study
         w->loadSnapshot("NominalParamValues");
-        w->var("mu")->setVal(mu_injected);
         SetParamsForToy(w, names);
+        w->var("mu")->setVal(mu_injected);
 
         double Nevt_total = Nevt_signal_1mu * mu_injected +
             Nevt_CHG_1mu * w->function("CHG_nominal_channel_epsilon")->getVal() +
