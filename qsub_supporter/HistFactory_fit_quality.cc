@@ -4,6 +4,7 @@
 #include<algorithm>
 #include<vector>
 #include <numeric>
+#include <time.h>
 
 #include "TRandom3.h"
 #include "TCanvas.h"
@@ -153,7 +154,44 @@ using std::endl;
 # define Toy_iter_num 5000
 # define LT_iter_num 5000
 
-void MyToyMCStudy(RooWorkspace *w, double Nevt_total_1mu){
+void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    w->loadSnapshot("NominalParamValues");
+
+    RooAbsData* data = (RooAbsData*)w->data("asimovData");
+    RooFitResult* fitres = model->fitTo(*data, RooFit::SumW2Error(false), PrintLevel(-1), Save());
+
+    RooArgSet fitargs = fitres->floatParsFinal();
+    TIterator* iter(fitargs.createIterator());
+
+    for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        names->push_back(name);
+    }
+
+    w->loadSnapshot("NominalParamValues");
+}
+
+void SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names) {
+
+    for (unsigned int i = 0; i < names->size(); i++) {
+        std::default_random_engine generator;
+        std::normal_distribution<double> distribution(0.0, 1.0);
+
+        if (names->at(i).find("alpha") != std::string::npos) {
+            w->var(names->at(i).c_str())->setVal(distribution(generator));
+        }
+        else if (names->at(i).find("gamma") != std::string::npos) {
+            // it is not implemented
+        }
+    }
+
+}
+
+void MyToyMCStudy(RooWorkspace *w, double Nevt_signal_1mu, double Nevt_CHG_1mu, double Nevt_MIX_1mu, double Nevt_UUBAR_1mu, double Nevt_DDBAR_1mu, double Nevt_SSBAR_1mu, double Nevt_CHARM_1mu, std::vector<std::string>* names){
 
         std::vector<double> mus;
         std::vector<double> mu_errors;
@@ -195,11 +233,20 @@ void MyToyMCStudy(RooWorkspace *w, double Nevt_total_1mu){
         RooArgSet* obs = (RooArgSet*)mc->GetObservables();
         RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
 
-        for(int i=0; i< Toy_iter_num; i++){ // Do Toy MC study
+        for(int i=0; i< Toy_iter_num; i++) { // Do Toy MC study
             w->loadSnapshot("NominalParamValues");
+            SetParamsForToy(w, names);
 
-            RooDataSet* genData = model->generate(RooArgSet(*x,model->indexCat()), Nevt_total_1mu, false, true, "", false, true);
+            double Nevt_total = Nevt_signal_1mu +
+                Nevt_CHG_1mu * w->function("CHG_nominal_channel_epsilon")->getVal() +
+                Nevt_MIX_1mu * w->function("MIX_nominal_channel_epsilon")->getVal() +
+                Nevt_UUBAR_1mu * w->function("UUBAR_nominal_channel_epsilon")->getVal() +
+                Nevt_DDBAR_1mu * w->function("DDBAR_nominal_channel_epsilon")->getVal() +
+                Nevt_SSBAR_1mu * w->function("SSBAR_nominal_channel_epsilon")->getVal() +
+                Nevt_CHARM_1mu * w->function("CHARM_nominal_channel_epsilon")->getVal();
+            RooDataSet* genData = model->generate(RooArgSet(*x,model->indexCat()), Nevt_total, false, false, "", false, true);
 
+            w->loadSnapshot("NominalParamValues");
             RooFitResult* fitres = model->fitTo(*genData, RooFit::SumW2Error(false), PrintLevel(-1), Save());
 
             RooArgSet fitargs_TOY = fitres->floatParsFinal();
@@ -417,8 +464,17 @@ void MyLinearityTest(RooWorkspace* w, double Nevt_signal_1mu, double Nevt_backgr
     for (int i = 0; i < LT_iter_num; i++) { // Do LT MC study
         w->loadSnapshot("NominalParamValues");
         w->var("mu")->setVal(mu_injected);
+        SetParamsForToy(w, names);
 
-        RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_signal_1mu * mu_injected + Nevt_background_1mu, false, true, "", false, true);
+        double Nevt_total = Nevt_signal_1mu * mu_injected +
+            Nevt_CHG_1mu * w->function("CHG_nominal_channel_epsilon")->getVal() +
+            Nevt_MIX_1mu * w->function("MIX_nominal_channel_epsilon")->getVal() +
+            Nevt_UUBAR_1mu * w->function("UUBAR_nominal_channel_epsilon")->getVal() +
+            Nevt_DDBAR_1mu * w->function("DDBAR_nominal_channel_epsilon")->getVal() +
+            Nevt_SSBAR_1mu * w->function("SSBAR_nominal_channel_epsilon")->getVal() +
+            Nevt_CHARM_1mu * w->function("CHARM_nominal_channel_epsilon")->getVal();
+
+        RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, false, "", false, true);
         w->loadSnapshot("NominalParamValues");
 
         RooFitResult* fitres = model->fitTo(*genData, RooFit::SumW2Error(false), PrintLevel(-1), Save());
@@ -594,18 +650,37 @@ void MyLinearityTest(RooWorkspace* w, double Nevt_signal_1mu, double Nevt_backgr
 }
 
 int main(int argc, char* argv[]) {
+    RooRandom::randomGenerator()->SetSeed(time(NULL));
+
     // argv[1]: {ToyMC|LinearityTest}
     // argv[2]: Nevt_signal_1mu
-    // argv[3]: Nevt_background_1mu
-    // argv[4]: injected mu when Linearity test
+    // argv[3]: Nevt_CHG_1mu
+    // argv[4]: Nevt_MIX_1mu
+    // argv[5]: Nevt_UUBAR_1mu
+    // argv[6]: Nevt_DDBAR_1mu
+    // argv[7]: Nevt_SSBAR_1mu
+    // argv[8]: Nevt_CHARM_1mu
+    // argv[9]: injected mu when Linearity test
     double Nevt_signal_1mu = -1;
-    double Nevt_background_1mu = -1;
+    double Nevt_CHG_1mu = -1;
+    double Nevt_MIX_1mu = -1;
+    double Nevt_UUBAR_1mu = -1;
+    double Nevt_DDBAR_1mu = -1;
+    double Nevt_SSBAR_1mu = -1;
+    double Nevt_CHARM_1mu = -1;
     double injected_mu = -1;
+
+    std::vector<std::string> param_names;
     
     if (std::string(argv[1]) == std::string("ToyMC")) {  // main ToyMC 12 1234
-        if (argc == 4) {
+        if (argc == 9) {
             Nevt_signal_1mu = std::atof(argv[2]);
-            Nevt_background_1mu = std::atof(argv[3]);
+            Nevt_CHG_1mu = std::atof(argv[3]);
+            Nevt_MIX_1mu = std::atof(argv[4]);
+            Nevt_UUBAR_1mu = std::atof(argv[5]);
+            Nevt_DDBAR_1mu = std::atof(argv[6]);
+            Nevt_SSBAR_1mu = std::atof(argv[7]);
+            Nevt_CHARM_1mu = std::atof(argv[8]);
             injected_mu = -1;
         }
         else {
@@ -614,10 +689,15 @@ int main(int argc, char* argv[]) {
         }
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) { // main LinearityTest 12 1234 0.8
-        if (argc == 5) {
+        if (argc == 10) {
             Nevt_signal_1mu = std::atof(argv[2]);
-            Nevt_background_1mu = std::atof(argv[3]);
-            injected_mu = std::atof(argv[4]);
+            Nevt_CHG_1mu = std::atof(argv[3]);
+            Nevt_MIX_1mu = std::atof(argv[4]);
+            Nevt_UUBAR_1mu = std::atof(argv[5]);
+            Nevt_DDBAR_1mu = std::atof(argv[6]);
+            Nevt_SSBAR_1mu = std::atof(argv[7]);
+            Nevt_CHARM_1mu = std::atof(argv[8]);
+            injected_mu = std::atof(argv[9]);
         }
         else {
             printf("Toy MC requires only 3 arguments: {number of signal events when 1mu} {number of background events when 1mu} {injected mu}\n");
@@ -635,11 +715,13 @@ int main(int argc, char* argv[]) {
 
     RooWorkspace* w = (RooWorkspace*)f->Get("combined");
 
+    GetNameOfParams(w, &param_names);
+
     if (std::string(argv[1]) == std::string("ToyMC")) {
-        MyToyMCStudy(w, Nevt_signal_1mu + Nevt_background_1mu);
+        MyToyMCStudy(w, Nevt_signal_1mu, Nevt_CHG_1mu, Nevt_MIX_1mu, Nevt_UUBAR_1mu, Nevt_DDBAR_1mu, Nevt_SSBAR_1mu, Nevt_CHARM_1mu, &param_names);
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) {
-        MyLinearityTest(w, Nevt_signal_1mu, Nevt_background_1mu, injected_mu);
+        MyLinearityTest(w, Nevt_signal_1mu, Nevt_CHG_1mu, Nevt_MIX_1mu, Nevt_UUBAR_1mu, Nevt_DDBAR_1mu, Nevt_SSBAR_1mu, Nevt_CHARM_1mu, &param_names, injected_mu);
     }
 
     f->Close();

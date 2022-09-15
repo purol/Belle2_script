@@ -162,10 +162,10 @@ int HypoCal() {
 
 	// get Category and data
 	RooCategory* idx = (RooCategory*)obs->find("channelCat");
-	RooAbsData* data = (RooAbsData*)w->data("obsData");
+	RooAbsData* data = (RooAbsData*)w->data("asimovData");
 
 	// fit
-	RooFitResult* fitres = model->fitTo(*data, RooFit::SumW2Error(true));
+	RooFitResult* fitres = model->fitTo(*data, RooFit::SumW2Error(false));
 
 	// define frame
 	RooPlot* x_frame = x->frame(Title("Tramsformed FBDT_{1}"));
