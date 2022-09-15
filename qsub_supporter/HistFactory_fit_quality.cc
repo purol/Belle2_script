@@ -5,6 +5,7 @@
 #include<vector>
 #include <numeric>
 #include <time.h>
+#include <random>
 
 #include "TRandom3.h"
 #include "TCanvas.h"
@@ -419,7 +420,7 @@ void MyToyMCStudy(RooWorkspace *w, double Nevt_signal_1mu, double Nevt_CHG_1mu, 
         temp_file->Close();
 }
 
-void MyLinearityTest(RooWorkspace* w, double Nevt_signal_1mu, double Nevt_background_1mu, double mu_injected) {
+void MyLinearityTest(RooWorkspace* w, double Nevt_signal_1mu, double Nevt_CHG_1mu, double Nevt_MIX_1mu, double Nevt_UUBAR_1mu, double Nevt_DDBAR_1mu, double Nevt_SSBAR_1mu, double Nevt_CHARM_1mu, std::vector<std::string>* names, double mu_injected) {
 
     std::vector<double> mus;
     std::vector<double> mu_errors;
