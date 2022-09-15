@@ -1,0 +1,95 @@
+   ------------------------------------------------------------------
+  | Welcome to ROOT 6.22/08                        https://root.cern |
+  | (c) 1995-2020, The ROOT Team; conception: R. Brun, F. Rademakers |
+  | Built for linuxx8664gcc on Mar 10 2021, 14:20:04                 |
+  | From tags/v6-22-08@v6-22-08                                      |
+  | Try '.help', '.demo', '.license', '.credits', '.quit'/'.q'       |
+   ------------------------------------------------------------------
+
+
+Processing ReadRootFiles_r.c...
+Read evtgen_exp_07_BtoKpnunu-0_Ntuple.root... 580 entries...
+Read evtgen_exp_09_BtoKpnunu-0_Ntuple.root... 489 entries...
+Read evtgen_exp_11_BtoKpnunu-0_Ntuple.root... 746 entries...
+Read evtgen_exp_13_BtoKpnunu-0_Ntuple.root... 875 entries...
+Read evtgen_exp_17_BtoKpnunu-0_Ntuple.root... 988 entries...
+Read evtgen_exp_19a_BtoKpnunu-0_Ntuple.root... 1971 entries...
+Read evtgen_exp_19b_BtoKpnunu-0_Ntuple.root... 969 entries...
+Read evtgen_exp_21_BtoKpnunu-0_Ntuple.root... 528 entries...
+Read evtgen_exp_23_BtoKpnunu-0_Ntuple.root... 616 entries...
+Read evtgen_exp_31_BtoKpnunu-0_Ntuple.root... 3367 entries...
+Read evtgen_exp_33_BtoKpnunu-0_Ntuple.root... 3711 entries...
+Read evtgen_exp_35_BtoKpnunu-0_Ntuple.root... 3670 entries...
+Read evtgen_exp_41b_BtoKpnunu-0_Ntuple.root... 5453 entries...
+Read evtgen_exp_43_BtoKpnunu-0_Ntuple.root... 13473 entries...
+Read evtgen_exp_45a_BtoKpnunu-0_Ntuple.root... 828 entries...
+Read evtgen_exp_45b_BtoKpnunu-0_Ntuple.root... 1321 entries...
+Read evtgen_exp_47_BtoKpnunu-0_Ntuple.root... 9769 entries...
+Read evtgen_exp_49_BtoKpnunu-0_Ntuple.root... 6087 entries...
+Read evtgen_exp_55_BtoKpnunu-0_Ntuple.root... 16185 entries...
+Read evtgen_exp_61_BtoKpnunu-0_Ntuple.root... 6908 entries...
+Read evtgen_exp_63_BtoKpnunu-0_Ntuple.root... 5590 entries...
+Read evtgen_exp_65_BtoKpnunu-0_Ntuple.root... 6962 entries...
+Total 91086 entries
+Number of event: 5364
+Number of candidate: 91086
+Number of B_tag isSignal = 1: 868
+Number of B_tag isSignal != 1: 90218
+Number of B_sig isSignal = 1: 23384
+Number of B_sig isSignal != 1: 67702
+Number of Upsilon isSignal = 1: 547
+Number of Upsilon isSignal != 1: 90539
+====== Mbc > 5.2 GeV =====
+Number of event: 5341
+Number of candidate: 90143
+Number of B_tag isSignal = 1: 868
+Number of B_tag isSignal != 1: 89275
+Number of B_sig isSignal = 1: 23361
+Number of B_sig isSignal != 1: 66782
+Number of Upsilon isSignal = 1: 547
+Number of Upsilon isSignal != 1: 89596
+===== abs(deltaE) < 0.5 =====
+Number of event: 5311
+Number of candidate: 89031
+Number of B_tag isSignal = 1: 868
+Number of B_tag isSignal != 1: 88163
+Number of B_sig isSignal = 1: 23202
+Number of B_sig isSignal != 1: 65829
+Number of Upsilon isSignal = 1: 547
+Number of Upsilon isSignal != 1: 88484
+===== atcPID(3,2) of Bsig > 0.6 =====
+Number of event: 3295
+Number of candidate: 26456
+Number of B_tag isSignal = 1: 491
+Number of B_tag isSignal != 1: 25965
+Number of B_sig isSignal = 1: 19265
+Number of B_sig isSignal != 1: 7191
+Number of Upsilon isSignal = 1: 458
+Number of Upsilon isSignal != 1: 25998
+===== BCS =====
+Number of event: 3295
+Number of candidate: 3295
+Number of B_tag isSignal = 1: 361
+Number of B_tag isSignal != 1: 2934
+Number of B_sig isSignal = 1: 2584
+Number of B_sig isSignal != 1: 711
+Number of Upsilon isSignal = 1: 350
+Number of Upsilon isSignal != 1: 2945
+====== Mbc > 5.27 GeV =====
+Number of event: 1853
+Number of candidate: 1853
+Number of B_tag isSignal = 1: 360
+Number of B_tag isSignal != 1: 1493
+Number of B_sig isSignal = 1: 1750
+Number of B_sig isSignal != 1: 103
+Number of Upsilon isSignal = 1: 349
+Number of Upsilon isSignal != 1: 1504
+===== abs(deltaE) < 0.1 =====
+Number of event: 765
+Number of candidate: 765
+Number of B_tag isSignal = 1: 346
+Number of B_tag isSignal != 1: 419
+Number of B_sig isSignal = 1: 730
+Number of B_sig isSignal != 1: 35
+Number of Upsilon isSignal = 1: 335
+Number of Upsilon isSignal != 1: 430
