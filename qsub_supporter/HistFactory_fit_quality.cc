@@ -685,7 +685,7 @@ int main(int argc, char* argv[]) {
             injected_mu = -1;
         }
         else {
-            printf("Toy MC requires only 2 arguments: {number of signal events when 1mu} {number of background events when 1mu}\n");
+            printf("Toy MC requires only 7 arguments: {number of signal events when 1mu} {number of CHG events when 1mu} {number of MIX events when 1mu} {number of UUBAR events when 1mu} {number of DDBAR events when 1mu} {number of SSBAR events when 1mu} {number of CHARM events when 1mu}\n");
             exit(1);
         }
     }
@@ -701,7 +701,7 @@ int main(int argc, char* argv[]) {
             injected_mu = std::atof(argv[9]);
         }
         else {
-            printf("Toy MC requires only 3 arguments: {number of signal events when 1mu} {number of background events when 1mu} {injected mu}\n");
+            printf("Linearity test requires only 8 arguments: {number of signal events when 1mu} {number of CHG events when 1mu} {number of MIX events when 1mu} {number of UUBAR events when 1mu} {number of DDBAR events when 1mu} {number of SSBAR events when 1mu} {number of CHARM events when 1mu} {injected mu}\n");
             exit(1);
         }
     }
