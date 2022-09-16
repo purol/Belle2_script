@@ -218,7 +218,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
         *x_val = Bin_x_values.at(i); // set x value
 
         for (unsigned int j = 0; j < Sample_names.size(); j++) {
-            RooAbsReal* temp_func = w->function(Sample_names.c_str());
+            RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
             Nevt = Nevt + temp_func->getValV();
         }
     }
