@@ -148,6 +148,101 @@ using std::endl;
 
 # define RarityBins 10
 
+void GetExpectedCL(RooStats::HypoTestInverterResult* fResults) {
+	// get CLs CLb CLs+b
+	const int nEntries = fResults->ArraySize();
+
+	double p[7];
+	double q[7];
+	p[0] = ROOT::Math::normal_cdf(-2);
+	p[1] = ROOT::Math::normal_cdf(-1);
+	p[2] = 0.5;
+	p[3] = ROOT::Math::normal_cdf(1);
+	p[4] = ROOT::Math::normal_cdf(2);
+
+	int np = 0;
+	for (int j = 0; j < nEntries; ++j) {
+		int i = j; // i is the order index
+		SamplingDistribution* s = fResults->GetExpectedPValueDist(i);
+		if (!s)  continue;
+		const std::vector<double>& values = s->GetSamplingDistribution();
+
+		double* x = const_cast<double*>(&values[0]); // need to change TMath::Quantiles
+		TMath::Quantiles(values.size(), 5, x, q, p, false);
+
+		FILE* fp;
+		fp = fopen(("CLs_hyb_" + std::string(argv[1]) + ".txt").c_str(), "a");
+		fprintf(fp, "expected CLs median: %lf\n", q[2]);
+		fprintf(fp, "expected CLs +1sigma: %lf\n", q[3] - q[2]);
+		fprintf(fp, "expected CLs -1sigma: %lf\n", q[2] - q[1]);
+		fprintf(fp, "expected CLs +2sigma: %lf\n", q[4] - q[2]);
+		fprintf(fp, "expected CLs -2sigma: %lf\n", q[2] - q[0]);
+		fclose(fp);
+		if (s) delete s;
+		np++;
+	}
+}
+
+void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, int type = 0) {
+	// type 0: CLs
+	// type 1: CLb
+	// type 2: CLs+b
+	if (!(type == 0) || !(type == 1) || !(type == 2)) {
+		printf("[ERROR] unvalid type!\n");
+		exit(1);
+	}
+
+	const int nEntries = fResults->ArraySize();
+
+	std::vector<Double_t> xArray;
+	std::vector<Double_t> yArray;
+	std::vector<Double_t> yErrArray;
+
+	for (int i = 0; i < nEntries; i++) {
+		int index = i;
+
+		double CLVal = 0.0;
+		double CLErr = 0.0;
+		if (type == 0) {
+			CLVal = fResults->GetYValue(index);
+			CLErr = fResults->GetYError(index);
+		}
+		else if (type == 1) {
+			CLVal = fResults->CLb(index);
+			CLErr = fResults->CLbError(index);
+		}
+		else if (type == 2) {
+			CLVal = fResults->CLsplusb(index);
+			CLErr = fResults->CLsplusbError(index);
+		}
+
+		if (CLVal < 0.0 || !std::isfinite(CLVal)) {
+			printf("Got a confidence level of %f at x=%f (failed fit?). Skipping this point.", CLVal, fResults->GetXValue(index));
+			continue;
+		}
+
+		FILE* fp;
+		fp = fopen(("CLs_hyb_" + std::string(argv[1]) + ".txt").c_str(), "a");
+		if (type == 0) {
+			fprintf(fp, "observed CLs central value: %lf\n", CLVal);
+			fprintf(fp, "observed CLs error: %lf\n", CLErr);
+		}
+		else if (type == 1) {
+			fprintf(fp, "observed CLb central value: %lf\n", CLVal);
+			fprintf(fp, "observed CLb error: %lf\n", CLErr);
+		}
+		else if (type == 2) {
+			fprintf(fp, "observed CLs+b central value: %lf\n", CLVal);
+			fprintf(fp, "observed CLs+b error: %lf\n", CLErr);
+		}
+		fclose(fp);
+
+		yArray.push_back(CLVal);
+		yErrArray.push_back(CLErr);
+		xArray.push_back(fResults->GetXValue(index));
+	}
+}
+
 int main(int argc, char* argv[]) { // argv[1]: mu value to test
 
 	const char* fname = "/home/belle2/junewoo/storage_b1/HistFactory/PDFandDATA_workspace_10_mu.root";
@@ -222,7 +317,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test
 
 	RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)HybCalc.GetTestStatSampler();
 	toymcs->SetTestStatistic(plr);
-	HybCalc.SetToys(5000, 5000);
+	HybCalc.SetToys(10000, 10000);
 
 	RooStats::HypoTestInverter inverter(HybCalc);
 	//inverter.SetConfidenceLevel(0.90);
@@ -238,35 +333,10 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test
 	sw.Stop();
 	printf("consumed time: %lf (s)\n", sw.RealTime());
 
-
-        // get CLs CLb CLs+b
-        const int nEntries = result->ArraySize();
-
-        double p[7];
-        double q[7];
-        p[0] = ROOT::Math::normal_cdf(-2);
-        p[1] = ROOT::Math::normal_cdf(-1);
-        p[2] = 0.5;
-        p[3] = ROOT::Math::normal_cdf(1);
-        p[4] = ROOT::Math::normal_cdf(2);
-
-        int np = 0;
-        for (int j=0; j<nEntries; ++j) {
-            int i = j; // i is the order index
-            SamplingDistribution * s = result->GetExpectedPValueDist(i);
-            if ( !s)  continue;
-            const std::vector<double> & values = s->GetSamplingDistribution();
-
-            double * x = const_cast<double *>(&values[0]); // need to change TMath::Quantiles
-            TMath::Quantiles(values.size(), 5, x,q,p,false);
-
-            FILE* fp;
-            fp = fopen( ("CLs_hyb_" + std::string(argv[1]) +".txt").c_str(),"a");
-            fprintf(fp, "%lf %lf %lf %lf %lf\n", q[2], q[3] - q[2], q[2] - q[1], q[4] - q[2], q[2] - q[0]); // median +1sig -1sig +2sig -2sig
-            fclose(fp);
-            if (s) delete s;
-            np++;
-       }
+	GetExpectedCL(result);
+	GetObservedCLs(result, 0);
+	GetObservedCLs(result, 1);
+	GetObservedCLs(result, 2);
 
 	return 0;
 }

@@ -220,6 +220,10 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
         for (unsigned int j = 0; j < Sample_names.size(); j++) {
             RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
             Nevt = Nevt + temp_func->getValV();
+            if (temp_func->getValV() < 0) {
+                printf("[ERROR] negative count!\n");
+                exit(1);
+            }
         }
     }
 
