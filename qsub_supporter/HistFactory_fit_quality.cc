@@ -157,7 +157,7 @@ using std::endl;
 
 std::default_random_engine generator;
 
-std::vector<double> Bin_x_values = { 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5 };
+std::vector<double> Bin_x_values = { 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95 };
 std::vector<std::string> Sample_names = {
     "L_x_Signal_nominal_channel_overallSyst_x_StatUncert",
     "L_x_CHG_nominal_channel_overallSyst_x_StatUncert",
