@@ -218,7 +218,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test
 
 	RooStats::FrequentistCalculator FreqCalc(*data, *bModel, *sbModel);
 	RooStats::ProfileLikelihoodTestStat* plr = new RooStats::ProfileLikelihoodTestStat(*sbModel->GetPdf());
-	// plr->SetOneSided(true);
+	plr->SetOneSided(true);
 
 	RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)FreqCalc.GetTestStatSampler();
 	toymcs->SetTestStatistic(plr);

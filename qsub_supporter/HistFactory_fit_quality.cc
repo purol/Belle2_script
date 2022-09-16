@@ -1,8 +1,8 @@
 #include <iostream>
 #include <stdio.h>
 #include <string>
-#include<algorithm>
-#include<vector>
+#include <algorithm>
+#include <vector>
 #include <numeric>
 #include <time.h>
 #include <random>
@@ -155,6 +155,19 @@ using std::endl;
 # define Toy_iter_num 5000
 # define LT_iter_num 5000
 
+std::default_random_engine generator;
+
+std::vector<double> Bin_x_values = { 0.5, 1.5, 2.5, 3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5 };
+std::vector<std::string> Sample_names = {
+    "L_x_Signal_nominal_channel_overallSyst_x_StatUncert",
+    "L_x_CHG_nominal_channel_overallSyst_x_StatUncert",
+    "L_x_MIX_nominal_channel_overallSyst_x_StatUncert",
+    "L_x_UUBAR_nominal_channel_overallSyst_x_StatUncert",
+    "L_x_DDBAR_nominal_channel_overallSyst_x_StatUncert",
+    "L_x_SSBAR_nominal_channel_overallSyst_x_StatUncert",
+    "L_x_CHARM_nominal_channel_overallSyst_x_StatUncert"
+};
+
 void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
@@ -176,23 +189,45 @@ void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
     w->loadSnapshot("NominalParamValues");
 }
 
-void SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names) {
+double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double injected_mu) {
+
+    double Nevt = 0.0;
+
+    w->loadSnapshot("NominalParamValues");
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
+    RooRealVar* x_val = w->var("obs_x_channel");
 
     for (unsigned int i = 0; i < names->size(); i++) {
-        std::default_random_engine generator;
-        std::normal_distribution<double> distribution(0.0, 1.0);
-
         if (names->at(i).find("alpha") != std::string::npos) {
+            std::normal_distribution<double> distribution(0.0, 1.0);
             w->var(names->at(i).c_str())->setVal(distribution(generator));
         }
-        else if (names->at(i).find("gamma") != std::string::npos) {
-            // it is not implemented
+        else if (names->at(i).find("gamma_stat") != std::string::npos) {
+            RooRealVar* norm = w->var(("nom_" + names->at(i)).c_str());
+            double width = std::pow(norm->getValV(), -0.5);
+            std::normal_distribution<double> distribution(1.0, width);
+            w->var(names->at(i).c_str())->setVal(distribution(generator));
         }
     }
 
+    w->var("mu")->setVal(injected_mu);
+
+    for (unsigned int i = 0; i < Bin_x_values.size(); i++) {
+        *x_val = Bin_x_values.at(i); // set x value
+
+        for (unsigned int j = 0; j < Sample_names.size(); j++) {
+            RooAbsReal* temp_func = w->function(Sample_names.c_str());
+            Nevt = Nevt + temp_func->getValV();
+        }
+    }
+
+    return Nevt;
+
 }
 
-void MyToyMCStudy(RooWorkspace *w, double Nevt_signal_1mu, double Nevt_CHG_1mu, double Nevt_MIX_1mu, double Nevt_UUBAR_1mu, double Nevt_DDBAR_1mu, double Nevt_SSBAR_1mu, double Nevt_CHARM_1mu, std::vector<std::string>* names){
+void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names){
 
         std::vector<double> mus;
         std::vector<double> mu_errors;
@@ -235,17 +270,10 @@ void MyToyMCStudy(RooWorkspace *w, double Nevt_signal_1mu, double Nevt_CHG_1mu, 
         RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
 
         for(int i=0; i< Toy_iter_num; i++) { // Do Toy MC study
-            w->loadSnapshot("NominalParamValues");
-            SetParamsForToy(w, names);
+            
+            double Nevt_total = SetParamsForToy(w, names, 1.0);
 
-            double Nevt_total = Nevt_signal_1mu +
-                Nevt_CHG_1mu * w->function("CHG_nominal_channel_epsilon")->getVal() +
-                Nevt_MIX_1mu * w->function("MIX_nominal_channel_epsilon")->getVal() +
-                Nevt_UUBAR_1mu * w->function("UUBAR_nominal_channel_epsilon")->getVal() +
-                Nevt_DDBAR_1mu * w->function("DDBAR_nominal_channel_epsilon")->getVal() +
-                Nevt_SSBAR_1mu * w->function("SSBAR_nominal_channel_epsilon")->getVal() +
-                Nevt_CHARM_1mu * w->function("CHARM_nominal_channel_epsilon")->getVal();
-            RooDataSet* genData = model->generate(RooArgSet(*x,model->indexCat()), Nevt_total, false, false, "", false, true);
+            RooDataSet* genData = model->generate(RooArgSet(*x,model->indexCat()), Nevt_total, false, true, "", false, true);
 
             w->loadSnapshot("NominalParamValues");
             RooFitResult* fitres = model->fitTo(*genData, RooFit::SumW2Error(false), PrintLevel(-1), Save());
@@ -420,7 +448,7 @@ void MyToyMCStudy(RooWorkspace *w, double Nevt_signal_1mu, double Nevt_CHG_1mu, 
         temp_file->Close();
 }
 
-void MyLinearityTest(RooWorkspace* w, double Nevt_signal_1mu, double Nevt_CHG_1mu, double Nevt_MIX_1mu, double Nevt_UUBAR_1mu, double Nevt_DDBAR_1mu, double Nevt_SSBAR_1mu, double Nevt_CHARM_1mu, std::vector<std::string>* names, double mu_injected) {
+void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu_injected) {
 
     std::vector<double> mus;
     std::vector<double> mu_errors;
@@ -463,19 +491,10 @@ void MyLinearityTest(RooWorkspace* w, double Nevt_signal_1mu, double Nevt_CHG_1m
     RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
 
     for (int i = 0; i < LT_iter_num; i++) { // Do LT MC study
-        w->loadSnapshot("NominalParamValues");
-        SetParamsForToy(w, names);
-        w->var("mu")->setVal(mu_injected);
 
-        double Nevt_total = Nevt_signal_1mu * mu_injected +
-            Nevt_CHG_1mu * w->function("CHG_nominal_channel_epsilon")->getVal() +
-            Nevt_MIX_1mu * w->function("MIX_nominal_channel_epsilon")->getVal() +
-            Nevt_UUBAR_1mu * w->function("UUBAR_nominal_channel_epsilon")->getVal() +
-            Nevt_DDBAR_1mu * w->function("DDBAR_nominal_channel_epsilon")->getVal() +
-            Nevt_SSBAR_1mu * w->function("SSBAR_nominal_channel_epsilon")->getVal() +
-            Nevt_CHARM_1mu * w->function("CHARM_nominal_channel_epsilon")->getVal();
+        double Nevt_total = SetParamsForToy(w, names, mu_injected);
 
-        RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, false, "", false, true);
+        RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, true, "", false, true);
         w->loadSnapshot("NominalParamValues");
 
         RooFitResult* fitres = model->fitTo(*genData, RooFit::SumW2Error(false), PrintLevel(-1), Save());
@@ -654,54 +673,26 @@ int main(int argc, char* argv[]) {
     RooRandom::randomGenerator()->SetSeed(time(NULL));
 
     // argv[1]: {ToyMC|LinearityTest}
-    // argv[2]: Nevt_signal_1mu
-    // argv[3]: Nevt_CHG_1mu
-    // argv[4]: Nevt_MIX_1mu
-    // argv[5]: Nevt_UUBAR_1mu
-    // argv[6]: Nevt_DDBAR_1mu
-    // argv[7]: Nevt_SSBAR_1mu
-    // argv[8]: Nevt_CHARM_1mu
-    // argv[9]: injected mu when Linearity test
-    double Nevt_signal_1mu = -1;
-    double Nevt_CHG_1mu = -1;
-    double Nevt_MIX_1mu = -1;
-    double Nevt_UUBAR_1mu = -1;
-    double Nevt_DDBAR_1mu = -1;
-    double Nevt_SSBAR_1mu = -1;
-    double Nevt_CHARM_1mu = -1;
+    // argv[2]: injected mu when Linearity test
     double injected_mu = -1;
 
     std::vector<std::string> param_names;
     
-    if (std::string(argv[1]) == std::string("ToyMC")) {  // main ToyMC 12 1234
-        if (argc == 9) {
-            Nevt_signal_1mu = std::atof(argv[2]);
-            Nevt_CHG_1mu = std::atof(argv[3]);
-            Nevt_MIX_1mu = std::atof(argv[4]);
-            Nevt_UUBAR_1mu = std::atof(argv[5]);
-            Nevt_DDBAR_1mu = std::atof(argv[6]);
-            Nevt_SSBAR_1mu = std::atof(argv[7]);
-            Nevt_CHARM_1mu = std::atof(argv[8]);
+    if (std::string(argv[1]) == std::string("ToyMC")) {  // main ToyMC
+        if (argc == 2) {
             injected_mu = -1;
         }
         else {
-            printf("Toy MC requires only 7 arguments: {number of signal events when 1mu} {number of CHG events when 1mu} {number of MIX events when 1mu} {number of UUBAR events when 1mu} {number of DDBAR events when 1mu} {number of SSBAR events when 1mu} {number of CHARM events when 1mu}\n");
+            printf("Toy MC requires 0 arguments\n");
             exit(1);
         }
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) { // main LinearityTest 12 1234 0.8
-        if (argc == 10) {
-            Nevt_signal_1mu = std::atof(argv[2]);
-            Nevt_CHG_1mu = std::atof(argv[3]);
-            Nevt_MIX_1mu = std::atof(argv[4]);
-            Nevt_UUBAR_1mu = std::atof(argv[5]);
-            Nevt_DDBAR_1mu = std::atof(argv[6]);
-            Nevt_SSBAR_1mu = std::atof(argv[7]);
-            Nevt_CHARM_1mu = std::atof(argv[8]);
-            injected_mu = std::atof(argv[9]);
+        if (argc == 3) {
+            injected_mu = std::atof(argv[2]);
         }
         else {
-            printf("Linearity test requires only 8 arguments: {number of signal events when 1mu} {number of CHG events when 1mu} {number of MIX events when 1mu} {number of UUBAR events when 1mu} {number of DDBAR events when 1mu} {number of SSBAR events when 1mu} {number of CHARM events when 1mu} {injected mu}\n");
+            printf("Linearity test requires only 1 arguments: {injected mu}\n");
             exit(1);
         }
     }
@@ -719,10 +710,10 @@ int main(int argc, char* argv[]) {
     GetNameOfParams(w, &param_names);
 
     if (std::string(argv[1]) == std::string("ToyMC")) {
-        MyToyMCStudy(w, Nevt_signal_1mu, Nevt_CHG_1mu, Nevt_MIX_1mu, Nevt_UUBAR_1mu, Nevt_DDBAR_1mu, Nevt_SSBAR_1mu, Nevt_CHARM_1mu, &param_names);
+        MyToyMCStudy(w, &param_names);
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) {
-        MyLinearityTest(w, Nevt_signal_1mu, Nevt_CHG_1mu, Nevt_MIX_1mu, Nevt_UUBAR_1mu, Nevt_DDBAR_1mu, Nevt_SSBAR_1mu, Nevt_CHARM_1mu, &param_names, injected_mu);
+        MyLinearityTest(w, &param_names, injected_mu);
     }
 
     f->Close();
