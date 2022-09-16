@@ -148,7 +148,7 @@ using std::endl;
 
 # define RarityBins 10
 
-void GetExpectedCL(RooStats::HypoTestInverterResult* fResults) {
+void GetExpectedCL(RooStats::HypoTestInverterResult* fResults, const char* mu) {
 	// get CLs CLb CLs+b
 	const int nEntries = fResults->ArraySize();
 
@@ -171,7 +171,7 @@ void GetExpectedCL(RooStats::HypoTestInverterResult* fResults) {
 		TMath::Quantiles(values.size(), 5, x, q, p, false);
 
 		FILE* fp;
-		fp = fopen(("CLs_hyb_" + std::string(argv[1]) + ".txt").c_str(), "a");
+		fp = fopen(("CLs_hyb_" + std::string(mu) + ".txt").c_str(), "a");
 		fprintf(fp, "expected CLs median: %lf\n", q[2]);
 		fprintf(fp, "expected CLs +1sigma: %lf\n", q[3] - q[2]);
 		fprintf(fp, "expected CLs -1sigma: %lf\n", q[2] - q[1]);
@@ -183,7 +183,7 @@ void GetExpectedCL(RooStats::HypoTestInverterResult* fResults) {
 	}
 }
 
-void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, int type = 0) {
+void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, int type = 0) {
 	// type 0: CLs
 	// type 1: CLb
 	// type 2: CLs+b
@@ -222,7 +222,7 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, int type = 0) {
 		}
 
 		FILE* fp;
-		fp = fopen(("CLs_hyb_" + std::string(argv[1]) + ".txt").c_str(), "a");
+		fp = fopen(("CLs_hyb_" + std::string(mu) + ".txt").c_str(), "a");
 		if (type == 0) {
 			fprintf(fp, "observed CLs central value: %lf\n", CLVal);
 			fprintf(fp, "observed CLs error: %lf\n", CLErr);
@@ -333,10 +333,10 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test
 	sw.Stop();
 	printf("consumed time: %lf (s)\n", sw.RealTime());
 
-	GetExpectedCL(result);
-	GetObservedCLs(result, 0);
-	GetObservedCLs(result, 1);
-	GetObservedCLs(result, 2);
+	GetExpectedCL(result, argv[1]);
+	GetObservedCLs(result, argv[1], 0);
+	GetObservedCLs(result, argv[1], 1);
+	GetObservedCLs(result, argv[1], 2);
 
 	return 0;
 }
