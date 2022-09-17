@@ -152,8 +152,8 @@ using std::endl;
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define Toy_iter_num 5000
-# define LT_iter_num 5000
+# define Toy_iter_num 10000
+# define LT_iter_num 10000
 
 std::default_random_engine generator;
 
