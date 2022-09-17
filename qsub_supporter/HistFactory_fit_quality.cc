@@ -153,8 +153,8 @@ using std::endl;
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define Toy_iter_num 10000
-# define LT_iter_num 10000
+# define Toy_iter_num 5000
+# define LT_iter_num 5000
 
 std::default_random_engine generator;
 
@@ -675,6 +675,7 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
 
 int main(int argc, char* argv[]) {
     RooMsgService::instance().setStreamStatus(1, false);
+    RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
 
     RooRandom::randomGenerator()->SetSeed(time(NULL));
 
