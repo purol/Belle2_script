@@ -187,7 +187,7 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, 
 	// type 0: CLs
 	// type 1: CLb
 	// type 2: CLs+b
-	if (!(type == 0) || !(type == 1) || !(type == 2)) {
+	if (!(type == 0) && !(type == 1) && !(type == 2)) {
 		printf("[ERROR] unvalid type!\n");
 		exit(1);
 	}

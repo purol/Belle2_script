@@ -206,9 +206,8 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
         }
         else if (names->at(i).find("gamma_stat") != std::string::npos) {
             RooRealVar* norm = w->var(("nom_" + names->at(i)).c_str());
-            double width = std::pow(norm->getValV(), -0.5);
-            std::normal_distribution<double> distribution(1.0, width);
-            w->var(names->at(i).c_str())->setVal(distribution(generator));
+            std::poisson_distribution<> distribution(norm->getValV());
+            w->var(names->at(i).c_str())->setVal(distribution(generator) / norm->getValV());
         }
     }
 
