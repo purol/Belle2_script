@@ -266,7 +266,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test
 	RooAbsData* data = (RooAbsData*)w->data("asimovData");
 
 	// fit
-	RooFitResult* fitres = model->fitTo(*data, RooFit::SumW2Error(false));
+	RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(true), RooFit::SumW2Error(false));
 
 	// define frame
 	RooPlot* x_frame = x->frame(Title("Tramsformed FBDT_{1}"));

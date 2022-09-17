@@ -35,6 +35,7 @@
 #include "RooParamHistFunc.h"
 #include "RooHist.h"
 #include "RooRandom.h"
+#include "RooMsgService.h"
 
 #include "RooStats/ModelConfig.h"
 #include "RooStats/ToyMCSampler.h"
@@ -175,7 +176,7 @@ void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
     w->loadSnapshot("NominalParamValues");
 
     RooAbsData* data = (RooAbsData*)w->data("asimovData");
-    RooFitResult* fitres = model->fitTo(*data, RooFit::SumW2Error(false), PrintLevel(-1), Save());
+    RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
 
     RooArgSet fitargs = fitres->floatParsFinal();
     TIterator* iter(fitargs.createIterator());
@@ -279,7 +280,7 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names){
             RooDataSet* genData = model->generate(RooArgSet(*x,model->indexCat()), Nevt_total, false, true, "", false, true);
 
             w->loadSnapshot("NominalParamValues");
-            RooFitResult* fitres = model->fitTo(*genData, RooFit::SumW2Error(false), PrintLevel(-1), Save());
+            RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
 
             RooArgSet fitargs_TOY = fitres->floatParsFinal();
             TIterator* iter_TOY(fitargs_TOY.createIterator());
@@ -500,7 +501,7 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, true, "", false, true);
         w->loadSnapshot("NominalParamValues");
 
-        RooFitResult* fitres = model->fitTo(*genData, RooFit::SumW2Error(false), PrintLevel(-1), Save());
+        RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
 
         RooArgSet fitargs_LT = fitres->floatParsFinal();
         TIterator* iter_LT(fitargs_LT.createIterator());
@@ -673,6 +674,8 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
 }
 
 int main(int argc, char* argv[]) {
+    RooMsgService::instance().setStreamStatus(1, false);
+
     RooRandom::randomGenerator()->SetSeed(time(NULL));
 
     // argv[1]: {ToyMC|LinearityTest}
