@@ -317,7 +317,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test
 
 	RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)HybCalc.GetTestStatSampler();
 	toymcs->SetTestStatistic(plr);
-	HybCalc.SetToys(10000, 10000);
+	HybCalc.SetToys(5000, 5000);
 
 	RooStats::HypoTestInverter inverter(HybCalc);
 	//inverter.SetConfidenceLevel(0.90);
