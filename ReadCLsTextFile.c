@@ -218,7 +218,27 @@ void ReadTxt(bool IsItFreq, std::vector<double>* mu_values, std::vector<double>*
     }
 }
 
-void 
+double GetCrossPoint(std::vector<double> x_values, std::vector<double> y_values, double conf = 0.9) {
+    double lowest_maximum = 1.0; // just above alpha
+    double lowest_maximum_x_value = -1;
+    double highest_minimum = 0.0; // just below alpha
+    double highest_minimum_x_value = -1;
+
+    double alpha = 1.0 - conf;
+
+    for (unsigned int i = 0; i < x_values.size(); i++) {
+        if ((lowest_maximum > y_values.at(i)) && (y_values.at(i) > alpha)) {
+            lowest_maximum_x_value = x_values.at(i);
+            lowest_maximum = y_values.at(i);
+        }
+        if ((highest_minimum < y_values.at(i)) && (y_values.at(i) < alpha)) {
+            highest_minimum_x_value = x_values.at(i);
+            highest_minimum = y_values.at(i);
+        }
+    }
+
+    return lowest_maximum_x_value + (alpha - lowest_maximum) * (highest_minimum_x_value - lowest_maximum_x_value) / (highest_minimum - lowest_maximum);
+}
 
 void ReadCLsTextFile(){
 
@@ -251,4 +271,7 @@ void ReadCLsTextFile(){
 
     // draw
     DrawPlots(GraphObservedCLs, GraphObservedCLb, GraphObservedCLsplusb, GraphExpectedCLs);
+
+    printf("Expected mu: %lf\n", GetCrossPoint(mu_values, ExpCLsMedian,0.9));
+    printf("Observed mu: %lf\n", GetCrossPoint(mu_values, ObsCLss,0.9));
 }
