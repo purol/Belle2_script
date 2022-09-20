@@ -245,7 +245,7 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, 
 
 int main(int argc, char* argv[]) { // argv[1]: mu value to test
 
-	const char* fname = "/home/belle2/junewoo/storage_b1/HistFactory/PDFandDATA_workspace_10_mu.root";
+	const char* fname = "/home/belle2/junewoo/storage_b1/HistFactory/PDFandDATA_workspace.root";
 
 	TFile* f = TFile::Open(fname);
 

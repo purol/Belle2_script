@@ -2136,7 +2136,7 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
         "Signal_Xsd_frag_decay28_m", "Signal_Xsd_frag_decay29_m", "Signal_Xsd_frag_decay30_m",
     };
     std::vector<TH1D*> Signal_Fragmentaions;
-    for (unsigned int i; i < name_Signal_Fragmentation.size(); i++) {
+    for (unsigned int i = 0; i < name_Signal_Fragmentation.size(); i++) {
         TH1D* temp = new TH1D(name_Signal_Fragmentation.at(i).c_str(), name_Signal_Fragmentation.at(i).c_str(), RarityBins, 0.0, 1.0);
         Signal_Fragmentaions.push_back(temp);
     }
@@ -2704,7 +2704,7 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     Signal_Xsfrac_m->Write();
 
     // fragmentation uncertainty
-    for (unsigned int i; i < Signal_Fragmentaions.size(); i++) Signal_Fragmentaions.at(i)->Write();
+    for (unsigned int i = 0; i < Signal_Fragmentaions.size(); i++) Signal_Fragmentaions.at(i)->Write();
 
     // pf uncertainty
     Signal_pf_p->Write();

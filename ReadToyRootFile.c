@@ -5,8 +5,8 @@ void ReadToyRootFile(){
     TFile* input_file = new TFile(fname.c_str(), "read");
     TTree* temp_tree = (TTree*)input_file->Get("TOY_result");
 
-    TH1F* ToyMCmu = new TH1F("ToyMCmu", ";#mu;Toys", 40, -10, 10);
-    TH1F* ToyMCmuerror = new TH1F("ToyMCmuerror", ";error of #mu;Toys", 50, 1, 4);
+    TH1F* ToyMCmu = new TH1F("ToyMCmu", ";#mu;Toys", 40, -10, 15);
+    TH1F* ToyMCmuerror = new TH1F("ToyMCmuerror", ";error of #mu;Toys", 50, 1, 7);
     TH1F* ToyMCmupull = new TH1F("ToyMCmupull", ";pull of #mu;Toys", 40, -4, 4);
 
     ToyMCmu->SetMarkerStyle(kFullCircle);
@@ -37,6 +37,8 @@ void ReadToyRootFile(){
             ToyMCmupull->Fill(temp_mupull);
         }
     }
+
+    gStyle->SetOptFit(11);
 
     TCanvas* c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
     ToyMCmu->Draw("PE1");

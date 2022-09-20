@@ -158,7 +158,6 @@ using std::endl;
 
 std::default_random_engine generator;
 
-std::vector<double> Bin_x_values = { 0.05, 0.15, 0.25, 0.35, 0.45, 0.55, 0.65, 0.75, 0.85, 0.95 };
 std::vector<std::string> Sample_names = {
     "L_x_Signal_nominal_channel_overallSyst_x_StatUncert",
     "L_x_CHG_nominal_channel_overallSyst_x_StatUncert",
@@ -214,8 +213,15 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
 
     w->var("mu")->setVal(injected_mu);
 
-    for (unsigned int i = 0; i < Bin_x_values.size(); i++) {
-        *x_val = Bin_x_values.at(i); // set x value
+    /* ================================ cal Nexpected ================================*/
+    RooAbsBinning const& binning = x_val->getBinning();
+    const double oldVal = x_val->getVal();
+
+    for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+        double binCenter = binning.binCenter(iBin);
+        double binWidth = binning.binWidth(iBin);
+
+        *x_val = binCenter; // set x value
 
         for (unsigned int j = 0; j < Sample_names.size(); j++) {
             RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
@@ -225,7 +231,10 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
                 exit(1);
             }
         }
+
     }
+
+    *x_val = oldVal;
 
     return Nevt;
 
@@ -298,32 +307,32 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names){
                 else if (name_TOY == std::string("alpha_mu_CHG")) {
                     alpha_mu_CHGs.push_back(val_TOY);
                     alpha_mu_CHG_errors.push_back(err_TOY);
-                    alpha_mu_CHG_pulls.push_back((val_TOY - 0.0) / err_TOY);
+                    alpha_mu_CHG_pulls.push_back((val_TOY - w->var("nom_alpha_mu_CHG")->getValV()) / err_TOY);
                 }
                 else if (name_TOY == std::string("alpha_mu_MIX")) {
                     alpha_mu_MIXs.push_back(val_TOY);
                     alpha_mu_MIX_errors.push_back(err_TOY);
-                    alpha_mu_MIX_pulls.push_back((val_TOY - 0.0) / err_TOY);
+                    alpha_mu_MIX_pulls.push_back((val_TOY - w->var("nom_alpha_mu_MIX")->getValV()) / err_TOY);
                 }
                 else if (name_TOY == std::string("alpha_mu_UUBAR")) {
                     alpha_mu_UUBARs.push_back(val_TOY);
                     alpha_mu_UUBAR_errors.push_back(err_TOY);
-                    alpha_mu_UUBAR_pulls.push_back((val_TOY - 0.0) / err_TOY);
+                    alpha_mu_UUBAR_pulls.push_back((val_TOY - w->var("nom_alpha_mu_UUBAR")->getValV()) / err_TOY);
                 }
                 else if (name_TOY == std::string("alpha_mu_DDBAR")) {
                     alpha_mu_DDBARs.push_back(val_TOY);
                     alpha_mu_DDBAR_errors.push_back(err_TOY);
-                    alpha_mu_DDBAR_pulls.push_back((val_TOY - 0.0) / err_TOY);
+                    alpha_mu_DDBAR_pulls.push_back((val_TOY - w->var("nom_alpha_mu_DDBAR")->getValV()) / err_TOY);
                 }
                 else if (name_TOY == std::string("alpha_mu_SSBAR")) {
                     alpha_mu_SSBARs.push_back(val_TOY);
                     alpha_mu_SSBAR_errors.push_back(err_TOY);
-                    alpha_mu_SSBAR_pulls.push_back((val_TOY - 0.0) / err_TOY);
+                    alpha_mu_SSBAR_pulls.push_back((val_TOY - w->var("nom_alpha_mu_SSBAR")->getValV()) / err_TOY);
                 }
                 else if (name_TOY == std::string("alpha_mu_CHARM")) {
                     alpha_mu_CHARMs.push_back(val_TOY);
                     alpha_mu_CHARM_errors.push_back(err_TOY);
-                    alpha_mu_CHARM_pulls.push_back((val_TOY - 0.0) / err_TOY);
+                    alpha_mu_CHARM_pulls.push_back((val_TOY - w->var("nom_alpha_mu_CHARM")->getValV()) / err_TOY);
                 }
             }
 
@@ -519,32 +528,32 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
             else if (name_LT == std::string("alpha_mu_CHG")) {
                 alpha_mu_CHGs.push_back(val_LT);
                 alpha_mu_CHG_errors.push_back(err_LT);
-                alpha_mu_CHG_pulls.push_back((val_LT - 0.0) / err_LT);
+                alpha_mu_CHG_pulls.push_back((val_LT - w->var("nom_alpha_mu_CHG")->getValV()) / err_LT);
             }
             else if (name_LT == std::string("alpha_mu_MIX")) {
                 alpha_mu_MIXs.push_back(val_LT);
                 alpha_mu_MIX_errors.push_back(err_LT);
-                alpha_mu_MIX_pulls.push_back((val_LT - 0.0) / err_LT);
+                alpha_mu_MIX_pulls.push_back((val_LT - w->var("nom_alpha_mu_MIX")->getValV()) / err_LT);
             }
             else if (name_LT == std::string("alpha_mu_UUBAR")) {
                 alpha_mu_UUBARs.push_back(val_LT);
                 alpha_mu_UUBAR_errors.push_back(err_LT);
-                alpha_mu_UUBAR_pulls.push_back((val_LT - 0.0) / err_LT);
+                alpha_mu_UUBAR_pulls.push_back((val_LT - w->var("nom_alpha_mu_UUBAR")->getValV()) / err_LT);
             }
             else if (name_LT == std::string("alpha_mu_DDBAR")) {
                 alpha_mu_DDBARs.push_back(val_LT);
                 alpha_mu_DDBAR_errors.push_back(err_LT);
-                alpha_mu_DDBAR_pulls.push_back((val_LT - 0.0) / err_LT);
+                alpha_mu_DDBAR_pulls.push_back((val_LT - w->var("nom_alpha_mu_DDBAR")->getValV()) / err_LT);
             }
             else if (name_LT == std::string("alpha_mu_SSBAR")) {
                 alpha_mu_SSBARs.push_back(val_LT);
                 alpha_mu_SSBAR_errors.push_back(err_LT);
-                alpha_mu_SSBAR_pulls.push_back((val_LT - 0.0) / err_LT);
+                alpha_mu_SSBAR_pulls.push_back((val_LT - w->var("nom_alpha_mu_SSBAR")->getValV()) / err_LT);
             }
             else if (name_LT == std::string("alpha_mu_CHARM")) {
                 alpha_mu_CHARMs.push_back(val_LT);
                 alpha_mu_CHARM_errors.push_back(err_LT);
-                alpha_mu_CHARM_pulls.push_back((val_LT - 0.0) / err_LT);
+                alpha_mu_CHARM_pulls.push_back((val_LT - w->var("nom_alpha_mu_CHARM")->getValV()) / err_LT);
             }
         }
 
