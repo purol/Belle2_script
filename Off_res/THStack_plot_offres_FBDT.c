@@ -364,7 +364,7 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
 }
 
-void THStack_plot_offres() {
+void THStack_plot_offres_FBDT() {
 
     const char* Offres_MC_dirname = "/home/jwpark/storage/BKG_gbasf2/Cirno_p12c2_off_MC/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut";
     const char* Offres_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Cirno_p12c2_off_data/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut";
@@ -482,6 +482,10 @@ void THStack_plot_offres() {
     TH1D* data_hist[Nvar_num];
     TH1D* Ratio_hist[Nvar_num];
 
+    TH1D* MC_one_bin[Nvar_num];
+    TH1D* data_one_bin[Nvar_num];
+    TH1D* Ratio_one_bin[Nvar_num];
+
     for (int k = 0; k < (int)variable_names.size(); k++) { // malloc TH1D
         std::vector<double> temp_v;
         temp_v.insert(temp_v.end(), uubar_values[k].begin(), uubar_values[k].end());
@@ -503,53 +507,6 @@ void THStack_plot_offres() {
         double max = *max_element(temp_v.begin(), temp_v.end());
         int bins = 10;
 
-        if (hasEnding(variable_names.at(k),std::string("dr"))) { // exceptions
-            max = 0.2;
-            min = 0.0;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("dz"))) {
-            max = 0.2;
-            min = -0.2;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("M"))) {
-            max = 2.0;
-            min = 0.0;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("chiProb"))) {
-            max = 1.0;
-            min = 0.0;
-        }
-        else if(hasEnding(variable_names.at(k), std::string("harmonicMomentThrust1"))){
-            max = 1.0;
-            min = -1.0;
-        }
-        else if(hasEnding(variable_names.at(k), std::string("harmonicMomentThrust2"))){
-            max = 1.0;
-            min = 0.0;
-        }
-        else if(hasEnding(variable_names.at(k), std::string("harmonicMomentThrust3"))){
-            max = 1.0;
-            min = -1.0;
-        }
-        else if(hasEnding(variable_names.at(k), std::string("harmonicMomentThrust4"))){
-            max = 1.0;
-            min = -0.5;
-        }
-        else if(hasEnding(variable_names.at(k), std::string("missingMomentumOfEvent"))){
-            max = 5.0;
-        }
-        else if(hasEnding(variable_names.at(k), std::string("missingEnergyOfEventCMS"))){
-            min = -1.5;
-        }
-        else if(hasEnding(variable_names.at(k), std::string("Btag_extraInfo_SignalProbability"))){
-            max = 0;
-            min = -3;
-            variable_names.at(k) = std::string("log_{10}SignalProbability");
-        }
-        else if(hasEnding(variable_names.at(k), std::string("Btag_thrustOm"))){
-            min = 0.5;
-        }
-
         min = 0.8;
         max = 1.0;
 
@@ -569,24 +526,12 @@ void THStack_plot_offres() {
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;MC/data", bins, min, max);
+
+        MC_one_bin[k] = new TH1D((variable_names.at(k) + "_MC_one_bin").c_str(), ";number of candidates", 1, min, max);
+        data_one_bin[k] = new TH1D((variable_names.at(k) + "_data_one_bin").c_str(), ";number of candidates", 1, min, max);
+        Ratio_one_bin[k] = new TH1D((variable_names.at(k) + "_ratio_one_bin").c_str(), ";number of candidates", 1, min, max);
     }
-    /*
-    int index = std::find(variable_names.begin(), variable_names.end(), std::string("log_{10}SignalProbability")) - variable_names.begin();
-    for (int i = 0; i < (int)uubar_values[index].size(); i++) uubar_values[index].at(i) = log10l(uubar_values[index].at(i));
-    for (int i = 0; i < (int)ddbar_values[index].size(); i++) ddbar_values[index].at(i) = log10l(ddbar_values[index].at(i));
-    for (int i = 0; i < (int)ssbar_values[index].size(); i++) ssbar_values[index].at(i) = log10l(ssbar_values[index].at(i));
-    for (int i = 0; i < (int)ccbar_values[index].size(); i++) ccbar_values[index].at(i) = log10l(ccbar_values[index].at(i));
-    for (int i = 0; i < (int)taupair_values[index].size(); i++) taupair_values[index].at(i) = log10l(taupair_values[index].at(i));
-    for (int i = 0; i < (int)mumu_values[index].size(); i++) mumu_values[index].at(i) = log10l(mumu_values[index].at(i));
-    for (int i = 0; i < (int)gg_values[index].size(); i++) gg_values[index].at(i) = log10l(gg_values[index].at(i));
-    for (int i = 0; i < (int)ee_values[index].size(); i++) ee_values[index].at(i) = log10l(ee_values[index].at(i));
-    for (int i = 0; i < (int)eeee_values[index].size(); i++) eeee_values[index].at(i) = log10l(eeee_values[index].at(i));
-    for (int i = 0; i < (int)eemumu_values[index].size(); i++) eemumu_values[index].at(i) = log10l(eemumu_values[index].at(i));
-    for (int i = 0; i < (int)llXX_values[index].size(); i++) llXX_values[index].at(i) = log10l(llXX_values[index].at(i));
-    for (int i = 0; i < (int)hhISR_values[index].size(); i++) hhISR_values[index].at(i) = log10l(hhISR_values[index].at(i));
-    for (int i = 0; i < (int)Offres_MC_values[index].size(); i++) Offres_MC_values[index].at(i) = log10l(Offres_MC_values[index].at(i));
-    for (int i = 0; i < (int)Offres_data_values[index].size(); i++) Offres_data_values[index].at(i) = log10l(Offres_data_values[index].at(i));
-    */
+
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
         for (int i = 0; i < (int)uubar_values[k].size(); i++) uubar_hist[k]->Fill(uubar_values[k].at(i), uubar_weights.at(i));
         for (int i = 0; i < (int)ddbar_values[k].size(); i++) ddbar_hist[k]->Fill(ddbar_values[k].at(i), ddbar_weights.at(i));
@@ -602,6 +547,9 @@ void THStack_plot_offres() {
         for (int i = 0; i < (int)hhISR_values[k].size(); i++) hhISR_hist[k]->Fill(hhISR_values[k].at(i), hhISR_weights.at(i));
         for (int i = 0; i < (int)Offres_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Offres_MC_values[k].at(i), weights.at(i));
         for (int i = 0; i < (int)Offres_data_values[k].size(); i++) data_hist[k]->Fill(Offres_data_values[k].at(i));
+
+        for (int i = 0; i < (int)Offres_MC_values[k].size(); i++) MC_one_bin[k]->Fill(Offres_MC_values[k].at(i), weights.at(i));
+        for (int i = 0; i < (int)Offres_data_values[k].size(); i++) data_one_bin[k]->Fill(Offres_data_values[k].at(i));
     }
 
     printf("uubar: %d\n", (int)uubar_values[0].size());
@@ -634,6 +582,8 @@ void THStack_plot_offres() {
 
         Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
         Ratio_hist[k]->Divide(stat_error_hist[k], data_hist[k]);
+
+        Ratio_one_bin[k]->Divide(MC_one_bin[k], data_one_bin[k]);
 
         TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
@@ -680,5 +630,8 @@ void THStack_plot_offres() {
     double MC_sum = 0;
     for (int i = 0; i < (int)Offres_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
     printf("data num: %ld\n", Offres_data_values[0].size());
-    printf("MC num with calibration: %lf\n", MC_sum);
+    printf("MC num with calibration: %lf\n\n", MC_sum);
+    printf("MC with calibration: %lf +- %lf\n", stat_error_hist[0]->GetBinContent, stat_error_hist[0]->GetBinError(0));
+    printf("data with calibration: %lf +- %lf\n", data_hist[0]->GetBinContent, data_hist[0]->GetBinError(0));
+    printf("MC/data with calibration: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent, Ratio_one_bin[0]->GetBinError(0));
 }
