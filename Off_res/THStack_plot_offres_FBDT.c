@@ -631,7 +631,7 @@ void THStack_plot_offres_FBDT() {
     for (int i = 0; i < (int)Offres_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
     printf("data num: %ld\n", Offres_data_values[0].size());
     printf("MC num with calibration: %lf\n\n", MC_sum);
-    printf("MC with calibration: %lf +- %lf\n", stat_error_hist[0]->GetBinContent(0), stat_error_hist[0]->GetBinError(0));
-    printf("data with calibration: %lf +- %lf\n", data_hist[0]->GetBinContent(0), data_hist[0]->GetBinError(0));
-    printf("MC/data with calibration: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent(0), Ratio_one_bin[0]->GetBinError(0));
+    printf("MC with calibration: %lf +- %lf\n", MC_one_bin[0]->GetBinContent(1), MC_one_bin[0]->GetBinError(1));
+    printf("data with calibration: %lf +- %lf\n", data_one_bin[0]->GetBinContent(1), data_one_bin[0]->GetBinError(1));
+    printf("MC/data with calibration: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent(1), Ratio_one_bin[0]->GetBinError(1));
 }

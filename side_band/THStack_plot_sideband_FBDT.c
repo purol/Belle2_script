@@ -590,8 +590,8 @@ void THStack_plot_sideband_FBDT() {
         for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Sideband_MC_values[k].at(i), weights.at(i));
         for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_hist[k]->Fill(Sideband_data_values[k].at(i));
 
-        for (int i = 0; i < (int)Offres_MC_values[k].size(); i++) MC_one_bin[k]->Fill(Offres_MC_values[k].at(i), weights.at(i));
-        for (int i = 0; i < (int)Offres_data_values[k].size(); i++) data_one_bin[k]->Fill(Offres_data_values[k].at(i));
+        for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) MC_one_bin[k]->Fill(Sideband_MC_values[k].at(i), weights.at(i));
+        for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_one_bin[k]->Fill(Sideband_data_values[k].at(i));
     }
 
     printf("charged: %d\n", (int)charged_values[0].size());
@@ -677,7 +677,7 @@ void THStack_plot_sideband_FBDT() {
     for (int i = 0; i < (int)Sideband_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
     printf("data num: %ld\n", Sideband_data_values[0].size());
     printf("MC num with calibration: %lf\n", MC_sum);
-    printf("MC with calibration: %lf +- %lf\n", stat_error_hist[0]->GetBinContent(0), stat_error_hist[0]->GetBinError(0));
-    printf("data with calibration: %lf +- %lf\n", data_hist[0]->GetBinContent(0), data_hist[0]->GetBinError(0));
-    printf("MC/data with calibration: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent(0), Ratio_one_bin[0]->GetBinError(0));
+    printf("MC with calibration: %lf +- %lf\n", MC_one_bin[0]->GetBinContent(1), MC_one_bin[0]->GetBinError(1));
+    printf("data with calibration: %lf +- %lf\n", data_one_bin[0]->GetBinContent(1), data_one_bin[0]->GetBinError(1));
+    printf("MC/data with calibration: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent(1), Ratio_one_bin[0]->GetBinError(1));
 }
