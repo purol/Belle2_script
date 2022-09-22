@@ -778,7 +778,7 @@ void THStack_plot_sideband() {
         Ratio_hist[k]->SetMinimum(0.5); Ratio_hist[k]->SetMaximum(1.5); Ratio_hist[k]->SetLineWidth(2);
         Ratio_hist[k]->GetYaxis()->SetTitleSize(0.08); Ratio_hist[k]->GetYaxis()->SetTitleOffset(0.5);
         Ratio_hist[k]->GetXaxis()->SetLabelSize(0.08); Ratio_hist[k]->GetYaxis()->SetLabelSize(0.08);
-        Ratio_hist[k]->Draw("ep");
+        Ratio_hist[k]->Draw("e0p");
         TLine* line = new TLine(Ratio_hist[k]->GetXaxis()->GetXmin(), 1.0, Ratio_hist[k]->GetXaxis()->GetXmax(), 1.0);
         line->SetLineColor(kRed);
         line->SetLineStyle(1); line->SetLineWidth(3);

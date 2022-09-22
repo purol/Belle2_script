@@ -232,7 +232,8 @@ int WorkSpace() {
 	CHG_temp.AddHistoSys("track_eff_uncer", "CHG_track_m", fname, "", "CHG_track_p", fname, "");
 	CHG_temp.AddHistoSys("KS0_reco_uncer", "CHG_KS0_m", fname, "", "CHG_KS0_p", fname, "");
 	CHG_temp.AddHistoSys("KID_eff_uncer", "CHG_KID_m", fname, "", "CHG_KID_p", fname, "");
-	CHG_temp.AddOverallSys("mu_CHG", 0.50, 1.50);
+	CHG_temp.AddNormFactor("Norm_CHG", 0.8, 0.8, 0.8, true);
+	CHG_temp.AddOverallSys("mu_CHG", 0.8125, 1.1875);
 	CHG_temp.ActivateStatError();
 	CHG_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(CHG_temp);
@@ -245,7 +246,8 @@ int WorkSpace() {
 	MIX_temp.AddHistoSys("track_eff_uncer", "MIX_track_m", fname, "", "MIX_track_p", fname, "");
 	MIX_temp.AddHistoSys("KS0_reco_uncer", "MIX_KS0_m", fname, "", "MIX_KS0_p", fname, "");
 	MIX_temp.AddHistoSys("KID_eff_uncer", "MIX_KID_m", fname, "", "MIX_KID_p", fname, "");
-	MIX_temp.AddOverallSys("mu_MIX", 0.50, 1.50);
+	MIX_temp.AddNormFactor("Norm_MIX", 0.8, 0.8, 0.8, true);
+	MIX_temp.AddOverallSys("mu_MIX", 0.8125, 1.1875);
 	MIX_temp.ActivateStatError();
 	MIX_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(MIX_temp);
@@ -257,7 +259,8 @@ int WorkSpace() {
 	UUBAR_temp.AddHistoSys("track_eff_uncer", "UUBAR_track_m", fname, "", "UUBAR_track_p", fname, "");
 	UUBAR_temp.AddHistoSys("KS0_reco_uncer", "UUBAR_KS0_m", fname, "", "UUBAR_KS0_p", fname, "");
 	UUBAR_temp.AddHistoSys("KID_eff_uncer", "UUBAR_KID_m", fname, "", "UUBAR_KID_p", fname, "");
-	UUBAR_temp.AddOverallSys("mu_UUBAR", 0.50, 1.50);
+	UUBAR_temp.AddNormFactor("Norm_UUBAR", 0.8, 0.8, 0.8, true);
+	UUBAR_temp.AddOverallSys("mu_UUBAR", 0.8125, 1.1875);
 	UUBAR_temp.ActivateStatError();
 	UUBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(UUBAR_temp);
@@ -269,7 +272,8 @@ int WorkSpace() {
 	DDBAR_temp.AddHistoSys("track_eff_uncer", "DDBAR_track_m", fname, "", "DDBAR_track_p", fname, "");
 	DDBAR_temp.AddHistoSys("KS0_reco_uncer", "DDBAR_KS0_m", fname, "", "DDBAR_KS0_p", fname, "");
 	DDBAR_temp.AddHistoSys("KID_eff_uncer", "DDBAR_KID_m", fname, "", "DDBAR_KID_p", fname, "");
-	DDBAR_temp.AddOverallSys("mu_DDBAR", 0.50, 1.50);
+	DDBAR_temp.AddNormFactor("Norm_DDBAR", 0.8, 0.8, 0.8, true);
+	DDBAR_temp.AddOverallSys("mu_DDBAR", 0.8125, 1.1875);
 	DDBAR_temp.ActivateStatError();
 	DDBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(DDBAR_temp);
@@ -281,7 +285,8 @@ int WorkSpace() {
 	SSBAR_temp.AddHistoSys("track_eff_uncer", "SSBAR_track_m", fname, "", "SSBAR_track_p", fname, "");
 	SSBAR_temp.AddHistoSys("KS0_reco_uncer", "SSBAR_KS0_m", fname, "", "SSBAR_KS0_p", fname, "");
 	SSBAR_temp.AddHistoSys("KID_eff_uncer", "SSBAR_KID_m", fname, "", "SSBAR_KID_p", fname, "");
-	SSBAR_temp.AddOverallSys("mu_SSBAR", 0.50, 1.50);
+	SSBAR_temp.AddNormFactor("Norm_SSBAR", 0.8, 0.8, 0.8, true);
+	SSBAR_temp.AddOverallSys("mu_SSBAR", 0.8125, 1.1875);
 	SSBAR_temp.ActivateStatError();
 	SSBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(SSBAR_temp);
@@ -293,7 +298,8 @@ int WorkSpace() {
 	CHARM_temp.AddHistoSys("track_eff_uncer", "CHARM_track_m", fname, "", "CHARM_track_p", fname, "");
 	CHARM_temp.AddHistoSys("KS0_reco_uncer", "CHARM_KS0_m", fname, "", "CHARM_KS0_p", fname, "");
 	CHARM_temp.AddHistoSys("KID_eff_uncer", "CHARM_KID_m", fname, "", "CHARM_KID_p", fname, "");
-	CHARM_temp.AddOverallSys("mu_CHARM", 0.50, 1.50);
+	CHARM_temp.AddNormFactor("Norm_CHARM", 0.8, 0.8, 0.8, true);
+	CHARM_temp.AddOverallSys("mu_CHARM", 0.8125, 1.1875);
 	CHARM_temp.ActivateStatError();
 	CHARM_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(CHARM_temp);
