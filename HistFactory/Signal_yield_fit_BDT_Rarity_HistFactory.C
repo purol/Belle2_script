@@ -1014,7 +1014,7 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double 
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -1087,7 +1087,7 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -1154,7 +1154,7 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -1223,7 +1223,7 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsIt
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -1293,7 +1293,7 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -1370,7 +1370,7 @@ double GetKIDPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -1529,7 +1529,7 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
 
                 value[k] = std::pow(lambda, 1.5) * fp * fp;
                 double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * (value[k] / value[0]);
-                hist[k]->Fill(cdf.GetCDFvalue(MVA_var), total_weight );
+                hist[k]->Fill(MVA_var, total_weight );
                 Nevts[k] = Nevts[k] + total_weight;
             }
 
@@ -1768,7 +1768,7 @@ void GetKstarffPDFs(const char* dirname, TH1D* hist[19], double Correction_facto
 
                 value[k] = (3.0 / 4.0) * (Amp_vertical * Amp_vertical + Amp_parallel * Amp_parallel) * (1 - costheta * costheta) + (3.0 / 2.0) * Amp_0 * Amp_0 * costheta * costheta;
                 double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * (value[k] / value[0]);
-                hist[k]->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+                hist[k]->Fill(MVA_var, total_weight);
                 Nevts[k] = Nevts[k] + total_weight;
             }
         }
@@ -1971,7 +1971,7 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -1985,12 +1985,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
 {
     /* ====================================== */
     // Seting CDF module
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu", Scale_Kplus);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu", Scale_Kplusstar);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu", Scale_Xsu_nonresonant);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu", Scale_K0);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu", Scale_K0star);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu", Scale_Xsd_nonresonant);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu", Scale_Kplus);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu", Scale_Kplusstar);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu", Scale_Xsu_nonresonant);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu", Scale_K0);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu", Scale_K0star);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu", Scale_Xsd_nonresonant);
     /* ====================================== */
 
 
@@ -2109,8 +2109,6 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     TH1D* Signal_Kfrac_m = new TH1D("Signal_Kfrac_m", "Signal_Kfrac_m", RarityBins, 0.0, 1.0);
     TH1D* Signal_Kstarfrac_p = new TH1D("Signal_Kstarfrac_p", "Signal_Kstarfrac_p", RarityBins, 0.0, 1.0);
     TH1D* Signal_Kstarfrac_m = new TH1D("Signal_Kstarfrac_m", "Signal_Kstarfrac_m", RarityBins, 0.0, 1.0);
-    TH1D* Signal_Xsfrac_p = new TH1D("Signal_Xsfrac_p", "Signal_Xsfrac_p", RarityBins, 0.0, 1.0);
-    TH1D* Signal_Xsfrac_m = new TH1D("Signal_Xsfrac_m", "Signal_Xsfrac_m", RarityBins, 0.0, 1.0);
 
     // fragmentation
     std::vector<std::string> name_Signal_Fragmentation = {
@@ -2158,33 +2156,33 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
 
     /* ====================================== */
     // define path for Ntuple
-    const char* MC_dirname_Knunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* MC_dirname_Kstarnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* MC_dirname_Xsununu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* MC_dirname_K0nunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* MC_dirname_K0starnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* MC_dirname_Xsdnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* MC_dirname_Knunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* MC_dirname_Kstarnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
+    const char* MC_dirname_Xsununu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
+    const char* MC_dirname_K0nunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
+    const char* MC_dirname_K0starnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
+    const char* MC_dirname_Xsdnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
 
-    const char* MC_dirname_CHG = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHG_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_MIX = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/MIX_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_UUBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/UUBAR_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_DDBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/DDBAR_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SSBAR_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHARM_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHG = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHG_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_MIX = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/MIX_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_UUBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/UUBAR_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_DDBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/DDBAR_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SSBAR_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHARM_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
 
     // for signal modeling
-    const char* MC_dirname_Xsununu_Hpf = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsu_Hpf";
-    const char* MC_dirname_Xsdnunu_Hpf = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsd_Hpf";
-    const char* MC_dirname_Xsununu_Lpf = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsu_Lpf";
-    const char* MC_dirname_Xsdnunu_Lpf = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsd_Lpf";
-    const char* MC_dirname_Xsununu_Hmb = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsu_Hmb";
-    const char* MC_dirname_Xsdnunu_Hmb = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsd_Hmb";
-    const char* MC_dirname_Xsununu_Lmb = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsu_Lmb";
-    const char* MC_dirname_Xsdnunu_Lmb = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsd_Lmb";
-    const char* MC_dirname_Xsununu_Htransition = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsu_Htransition";
-    const char* MC_dirname_Xsdnunu_Htransition = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsd_Htransition";
-    const char* MC_dirname_Xsununu_Ltransition = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsu_Ltransition";
-    const char* MC_dirname_Xsdnunu_Ltransition = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/Xsd_Ltransition";
+    const char* MC_dirname_Xsununu_Hpf = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/Xsu_Hpf";
+    const char* MC_dirname_Xsdnunu_Hpf = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/Xsd_Hpf";
+    const char* MC_dirname_Xsununu_Lpf = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/Xsu_Lpf";
+    const char* MC_dirname_Xsdnunu_Lpf = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/Xsd_Lpf";
+    const char* MC_dirname_Xsununu_Hmb = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/Xsu_Hmb";
+    const char* MC_dirname_Xsdnunu_Hmb = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/Xsd_Hmb";
+    const char* MC_dirname_Xsununu_Lmb = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/Xsu_Lmb";
+    const char* MC_dirname_Xsdnunu_Lmb = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/Xsd_Lmb";
+    const char* MC_dirname_Xsununu_Htransition = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/Xsu_Htransition";
+    const char* MC_dirname_Xsdnunu_Htransition = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/Xsd_Htransition";
+    const char* MC_dirname_Xsununu_Ltransition = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/Xsu_Ltransition";
+    const char* MC_dirname_Xsdnunu_Ltransition = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again_syst/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/Xsd_Ltransition";
     /* ====================================== */
 
 
@@ -2431,20 +2429,6 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNominalPDFs(MC_dirname_K0starnunu, Signal_Kstarfrac_m, "Bzero", Scale_K0star * ((BR_K0star_nunubar - Sigma_BR_K0star_nunubar) / BR_K0star_nunubar));
     GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kstarfrac_m, "Bzero", Scale_Xsd_nonresonant * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar));
 
-    GetNominalPDFs(MC_dirname_Knunu, Signal_Xsfrac_p, "Bplus", Scale_Kplus);
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Xsfrac_p, "Bplus", Scale_Kplusstar);
-    GetNominalPDFs(MC_dirname_Xsununu, Signal_Xsfrac_p, "Bplus", Scale_Xsu_nonresonant * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Xs_nunubar) / BR_Xsu_nonresonant_nunubar));
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_Xsfrac_p, "Bzero", Scale_K0);
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Xsfrac_p, "Bzero", Scale_K0star);
-    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Xsfrac_p, "Bzero", Scale_Xsd_nonresonant * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_Xs_nunubar) / BR_Xsd_nonresonant_nunubar));
-
-    GetNominalPDFs(MC_dirname_Knunu, Signal_Xsfrac_m, "Bplus", Scale_Kplus);
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Xsfrac_m, "Bplus", Scale_Kplusstar);
-    GetNominalPDFs(MC_dirname_Xsununu, Signal_Xsfrac_m, "Bplus", Scale_Xsu_nonresonant * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Xs_nunubar) / BR_Xsu_nonresonant_nunubar));
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_Xsfrac_m, "Bzero", Scale_K0);
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Xsfrac_m, "Bzero", Scale_K0star);
-    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Xsfrac_m, "Bzero", Scale_Xsd_nonresonant * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_Xs_nunubar) / BR_Xsd_nonresonant_nunubar));
-
     // get fragmentation uncertainty pdfs
     DecayModeMC Fragmentation_types[2 * (MAX_NUM_DECAYMODE_MC - 6 + 1)] = {
         Xsu2KcPi0_MC, Xsu2K0Pic_MC, Xsu2KcPicPic_MC, Xsu2K0PicPi0_MC,
@@ -2542,19 +2526,19 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
 
     /* ====================================== */
     // define path for Data
-    const char* DATA_dirname_Knunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* DATA_dirname_Kstarnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* DATA_dirname_Xsununu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* DATA_dirname_K0nunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* DATA_dirname_K0starnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* DATA_dirname_Xsdnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* DATA_dirname_Knunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* DATA_dirname_Kstarnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
+    const char* DATA_dirname_Xsununu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
+    const char* DATA_dirname_K0nunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
+    const char* DATA_dirname_K0starnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
+    const char* DATA_dirname_Xsdnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
 
-    const char* DATA_dirname_CHG = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHG_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_MIX = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/MIX_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_UUBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/UUBAR_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_DDBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/DDBAR_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SSBAR_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHARM_analysis/validation_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_CHG = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHG_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_MIX = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/MIX_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_UUBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/UUBAR_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_DDBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/DDBAR_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SSBAR_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHARM_analysis/validation_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     /* ====================================== */
 
 
@@ -2700,8 +2684,6 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     Signal_Kfrac_m->Write();
     Signal_Kstarfrac_p->Write();
     Signal_Kstarfrac_m->Write();
-    Signal_Xsfrac_p->Write();
-    Signal_Xsfrac_m->Write();
 
     // fragmentation uncertainty
     for (unsigned int i = 0; i < Signal_Fragmentaions.size(); i++) Signal_Fragmentaions.at(i)->Write();
