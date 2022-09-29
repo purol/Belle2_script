@@ -2431,18 +2431,18 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNominalPDFs(MC_dirname_K0starnunu, Signal_Kstarfrac_m, "Bzero", Scale_K0star * ((BR_K0star_nunubar - Sigma_BR_K0star_nunubar) / BR_K0star_nunubar));
     GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kstarfrac_m, "Bzero", Scale_Xsd_nonresonant * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar));
 
-    GetNominalPDFs(MC_dirname_Knunu, Signal_Xsfrac_p, "Bplus", Scale_Kplus * ((BR_Xs_nunubar - BR_Xsu_nonresonant_nunubar - Sigma_BR_Xs_nunubar) / (BR_Xs_nunubar - BR_Xsu_nonresonant_nunubar)));
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Xsfrac_p, "Bplus", Scale_Kplusstar * ((BR_Xs_nunubar - BR_Xsu_nonresonant_nunubar - Sigma_BR_Xs_nunubar) / (BR_Xs_nunubar - BR_Xsu_nonresonant_nunubar)));
+    GetNominalPDFs(MC_dirname_Knunu, Signal_Xsfrac_p, "Bplus", Scale_Kplus);
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Xsfrac_p, "Bplus", Scale_Kplusstar);
     GetNominalPDFs(MC_dirname_Xsununu, Signal_Xsfrac_p, "Bplus", Scale_Xsu_nonresonant * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Xs_nunubar) / BR_Xsu_nonresonant_nunubar));
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_Xsfrac_p, "Bzero", Scale_K0 * ((BR_Xs_nunubar - BR_Xsd_nonresonant_nunubar - Sigma_BR_Xs_nunubar) / (BR_Xs_nunubar - BR_Xsd_nonresonant_nunubar)));
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Xsfrac_p, "Bzero", Scale_K0star * ((BR_Xs_nunubar - BR_Xsd_nonresonant_nunubar - Sigma_BR_Xs_nunubar) / (BR_Xs_nunubar - BR_Xsd_nonresonant_nunubar)));
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_Xsfrac_p, "Bzero", Scale_K0);
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Xsfrac_p, "Bzero", Scale_K0star);
     GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Xsfrac_p, "Bzero", Scale_Xsd_nonresonant * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_Xs_nunubar) / BR_Xsd_nonresonant_nunubar));
 
-    GetNominalPDFs(MC_dirname_Knunu, Signal_Xsfrac_m, "Bplus", Scale_Kplus * ((BR_Xs_nunubar - BR_Xsu_nonresonant_nunubar + Sigma_BR_Xs_nunubar) / (BR_Xs_nunubar - BR_Xsu_nonresonant_nunubar)));
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Xsfrac_m, "Bplus", Scale_Kplusstar * ((BR_Xs_nunubar - BR_Xsu_nonresonant_nunubar + Sigma_BR_Xs_nunubar) / (BR_Xs_nunubar - BR_Xsu_nonresonant_nunubar)));
+    GetNominalPDFs(MC_dirname_Knunu, Signal_Xsfrac_m, "Bplus", Scale_Kplus);
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Xsfrac_m, "Bplus", Scale_Kplusstar);
     GetNominalPDFs(MC_dirname_Xsununu, Signal_Xsfrac_m, "Bplus", Scale_Xsu_nonresonant * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Xs_nunubar) / BR_Xsu_nonresonant_nunubar));
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_Xsfrac_m, "Bzero", Scale_K0 * ((BR_Xs_nunubar - BR_Xsd_nonresonant_nunubar + Sigma_BR_Xs_nunubar) / (BR_Xs_nunubar - BR_Xsd_nonresonant_nunubar)));
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Xsfrac_m, "Bzero", Scale_K0star * ((BR_Xs_nunubar - BR_Xsd_nonresonant_nunubar + Sigma_BR_Xs_nunubar) / (BR_Xs_nunubar - BR_Xsd_nonresonant_nunubar)));
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_Xsfrac_m, "Bzero", Scale_K0);
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Xsfrac_m, "Bzero", Scale_K0star);
     GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Xsfrac_m, "Bzero", Scale_Xsd_nonresonant * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_Xs_nunubar) / BR_Xsd_nonresonant_nunubar));
 
     // get fragmentation uncertainty pdfs
