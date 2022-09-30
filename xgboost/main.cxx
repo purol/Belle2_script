@@ -804,7 +804,7 @@ int main(int argc, char** argv) {
     safe_xgboost(XGBoosterSaveModel(h_booster, ("/home/belle2/junewoo/storage_b1/GridSearch/out/xgboost_" + model_name + ".model").c_str()));
     FILE* fp;
     fp = fopen(("/home/belle2/junewoo/storage_b1/GridSearch/out/Result_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5]) + "_" + std::string(argv[6])).c_str(), "w");
-    fprintf(fp, "%s_%s_%s_%s_%s_%s_%s %lf %lf %d\n", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], AUC_train, AUC_test);
+    fprintf(fp, "%s_%s_%s_%s_%s_%s_%s %lf %lf\n", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], AUC_train, AUC_test);
     fclose(fp);
 
 
