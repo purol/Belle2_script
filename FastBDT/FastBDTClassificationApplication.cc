@@ -627,15 +627,9 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        inputs.push_back(temp_DataToTree[25]); // Btag_CleoConeCS_3
        inputs.push_back(temp_DataToTree[26]); // Btag_CleoConeCS_4
        inputs.push_back(temp_DataToTree[27]); // Btag_CleoConeCS_5
-       inputs.push_back(temp_DataToTree[28]); // Btag_CleoConeCS_6
-       inputs.push_back(temp_DataToTree[29]); // Btag_CleoConeCS_7
-       inputs.push_back(temp_DataToTree[30]); // Btag_CleoConeCS_8
        inputs.push_back(temp_DataToTree[3]); // Btag_cosTBTO
-       inputs.push_back(temp_DataToTree[4]); // Btag_cosTBz
        inputs.push_back(temp_BtagDataToTree[2]); // Btag_deltaE
-       inputs.push_back(temp_DataToTree[8]); // Btag_KSFWVariables_hso01
        inputs.push_back(temp_DataToTree[10]); // Btag_KSFWVariables_hso03
-       inputs.push_back(temp_DataToTree[11]); // Btag_KSFWVariables_hso04
        inputs.push_back(temp_DataToTree[14]); // Btag_KSFWVariables_hso14
        inputs.push_back(temp_DataToTree[17]); // Btag_KSFWVariables_hso24
        inputs.push_back(temp_DataToTree[1]); // Btag_thrustBm
@@ -650,23 +644,34 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        inputs.push_back(temp_UpsilonDataToTree[29]); // cleoConeThrust6
        inputs.push_back(temp_UpsilonDataToTree[30]); // cleoConeThrust7
        inputs.push_back(temp_UpsilonDataToTree[31]); // cleoConeThrust8
-       inputs.push_back(temp_UpsilonDataToTree[20]); // harmonicMomentThrust2
        inputs.push_back(temp_UpsilonDataToTree[21]); // harmonicMomentThrust3
        inputs.push_back(temp_UpsilonDataToTree[22]); // harmonicMomentThrust4
        inputs.push_back(temp_BtagDataToTree[5]); // Btag_extraInfo_SignalProbability
+       inputs.push_back(temp_UpsilonDataToTree[9]); // missingEnergyOfEventCMS
        inputs.push_back(temp_UpsilonDataToTree[8]); // missingMomentumOfEvent
        inputs.push_back(temp_UpsilonDataToTree[7]); // missingMomentumOfEvent_theta
        inputs.push_back(temp_UpsilonDataToTree[54]); // nParticlesInList__bomu__pl__clMuonFBDT_tight__bc
        inputs.push_back(temp_UpsilonDataToTree[3]); // roeEextra__bocleanMask__bc
        inputs.push_back(temp_UpsilonDataToTree[44]); // roePTheta__bocleanMask__bc
+       inputs.push_back(temp_UpsilonDataToTree[35]); // thrustAxisCosTheta
 
-       inputs.push_back(temp_BsigDataToTree[66]); // Bsig_daughter_0_extraInfo_Dc_pValue_std
-       inputs.push_back(temp_BsigDataToTree[68]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_dr
-       inputs.push_back(temp_BsigDataToTree[69]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_dz
-       inputs.push_back(temp_BsigDataToTree[70]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_M
-       inputs.push_back(temp_BsigDataToTree[74]); // Bsig_daughter_0_extraInfo_D0simpleveto_chiProb
-       inputs.push_back(temp_BsigDataToTree[76]); // Bsig_daughter_0_extraInfo_D0simpleveto_dz
-       inputs.push_back(temp_BsigDataToTree[77]); // Bsig_daughter_0_extraInfo_D0simpleveto_M
+       if (temp_BsigDataToTree[67] > -0.5) {
+           inputs.push_back(temp_BsigDataToTree[69]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_dz
+           inputs.push_back(temp_BsigDataToTree[70]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_M
+       }
+       else {
+           inputs.push_back(-100.0); // Bsig_daughter_0_extraInfo_Dcsimpleveto_dz
+           inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_Dcsimpleveto_M
+       }
+
+       if (temp_BsigDataToTree[74] > -0.5) {
+           inputs.push_back(temp_BsigDataToTree[76]); // Bsig_daughter_0_extraInfo_D0simpleveto_dz
+           inputs.push_back(temp_BsigDataToTree[77]); // Bsig_daughter_0_extraInfo_D0simpleveto_M
+       }
+       else {
+           inputs.push_back(-100.0); // Bsig_daughter_0_extraInfo_D0simpleveto_dz
+           inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_D0simpleveto_M
+       }
 
        Output_BB = classifier_BB.predict(inputs);
        Output_Continuum = classifier_Continuum.predict(inputs);

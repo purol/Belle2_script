@@ -1014,7 +1014,7 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double 
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -1087,7 +1087,7 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -1154,7 +1154,7 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -1223,7 +1223,7 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsIt
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -1293,7 +1293,7 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -1370,7 +1370,7 @@ double GetKIDPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -1572,7 +1572,7 @@ void GetKffPDFs_norm(const char* dirname, TH1D* hist[7], double Correction_facto
 
                 value[k] = std::pow(lambda, 1.5) * fp * fp;
                 double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * (value[k] / value[0]);
-                hist[k]->Fill(cdf.GetCDFvalue(MVA_var), total_weight );
+                hist[k]->Fill(MVA_var, total_weight );
                 Nevts[k] = Nevts[k] + total_weight * (tot_value[0] / tot_value[k]);
             }
 
@@ -1732,7 +1732,7 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
 
                 value[k] = std::pow(lambda, 1.5) * fp * fp;
                 double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * (value[k] / value[0]);
-                hist[k]->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+                hist[k]->Fill(MVA_var, total_weight);
                 Nevts[k] = Nevts[k] + total_weight;
             }
 
@@ -1971,7 +1971,7 @@ void GetKstarffPDFs(const char* dirname, TH1D* hist[19], double Correction_facto
 
                 value[k] = (3.0 / 4.0) * (Amp_vertical * Amp_vertical + Amp_parallel * Amp_parallel) * (1 - costheta * costheta) + (3.0 / 2.0) * Amp_0 * Amp_0 * costheta * costheta;
                 double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * (value[k] / value[0]);
-                hist[k]->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+                hist[k]->Fill(MVA_var, total_weight);
                 Nevts[k] = Nevts[k] + total_weight;
             }
         }
@@ -2174,7 +2174,7 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
 
             Nevt = Nevt + total_weight;
 
-            hist->Fill(cdf.GetCDFvalue(MVA_var), total_weight);
+            hist->Fill(MVA_var, total_weight);
         }
         input_file->Close();
 
@@ -2188,7 +2188,7 @@ void Signal_yield_fit_BDT_Rarity_HistFactory_Knunu()
 {
     /* ====================================== */
     // Seting CDF module
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu", Scale_Kplus);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Izayoi_release5/SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu", Scale_Kplus);
     /* ====================================== */
 
 
@@ -2196,110 +2196,110 @@ void Signal_yield_fit_BDT_Rarity_HistFactory_Knunu()
     /* ====================================== */
     // Define PDFs for HistFactory
     // nominal PDFs
-    TH1D* Signal_nominal = new TH1D("Signal_nominal", "Signal_nominal", RarityBins, 0.0, 1.0);
-    TH1D* CHG_nominal = new TH1D("CHG_nominal", "CHG_nominal", RarityBins, 0.0, 1.0);
-    TH1D* MIX_nominal = new TH1D("MIX_nominal", "MIX_nominal", RarityBins, 0.0, 1.0);
-    TH1D* UUBAR_nominal = new TH1D("UUBAR_nominal", "UUBAR_nominal", RarityBins, 0.0, 1.0);
-    TH1D* DDBAR_nominal = new TH1D("DDBAR_nominal", "DDBAR_nominal", RarityBins, 0.0, 1.0);
-    TH1D* SSBAR_nominal = new TH1D("SSBAR_nominal", "SSBAR_nominal", RarityBins, 0.0, 1.0);
-    TH1D* CHARM_nominal = new TH1D("CHARM_nominal", "CHARM_nominal", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_nominal = new TH1D("Xsnunu_nominal", "Xsnunu_nominal", RarityBins, 0.0, 1.0);
+    TH1D* Signal_nominal = new TH1D("Signal_nominal", "Signal_nominal", RarityBins, 0.7, 1.0);
+    TH1D* CHG_nominal = new TH1D("CHG_nominal", "CHG_nominal", RarityBins, 0.7, 1.0);
+    TH1D* MIX_nominal = new TH1D("MIX_nominal", "MIX_nominal", RarityBins, 0.7, 1.0);
+    TH1D* UUBAR_nominal = new TH1D("UUBAR_nominal", "UUBAR_nominal", RarityBins, 0.7, 1.0);
+    TH1D* DDBAR_nominal = new TH1D("DDBAR_nominal", "DDBAR_nominal", RarityBins, 0.7, 1.0);
+    TH1D* SSBAR_nominal = new TH1D("SSBAR_nominal", "SSBAR_nominal", RarityBins, 0.7, 1.0);
+    TH1D* CHARM_nominal = new TH1D("CHARM_nominal", "CHARM_nominal", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_nominal = new TH1D("Xsnunu_nominal", "Xsnunu_nominal", RarityBins, 0.7, 1.0);
 
     // FEI uncertainty, BKGs will be cared by overall syst
-    TH1D* Signal_FEI_charged_p = new TH1D("Signal_FEI_charged_p", "Signal_FEI_charged_p", RarityBins, 0.0, 1.0);
-    TH1D* Signal_FEI_charged_m = new TH1D("Signal_FEI_charged_m", "Signal_FEI_charged_m", RarityBins, 0.0, 1.0);
-    TH1D* Signal_FEI_neutral_p = new TH1D("Signal_FEI_neutral_p", "Signal_FEI_neutral_p", RarityBins, 0.0, 1.0);
-    TH1D* Signal_FEI_neutral_m = new TH1D("Signal_FEI_neutral_m", "Signal_FEI_neutral_m", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_FEI_charged_p = new TH1D("Xsnunu_FEI_charged_p", "Xsnunu_FEI_charged_p", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_FEI_charged_m = new TH1D("Xsnunu_FEI_charged_m", "Xsnunu_FEI_charged_m", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_FEI_neutral_p = new TH1D("Xsnunu_FEI_neutral_p", "Xsnunu_FEI_neutral_p", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_FEI_neutral_m = new TH1D("Xsnunu_FEI_neutral_m", "Xsnunu_FEI_neutral_m", RarityBins, 0.0, 1.0);
+    TH1D* Signal_FEI_charged_p = new TH1D("Signal_FEI_charged_p", "Signal_FEI_charged_p", RarityBins, 0.7, 1.0);
+    TH1D* Signal_FEI_charged_m = new TH1D("Signal_FEI_charged_m", "Signal_FEI_charged_m", RarityBins, 0.7, 1.0);
+    TH1D* Signal_FEI_neutral_p = new TH1D("Signal_FEI_neutral_p", "Signal_FEI_neutral_p", RarityBins, 0.7, 1.0);
+    TH1D* Signal_FEI_neutral_m = new TH1D("Signal_FEI_neutral_m", "Signal_FEI_neutral_m", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_FEI_charged_p = new TH1D("Xsnunu_FEI_charged_p", "Xsnunu_FEI_charged_p", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_FEI_charged_m = new TH1D("Xsnunu_FEI_charged_m", "Xsnunu_FEI_charged_m", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_FEI_neutral_p = new TH1D("Xsnunu_FEI_neutral_p", "Xsnunu_FEI_neutral_p", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_FEI_neutral_m = new TH1D("Xsnunu_FEI_neutral_m", "Xsnunu_FEI_neutral_m", RarityBins, 0.7, 1.0);
 
     // pi0 uncertainty
-    TH1D* Signal_pi0_p = new TH1D("Signal_pi0_p", "Signal_pi0_p", RarityBins, 0.0, 1.0);
-    TH1D* CHG_pi0_p = new TH1D("CHG_pi0_p", "CHG_pi0_p", RarityBins, 0.0, 1.0);
-    TH1D* MIX_pi0_p = new TH1D("MIX_pi0_p", "MIX_pi0_p", RarityBins, 0.0, 1.0);
-    TH1D* UUBAR_pi0_p = new TH1D("UUBAR_pi0_p", "UUBAR_pi0_p", RarityBins, 0.0, 1.0);
-    TH1D* DDBAR_pi0_p = new TH1D("DDBAR_pi0_p", "DDBAR_pi0_p", RarityBins, 0.0, 1.0);
-    TH1D* SSBAR_pi0_p = new TH1D("SSBAR_pi0_p", "SSBAR_pi0_p", RarityBins, 0.0, 1.0);
-    TH1D* CHARM_pi0_p = new TH1D("CHARM_pi0_p", "CHARM_pi0_p", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_pi0_p = new TH1D("Xsnunu_pi0_p", "Xsnunu_pi0_p", RarityBins, 0.0, 1.0);
-    TH1D* Signal_pi0_m = new TH1D("Signal_pi0_m", "Signal_pi0_m", RarityBins, 0.0, 1.0);
-    TH1D* CHG_pi0_m = new TH1D("CHG_pi0_m", "CHG_pi0_m", RarityBins, 0.0, 1.0);
-    TH1D* MIX_pi0_m = new TH1D("MIX_pi0_m", "MIX_pi0_m", RarityBins, 0.0, 1.0);
-    TH1D* UUBAR_pi0_m = new TH1D("UUBAR_pi0_m", "UUBAR_pi0_m", RarityBins, 0.0, 1.0);
-    TH1D* DDBAR_pi0_m = new TH1D("DDBAR_pi0_m", "DDBAR_pi0_m", RarityBins, 0.0, 1.0);
-    TH1D* SSBAR_pi0_m = new TH1D("SSBAR_pi0_m", "SSBAR_pi0_m", RarityBins, 0.0, 1.0);
-    TH1D* CHARM_pi0_m = new TH1D("CHARM_pi0_m", "CHARM_pi0_m", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_pi0_m = new TH1D("Xsnunu_pi0_m", "Xsnunu_pi0_m", RarityBins, 0.0, 1.0);
+    TH1D* Signal_pi0_p = new TH1D("Signal_pi0_p", "Signal_pi0_p", RarityBins, 0.7, 1.0);
+    TH1D* CHG_pi0_p = new TH1D("CHG_pi0_p", "CHG_pi0_p", RarityBins, 0.7, 1.0);
+    TH1D* MIX_pi0_p = new TH1D("MIX_pi0_p", "MIX_pi0_p", RarityBins, 0.7, 1.0);
+    TH1D* UUBAR_pi0_p = new TH1D("UUBAR_pi0_p", "UUBAR_pi0_p", RarityBins, 0.7, 1.0);
+    TH1D* DDBAR_pi0_p = new TH1D("DDBAR_pi0_p", "DDBAR_pi0_p", RarityBins, 0.7, 1.0);
+    TH1D* SSBAR_pi0_p = new TH1D("SSBAR_pi0_p", "SSBAR_pi0_p", RarityBins, 0.7, 1.0);
+    TH1D* CHARM_pi0_p = new TH1D("CHARM_pi0_p", "CHARM_pi0_p", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_pi0_p = new TH1D("Xsnunu_pi0_p", "Xsnunu_pi0_p", RarityBins, 0.7, 1.0);
+    TH1D* Signal_pi0_m = new TH1D("Signal_pi0_m", "Signal_pi0_m", RarityBins, 0.7, 1.0);
+    TH1D* CHG_pi0_m = new TH1D("CHG_pi0_m", "CHG_pi0_m", RarityBins, 0.7, 1.0);
+    TH1D* MIX_pi0_m = new TH1D("MIX_pi0_m", "MIX_pi0_m", RarityBins, 0.7, 1.0);
+    TH1D* UUBAR_pi0_m = new TH1D("UUBAR_pi0_m", "UUBAR_pi0_m", RarityBins, 0.7, 1.0);
+    TH1D* DDBAR_pi0_m = new TH1D("DDBAR_pi0_m", "DDBAR_pi0_m", RarityBins, 0.7, 1.0);
+    TH1D* SSBAR_pi0_m = new TH1D("SSBAR_pi0_m", "SSBAR_pi0_m", RarityBins, 0.7, 1.0);
+    TH1D* CHARM_pi0_m = new TH1D("CHARM_pi0_m", "CHARM_pi0_m", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_pi0_m = new TH1D("Xsnunu_pi0_m", "Xsnunu_pi0_m", RarityBins, 0.7, 1.0);
 
     // track uncertainty
-    TH1D* Signal_track_p = new TH1D("Signal_track_p", "Signal_track_p", RarityBins, 0.0, 1.0);
-    TH1D* CHG_track_p = new TH1D("CHG_track_p", "CHG_track_p", RarityBins, 0.0, 1.0);
-    TH1D* MIX_track_p = new TH1D("MIX_track_p", "MIX_track_p", RarityBins, 0.0, 1.0);
-    TH1D* UUBAR_track_p = new TH1D("UUBAR_track_p", "UUBAR_track_p", RarityBins, 0.0, 1.0);
-    TH1D* DDBAR_track_p = new TH1D("DDBAR_track_p", "DDBAR_track_p", RarityBins, 0.0, 1.0);
-    TH1D* SSBAR_track_p = new TH1D("SSBAR_track_p", "SSBAR_track_p", RarityBins, 0.0, 1.0);
-    TH1D* CHARM_track_p = new TH1D("CHARM_track_p", "CHARM_track_p", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_track_p = new TH1D("Xsnunu_track_p", "Xsnunu_track_p", RarityBins, 0.0, 1.0);
-    TH1D* Signal_track_m = new TH1D("Signal_track_m", "Signal_track_m", RarityBins, 0.0, 1.0);
-    TH1D* CHG_track_m = new TH1D("CHG_track_m", "CHG_track_m", RarityBins, 0.0, 1.0);
-    TH1D* MIX_track_m = new TH1D("MIX_track_m", "MIX_track_m", RarityBins, 0.0, 1.0);
-    TH1D* UUBAR_track_m = new TH1D("UUBAR_track_m", "UUBAR_track_m", RarityBins, 0.0, 1.0);
-    TH1D* DDBAR_track_m = new TH1D("DDBAR_track_m", "DDBAR_track_m", RarityBins, 0.0, 1.0);
-    TH1D* SSBAR_track_m = new TH1D("SSBAR_track_m", "SSBAR_track_m", RarityBins, 0.0, 1.0);
-    TH1D* CHARM_track_m = new TH1D("CHARM_track_m", "CHARM_track_m", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_track_m = new TH1D("Xsnunu_track_m", "Xsnunu_track_m", RarityBins, 0.0, 1.0);
+    TH1D* Signal_track_p = new TH1D("Signal_track_p", "Signal_track_p", RarityBins, 0.7, 1.0);
+    TH1D* CHG_track_p = new TH1D("CHG_track_p", "CHG_track_p", RarityBins, 0.7, 1.0);
+    TH1D* MIX_track_p = new TH1D("MIX_track_p", "MIX_track_p", RarityBins, 0.7, 1.0);
+    TH1D* UUBAR_track_p = new TH1D("UUBAR_track_p", "UUBAR_track_p", RarityBins, 0.7, 1.0);
+    TH1D* DDBAR_track_p = new TH1D("DDBAR_track_p", "DDBAR_track_p", RarityBins, 0.7, 1.0);
+    TH1D* SSBAR_track_p = new TH1D("SSBAR_track_p", "SSBAR_track_p", RarityBins, 0.7, 1.0);
+    TH1D* CHARM_track_p = new TH1D("CHARM_track_p", "CHARM_track_p", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_track_p = new TH1D("Xsnunu_track_p", "Xsnunu_track_p", RarityBins, 0.7, 1.0);
+    TH1D* Signal_track_m = new TH1D("Signal_track_m", "Signal_track_m", RarityBins, 0.7, 1.0);
+    TH1D* CHG_track_m = new TH1D("CHG_track_m", "CHG_track_m", RarityBins, 0.7, 1.0);
+    TH1D* MIX_track_m = new TH1D("MIX_track_m", "MIX_track_m", RarityBins, 0.7, 1.0);
+    TH1D* UUBAR_track_m = new TH1D("UUBAR_track_m", "UUBAR_track_m", RarityBins, 0.7, 1.0);
+    TH1D* DDBAR_track_m = new TH1D("DDBAR_track_m", "DDBAR_track_m", RarityBins, 0.7, 1.0);
+    TH1D* SSBAR_track_m = new TH1D("SSBAR_track_m", "SSBAR_track_m", RarityBins, 0.7, 1.0);
+    TH1D* CHARM_track_m = new TH1D("CHARM_track_m", "CHARM_track_m", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_track_m = new TH1D("Xsnunu_track_m", "Xsnunu_track_m", RarityBins, 0.7, 1.0);
 
     // KS0 uncertainty
-    TH1D* Signal_KS0_p = new TH1D("Signal_KS0_p", "Signal_KS0_p", RarityBins, 0.0, 1.0);
-    TH1D* CHG_KS0_p = new TH1D("CHG_KS0_p", "CHG_KS0_p", RarityBins, 0.0, 1.0);
-    TH1D* MIX_KS0_p = new TH1D("MIX_KS0_p", "MIX_KS0_p", RarityBins, 0.0, 1.0);
-    TH1D* UUBAR_KS0_p = new TH1D("UUBAR_KS0_p", "UUBAR_KS0_p", RarityBins, 0.0, 1.0);
-    TH1D* DDBAR_KS0_p = new TH1D("DDBAR_KS0_p", "DDBAR_KS0_p", RarityBins, 0.0, 1.0);
-    TH1D* SSBAR_KS0_p = new TH1D("SSBAR_KS0_p", "SSBAR_KS0_p", RarityBins, 0.0, 1.0);
-    TH1D* CHARM_KS0_p = new TH1D("CHARM_KS0_p", "CHARM_KS0_p", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_KS0_p = new TH1D("Xsnunu_KS0_p", "Xsnunu_KS0_p", RarityBins, 0.0, 1.0);
-    TH1D* Signal_KS0_m = new TH1D("Signal_KS0_m", "Signal_KS0_m", RarityBins, 0.0, 1.0);
-    TH1D* CHG_KS0_m = new TH1D("CHG_KS0_m", "CHG_KS0_m", RarityBins, 0.0, 1.0);
-    TH1D* MIX_KS0_m = new TH1D("MIX_KS0_m", "MIX_KS0_m", RarityBins, 0.0, 1.0);
-    TH1D* UUBAR_KS0_m = new TH1D("UUBAR_KS0_m", "UUBAR_KS0_m", RarityBins, 0.0, 1.0);
-    TH1D* DDBAR_KS0_m = new TH1D("DDBAR_KS0_m", "DDBAR_KS0_m", RarityBins, 0.0, 1.0);
-    TH1D* SSBAR_KS0_m = new TH1D("SSBAR_KS0_m", "SSBAR_KS0_m", RarityBins, 0.0, 1.0);
-    TH1D* CHARM_KS0_m = new TH1D("CHARM_KS0_m", "CHARM_KS0_m", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_KS0_m = new TH1D("Xsnunu_KS0_m", "Xsnunu_KS0_m", RarityBins, 0.0, 1.0);
+    TH1D* Signal_KS0_p = new TH1D("Signal_KS0_p", "Signal_KS0_p", RarityBins, 0.7, 1.0);
+    TH1D* CHG_KS0_p = new TH1D("CHG_KS0_p", "CHG_KS0_p", RarityBins, 0.7, 1.0);
+    TH1D* MIX_KS0_p = new TH1D("MIX_KS0_p", "MIX_KS0_p", RarityBins, 0.7, 1.0);
+    TH1D* UUBAR_KS0_p = new TH1D("UUBAR_KS0_p", "UUBAR_KS0_p", RarityBins, 0.7, 1.0);
+    TH1D* DDBAR_KS0_p = new TH1D("DDBAR_KS0_p", "DDBAR_KS0_p", RarityBins, 0.7, 1.0);
+    TH1D* SSBAR_KS0_p = new TH1D("SSBAR_KS0_p", "SSBAR_KS0_p", RarityBins, 0.7, 1.0);
+    TH1D* CHARM_KS0_p = new TH1D("CHARM_KS0_p", "CHARM_KS0_p", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_KS0_p = new TH1D("Xsnunu_KS0_p", "Xsnunu_KS0_p", RarityBins, 0.7, 1.0);
+    TH1D* Signal_KS0_m = new TH1D("Signal_KS0_m", "Signal_KS0_m", RarityBins, 0.7, 1.0);
+    TH1D* CHG_KS0_m = new TH1D("CHG_KS0_m", "CHG_KS0_m", RarityBins, 0.7, 1.0);
+    TH1D* MIX_KS0_m = new TH1D("MIX_KS0_m", "MIX_KS0_m", RarityBins, 0.7, 1.0);
+    TH1D* UUBAR_KS0_m = new TH1D("UUBAR_KS0_m", "UUBAR_KS0_m", RarityBins, 0.7, 1.0);
+    TH1D* DDBAR_KS0_m = new TH1D("DDBAR_KS0_m", "DDBAR_KS0_m", RarityBins, 0.7, 1.0);
+    TH1D* SSBAR_KS0_m = new TH1D("SSBAR_KS0_m", "SSBAR_KS0_m", RarityBins, 0.7, 1.0);
+    TH1D* CHARM_KS0_m = new TH1D("CHARM_KS0_m", "CHARM_KS0_m", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_KS0_m = new TH1D("Xsnunu_KS0_m", "Xsnunu_KS0_m", RarityBins, 0.7, 1.0);
 
     // Kaon PID uncertainty
-    TH1D* Signal_KID_p = new TH1D("Signal_KID_p", "Signal_KID_p", RarityBins, 0.0, 1.0);
-    TH1D* CHG_KID_p = new TH1D("CHG_KID_p", "CHG_KID_p", RarityBins, 0.0, 1.0);
-    TH1D* MIX_KID_p = new TH1D("MIX_KID_p", "MIX_KID_p", RarityBins, 0.0, 1.0);
-    TH1D* UUBAR_KID_p = new TH1D("UUBAR_KID_p", "UUBAR_KID_p", RarityBins, 0.0, 1.0);
-    TH1D* DDBAR_KID_p = new TH1D("DDBAR_KID_p", "DDBAR_KID_p", RarityBins, 0.0, 1.0);
-    TH1D* SSBAR_KID_p = new TH1D("SSBAR_KID_p", "SSBAR_KID_p", RarityBins, 0.0, 1.0);
-    TH1D* CHARM_KID_p = new TH1D("CHARM_KID_p", "CHARM_KID_p", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_KID_p = new TH1D("Xsnunu_KID_p", "Xsnunu_KID_p", RarityBins, 0.0, 1.0);
-    TH1D* Signal_KID_m = new TH1D("Signal_KID_m", "Signal_KID_m", RarityBins, 0.0, 1.0);
-    TH1D* CHG_KID_m = new TH1D("CHG_KID_m", "CHG_KID_m", RarityBins, 0.0, 1.0);
-    TH1D* MIX_KID_m = new TH1D("MIX_KID_m", "MIX_KID_m", RarityBins, 0.0, 1.0);
-    TH1D* UUBAR_KID_m = new TH1D("UUBAR_KID_m", "UUBAR_KID_m", RarityBins, 0.0, 1.0);
-    TH1D* DDBAR_KID_m = new TH1D("DDBAR_KID_m", "DDBAR_KID_m", RarityBins, 0.0, 1.0);
-    TH1D* SSBAR_KID_m = new TH1D("SSBAR_KID_m", "SSBAR_KID_m", RarityBins, 0.0, 1.0);
-    TH1D* CHARM_KID_m = new TH1D("CHARM_KID_m", "CHARM_KID_m", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_KID_m = new TH1D("Xsnunu_KID_m", "Xsnunu_KID_m", RarityBins, 0.0, 1.0);
+    TH1D* Signal_KID_p = new TH1D("Signal_KID_p", "Signal_KID_p", RarityBins, 0.7, 1.0);
+    TH1D* CHG_KID_p = new TH1D("CHG_KID_p", "CHG_KID_p", RarityBins, 0.7, 1.0);
+    TH1D* MIX_KID_p = new TH1D("MIX_KID_p", "MIX_KID_p", RarityBins, 0.7, 1.0);
+    TH1D* UUBAR_KID_p = new TH1D("UUBAR_KID_p", "UUBAR_KID_p", RarityBins, 0.7, 1.0);
+    TH1D* DDBAR_KID_p = new TH1D("DDBAR_KID_p", "DDBAR_KID_p", RarityBins, 0.7, 1.0);
+    TH1D* SSBAR_KID_p = new TH1D("SSBAR_KID_p", "SSBAR_KID_p", RarityBins, 0.7, 1.0);
+    TH1D* CHARM_KID_p = new TH1D("CHARM_KID_p", "CHARM_KID_p", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_KID_p = new TH1D("Xsnunu_KID_p", "Xsnunu_KID_p", RarityBins, 0.7, 1.0);
+    TH1D* Signal_KID_m = new TH1D("Signal_KID_m", "Signal_KID_m", RarityBins, 0.7, 1.0);
+    TH1D* CHG_KID_m = new TH1D("CHG_KID_m", "CHG_KID_m", RarityBins, 0.7, 1.0);
+    TH1D* MIX_KID_m = new TH1D("MIX_KID_m", "MIX_KID_m", RarityBins, 0.7, 1.0);
+    TH1D* UUBAR_KID_m = new TH1D("UUBAR_KID_m", "UUBAR_KID_m", RarityBins, 0.7, 1.0);
+    TH1D* DDBAR_KID_m = new TH1D("DDBAR_KID_m", "DDBAR_KID_m", RarityBins, 0.7, 1.0);
+    TH1D* SSBAR_KID_m = new TH1D("SSBAR_KID_m", "SSBAR_KID_m", RarityBins, 0.7, 1.0);
+    TH1D* CHARM_KID_m = new TH1D("CHARM_KID_m", "CHARM_KID_m", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_KID_m = new TH1D("Xsnunu_KID_m", "Xsnunu_KID_m", RarityBins, 0.7, 1.0);
 
     // K nu nubar form factor
-    TH1D* Signal_Kff1_p = new TH1D("Signal_Kff1_p", "Signal_Kff1_p", RarityBins, 0.0, 1.0);
-    TH1D* Signal_Kff1_m = new TH1D("Signal_Kff1_m", "Signal_Kff1_m", RarityBins, 0.0, 1.0);
-    TH1D* Signal_Kff2_p = new TH1D("Signal_Kff2_p", "Signal_Kff2_p", RarityBins, 0.0, 1.0);
-    TH1D* Signal_Kff2_m = new TH1D("Signal_Kff2_m", "Signal_Kff2_m", RarityBins, 0.0, 1.0);
-    TH1D* Signal_Kff3_p = new TH1D("Signal_Kff3_p", "Signal_Kff3_p", RarityBins, 0.0, 1.0);
-    TH1D* Signal_Kff3_m = new TH1D("Signal_Kff3_m", "Signal_Kff3_m", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_Kff1_p = new TH1D("Xsnunu_Kff1_p", "Xsnunu_Kff1_p", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_Kff1_m = new TH1D("Xsnunu_Kff1_m", "Xsnunu_Kff1_m", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_Kff2_p = new TH1D("Xsnunu_Kff2_p", "Xsnunu_Kff2_p", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_Kff2_m = new TH1D("Xsnunu_Kff2_m", "Xsnunu_Kff2_m", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_Kff3_p = new TH1D("Xsnunu_Kff3_p", "Xsnunu_Kff3_p", RarityBins, 0.0, 1.0);
-    TH1D* Xsnunu_Kff3_m = new TH1D("Xsnunu_Kff3_m", "Xsnunu_Kff3_m", RarityBins, 0.0, 1.0);
+    TH1D* Signal_Kff1_p = new TH1D("Signal_Kff1_p", "Signal_Kff1_p", RarityBins, 0.7, 1.0);
+    TH1D* Signal_Kff1_m = new TH1D("Signal_Kff1_m", "Signal_Kff1_m", RarityBins, 0.7, 1.0);
+    TH1D* Signal_Kff2_p = new TH1D("Signal_Kff2_p", "Signal_Kff2_p", RarityBins, 0.7, 1.0);
+    TH1D* Signal_Kff2_m = new TH1D("Signal_Kff2_m", "Signal_Kff2_m", RarityBins, 0.7, 1.0);
+    TH1D* Signal_Kff3_p = new TH1D("Signal_Kff3_p", "Signal_Kff3_p", RarityBins, 0.7, 1.0);
+    TH1D* Signal_Kff3_m = new TH1D("Signal_Kff3_m", "Signal_Kff3_m", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_Kff1_p = new TH1D("Xsnunu_Kff1_p", "Xsnunu_Kff1_p", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_Kff1_m = new TH1D("Xsnunu_Kff1_m", "Xsnunu_Kff1_m", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_Kff2_p = new TH1D("Xsnunu_Kff2_p", "Xsnunu_Kff2_p", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_Kff2_m = new TH1D("Xsnunu_Kff2_m", "Xsnunu_Kff2_m", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_Kff3_p = new TH1D("Xsnunu_Kff3_p", "Xsnunu_Kff3_p", RarityBins, 0.7, 1.0);
+    TH1D* Xsnunu_Kff3_m = new TH1D("Xsnunu_Kff3_m", "Xsnunu_Kff3_m", RarityBins, 0.7, 1.0);
 
     /* ====================================== */
 
@@ -2307,19 +2307,19 @@ void Signal_yield_fit_BDT_Rarity_HistFactory_Knunu()
 
     /* ====================================== */
     // define path for Ntuple
-    const char* MC_dirname_Knunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* MC_dirname_Kstarnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* MC_dirname_Xsununu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* MC_dirname_K0nunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* MC_dirname_K0starnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* MC_dirname_Xsdnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* MC_dirname_Knunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_release5/SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* MC_dirname_Kstarnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_release5/SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
+    const char* MC_dirname_Xsununu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_release5/SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
+    const char* MC_dirname_K0nunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_release5/SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
+    const char* MC_dirname_K0starnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_release5/SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
+    const char* MC_dirname_Xsdnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_release5/SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
 
-    const char* MC_dirname_CHG = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHG_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_MIX = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/MIX_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_UUBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/UUBAR_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_DDBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/DDBAR_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SSBAR_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHARM_analysis/test_v001/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHG = "/home/jwpark/storage/BKG_gbasf2/Izayoi_release5/CHG_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_MIX = "/home/jwpark/storage/BKG_gbasf2/Izayoi_release5/MIX_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_UUBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_release5/UUBAR_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_DDBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_release5/DDBAR_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_release5/SSBAR_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Izayoi_release5/CHARM_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     /* ====================================== */
 
 
@@ -2487,9 +2487,9 @@ void Signal_yield_fit_BDT_Rarity_HistFactory_Knunu()
     GetKIDPDFs(MC_dirname_CHARM, CHARM_KID_m, "Continuum", false, 0.5);
 
     // get Kff uncertainty pdfs
-    TH1D* Signal_Kff_temp = new TH1D("Signal_Kff_temp", "Signal_Kff_temp", RarityBins, 0.0, 1.0);
+    TH1D* Signal_Kff_temp = new TH1D("Signal_Kff_temp", "Signal_Kff_temp", RarityBins, 0.7, 1.0);
     TH1D* Signal_Kff_array[7] = { Signal_Kff_temp, Signal_Kff1_p, Signal_Kff1_m, Signal_Kff2_p, Signal_Kff2_m, Signal_Kff3_p, Signal_Kff3_m };
-    TH1D* Xsnunu_Kff_temp = new TH1D("Xsnunu_Kff_temp", "Xsnunu_Kff_temp", RarityBins, 0.0, 1.0);
+    TH1D* Xsnunu_Kff_temp = new TH1D("Xsnunu_Kff_temp", "Xsnunu_Kff_temp", RarityBins, 0.7, 1.0);
     TH1D* Xsnunu_Kff_array[7] = { Xsnunu_Kff_temp, Xsnunu_Kff1_p, Xsnunu_Kff1_m, Xsnunu_Kff2_p, Xsnunu_Kff2_m, Xsnunu_Kff3_p, Xsnunu_Kff3_m };
     double Correction_factor_BR_Kplus[7] = { 0.0 };
     double Correction_factor_BR_Kzero[7] = { 0.0 };
@@ -2532,7 +2532,7 @@ void Signal_yield_fit_BDT_Rarity_HistFactory_Knunu()
 
     /* ====================================== */
     // Define histograms for Data
-    TH1D* total_DATA = new TH1D("total_DATA", "total_DATA", RarityBins, 0.0, 1.0);
+    TH1D* total_DATA = new TH1D("total_DATA", "total_DATA", RarityBins, 0.7, 1.0);
     /* ====================================== */
 
 

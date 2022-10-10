@@ -38,8 +38,8 @@
 # define N_Btag_info 7
 # define N_decay 38 // five decay mode + others
 
-# define Nvar 46
-# define DvetoNvar 7
+# define Nvar 38
+# define DvetoNvar 4
 
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
@@ -123,12 +123,12 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     double Vars[Nvar];
     int flag;
 
-    double Dc_chiProb;
+    double Dc_chiProb; // 0.0
     double Dc_pvalue_med;
-    double Dc_pvalue_std;
-    double Dc_dr;
-    double Dc_dz;
-    double Dc_M;
+    double Dc_pvalue_std; // 0.0
+    double Dc_dr; // -1.0
+    double Dc_dz; // -100.0
+    double Dc_M; // 0.0
     double D0_chiProb;
     double D0_pvalue_med;
     double D0_pvalue_std;
@@ -153,41 +153,35 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     tree_data->SetBranchAddress("Btag_CleoConeCS_3", &Vars[4]);
     tree_data->SetBranchAddress("Btag_CleoConeCS_4", &Vars[5]);
     tree_data->SetBranchAddress("Btag_CleoConeCS_5", &Vars[6]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_6", &Vars[7]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_7", &Vars[8]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_8", &Vars[9]);
-    tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[10]);
-    tree_data->SetBranchAddress("Btag_cosTBz", &Vars[11]);
-    tree_data->SetBranchAddress("Btag_deltaE", &Vars[12]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso01", &Vars[13]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso03", &Vars[14]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso04", &Vars[15]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso14", &Vars[16]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[17]);
-    tree_data->SetBranchAddress("Btag_thrustBm", &Vars[18]);
-    tree_data->SetBranchAddress("Btag_thrustOm", &Vars[19]);
-    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[20]);
-    tree_data->SetBranchAddress("cleoConeThrust0", &Vars[21]);
-    tree_data->SetBranchAddress("cleoConeThrust1", &Vars[22]);
-    tree_data->SetBranchAddress("cleoConeThrust2", &Vars[23]);
-    tree_data->SetBranchAddress("cleoConeThrust3", &Vars[24]);
-    tree_data->SetBranchAddress("cleoConeThrust4", &Vars[25]);
-    tree_data->SetBranchAddress("cleoConeThrust5", &Vars[26]);
-    tree_data->SetBranchAddress("cleoConeThrust6", &Vars[27]);
-    tree_data->SetBranchAddress("cleoConeThrust7", &Vars[28]);
-    tree_data->SetBranchAddress("cleoConeThrust8", &Vars[29]);
-    tree_data->SetBranchAddress("harmonicMomentThrust2", &Vars[30]);
-    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[31]);
-    tree_data->SetBranchAddress("harmonicMomentThrust4", &Vars[32]);
-    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[33]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[34]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[35]);
-    tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &Vars[36]);
-    tree_data->SetBranchAddress("roeEextra__bocleanMask__bc", &Vars[37]);
-    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[38]);
+    tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[7]);
+    tree_data->SetBranchAddress("Btag_deltaE", &Vars[8]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso03", &Vars[9]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso14", &Vars[10]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[11]);
+    tree_data->SetBranchAddress("Btag_thrustBm", &Vars[12]);
+    tree_data->SetBranchAddress("Btag_thrustOm", &Vars[13]);
+    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[14]);
+    tree_data->SetBranchAddress("cleoConeThrust0", &Vars[15]);
+    tree_data->SetBranchAddress("cleoConeThrust1", &Vars[16]);
+    tree_data->SetBranchAddress("cleoConeThrust2", &Vars[17]);
+    tree_data->SetBranchAddress("cleoConeThrust3", &Vars[18]);
+    tree_data->SetBranchAddress("cleoConeThrust4", &Vars[19]);
+    tree_data->SetBranchAddress("cleoConeThrust5", &Vars[20]);
+    tree_data->SetBranchAddress("cleoConeThrust6", &Vars[21]);
+    tree_data->SetBranchAddress("cleoConeThrust7", &Vars[22]);
+    tree_data->SetBranchAddress("cleoConeThrust8", &Vars[23]);
+    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[24]);
+    tree_data->SetBranchAddress("harmonicMomentThrust4", &Vars[25]);
+    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[26]);
+    tree_data->SetBranchAddress("missingEnergyOfEventCMS", &Vars[27]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[28]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[29]);
+    tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &Vars[30]);
+    tree_data->SetBranchAddress("roeEextra__bocleanMask__bc", &Vars[31]);
+    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[32]);
+    tree_data->SetBranchAddress("thrustAxisCosTheta", &Vars[33]);
 
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &Dc_dr);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &Dc_chiProb);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &Dc_dz);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &Dc_M);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &D0_chiProb);
@@ -218,26 +212,20 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
         for (unsigned int k = 0; k < Nvar - DvetoNvar; k++) input_vars[k].push_back((float) Vars[k]); 
 
         if(Dc_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_pvalue_std);
-            input_vars[Nvar - DvetoNvar + 1].push_back((float) Dc_dr);
-            input_vars[Nvar - DvetoNvar + 2].push_back((float)Dc_dz);
-            input_vars[Nvar - DvetoNvar + 3].push_back((float)Dc_M);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float)Dc_dz);
+            input_vars[Nvar - DvetoNvar + 2].push_back((float)Dc_M);
         }
         else {
-            input_vars[Nvar - DvetoNvar + 0].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 1].push_back((float) -1.0);
-            input_vars[Nvar - DvetoNvar + 2].push_back((float) -100.0);
-            input_vars[Nvar - DvetoNvar + 3].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float) -100.0);
+            input_vars[Nvar - DvetoNvar + 2].push_back((float) 0.0);
         }
         if(D0_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 4].push_back((float) D0_chiProb);
-            input_vars[Nvar - DvetoNvar + 5].push_back((float) D0_dz);
-            input_vars[Nvar - DvetoNvar + 6].push_back((float) D0_M);
+            input_vars[Nvar - DvetoNvar + 4].push_back((float) D0_dz);
+            input_vars[Nvar - DvetoNvar + 5].push_back((float) D0_M);
         }
         else {
-            input_vars[Nvar - DvetoNvar + 4].push_back((float) 0.0);
-            input_vars[Nvar - DvetoNvar + 5].push_back((float) -100.0);
-            input_vars[Nvar - DvetoNvar + 6].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 4].push_back((float) -100.0);
+            input_vars[Nvar - DvetoNvar + 5].push_back((float) 0.0);
         }
 
         IsSignal->push_back(tempissignal);
@@ -355,21 +343,21 @@ int main(int argc, char* argv[])
 
 
     // input file
-    const char* SIGNAL_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/SIGNAL_analysis/train_v000/final_output/DataFile";
-    const char* CHG_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/CHG_analysis/train_v000/final_output/DataFile";
-    const char* MIX_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/MIX_analysis/train_v000/final_output/DataFile";
-    const char* UUBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/UUBAR_analysis/train_v000/final_output/DataFile";
-    const char* DDBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/DDBAR_analysis/train_v000/final_output/DataFile";
-    const char* SSBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/SSBAR_analysis/train_v000/final_output/DataFile";
-    const char* CHARM_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/CHARM_analysis/train_v000/final_output/DataFile";
+    const char* SIGNAL_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/SIGNAL_analysis/train_v004/final_output/DataFile";
+    const char* CHG_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/CHG_analysis/train_v004/final_output/DataFile";
+    const char* MIX_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/MIX_analysis/train_v004/final_output/DataFile";
+    const char* UUBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/UUBAR_analysis/train_v004/final_output/DataFile";
+    const char* DDBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/DDBAR_analysis/train_v004/final_output/DataFile";
+    const char* SSBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/SSBAR_analysis/train_v004/final_output/DataFile";
+    const char* CHARM_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/CHARM_analysis/train_v004/final_output/DataFile";
 
-    const char* SIGNAL_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/SIGNAL_analysis/test_v000/final_output/DataFile";
-    const char* CHG_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/CHG_analysis/test_v000/final_output/DataFile";
-    const char* MIX_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/MIX_analysis/test_v000/final_output/DataFile";
-    const char* UUBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/UUBAR_analysis/test_v000/final_output/DataFile";
-    const char* DDBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/DDBAR_analysis/test_v000/final_output/DataFile";
-    const char* SSBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/SSBAR_analysis/test_v000/final_output/DataFile";
-    const char* CHARM_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/CHARM_analysis/test_v000/final_output/DataFile";
+    const char* SIGNAL_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/SIGNAL_analysis/test_v004/final_output/DataFile";
+    const char* CHG_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/CHG_analysis/test_v004/final_output/DataFile";
+    const char* MIX_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/MIX_analysis/test_v004/final_output/DataFile";
+    const char* UUBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/UUBAR_analysis/test_v004/final_output/DataFile";
+    const char* DDBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/DDBAR_analysis/test_v004/final_output/DataFile";
+    const char* SSBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/SSBAR_analysis/test_v004/final_output/DataFile";
+    const char* CHARM_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/CHARM_analysis/test_v004/final_output/DataFile";
 
 
 
