@@ -212,20 +212,20 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
         for (unsigned int k = 0; k < Nvar - DvetoNvar; k++) input_vars[k].push_back((float) Vars[k]); 
 
         if(Dc_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 1].push_back((float)Dc_dz);
-            input_vars[Nvar - DvetoNvar + 2].push_back((float)Dc_M);
+            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_dz);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float)Dc_M);
         }
         else {
-            input_vars[Nvar - DvetoNvar + 1].push_back((float) -100.0);
-            input_vars[Nvar - DvetoNvar + 2].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 0].push_back((float) -100.0);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float) 0.0);
         }
         if(D0_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 4].push_back((float) D0_dz);
-            input_vars[Nvar - DvetoNvar + 5].push_back((float) D0_M);
+            input_vars[Nvar - DvetoNvar + 2].push_back((float) D0_dz);
+            input_vars[Nvar - DvetoNvar + 3].push_back((float) D0_M);
         }
         else {
-            input_vars[Nvar - DvetoNvar + 4].push_back((float) -100.0);
-            input_vars[Nvar - DvetoNvar + 5].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 2].push_back((float) -100.0);
+            input_vars[Nvar - DvetoNvar + 3].push_back((float) 0.0);
         }
 
         IsSignal->push_back(tempissignal);
