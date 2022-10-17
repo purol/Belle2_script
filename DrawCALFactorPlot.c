@@ -83,5 +83,7 @@ int DrawCALFactorPlot(){
 
     TPaveText* pt = new TPaveText(0.129, 0.86, 0.494, 0.98, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("combined= " + std::to_string(CAL_mean) + " #pm " + std::to_string(CAL_mean_error)).c_str()); pt->Draw();
 
+    if (gPad) gPad->RedrawAxis();
+
     return 0;
 }

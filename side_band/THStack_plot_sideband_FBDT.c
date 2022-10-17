@@ -65,7 +65,8 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define Nvar_num 1
 
-# define CAL 0.8220
+# define CAL 0.9783
+# define CAL_qq 1.0626
 # define Stream 0.25
 
 bool hasEnding(std::string const& fullString, std::string const& ending) {
@@ -179,19 +180,19 @@ void LetsFillSideBand(const char* dirname, std::vector<std::string> variable_nam
             }
             else if ( (job_id >= 270611862 && job_id <= 270613417) ) {
                 numberings->push_back(2);
-                FEI_calibration_factor = 1.0;
+                FEI_calibration_factor = CAL_qq;
             }
             else if ( (job_id >= 270613418 && job_id <= 270614801) ) {
                 numberings->push_back(3);
-                FEI_calibration_factor = 1.0;
+                FEI_calibration_factor = CAL_qq;
             }
             else if ( (job_id >= 270616274 && job_id <= 270617649) ) {
                 numberings->push_back(4);
-                FEI_calibration_factor = 1.0;
+                FEI_calibration_factor = CAL_qq;
             }
             else if ( (job_id >= 270614802 && job_id <= 270616273) ) {
                 numberings->push_back(5);
-                FEI_calibration_factor = 1.0;
+                FEI_calibration_factor = CAL_qq;
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);

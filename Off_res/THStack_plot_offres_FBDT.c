@@ -58,14 +58,15 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
 // https://indico.belle2.org/event/6872/contributions/37447/attachments/17127/25504/FEIperformance_B2GM.pdf
-# define FEI_cal_Bc 1.0 
-# define FEI_cal_Bc_uncertainty (0.017/FEI_cal_Bc)
-# define FEI_cal_B0 1.0
-# define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0)
+# define FEI_cal_Bc 0.679
+# define FEI_cal_Bc_uncertainty (0.017/FEI_cal_Bc) // not percentage. relative uncertainty
+# define FEI_cal_B0 0.713
+# define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
 
 # define Nvar_num 1
 
 # define CAL 0.4790
+# define CAL_qq 1.0626
 # define Stream 0.25
 
 bool hasEnding(std::string const& fullString, std::string const& ending) {
@@ -164,11 +165,23 @@ void LetsFillOffres(const char* dirname, std::vector<std::string> variable_names
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
 
             // Fill numberings
-            int job_id = stoi(names.at(i).substr(26, 9));
-            if (job_id >= 270433378 && job_id <= 270433617) numberings->push_back(0);
-            else if (job_id >= 270433618 && job_id <= 270433842) numberings->push_back(1);
-            else if (job_id >= 270434071 && job_id <= 270434294) numberings->push_back(2);
-            else if (job_id >= 270433843 && job_id <= 270434070) numberings->push_back(3);
+            int job_id = stoi(names.at(i).substr(16, 9));
+            if (job_id >= 265736574 && job_id <= 265736629) {
+                numberings->push_back(0);
+                FEI_calibration_factor = CAL_qq;
+            }
+            else if (job_id >= 265736630 && job_id <= 265736675) {
+                numberings->push_back(1);
+                FEI_calibration_factor = CAL_qq;
+            }
+            else if (job_id >= 265736722 && job_id <= 265736767) {
+                numberings->push_back(2);
+                FEI_calibration_factor = CAL_qq;
+            }
+            else if (job_id >= 265736676 && job_id <= 265736721) {
+                numberings->push_back(3);
+                FEI_calibration_factor = CAL_qq;
+            }
             //else if (job_id >= 256846090 && job_id <= 256846478) numberings->push_back(4);
             //else if (job_id >= 256846479 && job_id <= 256846857) numberings->push_back(5);
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
@@ -184,94 +197,94 @@ void LetsFillOffres(const char* dirname, std::vector<std::string> variable_names
 
             // Fill calibration factors
             if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B2Kc
-                weights->push_back(FEI_cal_Bc*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B2KcPi0
-                weights->push_back(FEI_cal_Bc* pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B2Ks0Pic
-                weights->push_back(FEI_cal_Bc*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B2KcPicPic
-                weights->push_back(FEI_cal_Bc*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B2Ks0PicPi0
-                weights->push_back(FEI_cal_Bc * pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B2KcPicPicPi0
-                weights->push_back(FEI_cal_Bc * pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B2Ks0PicPicPic
-                weights->push_back(FEI_cal_Bc*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B2KcPicPicPicPic
-                weights->push_back(FEI_cal_Bc*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B2Ks0PicPicPicPi0
-                weights->push_back(FEI_cal_Bc * pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B2KcPi0Pi0
-                weights->push_back(FEI_cal_Bc * pi0_correction * pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B2Ks0PicPi0Pi0
-                weights->push_back(FEI_cal_Bc * pi0_correction * pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B2KcPicPicPi0Pi0
-                weights->push_back(FEI_cal_Bc * pi0_correction * pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B2KcKcKc
-                weights->push_back(FEI_cal_Bc*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B2KcKcKs0Pic
-                weights->push_back(FEI_cal_Bc*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * CAL*Stream);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B2KcKcKcPi0
-                weights->push_back(FEI_cal_Bc * pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B02Ks0
-                weights->push_back(FEI_cal_B0*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B02KcPic
-                weights->push_back(FEI_cal_B0*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B02Ks0Pi0
-                weights->push_back(FEI_cal_B0 * pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B02KcPicPi0
-                weights->push_back(FEI_cal_B0 * pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B02Ks0PicPic
-                weights->push_back(FEI_cal_B0*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B02KcPicPicPic
-                weights->push_back(FEI_cal_B0*CAL*Stream);
+                weights->push_back(FEI_calibration_factor* CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B02Ks0PicPicPi0
-                weights->push_back(FEI_cal_B0* pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor* pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B02KcPicPicPicPi0
-                weights->push_back(FEI_cal_B0* pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor* pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B02Ks0PicPicPicPic
-                weights->push_back(FEI_cal_B0*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B02Ks0Pi0Pi0
-                weights->push_back(FEI_cal_B0 * pi0_correction * pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B02KcPicPi0Pi0
-                weights->push_back(FEI_cal_B0 * pi0_correction * pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B02Ks0PicPicPi0Pi0
-                weights->push_back(FEI_cal_B0 * pi0_correction * pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction*CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B02KcKcKs0
-                weights->push_back(FEI_cal_B0*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B02KcKcKcPic
-                weights->push_back(FEI_cal_B0*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * CAL*Stream);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B02KcKcKs0Pi0
-                weights->push_back(FEI_cal_B0 * pi0_correction*CAL*Stream);
+                weights->push_back(FEI_calibration_factor * pi0_correction*CAL*Stream);
             }
             else {
                 printf("[ERROR] unexpected decay ID\n");
