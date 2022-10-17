@@ -131,6 +131,8 @@ void LetsFillOffres(const char* dirname, std::vector<std::string> variable_names
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
 
+    double FEI_calibration_factor = -1;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
