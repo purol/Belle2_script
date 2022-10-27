@@ -1,6 +1,6 @@
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 55
+# define N_Upsilon_info 57
 # define N_Bsig_info 81
 # define N_Btag_info 9
 # define N_decay 48 // five decay mode + others + 10 variables for systematics
@@ -154,6 +154,8 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    theTree->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &temp_UpsilonDataToTree[52]);
    theTree->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &temp_UpsilonDataToTree[53]);
    theTree->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp_UpsilonDataToTree[54]);
+   theTree->SetBranchAddress("beamE", &temp_UpsilonDataToTree[55]);
+   theTree->SetBranchAddress("nROE_Tracks__bolooseMask__bc", &temp_UpsilonDataToTree[56]);
 
    // get Bsig_info
    theTree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -420,6 +422,8 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    temp_tree->Branch("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &temp_UpsilonDataToTree[52]);
    temp_tree->Branch("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &temp_UpsilonDataToTree[53]);
    temp_tree->Branch("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp_UpsilonDataToTree[54]);
+   temp_tree->Branch("beamE", &temp_UpsilonDataToTree[55]);
+   temp_tree->Branch("nROE_Tracks__bolooseMask__bc", &temp_UpsilonDataToTree[56]);
 
    // get Bsig_info
    temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -629,9 +633,15 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        inputs.push_back(temp_DataToTree[27]); // Btag_CleoConeCS_5
        inputs.push_back(temp_DataToTree[3]); // Btag_cosTBTO
        inputs.push_back(temp_BtagDataToTree[2]); // Btag_deltaE
+       inputs.push_back(temp_DataToTree[5]); // Btag_KSFWVariables_et
+       inputs.push_back(temp_DataToTree[20]); // Btag_KSFWVariables_hoo2
+       inputs.push_back(temp_DataToTree[22]); // Btag_KSFWVariables_hoo4
        inputs.push_back(temp_DataToTree[10]); // Btag_KSFWVariables_hso03
        inputs.push_back(temp_DataToTree[14]); // Btag_KSFWVariables_hso14
+       inputs.push_back(temp_DataToTree[15]); // Btag_KSFWVariables_hso20
+       inputs.push_back(temp_DataToTree[16]); // Btag_KSFWVariables_hso22
        inputs.push_back(temp_DataToTree[17]); // Btag_KSFWVariables_hso24
+       inputs.push_back(temp_DataToTree[0]); // Btag_R2
        inputs.push_back(temp_DataToTree[1]); // Btag_thrustBm
        inputs.push_back(temp_DataToTree[2]); // Btag_thrustOm
        inputs.push_back(temp_DataToTree[34]); // Btag_useCMSFrame_theta
@@ -642,8 +652,9 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        inputs.push_back(temp_UpsilonDataToTree[27]); // cleoConeThrust4
        inputs.push_back(temp_UpsilonDataToTree[28]); // cleoConeThrust5
        inputs.push_back(temp_UpsilonDataToTree[29]); // cleoConeThrust6
-       inputs.push_back(temp_UpsilonDataToTree[30]); // cleoConeThrust7
        inputs.push_back(temp_UpsilonDataToTree[31]); // cleoConeThrust8
+       inputs.push_back(temp_UpsilonDataToTree[15]); // foxWolframR2
+       inputs.push_back(temp_UpsilonDataToTree[16]); // foxWolframR3
        inputs.push_back(temp_UpsilonDataToTree[21]); // harmonicMomentThrust3
        inputs.push_back(temp_UpsilonDataToTree[22]); // harmonicMomentThrust4
        inputs.push_back(temp_BtagDataToTree[5]); // Btag_extraInfo_SignalProbability
@@ -653,7 +664,7 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        inputs.push_back(temp_UpsilonDataToTree[54]); // nParticlesInList__bomu__pl__clMuonFBDT_tight__bc
        inputs.push_back(temp_UpsilonDataToTree[3]); // roeEextra__bocleanMask__bc
        inputs.push_back(temp_UpsilonDataToTree[44]); // roePTheta__bocleanMask__bc
-       inputs.push_back(temp_UpsilonDataToTree[35]); // thrustAxisCosTheta
+       inputs.push_back(temp_UpsilonDataToTree[32]); // sphericity
 
        if (temp_BsigDataToTree[67] > -0.5) {
            inputs.push_back(temp_BsigDataToTree[69]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_dz

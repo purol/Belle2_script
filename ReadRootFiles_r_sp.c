@@ -1,4 +1,4 @@
-// last update: 2022-07-16
+// last update: 2022-10-27
 // for Belle2 data
 
 /*
@@ -13,7 +13,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define N_Needed_info 37
 # define N_event_info 15
-# define N_Upsilon_info 55
+# define N_Upsilon_info 57
 # define N_Bsig_info 81
 # define N_Btag_info 9
 # define N_decay 48 // five decay mode + others + 10 variables for systematics
@@ -111,7 +111,7 @@ typedef struct data{
     // 42: roeP__bocleanMask__bc, 43: roeM__bocleanMask__bc, 44: roePTheta__bocleanMask__bc
     // 45: qsquared - MB^2, 46: chiProb, 47: dr, 48: dz
     // 49: nElectron, 50: nMuon, 51: nElectronloose, 52: nMuonloose
-    // 53: nElectrontight, 54: nMuontight
+    // 53: nElectrontight, 54: nMuontight, 55: beamE, 56: number of tracks in ROE(looseMask)
 
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
@@ -570,6 +570,8 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &temp.Upsilon_info[52]);
     tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &temp.Upsilon_info[53]);
     tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp.Upsilon_info[54]);
+    tree_upsilon->SetBranchAddress("beamE", &temp.Upsilon_info[55]);
+    tree_upsilon->SetBranchAddress("nROE_Tracks__bolooseMask__bc", &temp.Upsilon_info[56]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
@@ -1910,6 +1912,8 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &UpsilonDataToTree[52]);
         tree_upsilon->Branch("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &UpsilonDataToTree[53]);
         tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &UpsilonDataToTree[54]);
+        tree_upsilon->Branch("beamE", &UpsilonDataToTree[55]);
+        tree_upsilon->Branch("nROE_Tracks__bolooseMask__bc", &UpsilonDataToTree[56]);
 
         // get Bsig_info
         tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
@@ -2274,6 +2278,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &temp_UpsilonDataToTree[52]);
     temp_tree_upsilon->Branch("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &temp_UpsilonDataToTree[53]);
     temp_tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp_UpsilonDataToTree[54]);
+    temp_tree_upsilon->Branch("beamE", &temp_UpsilonDataToTree[55]);
+    temp_tree_upsilon->Branch("nROE_Tracks__bolooseMask__bc", &temp_UpsilonDataToTree[56]);
 
     // get Bsig_info
     temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -2632,6 +2638,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &temp_UpsilonDataToTree[52]);
     temp_tree->Branch("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &temp_UpsilonDataToTree[53]);
     temp_tree->Branch("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp_UpsilonDataToTree[54]);
+    temp_tree->Branch("beamE", &temp_UpsilonDataToTree[55]);
+    temp_tree->Branch("nROE_Tracks__bolooseMask__bc", &temp_UpsilonDataToTree[56]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);

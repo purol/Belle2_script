@@ -63,7 +63,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define FEI_cal_B0 0.713
 # define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
 
-# define Nvar_num 72
+# define Nvar_num 90
 
 # define CAL 0.4790
 # define CAL_qq 1.0626
@@ -396,16 +396,26 @@ void THStack_plot_offres() {
     variable_names.push_back("Btag_deltaE"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_Mbc"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_useCMSFrame_theta"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_R2"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_cosTBTO"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_et"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_mm2"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso00"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso01"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso02"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso03"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso04"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso10"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso12"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso14"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso20"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso22"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso24"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hoo0"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo1"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hoo2"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo3"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hoo4"); branch_names.push_back("Btag");
     variable_names.push_back("roeEextra__bocleanMask__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("Btag_thrustOm"); branch_names.push_back("Btag");
     variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT__bc"); branch_names.push_back("Upsilon");
@@ -428,6 +438,10 @@ void THStack_plot_offres() {
     variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dr"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dz"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_M"); branch_names.push_back("Bsig");
+    variable_names.push_back("foxWolframR1"); branch_names.push_back("Upsilon");
+    variable_names.push_back("foxWolframR2"); branch_names.push_back("Upsilon");
+    variable_names.push_back("foxWolframR3"); branch_names.push_back("Upsilon");
+    variable_names.push_back("foxWolframR4"); branch_names.push_back("Upsilon");
     variable_names.push_back("cleoConeThrust0"); branch_names.push_back("Upsilon");
     variable_names.push_back("cleoConeThrust1"); branch_names.push_back("Upsilon");
     variable_names.push_back("cleoConeThrust2"); branch_names.push_back("Upsilon");
@@ -458,6 +472,10 @@ void THStack_plot_offres() {
     variable_names.push_back("Bsig_daughter_0_extraInfo_mychiProb"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_mydr"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_mydz"); branch_names.push_back("Bsig");
+    variable_names.push_back("nROE_KLMClusters"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nROE_ECLClusters__bocleanMask__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nROE_ParticlesInList__bopi0__clmyneutralPion__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nROE_ParticlesInList__bogamma__clmygamma__bc"); branch_names.push_back("Upsilon");
 
     int Nvar = static_cast<int>(variable_names.size());
     if (Nvar != Nvar_num) exit(1);
