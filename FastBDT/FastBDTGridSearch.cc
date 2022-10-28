@@ -32,11 +32,13 @@
 #include "Classifier.h"
 
 # define N_Needed_info 37
-# define N_event_info 15
+//# define N_event_info 15
 # define N_Upsilon_info 57
 # define N_Bsig_info 81
 # define N_Btag_info 9
-# define N_decay 48 // five decay mode + others + 10 variables for systematics
+# define N_decay 38 // five decay mode + others
+# define N_decay_nparticles 3 // # of nu_e, B, B0
+# define N_decay_syst_ff 7 // helicity angle + q2
 
 # define Nvar 45
 # define DvetoNvar 4

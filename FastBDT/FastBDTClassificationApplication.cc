@@ -3,7 +3,9 @@
 # define N_Upsilon_info 57
 # define N_Bsig_info 81
 # define N_Btag_info 9
-# define N_decay 48 // five decay mode + others + 10 variables for systematics
+# define N_decay 38 // five decay mode + others
+# define N_decay_nparticles 3 // # of nu_e, B, B0
+# define N_decay_syst_ff 7 // helicity angle + q2
 
 
 #include <cstdlib>
@@ -52,12 +54,18 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    //---------------------------------------------------------------
 
    // Create a set of variables
-   int temp_EventDataToTree[N_event_info / 3];
+   int temp_ExperimentToTree;
+   int temp_RunToTree;
+   unsigned int temp_EventToTree;
+   int temp_CandidateToTree;
+   int temp_NcandidatesToTree;
    double temp_UpsilonDataToTree[N_Upsilon_info];
    double temp_BsigDataToTree[N_Bsig_info];
    double temp_BtagDataToTree[N_Btag_info];
    double temp_DataToTree[N_Needed_info];
-   double temp_DecayDataToTree[N_decay];
+   int temp_DecayDataToTree[N_decay];
+   int temp_DecayNparticlesDataToTree[N_decay_nparticles];
+   double temp_DecaySystFFDataToTree[N_decay_syst_ff];
    double temp_Upsilon_decayIDToTree;
    double temp_Bsig_decayIDToTree;
    int temp_flag;
@@ -88,11 +96,11 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    std::cout << "--- Select signal sample" << std::endl;
    TTree* theTree = (TTree*)input->Get("data");
    // get event_info
-   theTree->SetBranchAddress("__experiment__", &temp_EventDataToTree[0]);
-   theTree->SetBranchAddress("__run__", &temp_EventDataToTree[1]);
-   theTree->SetBranchAddress("__event__", &temp_EventDataToTree[2]);
-   theTree->SetBranchAddress("__candidate__", &temp_EventDataToTree[3]);
-   theTree->SetBranchAddress("__ncandidates__", &temp_EventDataToTree[4]);
+   theTree->SetBranchAddress("__experiment__", &temp_ExperimentToTree);
+   theTree->SetBranchAddress("__run__", &temp_RunToTree);
+   theTree->SetBranchAddress("__event__", &temp_EventToTree);
+   theTree->SetBranchAddress("__candidate__", &temp_CandidateToTree);
+   theTree->SetBranchAddress("__ncandidates__", &temp_NcandidatesToTree);
 
    // get decaymodeID
    theTree->SetBranchAddress("extraInfo__bodecayModeID__bc", &temp_Upsilon_decayIDToTree);
@@ -334,16 +342,16 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        theTree->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
        theTree->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
        theTree->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
-       theTree->SetBranchAddress("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[38]);
-       theTree->SetBranchAddress("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayDataToTree[39]);
-       theTree->SetBranchAddress("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayDataToTree[40]);
-       theTree->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
-       theTree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
-       theTree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
-       theTree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[44]);
-       theTree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[45]);
-       theTree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[46]);
-       theTree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[47]);
+       theTree->SetBranchAddress("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
+       theTree->SetBranchAddress("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
+       theTree->SetBranchAddress("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
+       theTree->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[0]);
+       theTree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[1]);
+       theTree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[2]);
+       theTree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[3]);
+       theTree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[4]);
+       theTree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[5]);
+       theTree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
    }
 
    theTree->SetBranchAddress("flag", &temp_flag);
@@ -356,11 +364,11 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
 
    /*================================================================*/
    // get event_info
-   temp_tree->Branch("__experiment__", &temp_EventDataToTree[0]);
-   temp_tree->Branch("__run__", &temp_EventDataToTree[1]);
-   temp_tree->Branch("__event__", &temp_EventDataToTree[2]);
-   temp_tree->Branch("__candidate__", &temp_EventDataToTree[3]);
-   temp_tree->Branch("__ncandidates__", &temp_EventDataToTree[4]);
+   temp_tree->Branch("__experiment__", &temp_ExperimentToTree);
+   temp_tree->Branch("__run__", &temp_RunToTree);
+   temp_tree->Branch("__event__", &temp_EventToTree);
+   temp_tree->Branch("__candidate__", &temp_CandidateToTree);
+   temp_tree->Branch("__ncandidates__", &temp_NcandidatesToTree);
 
    // get decaymodeID
    temp_tree->Branch("extraInfo__bodecayModeID__bc", &temp_Upsilon_decayIDToTree);
@@ -598,16 +606,16 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        temp_tree->Branch("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
        temp_tree->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
        temp_tree->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
-       temp_tree->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[38]);
-       temp_tree->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayDataToTree[39]);
-       temp_tree->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayDataToTree[40]);
-       temp_tree->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
-       temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
-       temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
-       temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[44]);
-       temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[45]);
-       temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[46]);
-       temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[47]);
+       temp_tree->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
+       temp_tree->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
+       temp_tree->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
+       temp_tree->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[0]);
+       temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[1]);
+       temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[2]);
+       temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[3]);
+       temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[4]);
+       temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[5]);
+       temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
    }
 
    // flag

@@ -12,11 +12,13 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 */
 
 # define N_Needed_info 37
-# define N_event_info 15
-# define N_Upsilon_info 55
+//# define N_event_info 15
+# define N_Upsilon_info 57
 # define N_Bsig_info 81
 # define N_Btag_info 9
-# define N_decay 48 // five decay mode + others + 10 variables for systematics
+# define N_decay 38 // five decay mode + others
+# define N_decay_nparticles 3 // # of nu_e, B, B0
+# define N_decay_syst_ff 7 // helicity angle + q2
 
 // small: temp_BB_output > 0.6 && temp_Continuum_output > 0.94
 // large: temp_BB_output > 0.6 && temp_Continuum_output > 0.84
@@ -53,12 +55,18 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
 
             TTree* temp_tree = (TTree*)input_file->Get("data");
 
-            int temp_EventDataToTree[N_event_info / 3];
+            int temp_ExperimentToTree;
+            int temp_RunToTree;
+            unsigned int temp_EventToTree;
+            int temp_CandidateToTree;
+            int temp_NcandidatesToTree;
             double temp_UpsilonDataToTree[N_Upsilon_info];
             double temp_BsigDataToTree[N_Bsig_info];
             double temp_BtagDataToTree[N_Btag_info];
             double temp_DataToTree[N_Needed_info];
-            double temp_DecayDataToTree[N_decay];
+            int temp_DecayDataToTree[N_decay];
+            int temp_DecayNparticlesDataToTree[N_decay_nparticles];
+            double temp_DecaySystFFDataToTree[N_decay_syst_ff];
             double temp_Upsilon_decayIDToTree;
             double temp_Bsig_decayIDToTree;
             int temp_flag;
@@ -81,11 +89,11 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             // Get data
             /*================================================================*/
             // get event_info
-            temp_tree->SetBranchAddress("__experiment__", &temp_EventDataToTree[0]);
-            temp_tree->SetBranchAddress("__run__", &temp_EventDataToTree[1]);
-            temp_tree->SetBranchAddress("__event__", &temp_EventDataToTree[2]);
-            temp_tree->SetBranchAddress("__candidate__", &temp_EventDataToTree[3]);
-            temp_tree->SetBranchAddress("__ncandidates__", &temp_EventDataToTree[4]);
+            temp_tree->SetBranchAddress("__experiment__", &temp_ExperimentToTree);
+            temp_tree->SetBranchAddress("__run__", &temp_RunToTree);
+            temp_tree->SetBranchAddress("__event__", &temp_EventToTree);
+            temp_tree->SetBranchAddress("__candidate__", &temp_CandidateToTree);
+            temp_tree->SetBranchAddress("__ncandidates__", &temp_NcandidatesToTree);
 
             // get decaymodeID
             temp_tree->SetBranchAddress("extraInfo__bodecayModeID__bc", &temp_Upsilon_decayIDToTree);
@@ -147,6 +155,8 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &temp_UpsilonDataToTree[52]);
             temp_tree->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &temp_UpsilonDataToTree[53]);
             temp_tree->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp_UpsilonDataToTree[54]);
+            temp_tree->SetBranchAddress("beamE", &temp_UpsilonDataToTree[55]);
+            temp_tree->SetBranchAddress("nROE_Tracks__bolooseMask__bc", &temp_UpsilonDataToTree[56]);
 
             // get Bsig_info
             temp_tree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -321,16 +331,16 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                 temp_tree->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
                 temp_tree->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
                 temp_tree->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
-                temp_tree->SetBranchAddress("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[38]);
-                temp_tree->SetBranchAddress("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayDataToTree[39]);
-                temp_tree->SetBranchAddress("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayDataToTree[40]);
-                temp_tree->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
-                temp_tree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
-                temp_tree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
-                temp_tree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[44]);
-                temp_tree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[45]);
-                temp_tree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[46]);
-                temp_tree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[47]);
+                temp_tree->SetBranchAddress("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
+                temp_tree->SetBranchAddress("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
+                temp_tree->SetBranchAddress("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
+                temp_tree->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[0]);
+                temp_tree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[1]);
+                temp_tree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[2]);
+                temp_tree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[3]);
+                temp_tree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[4]);
+                temp_tree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[5]);
+                temp_tree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
             }
 
             // flag
@@ -366,21 +376,21 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             // print root file
                 /*================================================================*/
             // get event_info
-            temp_tree_upsilon->Branch("__experiment__", &temp_EventDataToTree[0]);
-            temp_tree_upsilon->Branch("__run__", &temp_EventDataToTree[1]);
-            temp_tree_upsilon->Branch("__event__", &temp_EventDataToTree[2]);
-            temp_tree_upsilon->Branch("__candidate__", &temp_EventDataToTree[3]);
-            temp_tree_upsilon->Branch("__ncandidates__", &temp_EventDataToTree[4]);
-            temp_tree_Bsig->Branch("__experiment__", &temp_EventDataToTree[0]);
-            temp_tree_Bsig->Branch("__run__", &temp_EventDataToTree[1]);
-            temp_tree_Bsig->Branch("__event__", &temp_EventDataToTree[2]);
-            temp_tree_Bsig->Branch("__candidate__", &temp_EventDataToTree[3]);
-            temp_tree_Bsig->Branch("__ncandidates__", &temp_EventDataToTree[4]);
-            temp_tree_Btag->Branch("__experiment__", &temp_EventDataToTree[0]);
-            temp_tree_Btag->Branch("__run__", &temp_EventDataToTree[1]);
-            temp_tree_Btag->Branch("__event__", &temp_EventDataToTree[2]);
-            temp_tree_Btag->Branch("__candidate__", &temp_EventDataToTree[3]);
-            temp_tree_Btag->Branch("__ncandidates__", &temp_EventDataToTree[4]);
+            temp_tree_upsilon->Branch("__experiment__", &temp_ExperimentToTree);
+            temp_tree_upsilon->Branch("__run__", &temp_RunToTree);
+            temp_tree_upsilon->Branch("__event__", &temp_EventToTree);
+            temp_tree_upsilon->Branch("__candidate__", &temp_CandidateToTree);
+            temp_tree_upsilon->Branch("__ncandidates__", &temp_NcandidatesToTree);
+            temp_tree_Bsig->Branch("__experiment__", &temp_ExperimentToTree);
+            temp_tree_Bsig->Branch("__run__", &temp_RunToTree);
+            temp_tree_Bsig->Branch("__event__", &temp_EventToTree);
+            temp_tree_Bsig->Branch("__candidate__", &temp_CandidateToTree);
+            temp_tree_Bsig->Branch("__ncandidates__", &temp_NcandidatesToTree);
+            temp_tree_Btag->Branch("__experiment__", &temp_ExperimentToTree);
+            temp_tree_Btag->Branch("__run__", &temp_RunToTree);
+            temp_tree_Btag->Branch("__event__", &temp_EventToTree);
+            temp_tree_Btag->Branch("__candidate__", &temp_CandidateToTree);
+            temp_tree_Btag->Branch("__ncandidates__", &temp_NcandidatesToTree);
 
             // get decaymodeID
             temp_tree_upsilon->Branch("extraInfo__bodecayModeID__bc", &temp_Upsilon_decayIDToTree);
@@ -442,6 +452,8 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &temp_UpsilonDataToTree[52]);
             temp_tree_upsilon->Branch("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &temp_UpsilonDataToTree[53]);
             temp_tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp_UpsilonDataToTree[54]);
+            temp_tree_upsilon->Branch("beamE", &temp_UpsilonDataToTree[55]);
+            temp_tree_upsilon->Branch("nROE_Tracks__bolooseMask__bc", &temp_UpsilonDataToTree[56]);
 
             // get Bsig_info
             temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -616,16 +628,16 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                 temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
                 temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
                 temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
-                temp_tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[38]);
-                temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayDataToTree[39]);
-                temp_tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayDataToTree[40]);
-                temp_tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
-                temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
-                temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
-                temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[44]);
-                temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[45]);
-                temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[46]);
-                temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[47]);
+                temp_tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
+                temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
+                temp_tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
+                temp_tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[0]);
+                temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[1]);
+                temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[2]);
+                temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[3]);
+                temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[4]);
+                temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[5]);
+                temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
             }
 
             temp_tree_upsilon->Branch("MVA_BB", &temp_BB_output);

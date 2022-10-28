@@ -6,17 +6,20 @@ when you add new variables:
 revise # define N_Needed_info ...
 revise typedef struct data
 revise void Loader::GetData(TFile* input_file)
+check MakeShiftDoubleToInt if it affects the code
 revise void Loader::PrintRootFile(std::string output_name)
 revise void Loader::PrintSeparateRootFile(std::string output_name)
 revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double flag = 0)
 */
 
 # define N_Needed_info 37
-# define N_event_info 15
+//# define N_event_info 15
 # define N_Upsilon_info 57
 # define N_Bsig_info 81
 # define N_Btag_info 9
-# define N_decay 48 // five decay mode + others + 10 variables for systematics
+# define N_decay 38 // five decay mode + others
+# define N_decay_nparticles 3 // # of nu_e, B, B0
+# define N_decay_syst_ff 7 // helicity angle + q2
 
 # define Nstep 20
 # define start 0.8
@@ -79,17 +82,28 @@ void load_files(const char *dirname, std::vector<std::string>* names){
 typedef struct data{
     int __experiment__;
     int __run__;
-    int __event__;
+    unsigned int __event__;
     int __candidate__;
     int __ncandidates__;
 
     double Upsilon_decayID;
     double Bsig_decayID;
 
-    int event_info[N_event_info];
-    // 0: upsilon_experiment, 1: upsilon_run, 2: upsilon_event, 3: upsilon_candidate, 4: upsilon_ncandidates
-    // 5: Bsig_experiment, 6: Bsig_run, 7: Bsig_event, 8: Bsig_candidate, 9: Bsig_ncandidates
-    // 10: Btag_experiment, 11: Btag_run, 12: Btag_event, 13: Btag_candidate, 14: Btag_ncandidates
+    int upsilon_experiment;
+    int upsilon_run;
+    unsigned int upsilon_event;
+    int upsilon_candidate;
+    int upsilon_ncandidates;
+    int Bsig_experiment;
+    int Bsig_run;
+    unsigned int Bsig_event;
+    int Bsig_candidate;
+    int Bsig_ncandidates;
+    int Btag_experiment;
+    int Btag_run;
+    unsigned int Btag_event;
+    int Btag_candidate;
+    int Btag_ncandidates;
 
     double Upsilon_info[N_Upsilon_info];
     // 0: number of ECL clusters in ROE(cleanMask), 1: number of KLM clusters in ROE
@@ -162,7 +176,9 @@ typedef struct data{
     // 32: missing mass^2, 33: visible energy, 34: theta_CMS_of_tag
     // 35: decayhash, 36: decayhash_extended
 
-    double Decay[N_decay]; // MC level info
+    int Decay[N_decay]; // MC level info
+    int Decay_nparticles[N_decay_nparticles]; // MC level info for # particle
+    double Decay_syst_ff[N_decay_syst_ff]; // MC level info for helicity angle + q2
 
     float MVA_BB;
     float MVA_Continuum;
@@ -313,7 +329,7 @@ private:
 
     std::vector<int> experiment_indices;
     std::vector<int> run_indices;
-    std::vector<int> event_indices;
+    std::vector<unsigned int> event_indices;
     std::vector<int> candidate_indices;
     std::vector<int> ncandidates_indices;
     int current_N_experiment_index;
@@ -347,11 +363,27 @@ private:
     double MCcount[Loader::MAX_NUM_DECAYMODE_MC];
     bool MCcountOn;
 
-    int EventDataToTree[N_event_info];
+    int UpsilonExperimentToTree;
+    int UpsilonRunToTree;
+    unsigned int UpsilonEventToTree;
+    int UpsilonCandidateToTree;
+    int UpsilonNcandidatesToTree;
+    int BsigExperimentToTree;
+    int BsigRunToTree;
+    unsigned int BsigEventToTree;
+    int BsigCandidateToTree;
+    int BsigNcandidatesToTree;
+    int BtagExperimentToTree;
+    int BtagRunToTree;
+    unsigned int BtagEventToTree;
+    int BtagCandidateToTree;
+    int BtagNcandidatesToTree;
     double UpsilonDataToTree[N_Upsilon_info];
     double BsigDataToTree[N_Bsig_info];
     double BtagDataToTree[N_Btag_info];
-    double DecayDataToTree[N_decay];
+    int DecayDataToTree[N_decay];
+    int DecayNparticlesDataToTree[N_decay_nparticles];
+    double DecaySystFFDataToTree[N_decay_syst_ff];
     double DataToTree[N_Needed_info];
     double Upsilon_decayIDToTree;
     double Bsig_decayIDToTree;
@@ -493,22 +525,24 @@ void Loader::GetData(TFile* input_file) {
 
     Data temp = { 0 };
 
+    int MakeShiftDoubleToInt[7] = { 0 }; // intermediate variable to convert from int to double
+
     // get event_info
-    tree_upsilon->SetBranchAddress("__experiment__", &temp.event_info[0]);
-    tree_upsilon->SetBranchAddress("__run__", &temp.event_info[1]);
-    tree_upsilon->SetBranchAddress("__event__", &temp.event_info[2]);
-    tree_upsilon->SetBranchAddress("__candidate__", &temp.event_info[3]);
-    tree_upsilon->SetBranchAddress("__ncandidates__", &temp.event_info[4]);
-    tree_Bsig->SetBranchAddress("__experiment__", &temp.event_info[5]);
-    tree_Bsig->SetBranchAddress("__run__", &temp.event_info[6]);
-    tree_Bsig->SetBranchAddress("__event__", &temp.event_info[7]);
-    tree_Bsig->SetBranchAddress("__candidate__", &temp.event_info[8]);
-    tree_Bsig->SetBranchAddress("__ncandidates__", &temp.event_info[9]);
-    tree_Btag->SetBranchAddress("__experiment__", &temp.event_info[10]);
-    tree_Btag->SetBranchAddress("__run__", &temp.event_info[11]);
-    tree_Btag->SetBranchAddress("__event__", &temp.event_info[12]);
-    tree_Btag->SetBranchAddress("__candidate__", &temp.event_info[13]);
-    tree_Btag->SetBranchAddress("__ncandidates__", &temp.event_info[14]);
+    tree_upsilon->SetBranchAddress("__experiment__", &temp.upsilon_experiment);
+    tree_upsilon->SetBranchAddress("__run__", &temp.upsilon_run);
+    tree_upsilon->SetBranchAddress("__event__", &temp.upsilon_event);
+    tree_upsilon->SetBranchAddress("__candidate__", &temp.upsilon_candidate);
+    tree_upsilon->SetBranchAddress("__ncandidates__", &temp.upsilon_ncandidates);
+    tree_Bsig->SetBranchAddress("__experiment__", &temp.Bsig_experiment);
+    tree_Bsig->SetBranchAddress("__run__", &temp.Bsig_run);
+    tree_Bsig->SetBranchAddress("__event__", &temp.Bsig_event);
+    tree_Bsig->SetBranchAddress("__candidate__", &temp.Bsig_candidate);
+    tree_Bsig->SetBranchAddress("__ncandidates__", &temp.Bsig_ncandidates);
+    tree_Btag->SetBranchAddress("__experiment__", &temp.Btag_experiment);
+    tree_Btag->SetBranchAddress("__run__", &temp.Btag_run);
+    tree_Btag->SetBranchAddress("__event__", &temp.Btag_event);
+    tree_Btag->SetBranchAddress("__candidate__", &temp.Btag_candidate);
+    tree_Btag->SetBranchAddress("__ncandidates__", &temp.Btag_ncandidates);
 
     // get decaymodeID
     tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &temp.Upsilon_decayID);
@@ -525,7 +559,7 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("missingMomentumOfEvent_theta", &temp.Upsilon_info[7]);
     tree_upsilon->SetBranchAddress("missingMomentumOfEvent", &temp.Upsilon_info[8]);
     tree_upsilon->SetBranchAddress("missingEnergyOfEventCMS", &temp.Upsilon_info[9]);
-    tree_upsilon->SetBranchAddress("nRemainingTracksInEvent", &temp.Upsilon_info[10]);
+    tree_upsilon->SetBranchAddress("nRemainingTracksInEvent", &MakeShiftDoubleToInt[0]); // temp.Upsilon_info[10]
     tree_upsilon->SetBranchAddress("roeNeextra__bocleanMask__bc", &temp.Upsilon_info[11]);
     tree_upsilon->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp.Upsilon_info[12]);
     tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp.Upsilon_info[13]);
@@ -564,12 +598,12 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("chiProb", &temp.Upsilon_info[46]);
     tree_upsilon->SetBranchAddress("dr", &temp.Upsilon_info[47]);
     tree_upsilon->SetBranchAddress("dz", &temp.Upsilon_info[48]);
-    tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT__bc", &temp.Upsilon_info[49]);
-    tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT__bc", &temp.Upsilon_info[50]);
-    tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_loose__bc", &temp.Upsilon_info[51]);
-    tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &temp.Upsilon_info[52]);
-    tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &temp.Upsilon_info[53]);
-    tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp.Upsilon_info[54]);
+    tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT__bc", &MakeShiftDoubleToInt[1]); // temp.Upsilon_info[49]
+    tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT__bc", &MakeShiftDoubleToInt[2]); // temp.Upsilon_info[50]
+    tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_loose__bc", &MakeShiftDoubleToInt[3]); // temp.Upsilon_info[51]
+    tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &MakeShiftDoubleToInt[4]); // temp.Upsilon_info[52]
+    tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &MakeShiftDoubleToInt[5]); // temp.Upsilon_info[53]
+    tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &MakeShiftDoubleToInt[6]); // temp.Upsilon_info[54]
     tree_upsilon->SetBranchAddress("beamE", &temp.Upsilon_info[55]);
     tree_upsilon->SetBranchAddress("nROE_Tracks__bolooseMask__bc", &temp.Upsilon_info[56]);
 
@@ -746,19 +780,21 @@ void Loader::GetData(TFile* input_file) {
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &temp.Decay[35]);
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &temp.Decay[36]);
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &temp.Decay[37]);
-        tree_Xs->SetBranchAddress("nParticlesInList__bonu_e__clMC_signal__bc", &temp.Decay[38]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp.Decay[39]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp.Decay[40]);
-        tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp.Decay[41]);
-        tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp.Decay[42]);
-        tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp.Decay[43]);
-        tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp.Decay[44]);
-        tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp.Decay[45]);
-        tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp.Decay[46]);
-        tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp.Decay[47]);
+        tree_Xs->SetBranchAddress("nParticlesInList__bonu_e__clMC_signal__bc", &temp.Decay_nparticles[0]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp.Decay_nparticles[1]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp.Decay_nparticles[2]);
+        tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp.Decay_syst_ff[0]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp.Decay_syst_ff[1]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp.Decay_syst_ff[2]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp.Decay_syst_ff[3]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp.Decay_syst_ff[4]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp.Decay_syst_ff[5]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp.Decay_syst_ff[6]);
     }
     else {
         for (int i = 0; i < N_decay; i++) temp.Decay[i] = -1;
+        for (int i = 0; i < N_decay_nparticles; i++) temp.Decay_nparticles[i] = -1;
+        for (int i = 0; i < N_decay_syst_ff; i++) temp.Decay_syst_ff[i] = -1;
     }
 
     if (DoesItHaveMVAOutput) {
@@ -789,6 +825,16 @@ void Loader::GetData(TFile* input_file) {
         tree_Bsig->GetEntry(j);
         tree_Btag->GetEntry(j);
         if (DoesItHaveXsBranch) tree_Xs->GetEntry(j);
+
+        // Just Makeshift!
+        temp.Upsilon_info[10] = static_cast<double>(MakeShiftDoubleToInt[0]);
+        temp.Upsilon_info[49] = static_cast<double>(MakeShiftDoubleToInt[1]);
+        temp.Upsilon_info[50] = static_cast<double>(MakeShiftDoubleToInt[2]);
+        temp.Upsilon_info[51] = static_cast<double>(MakeShiftDoubleToInt[3]);
+        temp.Upsilon_info[52] = static_cast<double>(MakeShiftDoubleToInt[4]);
+        temp.Upsilon_info[53] = static_cast<double>(MakeShiftDoubleToInt[5]);
+        temp.Upsilon_info[54] = static_cast<double>(MakeShiftDoubleToInt[6]);
+
         TotalData.push(temp);
     }
     input_file->Close();
@@ -799,16 +845,16 @@ bool Loader::event_info_is_valid() {
     while (!TotalData.empty()) {
         Data temp_data = TotalData.front();
         TotalData.pop();
-        if (temp_data.event_info[0] != temp_data.event_info[5] || temp_data.event_info[0] != temp_data.event_info[10] || temp_data.event_info[5] != temp_data.event_info[10]) return false;
-        if (temp_data.event_info[1] != temp_data.event_info[6] || temp_data.event_info[1] != temp_data.event_info[11] || temp_data.event_info[6] != temp_data.event_info[11]) return false;
-        if (temp_data.event_info[2] != temp_data.event_info[7] || temp_data.event_info[2] != temp_data.event_info[12] || temp_data.event_info[7] != temp_data.event_info[12]) return false;
-        if (temp_data.event_info[3] != temp_data.event_info[8] || temp_data.event_info[3] != temp_data.event_info[13] || temp_data.event_info[8] != temp_data.event_info[13]) return false;
-        if (temp_data.event_info[4] != temp_data.event_info[9] || temp_data.event_info[4] != temp_data.event_info[14] || temp_data.event_info[9] != temp_data.event_info[14]) return false;
-        temp_data.__experiment__ = temp_data.event_info[0];
-        temp_data.__run__ = temp_data.event_info[1];
-        temp_data.__event__ = temp_data.event_info[2];
-        temp_data.__candidate__ = temp_data.event_info[3];
-        temp_data.__ncandidates__ = temp_data.event_info[4];
+        if (temp_data.upsilon_experiment != temp_data.Bsig_experiment || temp_data.upsilon_experiment != temp_data.Btag_experiment || temp_data.Bsig_experiment != temp_data.Btag_experiment) return false;
+        if (temp_data.upsilon_run != temp_data.Bsig_run || temp_data.upsilon_run != temp_data.Btag_run || temp_data.Bsig_run != temp_data.Btag_run) return false;
+        if (temp_data.upsilon_event != temp_data.Bsig_event || temp_data.upsilon_event != temp_data.Btag_event || temp_data.Bsig_event != temp_data.Btag_event) return false;
+        if (temp_data.upsilon_candidate != temp_data.Bsig_candidate || temp_data.upsilon_candidate != temp_data.Btag_candidate || temp_data.Bsig_candidate != temp_data.Btag_candidate) return false;
+        if (temp_data.upsilon_ncandidates != temp_data.Bsig_ncandidates || temp_data.upsilon_ncandidates != temp_data.Btag_ncandidates || temp_data.Bsig_ncandidates != temp_data.Btag_ncandidates) return false;
+        temp_data.__experiment__ = temp_data.upsilon_experiment;
+        temp_data.__run__ = temp_data.upsilon_run;
+        temp_data.__event__ = temp_data.upsilon_event;
+        temp_data.__candidate__ = temp_data.upsilon_candidate;
+        temp_data.__ncandidates__ = temp_data.upsilon_ncandidates;
         temp_queue.push(temp_data);
     }
     TotalData.swap(temp_queue);
@@ -1139,7 +1185,7 @@ void Loader::PrintInformation(std::string title, std::string filename, bool smar
     typedef struct labels {
         int __experiment__;
         int __run__;
-        int __event__;
+        unsigned int __event__;
         int __ncandidates__;
         bool IsThisModeExist[Loader::MAX_NUM_DECAYMODE];
     } Labels;
@@ -1505,7 +1551,7 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
         Data initial_data = TotalData.front();
         int experiment_ = initial_data.__experiment__;
         int run_ = initial_data.__run__;
-        int event_ = initial_data.__event__;
+        unsigned int event_ = initial_data.__event__;
         int ncandidates_ = initial_data.__ncandidates__;
         while (true) { // I suppose that the order of data exists
             if (TotalData.empty()) break;
@@ -1598,7 +1644,7 @@ bool Loader::IsBCSValid() {
     typedef struct labels {
         int __experiment__;
         int __run__;
-        int __event__;
+        unsigned int __event__;
         int __ncandidates__;
     } Labels;
 
@@ -1807,7 +1853,7 @@ void Loader::End() {
         for (int i = 0; i < experiment_indices.size(); i++) {
             printf("experiment num: %d\n", experiment_indices.at(i));
             printf("run num: %d\n", run_indices.at(i));
-            printf("event num: %d\n", event_indices.at(i));
+            printf("event num: %u\n", event_indices.at(i));
             printf("candidate num: %d\n", candidate_indices.at(i));
             printf("number of candidate: %d\n", ncandidates_indices.at(i));
             printf("---------------------\n");
@@ -1836,21 +1882,21 @@ void Loader::PrintRootFile(std::string output_name) {
 
         /*================================================================*/
         // get event_info
-        tree_upsilon->Branch("__experiment__", &EventDataToTree[0]);
-        tree_upsilon->Branch("__run__", &EventDataToTree[1]);
-        tree_upsilon->Branch("__event__", &EventDataToTree[2]);
-        tree_upsilon->Branch("__candidate__", &EventDataToTree[3]);
-        tree_upsilon->Branch("__ncandidates__", &EventDataToTree[4]);
-        tree_Bsig->Branch("__experiment__", &EventDataToTree[5]);
-        tree_Bsig->Branch("__run__", &EventDataToTree[6]);
-        tree_Bsig->Branch("__event__", &EventDataToTree[7]);
-        tree_Bsig->Branch("__candidate__", &EventDataToTree[8]);
-        tree_Bsig->Branch("__ncandidates__", &EventDataToTree[9]);
-        tree_Btag->Branch("__experiment__", &EventDataToTree[10]);
-        tree_Btag->Branch("__run__", &EventDataToTree[11]);
-        tree_Btag->Branch("__event__", &EventDataToTree[12]);
-        tree_Btag->Branch("__candidate__", &EventDataToTree[13]);
-        tree_Btag->Branch("__ncandidates__", &EventDataToTree[14]);
+        tree_upsilon->Branch("__experiment__", &UpsilonExperimentToTree);
+        tree_upsilon->Branch("__run__", &UpsilonRunToTree);
+        tree_upsilon->Branch("__event__", &UpsilonEventToTree);
+        tree_upsilon->Branch("__candidate__", &UpsilonCandidateToTree);
+        tree_upsilon->Branch("__ncandidates__", &UpsilonNcandidatesToTree);
+        tree_Bsig->Branch("__experiment__", &BsigExperimentToTree);
+        tree_Bsig->Branch("__run__", &BsigRunToTree);
+        tree_Bsig->Branch("__event__", &BsigEventToTree);
+        tree_Bsig->Branch("__candidate__", &BsigCandidateToTree);
+        tree_Bsig->Branch("__ncandidates__", &BsigNcandidatesToTree);
+        tree_Btag->Branch("__experiment__", &BtagExperimentToTree);
+        tree_Btag->Branch("__run__", &BtagRunToTree);
+        tree_Btag->Branch("__event__", &BtagEventToTree);
+        tree_Btag->Branch("__candidate__", &BtagCandidateToTree);
+        tree_Btag->Branch("__ncandidates__", &BtagNcandidatesToTree);
 
         // get decaymodeID
         tree_upsilon->Branch("extraInfo__bodecayModeID__bc", &Upsilon_decayIDToTree);
@@ -2087,16 +2133,16 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch28__bc", &DecayDataToTree[35]);
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &DecayDataToTree[36]);
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &DecayDataToTree[37]);
-        tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &DecayDataToTree[38]);
-        tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &DecayDataToTree[39]);
-        tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &DecayDataToTree[40]);
-        tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &DecayDataToTree[41]);
-        tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &DecayDataToTree[42]);
-        tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &DecayDataToTree[43]);
-        tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &DecayDataToTree[44]);
-        tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &DecayDataToTree[45]);
-        tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &DecayDataToTree[46]);
-        tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &DecayDataToTree[47]);
+        tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &DecayNparticlesDataToTree[0]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &DecayNparticlesDataToTree[1]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &DecayNparticlesDataToTree[2]);
+        tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &DecaySystFFDataToTree[0]);
+        tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &DecaySystFFDataToTree[1]);
+        tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &DecaySystFFDataToTree[2]);
+        tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &DecaySystFFDataToTree[3]);
+        tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &DecaySystFFDataToTree[4]);
+        tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &DecaySystFFDataToTree[5]);
+        tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &DecaySystFFDataToTree[6]);
 
         tree_upsilon->Branch("MVA_BB", &MVA_BB_DataToTree);
         tree_upsilon->Branch("MVA_Continuum", &MVA_Continuum_DataToTree);
@@ -2131,8 +2177,22 @@ void Loader::PrintRootFile(std::string output_name) {
         Data temp = temp_queue.front();
         temp_queue.pop();
 
-        for (int i = 0; i < N_event_info; i++) {
-            EventDataToTree[i] = temp.event_info[i];
+        {
+            UpsilonExperimentToTree = temp.upsilon_experiment;
+            UpsilonRunToTree = temp.upsilon_run;
+            UpsilonEventToTree = temp.upsilon_event;
+            UpsilonCandidateToTree = temp.upsilon_candidate;
+            UpsilonNcandidatesToTree = temp.upsilon_ncandidates;
+            BsigExperimentToTree = temp.Bsig_experiment;
+            BsigRunToTree = temp.Bsig_run;
+            BsigEventToTree = temp.Bsig_event;
+            BsigCandidateToTree = temp.Bsig_candidate;
+            BsigNcandidatesToTree = temp.Bsig_ncandidates;
+            BtagExperimentToTree = temp.Btag_experiment;
+            BtagRunToTree = temp.Btag_run;
+            BtagEventToTree = temp.Btag_event;
+            BtagCandidateToTree = temp.Btag_candidate;
+            BtagNcandidatesToTree = temp.Btag_ncandidates;
         }
         for (int i = 0; i < N_Upsilon_info; i++) {
             UpsilonDataToTree[i] = temp.Upsilon_info[i];
@@ -2145,6 +2205,12 @@ void Loader::PrintRootFile(std::string output_name) {
         }
         for (int i = 0; i < N_decay; i++) {
             DecayDataToTree[i] = temp.Decay[i];
+        }
+        for (int i = 0; i < N_decay_nparticles; i++) {
+            DecayNparticlesDataToTree[i] = temp.Decay_nparticles[i];
+        }
+        for (int i = 0; i < N_decay_syst_ff; i++) {
+            DecaySystFFDataToTree[i] = temp.Decay_syst_ff[i];
         }
         for (int i = 0; i < N_Needed_info; i++) {
             DataToTree[i] = temp.Needed_info[i];
@@ -2183,11 +2249,27 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     if (DoesItHaveXsBranch) temp_tree_Xs = new TTree("Xs", "");
     else temp_tree_Xs = nullptr;
 
-    int temp_EventDataToTree[N_event_info];
+    int temp_UpsilonExperimentToTree;
+    int temp_UpsilonRunToTree;
+    unsigned int temp_UpsilonEventToTree;
+    int temp_UpsilonCandidateToTree;
+    int temp_UpsilonNcandidatesToTree;
+    int temp_BsigExperimentToTree;
+    int temp_BsigRunToTree;
+    unsigned int temp_BsigEventToTree;
+    int temp_BsigCandidateToTree;
+    int temp_BsigNcandidatesToTree;
+    int temp_BtagExperimentToTree;
+    int temp_BtagRunToTree;
+    unsigned int temp_BtagEventToTree;
+    int temp_BtagCandidateToTree;
+    int temp_BtagNcandidatesToTree;
     double temp_UpsilonDataToTree[N_Upsilon_info];
     double temp_BsigDataToTree[N_Bsig_info];
     double temp_BtagDataToTree[N_Btag_info];
-    double temp_DecayDataToTree[N_decay];
+    int temp_DecayDataToTree[N_decay];
+    int temp_DecayNparticlesDataToTree[N_decay_nparticles];
+    double temp_DecaySystFFDataToTree[N_decay_syst_ff];
     double temp_DataToTree[N_Needed_info];
     double temp_Upsilon_decayIDToTree;
     double temp_Bsig_decayIDToTree;
@@ -2202,21 +2284,21 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
 
     /*================================================================*/
     // get event_info
-    temp_tree_upsilon->Branch("__experiment__", &temp_EventDataToTree[0]);
-    temp_tree_upsilon->Branch("__run__", &temp_EventDataToTree[1]);
-    temp_tree_upsilon->Branch("__event__", &temp_EventDataToTree[2]);
-    temp_tree_upsilon->Branch("__candidate__", &temp_EventDataToTree[3]);
-    temp_tree_upsilon->Branch("__ncandidates__", &temp_EventDataToTree[4]);
-    temp_tree_Bsig->Branch("__experiment__", &temp_EventDataToTree[5]);
-    temp_tree_Bsig->Branch("__run__", &temp_EventDataToTree[6]);
-    temp_tree_Bsig->Branch("__event__", &temp_EventDataToTree[7]);
-    temp_tree_Bsig->Branch("__candidate__", &temp_EventDataToTree[8]);
-    temp_tree_Bsig->Branch("__ncandidates__", &temp_EventDataToTree[9]);
-    temp_tree_Btag->Branch("__experiment__", &temp_EventDataToTree[10]);
-    temp_tree_Btag->Branch("__run__", &temp_EventDataToTree[11]);
-    temp_tree_Btag->Branch("__event__", &temp_EventDataToTree[12]);
-    temp_tree_Btag->Branch("__candidate__", &temp_EventDataToTree[13]);
-    temp_tree_Btag->Branch("__ncandidates__", &temp_EventDataToTree[14]);
+    temp_tree_upsilon->Branch("__experiment__", &temp_UpsilonExperimentToTree);
+    temp_tree_upsilon->Branch("__run__", &temp_UpsilonRunToTree);
+    temp_tree_upsilon->Branch("__event__", &temp_UpsilonEventToTree);
+    temp_tree_upsilon->Branch("__candidate__", &temp_UpsilonCandidateToTree);
+    temp_tree_upsilon->Branch("__ncandidates__", &temp_UpsilonNcandidatesToTree);
+    temp_tree_Bsig->Branch("__experiment__", &temp_BsigExperimentToTree);
+    temp_tree_Bsig->Branch("__run__", &temp_BsigRunToTree);
+    temp_tree_Bsig->Branch("__event__", &temp_BsigEventToTree);
+    temp_tree_Bsig->Branch("__candidate__", &temp_BsigCandidateToTree);
+    temp_tree_Bsig->Branch("__ncandidates__", &temp_BsigNcandidatesToTree);
+    temp_tree_Btag->Branch("__experiment__", &temp_BtagExperimentToTree);
+    temp_tree_Btag->Branch("__run__", &temp_BtagRunToTree);
+    temp_tree_Btag->Branch("__event__", &temp_BtagEventToTree);
+    temp_tree_Btag->Branch("__candidate__", &temp_BtagCandidateToTree);
+    temp_tree_Btag->Branch("__ncandidates__", &temp_BtagNcandidatesToTree);
 
     // get decaymodeID
     temp_tree_upsilon->Branch("extraInfo__bodecayModeID__bc", &temp_Upsilon_decayIDToTree);
@@ -2454,19 +2536,21 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
         temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
         temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
-        temp_tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[38]);
-        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayDataToTree[39]);
-        temp_tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayDataToTree[40]);
-        temp_tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
-        temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
-        temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
-        temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[44]);
-        temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[45]);
-        temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[46]);
-        temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[47]);
+        temp_tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
+        temp_tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[0]);
+        temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[1]);
+        temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[2]);
+        temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[3]);
+        temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[4]);
+        temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[5]);
+        temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
     }
     else {
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
+        for (int i = 0; i < N_decay_nparticles; i++)  temp_DecayNparticlesDataToTree[i] = -1;
+        for (int i = 0; i < N_decay_syst_ff; i++)  temp_DecaySystFFDataToTree[i] = -1;
     }
 
     if (DoesItHaveMVAOutput) {
@@ -2498,8 +2582,22 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         Data temp = temp_queue.front();
         temp_queue.pop();
 
-        for (int i = 0; i < N_event_info; i++) {
-            temp_EventDataToTree[i] = temp.event_info[i];
+        {
+            temp_UpsilonExperimentToTree = temp.upsilon_experiment;
+            temp_UpsilonRunToTree = temp.upsilon_run;
+            temp_UpsilonEventToTree = temp.upsilon_event;
+            temp_UpsilonCandidateToTree = temp.upsilon_candidate;
+            temp_UpsilonNcandidatesToTree = temp.upsilon_ncandidates;
+            temp_BsigExperimentToTree = temp.Bsig_experiment;
+            temp_BsigRunToTree = temp.Bsig_run;
+            temp_BsigEventToTree = temp.Bsig_event;
+            temp_BsigCandidateToTree = temp.Bsig_candidate;
+            temp_BsigNcandidatesToTree = temp.Bsig_ncandidates;
+            temp_BtagExperimentToTree = temp.Btag_experiment;
+            temp_BtagRunToTree = temp.Btag_run;
+            temp_BtagEventToTree = temp.Btag_event;
+            temp_BtagCandidateToTree = temp.Btag_candidate;
+            temp_BtagNcandidatesToTree = temp.Btag_ncandidates;
         }
         for (int i = 0; i < N_Upsilon_info; i++) {
             temp_UpsilonDataToTree[i] = temp.Upsilon_info[i];
@@ -2512,6 +2610,12 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         }
         for (int i = 0; i < N_decay; i++) {
             if (DoesItHaveXsBranch) temp_DecayDataToTree[i] = temp.Decay[i];
+        }
+        for (int i = 0; i < N_decay_nparticles; i++) {
+            if (DoesItHaveXsBranch) temp_DecayNparticlesDataToTree[i] = temp.Decay_nparticles[i];
+        }
+        for (int i = 0; i < N_decay_syst_ff; i++) {
+            if (DoesItHaveXsBranch) temp_DecaySystFFDataToTree[i] = temp.Decay_syst_ff[i];
         }
         for (int i = 0; i < N_Needed_info; i++) {
             temp_DataToTree[i] = temp.Needed_info[i];
@@ -2552,12 +2656,18 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_file->cd();
     TTree* temp_tree = new TTree("data", "");
 
-    int temp_EventDataToTree[N_event_info / 3];
+    int temp_ExperimentToTree;
+    int temp_RunToTree;
+    unsigned int temp_EventToTree;
+    int temp_CandidateToTree;
+    int temp_NcandidatesToTree;
     double temp_UpsilonDataToTree[N_Upsilon_info];
     double temp_BsigDataToTree[N_Bsig_info];
     double temp_BtagDataToTree[N_Btag_info];
     double temp_DataToTree[N_Needed_info];
-    double temp_DecayDataToTree[N_decay];
+    int temp_DecayDataToTree[N_decay];
+    int temp_DecayNparticlesDataToTree[N_decay_nparticles];
+    double temp_DecaySystFFDataToTree[N_decay_syst_ff];
     double temp_Upsilon_decayIDToTree;
     double temp_Bsig_decayIDToTree;
     int temp_flag;
@@ -2572,11 +2682,11 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
 
     /*================================================================*/
     // get event_info
-    temp_tree->Branch("__experiment__", &temp_EventDataToTree[0]);
-    temp_tree->Branch("__run__", &temp_EventDataToTree[1]);
-    temp_tree->Branch("__event__", &temp_EventDataToTree[2]);
-    temp_tree->Branch("__candidate__", &temp_EventDataToTree[3]);
-    temp_tree->Branch("__ncandidates__", &temp_EventDataToTree[4]);
+    temp_tree->Branch("__experiment__", &temp_ExperimentToTree);
+    temp_tree->Branch("__run__", &temp_RunToTree);
+    temp_tree->Branch("__event__", &temp_EventToTree);
+    temp_tree->Branch("__candidate__", &temp_CandidateToTree);
+    temp_tree->Branch("__ncandidates__", &temp_NcandidatesToTree);
 
     // get decaymodeID
     temp_tree->Branch("extraInfo__bodecayModeID__bc", &temp_Upsilon_decayIDToTree);
@@ -2814,16 +2924,16 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         temp_tree->Branch("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
         temp_tree->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
         temp_tree->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
-        temp_tree->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[38]);
-        temp_tree->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayDataToTree[39]);
-        temp_tree->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayDataToTree[40]);
-        temp_tree->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecayDataToTree[41]);
-        temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[42]);
-        temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecayDataToTree[43]);
-        temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[44]);
-        temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecayDataToTree[45]);
-        temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[46]);
-        temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecayDataToTree[47]);
+        temp_tree->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
+        temp_tree->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
+        temp_tree->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[0]);
+        temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[1]);
+        temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[2]);
+        temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[3]);
+        temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[4]);
+        temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[5]);
+        temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
     }
     else {
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
@@ -2861,8 +2971,12 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         Data temp = temp_queue.front();
         temp_queue.pop();
 
-        for (int i = 0; i < N_event_info / 3; i++) {
-            temp_EventDataToTree[i] = temp.event_info[i];
+        {
+            temp_ExperimentToTree = temp.__experiment__;
+            temp_RunToTree = temp.__run__;
+            temp_EventToTree = temp.__event__;
+            temp_CandidateToTree = temp.__candidate__;
+            temp_NcandidatesToTree = temp.__ncandidates__;
         }
         for (int i = 0; i < N_Upsilon_info; i++) {
             temp_UpsilonDataToTree[i] = temp.Upsilon_info[i];
@@ -2878,6 +2992,12 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         }
         for (int i = 0; i < N_decay; i++) {
             if (DoesItHaveXsBranch) temp_DecayDataToTree[i] = temp.Decay[i];
+        }
+        for (int i = 0; i < N_decay_nparticles; i++) {
+            if (DoesItHaveXsBranch) temp_DecayNparticlesDataToTree[i] = temp.Decay_nparticles[i];
+        }
+        for (int i = 0; i < N_decay_syst_ff; i++) {
+            if (DoesItHaveXsBranch) temp_DecaySystFFDataToTree[i] = temp.Decay_syst_ff[i];
         }
         temp_Upsilon_decayIDToTree = temp.Upsilon_decayID;
         temp_Bsig_decayIDToTree = temp.Bsig_decayID;
@@ -3464,7 +3584,7 @@ void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_) {
     typedef struct labels {
         int __experiment__;
         int __run__;
-        int __event__;
+        unsigned int __event__;
         int __ncandidates__;
     } Labels;
 
@@ -3525,7 +3645,7 @@ void Loader::PrintFOM1D(Loader::ScaleFactor scaleFactor_) {
     typedef struct labels {
         int __experiment__;
         int __run__;
-        int __event__;
+        unsigned int __event__;
         int __ncandidates__;
     } Labels;
 
@@ -3611,7 +3731,7 @@ void Loader::CountMCEvent(std::string filename, bool smartmode) {
     typedef struct labels {
         int __experiment__;
         int __run__;
-        int __event__;
+        unsigned int __event__;
         int __ncandidates__;
     } Labels;
 
