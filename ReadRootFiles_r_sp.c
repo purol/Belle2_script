@@ -3848,12 +3848,12 @@ void Loader::CountMCEvent(std::string filename, bool smartmode) {
 
             if (smartmode == false) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + 1;
             else {
-                if (filename.find("B2Knunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplus;
-                else if (filename.find("B2Kstarnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplusstar;
-                else if (filename.find("B2Xsnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsu_nonresonant;
-                else if (filename.find("B02K0nunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0;
-                else if (filename.find("B02Kstar0nunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0star;
-                else if (filename.find("B02Xsnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsd_nonresonant;
+                if (filename.find("B2Knunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplus_test;
+                else if (filename.find("B2Kstarnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplusstar_test;
+                else if (filename.find("B2Xsnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsu_nonresonant_test;
+                else if (filename.find("B02K0nunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0_test;
+                else if (filename.find("B02Kstar0nunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0star_test;
+                else if (filename.find("B02Xsnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsd_nonresonant_test;
                 else { printf("ERROR 142\n"); exit(1); }
             }
         }
