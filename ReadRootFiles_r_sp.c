@@ -308,7 +308,13 @@ public:
         Xsu_nonresonant,
         K0,
         K0star,
-        Xsd_nonresonant
+        Xsd_nonresonant,
+        CHG,
+        MIX,
+        UUBAR,
+        DDBAR,
+        SSBAR,
+        CHARM
     };
 
 private:
@@ -1752,12 +1758,18 @@ void Loader::End() {
     if (FOMIsOn == true) {
         double SF = -1;
         if (scaleFactor == Loader::None) SF = 1.0;
-        else if(scaleFactor == Loader::Kplus) SF = Scale_Kplus;
-        else if (scaleFactor == Loader::Kplusstar) SF = Scale_Kplusstar;
-        else if (scaleFactor == Loader::Xsu_nonresonant) SF = Scale_Xsu_nonresonant;
-        else if (scaleFactor == Loader::K0) SF = Scale_K0;
-        else if (scaleFactor == Loader::K0star) SF = Scale_K0star;
-        else if (scaleFactor == Loader::Xsd_nonresonant) SF = Scale_Xsd_nonresonant;
+        else if(scaleFactor == Loader::Kplus) SF = Scale_Kplus_test;
+        else if (scaleFactor == Loader::Kplusstar) SF = Scale_Kplusstar_test;
+        else if (scaleFactor == Loader::Xsu_nonresonant) SF = Scale_Xsu_nonresonant_test;
+        else if (scaleFactor == Loader::K0) SF = Scale_K0_test;
+        else if (scaleFactor == Loader::K0star) SF = Scale_K0star_test;
+        else if (scaleFactor == Loader::Xsd_nonresonant) SF = Scale_Xsd_nonresonant_test;
+        else if (scaleFactor == Loader::CHG) SF = Scale_CHG_test;
+        else if (scaleFactor == Loader::MIX) SF = Scale_MIX_test;
+        else if (scaleFactor == Loader::UUBAR) SF = Scale_UUBAR_test;
+        else if (scaleFactor == Loader::DDBAR) SF = Scale_DDBAR_test;
+        else if (scaleFactor == Loader::SSBAR) SF = Scale_SSBAR_test;
+        else if (scaleFactor == Loader::CHARM) SF = Scale_CHARM_test;
         else {
             printf("ERROR 526!\n");
             exit(1);
@@ -1773,12 +1785,18 @@ void Loader::End() {
             printf("\n");
         }
         if (scaleFactor == Loader::None) printf("no specified decay mode\n");
-        else if (scaleFactor == Loader::Kplus) printf("B+ -> K+ nu nubar decay is specified\n");
-        else if (scaleFactor == Loader::Kplusstar) printf("B+ -> K*+ nu nubar decay is specified\n");
-        else if (scaleFactor == Loader::Xsu_nonresonant) printf("B+ -> Xsu nu nubar decay (non-resonant) is specified\n");
-        else if (scaleFactor == Loader::K0) printf("B0 -> K0 nu nubar decay is specified\n");
-        else if (scaleFactor == Loader::K0star) printf("B0 -> K*0 nu nubar decay is specified\n");
-        else if (scaleFactor == Loader::Xsd_nonresonant) printf("B+ -> Xsd nu nubar decay (non-resonant) is specified\n");
+        else if (scaleFactor == Loader::Kplus) printf("B+ -> K+ nu nubar decay (test) is specified\n");
+        else if (scaleFactor == Loader::Kplusstar) printf("B+ -> K*+ nu nubar decay (test) is specified\n");
+        else if (scaleFactor == Loader::Xsu_nonresonant) printf("B+ -> Xsu nu nubar decay (non-resonant) (test) is specified\n");
+        else if (scaleFactor == Loader::K0) printf("B0 -> K0 nu nubar decay (test) is specified\n");
+        else if (scaleFactor == Loader::K0star) printf("B0 -> K*0 nu nubar decay (test) is specified\n");
+        else if (scaleFactor == Loader::Xsd_nonresonant) printf("B+ -> Xsd nu nubar decay (non-resonant) (test) is specified\n");
+        else if (scaleFactor == Loader::CHG) printf("CHG background (test) is specified\n");
+        else if (scaleFactor == Loader::MIX) printf("MIX background (test) is specified\n");
+        else if (scaleFactor == Loader::UUBAR) printf("UUBAR background (test) is specified\n");
+        else if (scaleFactor == Loader::DDBAR) printf("DDBAR background (test) is specified\n");
+        else if (scaleFactor == Loader::SSBAR) printf("SSBAR background (test) is specified\n");
+        else if (scaleFactor == Loader::CHARM) printf("CHARM background (test) is specified\n");
         printf("Scale factor: %lf\n", SF);
         printf("--------------- number of event to get FOM ---------------\n");
     }

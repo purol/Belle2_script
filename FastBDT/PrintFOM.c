@@ -1,4 +1,4 @@
-// last update: 2022-03-23
+// last update: 2022-10-27
 // for Belle2 data
 
 /*
@@ -6,20 +6,23 @@ when you add new variables:
 revise # define N_Needed_info ...
 revise typedef struct data
 revise void Loader::GetData(TFile* input_file)
+check MakeShiftDoubleToInt if it affects the code
 revise void Loader::PrintRootFile(std::string output_name)
 revise void Loader::PrintSeparateRootFile(std::string output_name)
 revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double flag = 0)
 */
 
 # define N_Needed_info 37
-# define N_event_info 15
-# define N_Upsilon_info 49
-# define N_Bsig_info 78
-# define N_Btag_info 7
+//# define N_event_info 15
+# define N_Upsilon_info 57
+# define N_Bsig_info 81
+# define N_Btag_info 9
 # define N_decay 38 // five decay mode + others
+# define N_decay_nparticles 3 // # of nu_e, B, B0
+# define N_decay_syst_ff 7 // helicity angle + q2
 
-# define Nstep 100
-# define start 0.5
+# define Nstep 20
+# define start 0.8
 # define end 1.0
 
 // arXiv:1409.4557v2
@@ -79,17 +82,28 @@ void load_files(const char *dirname, std::vector<std::string>* names){
 typedef struct data{
     int __experiment__;
     int __run__;
-    int __event__;
+    unsigned int __event__;
     int __candidate__;
     int __ncandidates__;
 
     double Upsilon_decayID;
     double Bsig_decayID;
 
-    int event_info[N_event_info];
-    // 0: upsilon_experiment, 1: upsilon_run, 2: upsilon_event, 3: upsilon_candidate, 4: upsilon_ncandidates
-    // 5: Bsig_experiment, 6: Bsig_run, 7: Bsig_event, 8: Bsig_candidate, 9: Bsig_ncandidates
-    // 10: Btag_experiment, 11: Btag_run, 12: Btag_event, 13: Btag_candidate, 14: Btag_ncandidates
+    int upsilon_experiment;
+    int upsilon_run;
+    unsigned int upsilon_event;
+    int upsilon_candidate;
+    int upsilon_ncandidates;
+    int Bsig_experiment;
+    int Bsig_run;
+    unsigned int Bsig_event;
+    int Bsig_candidate;
+    int Bsig_ncandidates;
+    int Btag_experiment;
+    int Btag_run;
+    unsigned int Btag_event;
+    int Btag_candidate;
+    int Btag_ncandidates;
 
     double Upsilon_info[N_Upsilon_info];
     // 0: number of ECL clusters in ROE(cleanMask), 1: number of KLM clusters in ROE
@@ -110,6 +124,8 @@ typedef struct data{
     // 39: MsquaredBsig_op3, 40: MsquaredBsig_op4, 41: MsquaredBsig_op7
     // 42: roeP__bocleanMask__bc, 43: roeM__bocleanMask__bc, 44: roePTheta__bocleanMask__bc
     // 45: qsquared - MB^2, 46: chiProb, 47: dr, 48: dz
+    // 49: nElectron, 50: nMuon, 51: nElectronloose, 52: nMuonloose
+    // 53: nElectrontight, 54: nMuontight, 55: beamE, 56: number of tracks in ROE(looseMask)
 
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
@@ -138,10 +154,12 @@ typedef struct data{
     // 68: Dcsimpleveto_dr, 69: Dcsimpleveto_dz, 70: Dcsimpleveto_M
     // 71: nD0, 72: D0_pValue_med, 73: D0_pValue:std, 74: D0simpleveto_chiProb
     // 75: D0simpleveto_dr, 76: D0simpleveto_dz, 77: D0simpleveto_M
+    // 78: mychiProb, 79: mydr, 80: mydz
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
     // 3: Btag_E, 4: Btag_E_CMS, 5: Btag_signalprobability, 6: chiProb_tag
+    // 7: dr, 8: dz
 
     double Needed_info[N_Needed_info];
     // 0: R2, 1: thrustBm, 2: thrustOm. 3: cosTBTO
@@ -158,7 +176,9 @@ typedef struct data{
     // 32: missing mass^2, 33: visible energy, 34: theta_CMS_of_tag
     // 35: decayhash, 36: decayhash_extended
 
-    double Decay[N_decay]; // MC level info
+    int Decay[N_decay]; // MC level info
+    int Decay_nparticles[N_decay_nparticles]; // MC level info for # particle
+    double Decay_syst_ff[N_decay_syst_ff]; // MC level info for helicity angle + q2
 
     float MVA_BB;
     float MVA_Continuum;
@@ -206,6 +226,9 @@ public:
         B2Ks0PicPicPic,
         B2KcPicPicPicPic,
         B2Ks0PicPicPicPi0,
+        B2KcPi0Pi0,
+        B2Ks0PicPi0Pi0,
+        B2KcPicPicPi0Pi0,
         B2KcKcKc,
         B2KcKcKs0Pic,
         B2KcKcKcPi0,
@@ -218,6 +241,9 @@ public:
         B02Ks0PicPicPi0,
         B02KcPicPicPicPi0,
         B02Ks0PicPicPicPic,
+        B02Ks0Pi0Pi0,
+        B02KcPicPi0Pi0,
+        B02Ks0PicPicPi0Pi0,
         B02KcKcKs0,
         B02KcKcKcPic,
         B02KcKcKs0Pi0,
@@ -235,6 +261,9 @@ public:
         Xsu2K0PicPicPic_MC,
         Xsu2KcPicPicPicPic_MC,
         Xsu2K0PicPicPicPi0_MC,
+        Xsu2KcPi0Pi0_MC,
+        Xsu2K0PicPi0Pi0_MC,
+        Xsu2KcPicPicPi0Pi0_MC,
         Xsu2KcKcKc_MC,
         Xsu2KcKcK0Pic_MC,
         Xsu2KcKcKcPi0_MC,
@@ -249,6 +278,9 @@ public:
         Xsd2K0PicPicPi0_MC,
         Xsd2KcPicPicPicPi0_MC,
         Xsd2K0PicPicPicPic_MC,
+        Xsd2K0Pi0Pi0_MC,
+        Xsd2KcPicPi0Pi0_MC,
+        Xsd2K0PicPicPi0Pi0_MC,
         Xsd2KcKcK0_MC,
         Xsd2KcKcKcPic_MC,
         Xsd2KcKcK0Pi0_MC,
@@ -276,7 +308,13 @@ public:
         Xsu_nonresonant,
         K0,
         K0star,
-        Xsd_nonresonant
+        Xsd_nonresonant,
+        CHG,
+        MIX,
+        UUBAR,
+        DDBAR,
+        SSBAR,
+        CHARM
     };
 
 private:
@@ -286,10 +324,10 @@ private:
     int current_TH1F;
     int current_TH2F;
 
-    std::vector<int> N_events;
-    std::vector<int> N_candidates;
-    std::vector<int> N_candidates_modes[Loader::MAX_NUM_DECAYMODE];
-    std::vector<int> N_events_modes[Loader::MAX_NUM_DECAYMODE];
+    std::vector<double> N_events;
+    std::vector<double> N_candidates;
+    std::vector<double> N_candidates_modes[Loader::MAX_NUM_DECAYMODE];
+    std::vector<double> N_events_modes[Loader::MAX_NUM_DECAYMODE];
     std::vector<double> N_MC_modes[Loader::MAX_NUM_DECAYMODE_MC];
     std::vector<std::string> titles;
     int current_N_event;
@@ -297,7 +335,7 @@ private:
 
     std::vector<int> experiment_indices;
     std::vector<int> run_indices;
-    std::vector<int> event_indices;
+    std::vector<unsigned int> event_indices;
     std::vector<int> candidate_indices;
     std::vector<int> ncandidates_indices;
     int current_N_experiment_index;
@@ -328,14 +366,30 @@ private:
     Loader::ScaleFactor scaleFactor;
 
     int current_MCcount;
-    int MCcount[Loader::MAX_NUM_DECAYMODE_MC];
+    double MCcount[Loader::MAX_NUM_DECAYMODE_MC];
     bool MCcountOn;
 
-    int EventDataToTree[N_event_info];
+    int UpsilonExperimentToTree;
+    int UpsilonRunToTree;
+    unsigned int UpsilonEventToTree;
+    int UpsilonCandidateToTree;
+    int UpsilonNcandidatesToTree;
+    int BsigExperimentToTree;
+    int BsigRunToTree;
+    unsigned int BsigEventToTree;
+    int BsigCandidateToTree;
+    int BsigNcandidatesToTree;
+    int BtagExperimentToTree;
+    int BtagRunToTree;
+    unsigned int BtagEventToTree;
+    int BtagCandidateToTree;
+    int BtagNcandidatesToTree;
     double UpsilonDataToTree[N_Upsilon_info];
     double BsigDataToTree[N_Bsig_info];
     double BtagDataToTree[N_Btag_info];
-    double DecayDataToTree[N_decay];
+    int DecayDataToTree[N_decay];
+    int DecayNparticlesDataToTree[N_decay_nparticles];
+    double DecaySystFFDataToTree[N_decay_syst_ff];
     double DataToTree[N_Needed_info];
     double Upsilon_decayIDToTree;
     double Bsig_decayIDToTree;
@@ -363,7 +417,7 @@ public:
     void DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j);
     void DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear);
-    void PrintInformation(std::string title);
+    void PrintInformation(std::string title, std::string filename = std::string(""), bool smartmode = true);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::Variable variable_qual, int i_qual, Loader::Inequality inq_qual, double value_qual);
@@ -382,7 +436,7 @@ public:
     void PrintFOM(Loader::ScaleFactor scaleFactor_ = Loader::None);
     void PrintFOM1D(Loader::ScaleFactor scaleFactor_ = Loader::None);
     void MVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
-    void CountMCEvent();
+    void CountMCEvent(std::string filename = std::string(""), bool smartmode = true);
     void SelectDecayModeOf(Loader::DecayMode decaymode);
     void RejectDecayModeOf(Loader::DecayMode decaymode);
 };
@@ -477,22 +531,24 @@ void Loader::GetData(TFile* input_file) {
 
     Data temp = { 0 };
 
+    double MakeShiftDoubleToInt[7] = { 0 }; // intermediate variable to convert from int to double
+
     // get event_info
-    tree_upsilon->SetBranchAddress("__experiment__", &temp.event_info[0]);
-    tree_upsilon->SetBranchAddress("__run__", &temp.event_info[1]);
-    tree_upsilon->SetBranchAddress("__event__", &temp.event_info[2]);
-    tree_upsilon->SetBranchAddress("__candidate__", &temp.event_info[3]);
-    tree_upsilon->SetBranchAddress("__ncandidates__", &temp.event_info[4]);
-    tree_Bsig->SetBranchAddress("__experiment__", &temp.event_info[5]);
-    tree_Bsig->SetBranchAddress("__run__", &temp.event_info[6]);
-    tree_Bsig->SetBranchAddress("__event__", &temp.event_info[7]);
-    tree_Bsig->SetBranchAddress("__candidate__", &temp.event_info[8]);
-    tree_Bsig->SetBranchAddress("__ncandidates__", &temp.event_info[9]);
-    tree_Btag->SetBranchAddress("__experiment__", &temp.event_info[10]);
-    tree_Btag->SetBranchAddress("__run__", &temp.event_info[11]);
-    tree_Btag->SetBranchAddress("__event__", &temp.event_info[12]);
-    tree_Btag->SetBranchAddress("__candidate__", &temp.event_info[13]);
-    tree_Btag->SetBranchAddress("__ncandidates__", &temp.event_info[14]);
+    tree_upsilon->SetBranchAddress("__experiment__", &temp.upsilon_experiment);
+    tree_upsilon->SetBranchAddress("__run__", &temp.upsilon_run);
+    tree_upsilon->SetBranchAddress("__event__", &temp.upsilon_event);
+    tree_upsilon->SetBranchAddress("__candidate__", &temp.upsilon_candidate);
+    tree_upsilon->SetBranchAddress("__ncandidates__", &temp.upsilon_ncandidates);
+    tree_Bsig->SetBranchAddress("__experiment__", &temp.Bsig_experiment);
+    tree_Bsig->SetBranchAddress("__run__", &temp.Bsig_run);
+    tree_Bsig->SetBranchAddress("__event__", &temp.Bsig_event);
+    tree_Bsig->SetBranchAddress("__candidate__", &temp.Bsig_candidate);
+    tree_Bsig->SetBranchAddress("__ncandidates__", &temp.Bsig_ncandidates);
+    tree_Btag->SetBranchAddress("__experiment__", &temp.Btag_experiment);
+    tree_Btag->SetBranchAddress("__run__", &temp.Btag_run);
+    tree_Btag->SetBranchAddress("__event__", &temp.Btag_event);
+    tree_Btag->SetBranchAddress("__candidate__", &temp.Btag_candidate);
+    tree_Btag->SetBranchAddress("__ncandidates__", &temp.Btag_ncandidates);
 
     // get decaymodeID
     tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &temp.Upsilon_decayID);
@@ -509,7 +565,7 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("missingMomentumOfEvent_theta", &temp.Upsilon_info[7]);
     tree_upsilon->SetBranchAddress("missingMomentumOfEvent", &temp.Upsilon_info[8]);
     tree_upsilon->SetBranchAddress("missingEnergyOfEventCMS", &temp.Upsilon_info[9]);
-    tree_upsilon->SetBranchAddress("nRemainingTracksInEvent", &temp.Upsilon_info[10]);
+    tree_upsilon->SetBranchAddress("nRemainingTracksInEvent", &MakeShiftDoubleToInt[0]); // temp.Upsilon_info[10]
     tree_upsilon->SetBranchAddress("roeNeextra__bocleanMask__bc", &temp.Upsilon_info[11]);
     tree_upsilon->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp.Upsilon_info[12]);
     tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp.Upsilon_info[13]);
@@ -548,6 +604,14 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("chiProb", &temp.Upsilon_info[46]);
     tree_upsilon->SetBranchAddress("dr", &temp.Upsilon_info[47]);
     tree_upsilon->SetBranchAddress("dz", &temp.Upsilon_info[48]);
+    tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT__bc", &MakeShiftDoubleToInt[1]); // temp.Upsilon_info[49]
+    tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT__bc", &MakeShiftDoubleToInt[2]); // temp.Upsilon_info[50]
+    tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_loose__bc", &MakeShiftDoubleToInt[3]); // temp.Upsilon_info[51]
+    tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &MakeShiftDoubleToInt[4]); // temp.Upsilon_info[52]
+    tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &MakeShiftDoubleToInt[5]); // temp.Upsilon_info[53]
+    tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &MakeShiftDoubleToInt[6]); // temp.Upsilon_info[54]
+    tree_upsilon->SetBranchAddress("beamE", &temp.Upsilon_info[55]);
+    tree_upsilon->SetBranchAddress("nROE_Tracks__bolooseMask__bc", &temp.Upsilon_info[56]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
@@ -628,6 +692,9 @@ void Loader::GetData(TFile* input_file) {
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp.Bsig_info[75]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp.Bsig_info[76]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp.Bsig_info[77]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_mychiProb", &temp.Bsig_info[78]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_mydr", &temp.Bsig_info[79]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_mydz", &temp.Bsig_info[80]);
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
@@ -637,6 +704,8 @@ void Loader::GetData(TFile* input_file) {
     tree_Btag->SetBranchAddress("Btag_useCMSFrame_E", &temp.Btag_info[4]);
     tree_Btag->SetBranchAddress("Btag_extraInfo_SignalProbability", &temp.Btag_info[5]);
     tree_Btag->SetBranchAddress("Btag_chiProb", &temp.Btag_info[6]);
+    tree_Btag->SetBranchAddress("Btag_dr", &temp.Btag_info[7]);
+    tree_Btag->SetBranchAddress("Btag_dz", &temp.Btag_info[8]);
 
     // other information I need
     tree_Btag->SetBranchAddress("Btag_R2", &temp.Needed_info[0]);
@@ -717,9 +786,21 @@ void Loader::GetData(TFile* input_file) {
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &temp.Decay[35]);
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &temp.Decay[36]);
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &temp.Decay[37]);
+        tree_Xs->SetBranchAddress("nParticlesInList__bonu_e__clMC_signal__bc", &temp.Decay_nparticles[0]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp.Decay_nparticles[1]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp.Decay_nparticles[2]);
+        tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp.Decay_syst_ff[0]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp.Decay_syst_ff[1]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp.Decay_syst_ff[2]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp.Decay_syst_ff[3]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp.Decay_syst_ff[4]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp.Decay_syst_ff[5]);
+        tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp.Decay_syst_ff[6]);
     }
     else {
         for (int i = 0; i < N_decay; i++) temp.Decay[i] = -1;
+        for (int i = 0; i < N_decay_nparticles; i++) temp.Decay_nparticles[i] = -1;
+        for (int i = 0; i < N_decay_syst_ff; i++) temp.Decay_syst_ff[i] = -1;
     }
 
     if (DoesItHaveMVAOutput) {
@@ -750,6 +831,16 @@ void Loader::GetData(TFile* input_file) {
         tree_Bsig->GetEntry(j);
         tree_Btag->GetEntry(j);
         if (DoesItHaveXsBranch) tree_Xs->GetEntry(j);
+
+        // Just Makeshift!
+        temp.Upsilon_info[10] = static_cast<double>(MakeShiftDoubleToInt[0]);
+        temp.Upsilon_info[49] = static_cast<double>(MakeShiftDoubleToInt[1]);
+        temp.Upsilon_info[50] = static_cast<double>(MakeShiftDoubleToInt[2]);
+        temp.Upsilon_info[51] = static_cast<double>(MakeShiftDoubleToInt[3]);
+        temp.Upsilon_info[52] = static_cast<double>(MakeShiftDoubleToInt[4]);
+        temp.Upsilon_info[53] = static_cast<double>(MakeShiftDoubleToInt[5]);
+        temp.Upsilon_info[54] = static_cast<double>(MakeShiftDoubleToInt[6]);
+
         TotalData.push(temp);
     }
     input_file->Close();
@@ -760,16 +851,16 @@ bool Loader::event_info_is_valid() {
     while (!TotalData.empty()) {
         Data temp_data = TotalData.front();
         TotalData.pop();
-        if (temp_data.event_info[0] != temp_data.event_info[5] || temp_data.event_info[0] != temp_data.event_info[10] || temp_data.event_info[5] != temp_data.event_info[10]) return false;
-        if (temp_data.event_info[1] != temp_data.event_info[6] || temp_data.event_info[1] != temp_data.event_info[11] || temp_data.event_info[6] != temp_data.event_info[11]) return false;
-        if (temp_data.event_info[2] != temp_data.event_info[7] || temp_data.event_info[2] != temp_data.event_info[12] || temp_data.event_info[7] != temp_data.event_info[12]) return false;
-        if (temp_data.event_info[3] != temp_data.event_info[8] || temp_data.event_info[3] != temp_data.event_info[13] || temp_data.event_info[8] != temp_data.event_info[13]) return false;
-        if (temp_data.event_info[4] != temp_data.event_info[9] || temp_data.event_info[4] != temp_data.event_info[14] || temp_data.event_info[9] != temp_data.event_info[14]) return false;
-        temp_data.__experiment__ = temp_data.event_info[0];
-        temp_data.__run__ = temp_data.event_info[1];
-        temp_data.__event__ = temp_data.event_info[2];
-        temp_data.__candidate__ = temp_data.event_info[3];
-        temp_data.__ncandidates__ = temp_data.event_info[4];
+        if (temp_data.upsilon_experiment != temp_data.Bsig_experiment || temp_data.upsilon_experiment != temp_data.Btag_experiment || temp_data.Bsig_experiment != temp_data.Btag_experiment) return false;
+        if (temp_data.upsilon_run != temp_data.Bsig_run || temp_data.upsilon_run != temp_data.Btag_run || temp_data.Bsig_run != temp_data.Btag_run) return false;
+        if (temp_data.upsilon_event != temp_data.Bsig_event || temp_data.upsilon_event != temp_data.Btag_event || temp_data.Bsig_event != temp_data.Btag_event) return false;
+        if (temp_data.upsilon_candidate != temp_data.Bsig_candidate || temp_data.upsilon_candidate != temp_data.Btag_candidate || temp_data.Bsig_candidate != temp_data.Btag_candidate) return false;
+        if (temp_data.upsilon_ncandidates != temp_data.Bsig_ncandidates || temp_data.upsilon_ncandidates != temp_data.Btag_ncandidates || temp_data.Bsig_ncandidates != temp_data.Btag_ncandidates) return false;
+        temp_data.__experiment__ = temp_data.upsilon_experiment;
+        temp_data.__run__ = temp_data.upsilon_run;
+        temp_data.__event__ = temp_data.upsilon_event;
+        temp_data.__candidate__ = temp_data.upsilon_candidate;
+        temp_data.__ncandidates__ = temp_data.upsilon_ncandidates;
         temp_queue.push(temp_data);
     }
     TotalData.swap(temp_queue);
@@ -1096,11 +1187,11 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
     current_THStack++;
 }
 
-void Loader::PrintInformation(std::string title) {
+void Loader::PrintInformation(std::string title, std::string filename, bool smartmode) {
     typedef struct labels {
         int __experiment__;
         int __run__;
-        int __event__;
+        unsigned int __event__;
         int __ncandidates__;
         bool IsThisModeExist[Loader::MAX_NUM_DECAYMODE];
     } Labels;
@@ -1147,7 +1238,16 @@ void Loader::PrintInformation(std::string title) {
             }
         }
         if (overlap == false) {
-            N_events.at(current_N_event) = N_events.at(current_N_event) + 1;
+            if (smartmode == false) N_events.at(current_N_event) = N_events.at(current_N_event) + 1;
+            else {
+                if (filename.find("B2Knunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplus;
+                else if (filename.find("B2Kstarnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplusstar;
+                else if (filename.find("B2Xsnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsu_nonresonant;
+                else if (filename.find("B02K0nunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0;
+                else if (filename.find("B02Kstar0nunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0star;
+                else if (filename.find("B02Xsnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsd_nonresonant;
+                else { N_events.at(current_N_event) = N_events.at(current_N_event) + 1; }
+            }
             Labels temp_Labels;
             temp_Labels.__experiment__ = temp.__experiment__;
             temp_Labels.__run__ = temp.__run__;
@@ -1210,15 +1310,42 @@ void Loader::PrintInformation(std::string title) {
             printf("ERROR! 029\n");
             exit(1);
         }
-        N_candidates_modes[decaymodeid].at(current_N_candidate)++;
+        if (smartmode == false) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0;
+        else {
+            if (filename.find("B2Knunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplus;
+            else if (filename.find("B2Kstarnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplusstar;
+            else if (filename.find("B2Xsnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsu_nonresonant;
+            else if (filename.find("B02K0nunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0;
+            else if (filename.find("B02Kstar0nunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0star;
+            else if (filename.find("B02Xsnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsd_nonresonant;
+            else { N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0; }
+        }
 
         TotalData.push(temp);
     }
-    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size();
+    if (smartmode == false) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size();
+    else {
+        if (filename.find("B2Knunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Kplus;
+        else if (filename.find("B2Kstarnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Kplusstar;
+        else if (filename.find("B2Xsnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Xsu_nonresonant;
+        else if (filename.find("B02K0nunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_K0;
+        else if (filename.find("B02Kstar0nunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_K0star;
+        else if (filename.find("B02Xsnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Xsd_nonresonant;
+        else { N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size(); }
+    }
     for (unsigned int i = 0; i < label_list.size(); i++) {
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) {
             if (label_list.at(i).IsThisModeExist[j]) {
-                N_events_modes[j].at(current_N_candidate)++;
+                if (smartmode == false) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + 1;
+                else {
+                    if (filename.find("B2Knunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Kplus;
+                    else if (filename.find("B2Kstarnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Kplusstar;
+                    else if (filename.find("B2Xsnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Xsu_nonresonant;
+                    else if (filename.find("B02K0nunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_K0;
+                    else if (filename.find("B02Kstar0nunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_K0star;
+                    else if (filename.find("B02Xsnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Xsd_nonresonant;
+                    else { N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + 1; }
+                }
             }
         }
     }
@@ -1430,7 +1557,7 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
         Data initial_data = TotalData.front();
         int experiment_ = initial_data.__experiment__;
         int run_ = initial_data.__run__;
-        int event_ = initial_data.__event__;
+        unsigned int event_ = initial_data.__event__;
         int ncandidates_ = initial_data.__ncandidates__;
         while (true) { // I suppose that the order of data exists
             if (TotalData.empty()) break;
@@ -1523,7 +1650,7 @@ bool Loader::IsBCSValid() {
     typedef struct labels {
         int __experiment__;
         int __run__;
-        int __event__;
+        unsigned int __event__;
         int __ncandidates__;
     } Labels;
 
@@ -1552,10 +1679,10 @@ bool Loader::IsBCSValid() {
 void Loader::End() {
     for (int i = 0; i < N_events.size();i++) {
         printf("%s\n", titles.at(i).c_str());
-        printf("Number of event: %d\n", N_events.at(i));
-        printf("Number of candidate: %d\n", N_candidates.at(i));
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %d\n", j, N_candidates_modes[j].at(i));
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of event including decayID %d: %d\n", j, N_events_modes[j].at(i));
+        printf("Number of event: %lf\n", N_events.at(i));
+        printf("Number of candidate: %lf\n", N_candidates.at(i));
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %lf\n", j, N_candidates_modes[j].at(i));
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of event including decayID %d: %lf\n", j, N_events_modes[j].at(i));
         if (AllOfThemHaveXsBranch) for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i));
     }
 
@@ -1631,12 +1758,18 @@ void Loader::End() {
     if (FOMIsOn == true) {
         double SF = -1;
         if (scaleFactor == Loader::None) SF = 1.0;
-        else if(scaleFactor == Loader::Kplus) SF = Scale_Kplus;
-        else if (scaleFactor == Loader::Kplusstar) SF = Scale_Kplusstar;
-        else if (scaleFactor == Loader::Xsu_nonresonant) SF = Scale_Xsu_nonresonant;
-        else if (scaleFactor == Loader::K0) SF = Scale_K0;
-        else if (scaleFactor == Loader::K0star) SF = Scale_K0star;
-        else if (scaleFactor == Loader::Xsd_nonresonant) SF = Scale_Xsd_nonresonant;
+        else if(scaleFactor == Loader::Kplus) SF = Scale_Kplus_test;
+        else if (scaleFactor == Loader::Kplusstar) SF = Scale_Kplusstar_test;
+        else if (scaleFactor == Loader::Xsu_nonresonant) SF = Scale_Xsu_nonresonant_test;
+        else if (scaleFactor == Loader::K0) SF = Scale_K0_test;
+        else if (scaleFactor == Loader::K0star) SF = Scale_K0star_test;
+        else if (scaleFactor == Loader::Xsd_nonresonant) SF = Scale_Xsd_nonresonant_test;
+        else if (scaleFactor == Loader::CHG) SF = Scale_CHG_test;
+        else if (scaleFactor == Loader::MIX) SF = Scale_MIX_test;
+        else if (scaleFactor == Loader::UUBAR) SF = Scale_UUBAR_test;
+        else if (scaleFactor == Loader::DDBAR) SF = Scale_DDBAR_test;
+        else if (scaleFactor == Loader::SSBAR) SF = Scale_SSBAR_test;
+        else if (scaleFactor == Loader::CHARM) SF = Scale_CHARM_test;
         else {
             printf("ERROR 526!\n");
             exit(1);
@@ -1652,19 +1785,25 @@ void Loader::End() {
             printf("\n");
         }
         if (scaleFactor == Loader::None) printf("no specified decay mode\n");
-        else if (scaleFactor == Loader::Kplus) printf("B+ -> K+ nu nubar decay is specified\n");
-        else if (scaleFactor == Loader::Kplusstar) printf("B+ -> K*+ nu nubar decay is specified\n");
-        else if (scaleFactor == Loader::Xsu_nonresonant) printf("B+ -> Xsu nu nubar decay (non-resonant) is specified\n");
-        else if (scaleFactor == Loader::K0) printf("B0 -> K0 nu nubar decay is specified\n");
-        else if (scaleFactor == Loader::K0star) printf("B0 -> K*0 nu nubar decay is specified\n");
-        else if (scaleFactor == Loader::Xsd_nonresonant) printf("B+ -> Xsd nu nubar decay (non-resonant) is specified\n");
+        else if (scaleFactor == Loader::Kplus) printf("B+ -> K+ nu nubar decay (test) is specified\n");
+        else if (scaleFactor == Loader::Kplusstar) printf("B+ -> K*+ nu nubar decay (test) is specified\n");
+        else if (scaleFactor == Loader::Xsu_nonresonant) printf("B+ -> Xsu nu nubar decay (non-resonant) (test) is specified\n");
+        else if (scaleFactor == Loader::K0) printf("B0 -> K0 nu nubar decay (test) is specified\n");
+        else if (scaleFactor == Loader::K0star) printf("B0 -> K*0 nu nubar decay (test) is specified\n");
+        else if (scaleFactor == Loader::Xsd_nonresonant) printf("B+ -> Xsd nu nubar decay (non-resonant) (test) is specified\n");
+        else if (scaleFactor == Loader::CHG) printf("CHG background (test) is specified\n");
+        else if (scaleFactor == Loader::MIX) printf("MIX background (test) is specified\n");
+        else if (scaleFactor == Loader::UUBAR) printf("UUBAR background (test) is specified\n");
+        else if (scaleFactor == Loader::DDBAR) printf("DDBAR background (test) is specified\n");
+        else if (scaleFactor == Loader::SSBAR) printf("SSBAR background (test) is specified\n");
+        else if (scaleFactor == Loader::CHARM) printf("CHARM background (test) is specified\n");
         printf("Scale factor: %lf\n", SF);
         printf("--------------- number of event to get FOM ---------------\n");
     }
 
     if (MCcountOn == true) {
         printf("--------------- number of Decay mode ---------------\n");
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event of MCdecayID %d: %d\n", j, MCcount[j]);
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event of MCdecayID %d: %lf\n", j, MCcount[j]);
         printf("--------------- number of Decay mode ---------------\n");
     }
 
@@ -1732,7 +1871,7 @@ void Loader::End() {
         for (int i = 0; i < experiment_indices.size(); i++) {
             printf("experiment num: %d\n", experiment_indices.at(i));
             printf("run num: %d\n", run_indices.at(i));
-            printf("event num: %d\n", event_indices.at(i));
+            printf("event num: %u\n", event_indices.at(i));
             printf("candidate num: %d\n", candidate_indices.at(i));
             printf("number of candidate: %d\n", ncandidates_indices.at(i));
             printf("---------------------\n");
@@ -1761,21 +1900,21 @@ void Loader::PrintRootFile(std::string output_name) {
 
         /*================================================================*/
         // get event_info
-        tree_upsilon->Branch("__experiment__", &EventDataToTree[0]);
-        tree_upsilon->Branch("__run__", &EventDataToTree[1]);
-        tree_upsilon->Branch("__event__", &EventDataToTree[2]);
-        tree_upsilon->Branch("__candidate__", &EventDataToTree[3]);
-        tree_upsilon->Branch("__ncandidates__", &EventDataToTree[4]);
-        tree_Bsig->Branch("__experiment__", &EventDataToTree[5]);
-        tree_Bsig->Branch("__run__", &EventDataToTree[6]);
-        tree_Bsig->Branch("__event__", &EventDataToTree[7]);
-        tree_Bsig->Branch("__candidate__", &EventDataToTree[8]);
-        tree_Bsig->Branch("__ncandidates__", &EventDataToTree[9]);
-        tree_Btag->Branch("__experiment__", &EventDataToTree[10]);
-        tree_Btag->Branch("__run__", &EventDataToTree[11]);
-        tree_Btag->Branch("__event__", &EventDataToTree[12]);
-        tree_Btag->Branch("__candidate__", &EventDataToTree[13]);
-        tree_Btag->Branch("__ncandidates__", &EventDataToTree[14]);
+        tree_upsilon->Branch("__experiment__", &UpsilonExperimentToTree);
+        tree_upsilon->Branch("__run__", &UpsilonRunToTree);
+        tree_upsilon->Branch("__event__", &UpsilonEventToTree);
+        tree_upsilon->Branch("__candidate__", &UpsilonCandidateToTree);
+        tree_upsilon->Branch("__ncandidates__", &UpsilonNcandidatesToTree);
+        tree_Bsig->Branch("__experiment__", &BsigExperimentToTree);
+        tree_Bsig->Branch("__run__", &BsigRunToTree);
+        tree_Bsig->Branch("__event__", &BsigEventToTree);
+        tree_Bsig->Branch("__candidate__", &BsigCandidateToTree);
+        tree_Bsig->Branch("__ncandidates__", &BsigNcandidatesToTree);
+        tree_Btag->Branch("__experiment__", &BtagExperimentToTree);
+        tree_Btag->Branch("__run__", &BtagRunToTree);
+        tree_Btag->Branch("__event__", &BtagEventToTree);
+        tree_Btag->Branch("__candidate__", &BtagCandidateToTree);
+        tree_Btag->Branch("__ncandidates__", &BtagNcandidatesToTree);
 
         // get decaymodeID
         tree_upsilon->Branch("extraInfo__bodecayModeID__bc", &Upsilon_decayIDToTree);
@@ -1831,6 +1970,14 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("chiProb", &UpsilonDataToTree[46]);
         tree_upsilon->Branch("dr", &UpsilonDataToTree[47]);
         tree_upsilon->Branch("dz", &UpsilonDataToTree[48]);
+        tree_upsilon->Branch("nParticlesInList__boe__pl__clElectronFBDT__bc", &UpsilonDataToTree[49]);
+        tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT__bc", &UpsilonDataToTree[50]);
+        tree_upsilon->Branch("nParticlesInList__boe__pl__clElectronFBDT_loose__bc", &UpsilonDataToTree[51]);
+        tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &UpsilonDataToTree[52]);
+        tree_upsilon->Branch("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &UpsilonDataToTree[53]);
+        tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &UpsilonDataToTree[54]);
+        tree_upsilon->Branch("beamE", &UpsilonDataToTree[55]);
+        tree_upsilon->Branch("nROE_Tracks__bolooseMask__bc", &UpsilonDataToTree[56]);
 
         // get Bsig_info
         tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
@@ -1911,6 +2058,9 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &BsigDataToTree[75]);
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &BsigDataToTree[76]);
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &BsigDataToTree[77]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mychiProb", &BsigDataToTree[78]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydr", &BsigDataToTree[79]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydz", &BsigDataToTree[80]);
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -1920,6 +2070,8 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Btag->Branch("Btag_useCMSFrame_E", &BtagDataToTree[4]);
         tree_Btag->Branch("Btag_extraInfo_SignalProbability", &BtagDataToTree[5]);
         tree_Btag->Branch("Btag_chiProb", &BtagDataToTree[6]);
+        tree_Btag->Branch("Btag_dr", &BtagDataToTree[7]);
+        tree_Btag->Branch("Btag_dz", &BtagDataToTree[8]);
 
         // other information I need
         tree_Btag->Branch("Btag_R2", &DataToTree[0]);
@@ -1999,6 +2151,16 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch28__bc", &DecayDataToTree[35]);
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &DecayDataToTree[36]);
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &DecayDataToTree[37]);
+        tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &DecayNparticlesDataToTree[0]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &DecayNparticlesDataToTree[1]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &DecayNparticlesDataToTree[2]);
+        tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &DecaySystFFDataToTree[0]);
+        tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &DecaySystFFDataToTree[1]);
+        tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &DecaySystFFDataToTree[2]);
+        tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &DecaySystFFDataToTree[3]);
+        tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &DecaySystFFDataToTree[4]);
+        tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &DecaySystFFDataToTree[5]);
+        tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &DecaySystFFDataToTree[6]);
 
         tree_upsilon->Branch("MVA_BB", &MVA_BB_DataToTree);
         tree_upsilon->Branch("MVA_Continuum", &MVA_Continuum_DataToTree);
@@ -2033,8 +2195,22 @@ void Loader::PrintRootFile(std::string output_name) {
         Data temp = temp_queue.front();
         temp_queue.pop();
 
-        for (int i = 0; i < N_event_info; i++) {
-            EventDataToTree[i] = temp.event_info[i];
+        {
+            UpsilonExperimentToTree = temp.upsilon_experiment;
+            UpsilonRunToTree = temp.upsilon_run;
+            UpsilonEventToTree = temp.upsilon_event;
+            UpsilonCandidateToTree = temp.upsilon_candidate;
+            UpsilonNcandidatesToTree = temp.upsilon_ncandidates;
+            BsigExperimentToTree = temp.Bsig_experiment;
+            BsigRunToTree = temp.Bsig_run;
+            BsigEventToTree = temp.Bsig_event;
+            BsigCandidateToTree = temp.Bsig_candidate;
+            BsigNcandidatesToTree = temp.Bsig_ncandidates;
+            BtagExperimentToTree = temp.Btag_experiment;
+            BtagRunToTree = temp.Btag_run;
+            BtagEventToTree = temp.Btag_event;
+            BtagCandidateToTree = temp.Btag_candidate;
+            BtagNcandidatesToTree = temp.Btag_ncandidates;
         }
         for (int i = 0; i < N_Upsilon_info; i++) {
             UpsilonDataToTree[i] = temp.Upsilon_info[i];
@@ -2047,6 +2223,12 @@ void Loader::PrintRootFile(std::string output_name) {
         }
         for (int i = 0; i < N_decay; i++) {
             DecayDataToTree[i] = temp.Decay[i];
+        }
+        for (int i = 0; i < N_decay_nparticles; i++) {
+            DecayNparticlesDataToTree[i] = temp.Decay_nparticles[i];
+        }
+        for (int i = 0; i < N_decay_syst_ff; i++) {
+            DecaySystFFDataToTree[i] = temp.Decay_syst_ff[i];
         }
         for (int i = 0; i < N_Needed_info; i++) {
             DataToTree[i] = temp.Needed_info[i];
@@ -2085,11 +2267,27 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     if (DoesItHaveXsBranch) temp_tree_Xs = new TTree("Xs", "");
     else temp_tree_Xs = nullptr;
 
-    int temp_EventDataToTree[N_event_info];
+    int temp_UpsilonExperimentToTree;
+    int temp_UpsilonRunToTree;
+    unsigned int temp_UpsilonEventToTree;
+    int temp_UpsilonCandidateToTree;
+    int temp_UpsilonNcandidatesToTree;
+    int temp_BsigExperimentToTree;
+    int temp_BsigRunToTree;
+    unsigned int temp_BsigEventToTree;
+    int temp_BsigCandidateToTree;
+    int temp_BsigNcandidatesToTree;
+    int temp_BtagExperimentToTree;
+    int temp_BtagRunToTree;
+    unsigned int temp_BtagEventToTree;
+    int temp_BtagCandidateToTree;
+    int temp_BtagNcandidatesToTree;
     double temp_UpsilonDataToTree[N_Upsilon_info];
     double temp_BsigDataToTree[N_Bsig_info];
     double temp_BtagDataToTree[N_Btag_info];
-    double temp_DecayDataToTree[N_decay];
+    int temp_DecayDataToTree[N_decay];
+    int temp_DecayNparticlesDataToTree[N_decay_nparticles];
+    double temp_DecaySystFFDataToTree[N_decay_syst_ff];
     double temp_DataToTree[N_Needed_info];
     double temp_Upsilon_decayIDToTree;
     double temp_Bsig_decayIDToTree;
@@ -2104,21 +2302,21 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
 
     /*================================================================*/
     // get event_info
-    temp_tree_upsilon->Branch("__experiment__", &temp_EventDataToTree[0]);
-    temp_tree_upsilon->Branch("__run__", &temp_EventDataToTree[1]);
-    temp_tree_upsilon->Branch("__event__", &temp_EventDataToTree[2]);
-    temp_tree_upsilon->Branch("__candidate__", &temp_EventDataToTree[3]);
-    temp_tree_upsilon->Branch("__ncandidates__", &temp_EventDataToTree[4]);
-    temp_tree_Bsig->Branch("__experiment__", &temp_EventDataToTree[5]);
-    temp_tree_Bsig->Branch("__run__", &temp_EventDataToTree[6]);
-    temp_tree_Bsig->Branch("__event__", &temp_EventDataToTree[7]);
-    temp_tree_Bsig->Branch("__candidate__", &temp_EventDataToTree[8]);
-    temp_tree_Bsig->Branch("__ncandidates__", &temp_EventDataToTree[9]);
-    temp_tree_Btag->Branch("__experiment__", &temp_EventDataToTree[10]);
-    temp_tree_Btag->Branch("__run__", &temp_EventDataToTree[11]);
-    temp_tree_Btag->Branch("__event__", &temp_EventDataToTree[12]);
-    temp_tree_Btag->Branch("__candidate__", &temp_EventDataToTree[13]);
-    temp_tree_Btag->Branch("__ncandidates__", &temp_EventDataToTree[14]);
+    temp_tree_upsilon->Branch("__experiment__", &temp_UpsilonExperimentToTree);
+    temp_tree_upsilon->Branch("__run__", &temp_UpsilonRunToTree);
+    temp_tree_upsilon->Branch("__event__", &temp_UpsilonEventToTree);
+    temp_tree_upsilon->Branch("__candidate__", &temp_UpsilonCandidateToTree);
+    temp_tree_upsilon->Branch("__ncandidates__", &temp_UpsilonNcandidatesToTree);
+    temp_tree_Bsig->Branch("__experiment__", &temp_BsigExperimentToTree);
+    temp_tree_Bsig->Branch("__run__", &temp_BsigRunToTree);
+    temp_tree_Bsig->Branch("__event__", &temp_BsigEventToTree);
+    temp_tree_Bsig->Branch("__candidate__", &temp_BsigCandidateToTree);
+    temp_tree_Bsig->Branch("__ncandidates__", &temp_BsigNcandidatesToTree);
+    temp_tree_Btag->Branch("__experiment__", &temp_BtagExperimentToTree);
+    temp_tree_Btag->Branch("__run__", &temp_BtagRunToTree);
+    temp_tree_Btag->Branch("__event__", &temp_BtagEventToTree);
+    temp_tree_Btag->Branch("__candidate__", &temp_BtagCandidateToTree);
+    temp_tree_Btag->Branch("__ncandidates__", &temp_BtagNcandidatesToTree);
 
     // get decaymodeID
     temp_tree_upsilon->Branch("extraInfo__bodecayModeID__bc", &temp_Upsilon_decayIDToTree);
@@ -2174,6 +2372,14 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("chiProb", &temp_UpsilonDataToTree[46]);
     temp_tree_upsilon->Branch("dr", &temp_UpsilonDataToTree[47]);
     temp_tree_upsilon->Branch("dz", &temp_UpsilonDataToTree[48]);
+    temp_tree_upsilon->Branch("nParticlesInList__boe__pl__clElectronFBDT__bc", &temp_UpsilonDataToTree[49]);
+    temp_tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT__bc", &temp_UpsilonDataToTree[50]);
+    temp_tree_upsilon->Branch("nParticlesInList__boe__pl__clElectronFBDT_loose__bc", &temp_UpsilonDataToTree[51]);
+    temp_tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &temp_UpsilonDataToTree[52]);
+    temp_tree_upsilon->Branch("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &temp_UpsilonDataToTree[53]);
+    temp_tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp_UpsilonDataToTree[54]);
+    temp_tree_upsilon->Branch("beamE", &temp_UpsilonDataToTree[55]);
+    temp_tree_upsilon->Branch("nROE_Tracks__bolooseMask__bc", &temp_UpsilonDataToTree[56]);
 
     // get Bsig_info
     temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -2254,6 +2460,9 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[75]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[78]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydr", &temp_BsigDataToTree[79]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydz", &temp_BsigDataToTree[80]);
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -2263,6 +2472,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Btag->Branch("Btag_useCMSFrame_E", &temp_BtagDataToTree[4]);
     temp_tree_Btag->Branch("Btag_extraInfo_SignalProbability", &temp_BtagDataToTree[5]);
     temp_tree_Btag->Branch("Btag_chiProb", &temp_BtagDataToTree[6]);
+    temp_tree_Btag->Branch("Btag_dr", &temp_BtagDataToTree[7]);
+    temp_tree_Btag->Branch("Btag_dz", &temp_BtagDataToTree[8]);
 
     // other information I need
     temp_tree_Btag->Branch("Btag_R2", &temp_DataToTree[0]);
@@ -2343,9 +2554,21 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
         temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
         temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
+        temp_tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
+        temp_tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[0]);
+        temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[1]);
+        temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[2]);
+        temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[3]);
+        temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[4]);
+        temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[5]);
+        temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
     }
     else {
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
+        for (int i = 0; i < N_decay_nparticles; i++)  temp_DecayNparticlesDataToTree[i] = -1;
+        for (int i = 0; i < N_decay_syst_ff; i++)  temp_DecaySystFFDataToTree[i] = -1;
     }
 
     if (DoesItHaveMVAOutput) {
@@ -2377,8 +2600,22 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         Data temp = temp_queue.front();
         temp_queue.pop();
 
-        for (int i = 0; i < N_event_info; i++) {
-            temp_EventDataToTree[i] = temp.event_info[i];
+        {
+            temp_UpsilonExperimentToTree = temp.upsilon_experiment;
+            temp_UpsilonRunToTree = temp.upsilon_run;
+            temp_UpsilonEventToTree = temp.upsilon_event;
+            temp_UpsilonCandidateToTree = temp.upsilon_candidate;
+            temp_UpsilonNcandidatesToTree = temp.upsilon_ncandidates;
+            temp_BsigExperimentToTree = temp.Bsig_experiment;
+            temp_BsigRunToTree = temp.Bsig_run;
+            temp_BsigEventToTree = temp.Bsig_event;
+            temp_BsigCandidateToTree = temp.Bsig_candidate;
+            temp_BsigNcandidatesToTree = temp.Bsig_ncandidates;
+            temp_BtagExperimentToTree = temp.Btag_experiment;
+            temp_BtagRunToTree = temp.Btag_run;
+            temp_BtagEventToTree = temp.Btag_event;
+            temp_BtagCandidateToTree = temp.Btag_candidate;
+            temp_BtagNcandidatesToTree = temp.Btag_ncandidates;
         }
         for (int i = 0; i < N_Upsilon_info; i++) {
             temp_UpsilonDataToTree[i] = temp.Upsilon_info[i];
@@ -2391,6 +2628,12 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         }
         for (int i = 0; i < N_decay; i++) {
             if (DoesItHaveXsBranch) temp_DecayDataToTree[i] = temp.Decay[i];
+        }
+        for (int i = 0; i < N_decay_nparticles; i++) {
+            if (DoesItHaveXsBranch) temp_DecayNparticlesDataToTree[i] = temp.Decay_nparticles[i];
+        }
+        for (int i = 0; i < N_decay_syst_ff; i++) {
+            if (DoesItHaveXsBranch) temp_DecaySystFFDataToTree[i] = temp.Decay_syst_ff[i];
         }
         for (int i = 0; i < N_Needed_info; i++) {
             temp_DataToTree[i] = temp.Needed_info[i];
@@ -2431,12 +2674,18 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_file->cd();
     TTree* temp_tree = new TTree("data", "");
 
-    int temp_EventDataToTree[N_event_info / 3];
+    int temp_ExperimentToTree;
+    int temp_RunToTree;
+    unsigned int temp_EventToTree;
+    int temp_CandidateToTree;
+    int temp_NcandidatesToTree;
     double temp_UpsilonDataToTree[N_Upsilon_info];
     double temp_BsigDataToTree[N_Bsig_info];
     double temp_BtagDataToTree[N_Btag_info];
     double temp_DataToTree[N_Needed_info];
-    double temp_DecayDataToTree[N_decay];
+    int temp_DecayDataToTree[N_decay];
+    int temp_DecayNparticlesDataToTree[N_decay_nparticles];
+    double temp_DecaySystFFDataToTree[N_decay_syst_ff];
     double temp_Upsilon_decayIDToTree;
     double temp_Bsig_decayIDToTree;
     int temp_flag;
@@ -2451,11 +2700,11 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
 
     /*================================================================*/
     // get event_info
-    temp_tree->Branch("__experiment__", &temp_EventDataToTree[0]);
-    temp_tree->Branch("__run__", &temp_EventDataToTree[1]);
-    temp_tree->Branch("__event__", &temp_EventDataToTree[2]);
-    temp_tree->Branch("__candidate__", &temp_EventDataToTree[3]);
-    temp_tree->Branch("__ncandidates__", &temp_EventDataToTree[4]);
+    temp_tree->Branch("__experiment__", &temp_ExperimentToTree);
+    temp_tree->Branch("__run__", &temp_RunToTree);
+    temp_tree->Branch("__event__", &temp_EventToTree);
+    temp_tree->Branch("__candidate__", &temp_CandidateToTree);
+    temp_tree->Branch("__ncandidates__", &temp_NcandidatesToTree);
 
     // get decaymodeID
     temp_tree->Branch("extraInfo__bodecayModeID__bc", &temp_Upsilon_decayIDToTree);
@@ -2511,6 +2760,14 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("chiProb", &temp_UpsilonDataToTree[46]);
     temp_tree->Branch("dr", &temp_UpsilonDataToTree[47]);
     temp_tree->Branch("dz", &temp_UpsilonDataToTree[48]);
+    temp_tree->Branch("nParticlesInList__boe__pl__clElectronFBDT__bc", &temp_UpsilonDataToTree[49]);
+    temp_tree->Branch("nParticlesInList__bomu__pl__clMuonFBDT__bc", &temp_UpsilonDataToTree[50]);
+    temp_tree->Branch("nParticlesInList__boe__pl__clElectronFBDT_loose__bc", &temp_UpsilonDataToTree[51]);
+    temp_tree->Branch("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &temp_UpsilonDataToTree[52]);
+    temp_tree->Branch("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &temp_UpsilonDataToTree[53]);
+    temp_tree->Branch("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp_UpsilonDataToTree[54]);
+    temp_tree->Branch("beamE", &temp_UpsilonDataToTree[55]);
+    temp_tree->Branch("nROE_Tracks__bolooseMask__bc", &temp_UpsilonDataToTree[56]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -2591,6 +2848,9 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[75]);
     temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
     temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[78]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_mydr", &temp_BsigDataToTree[79]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_mydz", &temp_BsigDataToTree[80]);
 
     // get Btag_info
     temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -2600,6 +2860,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("Btag_useCMSFrame_E", &temp_BtagDataToTree[4]);
     temp_tree->Branch("Btag_extraInfo_SignalProbability", &temp_BtagDataToTree[5]);
     temp_tree->Branch("Btag_chiProb", &temp_BtagDataToTree[6]);
+    temp_tree->Branch("Btag_dr", &temp_BtagDataToTree[7]);
+    temp_tree->Branch("Btag_dz", &temp_BtagDataToTree[8]);
 
     // other information I need
     temp_tree->Branch("Btag_R2", &temp_DataToTree[0]);
@@ -2680,6 +2942,16 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         temp_tree->Branch("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
         temp_tree->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
         temp_tree->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
+        temp_tree->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
+        temp_tree->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
+        temp_tree->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[0]);
+        temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[1]);
+        temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[2]);
+        temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[3]);
+        temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[4]);
+        temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[5]);
+        temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
     }
     else {
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
@@ -2717,8 +2989,12 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         Data temp = temp_queue.front();
         temp_queue.pop();
 
-        for (int i = 0; i < N_event_info / 3; i++) {
-            temp_EventDataToTree[i] = temp.event_info[i];
+        {
+            temp_ExperimentToTree = temp.__experiment__;
+            temp_RunToTree = temp.__run__;
+            temp_EventToTree = temp.__event__;
+            temp_CandidateToTree = temp.__candidate__;
+            temp_NcandidatesToTree = temp.__ncandidates__;
         }
         for (int i = 0; i < N_Upsilon_info; i++) {
             temp_UpsilonDataToTree[i] = temp.Upsilon_info[i];
@@ -2734,6 +3010,12 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         }
         for (int i = 0; i < N_decay; i++) {
             if (DoesItHaveXsBranch) temp_DecayDataToTree[i] = temp.Decay[i];
+        }
+        for (int i = 0; i < N_decay_nparticles; i++) {
+            if (DoesItHaveXsBranch) temp_DecayNparticlesDataToTree[i] = temp.Decay_nparticles[i];
+        }
+        for (int i = 0; i < N_decay_syst_ff; i++) {
+            if (DoesItHaveXsBranch) temp_DecaySystFFDataToTree[i] = temp.Decay_syst_ff[i];
         }
         temp_Upsilon_decayIDToTree = temp.Upsilon_decayID;
         temp_Bsig_decayIDToTree = temp.Bsig_decayID;
@@ -2801,6 +3083,18 @@ bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 7.5 && temp_data.Bsig_decayID < 8.5) return true;
         return false;
         break;
+    case Loader::B2KcPi0Pi0:
+        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 8.5 && temp_data.Bsig_decayID < 9.5) return true;
+        return false;
+        break;
+    case Loader::B2Ks0PicPi0Pi0:
+        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 9.5 && temp_data.Bsig_decayID < 10.5) return true;
+        return false;
+        break;
+    case Loader::B2KcPicPicPi0Pi0:
+        if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 10.5 && temp_data.Bsig_decayID < 11.5) return true;
+        return false;
+        break;
     case Loader::B2KcKcKc:
         if (temp_data.Upsilon_decayID > -0.5 && temp_data.Upsilon_decayID < 0.5 && temp_data.Bsig_decayID > 11.5 && temp_data.Bsig_decayID < 12.5) return true;
         return false;
@@ -2847,6 +3141,18 @@ bool Loader::TrueIfDecayModeMatch(Data temp_data, Loader::DecayMode decaymode) {
         break;
     case Loader::B02Ks0PicPicPicPic:
         if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 7.5 && temp_data.Bsig_decayID < 8.5) return true;
+        return false;
+        break;
+    case Loader::B02Ks0Pi0Pi0:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 8.5 && temp_data.Bsig_decayID < 9.5) return true;
+        return false;
+        break;
+    case Loader::B02KcPicPi0Pi0:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 9.5 && temp_data.Bsig_decayID < 10.5) return true;
+        return false;
+        break;
+    case Loader::B02Ks0PicPicPi0Pi0:
+        if (temp_data.Upsilon_decayID > 0.5 && temp_data.Upsilon_decayID < 1.5 && temp_data.Bsig_decayID > 10.5 && temp_data.Bsig_decayID < 11.5) return true;
         return false;
         break;
     case Loader::B02KcKcKs0:
@@ -2923,6 +3229,18 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
         if (temp_data.Decay[12] > 0) return true;
         return false;
         break;
+    case Loader::Xsu2KcPi0Pi0_MC:
+        if (temp_data.Decay[13] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2K0PicPi0Pi0_MC:
+        if (temp_data.Decay[14] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcPicPicPi0Pi0_MC:
+        if (temp_data.Decay[15] > 0) return true;
+        return false;
+        break;
     case Loader::Xsu2KcKcKc_MC:
         if (temp_data.Decay[16] > 0) return true;
         return false;
@@ -2977,6 +3295,18 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
         break;
     case Loader::Xsd2K0PicPicPicPic_MC:
         if (temp_data.Decay[31] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0Pi0Pi0_MC:
+        if (temp_data.Decay[32] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcPicPi0Pi0_MC:
+        if (temp_data.Decay[33] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0PicPicPi0Pi0_MC:
+        if (temp_data.Decay[34] > 0) return true;
         return false;
         break;
     case Loader::Xsd2KcKcK0_MC:
@@ -3066,16 +3396,26 @@ void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
         else if (decaymodeid_MC == 12)decaymodeid_MC_for_square = 10;
         else if (decaymodeid_MC == 13)decaymodeid_MC_for_square = 11;
         else if (decaymodeid_MC == 14)decaymodeid_MC_for_square = 12;
-        else if (decaymodeid_MC == 15)decaymodeid_MC_for_square = 11;
-        else if (decaymodeid_MC == 16)decaymodeid_MC_for_square = 12;
-        else if (decaymodeid_MC == 17)decaymodeid_MC_for_square = 13;
-        else if (decaymodeid_MC == 18)decaymodeid_MC_for_square = 14;
-        else if (decaymodeid_MC == 19)decaymodeid_MC_for_square = 15;
+        else if (decaymodeid_MC == 15)decaymodeid_MC_for_square = 13;
+        else if (decaymodeid_MC == 16)decaymodeid_MC_for_square = 14;
+        else if (decaymodeid_MC == 17)decaymodeid_MC_for_square = 15;
+        else if (decaymodeid_MC == 18)decaymodeid_MC_for_square = 16;
+        else if (decaymodeid_MC == 19)decaymodeid_MC_for_square = 17;
         else if (decaymodeid_MC == 20)decaymodeid_MC_for_square = 16;
         else if (decaymodeid_MC == 21)decaymodeid_MC_for_square = 17;
         else if (decaymodeid_MC == 22)decaymodeid_MC_for_square = 18;
         else if (decaymodeid_MC == 23)decaymodeid_MC_for_square = 19;
         else if (decaymodeid_MC == 24)decaymodeid_MC_for_square = 20;
+        else if (decaymodeid_MC == 25)decaymodeid_MC_for_square = 21;
+        else if (decaymodeid_MC == 26)decaymodeid_MC_for_square = 22;
+        else if (decaymodeid_MC == 27)decaymodeid_MC_for_square = 23;
+        else if (decaymodeid_MC == 28)decaymodeid_MC_for_square = 24;
+        else if (decaymodeid_MC == 29)decaymodeid_MC_for_square = 25;
+        else if (decaymodeid_MC == 30)decaymodeid_MC_for_square = 26;
+        else if (decaymodeid_MC == 31)decaymodeid_MC_for_square = 27;
+        else if (decaymodeid_MC == 32)decaymodeid_MC_for_square = 28;
+        else if (decaymodeid_MC == 33)decaymodeid_MC_for_square = 29;
+        else if (decaymodeid_MC == 34)decaymodeid_MC_for_square = 30;
         if(smartmode == false) Confusion_square[decaymodeid][decaymodeid_MC_for_square]++;
         else {
             if(filename.find("B2Knunu") != string::npos ) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplus;
@@ -3262,7 +3602,7 @@ void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_) {
     typedef struct labels {
         int __experiment__;
         int __run__;
-        int __event__;
+        unsigned int __event__;
         int __ncandidates__;
     } Labels;
 
@@ -3323,7 +3663,7 @@ void Loader::PrintFOM1D(Loader::ScaleFactor scaleFactor_) {
     typedef struct labels {
         int __experiment__;
         int __run__;
-        int __event__;
+        unsigned int __event__;
         int __ncandidates__;
     } Labels;
 
@@ -3331,7 +3671,7 @@ void Loader::PrintFOM1D(Loader::ScaleFactor scaleFactor_) {
         std::queue<Data> temp_queue;
         temp_queue.swap(TotalData);
 
-        double BB_output = start + (end - start) * j / Nstep;
+        double Continuum_output = start + (end - start) * j / Nstep;
 
         std::vector<Labels> label_list;
         double EVT_num = 0.0;
@@ -3340,7 +3680,7 @@ void Loader::PrintFOM1D(Loader::ScaleFactor scaleFactor_) {
             Data temp = temp_queue.front();
             temp_queue.pop();
 
-            if (temp.MVA_BB > BB_output) {
+            if (temp.MVA_Continuum > Continuum_output) {
                 bool overlap = false;
                 for (unsigned int k = 0; k < label_list.size(); k++) {
                     if (label_list.at(k).__experiment__ == temp.__experiment__ && label_list.at(k).__run__ == temp.__run__ && label_list.at(k).__event__ == temp.__event__ && label_list.at(k).__ncandidates__ == temp.__ncandidates__) {
@@ -3396,7 +3736,7 @@ void Loader::MVACut(double OBB, double Oqq, Loader::MassRegion massRegion) {
     TotalData.swap(temp_queue);
 }
 
-void Loader::CountMCEvent() {
+void Loader::CountMCEvent(std::string filename, bool smartmode) {
     if (current_MCcount > 0) { // allocate new int
         printf("The number of CountMCEvent should not be larger than 1\n");
         printf("Only first CountMCEvent is accepted\n");
@@ -3409,7 +3749,7 @@ void Loader::CountMCEvent() {
     typedef struct labels {
         int __experiment__;
         int __run__;
-        int __event__;
+        unsigned int __event__;
         int __ncandidates__;
     } Labels;
 
@@ -3447,7 +3787,17 @@ void Loader::CountMCEvent() {
                 printf("ERROR! MC decay id cannot be found\n");
                 exit(1);
             }
-            MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + 1;
+
+            if (smartmode == false) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + 1;
+            else {
+                if (filename.find("B2Knunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplus;
+                else if (filename.find("B2Kstarnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplusstar;
+                else if (filename.find("B2Xsnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsu_nonresonant;
+                else if (filename.find("B02K0nunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0;
+                else if (filename.find("B02Kstar0nunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0star;
+                else if (filename.find("B02Xsnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsd_nonresonant;
+                else { printf("ERROR 142\n"); exit(1); }
+            }
         }
 
         TotalData.push(temp);
@@ -3502,7 +3852,6 @@ int PrintFOM(){
         std::string::size_type const p(names.at(i).find_last_of('.'));
         std::string file_without_extension = names.at(i).substr(0, p);
 
-        loader.Cut(Loader::Bsig,6,Loader::larger_than,1.1);
         loader.PrintFOM1D(Loader::Kplus);
 
 
@@ -3511,4 +3860,3 @@ int PrintFOM(){
 
     return 0;
 }
-
