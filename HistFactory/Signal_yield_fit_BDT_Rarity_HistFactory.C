@@ -264,7 +264,7 @@ enum DecayModeMC { // MC level
 
 # define N_decay 38 // five decay mode + others
 
-void DecayArrayToXsOutputDecay(double Decay[N_decay], double output_Decay[MAX_NUM_DECAYMODE_MC]) {
+void DecayArrayToXsOutputDecay(int Decay[N_decay], double output_Decay[MAX_NUM_DECAYMODE_MC]) {
     output_Decay[Xsu2Kc_MC] = 0;
     output_Decay[Xsu2Kcstar2KcPi0_MC] = 0;
     output_Decay[Xsu2Kcstar2K0Pic_MC] = 0;
@@ -1940,7 +1940,7 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
     double temp_nKaon_excep = -1;
     double temp_KaonID_rel_up = -1;
     double temp_KaonID_rel_dn = -1;
-    double Decay[N_decay] = { 0.0 };
+    int Decay[N_decay] = { 0 };
 
     double weight_not_Selected = GetFragmentationWeight(type, SelectedDecayMode, IsItUp);
 
