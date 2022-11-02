@@ -47,6 +47,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
 # define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
 
+/*
 // my MC sample number
 # define N_Kplus_nunubar 10000000.0
 # define N_K0_nunubar 10000000.0
@@ -62,24 +63,81 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
 # define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
 # define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
+*/
 
-void load_files(const char *dirname, std::vector<std::string>* names){
-   TSystemDirectory dir(dirname, dirname);
-   TList *files = dir.GetListOfFiles();
-   if (files) {
-      TSystemFile *file;
-      TString fname;
-      TIter next(files);
-      while ((file=(TSystemFile*)next())) {
-         fname = file->GetName();
-         if (!file->IsDirectory() && fname.EndsWith(".root")) {
-            names->push_back(fname.Data());
-         }
-      }
-   }
+// SIGNAL MC sample number
+# define N_Kplus_train 7039000.0
+# define N_K0_train 7166624.0
+# define N_Kplusstar_train 7039000.0
+# define N_K0star_train 7166624.0
+# define N_Xsu_nonresonant_train 35195000.0
+# define N_Xsd_nonresonant_train 34940430.0
+# define N_Kplus_test 2961000.0
+# define N_K0_test 2833376.0
+# define N_Kplusstar_test 2961000.0
+# define N_K0star_test 2833376.0
+# define N_Xsu_nonresonant_test 14805000.0
+# define N_Xsd_nonresonant_test 15059570.0
+
+// scale factor for SIGNAL MC sample (364.436/fb)
+# define Scale_Kplus_train (0.364436 * N_Kplus_nunubar_1invab/N_Kplus_train)
+# define Scale_Kplusstar_train (0.364436 * N_Kplusstar_nunubar_1invab/N_Kplusstar_train)
+# define Scale_Xsu_nonresonant_train (0.364436 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_train)
+# define Scale_K0_train (0.364436 * N_K0_nunubar_1invab/N_K0_train)
+# define Scale_K0star_train (0.364436 * N_K0star_nunubar_1invab/N_K0star_train)
+# define Scale_Xsd_nonresonant_train (0.364436 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_train)
+# define Scale_Kplus_test (0.364436 * N_Kplus_nunubar_1invab/N_Kplus_test)
+# define Scale_Kplusstar_test (0.364436 * N_Kplusstar_nunubar_1invab/N_Kplusstar_test)
+# define Scale_Xsu_nonresonant_test (0.364436 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_test)
+# define Scale_K0_test (0.364436 * N_K0_nunubar_1invab/N_K0_test)
+# define Scale_K0star_test (0.364436 * N_K0star_nunubar_1invab/N_K0star_test)
+# define Scale_Xsd_nonresonant_test (0.364436 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_test)
+
+// BKG MC sample number (0.8/ab for BB, 1.0/ab for qq)
+# define N_CHG_train 32042497.0
+# define N_MIX_train 24693710.0
+# define N_UUBAR_train 94447089.0
+# define N_DDBAR_train 22664556.0
+# define N_SSBAR_train 19244661.0
+# define N_CHARM_train 107541168.0
+# define N_CHG_test 48052238.0
+# define N_MIX_test 37030486.0
+# define N_UUBAR_test 141671998.0
+# define N_DDBAR_test 34114182.0
+# define N_SSBAR_test 28859338.0
+# define N_CHARM_test 161280679.0
+
+// scale factor for BKG MC sample (364.436/fb)
+# define Scale_CHG_train ((0.364436/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_train)
+# define Scale_MIX_train ((0.364436/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_train)
+# define Scale_UUBAR_train ((0.364436/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_train)
+# define Scale_DDBAR_train ((0.364436/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_train)
+# define Scale_SSBAR_train ((0.364436/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_train)
+# define Scale_CHARM_train ((0.364436/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_train)
+# define Scale_CHG_test ((0.364436/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_test)
+# define Scale_MIX_test ((0.364436/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_test)
+# define Scale_UUBAR_test ((0.364436/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_test)
+# define Scale_DDBAR_test ((0.364436/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_test)
+# define Scale_SSBAR_test ((0.364436/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_test)
+# define Scale_CHARM_test ((0.364436/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_test)
+
+void load_files(const char* dirname, std::vector<std::string>* names) {
+    TSystemDirectory dir(dirname, dirname);
+    TList* files = dir.GetListOfFiles();
+    if (files) {
+        TSystemFile* file;
+        TString fname;
+        TIter next(files);
+        while ((file = (TSystemFile*)next())) {
+            fname = file->GetName();
+            if (!file->IsDirectory() && fname.EndsWith(".root")) {
+                names->push_back(fname.Data());
+            }
+        }
+    }
 }
 
-typedef struct data{
+typedef struct data {
     int __experiment__;
     int __run__;
     unsigned int __event__;
@@ -188,7 +246,7 @@ typedef struct data{
     double nROE_Upsilon_BCS;
     double nROE_Upsilon;
 
-} Data; 
+} Data;
 
 class Loader {
 public:
@@ -531,7 +589,7 @@ void Loader::GetData(TFile* input_file) {
 
     Data temp = { 0 };
 
-    double MakeShiftDoubleToInt[7] = { 0 }; // intermediate variable to convert from int to double
+    int MakeShiftDoubleToInt[7] = { 0 }; // intermediate variable to convert from int to double
 
     // get event_info
     tree_upsilon->SetBranchAddress("__experiment__", &temp.upsilon_experiment);
@@ -886,16 +944,16 @@ void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_l
         Data temp_data = temp_queue.front();
         temp_queue.pop();
         if (variable == Loader::Upsilon) {
-            if(dr == Loader::Linear) temp_hist->Fill(temp_data.Upsilon_info[i]);
+            if (dr == Loader::Linear) temp_hist->Fill(temp_data.Upsilon_info[i]);
             else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Upsilon_info[i]));
             else { printf("ERROR! 001\n"); exit(1); }
         }
-        else if(variable == Loader::Bsig) {
+        else if (variable == Loader::Bsig) {
             if (dr == Loader::Linear) temp_hist->Fill(temp_data.Bsig_info[i]);
             else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Bsig_info[i]));
             else { printf("ERROR! 002\n"); exit(1); }
         }
-        else if(variable == Loader::Btag) {
+        else if (variable == Loader::Btag) {
             if (dr == Loader::Linear) temp_hist->Fill(temp_data.Btag_info[i]);
             else if (dr == Loader::Log) temp_hist->Fill(TMath::Log10(temp_data.Btag_info[i]));
             else { printf("ERROR! 003\n"); exit(1); }
@@ -1140,7 +1198,7 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
     }
 
     TH1F* temp_hist[Loader::MAX_NUM_DECAYMODE];
-    for (int i = 0; i < MAX_NUM_DECAYMODE;i++) {
+    for (int i = 0; i < MAX_NUM_DECAYMODE; i++) {
         temp_hist[i] = TH1Fs_THStack[i].at(current_THStack);
     }
 
@@ -1152,7 +1210,7 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
 
         Loader::DecayMode decaymodeid = Loader::MAX_NUM_DECAYMODE;
         for (int i = 0; i < MAX_NUM_DECAYMODE; i++) {
-            if (TrueIfDecayModeMatch(temp_data, static_cast<Loader::DecayMode>(i) )) {
+            if (TrueIfDecayModeMatch(temp_data, static_cast<Loader::DecayMode>(i))) {
                 decaymodeid = static_cast<Loader::DecayMode>(i);
                 break;
             }
@@ -1240,12 +1298,12 @@ void Loader::PrintInformation(std::string title, std::string filename, bool smar
         if (overlap == false) {
             if (smartmode == false) N_events.at(current_N_event) = N_events.at(current_N_event) + 1;
             else {
-                if (filename.find("B2Knunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplus;
-                else if (filename.find("B2Kstarnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplusstar;
-                else if (filename.find("B2Xsnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsu_nonresonant;
-                else if (filename.find("B02K0nunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0;
-                else if (filename.find("B02Kstar0nunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0star;
-                else if (filename.find("B02Xsnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsd_nonresonant;
+                if (filename.find("B2Knunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplus_test;
+                else if (filename.find("B2Kstarnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplusstar_test;
+                else if (filename.find("B2Xsnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsu_nonresonant_test;
+                else if (filename.find("B02K0nunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0_test;
+                else if (filename.find("B02Kstar0nunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0star_test;
+                else if (filename.find("B02Xsnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsd_nonresonant_test;
                 else { N_events.at(current_N_event) = N_events.at(current_N_event) + 1; }
             }
             Labels temp_Labels;
@@ -1285,12 +1343,12 @@ void Loader::PrintInformation(std::string title, std::string filename, bool smar
                 }
 
                 double temp_N = -1;
-                if (decaymodeid_MC == Loader::Xsu2Kc_MC) temp_N = Scale_Kplus;
-                else if (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC) temp_N = Scale_Kplusstar;
-                else if (static_cast<int>(Xsu2KcPi0_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(Xsu2KcKcKcPi0_MC)) temp_N = Scale_Xsu_nonresonant;
-                else if (decaymodeid_MC == Loader::Xsd2K0_MC) temp_N = Scale_K0;
-                else if (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC) temp_N = Scale_K0star;
-                else if (static_cast<int>(Xsd2KcPic_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(other)) temp_N = Scale_Xsd_nonresonant;
+                if (decaymodeid_MC == Loader::Xsu2Kc_MC) temp_N = Scale_Kplus_test;
+                else if (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC) temp_N = Scale_Kplusstar_test;
+                else if (static_cast<int>(Xsu2KcPi0_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(Xsu2KcKcKcPi0_MC)) temp_N = Scale_Xsu_nonresonant_test;
+                else if (decaymodeid_MC == Loader::Xsd2K0_MC) temp_N = Scale_K0_test;
+                else if (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC) temp_N = Scale_K0star_test;
+                else if (static_cast<int>(Xsd2KcPic_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(other)) temp_N = Scale_Xsd_nonresonant_test;
                 else {
                     printf("ERROR 265\n");
                     exit(1);
@@ -1312,12 +1370,12 @@ void Loader::PrintInformation(std::string title, std::string filename, bool smar
         }
         if (smartmode == false) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0;
         else {
-            if (filename.find("B2Knunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplus;
-            else if (filename.find("B2Kstarnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplusstar;
-            else if (filename.find("B2Xsnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsu_nonresonant;
-            else if (filename.find("B02K0nunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0;
-            else if (filename.find("B02Kstar0nunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0star;
-            else if (filename.find("B02Xsnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsd_nonresonant;
+            if (filename.find("B2Knunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplus_test;
+            else if (filename.find("B2Kstarnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplusstar_test;
+            else if (filename.find("B2Xsnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsu_nonresonant_test;
+            else if (filename.find("B02K0nunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0_test;
+            else if (filename.find("B02Kstar0nunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0star_test;
+            else if (filename.find("B02Xsnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsd_nonresonant_test;
             else { N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0; }
         }
 
@@ -1325,12 +1383,12 @@ void Loader::PrintInformation(std::string title, std::string filename, bool smar
     }
     if (smartmode == false) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size();
     else {
-        if (filename.find("B2Knunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Kplus;
-        else if (filename.find("B2Kstarnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Kplusstar;
-        else if (filename.find("B2Xsnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Xsu_nonresonant;
-        else if (filename.find("B02K0nunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_K0;
-        else if (filename.find("B02Kstar0nunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_K0star;
-        else if (filename.find("B02Xsnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Xsd_nonresonant;
+        if (filename.find("B2Knunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Kplus_test;
+        else if (filename.find("B2Kstarnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Kplusstar_test;
+        else if (filename.find("B2Xsnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Xsu_nonresonant_test;
+        else if (filename.find("B02K0nunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_K0_test;
+        else if (filename.find("B02Kstar0nunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_K0star_test;
+        else if (filename.find("B02Xsnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Xsd_nonresonant_test;
         else { N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size(); }
     }
     for (unsigned int i = 0; i < label_list.size(); i++) {
@@ -1338,12 +1396,12 @@ void Loader::PrintInformation(std::string title, std::string filename, bool smar
             if (label_list.at(i).IsThisModeExist[j]) {
                 if (smartmode == false) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + 1;
                 else {
-                    if (filename.find("B2Knunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Kplus;
-                    else if (filename.find("B2Kstarnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Kplusstar;
-                    else if (filename.find("B2Xsnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Xsu_nonresonant;
-                    else if (filename.find("B02K0nunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_K0;
-                    else if (filename.find("B02Kstar0nunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_K0star;
-                    else if (filename.find("B02Xsnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Xsd_nonresonant;
+                    if (filename.find("B2Knunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Kplus_test;
+                    else if (filename.find("B2Kstarnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Kplusstar_test;
+                    else if (filename.find("B2Xsnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Xsu_nonresonant_test;
+                    else if (filename.find("B02K0nunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_K0_test;
+                    else if (filename.find("B02Kstar0nunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_K0star_test;
+                    else if (filename.find("B02Xsnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Xsd_nonresonant_test;
                     else { N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + 1; }
                 }
             }
@@ -1360,7 +1418,7 @@ void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, doubl
         Data temp_data = TotalData.front();
         TotalData.pop();
         if (variable == Loader::Upsilon) {
-            if(inq == Loader::larger_than && temp_data.Upsilon_info[i] > value) temp_queue.push(temp_data);
+            if (inq == Loader::larger_than && temp_data.Upsilon_info[i] > value) temp_queue.push(temp_data);
             else if (inq == Loader::smaller_than && temp_data.Upsilon_info[i] < value) temp_queue.push(temp_data);
         }
         else if (variable == Loader::Bsig) {
@@ -1431,14 +1489,14 @@ void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, doubl
         double qualifier_var = -1;
         bool satisfy = false;
         if (variable_qual == Loader::Upsilon) qualifier_var = temp_data.Upsilon_info[i_qual];
-        else if(variable_qual == Loader::Bsig) qualifier_var = temp_data.Bsig_info[i_qual];
-        else if(variable_qual == Loader::Btag) qualifier_var = temp_data.Btag_info[i_qual];
+        else if (variable_qual == Loader::Bsig) qualifier_var = temp_data.Bsig_info[i_qual];
+        else if (variable_qual == Loader::Btag) qualifier_var = temp_data.Btag_info[i_qual];
         else {
             printf("ERROR! 130\n");
             exit(1);
         }
         if (inq_qual == Loader::larger_than && qualifier_var > value_qual) satisfy = true;
-        else if(inq_qual == Loader::smaller_than && qualifier_var < value_qual) satisfy = true;
+        else if (inq_qual == Loader::smaller_than && qualifier_var < value_qual) satisfy = true;
         else satisfy = false;
         if (qualifier == Loader::when) {
             if (!satisfy) {
@@ -1677,7 +1735,7 @@ bool Loader::IsBCSValid() {
 }
 
 void Loader::End() {
-    for (int i = 0; i < N_events.size();i++) {
+    for (int i = 0; i < N_events.size(); i++) {
         printf("%s\n", titles.at(i).c_str());
         printf("Number of event: %lf\n", N_events.at(i));
         printf("Number of candidate: %lf\n", N_candidates.at(i));
@@ -1758,7 +1816,7 @@ void Loader::End() {
     if (FOMIsOn == true) {
         double SF = -1;
         if (scaleFactor == Loader::None) SF = 1.0;
-        else if(scaleFactor == Loader::Kplus) SF = Scale_Kplus_test;
+        else if (scaleFactor == Loader::Kplus) SF = Scale_Kplus_test;
         else if (scaleFactor == Loader::Kplusstar) SF = Scale_Kplusstar_test;
         else if (scaleFactor == Loader::Xsu_nonresonant) SF = Scale_Xsu_nonresonant_test;
         else if (scaleFactor == Loader::K0) SF = Scale_K0_test;
@@ -1807,13 +1865,13 @@ void Loader::End() {
         printf("--------------- number of Decay mode ---------------\n");
     }
 
-    for (int i = 0; i < TH1Fs.size();i++) {
+    for (int i = 0; i < TH1Fs.size(); i++) {
         TCanvas* c_temp = new TCanvas("c", "", 1500, 1200); c_temp->cd();
         TH1Fs.at(i)->Draw("Hist"); c_temp->SaveAs((std::string(TH1Fs.at(i)->GetName()) + ".png").c_str());
         delete c_temp;
     }
 
-    for (int i = 0; i < TH2Fs.size();i++) {
+    for (int i = 0; i < TH2Fs.size(); i++) {
         TH1D* projX;
         TH1D* projY;
 
@@ -3416,14 +3474,14 @@ void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
         else if (decaymodeid_MC == 32)decaymodeid_MC_for_square = 28;
         else if (decaymodeid_MC == 33)decaymodeid_MC_for_square = 29;
         else if (decaymodeid_MC == 34)decaymodeid_MC_for_square = 30;
-        if(smartmode == false) Confusion_square[decaymodeid][decaymodeid_MC_for_square]++;
+        if (smartmode == false) Confusion_square[decaymodeid][decaymodeid_MC_for_square]++;
         else {
-            if(filename.find("B2Knunu") != string::npos ) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplus;
-            else if (filename.find("B2Kstarnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplusstar;
-            else if (filename.find("B2Xsnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsu_nonresonant;
-            else if (filename.find("B02K0nunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0;
-            else if (filename.find("B02Kstar0nunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0star;
-            else if (filename.find("B02Xsnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsd_nonresonant;
+            if (filename.find("B2Knunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplus_test;
+            else if (filename.find("B2Kstarnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplusstar_test;
+            else if (filename.find("B2Xsnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsu_nonresonant_test;
+            else if (filename.find("B02K0nunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0_test;
+            else if (filename.find("B02Kstar0nunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0star_test;
+            else if (filename.find("B02Xsnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsd_nonresonant_test;
             else { printf("ERROR 142\n"); exit(1); }
         }
 
@@ -3512,7 +3570,7 @@ void Loader::OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetom
             if ((0.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 3.5) || (5.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 8.5)) temp_queue.push(temp_data);
         }
         else if (type == Loader::Dchargedwithpizero) {
-            if ((3.5 < temp_dmID_Dcharged && temp_dmID_Dcharged  < 5.5) || (8.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 11.5)) temp_queue.push(temp_data);
+            if ((3.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 5.5) || (8.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 11.5)) temp_queue.push(temp_data);
         }
         else if (type == Loader::Dneutralwithoutpizero) {
             if ((0.5 < temp_dmID_Dneutral && temp_dmID_Dneutral < 3.5) || (6.5 < temp_dmID_Dneutral && temp_dmID_Dneutral < 7.5)) temp_queue.push(temp_data);
@@ -3559,7 +3617,7 @@ void Loader::DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedve
 
         if (type == Loader::Dchargedwithoutpizero) {
             if ((0.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 3.5) || (5.5 < temp_dmID_Dcharged && temp_dmID_Dcharged < 8.5)) {
-                if(!(minM < temp_M_Dcharged && temp_M_Dcharged < maxM)) temp_queue.push(temp_data);
+                if (!(minM < temp_M_Dcharged && temp_M_Dcharged < maxM)) temp_queue.push(temp_data);
             }
             else temp_queue.push(temp_data);
         }
@@ -3722,7 +3780,7 @@ void Loader::MVACut(double OBB, double Oqq, Loader::MassRegion massRegion) {
         if (massRegion == Loader::SmallMass) {
             if (temp_data.Bsig_info[6] > 1.1) temp_queue.push(temp_data);
             else {
-                if(temp_data.MVA_BB > OBB && temp_data.MVA_Continuum > Oqq) temp_queue.push(temp_data);
+                if (temp_data.MVA_BB > OBB && temp_data.MVA_Continuum > Oqq) temp_queue.push(temp_data);
             }
         }
         else if (massRegion == Loader::LargeMass) {
