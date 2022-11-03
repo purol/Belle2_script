@@ -112,18 +112,18 @@
 # define Scale_Xsd_nonresonant_test (0.364436 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_test)
 
 // BKG MC sample number (0.8/ab for BB, 1.0/ab for qq)
-# define N_CHG_train 32042497.0
-# define N_MIX_train 24693710.0
-# define N_UUBAR_train 94447089.0
-# define N_DDBAR_train 22664556.0
-# define N_SSBAR_train 19244661.0
-# define N_CHARM_train 107541168.0
-# define N_CHG_test 48052238.0
-# define N_MIX_test 37030486.0
-# define N_UUBAR_test 141671998.0
-# define N_DDBAR_test 34114182.0
-# define N_SSBAR_test 28859338.0
-# define N_CHARM_test 161280679.0
+# define N_CHG_test 32042497.0
+# define N_MIX_test 24693710.0
+# define N_UUBAR_test 94447089.0
+# define N_DDBAR_test 22664556.0
+# define N_SSBAR_test 19244661.0
+# define N_CHARM_test 107541168.0
+# define N_CHG_train 48052238.0
+# define N_MIX_train 37030486.0
+# define N_UUBAR_train 141671998.0
+# define N_DDBAR_train 34114182.0
+# define N_SSBAR_train 28859338.0
+# define N_CHARM_train 161280679.0
 
 // scale factor for BKG MC sample (364.436/fb)
 # define Scale_CHG_train ((0.364436/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_train)
@@ -196,12 +196,12 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     double D0_dz;
     double D0_M;
 
-    double Decay_Kplus = -1;
-    double Decay_Kplusstar_ch1 = -1;
-    double Decay_Kplusstar_ch2 = -1;
-    double Decay_K0 = -1;
-    double Decay_K0star_ch1 = -1;
-    double Decay_K0star_ch2 = -1;
+    int Decay_Kplus = -1;
+    int Decay_Kplusstar_ch1 = -1;
+    int Decay_Kplusstar_ch2 = -1;
+    int Decay_K0 = -1;
+    int Decay_K0star_ch1 = -1;
+    int Decay_K0star_ch2 = -1;
 
     double Mxs = -1;
     double Pcms = -1;
