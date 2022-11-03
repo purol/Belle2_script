@@ -72,10 +72,10 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             int temp_flag;
             float temp_BB_output;
             float temp_Continuum_output;
-            double temp_nROE_mu;
-            double temp_nROE_Jpsi;
-            double temp_nROE_Upsilon_BCS;
-            double temp_nROE_Upsilon;
+            int temp_nROE_mu;
+            int temp_nROE_Jpsi;
+            int temp_nROE_Upsilon_BCS;
+            int temp_nROE_Upsilon;
 
             bool DoesItHaveXsBranch = false;
             for (int i = 0; i < temp_tree->GetListOfBranches()->LastIndex(); i++) {

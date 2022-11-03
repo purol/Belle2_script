@@ -241,10 +241,10 @@ typedef struct data{
     float MVA_BB;
     float MVA_Continuum;
 
-    double nROE_mu;
-    double nROE_Jpsi;
-    double nROE_Upsilon_BCS;
-    double nROE_Upsilon;
+    int nROE_mu;
+    int nROE_Jpsi;
+    int nROE_Upsilon_BCS;
+    int nROE_Upsilon;
 
 } Data; 
 
@@ -453,10 +453,10 @@ private:
     double Bsig_decayIDToTree;
     float MVA_BB_DataToTree;
     float MVA_Continuum_DataToTree;
-    double nROE_mu_DataToTree;
-    double nROE_Jpsi_DataToTree;
-    double nROE_Upsilon_BCS_DataToTree;
-    double nROE_Upsilon_DataToTree;
+    int nROE_mu_DataToTree;
+    int nROE_Jpsi_DataToTree;
+    int nROE_Upsilon_BCS_DataToTree;
+    int nROE_Upsilon_DataToTree;
 
     bool DoesItHaveXsBranch;
     bool DoesItHaveMVAOutput;
@@ -877,10 +877,10 @@ void Loader::GetData(TFile* input_file) {
         tree_upsilon->SetBranchAddress("nParticlesInList__boUpsilon__bo4S__bc__cltemp_withoutneutrino__bc", &temp.nROE_Upsilon);
     }
     else {
-        temp.nROE_mu = -1.0;
-        temp.nROE_Jpsi = -1.0;
-        temp.nROE_Upsilon_BCS = -1.0;
-        temp.nROE_Upsilon = -1.0;
+        temp.nROE_mu = -1;
+        temp.nROE_Jpsi = -1;
+        temp.nROE_Upsilon_BCS = -1;
+        temp.nROE_Upsilon = -1;
     }
 
     printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -2353,10 +2353,10 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     float temp_MVA_BB_DataToTree;
     float temp_MVA_Continuum_DataToTree;
 
-    double temp_nROE_mu;
-    double temp_nROE_Jpsi;
-    double temp_nROE_Upsilon_BCS;
-    double temp_nROE_Upsilon;
+    int temp_nROE_mu;
+    int temp_nROE_Jpsi;
+    int temp_nROE_Upsilon_BCS;
+    int temp_nROE_Upsilon;
 
     /*================================================================*/
     // get event_info
@@ -2751,10 +2751,10 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     float temp_MVA_BB_DataToTree;
     float temp_MVA_Continuum_DataToTree;
 
-    double temp_nROE_mu_DataToTree;
-    double temp_nROE_Jpsi_DataToTree;
-    double temp_nROE_Upsilon_BCS_DataToTree;
-    double temp_nROE_Upsilon_DataToTree;
+    int temp_nROE_mu_DataToTree;
+    int temp_nROE_Jpsi_DataToTree;
+    int temp_nROE_Upsilon_BCS_DataToTree;
+    int temp_nROE_Upsilon_DataToTree;
 
     /*================================================================*/
     // get event_info
