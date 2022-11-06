@@ -633,7 +633,8 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
 
        std::vector<float> inputs;
        inputs.push_back(temp_UpsilonDataToTree[33]); // aplanarity
-       inputs.push_back(temp_BsigDataToTree[80]); // Bsig_daughter_0_extraInfo_mydz
+       inputs.push_back(temp_BsigDataToTree[4]); // Bsig_useCMSFrame_p
+       inputs.push_back(temp_BtagDataToTree[6]); // Btag_chiProb
        inputs.push_back(temp_DataToTree[23]); // Btag_CleoConeCS_1
        inputs.push_back(temp_DataToTree[24]); // Btag_CleoConeCS_2
        inputs.push_back(temp_DataToTree[25]); // Btag_CleoConeCS_3
@@ -641,17 +642,18 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        inputs.push_back(temp_DataToTree[27]); // Btag_CleoConeCS_5
        inputs.push_back(temp_DataToTree[3]); // Btag_cosTBTO
        inputs.push_back(temp_BtagDataToTree[2]); // Btag_deltaE
-       inputs.push_back(temp_DataToTree[5]); // Btag_KSFWVariables_et
+       inputs.push_back(temp_DataToTree[19]); // Btag_KSFWVariables_hoo1
        inputs.push_back(temp_DataToTree[20]); // Btag_KSFWVariables_hoo2
+       inputs.push_back(temp_DataToTree[21]); // Btag_KSFWVariables_hoo3
        inputs.push_back(temp_DataToTree[22]); // Btag_KSFWVariables_hoo4
+       inputs.push_back(temp_DataToTree[8]); // Btag_KSFWVariables_hso01
        inputs.push_back(temp_DataToTree[10]); // Btag_KSFWVariables_hso03
-       inputs.push_back(temp_DataToTree[14]); // Btag_KSFWVariables_hso14
+       inputs.push_back(temp_DataToTree[11]); // Btag_KSFWVariables_hso04
+       inputs.push_back(temp_DataToTree[12]); // Btag_KSFWVariables_hso10
+       inputs.push_back(temp_DataToTree[13]); // Btag_KSFWVariables_hso12
        inputs.push_back(temp_DataToTree[15]); // Btag_KSFWVariables_hso20
        inputs.push_back(temp_DataToTree[16]); // Btag_KSFWVariables_hso22
        inputs.push_back(temp_DataToTree[17]); // Btag_KSFWVariables_hso24
-       inputs.push_back(temp_DataToTree[0]); // Btag_R2
-       inputs.push_back(temp_DataToTree[1]); // Btag_thrustBm
-       inputs.push_back(temp_DataToTree[2]); // Btag_thrustOm
        inputs.push_back(temp_DataToTree[34]); // Btag_useCMSFrame_theta
        inputs.push_back(temp_UpsilonDataToTree[23]); // cleoConeThrust0
        inputs.push_back(temp_UpsilonDataToTree[24]); // cleoConeThrust1
@@ -659,10 +661,10 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        inputs.push_back(temp_UpsilonDataToTree[26]); // cleoConeThrust3
        inputs.push_back(temp_UpsilonDataToTree[27]); // cleoConeThrust4
        inputs.push_back(temp_UpsilonDataToTree[28]); // cleoConeThrust5
-       inputs.push_back(temp_UpsilonDataToTree[29]); // cleoConeThrust6
-       inputs.push_back(temp_UpsilonDataToTree[31]); // cleoConeThrust8
+       inputs.push_back(temp_UpsilonDataToTree[14]); // foxWolframR1
        inputs.push_back(temp_UpsilonDataToTree[15]); // foxWolframR2
        inputs.push_back(temp_UpsilonDataToTree[16]); // foxWolframR3
+       inputs.push_back(temp_UpsilonDataToTree[19]); // harmonicMomentThrust1
        inputs.push_back(temp_UpsilonDataToTree[21]); // harmonicMomentThrust3
        inputs.push_back(temp_UpsilonDataToTree[22]); // harmonicMomentThrust4
        inputs.push_back(temp_BtagDataToTree[5]); // Btag_extraInfo_SignalProbability
@@ -672,23 +674,18 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        inputs.push_back(temp_UpsilonDataToTree[54]); // nParticlesInList__bomu__pl__clMuonFBDT_tight__bc
        inputs.push_back(temp_UpsilonDataToTree[3]); // roeEextra__bocleanMask__bc
        inputs.push_back(temp_UpsilonDataToTree[44]); // roePTheta__bocleanMask__bc
-       inputs.push_back(temp_UpsilonDataToTree[32]); // sphericity
 
        if (temp_BsigDataToTree[67] > -0.5) {
-           inputs.push_back(temp_BsigDataToTree[69]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_dz
            inputs.push_back(temp_BsigDataToTree[70]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_M
        }
        else {
-           inputs.push_back(-100.0); // Bsig_daughter_0_extraInfo_Dcsimpleveto_dz
            inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_Dcsimpleveto_M
        }
 
        if (temp_BsigDataToTree[74] > -0.5) {
-           inputs.push_back(temp_BsigDataToTree[76]); // Bsig_daughter_0_extraInfo_D0simpleveto_dz
            inputs.push_back(temp_BsigDataToTree[77]); // Bsig_daughter_0_extraInfo_D0simpleveto_M
        }
        else {
-           inputs.push_back(-100.0); // Bsig_daughter_0_extraInfo_D0simpleveto_dz
            inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_D0simpleveto_M
        }
 

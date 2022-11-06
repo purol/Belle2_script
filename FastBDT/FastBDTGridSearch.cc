@@ -40,8 +40,8 @@
 # define N_decay_nparticles 3 // # of nu_e, B, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
 
-# define Nvar 45
-# define DvetoNvar 4
+# define Nvar 44
+# define DvetoNvar 2
 
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
@@ -207,46 +207,47 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     double Pcms = -1;
 
     tree_data->SetBranchAddress("aplanarity", &Vars[0]);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_mydz", &Vars[1]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_1", &Vars[2]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_2", &Vars[3]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_3", &Vars[4]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_4", &Vars[5]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_5", &Vars[6]);
-    tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[7]);
-    tree_data->SetBranchAddress("Btag_deltaE", &Vars[8]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_et", &Vars[9]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo2", &Vars[10]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo4", &Vars[11]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso03", &Vars[12]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso14", &Vars[13]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso20", &Vars[14]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso22", &Vars[15]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[16]);
-    tree_data->SetBranchAddress("Btag_R2", &Vars[17]);
-    tree_data->SetBranchAddress("Btag_thrustBm", &Vars[18]);
-    tree_data->SetBranchAddress("Btag_thrustOm", &Vars[19]);
-    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[20]);
-    tree_data->SetBranchAddress("cleoConeThrust0", &Vars[21]);
-    tree_data->SetBranchAddress("cleoConeThrust1", &Vars[22]);
-    tree_data->SetBranchAddress("cleoConeThrust2", &Vars[23]);
-    tree_data->SetBranchAddress("cleoConeThrust3", &Vars[24]);
-    tree_data->SetBranchAddress("cleoConeThrust4", &Vars[25]);
-    tree_data->SetBranchAddress("cleoConeThrust5", &Vars[26]);
-    tree_data->SetBranchAddress("cleoConeThrust6", &Vars[27]);
-    tree_data->SetBranchAddress("cleoConeThrust8", &Vars[28]);
-    tree_data->SetBranchAddress("foxWolframR2", &Vars[29]);
-    tree_data->SetBranchAddress("foxWolframR3", &Vars[30]);
-    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[31]);
-    tree_data->SetBranchAddress("harmonicMomentThrust4", &Vars[32]);
-    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[33]);
-    tree_data->SetBranchAddress("missingEnergyOfEventCMS", &Vars[34]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[35]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[36]);
-    tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &Vars[37]);
-    tree_data->SetBranchAddress("roeEextra__bocleanMask__bc", &Vars[38]);
-    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[39]);
-    tree_data->SetBranchAddress("sphericity", &Vars[40]);
+    tree_data->SetBranchAddress("Bsig_useCMSFrame_p", &Vars[1]);
+    tree_data->SetBranchAddress("Btag_chiProb", &Vars[2]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_1", &Vars[3]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_2", &Vars[4]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_3", &Vars[5]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_4", &Vars[6]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_5", &Vars[7]);
+    tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[8]);
+    tree_data->SetBranchAddress("Btag_deltaE", &Vars[9]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo1", &Vars[10]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo2", &Vars[11]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo3", &Vars[12]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo4", &Vars[13]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso01", &Vars[14]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso03", &Vars[15]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso04", &Vars[16]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso10", &Vars[17]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso12", &Vars[18]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso20", &Vars[19]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso22", &Vars[20]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[21]);
+    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[22]);
+    tree_data->SetBranchAddress("cleoConeThrust0", &Vars[23]);
+    tree_data->SetBranchAddress("cleoConeThrust1", &Vars[24]);
+    tree_data->SetBranchAddress("cleoConeThrust2", &Vars[25]);
+    tree_data->SetBranchAddress("cleoConeThrust3", &Vars[26]);
+    tree_data->SetBranchAddress("cleoConeThrust4", &Vars[27]);
+    tree_data->SetBranchAddress("cleoConeThrust5", &Vars[28]);
+    tree_data->SetBranchAddress("foxWolframR1", &Vars[29]);
+    tree_data->SetBranchAddress("foxWolframR2", &Vars[30]);
+    tree_data->SetBranchAddress("foxWolframR3", &Vars[31]);
+    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[32]);
+    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[33]);
+    tree_data->SetBranchAddress("harmonicMomentThrust4", &Vars[34]);
+    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[35]);
+    tree_data->SetBranchAddress("missingEnergyOfEventCMS", &Vars[36]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[37]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[38]);
+    tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &Vars[39]);
+    tree_data->SetBranchAddress("roeEextra__bocleanMask__bc", &Vars[40]);
+    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[41]);
 
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &Dc_chiProb);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &Dc_dz);
@@ -266,7 +267,7 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
         tree_data->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay_K0star_ch2);
     }
     tree_data->SetBranchAddress("Bsig_M", &Mxs);
-    tree_data->SetBranchAddress("Bsig_useCMSFrame_p", &Pcms);
+    // tree_data->SetBranchAddress("Bsig_useCMSFrame_p", &Pcms);
 
     int Nevt = 0;
     //printf("%lld entries...\n", tree_data->GetEntries());
@@ -279,20 +280,16 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
         for (unsigned int k = 0; k < Nvar - DvetoNvar; k++) input_vars[k].push_back((float) Vars[k]); 
 
         if(Dc_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_dz);
-            input_vars[Nvar - DvetoNvar + 1].push_back((float)Dc_M);
+            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_M);
         }
         else {
-            input_vars[Nvar - DvetoNvar + 0].push_back((float) -100.0);
-            input_vars[Nvar - DvetoNvar + 1].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 0].push_back((float) 0.0);
         }
         if(D0_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 2].push_back((float) D0_dz);
-            input_vars[Nvar - DvetoNvar + 3].push_back((float) D0_M);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float) D0_M);
         }
         else {
-            input_vars[Nvar - DvetoNvar + 2].push_back((float) -100.0);
-            input_vars[Nvar - DvetoNvar + 3].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float) 0.0);
         }
 
         IsSignal->push_back(tempissignal);
