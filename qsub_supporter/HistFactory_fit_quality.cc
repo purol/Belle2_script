@@ -189,7 +189,7 @@ void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
     w->loadSnapshot("NominalParamValues");
 }
 
-RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, double tolerance = -1.0) { // this function follows the procedure in ProfileLikelihoodTestStat.cxx
+RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, double tolerance = -1.0) { // this function follows the procedure in ProfileLikelihoodTestStat.cxx
     // what we have done
     w->loadSnapshot("NominalParamValues");
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
@@ -201,7 +201,7 @@ RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, double tolerance = 
     RooArgSet fGlobalObs;
     RooArgSet fConditionalObs;
     Bool_t fLOffset = RooStats::IsNLLOffset();
-    RooAbsReal* nll = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
+    nll = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
 
     // get default values
     TString fMinimizer = ::ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str();
@@ -211,7 +211,6 @@ RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, double tolerance = 
     if (tolerance < 0) fTolerance = TMath::Max(1., ::ROOT::Math::MinimizerOptions::DefaultTolerance());
     else fTolerance = tolerance;
     Int_t fPrintLevel = ::ROOT::Math::MinimizerOptions::DefaultPrintLevel();
-    fPrintLevel = 0;
 
     // follow what ProfileLikelihoodTestStat.cxx does
     const auto& config = RooStats::GetGlobalRooStatsConfig();
@@ -251,8 +250,6 @@ RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, double tolerance = 
             }
         }
     }
-
-    delete nll;
 
     return minim.save();
 }
@@ -308,7 +305,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
 
 }
 
-void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names){
+void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps){
 
         std::vector<double> mus;
         std::vector<double> mu_errors;
@@ -358,7 +355,8 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names){
 
             w->loadSnapshot("NominalParamValues");
             //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
-            RooFitResult* fitres = MinimizeNLL(w, genData, 0.1);
+            RooAbsReal* nll;
+            RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
 
             RooArgSet fitargs_TOY = fitres->floatParsFinal();
             TIterator* iter_TOY(fitargs_TOY.createIterator());
@@ -411,6 +409,9 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names){
             mu_DDBARs.push_back(w->function("DDBAR_nominal_channel_epsilon")->getVal());
             mu_SSBARs.push_back(w->function("SSBAR_nominal_channel_epsilon")->getVal());
             mu_CHARMs.push_back(w->function("CHARM_nominal_channel_epsilon")->getVal());
+
+            delete nll;
+            delete fitres;
 
         }
 
@@ -530,7 +531,7 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names){
         temp_file->Close();
 }
 
-void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu_injected) {
+void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu_injected, double eps) {
 
     std::vector<double> mus;
     std::vector<double> mu_errors;
@@ -580,7 +581,9 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         w->loadSnapshot("NominalParamValues");
 
         //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
-        RooFitResult* fitres = MinimizeNLL(w, genData, 0.1);
+        RooAbsReal* nll
+        RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
+        delete nll;
 
         RooArgSet fitargs_LT = fitres->floatParsFinal();
         TIterator* iter_LT(fitargs_LT.createIterator());
@@ -633,6 +636,9 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         mu_DDBARs.push_back(w->function("DDBAR_nominal_channel_epsilon")->getVal());
         mu_SSBARs.push_back(w->function("SSBAR_nominal_channel_epsilon")->getVal());
         mu_CHARMs.push_back(w->function("CHARM_nominal_channel_epsilon")->getVal());
+
+        delete nll;
+        delete fitres;
 
     }
 
@@ -760,25 +766,29 @@ int main(int argc, char* argv[]) {
 
     // argv[1]: {ToyMC|LinearityTest}
     // argv[2]: injected mu when Linearity test
+    // argv[3]: eps for minimizer
     double injected_mu = -1;
+    double eps = -1.0;
 
     std::vector<std::string> param_names;
     
     if (std::string(argv[1]) == std::string("ToyMC")) {  // main ToyMC
-        if (argc == 2) {
+        if (argc == 3) {
             injected_mu = -1;
+            eps = std::atof(argv[2]);
         }
         else {
-            printf("Toy MC requires 0 arguments\n");
+            printf("Toy MC requires 1 arguments\n");
             exit(1);
         }
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) { // main LinearityTest 12 1234 0.8
-        if (argc == 3) {
+        if (argc == 4) {
             injected_mu = std::atof(argv[2]);
+            eps = std::atof(argv[3]);
         }
         else {
-            printf("Linearity test requires only 1 arguments: {injected mu}\n");
+            printf("Linearity test requires only 2 arguments: {injected mu} {eps}\n");
             exit(1);
         }
     }
@@ -796,10 +806,10 @@ int main(int argc, char* argv[]) {
     GetNameOfParams(w, &param_names);
 
     if (std::string(argv[1]) == std::string("ToyMC")) {
-        MyToyMCStudy(w, &param_names);
+        MyToyMCStudy(w, &param_names, eps);
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) {
-        MyLinearityTest(w, &param_names, injected_mu);
+        MyLinearityTest(w, &param_names, injected_mu, eps);
     }
 
     f->Close();
