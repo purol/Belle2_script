@@ -189,6 +189,74 @@ void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
     w->loadSnapshot("NominalParamValues");
 }
 
+RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, double tolerance = -1.0) { // this function follows the procedure in ProfileLikelihoodTestStat.cxx
+    // what we have done
+    w->loadSnapshot("NominalParamValues");
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    // get nll
+    RooArgSet* allParams = model->getParameters(*data);
+    RooStats::RemoveConstantParameters(allParams);
+    RooArgSet fGlobalObs;
+    RooArgSet fConditionalObs;
+    Bool_t fLOffset = RooStats::IsNLLOffset();
+    RooAbsReal* nll = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
+
+    // get default values
+    TString fMinimizer = ::ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str();
+    Int_t fStrategy = ::ROOT::Math::MinimizerOptions::DefaultStrategy();
+    // avoid default tolerance to be too small (1. is default in RooMinimizer)
+    Double_t fTolerance;
+    if (tolerance < 0) fTolerance = TMath::Max(1., ::ROOT::Math::MinimizerOptions::DefaultTolerance());
+    else fTolerance = tolerance;
+    Int_t fPrintLevel = ::ROOT::Math::MinimizerOptions::DefaultPrintLevel();
+    fPrintLevel = 0;
+
+    // follow what ProfileLikelihoodTestStat.cxx does
+    const auto& config = RooStats::GetGlobalRooStatsConfig();
+    RooMinimizer minim(*nll);
+    minim.setStrategy(fStrategy);
+    minim.setEvalErrorWall(config.useEvalErrorWall);
+    //LM: RooMinimizer.setPrintLevel has +1 offset - so subtract  here -1 + an extra -1
+    int level = (fPrintLevel == 0) ? -1 : fPrintLevel - 2;
+    minim.setPrintLevel(level);
+    minim.setEps(fTolerance);
+    // this causes a memory leak
+    minim.optimizeConst(2);
+    TString minimizer = fMinimizer;
+    TString algorithm = ROOT::Math::MinimizerOptions::DefaultMinimizerAlgo();
+    if (algorithm == "Migrad") algorithm = "Minimize"; // prefer to use Minimize instead of Migrad
+    int status;
+    for (int tries = 1, maxtries = 4; tries <= maxtries; ++tries) {
+        status = minim.minimize(minimizer, algorithm);
+        if (status % 1000 == 0) {  // ignore erros from Improve
+            break;
+        }
+        else if (tries < maxtries) {
+            cout << "    ----> Doing a re-scan first" << endl;
+            minim.minimize(minimizer, "Scan");
+            if (tries == 2) {
+                if (fStrategy == 0) {
+                    cout << "    ----> trying with strategy = 1" << endl;;
+                    minim.setStrategy(1);
+                }
+                else
+                    tries++; // skip this trial if strategy is already 1
+            }
+            if (tries == 3) {
+                cout << "    ----> trying with improve" << endl;;
+                minimizer = "Minuit";
+                algorithm = "migradimproved";
+            }
+        }
+    }
+
+    delete nll;
+
+    return minim.save();
+}
+
 double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double injected_mu) {
 
     double Nevt = 0.0;
@@ -289,7 +357,8 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names){
             RooDataSet* genData = model->generate(RooArgSet(*x,model->indexCat()), Nevt_total, false, true, "", false, true);
 
             w->loadSnapshot("NominalParamValues");
-            RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+            //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+            RooFitResult* fitres = MinimizeNLL(w, genData, 0.1);
 
             RooArgSet fitargs_TOY = fitres->floatParsFinal();
             TIterator* iter_TOY(fitargs_TOY.createIterator());
@@ -510,7 +579,8 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, true, "", false, true);
         w->loadSnapshot("NominalParamValues");
 
-        RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+        //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+        RooFitResult* fitres = MinimizeNLL(w, genData, 0.1);
 
         RooArgSet fitargs_LT = fitres->floatParsFinal();
         TIterator* iter_LT(fitargs_LT.createIterator());
