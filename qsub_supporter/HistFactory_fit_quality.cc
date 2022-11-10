@@ -153,8 +153,8 @@ using std::endl;
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define Toy_iter_num 5000
-# define LT_iter_num 5000
+# define Toy_iter_num 100
+# define LT_iter_num 100
 
 std::default_random_engine generator;
 
@@ -305,7 +305,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
 
 }
 
-void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps){
+void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, int indicator = 0){
 
         std::vector<double> mus;
         std::vector<double> mu_errors;
@@ -415,7 +415,7 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps){
         }
 
         // define file to save results
-        TFile* temp_file = new TFile("TOY_result.root", "recreate");
+        TFile* temp_file = new TFile( ("TOY_result_" + std::to_string(indicator) + ".root").c_str(), "recreate");
         temp_file->cd();
         TTree* temp_tree = new TTree("TOY_result", "");
 
@@ -530,7 +530,7 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps){
         temp_file->Close();
 }
 
-void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu_injected, double eps) {
+void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu_injected, double eps, int indicator = 0) {
 
     std::vector<double> mus;
     std::vector<double> mu_errors;
@@ -640,7 +640,7 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
     }
 
     // define file to save results
-    TFile* temp_file = new TFile( ("LT_result_" + std::to_string(mu_injected) + ".root").c_str() , "recreate");
+    TFile* temp_file = new TFile( ("LT_result_" + std::to_string(mu_injected) + "_" + std::to_string(indicator) + ".root").c_str() , "recreate");
     temp_file->cd();
     TTree* temp_tree = new TTree("LT_result", "");
 
@@ -764,28 +764,32 @@ int main(int argc, char* argv[]) {
     // argv[1]: {ToyMC|LinearityTest}
     // argv[2]: injected mu when Linearity test
     // argv[3]: eps for minimizer
+    // argv[4]: indicator
     double injected_mu = -1;
     double eps = -1.0;
+    int indicator = 0;
 
     std::vector<std::string> param_names;
     
     if (std::string(argv[1]) == std::string("ToyMC")) {  // main ToyMC
-        if (argc == 3) {
+        if (argc == 4) {
             injected_mu = -1;
             eps = std::atof(argv[2]);
+            indicator = std::atoi(argv[3]);
         }
         else {
-            printf("Toy MC requires 1 arguments\n");
+            printf("Toy MC requires 2 arguments\n");
             exit(1);
         }
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) { // main LinearityTest 12 1234 0.8
-        if (argc == 4) {
+        if (argc == 5) {
             injected_mu = std::atof(argv[2]);
             eps = std::atof(argv[3]);
+            indicator = std::atoi(argv[4]);
         }
         else {
-            printf("Linearity test requires only 2 arguments: {injected mu} {eps}\n");
+            printf("Linearity test requires only 2 arguments: {injected mu} {eps} {indicator}\n");
             exit(1);
         }
     }
@@ -803,10 +807,10 @@ int main(int argc, char* argv[]) {
     GetNameOfParams(w, &param_names);
 
     if (std::string(argv[1]) == std::string("ToyMC")) {
-        MyToyMCStudy(w, &param_names, eps);
+        MyToyMCStudy(w, &param_names, eps, indicator);
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) {
-        MyLinearityTest(w, &param_names, injected_mu, eps);
+        MyLinearityTest(w, &param_names, injected_mu, eps, indicator);
     }
 
     f->Close();
