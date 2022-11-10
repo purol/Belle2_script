@@ -243,7 +243,7 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, 
 	}
 }
 
-int main(int argc, char* argv[]) { // argv[1]: mu value to test
+int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: eps
 
 	const char* fname = "./PDFandDATA_workspace.root";
 
@@ -314,6 +314,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test
 	RooStats::HybridCalculator HybCalc(*data, *bModel, *sbModel);
 	RooStats::ProfileLikelihoodTestStat* plr = new RooStats::ProfileLikelihoodTestStat(*sbModel->GetPdf());
 	plr->SetOneSided(true);
+	plr->SetTolerance(std::atof(argv[2]));
 
 	RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)HybCalc.GetTestStatSampler();
 	toymcs->SetTestStatistic(plr);
