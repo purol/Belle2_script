@@ -153,10 +153,11 @@ using std::endl;
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define Toy_iter_num 100
-# define LT_iter_num 100
+# define Toy_iter_num 500
+# define LT_iter_num 500
 
-std::default_random_engine generator;
+std::random_device rd;
+std::default_random_engine generator(rd());
 
 std::vector<std::string> Sample_names = {
     "L_x_Signal_nominal_channel_overallSyst_x_StatUncert",
@@ -759,7 +760,7 @@ int main(int argc, char* argv[]) {
     RooMsgService::instance().setStreamStatus(1, false);
     RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
 
-    RooRandom::randomGenerator()->SetSeed(time(NULL));
+    RooRandom::randomGenerator()->SetSeed(rd());
 
     // argv[1]: {ToyMC|LinearityTest}
     // argv[2]: injected mu when Linearity test
