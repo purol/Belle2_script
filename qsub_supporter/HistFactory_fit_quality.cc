@@ -410,7 +410,6 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps){
             mu_SSBARs.push_back(w->function("SSBAR_nominal_channel_epsilon")->getVal());
             mu_CHARMs.push_back(w->function("CHARM_nominal_channel_epsilon")->getVal());
 
-            delete nll;
             delete fitres;
 
         }
@@ -581,9 +580,8 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         w->loadSnapshot("NominalParamValues");
 
         //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
-        RooAbsReal* nll
+        RooAbsReal* nll;
         RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
-        delete nll;
 
         RooArgSet fitargs_LT = fitres->floatParsFinal();
         TIterator* iter_LT(fitargs_LT.createIterator());
@@ -637,7 +635,6 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         mu_SSBARs.push_back(w->function("SSBAR_nominal_channel_epsilon")->getVal());
         mu_CHARMs.push_back(w->function("CHARM_nominal_channel_epsilon")->getVal());
 
-        delete nll;
         delete fitres;
 
     }
