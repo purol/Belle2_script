@@ -1,5 +1,37 @@
 #define LT_number 51
 
+void load_files(const char* dirname, std::vector<string>* names) {
+    TSystemDirectory dir(dirname, dirname);
+    TList* files = dir.GetListOfFiles();
+    if (files) {
+        TSystemFile* file;
+        TString fname;
+        TIter next(files);
+        while ((file = (TSystemFile*)next())) {
+            fname = file->GetName();
+            if (!file->IsDirectory() && fname.EndsWith(".root")) {
+                names->push_back(fname.Data());
+            }
+        }
+    }
+}
+
+void load_files(const char* dirname, std::vector<string>* names, const char* included_string) {
+    TSystemDirectory dir(dirname, dirname);
+    TList* files = dir.GetListOfFiles();
+    if (files) {
+        TSystemFile* file;
+        TString fname;
+        TIter next(files);
+        while ((file = (TSystemFile*)next())) {
+            fname = file->GetName();
+            if (!file->IsDirectory() && fname.EndsWith(".root") && fname.Contains(included_string)) {
+                names->push_back(fname.Data());
+            }
+        }
+    }
+}
+
 void ReadLinearityRootFile(){
 
     std::vector<double> mus;
@@ -13,23 +45,29 @@ void ReadLinearityRootFile(){
     for (int i = 0; i < LT_number; i++) {
         double injected_mu = i * 0.2;
         Inputmu[i] = injected_mu;
-        std::string fname = "LT_result_" + std::to_string(injected_mu) + ".root";
-        
-        TFile* input_file = new TFile(fname.c_str(), "read");
-        TTree* temp_tree = (TTree*)input_file->Get("LT_result");
 
-        double out_mu;
         std::vector<double> out_mus;
-        unsigned int Nentry = temp_tree->GetEntries();
+        unsigned int Nentry = 0;
 
-        temp_tree->SetBranchAddress("mu", &out_mu);
+        std::vector<string> names;
+        const char* dirname = "./";
+        load_files(dirname, &names, ("LT_result_" + std::to_string(injected_mu)).c_str() );
+        for (unsigned int k = 0; k < names.size(); k++) {
 
-        for (unsigned int j = 0; j < Nentry; j++) { // Fill
-            temp_tree->GetEntry(j);
-            out_mus.push_back(out_mu);
+            TFile* input_file = new TFile((dirname + std::string("/") + names.at(k)).c_str(), "read");
+            TTree* temp_tree = (TTree*)input_file->Get("LT_result");
+
+            double out_mu;
+            Nentry = temp_tree->GetEntries();
+
+            temp_tree->SetBranchAddress("mu", &out_mu);
+
+            for (unsigned int j = 0; j < Nentry; j++) { // Fill
+                temp_tree->GetEntry(j);
+                out_mus.push_back(out_mu);
+            }
+            input_file->Close();
         }
-        input_file->Close();
-
 
         RooRealVar  mu_roorealvar("mu_roorealvar", "mu", injected_mu - 10.0, injected_mu + 10.0);
         RooDataSet mu_RooDataSet("mu_RooDataSet", "mu_RooDataSet", RooArgSet(mu_roorealvar));

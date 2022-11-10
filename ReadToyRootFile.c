@@ -1,9 +1,36 @@
+void load_files(const char* dirname, std::vector<string>* names) {
+    TSystemDirectory dir(dirname, dirname);
+    TList* files = dir.GetListOfFiles();
+    if (files) {
+        TSystemFile* file;
+        TString fname;
+        TIter next(files);
+        while ((file = (TSystemFile*)next())) {
+            fname = file->GetName();
+            if (!file->IsDirectory() && fname.EndsWith(".root")) {
+                names->push_back(fname.Data());
+            }
+        }
+    }
+}
+
+void load_files(const char* dirname, std::vector<string>* names, const char* included_string) {
+    TSystemDirectory dir(dirname, dirname);
+    TList* files = dir.GetListOfFiles();
+    if (files) {
+        TSystemFile* file;
+        TString fname;
+        TIter next(files);
+        while ((file = (TSystemFile*)next())) {
+            fname = file->GetName();
+            if (!file->IsDirectory() && fname.EndsWith(".root") && fname.Contains(included_string)) {
+                names->push_back(fname.Data());
+            }
+        }
+    }
+}
+
 void ReadToyRootFile(){
-
-    std::string fname = "TOY_result.root";
-
-    TFile* input_file = new TFile(fname.c_str(), "read");
-    TTree* temp_tree = (TTree*)input_file->Get("TOY_result");
 
     TH1F* ToyMCmu = new TH1F("ToyMCmu", ";#mu;Toys", 40, -10, 15);
     TH1F* ToyMCmuerror = new TH1F("ToyMCmuerror", ";error of #mu;Toys", 50, 1, 7);
@@ -21,7 +48,14 @@ void ReadToyRootFile(){
     ToyMCmupull->SetLineColor(kBlack);
     ToyMCmupull->SetMarkerColor(kBlack);
 
-    {
+    std::vector<string> names;
+    const char* dirname = "./";
+    load_files(dirname, &names, "TOY_result");
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        TTree* temp_tree = (TTree*)input_file->Get("TOY_result");
+
         double temp_mu = -1;
         double temp_muerror = -1;
         double temp_mupull = -1;
@@ -36,6 +70,7 @@ void ReadToyRootFile(){
             ToyMCmuerror->Fill(temp_muerror);
             ToyMCmupull->Fill(temp_mupull);
         }
+        input_file->Close();
     }
 
     gStyle->SetOptFit(11);
