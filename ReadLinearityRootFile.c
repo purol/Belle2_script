@@ -71,7 +71,7 @@ void ReadLinearityRootFile(){
 
         RooRealVar  mu_roorealvar("mu_roorealvar", "mu", injected_mu - 10.0, injected_mu + 10.0);
         RooDataSet mu_RooDataSet("mu_RooDataSet", "mu_RooDataSet", RooArgSet(mu_roorealvar));
-        for (int j = 0; j < Nentry; j++) {
+        for (int j = 0; j < out_mus.size(); j++) {
             mu_roorealvar = out_mus.at(j);
             mu_RooDataSet.add(RooArgSet(mu_roorealvar));
         }
