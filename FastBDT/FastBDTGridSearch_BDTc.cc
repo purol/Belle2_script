@@ -257,14 +257,6 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
 
     tree_data->SetBranchAddress("flag", &flag);
 
-    if(tempissignal){
-        tree_data->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay_Kplus);
-        tree_data->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay_Kplusstar_ch1);
-        tree_data->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay_Kplusstar_ch2);
-        tree_data->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &Decay_K0);
-        tree_data->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &Decay_K0star_ch1);
-        tree_data->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay_K0star_ch2);
-    }
     tree_data->SetBranchAddress("Bsig_M", &Mxs);
     // tree_data->SetBranchAddress("Bsig_useCMSFrame_p", &Pcms);
 
@@ -272,8 +264,7 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     //printf("%lld entries...\n", tree_data->GetEntries());
     for (unsigned int j = 0; j < tree_data->GetEntries(); j++) { // Fill
         tree_data->GetEntry(j);
-        if(tempissignal == true && (Decay_Kplus > 0.5 || Decay_Kplusstar_ch1 > 0.5 || Decay_Kplusstar_ch2 > 0.5 || Decay_K0 > 0.5 || Decay_K0star_ch1 > 0.5 || Decay_K0star_ch2 > 0.5) && Mxs > 1.1) continue;
-        else if(tempissignal == true && (Decay_Kplus < 0.5 && Decay_Kplusstar_ch1 < 0.5 && Decay_Kplusstar_ch2 < 0.5 && Decay_K0 < 0.5 &&  Decay_K0star_ch1 < 0.5 && Decay_K0star_ch2 < 0.5) && Mxs < 1.1) continue;
+
         Nevt++;
 
         for (unsigned int k = 0; k < Nvar - DvetoNvar; k++) input_vars[k].push_back((float) Vars[k]); 
