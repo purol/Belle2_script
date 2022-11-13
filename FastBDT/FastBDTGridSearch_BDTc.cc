@@ -596,7 +596,7 @@ int main(int argc, char* argv[])
 
 
     // save model
-    std::fstream out_stream(("/home/belle2/junewoo/storage_b1/GridSearch/out/classifier_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])+".weightfile").c_str(), std::ios_base::out | std::ios_base::trunc);
+    std::fstream out_stream(("/home/belle2/junewoo/storage_b1/GridSearch_BDTc/out/classifier_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])+".weightfile").c_str(), std::ios_base::out | std::ios_base::trunc);
     out_stream << classifier << std::endl;
     out_stream.close();
 
