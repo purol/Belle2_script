@@ -179,7 +179,7 @@ void FastBDT_output_KS_test_BDTc()
         load_files(side_MC_CHG, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 0) continue;
-            LetsFill((side_MC_CHG + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, 0.364436 / 0.9);
+            LetsFill((side_MC_CHG + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, 0.364436 / 0.8);
         }
     }
     {
@@ -187,7 +187,7 @@ void FastBDT_output_KS_test_BDTc()
         load_files(side_MC_MIX, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 0) continue;
-            LetsFill((side_MC_MIX + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, 0.364436 / 0.9);
+            LetsFill((side_MC_MIX + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, 0.364436 / 0.8);
         }
     }
     {
@@ -237,7 +237,7 @@ void FastBDT_output_KS_test_BDTc()
         load_files(side_MC_CHG, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 1) continue;
-            LetsFill((side_MC_CHG + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, 0.364436 / 0.9);
+            LetsFill((side_MC_CHG + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, 0.364436 / 0.8);
         }
     }
     {
@@ -245,7 +245,7 @@ void FastBDT_output_KS_test_BDTc()
         load_files(side_MC_MIX, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 1) continue;
-            LetsFill((side_MC_MIX + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, 0.364436 / 0.9);
+            LetsFill((side_MC_MIX + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, 0.364436 / 0.8);
         }
     }
     {
@@ -292,7 +292,7 @@ void FastBDT_output_KS_test_BDTc()
         load_files(side_MC_CHG, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 0) continue;
-            LetsFillwithCorrection((side_MC_CHG + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.364436 / 0.9, NormFactorForTrain);
+            LetsFillwithCorrection((side_MC_CHG + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.364436 / 0.8, NormFactorForTrain);
         }
     }
     {
@@ -300,7 +300,7 @@ void FastBDT_output_KS_test_BDTc()
         load_files(side_MC_MIX, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 0) continue;
-            LetsFillwithCorrection((side_MC_MIX + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.364436 / 0.9, NormFactorForTrain);
+            LetsFillwithCorrection((side_MC_MIX + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.364436 / 0.8, NormFactorForTrain);
         }
     }
     {
@@ -343,7 +343,7 @@ void FastBDT_output_KS_test_BDTc()
         load_files(side_MC_CHG, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2  == 1) continue;
-            LetsFillwithCorrection((side_MC_CHG + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.364436 / 0.9, NormFactorForTest);
+            LetsFillwithCorrection((side_MC_CHG + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.364436 / 0.8, NormFactorForTest);
         }
     }
     {
@@ -351,7 +351,7 @@ void FastBDT_output_KS_test_BDTc()
         load_files(side_MC_MIX, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2  == 1) continue;
-            LetsFillwithCorrection((side_MC_MIX + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.364436 / 0.9, NormFactorForTest);
+            LetsFillwithCorrection((side_MC_MIX + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.364436 / 0.8, NormFactorForTest);
         }
     }
     {

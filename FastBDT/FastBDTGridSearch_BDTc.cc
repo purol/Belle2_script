@@ -426,7 +426,7 @@ int main(int argc, char* argv[])
         load_files(side_MC_CHG, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 0) continue;
-            FillVariables((side_MC_CHG + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, 0.364436 / 0.9);
+            FillVariables((side_MC_CHG + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, 0.364436 / 0.8);
         }
     }
     {
@@ -434,7 +434,7 @@ int main(int argc, char* argv[])
         load_files(side_MC_MIX, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 0) continue;
-            FillVariables((side_MC_MIX + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, 0.364436 / 0.9);
+            FillVariables((side_MC_MIX + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, 0.364436 / 0.8);
         }
     }
     {
@@ -519,7 +519,7 @@ int main(int argc, char* argv[])
         load_files(side_MC_CHG, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 1) continue;
-            FillVariables((side_MC_CHG + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.364436 / 0.9);
+            FillVariables((side_MC_CHG + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.364436 / 0.8);
         }
     }
     {
@@ -527,7 +527,7 @@ int main(int argc, char* argv[])
         load_files(side_MC_MIX, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 1) continue;
-            FillVariables((side_MC_MIX + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.364436 / 0.9);
+            FillVariables((side_MC_MIX + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.364436 / 0.8);
         }
     }
     {
@@ -589,7 +589,7 @@ int main(int argc, char* argv[])
     printf("%u_%u_%lf_%lf_%u %lf %lf\n", nTrees, depth, shrinkage, subsample, binning_num, train_AUC, test_AUC);
 
     FILE* fp;
-    fp = fopen(("/home/belle2/junewoo/storage_b1/GridSearch/out/Result_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])).c_str(), "w");
+    fp = fopen(("/home/belle2/junewoo/storage_b1/GridSearch_BDTc/out/Result_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])).c_str(), "w");
     fprintf(fp, "%u_%u_%lf_%lf_%u %lf %lf\n", nTrees, depth, shrinkage, subsample, binning_num, train_AUC, test_AUC);
     fclose(fp);
 
