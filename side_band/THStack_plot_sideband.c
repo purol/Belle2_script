@@ -627,7 +627,7 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
 
     double FEI_calibration_factor = -1;
 
-    double BDTc = -1;
+    float BDTc = -1;
     double BDTc_correction = -1;
 
     std::vector<string> names;
@@ -850,7 +850,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
     double FEI_calibration_factor = -1;
 
-    double BDTc = -1;
+    float BDTc = -1;
     double BDTc_correction = -1;
 
     std::vector<string> names;
@@ -922,153 +922,123 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
             if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B2Kc
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B2KcPi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B2Ks0Pic
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B2KcPicPic
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B2Ks0PicPi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B2KcPicPicPi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B2Ks0PicPicPic
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B2KcPicPicPicPic
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B2Ks0PicPicPicPi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B2KcPi0Pi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B2Ks0PicPi0Pi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B2KcPicPicPi0Pi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B2KcKcKc
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B2KcKcKs0Pic
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B2KcKcKcPi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B02Ks0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B02KcPic
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B02Ks0Pi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B02KcPicPi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B02Ks0PicPic
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B02KcPicPicPic
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B02Ks0PicPicPi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B02KcPicPicPicPi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B02Ks0PicPicPicPic
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B02Ks0Pi0Pi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B02KcPicPi0Pi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B02Ks0PicPicPi0Pi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B02KcKcKs0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B02KcKcKcPic
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B02KcKcKs0Pi0
                 nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                if (BDTc > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (BDTc / (1.0 - BDTc)) * FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
             }
             else {
                 printf("[ERROR] unexpected decay ID\n");
