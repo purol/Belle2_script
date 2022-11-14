@@ -91,7 +91,7 @@ double LetsFill(const char* filename, TH1F* FBDTc_hist, Nevt* nevt, double weigh
     tree_upsilon->SetBranchAddress("MVA_Continuum", &FBDT_var);
 
     for (unsigned int i = 0; i < tree_upsilon->GetEntries(); i++) {
-        tree_upsilon->GetEntry(j);
+        tree_upsilon->GetEntry(i);
         FBDTc_hist->Fill(FBDT_var, weight_var);
 
         if (FBDT_var > (5.0 / 6.0)) NormFactor = NormFactor + 5.0 * weight_var;
@@ -117,7 +117,7 @@ double LetsFill(const char* filename, TH1F* FBDTc_hist, double weight_var = 1.0)
     tree_upsilon->SetBranchAddress("MVA_Continuum", &FBDT_var);
 
     for (unsigned int i = 0; i < tree_upsilon->GetEntries(); i++) {
-        tree_upsilon->GetEntry(j);
+        tree_upsilon->GetEntry(i);
         FBDTc_hist->Fill(FBDT_var, weight_var);
 
         if (FBDT_var > (5.0 / 6.0)) NormFactor = NormFactor + 5.0 * weight_var;
@@ -131,7 +131,6 @@ double LetsFill(const char* filename, TH1F* FBDTc_hist, double weight_var = 1.0)
 
 double LetsFillwithCorrection(const char* filename, TH1F* FBDTc_hist, double weight_var = 1.0, double NormFactor = 1.0) {
     float FBDT_var = 0;
-    double NormFactor = 0;
 
     TFile* input_file = new TFile(filename, "read");
 
@@ -139,7 +138,7 @@ double LetsFillwithCorrection(const char* filename, TH1F* FBDTc_hist, double wei
     tree_upsilon->SetBranchAddress("MVA_Continuum", &FBDT_var);
 
     for (unsigned int i = 0; i < tree_upsilon->GetEntries(); i++) {
-        tree_upsilon->GetEntry(j);
+        tree_upsilon->GetEntry(i);
 
         if (FBDT_var > (5.0 / 6.0)) FBDTc_hist->Fill(FBDT_var, 5.0 * weight_var / NormFactor);
         else FBDTc_hist->Fill(FBDT_var, (FBDT_var / (1.0 - FBDT_var)) * weight_var / NormFactor);
@@ -150,7 +149,7 @@ double LetsFillwithCorrection(const char* filename, TH1F* FBDTc_hist, double wei
     return NormFactor;
 }
 
-void FastBDT_output_KS_test()
+void FastBDT_output_KS_test_BDTc()
 {
     Nevt nevt_train = { 0.0, 0.0 };
     Nevt nevt_test = { 0.0, 0.0 };
@@ -293,7 +292,7 @@ void FastBDT_output_KS_test()
         load_files(side_MC_CHG, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 0) continue;
-            LetsFillwithCorrection((side_MC_CHG + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, &nevt_train, 0.364436 / 0.9, NormFactorForTrain);
+            LetsFillwithCorrection((side_MC_CHG + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.364436 / 0.9, NormFactorForTrain);
         }
     }
     {
@@ -301,7 +300,7 @@ void FastBDT_output_KS_test()
         load_files(side_MC_MIX, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 0) continue;
-            LetsFillwithCorrection((side_MC_MIX + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, &nevt_train, 0.364436 / 0.9, NormFactorForTrain);
+            LetsFillwithCorrection((side_MC_MIX + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.364436 / 0.9, NormFactorForTrain);
         }
     }
     {
@@ -309,7 +308,7 @@ void FastBDT_output_KS_test()
         load_files(side_MC_UUBAR, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 0) continue;
-            LetsFillwithCorrection((side_MC_UUBAR + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, &nevt_train, 0.364436 / 1.0, NormFactorForTrain);
+            LetsFillwithCorrection((side_MC_UUBAR + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.364436 / 1.0, NormFactorForTrain);
         }
     }
     {
@@ -317,7 +316,7 @@ void FastBDT_output_KS_test()
         load_files(side_MC_DDBAR, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 0) continue;
-            LetsFillwithCorrection((side_MC_DDBAR + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, &nevt_train, 0.364436 / 1.0, NormFactorForTrain);
+            LetsFillwithCorrection((side_MC_DDBAR + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.364436 / 1.0, NormFactorForTrain);
         }
     }
     {
@@ -325,7 +324,7 @@ void FastBDT_output_KS_test()
         load_files(side_MC_SSBAR, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 0) continue;
-            LetsFillwithCorrection((side_MC_SSBAR + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, &nevt_train, 0.364436 / 1.0, NormFactorForTrain);
+            LetsFillwithCorrection((side_MC_SSBAR + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.364436 / 1.0, NormFactorForTrain);
         }
     }
     {
@@ -333,7 +332,7 @@ void FastBDT_output_KS_test()
         load_files(side_MC_CHARM, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 0) continue;
-            LetsFillwithCorrection((side_MC_CHARM + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, &nevt_train, 0.364436 / 1.0, NormFactorForTrain);
+            LetsFillwithCorrection((side_MC_CHARM + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.364436 / 1.0, NormFactorForTrain);
         }
     }
 
@@ -344,7 +343,7 @@ void FastBDT_output_KS_test()
         load_files(side_MC_CHG, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2  == 1) continue;
-            LetsFillwithCorrection((side_MC_CHG + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, &nevt_test, 0.364436 / 0.9, NormFactorForTest);
+            LetsFillwithCorrection((side_MC_CHG + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.364436 / 0.9, NormFactorForTest);
         }
     }
     {
@@ -352,7 +351,7 @@ void FastBDT_output_KS_test()
         load_files(side_MC_MIX, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2  == 1) continue;
-            LetsFillwithCorrection((side_MC_MIX + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, &nevt_test, 0.364436 / 0.9, NormFactorForTest);
+            LetsFillwithCorrection((side_MC_MIX + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.364436 / 0.9, NormFactorForTest);
         }
     }
     {
@@ -360,7 +359,7 @@ void FastBDT_output_KS_test()
         load_files(side_MC_UUBAR, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2  == 1) continue;
-            LetsFillwithCorrection((side_MC_UUBAR + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, &nevt_test, 0.364436 / 1.0, NormFactorForTest);
+            LetsFillwithCorrection((side_MC_UUBAR + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.364436 / 1.0, NormFactorForTest);
         }
     }
     {
@@ -368,7 +367,7 @@ void FastBDT_output_KS_test()
         load_files(side_MC_DDBAR, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2  == 1) continue;
-            LetsFillwithCorrection((side_MC_DDBAR + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, &nevt_test, 0.364436 / 1.0, NormFactorForTest);
+            LetsFillwithCorrection((side_MC_DDBAR + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.364436 / 1.0, NormFactorForTest);
         }
     }
     {
@@ -376,7 +375,7 @@ void FastBDT_output_KS_test()
         load_files(side_MC_SSBAR, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2  == 1) continue;
-            LetsFillwithCorrection((side_MC_SSBAR + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, &nevt_test, 0.364436 / 1.0, NormFactorForTest);
+            LetsFillwithCorrection((side_MC_SSBAR + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.364436 / 1.0, NormFactorForTest);
         }
     }
     {
@@ -384,7 +383,7 @@ void FastBDT_output_KS_test()
         load_files(side_MC_CHARM, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 1) continue;
-            LetsFillwithCorrection((side_MC_CHARM + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, &nevt_test, 0.364436 / 1.0, NormFactorForTest);
+            LetsFillwithCorrection((side_MC_CHARM + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.364436 / 1.0, NormFactorForTest);
         }
     }
 
