@@ -1353,8 +1353,8 @@ void THStack_plot_Jpsi_FBDT() {
         for (int i = 0; i < (int)Jpsi_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Jpsi_MC_values[k].at(i), weights.at(i));
         for (int i = 0; i < (int)Jpsi_data_values[k].size(); i++) data_hist[k]->Fill(Jpsi_data_values[k].at(i));
 
-        for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) MC_one_bin[k]->Fill(Sideband_MC_values[k].at(i), weights.at(i));
-        for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_one_bin[k]->Fill(Sideband_data_values[k].at(i));
+        for (int i = 0; i < (int)Jpsi_MC_values[k].size(); i++) MC_one_bin[k]->Fill(Jpsi_MC_values[k].at(i), weights.at(i));
+        for (int i = 0; i < (int)Jpsi_data_values[k].size(); i++) data_one_bin[k]->Fill(Jpsi_data_values[k].at(i));
     }
 
     printf("charged: %d\n", (int)charged_values[0].size());
