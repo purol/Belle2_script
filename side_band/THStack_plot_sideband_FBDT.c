@@ -63,7 +63,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define FEI_cal_B0 0.713
 # define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
 
-# define Nvar_num 90
+# define Nvar_num 1
 
 # define CAL 1.1728
 # define CAL_qq 1.0
@@ -1062,13 +1062,13 @@ void THStack_plot_sideband_FBDT() {
     Nevt nevt_SSBAR = { 0.0, 0.0 };
     Nevt nevt_CHARM = { 0.0, 0.0 };
 
-    const char* Sideband_MC_CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/CHG_analysis/validation_v000/final_output";
-    const char* Sideband_MC_MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/MIX_analysis/validation_v000/final_output";
-    const char* Sideband_MC_UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/UUBAR_analysis/validation_v000/final_output";
-    const char* Sideband_MC_DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/DDBAR_analysis/validation_v000/final_output";
-    const char* Sideband_MC_SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/SSBAR_analysis/validation_v000/final_output";
-    const char* Sideband_MC_CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/CHARM_analysis/validation_v000/final_output";
-    const char* Sideband_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_data_side/SIGNAL_analysis/validation_v000/final_output";
+    const char* Sideband_MC_CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/CHG_analysis/validation_v000/final_output_root_after_MVA_Application";
+    const char* Sideband_MC_MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/MIX_analysis/validation_v000/final_output_root_after_MVA_Application";
+    const char* Sideband_MC_UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/UUBAR_analysis/validation_v000/final_output_root_after_MVA_Application";
+    const char* Sideband_MC_DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/DDBAR_analysis/validation_v000/final_output_root_after_MVA_Application";
+    const char* Sideband_MC_SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/SSBAR_analysis/validation_v000/final_output_root_after_MVA_Application";
+    const char* Sideband_MC_CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/CHARM_analysis/validation_v000/final_output_root_after_MVA_Application";
+    const char* Sideband_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_data_side/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application";
 
     NevtCount_ri(Sideband_MC_CHG_dirname, "CHG", &nevt_CHG);
     NevtCount_ri(Sideband_MC_MIX_dirname, "MIX", &nevt_MIX);
