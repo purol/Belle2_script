@@ -667,7 +667,7 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
             // BDTc correction factor
             if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
             else BDTc_correction = (BDTc / (1.0 - BDTc));
-            BDTc_correction = BDTc_correction / NormFactor;
+            BDTc_correction = BDTc_correction * NormFactor;
 
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
 
