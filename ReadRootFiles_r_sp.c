@@ -497,6 +497,7 @@ public:
     void CountMCEvent(std::string filename = std::string(""), bool smartmode = true);
     void SelectDecayModeOf(Loader::DecayMode decaymode);
     void RejectDecayModeOf(Loader::DecayMode decaymode);
+    void BeamEnergyCorrectionFromDeltaE(int index_pBcms, int index_EBcms, int index_Mbc, int index_deltaE, double targetEbeamstar, bool IsItBtag);
 };
 
 Loader::Loader() {
