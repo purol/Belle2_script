@@ -15,7 +15,7 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 //# define N_event_info 15
 # define N_Upsilon_info 57
 # define N_Bsig_info 81
-# define N_Btag_info 9
+# define N_Btag_info 11
 # define N_decay 38 // five decay mode + others
 # define N_decay_nparticles 3 // # of nu_e, B, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
@@ -251,6 +251,8 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree->SetBranchAddress("Btag_chiProb", &temp_BtagDataToTree[6]);
             temp_tree->SetBranchAddress("Btag_dr", &temp_BtagDataToTree[7]);
             temp_tree->SetBranchAddress("Btag_dz", &temp_BtagDataToTree[8]);
+            temp_tree->SetBranchAddress("Btag_useCMSFrame_p", &temp_BtagDataToTree[9]);
+            temp_tree->SetBranchAddress("Btag_useCMSFrame_phi", &temp_BtagDataToTree[10]);
 
             // other information I need
             temp_tree->SetBranchAddress("Btag_R2", &temp_DataToTree[0]);
@@ -548,6 +550,8 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree_Btag->Branch("Btag_chiProb", &temp_BtagDataToTree[6]);
             temp_tree_Btag->Branch("Btag_dr", &temp_BtagDataToTree[7]);
             temp_tree_Btag->Branch("Btag_dz", &temp_BtagDataToTree[8]);
+            temp_tree_Btag->Branch("Btag_useCMSFrame_p", &temp_BtagDataToTree[9]);
+            temp_tree_Btag->Branch("Btag_useCMSFrame_phi", &temp_BtagDataToTree[10]);
 
             // other information I need
             temp_tree_Btag->Branch("Btag_R2", &temp_DataToTree[0]);

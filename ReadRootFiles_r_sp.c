@@ -16,7 +16,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 //# define N_event_info 15
 # define N_Upsilon_info 57
 # define N_Bsig_info 81
-# define N_Btag_info 9
+# define N_Btag_info 11
 # define N_decay 38 // five decay mode + others
 # define N_decay_nparticles 3 // # of nu_e, B, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
@@ -217,7 +217,7 @@ typedef struct data{
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
     // 3: Btag_E, 4: Btag_E_CMS, 5: Btag_signalprobability, 6: chiProb_tag
-    // 7: dr, 8: dz
+    // 7: dr, 8: dz, 9: Btag_p_CMS, 10: Btag_CMS_phi
 
     double Needed_info[N_Needed_info];
     // 0: R2, 1: thrustBm, 2: thrustOm. 3: cosTBTO
@@ -764,6 +764,8 @@ void Loader::GetData(TFile* input_file) {
     tree_Btag->SetBranchAddress("Btag_chiProb", &temp.Btag_info[6]);
     tree_Btag->SetBranchAddress("Btag_dr", &temp.Btag_info[7]);
     tree_Btag->SetBranchAddress("Btag_dz", &temp.Btag_info[8]);
+    tree_Btag->SetBranchAddress("Btag_useCMSFrame_p", &temp.Btag_info[9]);
+    tree_Btag->SetBranchAddress("Btag_useCMSFrame_phi", &temp.Btag_info[10]);
 
     // other information I need
     tree_Btag->SetBranchAddress("Btag_R2", &temp.Needed_info[0]);
@@ -2130,6 +2132,8 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Btag->Branch("Btag_chiProb", &BtagDataToTree[6]);
         tree_Btag->Branch("Btag_dr", &BtagDataToTree[7]);
         tree_Btag->Branch("Btag_dz", &BtagDataToTree[8]);
+        tree_Btag->Branch("Btag_useCMSFrame_p", &BtagDataToTree[9]);
+        tree_Btag->Branch("Btag_useCMSFrame_phi", &BtagDataToTree[10]);
 
         // other information I need
         tree_Btag->Branch("Btag_R2", &DataToTree[0]);
@@ -2532,6 +2536,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Btag->Branch("Btag_chiProb", &temp_BtagDataToTree[6]);
     temp_tree_Btag->Branch("Btag_dr", &temp_BtagDataToTree[7]);
     temp_tree_Btag->Branch("Btag_dz", &temp_BtagDataToTree[8]);
+    temp_tree_Btag->Branch("Btag_useCMSFrame_p", &temp_BtagDataToTree[9]);
+    temp_tree_Btag->Branch("Btag_useCMSFrame_phi", &temp_BtagDataToTree[10]);
 
     // other information I need
     temp_tree_Btag->Branch("Btag_R2", &temp_DataToTree[0]);
@@ -2920,6 +2926,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("Btag_chiProb", &temp_BtagDataToTree[6]);
     temp_tree->Branch("Btag_dr", &temp_BtagDataToTree[7]);
     temp_tree->Branch("Btag_dz", &temp_BtagDataToTree[8]);
+    temp_tree->Branch("Btag_useCMSFrame_p", &temp_BtagDataToTree[9]);
+    temp_tree->Branch("Btag_useCMSFrame_phi", &temp_BtagDataToTree[10]);
 
     // other information I need
     temp_tree->Branch("Btag_R2", &temp_DataToTree[0]);
