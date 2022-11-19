@@ -1041,8 +1041,6 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
 void THStack_plot_offres() {
 
-    const char* Offres_MC_CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/CHG_analysis/test_v000/final_output";
-    const char* Offres_MC_MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/MIX_analysis/test_v000/final_output";
     const char* Offres_MC_UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/UUBAR_analysis/test_v000/final_output";
     const char* Offres_MC_DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/DDBAR_analysis/test_v000/final_output";
     const char* Offres_MC_SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/SSBAR_analysis/test_v000/final_output";
@@ -1175,10 +1173,10 @@ void THStack_plot_offres() {
     std::vector<double> llXX_weights;
     std::vector<double> hhISR_weights;
 
-    LetsFillOffres_ri(Offres_MC_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR");
-    LetsFillOffres_ri(Offres_MC_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR");
-    LetsFillOffres_ri(Offres_MC_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR");
-    LetsFillOffres_ri(Offres_MC_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM");
+    LetsFillOffres_ri(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR");
+    LetsFillOffres_ri(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR");
+    LetsFillOffres_ri(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR");
+    LetsFillOffres_ri(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM");
     LetsFill(Offres_data_dirname, variable_names, branch_names, Offres_data_values);
 
     // sort variables
