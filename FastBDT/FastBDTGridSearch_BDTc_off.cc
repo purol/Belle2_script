@@ -370,7 +370,7 @@ double PrintAUC(const FastBDT::Classifier& classifier, std::vector<std::vector<f
     return AUC;
 }
 
-int main(int argc, char* argv[])
+int main(int argc, char* argv[]) // offres total: 42.329/fb
 {
     // grid search
     // unsigned int nTrees[5] = { 100, 500, 1000, 1500, 2000 };  default is 100
@@ -396,14 +396,17 @@ int main(int argc, char* argv[])
 
 
     // input file
-    const char* side_data = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/data/SIGNAL_analysis/validation_v000/final_output/DataFile";
-    
-    const char* side_MC_CHG = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/CHG_analysis/validation_v000/final_output/DataFile";
-    const char* side_MC_MIX = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/MIX_analysis/validation_v000/final_output/DataFile";
-    const char* side_MC_UUBAR = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/UUBAR_analysis/validation_v000/final_output/DataFile";
-    const char* side_MC_DDBAR = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/DDBAR_analysis/validation_v000/final_output/DataFile";
-    const char* side_MC_SSBAR = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/SSBAR_analysis/validation_v000/final_output/DataFile";
-    const char* side_MC_CHARM = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/CHARM_analysis/validation_v000/final_output/DataFile";
+    const char* off_data = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/data/SIGNAL_analysis/validation_v000/final_output/DataFile";
+   
+    const char* off_MC_UUBAR_train = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/UUBAR_analysis/train_v000/final_output/DataFile";
+    const char* off_MC_DDBAR_train = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/DDBAR_analysis/train_v000/final_output/DataFile";
+    const char* off_MC_SSBAR_train = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/SSBAR_analysis/train_v000/final_output/DataFile";
+    const char* off_MC_CHARM_train = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/CHARM_analysis/train_v000/final_output/DataFile";
+
+    const char* off_MC_UUBAR_test = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/UUBAR_analysis/test_v000/final_output/DataFile";
+    const char* off_MC_DDBAR_test = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/DDBAR_analysis/test_v000/final_output/DataFile";
+    const char* off_MC_SSBAR_test = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/SSBAR_analysis/test_v000/final_output/DataFile";
+    const char* off_MC_CHARM_test = "/home/belle2/junewoo/storage_b1/GridSearch_BDTc/MC/CHARM_analysis/test_v000/final_output/DataFile";
 
     // define input of the classifier
     std::vector<std::vector<float>> InputVariables;
@@ -415,58 +418,38 @@ int main(int argc, char* argv[])
 
     {
         std::vector<string> names;
-        load_files(side_data, &names);
+        load_files(off_data, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 0) continue;
-            FillVariables((side_data + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 1.0);
+            if (i % 6 == 0) continue; // offresdata: 9032 (38.2277/fb)
+            FillVariables((off_data + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 1.0);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_CHG, &names);
+        load_files(off_MC_UUBAR_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 0) continue;
-            FillVariables((side_MC_CHG + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, 0.364436 / 0.8);
+            FillVariables((off_MC_UUBAR_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, Scale_UUBAR_train * (0.0382277 / 0.364436));
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_MIX, &names);
+        load_files(off_MC_DDBAR_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 0) continue;
-            FillVariables((side_MC_MIX + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, 0.364436 / 0.8);
+            FillVariables((off_MC_DDBAR_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, Scale_DDBAR_train * (0.0382277 / 0.364436));
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_UUBAR, &names);
+        load_files(off_MC_SSBAR_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 0) continue;
-            FillVariables((side_MC_UUBAR + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, 0.364436 / 1.0);
+            FillVariables((off_MC_SSBAR_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, Scale_SSBAR_train * (0.0382277 / 0.364436));
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_DDBAR, &names);
+        load_files(off_MC_CHARM_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 0) continue;
-            FillVariables((side_MC_DDBAR + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, 0.364436 / 1.0);
-        }
-    }
-    {
-        std::vector<string> names;
-        load_files(side_MC_SSBAR, &names);
-        for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 0) continue;
-            FillVariables((side_MC_SSBAR + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, 0.364436 / 1.0);
-        }
-    }
-    {
-        std::vector<string> names;
-        load_files(side_MC_CHARM, &names);
-        for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 0) continue;
-            FillVariables((side_MC_CHARM + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, 0.364436 / 1.0);
+            FillVariables((off_MC_CHARM_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, Scale_CHARM_train * (0.0382277 / 0.364436));
         }
     }
 
@@ -508,58 +491,38 @@ int main(int argc, char* argv[])
 
     {
         std::vector<string> names;
-        load_files(side_data, &names);
+        load_files(off_data, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 1) continue;
-            FillVariables((side_data + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, 1.0);
+            if (i % 6 != 0) continue; // offresdata: 969 (4.1013/fb)
+            FillVariables((off_data + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, 1.0);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_CHG, &names);
+        load_files(off_MC_UUBAR_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 1) continue;
-            FillVariables((side_MC_CHG + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.364436 / 0.8);
+            FillVariables((off_MC_UUBAR_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, Scale_UUBAR_test * (0.0041013 / 0.364436));
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_MIX, &names);
+        load_files(off_MC_DDBAR_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 1) continue;
-            FillVariables((side_MC_MIX + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.364436 / 0.8);
+            FillVariables((off_MC_DDBAR_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, Scale_DDBAR_test * (0.0041013 / 0.364436));
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_UUBAR, &names);
+        load_files(off_MC_SSBAR_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 1) continue;
-            FillVariables((side_MC_UUBAR + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.364436 / 1.0);
+            FillVariables((off_MC_SSBAR_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, Scale_SSBAR_test * (0.0041013 / 0.364436));
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_DDBAR, &names);
+        load_files(off_MC_CHARM_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 1) continue;
-            FillVariables((side_MC_DDBAR + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.364436 / 1.0);
-        }
-    }
-    {
-        std::vector<string> names;
-        load_files(side_MC_SSBAR, &names);
-        for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 1) continue;
-            FillVariables((side_MC_SSBAR + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.364436 / 1.0);
-        }
-    }
-    {
-        std::vector<string> names;
-        load_files(side_MC_CHARM, &names);
-        for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 2 == 1) continue;
-            FillVariables((side_MC_CHARM + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, 0.364436 / 1.0);
+            FillVariables((off_MC_CHARM_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, Scale_CHARM_test* (0.0041013 / 0.364436));
         }
     }
 
