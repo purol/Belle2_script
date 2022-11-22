@@ -455,5 +455,5 @@ void FastBDT_output_KS_test_BDTc()
     gPad->BuildLegend(0.9, 0.9, 0.6, 0.6);
     c_temp_2->SaveAs("BDTc_AfterCorrection.png");
 
-    printf("average BDTc of data: %lf\n", data_all.BDTcSum);
+    printf("average BDTc of data: %lf\n", data_all.BDTcSum / data_all.NevtwithoutCorrection);
 }
