@@ -81,6 +81,13 @@ typedef struct _Nevt {
     double NevtwithCorrection;
 } Nevt;
 
+double BDTcToWeight(double BDTc) {
+
+    if (BDTc > (5.0 / 6.0)) return 5.0;
+    else return (BDTc / (1.0 - BDTc));
+
+}
+
 double LetsFill(const char* filename, TH1F* FBDTc_hist, Nevt* nevt, double weight_var = 1.0) {
     float FBDT_var = 0;
     double NormFactor = 0;
@@ -94,12 +101,10 @@ double LetsFill(const char* filename, TH1F* FBDTc_hist, Nevt* nevt, double weigh
         tree_upsilon->GetEntry(i);
         FBDTc_hist->Fill(FBDT_var, weight_var);
 
-        if (FBDT_var > (5.0 / 6.0)) NormFactor = NormFactor + 5.0 * weight_var;
-        else NormFactor = NormFactor + (FBDT_var / (1.0 - FBDT_var)) * weight_var;
+        NormFactor = NormFactor + BDTcToWeight(FBDT_var) * weight_var;
 
         nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + weight_var;
-        if (FBDT_var > (5.0 / 6.0)) nevt->NevtwithCorrection = nevt->NevtwithCorrection + 5.0 * weight_var;
-        else nevt->NevtwithCorrection = nevt->NevtwithCorrection + (FBDT_var / (1.0 - FBDT_var)) * weight_var;
+        nevt->NevtwithCorrection = nevt->NevtwithCorrection + BDTcToWeight(FBDT_var) * weight_var;
 
     }
     input_file->Close();
@@ -120,8 +125,7 @@ double LetsFill(const char* filename, TH1F* FBDTc_hist, double weight_var = 1.0)
         tree_upsilon->GetEntry(i);
         FBDTc_hist->Fill(FBDT_var, weight_var);
 
-        if (FBDT_var > (5.0 / 6.0)) NormFactor = NormFactor + 5.0 * weight_var;
-        else NormFactor = NormFactor + (FBDT_var / (1.0 - FBDT_var)) * weight_var;
+        NormFactor = NormFactor + BDTcToWeight(FBDT_var) * weight_var;
 
     }
     input_file->Close();
@@ -140,8 +144,7 @@ double LetsFillwithCorrection(const char* filename, TH1F* FBDTc_hist, double wei
     for (unsigned int i = 0; i < tree_upsilon->GetEntries(); i++) {
         tree_upsilon->GetEntry(i);
 
-        if (FBDT_var > (5.0 / 6.0)) FBDTc_hist->Fill(FBDT_var, 5.0 * weight_var / NormFactor);
-        else FBDTc_hist->Fill(FBDT_var, (FBDT_var / (1.0 - FBDT_var)) * weight_var / NormFactor);
+        FBDTc_hist->Fill(FBDT_var, BDTcToWeight(FBDT_var) * weight_var / NormFactor);
 
     }
     input_file->Close();
