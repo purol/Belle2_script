@@ -79,6 +79,7 @@ TH1F* FBDTc_data_test = new TH1F("FastBDT_{c} data test", ";FastBDT_{c};", 40, 0
 typedef struct _Nevt {
     double NevtwithoutCorrection;
     double NevtwithCorrection;
+    double BDTcSum;
 } Nevt;
 
 double BDTcToWeight(double BDTc) {
@@ -105,6 +106,7 @@ double LetsFill(const char* filename, TH1F* FBDTc_hist, Nevt* nevt, double weigh
 
         nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + weight_var;
         nevt->NevtwithCorrection = nevt->NevtwithCorrection + BDTcToWeight(FBDT_var) * weight_var;
+        nevt->BDTcSum = nevt->BDTcSum + FBDT_var * weight_var;
 
     }
     input_file->Close();
@@ -154,8 +156,10 @@ double LetsFillwithCorrection(const char* filename, TH1F* FBDTc_hist, double wei
 
 void FastBDT_output_KS_test_BDTc()
 {
-    Nevt nevt_train = { 0.0, 0.0 };
-    Nevt nevt_test = { 0.0, 0.0 };
+    Nevt nevt_train = { 0.0, 0.0, 0.0 };
+    Nevt nevt_test = { 0.0, 0.0, 0.0 };
+
+    Nevt data_all = { 0.0, 0.0, 0.0 };
 
     // dirnames
     const char* side_data = "./temp_v000_validation/SIGNAL";
@@ -174,7 +178,7 @@ void FastBDT_output_KS_test_BDTc()
         load_files(side_data, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 0) continue;
-            LetsFill((side_data + std::string("/") + names.at(i)).c_str(), FBDTc_data_train, 1.0);
+            LetsFill((side_data + std::string("/") + names.at(i)).c_str(), FBDTc_data_train, &data_all, 1.0);
         }
     }
     {
@@ -232,7 +236,7 @@ void FastBDT_output_KS_test_BDTc()
         load_files(side_data, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 2 == 1) continue;
-            LetsFill((side_data + std::string("/") + names.at(i)).c_str(), FBDTc_data_test, 1.0);
+            LetsFill((side_data + std::string("/") + names.at(i)).c_str(), FBDTc_data_test, &data_all, 1.0);
         }
     }
     {
@@ -451,4 +455,5 @@ void FastBDT_output_KS_test_BDTc()
     gPad->BuildLegend(0.9, 0.9, 0.6, 0.6);
     c_temp_2->SaveAs("BDTc_AfterCorrection.png");
 
+    printf("average BDTc of data: %lf\n", data_all.BDTcSum);
 }

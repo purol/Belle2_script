@@ -97,6 +97,13 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define CAL_qq 1.0626
 # define Stream 0.25
 
+double BDTcToWeight(double BDTc) {
+
+    if (BDTc > (5.0 / 6.0)) return 5.0;
+    else return (BDTc / (1.0 - BDTc));
+
+}
+
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
         return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
@@ -671,9 +678,7 @@ void LetsFillOffres_ri_correction(const char* dirname, std::vector<std::string> 
             tree_Btag->GetEntry(j);
 
             // BDTc correction factor
-            if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
-            else BDTc_correction = (BDTc / (1.0 - BDTc));
-            BDTc_correction = BDTc_correction * NormFactor;
+            BDTc_correction = BDTcToWeight(BDTc) * NormFactor;
 
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
 
@@ -872,8 +877,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             tree_Btag->GetEntry(j);
 
             // BDTc correction factor
-            if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
-            else BDTc_correction = (BDTc / (1.0 - BDTc));
+            BDTc_correction = BDTcToWeight(BDTc);
 
             // Fill numberings
             double weight_ri = 0.0;
