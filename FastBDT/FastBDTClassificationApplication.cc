@@ -637,7 +637,6 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
 
        std::vector<float> inputs;
        inputs.push_back(temp_UpsilonDataToTree[33]); // aplanarity
-       inputs.push_back(temp_BsigDataToTree[4]); // Bsig_useCMSFrame_p
        inputs.push_back(temp_BtagDataToTree[6]); // Btag_chiProb
        inputs.push_back(temp_DataToTree[23]); // Btag_CleoConeCS_1
        inputs.push_back(temp_DataToTree[24]); // Btag_CleoConeCS_2
