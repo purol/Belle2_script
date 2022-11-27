@@ -80,9 +80,8 @@ using std::to_string;
 # define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
 # define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
 
-# define Lumi_validation_MC 0.364436 // ab-1
+# define Lumi_validation_MC 0.3 // ab-1
 
-/*
 // my MC sample number
 # define N_Kplus_nunubar 10000000.0
 # define N_K0_nunubar 10000000.0
@@ -98,63 +97,6 @@ using std::to_string;
 # define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
 # define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
 # define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
-*/
-
-// SIGNAL MC sample number
-# define N_Kplus_train 7039000.0
-# define N_K0_train 7166624.0
-# define N_Kplusstar_train 7039000.0
-# define N_K0star_train 7166624.0
-# define N_Xsu_nonresonant_train 35195000.0
-# define N_Xsd_nonresonant_train 34940430.0
-# define N_Kplus_test 2961000.0
-# define N_K0_test 2833376.0
-# define N_Kplusstar_test 2961000.0
-# define N_K0star_test 2833376.0
-# define N_Xsu_nonresonant_test 14805000.0
-# define N_Xsd_nonresonant_test 15059570.0
-
-// scale factor for SIGNAL MC sample (364.436/fb)
-# define Scale_Kplus_train (0.364436 * N_Kplus_nunubar_1invab/N_Kplus_train)
-# define Scale_Kplusstar_train (0.364436 * N_Kplusstar_nunubar_1invab/N_Kplusstar_train)
-# define Scale_Xsu_nonresonant_train (0.364436 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_train)
-# define Scale_K0_train (0.364436 * N_K0_nunubar_1invab/N_K0_train)
-# define Scale_K0star_train (0.364436 * N_K0star_nunubar_1invab/N_K0star_train)
-# define Scale_Xsd_nonresonant_train (0.364436 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_train)
-# define Scale_Kplus_test (0.364436 * N_Kplus_nunubar_1invab/N_Kplus_test)
-# define Scale_Kplusstar_test (0.364436 * N_Kplusstar_nunubar_1invab/N_Kplusstar_test)
-# define Scale_Xsu_nonresonant_test (0.364436 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_test)
-# define Scale_K0_test (0.364436 * N_K0_nunubar_1invab/N_K0_test)
-# define Scale_K0star_test (0.364436 * N_K0star_nunubar_1invab/N_K0star_test)
-# define Scale_Xsd_nonresonant_test (0.364436 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_test)
-
-// BKG MC sample number (0.8/ab for BB, 1.0/ab for qq)
-# define N_CHG_train 32042497.0
-# define N_MIX_train 24693710.0
-# define N_UUBAR_train 94447089.0
-# define N_DDBAR_train 22664556.0
-# define N_SSBAR_train 19244661.0
-# define N_CHARM_train 107541168.0
-# define N_CHG_test 48052238.0
-# define N_MIX_test 37030486.0
-# define N_UUBAR_test 141671998.0
-# define N_DDBAR_test 34114182.0
-# define N_SSBAR_test 28859338.0
-# define N_CHARM_test 161280679.0
-
-// scale factor for BKG MC sample (364.436/fb)
-# define Scale_CHG_train ((0.364436/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_train)
-# define Scale_MIX_train ((0.364436/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_train)
-# define Scale_UUBAR_train ((0.364436/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_train)
-# define Scale_DDBAR_train ((0.364436/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_train)
-# define Scale_SSBAR_train ((0.364436/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_train)
-# define Scale_CHARM_train ((0.364436/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_train)
-# define Scale_CHG_test ((0.364436/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_test)
-# define Scale_MIX_test ((0.364436/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_test)
-# define Scale_UUBAR_test ((0.364436/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_test)
-# define Scale_DDBAR_test ((0.364436/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_test)
-# define Scale_SSBAR_test ((0.364436/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_test)
-# define Scale_CHARM_test ((0.364436/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_test)
 
 # define KS0_rel_uncertainty 0.6 // %/cm
 # define track_rel_uncertainty 0.69 // %
@@ -198,7 +140,7 @@ using std::to_string;
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define RarityBins 10
+# define RarityBins 15
 
 int WorkSpace() {
 
@@ -290,6 +232,7 @@ int WorkSpace() {
 	CHG_temp.AddHistoSys("track_eff_uncer", "CHG_track_m", fname, "", "CHG_track_p", fname, "");
 	CHG_temp.AddHistoSys("KS0_reco_uncer", "CHG_KS0_m", fname, "", "CHG_KS0_p", fname, "");
 	CHG_temp.AddHistoSys("KID_eff_uncer", "CHG_KID_m", fname, "", "CHG_KID_p", fname, "");
+        CHG_temp.AddNormFactor("Norm_CHG_CAL", 1.3, 1.3, 1.3, true);
 	CHG_temp.AddOverallSys("mu_CHG", 0.7, 1.3);
 	CHG_temp.ActivateStatError();
 	CHG_temp.SetNormalizeByTheory(kFALSE);
@@ -303,6 +246,7 @@ int WorkSpace() {
 	MIX_temp.AddHistoSys("track_eff_uncer", "MIX_track_m", fname, "", "MIX_track_p", fname, "");
 	MIX_temp.AddHistoSys("KS0_reco_uncer", "MIX_KS0_m", fname, "", "MIX_KS0_p", fname, "");
 	MIX_temp.AddHistoSys("KID_eff_uncer", "MIX_KID_m", fname, "", "MIX_KID_p", fname, "");
+        MIX_temp.AddNormFactor("Norm_MIX_CAL", 1.3, 1.3, 1.3, true);
 	MIX_temp.AddOverallSys("mu_MIX", 0.7, 1.3);
 	MIX_temp.ActivateStatError();
 	MIX_temp.SetNormalizeByTheory(kFALSE);
@@ -315,7 +259,7 @@ int WorkSpace() {
 	UUBAR_temp.AddHistoSys("track_eff_uncer", "UUBAR_track_m", fname, "", "UUBAR_track_p", fname, "");
 	UUBAR_temp.AddHistoSys("KS0_reco_uncer", "UUBAR_KS0_m", fname, "", "UUBAR_KS0_p", fname, "");
 	UUBAR_temp.AddHistoSys("KID_eff_uncer", "UUBAR_KID_m", fname, "", "UUBAR_KID_p", fname, "");
-	UUBAR_temp.AddNormFactor("Norm_UUBAR", 0.8219, 0.8219, 0.8219, true);
+        UUBAR_temp.AddNormFactor("Norm_UUBAR_CAL", 1.3, 1.3, 1.3, true);
 	UUBAR_temp.AddOverallSys("mu_UUBAR", 0.7, 1.3);
 	UUBAR_temp.ActivateStatError();
 	UUBAR_temp.SetNormalizeByTheory(kFALSE);
@@ -328,7 +272,7 @@ int WorkSpace() {
 	DDBAR_temp.AddHistoSys("track_eff_uncer", "DDBAR_track_m", fname, "", "DDBAR_track_p", fname, "");
 	DDBAR_temp.AddHistoSys("KS0_reco_uncer", "DDBAR_KS0_m", fname, "", "DDBAR_KS0_p", fname, "");
 	DDBAR_temp.AddHistoSys("KID_eff_uncer", "DDBAR_KID_m", fname, "", "DDBAR_KID_p", fname, "");
-	DDBAR_temp.AddNormFactor("Norm_DDBAR", 0.8219, 0.8219, 0.8219, true);
+        DDBAR_temp.AddNormFactor("Norm_DDBAR_CAL", 1.3, 1.3, 1.3, true);
 	DDBAR_temp.AddOverallSys("mu_DDBAR", 0.7, 1.3);
 	DDBAR_temp.ActivateStatError();
 	DDBAR_temp.SetNormalizeByTheory(kFALSE);
@@ -341,7 +285,7 @@ int WorkSpace() {
 	SSBAR_temp.AddHistoSys("track_eff_uncer", "SSBAR_track_m", fname, "", "SSBAR_track_p", fname, "");
 	SSBAR_temp.AddHistoSys("KS0_reco_uncer", "SSBAR_KS0_m", fname, "", "SSBAR_KS0_p", fname, "");
 	SSBAR_temp.AddHistoSys("KID_eff_uncer", "SSBAR_KID_m", fname, "", "SSBAR_KID_p", fname, "");
-	SSBAR_temp.AddNormFactor("Norm_SSBAR", 0.8219, 0.8219, 0.8219, true);
+        SSBAR_temp.AddNormFactor("Norm_SSBAR_CAL", 1.3, 1.3, 1.3, true);
 	SSBAR_temp.AddOverallSys("mu_SSBAR", 0.7, 1.3);
 	SSBAR_temp.ActivateStatError();
 	SSBAR_temp.SetNormalizeByTheory(kFALSE);
@@ -354,7 +298,7 @@ int WorkSpace() {
 	CHARM_temp.AddHistoSys("track_eff_uncer", "CHARM_track_m", fname, "", "CHARM_track_p", fname, "");
 	CHARM_temp.AddHistoSys("KS0_reco_uncer", "CHARM_KS0_m", fname, "", "CHARM_KS0_p", fname, "");
 	CHARM_temp.AddHistoSys("KID_eff_uncer", "CHARM_KID_m", fname, "", "CHARM_KID_p", fname, "");
-	CHARM_temp.AddNormFactor("Norm_CHARM", 0.8219, 0.8219, 0.8219, true);
+        CHARM_temp.AddNormFactor("Norm_CHARM_CAL", 1.3, 1.3, 1.3, true);
 	CHARM_temp.AddOverallSys("mu_CHARM", 0.7, 1.3);
 	CHARM_temp.ActivateStatError();
 	CHARM_temp.SetNormalizeByTheory(kFALSE);
