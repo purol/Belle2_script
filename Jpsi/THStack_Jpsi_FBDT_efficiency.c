@@ -129,7 +129,7 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
     13: hhISR
     */
 
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double temp_KaonID_correction = -1;
@@ -332,7 +332,7 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
     13: hhISR
     */
 
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double temp_KaonID_correction = -1;
@@ -547,7 +547,7 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
 }
 
 void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num]) {
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -586,7 +586,7 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 }
 
 void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], const char* included_string) {
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
 
     std::vector<string> names;
     load_files(dirname, &names, included_string);
@@ -642,7 +642,7 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
     13: hhISR
     */
 
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double temp_KaonID_correction = -1;
@@ -866,7 +866,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
     14: signal (B-->Xs J/psi)
     */
 
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double temp_KaonID_correction = -1;
@@ -1168,7 +1168,7 @@ void THStack_Jpsi_FBDT_efficiency() {
             printf("undefined numbering!\n");
             exit(1);
         }
-    }before_uncer =
+    }
 
     for (int k = 0; k < (int)Jpsi_data_values_after[0].size(); k++) {
         for (int l = 0; l < (int)variable_names.size(); l++) data_after_one_bin->Fill(Jpsi_data_values_after[l].at(k));
