@@ -2352,7 +2352,6 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     TH1D* DDBAR_BDTc_p = new TH1D("DDBAR_BDTc_p", "DDBAR_BDTc_p", RarityBins, 0.7, 1.0);
     TH1D* SSBAR_BDTc_p = new TH1D("SSBAR_BDTc_p", "SSBAR_BDTc_p", RarityBins, 0.7, 1.0);
     TH1D* CHARM_BDTc_p = new TH1D("CHARM_BDTc_p", "CHARM_BDTc_p", RarityBins, 0.7, 1.0);
-    TH1D* Signal_BDTc_m = new TH1D("Signal_BDTc_m", "Signal_BDTc_m", RarityBins, 0.7, 1.0);
     TH1D* CHG_BDTc_m = new TH1D("CHG_BDTc_m", "CHG_BDTc_m", RarityBins, 0.7, 1.0);
     TH1D* MIX_BDTc_m = new TH1D("MIX_BDTc_m", "MIX_BDTc_m", RarityBins, 0.7, 1.0);
     TH1D* UUBAR_BDTc_m = new TH1D("UUBAR_BDTc_m", "UUBAR_BDTc_m", RarityBins, 0.7, 1.0);
@@ -2945,6 +2944,20 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     // fixed mKstar uncertainty
     Signal_mKstar_p->Write();
     Signal_mKstar_m->Write();
+
+    // BDTc uncertainty
+    CHG_BDTc_p->Write();
+    MIX_BDTc_p->Write();
+    UUBAR_BDTc_p->Write();
+    DDBAR_BDTc_p->Write();
+    SSBAR_BDTc_p->Write();
+    CHARM_BDTc_p->Write();
+    CHG_BDTc_m->Write();
+    MIX_BDTc_m->Write();
+    UUBAR_BDTc_m->Write();
+    DDBAR_BDTc_m->Write();
+    SSBAR_BDTc_m->Write();
+    CHARM_BDTc_m->Write();
 
     total_DATA->Write();
 
