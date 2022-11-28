@@ -2089,7 +2089,7 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
-        tree_Bsig->SetBranchAddress("MVA_Continuum", &BDTc_var);
+        tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc_var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Count the number of event without BDTc correction
