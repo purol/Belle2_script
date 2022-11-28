@@ -569,17 +569,17 @@ public:
        m_load_files(dirname, &names);
 
         for (unsigned int i = 0; i < names.size(); i++) {
-            float MVA_Continuum = 0;
+            float MVA_BB = 0;
 
             TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
 
             TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
-            tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_Continuum);
+            tree_upsilon->SetBranchAddress("MVA_BB", &MVA_BB);
 
             for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
                 tree_upsilon->GetEntry(j);
 
-                m_values.push_back(MVA_Continuum);
+                m_values.push_back(MVA_BB);
                 m_weights.push_back(weight);
 
             }
@@ -645,22 +645,22 @@ public:
         m_load_files(dirname, &names);
 
         for (unsigned int i = 0; i < names.size(); i++) {
-            float MVA_Continuum = 0;
+            float MVA_BB = 0;
 
             TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
 
             TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
-            tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_Continuum);
+            tree_upsilon->SetBranchAddress("MVA_BB", &MVA_BB);
 
             for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
                 tree_upsilon->GetEntry(j);
 
                 if (IsSignal) {
-                    m_signal_output.push_back(GetCDFvalue(MVA_Continuum));
+                    m_signal_output.push_back(GetCDFvalue(MVA_BB));
                     m_signal_weight.push_back(weight);
                 }
                 else {
-                    m_background_output.push_back(GetCDFvalue(MVA_Continuum));
+                    m_background_output.push_back(GetCDFvalue(MVA_BB));
                     m_background_weight.push_back(weight);
                 }
             }
@@ -1058,7 +1058,7 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double 
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_var); // MVA
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
@@ -1124,7 +1124,7 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_var); // MVA
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
@@ -1196,7 +1196,7 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_var); // MVA
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
@@ -1263,7 +1263,7 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsIt
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_var); // MVA
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
@@ -1333,7 +1333,7 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_var); // MVA
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
@@ -1404,7 +1404,7 @@ double GetKIDPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_var); // MVA
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
@@ -1547,7 +1547,7 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_var); // MVA
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
@@ -1766,7 +1766,7 @@ void GetKstarffPDFs(const char* dirname, TH1D* hist[19], double Correction_facto
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
-        tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_var); // MVA
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
@@ -1958,7 +1958,7 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
         TTree* tree_Xs = (TTree*)input_file->Get("Xs");
 
-        tree_upsilon->SetBranchAddress("MVA_Continuum", &MVA_var); // MVA
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
@@ -2046,6 +2046,126 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
         input_file->Close();
 
         printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
+    }
+    return Nevt;
+}
+
+double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double weight_var = 1.0) { // get BDTc PDF with appropriate correction
+    if (strcmp(type, "Bplus") == 0) {}
+    else if (strcmp(type, "Bzero") == 0) {}
+    else if (strcmp(type, "Continuum") == 0) {}
+    else {
+        printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    float MVA_var = 0;
+    float BDTc_var = 0;
+
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double temp_KaonID_correction = -1;
+    double temp_nKaon_excep = -1;
+
+    std::vector<string> names;
+    load_files(dirname, &names);
+
+    double Nevt = 0;
+    double Nevt_with_BDTc = 0;
+    double Nevt_with_BDTc_with_norm = 0;
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
+
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        tree_Bsig->SetBranchAddress("MVA_Continuum", &BDTc_var);
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Count the number of event without BDTc correction
+            tree_upsilon->GetEntry(j);
+            tree_Bsig->GetEntry(j);
+            tree_Btag->GetEntry(j);
+
+            double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
+
+            double Correction_pi0 = std::pow(pi0_correction, Npi0);
+            double Correction_FEI = 1.0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
+            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID;
+
+            Nevt = Nevt + total_weight;
+        }
+
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Count the number of event with BDTc correction
+            tree_upsilon->GetEntry(j);
+            tree_Bsig->GetEntry(j);
+            tree_Btag->GetEntry(j);
+
+            double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
+
+            double Correction_pi0 = std::pow(pi0_correction, Npi0);
+            double Correction_FEI = 1.0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
+            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double BDTc_weight = 0;
+            if (BDTc_var > (5.0 / 6.0)) BDTc_weight = 5.0;
+            else BDTc_weight = (BDTc_var / (1.0 - BDTc_var));
+
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * BDTc_weight;
+
+            Nevt_with_BDTc = Nevt_with_BDTc + total_weight;
+        }
+
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // apply BDTc weight with appropritate norm factor
+            tree_upsilon->GetEntry(j);
+            tree_Bsig->GetEntry(j);
+            tree_Btag->GetEntry(j);
+
+            double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
+
+            double Correction_pi0 = std::pow(pi0_correction, Npi0);
+            double Correction_FEI = 1.0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
+            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double BDTc_weight = 0;
+            if (BDTc_var > (5.0 / 6.0)) BDTc_weight = 5.0;
+            else BDTc_weight = (BDTc_var / (1.0 - BDTc_var));
+            BDTc_weight = BDTc_weight * (Nevt / Nevt_with_BDTc);
+
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * BDTc_weight;
+
+            Nevt_with_BDTc_with_norm = Nevt_with_BDTc_with_norm + total_weight;
+
+            hist->Fill(MVA_var, total_weight);
+        }
+
+        input_file->Close();
+
+        if (std::abs(Nevt_with_BDTc_with_norm - Nevt) > 0.1) { // final check
+            printf("[ERROR] BDTc correction will make large discrepancy about the number of total event!\n");
+            exit(1);
+        }
+
+        printf("%s has %lf events (with correction)\n", dirname, Nevt_with_BDTc_with_norm);
 
     }
     return Nevt;
@@ -2224,6 +2344,21 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     // mK*
     TH1D* Signal_mKstar_p = new TH1D("Signal_mKstar_p", "Signal_mKstar_p", RarityBins, 0.7, 1.0);
     TH1D* Signal_mKstar_m = new TH1D("Signal_mKstar_m", "Signal_mKstar_m", RarityBins, 0.7, 1.0);
+
+    // BDTc
+    TH1D* CHG_BDTc_p = new TH1D("CHG_BDTc_p", "CHG_BDTc_p", RarityBins, 0.7, 1.0);
+    TH1D* MIX_BDTc_p = new TH1D("MIX_BDTc_p", "MIX_BDTc_p", RarityBins, 0.7, 1.0);
+    TH1D* UUBAR_BDTc_p = new TH1D("UUBAR_BDTc_p", "UUBAR_BDTc_p", RarityBins, 0.7, 1.0);
+    TH1D* DDBAR_BDTc_p = new TH1D("DDBAR_BDTc_p", "DDBAR_BDTc_p", RarityBins, 0.7, 1.0);
+    TH1D* SSBAR_BDTc_p = new TH1D("SSBAR_BDTc_p", "SSBAR_BDTc_p", RarityBins, 0.7, 1.0);
+    TH1D* CHARM_BDTc_p = new TH1D("CHARM_BDTc_p", "CHARM_BDTc_p", RarityBins, 0.7, 1.0);
+    TH1D* Signal_BDTc_m = new TH1D("Signal_BDTc_m", "Signal_BDTc_m", RarityBins, 0.7, 1.0);
+    TH1D* CHG_BDTc_m = new TH1D("CHG_BDTc_m", "CHG_BDTc_m", RarityBins, 0.7, 1.0);
+    TH1D* MIX_BDTc_m = new TH1D("MIX_BDTc_m", "MIX_BDTc_m", RarityBins, 0.7, 1.0);
+    TH1D* UUBAR_BDTc_m = new TH1D("UUBAR_BDTc_m", "UUBAR_BDTc_m", RarityBins, 0.7, 1.0);
+    TH1D* DDBAR_BDTc_m = new TH1D("DDBAR_BDTc_m", "DDBAR_BDTc_m", RarityBins, 0.7, 1.0);
+    TH1D* SSBAR_BDTc_m = new TH1D("SSBAR_BDTc_m", "SSBAR_BDTc_m", RarityBins, 0.7, 1.0);
+    TH1D* CHARM_BDTc_m = new TH1D("CHARM_BDTc_m", "CHARM_BDTc_m", RarityBins, 0.7, 1.0);
     /* ====================================== */
 
 
@@ -2613,6 +2748,20 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNominalPDFs(MC_dirname_K0nunu, Signal_mKstar_m, "Bzero", Scale_K0_test);
     GetNominalPDFs(MC_dirname_K0starnunu_mKstarfixed, Signal_mKstar_m, "Bzero", Scale_K0star_syst);
     GetNominalPDFs(MC_dirname_Xsdnunu, Signal_mKstar_m, "Bzero", Scale_Xsd_nonresonant_test);
+
+    // get BDTc uncertainty pdfs
+    GetBDTcPDFs(MC_dirname_CHG, CHG_BDTc_p, "Bplus", Scale_CHG_test);
+    GetBDTcPDFs(MC_dirname_MIX, MIX_BDTc_p, "Bzero", Scale_MIX_test);
+    GetBDTcPDFs(MC_dirname_UUBAR, UUBAR_BDTc_p, "Continuum", Scale_UUBAR_test);
+    GetBDTcPDFs(MC_dirname_DDBAR, DDBAR_BDTc_p, "Continuum", Scale_DDBAR_test);
+    GetBDTcPDFs(MC_dirname_SSBAR, SSBAR_BDTc_p, "Continuum", Scale_SSBAR_test);
+    GetBDTcPDFs(MC_dirname_CHARM, CHARM_BDTc_p, "Continuum", Scale_CHARM_test);
+    GetBDTcPDFs(MC_dirname_CHG, CHG_BDTc_m, "Bplus", Scale_CHG_test);
+    GetBDTcPDFs(MC_dirname_MIX, MIX_BDTc_m, "Bzero", Scale_MIX_test);
+    GetBDTcPDFs(MC_dirname_UUBAR, UUBAR_BDTc_m, "Continuum", Scale_UUBAR_test);
+    GetBDTcPDFs(MC_dirname_DDBAR, DDBAR_BDTc_m, "Continuum", Scale_DDBAR_test);
+    GetBDTcPDFs(MC_dirname_SSBAR, SSBAR_BDTc_m, "Continuum", Scale_SSBAR_test);
+    GetBDTcPDFs(MC_dirname_CHARM, CHARM_BDTc_m, "Continuum", Scale_CHARM_test);
     /* ====================================== */
 
 
