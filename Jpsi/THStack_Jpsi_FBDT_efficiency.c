@@ -1098,28 +1098,101 @@ void THStack_Jpsi_FBDT_efficiency() {
     const char* Jpsi_MC_CHARM_after_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_Jpsi/CHARM_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut";
     const char* Jpsi_data_after_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_data_Jpsi/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut";
 
+    std::vector<std::string> variable_names;
+    std::vector<std::string> branch_names;
+    variable_names.push_back("MVA_BB"); branch_names.push_back("Upsilon");
+
+    int Nvar = static_cast<int>(variable_names.size());
+    if (Nvar != Nvar_num) exit(1);
+    std::vector<double> Jpsi_MC_values_before[Nvar_num];
+    std::vector<double> Jpsi_MC_values_after[Nvar_num];
+    std::vector<int> Jpsi_MC_numbering_before;
+    std::vector<int> Jpsi_MC_numbering_after;
+
+    std::vector<double> Jpsi_data_values_before[Nvar_num];
+    std::vector<double> Jpsi_data_values_after[Nvar_num];
+
+    std::vector<double> weights_before;
+    std::vector<double> weights_after;
+
+    LetsFillJpsi_ri(Jpsi_MC_SIGNAL_before_dirname, variable_names, branch_names, Jpsi_MC_values_before, &Jpsi_MC_numbering_before, &weights_before, "SIGNAL");
+    LetsFillJpsi_ri(Jpsi_MC_CHG_before_dirname, variable_names, branch_names, Jpsi_MC_values_before, &Jpsi_MC_numbering_before, &weights_before, "CHG");
+    LetsFillJpsi_ri(Jpsi_MC_MIX_before_dirname, variable_names, branch_names, Jpsi_MC_values_before, &Jpsi_MC_numbering_before, &weights_before, "MIX");
+    LetsFillJpsi_ri(Jpsi_MC_UUBAR_before_dirname, variable_names, branch_names, Jpsi_MC_values_before, &Jpsi_MC_numbering_before, &weights_before, "UUBAR");
+    LetsFillJpsi_ri(Jpsi_MC_DDBAR_before_dirname, variable_names, branch_names, Jpsi_MC_values_before, &Jpsi_MC_numbering_before, &weights_before, "DDBAR");
+    LetsFillJpsi_ri(Jpsi_MC_SSBAR_before_dirname, variable_names, branch_names, Jpsi_MC_values_before, &Jpsi_MC_numbering_before, &weights_before, "SSBAR");
+    LetsFillJpsi_ri(Jpsi_MC_CHARM_before_dirname, variable_names, branch_names, Jpsi_MC_values_before, &Jpsi_MC_numbering_before, &weights_before, "CHARM");
+    LetsFillJpsi_ri(Jpsi_MC_SIGNAL_after_dirname, variable_names, branch_names, Jpsi_MC_values_after, &Jpsi_MC_numbering_after, &weights_after, "SIGNAL");
+    LetsFillJpsi_ri(Jpsi_MC_CHG_after_dirname, variable_names, branch_names, Jpsi_MC_values_after, &Jpsi_MC_numbering_after, &weights_after, "CHG");
+    LetsFillJpsi_ri(Jpsi_MC_MIX_after_dirname, variable_names, branch_names, Jpsi_MC_values_after, &Jpsi_MC_numbering_after, &weights_after, "MIX");
+    LetsFillJpsi_ri(Jpsi_MC_UUBAR_after_dirname, variable_names, branch_names, Jpsi_MC_values_after, &Jpsi_MC_numbering_after, &weights_after, "UUBAR");
+    LetsFillJpsi_ri(Jpsi_MC_DDBAR_after_dirname, variable_names, branch_names, Jpsi_MC_values_after, &Jpsi_MC_numbering_after, &weights_after, "DDBAR");
+    LetsFillJpsi_ri(Jpsi_MC_SSBAR_after_dirname, variable_names, branch_names, Jpsi_MC_values_after, &Jpsi_MC_numbering_after, &weights_after, "SSBAR");
+    LetsFillJpsi_ri(Jpsi_MC_CHARM_after_dirname, variable_names, branch_names, Jpsi_MC_values_after, &Jpsi_MC_numbering_after, &weights_after, "CHARM");
+    LetsFill(Jpsi_data_before_dirname, variable_names, branch_names, Jpsi_data_values_before);
+    LetsFill(Jpsi_data_after_dirname, variable_names, branch_names, Jpsi_data_values_after);
+
     TH1D* MC_SIGNAL_before_one_bin = new TH1D("MC_SIGNAL_before_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
-    TH1D* MC_CHG_before_one_bin = new TH1D("MC_CHG_before_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
-    TH1D* MC_MIX_before_one_bin = new TH1D("MC_MIX_before_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
-    TH1D* MC_UUBAR_before_one_bin = new TH1D("MC_UUBAR_before_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
-    TH1D* MC_DDBAR_before_one_bin = new TH1D("MC_DDBAR_before_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
-    TH1D* MC_SSBAR_before_one_bin = new TH1D("MC_SSBAR_before_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
-    TH1D* MC_CHARM_before_one_bin = new TH1D("MC_CHARM_before_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
+    TH1D* MC_BKG_before_one_bin = new TH1D("MC_BKG_before_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
+    TH1D* data_before_one_bin = new TH1D("data_before_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
 
     TH1D* MC_SIGNAL_after_one_bin = new TH1D("MC_SIGNAL_after_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
-    TH1D* MC_CHG_after_one_bin = new TH1D("MC_CHG_after_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
-    TH1D* MC_MIX_after_one_bin = new TH1D("MC_MIX_after_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
-    TH1D* MC_UUBAR_after_one_bin = new TH1D("MC_UUBAR_after_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
-    TH1D* MC_DDBAR_after_one_bin = new TH1D("MC_DDBAR_after_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
-    TH1D* MC_SSBAR_after_one_bin = new TH1D("MC_SSBAR_after_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
-    TH1D* MC_CHARM_after_one_bin = new TH1D("MC_CHARM_after_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
+    TH1D* MC_BKG_after_one_bin = new TH1D("MC_BKG_after_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
+    TH1D* data_after_one_bin = new TH1D("data_after_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
+
+    for (int k = 0; k < (int)Jpsi_MC_numbering_before.size(); k++) {
+        if (Jpsi_MC_numbering_before.at(k) >= 0 && Jpsi_MC_numbering_before.at(k) <= 13) { // BKG
+            for (int l = 0; l < (int)variable_names.size(); l++) MC_BKG_before_one_bin->Fill(Jpsi_MC_values_before[l].at(k), weights_before.at(k));
+        }
+        else if (Jpsi_MC_numbering_before.at(k) == 14) { // signal
+            for (int l = 0; l < (int)variable_names.size(); l++) MC_SIGNAL_before_one_bin->Fill(Jpsi_MC_values_before[l].at(k), weights_before.at(k));
+        }
+        else {
+            printf("undefined numbering!\n");
+            exit(1);
+        }
+    }
+
+    for (int k = 0; k < (int)Jpsi_data_values_before[0].size(); k++) {
+        for (int l = 0; l < (int)variable_names.size(); l++) data_before_one_bin->Fill(Jpsi_data_values_before[l].at(k));
+    }
+
+    for (int k = 0; k < (int)Jpsi_MC_numbering_after.size(); k++) {
+        if (Jpsi_MC_numbering_after.at(k) >= 0 && Jpsi_MC_numbering_after.at(k) <= 13) { // BKG
+            for (int l = 0; l < (int)variable_names.size(); l++) MC_BKG_after_one_bin->Fill(Jpsi_MC_values_after[l].at(k), weights_after.at(k));
+        }
+        else if (Jpsi_MC_numbering_after.at(k) == 14) { // signal
+            for (int l = 0; l < (int)variable_names.size(); l++) MC_SIGNAL_after_one_bin->Fill(Jpsi_MC_values_after[l].at(k), weights_after.at(k));
+        }
+        else {
+            printf("undefined numbering!\n");
+            exit(1);
+        }
+    }before_uncer =
+
+    for (int k = 0; k < (int)Jpsi_data_values_after[0].size(); k++) {
+        for (int l = 0; l < (int)variable_names.size(); l++) data_after_one_bin->Fill(Jpsi_data_values_after[l].at(k));
+    }
+
+    double Nsig_before = MC_SIGNAL_before_one_bin->GetBinContent(1);
+    double NBKG_before = MC_SIGNAL_before_one_bin->GetBinContent(1);
+    double Ndata_before = data_before_one_bin->GetBinContent(1);
+    double Nsig_after = MC_SIGNAL_after_one_bin->GetBinContent(1);
+    double NBKG_after = MC_SIGNAL_after_one_bin->GetBinContent(1);
+    double Ndata_after = data_after_one_bin->GetBinContent(1);
+
+    double Nsig_before_uncer = MC_SIGNAL_before_one_bin->GetBinError(1);
+    double NBKG_before_uncer = MC_SIGNAL_before_one_bin->GetBinError(1);
+    double Ndata_before_uncer = data_before_one_bin->GetBinError(1);
+    double Nsig_after_uncer = MC_SIGNAL_after_one_bin->GetBinError(1);
+    double NBKG_after_uncer = MC_SIGNAL_after_one_bin->GetBinError(1);
+    double Ndata_after_uncer = data_after_one_bin->GetBinError(1);
 
     // Print data-MC discrepancy
-    double MC_sum = 0;
-    for (int i = 0; i < (int)Jpsi_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
-    printf("data num: %ld\n", Jpsi_data_values[0].size());
-    printf("MC num with calibration: %lf\n", MC_sum);
-    printf("MC with calibration: %lf +- %lf\n", MC_one_bin[0]->GetBinContent(1), MC_one_bin[0]->GetBinError(1));
-    printf("data with calibration: %lf +- %lf\n", data_one_bin[0]->GetBinContent(1), data_one_bin[0]->GetBinError(1));
-    printf("MC/data with calibration: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent(1), Ratio_one_bin[0]->GetBinError(1));
+    printf("%lf +- %lf\n", Nsig_before, Nsig_before_uncer);
+    printf("%lf +- %lf\n", NBKG_before, NBKG_before_uncer);
+    printf("%lf +- %lf\n", Ndata_before, Ndata_before_uncer);
+    printf("%lf +- %lf\n", Nsig_after, Nsig_after_uncer);
+    printf("%lf +- %lf\n", NBKG_after, NBKG_after_uncer);
+    printf("%lf +- %lf\n", Ndata_after, Ndata_after_uncer);
 }
