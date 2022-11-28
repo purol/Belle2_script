@@ -1175,24 +1175,56 @@ void THStack_Jpsi_FBDT_efficiency() {
     }
 
     double Nsig_before = MC_SIGNAL_before_one_bin->GetBinContent(1);
-    double NBKG_before = MC_SIGNAL_before_one_bin->GetBinContent(1);
+    double NBKG_before = MC_BKG_before_one_bin->GetBinContent(1);
     double Ndata_before = data_before_one_bin->GetBinContent(1);
     double Nsig_after = MC_SIGNAL_after_one_bin->GetBinContent(1);
-    double NBKG_after = MC_SIGNAL_after_one_bin->GetBinContent(1);
+    double NBKG_after = MC_BKG_after_one_bin->GetBinContent(1);
     double Ndata_after = data_after_one_bin->GetBinContent(1);
 
     double Nsig_before_uncer = MC_SIGNAL_before_one_bin->GetBinError(1);
-    double NBKG_before_uncer = MC_SIGNAL_before_one_bin->GetBinError(1);
+    double NBKG_before_uncer = MC_BKG_before_one_bin->GetBinError(1);
     double Ndata_before_uncer = data_before_one_bin->GetBinError(1);
     double Nsig_after_uncer = MC_SIGNAL_after_one_bin->GetBinError(1);
-    double NBKG_after_uncer = MC_SIGNAL_after_one_bin->GetBinError(1);
+    double NBKG_after_uncer = MC_BKG_after_one_bin->GetBinError(1);
     double Ndata_after_uncer = data_after_one_bin->GetBinError(1);
 
     // Print data-MC discrepancy
-    printf("%lf +- %lf\n", Nsig_before, Nsig_before_uncer);
-    printf("%lf +- %lf\n", NBKG_before, NBKG_before_uncer);
-    printf("%lf +- %lf\n", Ndata_before, Ndata_before_uncer);
-    printf("%lf +- %lf\n", Nsig_after, Nsig_after_uncer);
-    printf("%lf +- %lf\n", NBKG_after, NBKG_after_uncer);
-    printf("%lf +- %lf\n", Ndata_after, Ndata_after_uncer);
+    printf("Nsig before: %lf +- %lf\n", Nsig_before, Nsig_before_uncer);
+    printf("NBKG before: %lf +- %lf\n", NBKG_before, NBKG_before_uncer);
+    printf("Ndata before: %lf +- %lf\n", Ndata_before, Ndata_before_uncer);
+    printf("Nsig after: %lf +- %lf\n", Nsig_after, Nsig_after_uncer);
+    printf("NBKG after: %lf +- %lf\n", NBKG_after, NBKG_after_uncer);
+    printf("Ndata after: %lf +- %lf\n", Ndata_after, Ndata_after_uncer);
+
+    double efficiency_data = (Ndata_after - NBKG_after) / (Ndata_before - NBKG_before);
+    double efficiency_MC = Nsig_after / Nsig_before;
+
+    /* calculate uncertainty of efficiency data*/
+    double efficiency_data_uncer_Ndata_after = Ndata_after_uncer / (Ndata_after - NBKG_after);
+    double efficiency_data_uncer_NBKG_after = NBKG_after_uncer / (Ndata_after - NBKG_after);
+    double efficiency_data_uncer_Ndata_before = Ndata_before_uncer / (Ndata_before - NBKG_before);
+    double efficiency_data_uncer_NBKG_before = NBKG_before_uncer / (Ndata_before - NBKG_before);
+    double efficiency_data_uncer = std::sqrt(
+        efficiency_data_uncer_Ndata_after * efficiency_data_uncer_Ndata_after +
+        efficiency_data_uncer_NBKG_after * efficiency_data_uncer_NBKG_after +
+        efficiency_data_uncer_Ndata_before * efficiency_data_uncer_Ndata_before +
+        efficiency_data_uncer_NBKG_before * efficiency_data_uncer_NBKG_before
+    ); // it is relative uncertainty
+
+    /* calculate uncertainty of efficiency MC*/
+    double efficiency_MC_uncer_Nsig_after = Nsig_after_uncer / Nsig_after;
+    double efficiency_MC_uncer_Nsig_before = Nsig_before_uncer / Nsig_before;
+    double efficiency_MC_uncer = std::sqrt(
+        efficiency_MC_uncer_Nsig_after * efficiency_MC_uncer_Nsig_after +
+        efficiency_MC_uncer_Nsig_before * efficiency_MC_uncer_Nsig_before
+    ); // it is relative uncertainty
+
+    /* calculate total uncertainty */
+    double efficiency_ratio = efficiency_data / efficiency_MC;
+    double efficiency_ratio_uncer = efficiency_ratio * std::sqrt(
+        efficiency_data_uncer * efficiency_data_uncer +
+        efficiency_MC_uncer * efficiency_MC_uncer
+    ); // it is relative uncertainty
+
+    printf("eps_data/eps_MC = %lf +- %lf\n", efficiency_ratio, efficiency_ratio * efficiency_ratio_uncer);
 }
