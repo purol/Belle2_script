@@ -262,6 +262,8 @@ int WorkSpace() {
 	UUBAR_temp.AddHistoSys("KS0_reco_uncer", "UUBAR_KS0_m", fname, "", "UUBAR_KS0_p", fname, "");
 	UUBAR_temp.AddHistoSys("KID_eff_uncer", "UUBAR_KID_m", fname, "", "UUBAR_KID_p", fname, "");
 	UUBAR_temp.AddHistoSys("BDTc_shape_qq", "UUBAR_BDTc_m", fname, "", "UUBAR_BDTc_p", fname, "");
+	UUBAR_temp.AddNormFactor("qq_CAL_UUBAR", 1.3780, 1.3780, 1.3780, true);
+	UUBAR_temp.AddOverallSys("qq_CAL_uncer_UUBAR", 0.7, 1.3);
     UUBAR_temp.AddNormFactor("Norm_UUBAR_CAL", 1.3, 1.3, 1.3, true);
 	UUBAR_temp.AddOverallSys("mu_UUBAR", 0.7, 1.3);
 	UUBAR_temp.ActivateStatError();
@@ -276,6 +278,8 @@ int WorkSpace() {
 	DDBAR_temp.AddHistoSys("KS0_reco_uncer", "DDBAR_KS0_m", fname, "", "DDBAR_KS0_p", fname, "");
 	DDBAR_temp.AddHistoSys("KID_eff_uncer", "DDBAR_KID_m", fname, "", "DDBAR_KID_p", fname, "");
 	DDBAR_temp.AddHistoSys("BDTc_shape_qq", "DDBAR_BDTc_m", fname, "", "DDBAR_BDTc_p", fname, "");
+	DDBAR_temp.AddNormFactor("qq_CAL_DDBAR", 1.3780, 1.3780, 1.3780, true);
+	DDBAR_temp.AddOverallSys("qq_CAL_uncer_DDBAR", 0.7, 1.3);
     DDBAR_temp.AddNormFactor("Norm_DDBAR_CAL", 1.3, 1.3, 1.3, true);
 	DDBAR_temp.AddOverallSys("mu_DDBAR", 0.7, 1.3);
 	DDBAR_temp.ActivateStatError();
@@ -290,6 +294,8 @@ int WorkSpace() {
 	SSBAR_temp.AddHistoSys("KS0_reco_uncer", "SSBAR_KS0_m", fname, "", "SSBAR_KS0_p", fname, "");
 	SSBAR_temp.AddHistoSys("KID_eff_uncer", "SSBAR_KID_m", fname, "", "SSBAR_KID_p", fname, "");
 	SSBAR_temp.AddHistoSys("BDTc_shape_qq", "SSBAR_BDTc_m", fname, "", "SSBAR_BDTc_p", fname, "");
+	SSBAR_temp.AddNormFactor("qq_CAL_SSBAR", 1.3780, 1.3780, 1.3780, true);
+	SSBAR_temp.AddOverallSys("qq_CAL_uncer_SSBAR", 0.7, 1.3);
     SSBAR_temp.AddNormFactor("Norm_SSBAR_CAL", 1.3, 1.3, 1.3, true);
 	SSBAR_temp.AddOverallSys("mu_SSBAR", 0.7, 1.3);
 	SSBAR_temp.ActivateStatError();
@@ -304,6 +310,8 @@ int WorkSpace() {
 	CHARM_temp.AddHistoSys("KS0_reco_uncer", "CHARM_KS0_m", fname, "", "CHARM_KS0_p", fname, "");
 	CHARM_temp.AddHistoSys("KID_eff_uncer", "CHARM_KID_m", fname, "", "CHARM_KID_p", fname, "");
 	CHARM_temp.AddHistoSys("BDTc_shape_qq", "CHARM_BDTc_m", fname, "", "CHARM_BDTc_p", fname, "");
+	CHARM_temp.AddNormFactor("qq_CAL_CHARM", 1.3780, 1.3780, 1.3780, true);
+	CHARM_temp.AddOverallSys("qq_CAL_uncer_CHARM", 0.7, 1.3);
     CHARM_temp.AddNormFactor("Norm_CHARM_CAL", 1.3, 1.3, 1.3, true);
 	CHARM_temp.AddOverallSys("mu_CHARM", 0.7, 1.3);
 	CHARM_temp.ActivateStatError();

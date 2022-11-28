@@ -1045,11 +1045,26 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
 void THStack_plot_offres() {
 
+    Nevt nevt_UUBAR = { 0.0, 0.0 };
+    Nevt nevt_DDBAR = { 0.0, 0.0 };
+    Nevt nevt_SSBAR = { 0.0, 0.0 };
+    Nevt nevt_CHARM = { 0.0, 0.0 };
+
     const char* Offres_MC_UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/UUBAR_analysis/test_v000/final_output";
     const char* Offres_MC_DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/DDBAR_analysis/test_v000/final_output";
     const char* Offres_MC_SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/SSBAR_analysis/test_v000/final_output";
     const char* Offres_MC_CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/CHARM_analysis/test_v000/final_output";
     const char* Offres_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_data_off/SIGNAL_analysis/validation_v000/final_output";
+
+    NevtCount_ri(Offres_MC_UUBAR_dirname, "UUBAR", &nevt_UUBAR);
+    NevtCount_ri(Offres_MC_DDBAR_dirname, "DDBAR", &nevt_DDBAR);
+    NevtCount_ri(Offres_MC_SSBAR_dirname, "SSBAR", &nevt_SSBAR);
+    NevtCount_ri(Offres_MC_CHARM_dirname, "CHARM", &nevt_CHARM);
+
+    double NormFactor_UUBAR = nevt_UUBAR.NevtwithoutCorrection / nevt_UUBAR.NevtwithCorrection;
+    double NormFactor_DDBAR = nevt_DDBAR.NevtwithoutCorrection / nevt_DDBAR.NevtwithCorrection;
+    double NormFactor_SSBAR = nevt_SSBAR.NevtwithoutCorrection / nevt_SSBAR.NevtwithCorrection;
+    double NormFactor_CHARM = nevt_CHARM.NevtwithoutCorrection / nevt_CHARM.NevtwithCorrection;
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
@@ -1177,6 +1192,12 @@ void THStack_plot_offres() {
     std::vector<double> llXX_weights;
     std::vector<double> hhISR_weights;
 
+    /*
+    LetsFillOffres_ri_correction(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR);
+    LetsFillOffres_ri_correction(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR);
+    LetsFillOffres_ri_correction(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR);
+    LetsFillOffres_ri_correction(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM", NormFactor_CHARM);
+    */
     LetsFillOffres_ri(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR");
     LetsFillOffres_ri(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR");
     LetsFillOffres_ri(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR");
