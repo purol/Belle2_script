@@ -784,7 +784,7 @@ int main(int argc, char* argv[]) {
             Toy_iter_num = std::atoi(argv[4]);
         }
         else {
-            printf("Toy MC requires 2 arguments\n");
+            printf("Toy MC requires 3 arguments {eps} {indicator} {Num of sample}\n");
             exit(1);
         }
     }
@@ -796,7 +796,7 @@ int main(int argc, char* argv[]) {
             LT_iter_num = std::atoi(argv[5]);
         }
         else {
-            printf("Linearity test requires only 2 arguments: {injected mu} {eps} {indicator}\n");
+            printf("Linearity test requires only 4 arguments: {injected mu} {eps} {indicator} {Num of sample}\n");
             exit(1);
         }
     }
