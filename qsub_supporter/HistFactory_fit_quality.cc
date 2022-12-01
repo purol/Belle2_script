@@ -176,9 +176,7 @@ void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
     w->loadSnapshot("NominalParamValues");
 
     RooAbsData* data = (RooAbsData*)w->data("asimovData");
-    // RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
-    RooAbsReal* nll;
-    RooFitResult* fitres = MinimizeNLL(w, data, nll, 1.0);
+    RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
 
     RooArgSet fitargs = fitres->floatParsFinal();
     TIterator* iter(fitargs.createIterator());
