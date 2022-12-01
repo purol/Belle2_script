@@ -153,8 +153,11 @@ using std::endl;
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define Toy_iter_num 500
-# define LT_iter_num 500
+//# define Toy_iter_num 500
+//# define LT_iter_num 500
+
+int Toy_iter_num = 0.0;
+int LT_iter_num = 0.0;
 
 std::random_device rd;
 std::default_random_engine generator(rd());
@@ -766,6 +769,7 @@ int main(int argc, char* argv[]) {
     // argv[2]: injected mu when Linearity test
     // argv[3]: eps for minimizer
     // argv[4]: indicator
+    // argv[5]: Num of sample
     double injected_mu = -1;
     double eps = -1.0;
     int indicator = 0;
@@ -773,10 +777,11 @@ int main(int argc, char* argv[]) {
     std::vector<std::string> param_names;
     
     if (std::string(argv[1]) == std::string("ToyMC")) {  // main ToyMC
-        if (argc == 4) {
+        if (argc == 5) {
             injected_mu = -1;
             eps = std::atof(argv[2]);
             indicator = std::atoi(argv[3]);
+            Toy_iter_num = std::atoi(argv[4]);
         }
         else {
             printf("Toy MC requires 2 arguments\n");
@@ -784,10 +789,11 @@ int main(int argc, char* argv[]) {
         }
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) { // main LinearityTest 12 1234 0.8
-        if (argc == 5) {
+        if (argc == 6) {
             injected_mu = std::atof(argv[2]);
             eps = std::atof(argv[3]);
             indicator = std::atoi(argv[4]);
+            LT_iter_num = std::atoi(argv[5]);
         }
         else {
             printf("Linearity test requires only 2 arguments: {injected mu} {eps} {indicator}\n");
