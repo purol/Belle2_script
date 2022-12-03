@@ -677,18 +677,23 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        inputs.push_back(temp_UpsilonDataToTree[54]); // nParticlesInList__bomu__pl__clMuonFBDT_tight__bc
        inputs.push_back(temp_UpsilonDataToTree[3]); // roeEextra__bocleanMask__bc
        inputs.push_back(temp_UpsilonDataToTree[44]); // roePTheta__bocleanMask__bc
+       inputs.push_back(temp_BsigDataToTree[4]); // Bsig_useCMSFrame_p
 
        if (temp_BsigDataToTree[67] > -0.5) {
+           inputs.push_back(temp_BsigDataToTree[66]); // Bsig_daughter_0_extraInfo_Dc_pValue_std
            inputs.push_back(temp_BsigDataToTree[70]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_M
        }
        else {
+           inputs.push_back(temp_BsigDataToTree[66]); // Bsig_daughter_0_extraInfo_Dc_pValue_std
            inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_Dcsimpleveto_M
        }
 
        if (temp_BsigDataToTree[74] > -0.5) {
+           inputs.push_back(temp_BsigDataToTree[73]); // Bsig_daughter_0_extraInfo_D0_pValue_std
            inputs.push_back(temp_BsigDataToTree[77]); // Bsig_daughter_0_extraInfo_D0simpleveto_M
        }
        else {
+           inputs.push_back(temp_BsigDataToTree[73]); // Bsig_daughter_0_extraInfo_D0_pValue_std
            inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_D0simpleveto_M
        }
 
