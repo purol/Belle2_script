@@ -40,8 +40,8 @@
 # define N_decay_nparticles 3 // # of nu_e, B, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
 
-# define Nvar 46
-# define DvetoNvar 4
+# define Nvar 43
+# define DvetoNvar 2
 
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
@@ -247,15 +247,10 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &Vars[38]);
     tree_data->SetBranchAddress("roeEextra__bocleanMask__bc", &Vars[39]);
     tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[40]);
-    tree_data->SetBranchAddress("Bsig_useCMSFrame_p", &Vars[41]);
 
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &Dc_pvalue_med);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &Dc_chiProb);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &Dc_dz);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &Dc_M);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med", &D0_pvalue_med);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std", &D0_pvalue_std);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &D0_chiProb);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &D0_dz);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &D0_M);
@@ -284,20 +279,16 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
         for (unsigned int k = 0; k < Nvar - DvetoNvar; k++) input_vars[k].push_back((float) Vars[k]); 
 
         if(Dc_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_pvalue_std);
-            input_vars[Nvar - DvetoNvar + 1].push_back((float)Dc_M);
+            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_M);
         }
         else {
-            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_pvalue_std);
-            input_vars[Nvar - DvetoNvar + 1].push_back((float)0.0);
+            input_vars[Nvar - DvetoNvar + 0].push_back((float) 0.0);
         }
         if(D0_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 2].push_back((float)D0_pvalue_std);
-            input_vars[Nvar - DvetoNvar + 3].push_back((float)D0_M);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float) D0_M);
         }
         else {
-            input_vars[Nvar - DvetoNvar + 2].push_back((float)D0_pvalue_std);
-            input_vars[Nvar - DvetoNvar + 3].push_back((float)0.0);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float) 0.0);
         }
 
         IsSignal->push_back(tempissignal);
