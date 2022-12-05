@@ -204,7 +204,7 @@ private:
 
 public:
     FileSaver();
-    void OpenFile(bool IsItToy, std::vector<std::string>* names, int indicator);
+    void OpenFile(bool IsItToy, std::vector<std::string>* names, double mu_injected, int indicator);
     void CloseFile();
     void GetTrueValues(RooWorkspace* w, std::vector<std::string>* names);
     void GetFittingValues(RooFitResult* fitres, std::vector<std::string>* names);
@@ -256,7 +256,7 @@ void FileSaver::GetTrueValues(RooWorkspace* w, std::vector<std::string>* names) 
 
     // write into member variables
     for (unsigned int i = 0; i < names->size(); i++) {
-        m_true_param[i] = w->var(names->at(i))->getValV();
+        m_true_param[i] = w->var(names->at(i).c_str())->getValV();
     }
 
 }
