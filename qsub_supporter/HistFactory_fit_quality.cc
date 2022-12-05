@@ -206,8 +206,8 @@ public:
     FileSaver();
     void OpenFile(bool IsItToy, std::vector<std::string>* names, int indicator);
     void CloseFile();
-    void GetTrueValues();
-    void GetFittingValues();
+    void GetTrueValues(RooWorkspace* w, std::vector<std::string>* names);
+    void GetFittingValues(RooFitResult* fitres, std::vector<std::string>* names);
     void WriteIntoBranch();
 };
 
@@ -219,7 +219,7 @@ FileSaver::FileSaver() {
     TTree* m_tree = nullptr;
 }
 
-void FileSaver::OpenFile(bool IsItToy, std::vector<std::string>* names, int indicator) {
+void FileSaver::OpenFile(bool IsItToy, std::vector<std::string>* names, double mu_injected, int indicator) {
 
     // malloc params
     m_true_param = (double*)malloc(sizeof(double) * names->size());
@@ -520,17 +520,17 @@ int main(int argc, char* argv[]) {
     GetNameOfParams(w, &param_names);
 
     if (std::string(argv[1]) == std::string("ToyMC")) {
-        filesaver.OpenFile(true, &param_names, indicator);
+        filesaver.OpenFile(true, &param_names, injected_mu, indicator);
         MyToyMCStudy(w, &param_names, eps, indicator);
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) {
-        filesaver.OpenFile(false, &param_names, indicator);
+        filesaver.OpenFile(false, &param_names, injected_mu, indicator);
         MyLinearityTest(w, &param_names, injected_mu, eps, indicator);
     }
 
     f->Close();
 
-    filesaver.CloseFile()
+    filesaver.CloseFile();
 
     return 0;
 }
