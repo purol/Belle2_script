@@ -193,6 +193,104 @@ void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
     w->loadSnapshot("NominalParamValues");
 }
 
+class FileSaver {
+private:
+    double* m_true_param;
+    double* m_fitting_param;
+    double* m_fitting_param_error;
+
+    TFile* m_file;
+    TTree* m_tree;
+
+public:
+    FileSaver();
+    void OpenFile(bool IsItToy, std::vector<std::string>* names, int indicator);
+    void CloseFile();
+    void GetTrueValues();
+    void GetFittingValues();
+    void WriteIntoBranch();
+};
+
+FileSaver::FileSaver() {
+    double* m_true_param = nullptr;
+    double* m_fitting_param = nullptr;
+    double* m_fitting_param_error = nullptr;
+    TFile* m_file = nullptr;
+    TTree* m_tree = nullptr;
+}
+
+void FileSaver::OpenFile(bool IsItToy, std::vector<std::string>* names, int indicator) {
+
+    // malloc params
+    m_true_param = (double*)malloc(sizeof(double) * names->size());
+    m_fitting_param = (double*)malloc(sizeof(double) * names->size());
+    m_fitting_param_error = (double*)malloc(sizeof(double) * names->size());
+
+    // open file
+    if (IsItToy) {
+        m_file = new TFile(("TOY_result_" + std::to_string(indicator) + ".root").c_str(), "recreate");
+        m_file->cd();
+        m_tree = new TTree("TOY_result", "");
+    }
+    else {
+        m_file = new TFile(("LT_result_" + std::to_string(mu_injected) + "_" + std::to_string(indicator) + ".root").c_str(), "recreate");
+        m_file->cd();
+        m_tree = new TTree("LT_result", "");
+    }
+
+    // set branches
+    for (unsigned int i = 0; i < names->size(); i++) {
+        m_tree->Branch((names->at(i) + "_true").c_str(), m_true_param[i]);
+        m_tree->Branch((names->at(i) + "_value").c_str(), m_fitting_param[i]);
+        m_tree->Branch((names->at(i) + "_error").c_str(), m_fitting_param_error[i]);
+    }
+}
+
+void FileSaver::CloseFile() {
+    m_file->cd();
+    m_tree->Write();
+    m_file->Close();
+}
+
+void FileSaver::GetTrueValues(RooWorkspace* w, std::vector<std::string>* names) {
+
+    // write into member variables
+    for (unsigned int i = 0; i < names->size(); i++) {
+        m_true_param[i] = w->var(names->at(i))->getValV();
+    }
+
+}
+
+void FileSaver::GetFittingValues(RooFitResult* fitres, std::vector<std::string>* names) {
+
+    RooArgSet fitargs = fitres->floatParsFinal();
+    TIterator* iter(fitargs.createIterator());
+
+    for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        double val = rrv->getVal();
+        double err = rrv->getError();
+
+        for (unsigned int i = 0; i < names->size(); i++) {
+            if (name == names->at(i)) {
+                m_fitting_param[i] = val;
+                m_fitting_param_error[i] = err;
+            }
+        }
+
+    }
+
+}
+
+void FileSaver::WriteIntoBranch() {
+
+    m_tree->Fill();
+
+}
+
+FileSaver filesaver;
+
 RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, double tolerance = -1.0) { // this function follows the procedure in ProfileLikelihoodTestStat.cxx
     // what we have done
     w->loadSnapshot("NominalParamValues");
@@ -311,40 +409,6 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
 
 void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, int indicator = 0){
 
-        std::vector<double> mus;
-        std::vector<double> mu_errors;
-        std::vector<double> mu_pulls;
-
-        std::vector<double> alpha_mu_CHGs;
-        std::vector<double> alpha_mu_CHG_errors;
-        std::vector<double> alpha_mu_CHG_pulls;
-        std::vector<double> mu_CHGs;
-
-        std::vector<double> alpha_mu_MIXs;
-        std::vector<double> alpha_mu_MIX_errors;
-        std::vector<double> alpha_mu_MIX_pulls;
-        std::vector<double> mu_MIXs;
-
-        std::vector<double> alpha_mu_UUBARs;
-        std::vector<double> alpha_mu_UUBAR_errors;
-        std::vector<double> alpha_mu_UUBAR_pulls;
-        std::vector<double> mu_UUBARs;
-
-        std::vector<double> alpha_mu_DDBARs;
-        std::vector<double> alpha_mu_DDBAR_errors;
-        std::vector<double> alpha_mu_DDBAR_pulls;
-        std::vector<double> mu_DDBARs;
-
-        std::vector<double> alpha_mu_SSBARs;
-        std::vector<double> alpha_mu_SSBAR_errors;
-        std::vector<double> alpha_mu_SSBAR_pulls;
-        std::vector<double> mu_SSBARs;
-
-        std::vector<double> alpha_mu_CHARMs;
-        std::vector<double> alpha_mu_CHARM_errors;
-        std::vector<double> alpha_mu_CHARM_pulls;
-        std::vector<double> mu_CHARMs;
-
         ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
         RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
@@ -355,6 +419,8 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
             
             double Nevt_total = SetParamsForToy(w, names, 1.0);
 
+            filesaver.GetTrueValues(w, names);
+
             RooDataSet* genData = model->generate(RooArgSet(*x,model->indexCat()), Nevt_total, false, true, "", false, true);
 
             w->loadSnapshot("NominalParamValues");
@@ -362,213 +428,15 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
             RooAbsReal* nll;
             RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
 
-            RooArgSet fitargs_TOY = fitres->floatParsFinal();
-            TIterator* iter_TOY(fitargs_TOY.createIterator());
-
-            for(TObject* a_TOY = iter_TOY->Next(); a_TOY != 0; a_TOY = iter_TOY->Next()){
-                RooRealVar* rrv_TOY = dynamic_cast<RooRealVar*>(a_TOY);
-                std::string name_TOY = rrv_TOY->GetName();
-                double val_TOY = rrv_TOY->getVal();
-                double err_TOY = rrv_TOY->getError();
-                if(name_TOY == std::string("mu")){
-                    mus.push_back(val_TOY);
-                    mu_errors.push_back(err_TOY);
-                    mu_pulls.push_back((val_TOY - 1.0)/err_TOY);
-                }
-                else if (name_TOY == std::string("alpha_mu_CHG")) {
-                    alpha_mu_CHGs.push_back(val_TOY);
-                    alpha_mu_CHG_errors.push_back(err_TOY);
-                    alpha_mu_CHG_pulls.push_back((val_TOY - w->var("nom_alpha_mu_CHG")->getValV()) / err_TOY);
-                }
-                else if (name_TOY == std::string("alpha_mu_MIX")) {
-                    alpha_mu_MIXs.push_back(val_TOY);
-                    alpha_mu_MIX_errors.push_back(err_TOY);
-                    alpha_mu_MIX_pulls.push_back((val_TOY - w->var("nom_alpha_mu_MIX")->getValV()) / err_TOY);
-                }
-                else if (name_TOY == std::string("alpha_mu_UUBAR")) {
-                    alpha_mu_UUBARs.push_back(val_TOY);
-                    alpha_mu_UUBAR_errors.push_back(err_TOY);
-                    alpha_mu_UUBAR_pulls.push_back((val_TOY - w->var("nom_alpha_mu_UUBAR")->getValV()) / err_TOY);
-                }
-                else if (name_TOY == std::string("alpha_mu_DDBAR")) {
-                    alpha_mu_DDBARs.push_back(val_TOY);
-                    alpha_mu_DDBAR_errors.push_back(err_TOY);
-                    alpha_mu_DDBAR_pulls.push_back((val_TOY - w->var("nom_alpha_mu_DDBAR")->getValV()) / err_TOY);
-                }
-                else if (name_TOY == std::string("alpha_mu_SSBAR")) {
-                    alpha_mu_SSBARs.push_back(val_TOY);
-                    alpha_mu_SSBAR_errors.push_back(err_TOY);
-                    alpha_mu_SSBAR_pulls.push_back((val_TOY - w->var("nom_alpha_mu_SSBAR")->getValV()) / err_TOY);
-                }
-                else if (name_TOY == std::string("alpha_mu_CHARM")) {
-                    alpha_mu_CHARMs.push_back(val_TOY);
-                    alpha_mu_CHARM_errors.push_back(err_TOY);
-                    alpha_mu_CHARM_pulls.push_back((val_TOY - w->var("nom_alpha_mu_CHARM")->getValV()) / err_TOY);
-                }
-            }
-
-            mu_CHGs.push_back(w->function("CHG_nominal_channel_epsilon")->getVal());
-            mu_MIXs.push_back(w->function("MIX_nominal_channel_epsilon")->getVal());
-            mu_UUBARs.push_back(w->function("UUBAR_nominal_channel_epsilon")->getVal());
-            mu_DDBARs.push_back(w->function("DDBAR_nominal_channel_epsilon")->getVal());
-            mu_SSBARs.push_back(w->function("SSBAR_nominal_channel_epsilon")->getVal());
-            mu_CHARMs.push_back(w->function("CHARM_nominal_channel_epsilon")->getVal());
+            filesaver.GetFittingValues(fitres, names);
+            filesaver.WriteIntoBranch();
 
             delete fitres;
 
         }
-
-        // define file to save results
-        TFile* temp_file = new TFile( ("TOY_result_" + std::to_string(indicator) + ".root").c_str(), "recreate");
-        temp_file->cd();
-        TTree* temp_tree = new TTree("TOY_result", "");
-
-        double mu = -1;
-        double mu_error = -1;
-        double mu_pull = -1;
-
-        double alpha_mu_CHG = -1;
-        double alpha_mu_CHG_error = -1;
-        double alpha_mu_CHG_pull = -1;
-        double mu_CHG = -1;
-
-        double alpha_mu_MIX = -1;
-        double alpha_mu_MIX_error = -1;
-        double alpha_mu_MIX_pull = -1;
-        double mu_MIX = -1;
-
-        double alpha_mu_UUBAR = -1;
-        double alpha_mu_UUBAR_error = -1;
-        double alpha_mu_UUBAR_pull = -1;
-        double mu_UUBAR = -1;
-
-        double alpha_mu_DDBAR = -1;
-        double alpha_mu_DDBAR_error = -1;
-        double alpha_mu_DDBAR_pull = -1;
-        double mu_DDBAR = -1;
-
-        double alpha_mu_SSBAR = -1;
-        double alpha_mu_SSBAR_error = -1;
-        double alpha_mu_SSBAR_pull = -1;
-        double mu_SSBAR = -1;
-
-        double alpha_mu_CHARM = -1;
-        double alpha_mu_CHARM_error = -1;
-        double alpha_mu_CHARM_pull = -1;
-        double mu_CHARM = -1;
-
-        temp_tree->Branch("mu", &mu);
-        temp_tree->Branch("mu_error", &mu_error);
-        temp_tree->Branch("mu_pull", &mu_pull);
-
-        temp_tree->Branch("alpha_mu_CHG", &alpha_mu_CHG);
-        temp_tree->Branch("alpha_mu_CHG_error", &alpha_mu_CHG_error);
-        temp_tree->Branch("alpha_mu_CHG_pull", &alpha_mu_CHG_pull);
-        temp_tree->Branch("mu_CHG", &mu_CHG);
-
-        temp_tree->Branch("alpha_mu_MIX", &alpha_mu_MIX);
-        temp_tree->Branch("alpha_mu_MIX_error", &alpha_mu_MIX_error);
-        temp_tree->Branch("alpha_mu_MIX_pull", &alpha_mu_MIX_pull);
-        temp_tree->Branch("mu_MIX", &mu_MIX);
-
-        temp_tree->Branch("alpha_mu_UUBAR", &alpha_mu_UUBAR);
-        temp_tree->Branch("alpha_mu_UUBAR_error", &alpha_mu_UUBAR_error);
-        temp_tree->Branch("alpha_mu_UUBAR_pull", &alpha_mu_UUBAR_pull);
-        temp_tree->Branch("mu_UUBAR", &mu_UUBAR);
-
-        temp_tree->Branch("alpha_mu_DDBAR", &alpha_mu_DDBAR);
-        temp_tree->Branch("alpha_mu_DDBAR_error", &alpha_mu_DDBAR_error);
-        temp_tree->Branch("alpha_mu_DDBAR_pull", &alpha_mu_DDBAR_pull);
-        temp_tree->Branch("mu_DDBAR", &mu_DDBAR);
-
-        temp_tree->Branch("alpha_mu_SSBAR", &alpha_mu_SSBAR);
-        temp_tree->Branch("alpha_mu_SSBAR_error", &alpha_mu_SSBAR_error);
-        temp_tree->Branch("alpha_mu_SSBAR_pull", &alpha_mu_SSBAR_pull);
-        temp_tree->Branch("mu_SSBAR", &mu_SSBAR);
-
-        temp_tree->Branch("alpha_mu_CHARM", &alpha_mu_CHARM);
-        temp_tree->Branch("alpha_mu_CHARM_error", &alpha_mu_CHARM_error);
-        temp_tree->Branch("alpha_mu_CHARM_pull", &alpha_mu_CHARM_pull);
-        temp_tree->Branch("mu_CHARM", &mu_CHARM);
-
-        for (int i = 0; i < Toy_iter_num; i++) {
-            mu = mus.at(i);
-            mu_error = mu_errors.at(i);
-            mu_pull = mu_pulls.at(i);
-
-            alpha_mu_CHG = alpha_mu_CHGs.at(i);
-            alpha_mu_CHG_error = alpha_mu_CHG_errors.at(i);
-            alpha_mu_CHG_pull = alpha_mu_CHG_pulls.at(i);
-            mu_CHG = mu_CHGs.at(i);
-
-            alpha_mu_MIX = alpha_mu_MIXs.at(i);
-            alpha_mu_MIX_error = alpha_mu_MIX_errors.at(i);
-            alpha_mu_MIX_pull = alpha_mu_MIX_pulls.at(i);
-            mu_MIX = mu_MIXs.at(i);
-
-            alpha_mu_UUBAR = alpha_mu_UUBARs.at(i);
-            alpha_mu_UUBAR_error = alpha_mu_UUBAR_errors.at(i);
-            alpha_mu_UUBAR_pull = alpha_mu_UUBAR_pulls.at(i);
-            mu_UUBAR = mu_UUBARs.at(i);
-
-            alpha_mu_DDBAR = alpha_mu_DDBARs.at(i);
-            alpha_mu_DDBAR_error = alpha_mu_DDBAR_errors.at(i);
-            alpha_mu_DDBAR_pull = alpha_mu_DDBAR_pulls.at(i);
-            mu_DDBAR = mu_DDBARs.at(i);
-
-            alpha_mu_SSBAR = alpha_mu_SSBARs.at(i);
-            alpha_mu_SSBAR_error = alpha_mu_SSBAR_errors.at(i);
-            alpha_mu_SSBAR_pull = alpha_mu_SSBAR_pulls.at(i);
-            mu_SSBAR = mu_SSBARs.at(i);
-
-            alpha_mu_CHARM = alpha_mu_CHARMs.at(i);
-            alpha_mu_CHARM_error = alpha_mu_CHARM_errors.at(i);
-            alpha_mu_CHARM_pull = alpha_mu_CHARM_pulls.at(i);
-            mu_CHARM = mu_CHARMs.at(i);
-
-            temp_tree->Fill();
-        }
-
-        temp_file->cd();
-        temp_tree->Write();
-        temp_file->Close();
 }
 
 void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu_injected, double eps, int indicator = 0) {
-
-    std::vector<double> mus;
-    std::vector<double> mu_errors;
-    std::vector<double> mu_pulls;
-
-    std::vector<double> alpha_mu_CHGs;
-    std::vector<double> alpha_mu_CHG_errors;
-    std::vector<double> alpha_mu_CHG_pulls;
-    std::vector<double> mu_CHGs;
-
-    std::vector<double> alpha_mu_MIXs;
-    std::vector<double> alpha_mu_MIX_errors;
-    std::vector<double> alpha_mu_MIX_pulls;
-    std::vector<double> mu_MIXs;
-
-    std::vector<double> alpha_mu_UUBARs;
-    std::vector<double> alpha_mu_UUBAR_errors;
-    std::vector<double> alpha_mu_UUBAR_pulls;
-    std::vector<double> mu_UUBARs;
-
-    std::vector<double> alpha_mu_DDBARs;
-    std::vector<double> alpha_mu_DDBAR_errors;
-    std::vector<double> alpha_mu_DDBAR_pulls;
-    std::vector<double> mu_DDBARs;
-
-    std::vector<double> alpha_mu_SSBARs;
-    std::vector<double> alpha_mu_SSBAR_errors;
-    std::vector<double> alpha_mu_SSBAR_pulls;
-    std::vector<double> mu_SSBARs;
-
-    std::vector<double> alpha_mu_CHARMs;
-    std::vector<double> alpha_mu_CHARM_errors;
-    std::vector<double> alpha_mu_CHARM_pulls;
-    std::vector<double> mu_CHARMs;
 
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
@@ -580,6 +448,8 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
 
         double Nevt_total = SetParamsForToy(w, names, mu_injected);
 
+        filesaver.GetTrueValues(w, names);
+
         RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, true, "", false, true);
         w->loadSnapshot("NominalParamValues");
 
@@ -587,176 +457,12 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         RooAbsReal* nll;
         RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
 
-        RooArgSet fitargs_LT = fitres->floatParsFinal();
-        TIterator* iter_LT(fitargs_LT.createIterator());
-
-        for (TObject* a_LT = iter_LT->Next(); a_LT != 0; a_LT = iter_LT->Next()) {
-            RooRealVar* rrv_LT = dynamic_cast<RooRealVar*>(a_LT);
-            std::string name_LT = rrv_LT->GetName();
-            double val_LT = rrv_LT->getVal();
-            double err_LT = rrv_LT->getError();
-            if (name_LT == std::string("mu")) {
-                mus.push_back(val_LT);
-                mu_errors.push_back(err_LT);
-                mu_pulls.push_back((val_LT - mu_injected) / err_LT);
-            }
-            else if (name_LT == std::string("alpha_mu_CHG")) {
-                alpha_mu_CHGs.push_back(val_LT);
-                alpha_mu_CHG_errors.push_back(err_LT);
-                alpha_mu_CHG_pulls.push_back((val_LT - w->var("nom_alpha_mu_CHG")->getValV()) / err_LT);
-            }
-            else if (name_LT == std::string("alpha_mu_MIX")) {
-                alpha_mu_MIXs.push_back(val_LT);
-                alpha_mu_MIX_errors.push_back(err_LT);
-                alpha_mu_MIX_pulls.push_back((val_LT - w->var("nom_alpha_mu_MIX")->getValV()) / err_LT);
-            }
-            else if (name_LT == std::string("alpha_mu_UUBAR")) {
-                alpha_mu_UUBARs.push_back(val_LT);
-                alpha_mu_UUBAR_errors.push_back(err_LT);
-                alpha_mu_UUBAR_pulls.push_back((val_LT - w->var("nom_alpha_mu_UUBAR")->getValV()) / err_LT);
-            }
-            else if (name_LT == std::string("alpha_mu_DDBAR")) {
-                alpha_mu_DDBARs.push_back(val_LT);
-                alpha_mu_DDBAR_errors.push_back(err_LT);
-                alpha_mu_DDBAR_pulls.push_back((val_LT - w->var("nom_alpha_mu_DDBAR")->getValV()) / err_LT);
-            }
-            else if (name_LT == std::string("alpha_mu_SSBAR")) {
-                alpha_mu_SSBARs.push_back(val_LT);
-                alpha_mu_SSBAR_errors.push_back(err_LT);
-                alpha_mu_SSBAR_pulls.push_back((val_LT - w->var("nom_alpha_mu_SSBAR")->getValV()) / err_LT);
-            }
-            else if (name_LT == std::string("alpha_mu_CHARM")) {
-                alpha_mu_CHARMs.push_back(val_LT);
-                alpha_mu_CHARM_errors.push_back(err_LT);
-                alpha_mu_CHARM_pulls.push_back((val_LT - w->var("nom_alpha_mu_CHARM")->getValV()) / err_LT);
-            }
-        }
-
-        mu_CHGs.push_back(w->function("CHG_nominal_channel_epsilon")->getVal());
-        mu_MIXs.push_back(w->function("MIX_nominal_channel_epsilon")->getVal());
-        mu_UUBARs.push_back(w->function("UUBAR_nominal_channel_epsilon")->getVal());
-        mu_DDBARs.push_back(w->function("DDBAR_nominal_channel_epsilon")->getVal());
-        mu_SSBARs.push_back(w->function("SSBAR_nominal_channel_epsilon")->getVal());
-        mu_CHARMs.push_back(w->function("CHARM_nominal_channel_epsilon")->getVal());
+        filesaver.GetFittingValues(fitres, names);
+        filesaver.WriteIntoBranch();
 
         delete fitres;
 
     }
-
-    // define file to save results
-    TFile* temp_file = new TFile( ("LT_result_" + std::to_string(mu_injected) + "_" + std::to_string(indicator) + ".root").c_str() , "recreate");
-    temp_file->cd();
-    TTree* temp_tree = new TTree("LT_result", "");
-
-    double mu = -1;
-    double mu_error = -1;
-    double mu_pull = -1;
-
-    double alpha_mu_CHG = -1;
-    double alpha_mu_CHG_error = -1;
-    double alpha_mu_CHG_pull = -1;
-    double mu_CHG = -1;
-
-    double alpha_mu_MIX = -1;
-    double alpha_mu_MIX_error = -1;
-    double alpha_mu_MIX_pull = -1;
-    double mu_MIX = -1;
-
-    double alpha_mu_UUBAR = -1;
-    double alpha_mu_UUBAR_error = -1;
-    double alpha_mu_UUBAR_pull = -1;
-    double mu_UUBAR = -1;
-
-    double alpha_mu_DDBAR = -1;
-    double alpha_mu_DDBAR_error = -1;
-    double alpha_mu_DDBAR_pull = -1;
-    double mu_DDBAR = -1;
-
-    double alpha_mu_SSBAR = -1;
-    double alpha_mu_SSBAR_error = -1;
-    double alpha_mu_SSBAR_pull = -1;
-    double mu_SSBAR = -1;
-
-    double alpha_mu_CHARM = -1;
-    double alpha_mu_CHARM_error = -1;
-    double alpha_mu_CHARM_pull = -1;
-    double mu_CHARM = -1;
-
-    temp_tree->Branch("mu", &mu);
-    temp_tree->Branch("mu_error", &mu_error);
-    temp_tree->Branch("mu_pull", &mu_pull);
-
-    temp_tree->Branch("alpha_mu_CHG", &alpha_mu_CHG);
-    temp_tree->Branch("alpha_mu_CHG_error", &alpha_mu_CHG_error);
-    temp_tree->Branch("alpha_mu_CHG_pull", &alpha_mu_CHG_pull);
-    temp_tree->Branch("mu_CHG", &mu_CHG);
-
-    temp_tree->Branch("alpha_mu_MIX", &alpha_mu_MIX);
-    temp_tree->Branch("alpha_mu_MIX_error", &alpha_mu_MIX_error);
-    temp_tree->Branch("alpha_mu_MIX_pull", &alpha_mu_MIX_pull);
-    temp_tree->Branch("mu_MIX", &mu_MIX);
-
-    temp_tree->Branch("alpha_mu_UUBAR", &alpha_mu_UUBAR);
-    temp_tree->Branch("alpha_mu_UUBAR_error", &alpha_mu_UUBAR_error);
-    temp_tree->Branch("alpha_mu_UUBAR_pull", &alpha_mu_UUBAR_pull);
-    temp_tree->Branch("mu_UUBAR", &mu_UUBAR);
-
-    temp_tree->Branch("alpha_mu_DDBAR", &alpha_mu_DDBAR);
-    temp_tree->Branch("alpha_mu_DDBAR_error", &alpha_mu_DDBAR_error);
-    temp_tree->Branch("alpha_mu_DDBAR_pull", &alpha_mu_DDBAR_pull);
-    temp_tree->Branch("mu_DDBAR", &mu_DDBAR);
-
-    temp_tree->Branch("alpha_mu_SSBAR", &alpha_mu_SSBAR);
-    temp_tree->Branch("alpha_mu_SSBAR_error", &alpha_mu_SSBAR_error);
-    temp_tree->Branch("alpha_mu_SSBAR_pull", &alpha_mu_SSBAR_pull);
-    temp_tree->Branch("mu_SSBAR", &mu_SSBAR);
-
-    temp_tree->Branch("alpha_mu_CHARM", &alpha_mu_CHARM);
-    temp_tree->Branch("alpha_mu_CHARM_error", &alpha_mu_CHARM_error);
-    temp_tree->Branch("alpha_mu_CHARM_pull", &alpha_mu_CHARM_pull);
-    temp_tree->Branch("mu_CHARM", &mu_CHARM);
-
-    for (int i = 0; i < LT_iter_num; i++) {
-        mu = mus.at(i);
-        mu_error = mu_errors.at(i);
-        mu_pull = mu_pulls.at(i);
-
-        alpha_mu_CHG = alpha_mu_CHGs.at(i);
-        alpha_mu_CHG_error = alpha_mu_CHG_errors.at(i);
-        alpha_mu_CHG_pull = alpha_mu_CHG_pulls.at(i);
-        mu_CHG = mu_CHGs.at(i);
-
-        alpha_mu_MIX = alpha_mu_MIXs.at(i);
-        alpha_mu_MIX_error = alpha_mu_MIX_errors.at(i);
-        alpha_mu_MIX_pull = alpha_mu_MIX_pulls.at(i);
-        mu_MIX = mu_MIXs.at(i);
-
-        alpha_mu_UUBAR = alpha_mu_UUBARs.at(i);
-        alpha_mu_UUBAR_error = alpha_mu_UUBAR_errors.at(i);
-        alpha_mu_UUBAR_pull = alpha_mu_UUBAR_pulls.at(i);
-        mu_UUBAR = mu_UUBARs.at(i);
-
-        alpha_mu_DDBAR = alpha_mu_DDBARs.at(i);
-        alpha_mu_DDBAR_error = alpha_mu_DDBAR_errors.at(i);
-        alpha_mu_DDBAR_pull = alpha_mu_DDBAR_pulls.at(i);
-        mu_DDBAR = mu_DDBARs.at(i);
-
-        alpha_mu_SSBAR = alpha_mu_SSBARs.at(i);
-        alpha_mu_SSBAR_error = alpha_mu_SSBAR_errors.at(i);
-        alpha_mu_SSBAR_pull = alpha_mu_SSBAR_pulls.at(i);
-        mu_SSBAR = mu_SSBARs.at(i);
-
-        alpha_mu_CHARM = alpha_mu_CHARMs.at(i);
-        alpha_mu_CHARM_error = alpha_mu_CHARM_errors.at(i);
-        alpha_mu_CHARM_pull = alpha_mu_CHARM_pulls.at(i);
-        mu_CHARM = mu_CHARMs.at(i);
-
-        temp_tree->Fill();
-    }
-
-    temp_file->cd();
-    temp_tree->Write();
-    temp_file->Close();
 }
 
 int main(int argc, char* argv[]) {
@@ -814,13 +520,17 @@ int main(int argc, char* argv[]) {
     GetNameOfParams(w, &param_names);
 
     if (std::string(argv[1]) == std::string("ToyMC")) {
+        filesaver.OpenFile(true, &param_names, indicator);
         MyToyMCStudy(w, &param_names, eps, indicator);
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) {
+        filesaver.OpenFile(false, &param_names, indicator);
         MyLinearityTest(w, &param_names, injected_mu, eps, indicator);
     }
 
     f->Close();
+
+    filesaver.CloseFile()
 
     return 0;
 }
