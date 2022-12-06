@@ -240,9 +240,9 @@ void FileSaver::OpenFile(bool IsItToy, std::vector<std::string>* names, double m
 
     // set branches
     for (unsigned int i = 0; i < names->size(); i++) {
-        m_tree->Branch((names->at(i) + "_true").c_str(), m_true_param[i]);
-        m_tree->Branch((names->at(i) + "_value").c_str(), m_fitting_param[i]);
-        m_tree->Branch((names->at(i) + "_error").c_str(), m_fitting_param_error[i]);
+        m_tree->Branch((names->at(i) + "_true").c_str(), &m_true_param[i]);
+        m_tree->Branch((names->at(i) + "_value").c_str(), &m_fitting_param[i]);
+        m_tree->Branch((names->at(i) + "_error").c_str(), &m_fitting_param_error[i]);
     }
 }
 
