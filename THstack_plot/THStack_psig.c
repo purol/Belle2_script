@@ -33,6 +33,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
 # define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
 
+/*
 // my MC sample number
 # define N_Kplus_nunubar 10000000.0
 # define N_K0_nunubar 10000000.0
@@ -48,6 +49,63 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
 # define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
 # define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
+*/
+
+// SIGNAL MC sample number
+# define N_Kplus_train 7039000.0
+# define N_K0_train 7166624.0
+# define N_Kplusstar_train 7039000.0
+# define N_K0star_train 7166624.0
+# define N_Xsu_nonresonant_train 35195000.0
+# define N_Xsd_nonresonant_train 34940430.0
+# define N_Kplus_test 2961000.0
+# define N_K0_test 2833376.0
+# define N_Kplusstar_test 2961000.0
+# define N_K0star_test 2833376.0
+# define N_Xsu_nonresonant_test 14805000.0
+# define N_Xsd_nonresonant_test 15059570.0
+
+// scale factor for SIGNAL MC sample (364.436/fb)
+# define Scale_Kplus_train (0.364436 * N_Kplus_nunubar_1invab/N_Kplus_train)
+# define Scale_Kplusstar_train (0.364436 * N_Kplusstar_nunubar_1invab/N_Kplusstar_train)
+# define Scale_Xsu_nonresonant_train (0.364436 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_train)
+# define Scale_K0_train (0.364436 * N_K0_nunubar_1invab/N_K0_train)
+# define Scale_K0star_train (0.364436 * N_K0star_nunubar_1invab/N_K0star_train)
+# define Scale_Xsd_nonresonant_train (0.364436 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_train)
+# define Scale_Kplus_test (0.364436 * N_Kplus_nunubar_1invab/N_Kplus_test)
+# define Scale_Kplusstar_test (0.364436 * N_Kplusstar_nunubar_1invab/N_Kplusstar_test)
+# define Scale_Xsu_nonresonant_test (0.364436 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_test)
+# define Scale_K0_test (0.364436 * N_K0_nunubar_1invab/N_K0_test)
+# define Scale_K0star_test (0.364436 * N_K0star_nunubar_1invab/N_K0star_test)
+# define Scale_Xsd_nonresonant_test (0.364436 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_test)
+
+// BKG MC sample number (0.8/ab for BB, 1.0/ab for qq)
+# define N_CHG_train 32042497.0
+# define N_MIX_train 24693710.0
+# define N_UUBAR_train 94447089.0
+# define N_DDBAR_train 22664556.0
+# define N_SSBAR_train 19244661.0
+# define N_CHARM_train 107541168.0
+# define N_CHG_test 48052238.0
+# define N_MIX_test 37030486.0
+# define N_UUBAR_test 141671998.0
+# define N_DDBAR_test 34114182.0
+# define N_SSBAR_test 28859338.0
+# define N_CHARM_test 161280679.0
+
+// scale factor for BKG MC sample (364.436/fb)
+# define Scale_CHG_train ((0.364436/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_train)
+# define Scale_MIX_train ((0.364436/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_train)
+# define Scale_UUBAR_train ((0.364436/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_train)
+# define Scale_DDBAR_train ((0.364436/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_train)
+# define Scale_SSBAR_train ((0.364436/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_train)
+# define Scale_CHARM_train ((0.364436/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_train)
+# define Scale_CHG_test ((0.364436/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_test)
+# define Scale_MIX_test ((0.364436/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_test)
+# define Scale_UUBAR_test ((0.364436/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_test)
+# define Scale_DDBAR_test ((0.364436/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_test)
+# define Scale_SSBAR_test ((0.364436/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_test)
+# define Scale_CHARM_test ((0.364436/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_test)
 
 void load_files(const char *dirname, std::vector<string>* names){
    TSystemDirectory dir(dirname, dirname);
@@ -165,18 +223,18 @@ void THStack_psig() {
     const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/SSBAR_analysis/validation_v000/before_psig_cut";
     const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/CHARM_analysis/validation_v000/before_psig_cut";
 
-    LetsFill(Knunu_dirname, SIGNAL_hist, "B2Knunu", Scale_Kplus);
-    LetsFill(Kstarnunu_dirname, SIGNAL_hist, "B2Kstarnunu", Scale_Kplusstar);
-    LetsFill(Xsununu_dirname, SIGNAL_hist, "B2Xsnunu", Scale_Xsu_nonresonant);
-    LetsFill(K0nunu_dirname, SIGNAL_hist, "B02K0nunu", Scale_K0);
-    LetsFill(K0starnunu_dirname, SIGNAL_hist, "B02Kstar0nunu", Scale_K0star);
-    LetsFill(Xsdnunu_dirname, SIGNAL_hist, "B02Xsnunu", Scale_Xsd_nonresonant);
-    LetsFill(CHG_dirname, CHG_hist);
-    LetsFill(MIX_dirname, MIX_hist);
-    LetsFill(UUBAR_dirname, UUBAR_hist);
-    LetsFill(DDBAR_dirname, DDBAR_hist);
-    LetsFill(SSBAR_dirname, SSBAR_hist);
-    LetsFill(CHARM_dirname, CHARM_hist);
+    LetsFill(Knunu_dirname, SIGNAL_hist, "B2Knunu", Scale_Kplus_test);
+    LetsFill(Kstarnunu_dirname, SIGNAL_hist, "B2Kstarnunu", Scale_Kplusstar_test);
+    LetsFill(Xsununu_dirname, SIGNAL_hist, "B2Xsnunu", Scale_Xsu_nonresonant_test);
+    LetsFill(K0nunu_dirname, SIGNAL_hist, "B02K0nunu", Scale_K0_test);
+    LetsFill(K0starnunu_dirname, SIGNAL_hist, "B02Kstar0nunu", Scale_K0star_test);
+    LetsFill(Xsdnunu_dirname, SIGNAL_hist, "B02Xsnunu", Scale_Xsd_nonresonant_test);
+    LetsFill(CHG_dirname, CHG_hist, Scale_CHG_test);
+    LetsFill(MIX_dirname, MIX_hist, Scale_MIX_test);
+    LetsFill(UUBAR_dirname, UUBAR_hist, Scale_UUBAR_test);
+    LetsFill(DDBAR_dirname, DDBAR_hist, Scale_DDBAR_test);
+    LetsFill(SSBAR_dirname, SSBAR_hist, Scale_SSBAR_test);
+    LetsFill(CHARM_dirname, CHARM_hist, Scale_CHARM_test);
 
 
     double CHG_int = CHG_hist->Integral();

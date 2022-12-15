@@ -56,19 +56,19 @@ void ReadToyRootFile(){
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
         TTree* temp_tree = (TTree*)input_file->Get("TOY_result");
 
-        double temp_mu = -1;
-        double temp_muerror = -1;
-        double temp_mupull = -1;
+        double temp_mu_true = -1;
+        double temp_mu_fitting = -1;
+        double temp_mu_error = -1;
 
-        temp_tree->SetBranchAddress("mu", &temp_mu);
-        temp_tree->SetBranchAddress("mu_error", &temp_muerror);
-        temp_tree->SetBranchAddress("mu_pull", &temp_mupull);
+        temp_tree->SetBranchAddress("mu_true", &temp_mu_true);
+        temp_tree->SetBranchAddress("mu_value", &temp_mu_fitting);
+        temp_tree->SetBranchAddress("mu_error", &temp_mu_error);
 
         for (unsigned int j = 0; j < temp_tree->GetEntries(); j++) { // Fill
             temp_tree->GetEntry(j);
-            ToyMCmu->Fill(temp_mu);
-            ToyMCmuerror->Fill(temp_muerror);
-            ToyMCmupull->Fill(temp_mupull);
+            ToyMCmu->Fill(temp_mu_fitting);
+            ToyMCmuerror->Fill(temp_mu_error);
+            ToyMCmupull->Fill( (temp_mu_fitting - temp_mu_true)/ temp_mu_error);
         }
         input_file->Close();
     }
