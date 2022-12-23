@@ -14,12 +14,13 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define N_Needed_info 37
 //# define N_event_info 15
-# define N_Upsilon_info 57
-# define N_Bsig_info 81
+# define N_Upsilon_info 66
+# define N_Bsig_info 361
 # define N_Btag_info 11
 # define N_decay 38 // five decay mode + others
 # define N_decay_nparticles 3 // # of nu_e, B, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
+# define N_PID_syst 73
 
 # define Nstep 20
 # define start 0.8
@@ -184,35 +185,35 @@ typedef struct data{
     // 45: qsquared - MB^2, 46: chiProb, 47: dr, 48: dz
     // 49: nElectron, 50: nMuon, 51: nElectronloose, 52: nMuonloose
     // 53: nElectrontight, 54: nMuontight, 55: beamE, 56: number of tracks in ROE(looseMask)
+    // 57: Ecms, 58: Ngamma_v111, 59: Eecl_v111, 60: Eecl_v111_matched, 61: Eecl_v111_unmatched
+    // 62: Ngamma_v133, 63: Eecl_v133, 64: Eecl_v133_matched, 65:Eecl_v133_unmatched
 
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
     // 3: Bsig_p, 4: Bsig_p_CMS, 5: Bsig_p_Recoil
     // 6: M
-    // 7: Dcvetomass, 8: DcvetodmID, 9: DcvetoabsdM
-    // 10: Dnvetomass, 11: DnvetodmID, 12: DnvetoabsdM
-    // 13: KS0_distance, 14: Kaon PID correction, 15: Kaon PID rel uncertainty up
-    // 16: Kaon PID rel uncertainty down, 17: Pion PID correction, 18: Pion PID rel uncertainty up
-    // 19: Pion PID rel uncertainty down, 20: nKslow1, 21: nKslow2
-    // 22: nKslow3, 23: nPislow1, 24: nPislow2
-    // 25: nPislow3, 26:nKexcept, 27: nPiexcept
-    // 28: Bsig_R2, 29: Bsig_thrustBm, 30: Bsig_thrustOm
-    // 31: Bsig_cosTBTO, 32: Bsig_cosTBz, 33: Bsig_KSFWVariables_et
-    // 34: Bsig_KSFWVariables_mm2, 35: Bsig_KSFWVariables_hso00, 36: Bsig_KSFWVariables_hso01
-    // 37: Bsig_KSFWVariables_hso02, 38: Bsig_KSFWVariables_hso03: 39: Bsig_KSFWVariables_hso04
-    // 40: Bsig_KSFWVariables_hso10, 41: Bsig_KSFWVariables_hso12, 42: Bsig_KSFWVariables_hso14
-    // 43: Bsig_KSFWVariables_hso20, 44: Bsig_KSFWVariables_hso22, 45: Bsig_KSFWVariables_hso24
-    // 46: Bsig_KSFWVariables_hoo0, 47: Bsig_KSFWVariables_hoo1, 48: Bsig_KSFWVariables_hoo2
-    // 49: Bsig_KSFWVariables_hoo3, 50: Bsig_KSFWVariables_hoo4, 51: Bsig_CleoConeCS_1
-    // 52: Bsig_CleoConeCS_2, 53: Bsig_CleoConeCS_3, 54: Bsig_CleoConeCS_4
-    // 55: Bsig_CleoConeCS_5, 56: Bsig_CleoConeCS_6, 57: Bsig_CleoConeCS_7
-    // 58: Bsig_CleoConeCS_8, 59: Bsig_CleoConeCS_9, 60: Bsig_pt
-    // 61: Bsig_useCMSFrame_pt, 62: Bsig_theta, 63: Bsig_useCMSFrame_theta
-    // 64: nDc, 65: Dc_pValue_med, 66: Dc_pValue:std, 67: Dcsimpleveto_chiProb
-    // 68: Dcsimpleveto_dr, 69: Dcsimpleveto_dz, 70: Dcsimpleveto_M
-    // 71: nD0, 72: D0_pValue_med, 73: D0_pValue:std, 74: D0simpleveto_chiProb
-    // 75: D0simpleveto_dr, 76: D0simpleveto_dz, 77: D0simpleveto_M
-    // 78: mychiProb, 79: mydr, 80: mydz
+    // 7: KS0_distance
+    // 8: nKslow1, 9: nKslow2
+    // 10: nKslow3, 11: nPislow1, 12: nPislow2
+    // 13: nPislow3, 14:nKexcept, 15: nPiexcept
+    // 16: Bsig_R2, 17: Bsig_thrustBm, 18: Bsig_thrustOm
+    // 19: Bsig_cosTBTO, 20: Bsig_cosTBz, 21: Bsig_KSFWVariables_et
+    // 22: Bsig_KSFWVariables_mm2, 23: Bsig_KSFWVariables_hso00, 24: Bsig_KSFWVariables_hso01
+    // 25: Bsig_KSFWVariables_hso02, 26: Bsig_KSFWVariables_hso03: 27: Bsig_KSFWVariables_hso04
+    // 28: Bsig_KSFWVariables_hso10, 29: Bsig_KSFWVariables_hso12, 30: Bsig_KSFWVariables_hso14
+    // 31: Bsig_KSFWVariables_hso20, 32: Bsig_KSFWVariables_hso22, 33: Bsig_KSFWVariables_hso24
+    // 34: Bsig_KSFWVariables_hoo0, 35: Bsig_KSFWVariables_hoo1, 36: Bsig_KSFWVariables_hoo2
+    // 37: Bsig_KSFWVariables_hoo3, 38: Bsig_KSFWVariables_hoo4, 39: Bsig_CleoConeCS_1
+    // 40: Bsig_CleoConeCS_2, 41: Bsig_CleoConeCS_3, 42: Bsig_CleoConeCS_4
+    // 43: Bsig_CleoConeCS_5, 44: Bsig_CleoConeCS_6, 45: Bsig_CleoConeCS_7
+    // 46: Bsig_CleoConeCS_8, 47: Bsig_CleoConeCS_9, 48: Bsig_pt
+    // 49: Bsig_useCMSFrame_pt, 50: Bsig_theta, 51: Bsig_useCMSFrame_theta
+    // 52: nDc, 53: Dc_pValue_med, 54: Dc_pValue:std, 55: Dcsimpleveto_chiProb
+    // 56: Dcsimpleveto_dr, 57: Dcsimpleveto_dz, 58: Dcsimpleveto_M
+    // 59: nD0, 60: D0_pValue_med, 61: D0_pValue:std, 62: D0simpleveto_chiProb
+    // 63: D0simpleveto_dr, 64: D0simpleveto_dz, 65: D0simpleveto_M
+    // 66: mychiProb, 67: mydr, 68: mydz
+    // 69-360: PIDs
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
@@ -220,17 +221,17 @@ typedef struct data{
     // 7: dr, 8: dz, 9: Btag_p_CMS, 10: Btag_CMS_phi
 
     double Needed_info[N_Needed_info];
-    // 0: R2, 1: thrustBm, 2: thrustOm. 3: cosTBTO
-    // 4: cosTBz, 5: KSFWVariables(et), 6: KSFWVariables(mm2)
-    // 7: KSFWVariables(hso00), 8: KSFWVariables(hso01), 9: KSFWVariables(hso02)
-    // 10: KSFWVariables(hso03), 11: KSFWVariables(hso04)
-    // 12: KSFWVariables(hso10), 13: KSFWVariables(hso12), 14: KSFWVariables(hso14)
-    // 15: KSFWVariables(hso20), 16: KSFWVariables(hso22), 17: KSFWVariables(hso24)
-    // 18: KSFWVariables(hoo0), 19: KSFWVariables(hoo1), 20: KSFWVariables(hoo2)
-    // 21: KSFWVariables(hoo3), 22: KSFWVariables(hoo4)
-    // 23: CleoConeCS(1), 24: CleoConeCS(2), 25: CleoConeCS(3)
-    // 26: CleoConeCS(4), 27: CleoConeCS(5), 28: CleoConeCS(6)
-    // 29: CleoConeCS(7), 30: CleoConeCS(8), 31:CleoConeCS(9)
+    // 0: Btag_R2, 1: Btag_thrustBm, 2: Btag_thrustOm. 3: Btag_cosTBTO
+    // 4: Btag_cosTBz, 5: Btag_KSFWVariables(et), 6: Btag_KSFWVariables(mm2)
+    // 7: Btag_KSFWVariables(hso00), 8: Btag_KSFWVariables(hso01), 9: Btag_KSFWVariables(hso02)
+    // 10: Btag_KSFWVariables(hso03), 11: Btag_KSFWVariables(hso04)
+    // 12: Btag_KSFWVariables(hso10), 13: Btag_KSFWVariables(hso12), 14: Btag_KSFWVariables(hso14)
+    // 15: Btag_KSFWVariables(hso20), 16: Btag_KSFWVariables(hso22), 17: Btag_KSFWVariables(hso24)
+    // 18: Btag_KSFWVariables(hoo0), 19: Btag_KSFWVariables(hoo1), 20: Btag_KSFWVariables(hoo2)
+    // 21: Btag_KSFWVariables(hoo3), 22: Btag_KSFWVariables(hoo4)
+    // 23: Btag_CleoConeCS(1), 24: Btag_CleoConeCS(2), 25: Btag_CleoConeCS(3)
+    // 26: Btag_CleoConeCS(4), 27: Btag_CleoConeCS(5), 28: Btag_CleoConeCS(6)
+    // 29: Btag_CleoConeCS(7), 30: Btag_CleoConeCS(8), 31:Btag_CleoConeCS(9)
     // 32: missing mass^2, 33: visible energy, 34: theta_CMS_of_tag
     // 35: decayhash, 36: decayhash_extended
 
@@ -671,6 +672,15 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &MakeShiftDoubleToInt[6]); // temp.Upsilon_info[54]
     tree_upsilon->SetBranchAddress("beamE", &temp.Upsilon_info[55]);
     tree_upsilon->SetBranchAddress("nROE_Tracks__bolooseMask__bc", &temp.Upsilon_info[56]);
+    tree_upsilon->SetBranchAddress("Ecms", &temp.Upsilon_info[57]);
+    tree_upsilon->SetBranchAddress("extraInfo__boNgamma__bc", &temp.Upsilon_info[58]);
+    tree_upsilon->SetBranchAddress("extraInfo__boEecl__bc", &temp.Upsilon_info[59]);
+    tree_upsilon->SetBranchAddress("extraInfo__boEecl_matched__bc", &temp.Upsilon_info[60]);
+    tree_upsilon->SetBranchAddress("extraInfo__boEecl_unmatched__bc", &temp.Upsilon_info[61]);
+    tree_upsilon->SetBranchAddress("extraInfo__boNgammav133__bc", &temp.Upsilon_info[62]);
+    tree_upsilon->SetBranchAddress("extraInfo__boEeclv133__bc", &temp.Upsilon_info[63]);
+    tree_upsilon->SetBranchAddress("extraInfo__boEeclv133_matched__bc", &temp.Upsilon_info[64]);
+    tree_upsilon->SetBranchAddress("extraInfo__boEeclv133_unmatched__bc", &temp.Upsilon_info[65]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
@@ -680,80 +690,74 @@ void Loader::GetData(TFile* input_file) {
     tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_p", &temp.Bsig_info[4]);
     tree_upsilon->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp.Bsig_info[5]);
     tree_Bsig->SetBranchAddress("Bsig_M", &temp.Bsig_info[6]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcvetomass", &temp.Bsig_info[7]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_DcvetodmID", &temp.Bsig_info[8]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcvetoabsdm", &temp.Bsig_info[9]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dnvetomass", &temp.Bsig_info[10]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_DnvetodmID", &temp.Bsig_info[11]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp.Bsig_info[12]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp.Bsig_info[13]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp.Bsig_info[14]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp.Bsig_info[15]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp.Bsig_info[16]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Pion_PID_correction", &temp.Bsig_info[17]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &temp.Bsig_info[18]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &temp.Bsig_info[19]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow1", &temp.Bsig_info[20]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow2", &temp.Bsig_info[21]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow3", &temp.Bsig_info[22]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow1", &temp.Bsig_info[23]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow2", &temp.Bsig_info[24]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow3", &temp.Bsig_info[25]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp.Bsig_info[26]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPiexcep", &temp.Bsig_info[27]);
-    tree_Bsig->SetBranchAddress("Bsig_R2", &temp.Bsig_info[28]);
-    tree_Bsig->SetBranchAddress("Bsig_thrustBm", &temp.Bsig_info[29]);
-    tree_Bsig->SetBranchAddress("Bsig_thrustOm", &temp.Bsig_info[30]);
-    tree_Bsig->SetBranchAddress("Bsig_cosTBTO", &temp.Bsig_info[31]);
-    tree_Bsig->SetBranchAddress("Bsig_cosTBz", &temp.Bsig_info[32]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_et", &temp.Bsig_info[33]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_mm2", &temp.Bsig_info[34]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso00", &temp.Bsig_info[35]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso01", &temp.Bsig_info[36]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso02", &temp.Bsig_info[37]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso03", &temp.Bsig_info[38]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso04", &temp.Bsig_info[39]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso10", &temp.Bsig_info[40]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso12", &temp.Bsig_info[41]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso14", &temp.Bsig_info[42]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso20", &temp.Bsig_info[43]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso22", &temp.Bsig_info[44]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso24", &temp.Bsig_info[45]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo0", &temp.Bsig_info[46]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo1", &temp.Bsig_info[47]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo2", &temp.Bsig_info[48]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo3", &temp.Bsig_info[49]);
-    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo4", &temp.Bsig_info[50]);
-    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_1", &temp.Bsig_info[51]);
-    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_2", &temp.Bsig_info[52]);
-    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_3", &temp.Bsig_info[53]);
-    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_4", &temp.Bsig_info[54]);
-    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_5", &temp.Bsig_info[55]);
-    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_6", &temp.Bsig_info[56]);
-    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_7", &temp.Bsig_info[57]);
-    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_8", &temp.Bsig_info[58]);
-    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_9", &temp.Bsig_info[59]);
-    tree_Bsig->SetBranchAddress("Bsig_pt", &temp.Bsig_info[60]);
-    tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_pt", &temp.Bsig_info[61]);
-    tree_Bsig->SetBranchAddress("Bsig_theta", &temp.Bsig_info[62]);
-    tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_theta", &temp.Bsig_info[63]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nDc", &temp.Bsig_info[64]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &temp.Bsig_info[65]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &temp.Bsig_info[66]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &temp.Bsig_info[67]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &temp.Bsig_info[68]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &temp.Bsig_info[69]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &temp.Bsig_info[70]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nD0", &temp.Bsig_info[71]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med", &temp.Bsig_info[72]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std", &temp.Bsig_info[73]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &temp.Bsig_info[74]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp.Bsig_info[75]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp.Bsig_info[76]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp.Bsig_info[77]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_mychiProb", &temp.Bsig_info[78]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_mydr", &temp.Bsig_info[79]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_mydz", &temp.Bsig_info[80]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp.Bsig_info[7]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow1", &temp.Bsig_info[8]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow2", &temp.Bsig_info[9]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKslow3", &temp.Bsig_info[10]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow1", &temp.Bsig_info[11]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow2", &temp.Bsig_info[12]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPislow3", &temp.Bsig_info[13]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp.Bsig_info[14]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nPiexcep", &temp.Bsig_info[15]);
+    tree_Bsig->SetBranchAddress("Bsig_R2", &temp.Bsig_info[16]);
+    tree_Bsig->SetBranchAddress("Bsig_thrustBm", &temp.Bsig_info[17]);
+    tree_Bsig->SetBranchAddress("Bsig_thrustOm", &temp.Bsig_info[18]);
+    tree_Bsig->SetBranchAddress("Bsig_cosTBTO", &temp.Bsig_info[19]);
+    tree_Bsig->SetBranchAddress("Bsig_cosTBz", &temp.Bsig_info[20]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_et", &temp.Bsig_info[21]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_mm2", &temp.Bsig_info[22]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso00", &temp.Bsig_info[23]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso01", &temp.Bsig_info[24]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso02", &temp.Bsig_info[25]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso03", &temp.Bsig_info[26]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso04", &temp.Bsig_info[27]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso10", &temp.Bsig_info[28]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso12", &temp.Bsig_info[29]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso14", &temp.Bsig_info[30]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso20", &temp.Bsig_info[31]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso22", &temp.Bsig_info[32]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hso24", &temp.Bsig_info[33]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo0", &temp.Bsig_info[34]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo1", &temp.Bsig_info[35]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo2", &temp.Bsig_info[36]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo3", &temp.Bsig_info[37]);
+    tree_Bsig->SetBranchAddress("Bsig_KSFWVariables_hoo4", &temp.Bsig_info[38]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_1", &temp.Bsig_info[39]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_2", &temp.Bsig_info[40]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_3", &temp.Bsig_info[41]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_4", &temp.Bsig_info[42]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_5", &temp.Bsig_info[43]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_6", &temp.Bsig_info[44]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_7", &temp.Bsig_info[45]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_8", &temp.Bsig_info[46]);
+    tree_Bsig->SetBranchAddress("Bsig_CleoConeCS_9", &temp.Bsig_info[47]);
+    tree_Bsig->SetBranchAddress("Bsig_pt", &temp.Bsig_info[48]);
+    tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_pt", &temp.Bsig_info[49]);
+    tree_Bsig->SetBranchAddress("Bsig_theta", &temp.Bsig_info[50]);
+    tree_Bsig->SetBranchAddress("Bsig_useCMSFrame_theta", &temp.Bsig_info[51]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nDc", &temp.Bsig_info[52]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &temp.Bsig_info[53]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &temp.Bsig_info[54]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &temp.Bsig_info[55]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &temp.Bsig_info[56]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &temp.Bsig_info[57]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &temp.Bsig_info[58]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nD0", &temp.Bsig_info[59]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med", &temp.Bsig_info[60]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std", &temp.Bsig_info[61]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &temp.Bsig_info[62]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp.Bsig_info[63]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp.Bsig_info[64]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp.Bsig_info[65]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_mychiProb", &temp.Bsig_info[66]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_mydr", &temp.Bsig_info[67]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_mydz", &temp.Bsig_info[68]);
+    for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+        tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp.Bsig_info[69 + 4 * i_PID]);
+        tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp.Bsig_info[69 + 4 * i_PID + 1]);
+        tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp.Bsig_info[69 + 4 * i_PID + 2]);
+        tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp.Bsig_info[69 + 4 * i_PID + 3]);
+    }
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
@@ -2039,6 +2043,15 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &UpsilonDataToTree[54]);
         tree_upsilon->Branch("beamE", &UpsilonDataToTree[55]);
         tree_upsilon->Branch("nROE_Tracks__bolooseMask__bc", &UpsilonDataToTree[56]);
+        tree_upsilon->Branch("Ecms", &UpsilonDataToTree[57]);
+        tree_upsilon->Branch("extraInfo__boNgamma__bc", &UpsilonDataToTree[58]);
+        tree_upsilon->Branch("extraInfo__boEecl__bc", &UpsilonDataToTree[59]);
+        tree_upsilon->Branch("extraInfo__boEecl_matched__bc", &UpsilonDataToTree[60]);
+        tree_upsilon->Branch("extraInfo__boEecl_unmatched__bc", &UpsilonDataToTree[61]);
+        tree_upsilon->Branch("extraInfo__boNgammav133__bc", &UpsilonDataToTree[62]);
+        tree_upsilon->Branch("extraInfo__boEeclv133__bc", &UpsilonDataToTree[63]);
+        tree_upsilon->Branch("extraInfo__boEeclv133_matched__bc", &UpsilonDataToTree[64]);
+        tree_upsilon->Branch("extraInfo__boEeclv133_unmatched__bc", &UpsilonDataToTree[65]);
 
         // get Bsig_info
         tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
@@ -2048,80 +2061,74 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Bsig->Branch("Bsig_useCMSFrame_p", &BsigDataToTree[4]);
         tree_upsilon->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &BsigDataToTree[5]);
         tree_Bsig->Branch("Bsig_M", &BsigDataToTree[6]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcvetomass", &BsigDataToTree[7]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_DcvetodmID", &BsigDataToTree[8]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcvetoabsdm", &BsigDataToTree[9]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dnvetomass", &BsigDataToTree[10]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_DnvetodmID", &BsigDataToTree[11]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &BsigDataToTree[12]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_3D_distance", &BsigDataToTree[13]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &BsigDataToTree[14]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &BsigDataToTree[15]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &BsigDataToTree[16]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Pion_PID_correction", &BsigDataToTree[17]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &BsigDataToTree[18]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &BsigDataToTree[19]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow1", &BsigDataToTree[20]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow2", &BsigDataToTree[21]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow3", &BsigDataToTree[22]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow1", &BsigDataToTree[23]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow2", &BsigDataToTree[24]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow3", &BsigDataToTree[25]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKexcep", &BsigDataToTree[26]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &BsigDataToTree[27]);
-        tree_Bsig->Branch("Bsig_R2", &BsigDataToTree[28]);
-        tree_Bsig->Branch("Bsig_thrustBm", &BsigDataToTree[29]);
-        tree_Bsig->Branch("Bsig_thrustOm", &BsigDataToTree[30]);
-        tree_Bsig->Branch("Bsig_cosTBTO", &BsigDataToTree[31]);
-        tree_Bsig->Branch("Bsig_cosTBz", &BsigDataToTree[32]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_et", &BsigDataToTree[33]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_mm2", &BsigDataToTree[34]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hso00", &BsigDataToTree[35]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hso01", &BsigDataToTree[36]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hso02", &BsigDataToTree[37]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hso03", &BsigDataToTree[38]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hso04", &BsigDataToTree[39]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hso10", &BsigDataToTree[40]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hso12", &BsigDataToTree[41]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hso14", &BsigDataToTree[42]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hso20", &BsigDataToTree[43]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hso22", &BsigDataToTree[44]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hso24", &BsigDataToTree[45]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hoo0", &BsigDataToTree[46]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hoo1", &BsigDataToTree[47]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hoo2", &BsigDataToTree[48]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hoo3", &BsigDataToTree[49]);
-        tree_Bsig->Branch("Bsig_KSFWVariables_hoo4", &BsigDataToTree[50]);
-        tree_Bsig->Branch("Bsig_CleoConeCS_1", &BsigDataToTree[51]);
-        tree_Bsig->Branch("Bsig_CleoConeCS_2", &BsigDataToTree[52]);
-        tree_Bsig->Branch("Bsig_CleoConeCS_3", &BsigDataToTree[53]);
-        tree_Bsig->Branch("Bsig_CleoConeCS_4", &BsigDataToTree[54]);
-        tree_Bsig->Branch("Bsig_CleoConeCS_5", &BsigDataToTree[55]);
-        tree_Bsig->Branch("Bsig_CleoConeCS_6", &BsigDataToTree[56]);
-        tree_Bsig->Branch("Bsig_CleoConeCS_7", &BsigDataToTree[57]);
-        tree_Bsig->Branch("Bsig_CleoConeCS_8", &BsigDataToTree[58]);
-        tree_Bsig->Branch("Bsig_CleoConeCS_9", &BsigDataToTree[59]);
-        tree_Bsig->Branch("Bsig_pt", &BsigDataToTree[60]);
-        tree_Bsig->Branch("Bsig_useCMSFrame_pt", &BsigDataToTree[61]);
-        tree_Bsig->Branch("Bsig_theta", &BsigDataToTree[62]);
-        tree_Bsig->Branch("Bsig_useCMSFrame_theta", &BsigDataToTree[63]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc", &BsigDataToTree[64]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med", &BsigDataToTree[65]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std", &BsigDataToTree[66]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &BsigDataToTree[67]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &BsigDataToTree[68]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &BsigDataToTree[69]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &BsigDataToTree[70]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nD0", &BsigDataToTree[71]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med", &BsigDataToTree[72]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std", &BsigDataToTree[73]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &BsigDataToTree[74]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &BsigDataToTree[75]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &BsigDataToTree[76]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &BsigDataToTree[77]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mychiProb", &BsigDataToTree[78]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydr", &BsigDataToTree[79]);
-        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydz", &BsigDataToTree[80]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_3D_distance", &BsigDataToTree[7]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow1", &BsigDataToTree[8]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow2", &BsigDataToTree[9]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow3", &BsigDataToTree[10]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow1", &BsigDataToTree[11]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow2", &BsigDataToTree[12]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow3", &BsigDataToTree[13]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKexcep", &BsigDataToTree[14]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &BsigDataToTree[15]);
+        tree_Bsig->Branch("Bsig_R2", &BsigDataToTree[16]);
+        tree_Bsig->Branch("Bsig_thrustBm", &BsigDataToTree[17]);
+        tree_Bsig->Branch("Bsig_thrustOm", &BsigDataToTree[18]);
+        tree_Bsig->Branch("Bsig_cosTBTO", &BsigDataToTree[19]);
+        tree_Bsig->Branch("Bsig_cosTBz", &BsigDataToTree[20]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_et", &BsigDataToTree[21]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_mm2", &BsigDataToTree[22]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso00", &BsigDataToTree[23]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso01", &BsigDataToTree[24]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso02", &BsigDataToTree[25]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso03", &BsigDataToTree[26]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso04", &BsigDataToTree[27]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso10", &BsigDataToTree[28]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso12", &BsigDataToTree[29]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso14", &BsigDataToTree[30]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso20", &BsigDataToTree[31]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso22", &BsigDataToTree[32]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hso24", &BsigDataToTree[33]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hoo0", &BsigDataToTree[34]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hoo1", &BsigDataToTree[35]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hoo2", &BsigDataToTree[36]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hoo3", &BsigDataToTree[37]);
+        tree_Bsig->Branch("Bsig_KSFWVariables_hoo4", &BsigDataToTree[38]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_1", &BsigDataToTree[39]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_2", &BsigDataToTree[40]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_3", &BsigDataToTree[41]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_4", &BsigDataToTree[42]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_5", &BsigDataToTree[43]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_6", &BsigDataToTree[44]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_7", &BsigDataToTree[45]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_8", &BsigDataToTree[46]);
+        tree_Bsig->Branch("Bsig_CleoConeCS_9", &BsigDataToTree[47]);
+        tree_Bsig->Branch("Bsig_pt", &BsigDataToTree[48]);
+        tree_Bsig->Branch("Bsig_useCMSFrame_pt", &BsigDataToTree[49]);
+        tree_Bsig->Branch("Bsig_theta", &BsigDataToTree[50]);
+        tree_Bsig->Branch("Bsig_useCMSFrame_theta", &BsigDataToTree[51]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc", &BsigDataToTree[52]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med", &BsigDataToTree[53]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std", &BsigDataToTree[54]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &BsigDataToTree[55]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &BsigDataToTree[56]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &BsigDataToTree[57]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &BsigDataToTree[58]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nD0", &BsigDataToTree[59]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med", &BsigDataToTree[60]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std", &BsigDataToTree[61]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &BsigDataToTree[62]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &BsigDataToTree[63]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &BsigDataToTree[64]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &BsigDataToTree[65]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mychiProb", &BsigDataToTree[66]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydr", &BsigDataToTree[67]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydz", &BsigDataToTree[68]);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &BsigDataToTree[69 + 4 * i_PID]);
+            tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &BsigDataToTree[69 + 4 * i_PID + 1]);
+            tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &BsigDataToTree[69 + 4 * i_PID + 2]);
+            tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &BsigDataToTree[69 + 4 * i_PID + 3]);
+        }
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -2443,6 +2450,15 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp_UpsilonDataToTree[54]);
     temp_tree_upsilon->Branch("beamE", &temp_UpsilonDataToTree[55]);
     temp_tree_upsilon->Branch("nROE_Tracks__bolooseMask__bc", &temp_UpsilonDataToTree[56]);
+    temp_tree_upsilon->Branch("Ecms", &temp_UpsilonDataToTree[57]);
+    temp_tree_upsilon->Branch("extraInfo__boNgamma__bc", &temp_UpsilonDataToTree[58]);
+    temp_tree_upsilon->Branch("extraInfo__boEecl__bc", &temp_UpsilonDataToTree[59]);
+    temp_tree_upsilon->Branch("extraInfo__boEecl_matched__bc", &temp_UpsilonDataToTree[60]);
+    temp_tree_upsilon->Branch("extraInfo__boEecl_unmatched__bc", &temp_UpsilonDataToTree[61]);
+    temp_tree_upsilon->Branch("extraInfo__boNgammav133__bc", &temp_UpsilonDataToTree[62]);
+    temp_tree_upsilon->Branch("extraInfo__boEeclv133__bc", &temp_UpsilonDataToTree[63]);
+    temp_tree_upsilon->Branch("extraInfo__boEeclv133_matched__bc", &temp_UpsilonDataToTree[64]);
+    temp_tree_upsilon->Branch("extraInfo__boEeclv133_unmatched__bc", &temp_UpsilonDataToTree[65]);
 
     // get Bsig_info
     temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -2452,80 +2468,74 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Bsig->Branch("Bsig_useCMSFrame_p", &temp_BsigDataToTree[4]);
     temp_tree_upsilon->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree[5]);
     temp_tree_Bsig->Branch("Bsig_M", &temp_BsigDataToTree[6]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcvetomass", &temp_BsigDataToTree[7]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_DcvetodmID", &temp_BsigDataToTree[8]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcvetoabsdm", &temp_BsigDataToTree[9]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dnvetomass", &temp_BsigDataToTree[10]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_DnvetodmID", &temp_BsigDataToTree[11]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp_BsigDataToTree[12]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_BsigDataToTree[13]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_BsigDataToTree[14]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_BsigDataToTree[15]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_BsigDataToTree[16]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Pion_PID_correction", &temp_BsigDataToTree[17]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &temp_BsigDataToTree[18]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &temp_BsigDataToTree[19]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow1", &temp_BsigDataToTree[20]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow2", &temp_BsigDataToTree[21]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow3", &temp_BsigDataToTree[22]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow1", &temp_BsigDataToTree[23]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow2", &temp_BsigDataToTree[24]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree[25]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree[26]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree[27]);
-    temp_tree_Bsig->Branch("Bsig_R2", &temp_BsigDataToTree[28]);
-    temp_tree_Bsig->Branch("Bsig_thrustBm", &temp_BsigDataToTree[29]);
-    temp_tree_Bsig->Branch("Bsig_thrustOm", &temp_BsigDataToTree[30]);
-    temp_tree_Bsig->Branch("Bsig_cosTBTO", &temp_BsigDataToTree[31]);
-    temp_tree_Bsig->Branch("Bsig_cosTBz", &temp_BsigDataToTree[32]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_et", &temp_BsigDataToTree[33]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_mm2", &temp_BsigDataToTree[34]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso00", &temp_BsigDataToTree[35]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso01", &temp_BsigDataToTree[36]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso02", &temp_BsigDataToTree[37]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso03", &temp_BsigDataToTree[38]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso04", &temp_BsigDataToTree[39]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso10", &temp_BsigDataToTree[40]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso12", &temp_BsigDataToTree[41]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso14", &temp_BsigDataToTree[42]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso20", &temp_BsigDataToTree[43]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso22", &temp_BsigDataToTree[44]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso24", &temp_BsigDataToTree[45]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo0", &temp_BsigDataToTree[46]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo1", &temp_BsigDataToTree[47]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo2", &temp_BsigDataToTree[48]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo3", &temp_BsigDataToTree[49]);
-    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo4", &temp_BsigDataToTree[50]);
-    temp_tree_Bsig->Branch("Bsig_CleoConeCS_1", &temp_BsigDataToTree[51]);
-    temp_tree_Bsig->Branch("Bsig_CleoConeCS_2", &temp_BsigDataToTree[52]);
-    temp_tree_Bsig->Branch("Bsig_CleoConeCS_3", &temp_BsigDataToTree[53]);
-    temp_tree_Bsig->Branch("Bsig_CleoConeCS_4", &temp_BsigDataToTree[54]);
-    temp_tree_Bsig->Branch("Bsig_CleoConeCS_5", &temp_BsigDataToTree[55]);
-    temp_tree_Bsig->Branch("Bsig_CleoConeCS_6", &temp_BsigDataToTree[56]);
-    temp_tree_Bsig->Branch("Bsig_CleoConeCS_7", &temp_BsigDataToTree[57]);
-    temp_tree_Bsig->Branch("Bsig_CleoConeCS_8", &temp_BsigDataToTree[58]);
-    temp_tree_Bsig->Branch("Bsig_CleoConeCS_9", &temp_BsigDataToTree[59]);
-    temp_tree_Bsig->Branch("Bsig_pt", &temp_BsigDataToTree[60]);
-    temp_tree_Bsig->Branch("Bsig_useCMSFrame_pt", &temp_BsigDataToTree[61]);
-    temp_tree_Bsig->Branch("Bsig_theta", &temp_BsigDataToTree[62]);
-    temp_tree_Bsig->Branch("Bsig_useCMSFrame_theta", &temp_BsigDataToTree[63]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc", &temp_BsigDataToTree[64]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med", &temp_BsigDataToTree[65]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std", &temp_BsigDataToTree[66]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &temp_BsigDataToTree[67]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &temp_BsigDataToTree[68]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &temp_BsigDataToTree[69]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &temp_BsigDataToTree[70]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nD0", &temp_BsigDataToTree[71]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med", &temp_BsigDataToTree[72]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std", &temp_BsigDataToTree[73]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &temp_BsigDataToTree[74]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[75]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[78]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydr", &temp_BsigDataToTree[79]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydz", &temp_BsigDataToTree[80]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_BsigDataToTree[7]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow1", &temp_BsigDataToTree[8]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow2", &temp_BsigDataToTree[9]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKslow3", &temp_BsigDataToTree[10]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow1", &temp_BsigDataToTree[11]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow2", &temp_BsigDataToTree[12]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree[13]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree[14]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree[15]);
+    temp_tree_Bsig->Branch("Bsig_R2", &temp_BsigDataToTree[16]);
+    temp_tree_Bsig->Branch("Bsig_thrustBm", &temp_BsigDataToTree[17]);
+    temp_tree_Bsig->Branch("Bsig_thrustOm", &temp_BsigDataToTree[18]);
+    temp_tree_Bsig->Branch("Bsig_cosTBTO", &temp_BsigDataToTree[19]);
+    temp_tree_Bsig->Branch("Bsig_cosTBz", &temp_BsigDataToTree[20]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_et", &temp_BsigDataToTree[21]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_mm2", &temp_BsigDataToTree[22]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso00", &temp_BsigDataToTree[23]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso01", &temp_BsigDataToTree[24]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso02", &temp_BsigDataToTree[25]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso03", &temp_BsigDataToTree[26]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso04", &temp_BsigDataToTree[27]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso10", &temp_BsigDataToTree[28]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso12", &temp_BsigDataToTree[29]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso14", &temp_BsigDataToTree[30]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso20", &temp_BsigDataToTree[31]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso22", &temp_BsigDataToTree[32]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hso24", &temp_BsigDataToTree[33]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo0", &temp_BsigDataToTree[34]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo1", &temp_BsigDataToTree[35]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo2", &temp_BsigDataToTree[36]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo3", &temp_BsigDataToTree[37]);
+    temp_tree_Bsig->Branch("Bsig_KSFWVariables_hoo4", &temp_BsigDataToTree[38]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_1", &temp_BsigDataToTree[39]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_2", &temp_BsigDataToTree[40]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_3", &temp_BsigDataToTree[41]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_4", &temp_BsigDataToTree[42]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_5", &temp_BsigDataToTree[43]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_6", &temp_BsigDataToTree[44]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_7", &temp_BsigDataToTree[45]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_8", &temp_BsigDataToTree[46]);
+    temp_tree_Bsig->Branch("Bsig_CleoConeCS_9", &temp_BsigDataToTree[47]);
+    temp_tree_Bsig->Branch("Bsig_pt", &temp_BsigDataToTree[48]);
+    temp_tree_Bsig->Branch("Bsig_useCMSFrame_pt", &temp_BsigDataToTree[49]);
+    temp_tree_Bsig->Branch("Bsig_theta", &temp_BsigDataToTree[50]);
+    temp_tree_Bsig->Branch("Bsig_useCMSFrame_theta", &temp_BsigDataToTree[51]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc", &temp_BsigDataToTree[52]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med", &temp_BsigDataToTree[53]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std", &temp_BsigDataToTree[54]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &temp_BsigDataToTree[55]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &temp_BsigDataToTree[56]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &temp_BsigDataToTree[57]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &temp_BsigDataToTree[58]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nD0", &temp_BsigDataToTree[59]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med", &temp_BsigDataToTree[60]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std", &temp_BsigDataToTree[61]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &temp_BsigDataToTree[62]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[63]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[64]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[65]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[66]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydr", &temp_BsigDataToTree[67]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_mydz", &temp_BsigDataToTree[68]);
+    for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+        temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[69 + 4 * i_PID]);
+        temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[69 + 4 * i_PID + 1]);
+        temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[69 + 4 * i_PID + 2]);
+        temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[69 + 4 * i_PID + 3]);
+    }
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -2833,6 +2843,15 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp_UpsilonDataToTree[54]);
     temp_tree->Branch("beamE", &temp_UpsilonDataToTree[55]);
     temp_tree->Branch("nROE_Tracks__bolooseMask__bc", &temp_UpsilonDataToTree[56]);
+    temp_tree->Branch("Ecms", &temp_UpsilonDataToTree[57]);
+    temp_tree->Branch("extraInfo__boNgamma__bc", &temp_UpsilonDataToTree[58]);
+    temp_tree->Branch("extraInfo__boEecl__bc", &temp_UpsilonDataToTree[59]);
+    temp_tree->Branch("extraInfo__boEecl_matched__bc", &temp_UpsilonDataToTree[60]);
+    temp_tree->Branch("extraInfo__boEecl_unmatched__bc", &temp_UpsilonDataToTree[61]);
+    temp_tree->Branch("extraInfo__boNgammav133__bc", &temp_UpsilonDataToTree[62]);
+    temp_tree->Branch("extraInfo__boEeclv133__bc", &temp_UpsilonDataToTree[63]);
+    temp_tree->Branch("extraInfo__boEeclv133_matched__bc", &temp_UpsilonDataToTree[64]);
+    temp_tree->Branch("extraInfo__boEeclv133_unmatched__bc", &temp_UpsilonDataToTree[65]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -2842,80 +2861,74 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("Bsig_useCMSFrame_p", &temp_BsigDataToTree[4]);
     temp_tree->Branch("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &temp_BsigDataToTree[5]);
     temp_tree->Branch("Bsig_M", &temp_BsigDataToTree[6]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcvetomass", &temp_BsigDataToTree[7]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_DcvetodmID", &temp_BsigDataToTree[8]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcvetoabsdm", &temp_BsigDataToTree[9]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dnvetomass", &temp_BsigDataToTree[10]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_DnvetodmID", &temp_BsigDataToTree[11]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dnvetoabsdm", &temp_BsigDataToTree[12]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_BsigDataToTree[13]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_BsigDataToTree[14]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_BsigDataToTree[15]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_BsigDataToTree[16]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Pion_PID_correction", &temp_BsigDataToTree[17]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_up", &temp_BsigDataToTree[18]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Pion_PID_rel_uncer_dn", &temp_BsigDataToTree[19]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow1", &temp_BsigDataToTree[20]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow2", &temp_BsigDataToTree[21]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow3", &temp_BsigDataToTree[22]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow1", &temp_BsigDataToTree[23]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow2", &temp_BsigDataToTree[24]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree[25]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree[26]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree[27]);
-    temp_tree->Branch("Bsig_R2", &temp_BsigDataToTree[28]);
-    temp_tree->Branch("Bsig_thrustBm", &temp_BsigDataToTree[29]);
-    temp_tree->Branch("Bsig_thrustOm", &temp_BsigDataToTree[30]);
-    temp_tree->Branch("Bsig_cosTBTO", &temp_BsigDataToTree[31]);
-    temp_tree->Branch("Bsig_cosTBz", &temp_BsigDataToTree[32]);
-    temp_tree->Branch("Bsig_KSFWVariables_et", &temp_BsigDataToTree[33]);
-    temp_tree->Branch("Bsig_KSFWVariables_mm2", &temp_BsigDataToTree[34]);
-    temp_tree->Branch("Bsig_KSFWVariables_hso00", &temp_BsigDataToTree[35]);
-    temp_tree->Branch("Bsig_KSFWVariables_hso01", &temp_BsigDataToTree[36]);
-    temp_tree->Branch("Bsig_KSFWVariables_hso02", &temp_BsigDataToTree[37]);
-    temp_tree->Branch("Bsig_KSFWVariables_hso03", &temp_BsigDataToTree[38]);
-    temp_tree->Branch("Bsig_KSFWVariables_hso04", &temp_BsigDataToTree[39]);
-    temp_tree->Branch("Bsig_KSFWVariables_hso10", &temp_BsigDataToTree[40]);
-    temp_tree->Branch("Bsig_KSFWVariables_hso12", &temp_BsigDataToTree[41]);
-    temp_tree->Branch("Bsig_KSFWVariables_hso14", &temp_BsigDataToTree[42]);
-    temp_tree->Branch("Bsig_KSFWVariables_hso20", &temp_BsigDataToTree[43]);
-    temp_tree->Branch("Bsig_KSFWVariables_hso22", &temp_BsigDataToTree[44]);
-    temp_tree->Branch("Bsig_KSFWVariables_hso24", &temp_BsigDataToTree[45]);
-    temp_tree->Branch("Bsig_KSFWVariables_hoo0", &temp_BsigDataToTree[46]);
-    temp_tree->Branch("Bsig_KSFWVariables_hoo1", &temp_BsigDataToTree[47]);
-    temp_tree->Branch("Bsig_KSFWVariables_hoo2", &temp_BsigDataToTree[48]);
-    temp_tree->Branch("Bsig_KSFWVariables_hoo3", &temp_BsigDataToTree[49]);
-    temp_tree->Branch("Bsig_KSFWVariables_hoo4", &temp_BsigDataToTree[50]);
-    temp_tree->Branch("Bsig_CleoConeCS_1", &temp_BsigDataToTree[51]);
-    temp_tree->Branch("Bsig_CleoConeCS_2", &temp_BsigDataToTree[52]);
-    temp_tree->Branch("Bsig_CleoConeCS_3", &temp_BsigDataToTree[53]);
-    temp_tree->Branch("Bsig_CleoConeCS_4", &temp_BsigDataToTree[54]);
-    temp_tree->Branch("Bsig_CleoConeCS_5", &temp_BsigDataToTree[55]);
-    temp_tree->Branch("Bsig_CleoConeCS_6", &temp_BsigDataToTree[56]);
-    temp_tree->Branch("Bsig_CleoConeCS_7", &temp_BsigDataToTree[57]);
-    temp_tree->Branch("Bsig_CleoConeCS_8", &temp_BsigDataToTree[58]);
-    temp_tree->Branch("Bsig_CleoConeCS_9", &temp_BsigDataToTree[59]);
-    temp_tree->Branch("Bsig_pt", &temp_BsigDataToTree[60]);
-    temp_tree->Branch("Bsig_useCMSFrame_pt", &temp_BsigDataToTree[61]);
-    temp_tree->Branch("Bsig_theta", &temp_BsigDataToTree[62]);
-    temp_tree->Branch("Bsig_useCMSFrame_theta", &temp_BsigDataToTree[63]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_nDc", &temp_BsigDataToTree[64]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med", &temp_BsigDataToTree[65]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std", &temp_BsigDataToTree[66]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &temp_BsigDataToTree[67]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &temp_BsigDataToTree[68]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &temp_BsigDataToTree[69]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &temp_BsigDataToTree[70]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_nD0", &temp_BsigDataToTree[71]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med", &temp_BsigDataToTree[72]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std", &temp_BsigDataToTree[73]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &temp_BsigDataToTree[74]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[75]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[76]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[77]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[78]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_mydr", &temp_BsigDataToTree[79]);
-    temp_tree->Branch("Bsig_daughter_0_extraInfo_mydz", &temp_BsigDataToTree[80]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_BsigDataToTree[7]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow1", &temp_BsigDataToTree[8]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow2", &temp_BsigDataToTree[9]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nKslow3", &temp_BsigDataToTree[10]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow1", &temp_BsigDataToTree[11]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow2", &temp_BsigDataToTree[12]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nPislow3", &temp_BsigDataToTree[13]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nKexcep", &temp_BsigDataToTree[14]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nPiexcep", &temp_BsigDataToTree[15]);
+    temp_tree->Branch("Bsig_R2", &temp_BsigDataToTree[16]);
+    temp_tree->Branch("Bsig_thrustBm", &temp_BsigDataToTree[17]);
+    temp_tree->Branch("Bsig_thrustOm", &temp_BsigDataToTree[18]);
+    temp_tree->Branch("Bsig_cosTBTO", &temp_BsigDataToTree[19]);
+    temp_tree->Branch("Bsig_cosTBz", &temp_BsigDataToTree[20]);
+    temp_tree->Branch("Bsig_KSFWVariables_et", &temp_BsigDataToTree[21]);
+    temp_tree->Branch("Bsig_KSFWVariables_mm2", &temp_BsigDataToTree[22]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso00", &temp_BsigDataToTree[23]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso01", &temp_BsigDataToTree[24]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso02", &temp_BsigDataToTree[25]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso03", &temp_BsigDataToTree[26]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso04", &temp_BsigDataToTree[27]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso10", &temp_BsigDataToTree[28]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso12", &temp_BsigDataToTree[29]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso14", &temp_BsigDataToTree[30]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso20", &temp_BsigDataToTree[31]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso22", &temp_BsigDataToTree[32]);
+    temp_tree->Branch("Bsig_KSFWVariables_hso24", &temp_BsigDataToTree[33]);
+    temp_tree->Branch("Bsig_KSFWVariables_hoo0", &temp_BsigDataToTree[34]);
+    temp_tree->Branch("Bsig_KSFWVariables_hoo1", &temp_BsigDataToTree[35]);
+    temp_tree->Branch("Bsig_KSFWVariables_hoo2", &temp_BsigDataToTree[36]);
+    temp_tree->Branch("Bsig_KSFWVariables_hoo3", &temp_BsigDataToTree[37]);
+    temp_tree->Branch("Bsig_KSFWVariables_hoo4", &temp_BsigDataToTree[38]);
+    temp_tree->Branch("Bsig_CleoConeCS_1", &temp_BsigDataToTree[39]);
+    temp_tree->Branch("Bsig_CleoConeCS_2", &temp_BsigDataToTree[40]);
+    temp_tree->Branch("Bsig_CleoConeCS_3", &temp_BsigDataToTree[41]);
+    temp_tree->Branch("Bsig_CleoConeCS_4", &temp_BsigDataToTree[42]);
+    temp_tree->Branch("Bsig_CleoConeCS_5", &temp_BsigDataToTree[43]);
+    temp_tree->Branch("Bsig_CleoConeCS_6", &temp_BsigDataToTree[44]);
+    temp_tree->Branch("Bsig_CleoConeCS_7", &temp_BsigDataToTree[45]);
+    temp_tree->Branch("Bsig_CleoConeCS_8", &temp_BsigDataToTree[46]);
+    temp_tree->Branch("Bsig_CleoConeCS_9", &temp_BsigDataToTree[47]);
+    temp_tree->Branch("Bsig_pt", &temp_BsigDataToTree[48]);
+    temp_tree->Branch("Bsig_useCMSFrame_pt", &temp_BsigDataToTree[49]);
+    temp_tree->Branch("Bsig_theta", &temp_BsigDataToTree[50]);
+    temp_tree->Branch("Bsig_useCMSFrame_theta", &temp_BsigDataToTree[51]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nDc", &temp_BsigDataToTree[52]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med", &temp_BsigDataToTree[53]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std", &temp_BsigDataToTree[54]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &temp_BsigDataToTree[55]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr", &temp_BsigDataToTree[56]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &temp_BsigDataToTree[57]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &temp_BsigDataToTree[58]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nD0", &temp_BsigDataToTree[59]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med", &temp_BsigDataToTree[60]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std", &temp_BsigDataToTree[61]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &temp_BsigDataToTree[62]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr", &temp_BsigDataToTree[63]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &temp_BsigDataToTree[64]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M", &temp_BsigDataToTree[65]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_mychiProb", &temp_BsigDataToTree[66]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_mydr", &temp_BsigDataToTree[67]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_mydz", &temp_BsigDataToTree[68]);
+    for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+        temp_tree->Branch(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[69 + 4 * i_PID]);
+        temp_tree->Branch(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[69 + 4 * i_PID + 1]);
+        temp_tree->Branch(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[69 + 4 * i_PID + 2]);
+        temp_tree->Branch(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[69 + 4 * i_PID + 3]);
+    }
 
     // get Btag_info
     temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
