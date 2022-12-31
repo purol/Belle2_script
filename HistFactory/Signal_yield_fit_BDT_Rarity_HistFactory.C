@@ -30,6 +30,8 @@ using namespace RooFit;
 using std::string;
 using std::to_string;
 
+# define MyEPSILON 0.000001
+
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
@@ -189,6 +191,12 @@ using std::to_string;
 # define Xsd_frag_decay28 14.5
 # define Xsd_frag_decay29 10.9
 # define Xsd_frag_decay30 871.0
+
+# define N_PID_syst 73
+double PID_correction[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+double PID_correction_stat_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+double PID_correction_sys_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+double PID_correction_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
 enum DecayMode { // reco level
     B2Kc = 0,
@@ -1042,8 +1050,7 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double 
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
-    double temp_KaonID_correction = -1;
-    double temp_nKaon_excep = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -1062,8 +1069,12 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double 
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1078,9 +1089,16 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double 
             if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
 
             Nevt = Nevt + total_weight;
 
@@ -1108,8 +1126,7 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
-    double temp_KaonID_correction = -1;
-    double temp_nKaon_excep = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -1128,8 +1145,12 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1151,9 +1172,16 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
                 else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0 * (1 - FEI_cal_B0_uncertainty);
                 else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             }
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
 
             Nevt = Nevt + total_weight;
 
@@ -1180,8 +1208,7 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
-    double temp_KaonID_correction = -1;
-    double temp_nKaon_excep = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -1200,8 +1227,12 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1218,9 +1249,16 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
 
             Nevt = Nevt + total_weight;
 
@@ -1247,8 +1285,7 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsIt
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
-    double temp_KaonID_correction = -1;
-    double temp_nKaon_excep = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -1267,8 +1304,12 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsIt
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1284,12 +1325,19 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsIt
             if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
             double Correction_track = 1.0;
             if (IsItUp == true) Correction_track = (1 + (Ntrack * track_rel_uncertainty / 100.0));
             else Correction_track = (1 - (Ntrack * track_rel_uncertainty / 100.0));
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_track;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_track;
 
             Nevt = Nevt + total_weight;
 
@@ -1316,8 +1364,7 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
-    double temp_KaonID_correction = -1;
-    double temp_nKaon_excep = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_KS0_3D_distance = -1;
 
     std::vector<string> names;
@@ -1337,8 +1384,12 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_KS0_3D_distance);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -1354,12 +1405,19 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
             double KS0_correction = 1.0;
             if(IsItUp == true) KS0_correction = 1 + (KS0_rel_uncertainty * temp_KS0_3D_distance / 100.0);
             else KS0_correction = 1 - (KS0_rel_uncertainty * temp_KS0_3D_distance / 100.0);
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * KS0_correction;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * KS0_correction;
 
             Nevt = Nevt + total_weight;
 
@@ -1374,6 +1432,7 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
 }
 
 double GetKIDPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp, double weight_var = 1.0) { // get nominal PDF with appropriate correction
+    // need to be fixed!
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
     else if (strcmp(type, "Continuum") == 0) {}
@@ -1531,8 +1590,7 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
-    double temp_KaonID_correction = -1;
-    double temp_nKaon_excep = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -1551,8 +1609,12 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
 
         TTree* tree_Xs = (TTree*)input_file->Get("Xs");
 
@@ -1580,7 +1642,14 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
             if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
 
             q2 = q2 * q2;
 
@@ -1598,7 +1667,7 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
                 double lambda = (m_b * m_b * m_b * m_b) + (m_k * m_k * m_k * m_k) + (q2 * q2) - 2 * (m_b * m_b * m_k * m_k + m_b * m_b * q2 + m_k * m_k * q2);
 
                 value[k] = std::pow(lambda, 1.5) * fp * fp;
-                double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * (value[k] / value[0]);
+                double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * (value[k] / value[0]);
                 hist[k]->Fill(MVA_var, total_weight );
                 Nevts[k] = Nevts[k] + total_weight;
             }
@@ -1750,8 +1819,7 @@ void GetKstarffPDFs(const char* dirname, TH1D* hist[19], double Correction_facto
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
-    double temp_KaonID_correction = -1;
-    double temp_nKaon_excep = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -1770,8 +1838,12 @@ void GetKstarffPDFs(const char* dirname, TH1D* hist[19], double Correction_facto
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
 
         TTree* tree_Xs = (TTree*)input_file->Get("Xs");
 
@@ -1801,7 +1873,14 @@ void GetKstarffPDFs(const char* dirname, TH1D* hist[19], double Correction_facto
             if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
 
             q2 = q2 * q2;
 
@@ -1837,7 +1916,7 @@ void GetKstarffPDFs(const char* dirname, TH1D* hist[19], double Correction_facto
                 double Amp_0 = -1 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (1.0 / m_k_tilda) * (1.0 / std::pow(sB, 0.5)) * ((1 - m_k_tilda * m_k_tilda - sB) * (1 + m_k_tilda) * A1 - Lambda * A2 / (1 + m_k_tilda));
 
                 value[k] = (3.0 / 4.0) * (Amp_vertical * Amp_vertical + Amp_parallel * Amp_parallel) * (1 - costheta * costheta) + (3.0 / 2.0) * Amp_0 * Amp_0 * costheta * costheta;
-                double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * (value[k] / value[0]);
+                double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * (value[k] / value[0]);
                 hist[k]->Fill(MVA_var, total_weight);
                 Nevts[k] = Nevts[k] + total_weight;
             }
@@ -1937,9 +2016,7 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double temp_KaonID_correction = -1;
-    double temp_nKaon_excep = -1;
-    double temp_KaonID_rel_up = -1;
-    double temp_KaonID_rel_dn = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     int Decay[N_decay] = { 0 };
 
     double weight_not_Selected = GetFragmentationWeight(type, SelectedDecayMode, IsItUp);
@@ -1962,10 +2039,12 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_up", &temp_KaonID_rel_up);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_rel_uncer_dn", &temp_KaonID_rel_dn);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
 
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
@@ -2020,7 +2099,14 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
             if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
 
             double output_Decay[MAX_NUM_DECAYMODE_MC] = { 0.0 };
             DecayArrayToXsOutputDecay(Decay, output_Decay);
@@ -2037,7 +2123,7 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
                 }
             }
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * fragmentation_weight;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * fragmentation_weight;
 
             Nevt = Nevt + total_weight;
 
@@ -2065,8 +2151,7 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
-    double temp_KaonID_correction = -1;
-    double temp_nKaon_excep = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -2087,8 +2172,12 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc_var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -2104,9 +2193,16 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
             if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
 
             Nevt = Nevt + total_weight;
         }
@@ -2123,12 +2219,19 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
             if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
             double BDTc_weight = 0;
             if (BDTc_var > (5.0 / 6.0)) BDTc_weight = 5.0;
             else BDTc_weight = (BDTc_var / (1.0 - BDTc_var));
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * BDTc_weight;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * BDTc_weight;
 
             Nevt_with_BDTc = Nevt_with_BDTc + total_weight;
         }
@@ -2145,13 +2248,20 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
             if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
             double BDTc_weight = 0;
             if (BDTc_var > (5.0 / 6.0)) BDTc_weight = 5.0;
             else BDTc_weight = (BDTc_var / (1.0 - BDTc_var));
             BDTc_weight = BDTc_weight * (Nevt / Nevt_with_BDTc);
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * BDTc_weight;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * BDTc_weight;
 
             Nevt_with_BDTc_with_norm = Nevt_with_BDTc_with_norm + total_weight;
 
@@ -2169,6 +2279,87 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
 
     }
     return Nevt;
+}
+
+void ReadPIDFile() {
+    const char* KID_true_file = "KaonEff.csv";
+    const char* KID_mis_file = "Kaonmis.csv";
+    const char* PID_true_file = "PionEff.csv";
+    const char* PID_mis_file = "Pionmis.csv";
+
+    FILE* fp_KID_true = fopen(KID_true_file, "r");
+    FILE* fp_KID_mis = fopen(KID_mis_file, "r");
+    FILE* fp_PID_true = fopen(PID_true_file, "r");
+    FILE* fp_PID_mis = fopen(PID_mis_file, "r");
+
+    fscanf(fp_KID_true, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+    fscanf(fp_KID_mis, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+    fscanf(fp_PID_true, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+    fscanf(fp_PID_mis, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+
+    double temp_p_min;
+    double temp_p_max;
+    double temp_cosTheta_min;
+    double temp_cosTheta_max;
+    double temp_data_MC_ratio;
+    double temp_data_MC_uncertainty_stat_up;
+    double temp_data_MC_uncertainty_stat_dn;
+    double temp_data_MC_uncertainty_sys_up;
+    double temp_data_MC_uncertainty_sys_dn;
+    double temp_data_efficiency;
+    double temp_data_uncertainty_stat_up;
+    double temp_data_uncertainty_stat_dn;
+    double temp_data_uncertainty_sys_up;
+    double temp_data_uncertainty_sys_dn;
+    double temp_MC_efficiency;
+    double temp_MC_uncertainty_stat_up;
+    double temp_MC_uncertainty_stat_dn;
+    double temp_MC_uncertainty_sys_up;
+    double temp_MC_uncertainty_sys_dn;
+    double temp_threshold;
+
+    double PID_correction[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double PID_correction_stat_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double PID_correction_sys_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double PID_correction_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+
+    for (int i = 0; i < N_PID_syst; i++) {
+        fscanf(fp_KID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,kaonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[0][i], &PID_correction_stat_uncer[0][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[0][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+        fscanf(fp_KID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,kaonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[1][i], &PID_correction_stat_uncer[1][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[1][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+        fscanf(fp_PID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[2][i], &PID_correction_stat_uncer[2][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[2][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+        fscanf(fp_PID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[3][i], &PID_correction_stat_uncer[3][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[3][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+ 
+        if (std::abs(PID_correction[0][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[0][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[0][i] - 1.0) < MyEPSILON) {
+            PID_correction[0][i] = 1.0;
+            PID_correction_stat_uncer[0][i] = 0.0;
+            PID_correction_sys_uncer[0][i] = 0.0;
+        }
+        if (std::abs(PID_correction[1][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[1][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[1][i] - 1.0) < MyEPSILON) {
+            PID_correction[1][i] = 1.0;
+            PID_correction_stat_uncer[1][i] = 0.0;
+            PID_correction_sys_uncer[1][i] = 0.0;
+        }
+        if (std::abs(PID_correction[2][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[2][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[2][i] - 1.0) < MyEPSILON) {
+            PID_correction[2][i] = 1.0;
+            PID_correction_stat_uncer[2][i] = 0.0;
+            PID_correction_sys_uncer[2][i] = 0.0;
+        }
+        if (std::abs(PID_correction[3][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[3][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[3][i] - 1.0) < MyEPSILON) {
+            PID_correction[3][i] = 1.0;
+            PID_correction_stat_uncer[3][i] = 0.0;
+            PID_correction_sys_uncer[3][i] = 0.0;
+        }
+
+        PID_correction_uncer[0][i] = std::sqrt(PID_correction_stat_uncer[0][i] * PID_correction_stat_uncer[0][i] + PID_correction_sys_uncer[0][i] * PID_correction_sys_uncer[0][i]);
+        PID_correction_uncer[1][i] = std::sqrt(PID_correction_stat_uncer[1][i] * PID_correction_stat_uncer[1][i] + PID_correction_sys_uncer[1][i] * PID_correction_sys_uncer[1][i]);
+        PID_correction_uncer[2][i] = std::sqrt(PID_correction_stat_uncer[2][i] * PID_correction_stat_uncer[2][i] + PID_correction_sys_uncer[2][i] * PID_correction_sys_uncer[2][i]);
+        PID_correction_uncer[3][i] = std::sqrt(PID_correction_stat_uncer[3][i] * PID_correction_stat_uncer[3][i] + PID_correction_sys_uncer[3][i] * PID_correction_sys_uncer[3][i]);
+    }
+
+    fclose(fp_KID_true);
+    fclose(fp_KID_mis);
+    fclose(fp_PID_true);
+    fclose(fp_PID_mis);
 }
 
 void Signal_yield_fit_BDT_Rarity_HistFactory()
