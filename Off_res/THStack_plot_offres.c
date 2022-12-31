@@ -93,7 +93,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define FEI_cal_B0 0.713
 # define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
 
-# define Nvar_num 112
+# define Nvar_num 114
 
 # define CAL 0.4790
 # define CAL_qq 1.0626
