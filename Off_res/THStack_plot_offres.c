@@ -14,6 +14,8 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # include <algorithm>
 # include <float.h>
 
+# define MyEPSILON 0.000001
+
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
