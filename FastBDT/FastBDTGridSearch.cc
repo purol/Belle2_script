@@ -40,8 +40,8 @@
 # define N_decay_nparticles 3 // # of nu_e, B, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
 
-# define Nvar 43
-# define DvetoNvar 2
+# define Nvar 44
+# define DvetoNvar 4
 
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
@@ -97,19 +97,19 @@
 # define N_Xsu_nonresonant_test 14805000.0
 # define N_Xsd_nonresonant_test 15059570.0
 
-// scale factor for SIGNAL MC sample (364.436/fb)
-# define Scale_Kplus_train (0.364436 * N_Kplus_nunubar_1invab/N_Kplus_train)
-# define Scale_Kplusstar_train (0.364436 * N_Kplusstar_nunubar_1invab/N_Kplusstar_train)
-# define Scale_Xsu_nonresonant_train (0.364436 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_train)
-# define Scale_K0_train (0.364436 * N_K0_nunubar_1invab/N_K0_train)
-# define Scale_K0star_train (0.364436 * N_K0star_nunubar_1invab/N_K0star_train)
-# define Scale_Xsd_nonresonant_train (0.364436 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_train)
-# define Scale_Kplus_test (0.364436 * N_Kplus_nunubar_1invab/N_Kplus_test)
-# define Scale_Kplusstar_test (0.364436 * N_Kplusstar_nunubar_1invab/N_Kplusstar_test)
-# define Scale_Xsu_nonresonant_test (0.364436 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_test)
-# define Scale_K0_test (0.364436 * N_K0_nunubar_1invab/N_K0_test)
-# define Scale_K0star_test (0.364436 * N_K0star_nunubar_1invab/N_K0star_test)
-# define Scale_Xsd_nonresonant_test (0.364436 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_test)
+// scale factor for SIGNAL MC sample (364.436 - 2.763 = 361.673/fb)
+# define Scale_Kplus_train (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_train)
+# define Scale_Kplusstar_train (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_train)
+# define Scale_Xsu_nonresonant_train (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_train)
+# define Scale_K0_train (0.361673 * N_K0_nunubar_1invab/N_K0_train)
+# define Scale_K0star_train (0.361673 * N_K0star_nunubar_1invab/N_K0star_train)
+# define Scale_Xsd_nonresonant_train (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_train)
+# define Scale_Kplus_test (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_test)
+# define Scale_Kplusstar_test (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_test)
+# define Scale_Xsu_nonresonant_test (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_test)
+# define Scale_K0_test (0.361673 * N_K0_nunubar_1invab/N_K0_test)
+# define Scale_K0star_test (0.361673 * N_K0star_nunubar_1invab/N_K0star_test)
+# define Scale_Xsd_nonresonant_test (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_test)
 
 // BKG MC sample number (0.8/ab for BB, 1.0/ab for qq)
 # define N_CHG_test 32042497.0
@@ -125,19 +125,19 @@
 # define N_SSBAR_train 28859338.0
 # define N_CHARM_train 161280679.0
 
-// scale factor for BKG MC sample (364.436/fb)
-# define Scale_CHG_train ((0.364436/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_train)
-# define Scale_MIX_train ((0.364436/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_train)
-# define Scale_UUBAR_train ((0.364436/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_train)
-# define Scale_DDBAR_train ((0.364436/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_train)
-# define Scale_SSBAR_train ((0.364436/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_train)
-# define Scale_CHARM_train ((0.364436/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_train)
-# define Scale_CHG_test ((0.364436/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_test)
-# define Scale_MIX_test ((0.364436/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_test)
-# define Scale_UUBAR_test ((0.364436/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_test)
-# define Scale_DDBAR_test ((0.364436/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_test)
-# define Scale_SSBAR_test ((0.364436/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_test)
-# define Scale_CHARM_test ((0.364436/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_test)
+// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb)
+# define Scale_CHG_train (0.361673/((N_CHG_train/(N_CHG_train + N_CHG_test))*0.8+1.0))
+# define Scale_MIX_train (0.361673/((N_MIX_train/(N_MIX_train + N_MIX_test))*0.8+1.0))
+# define Scale_UUBAR_train (0.361673/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_train (0.361673/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_train (0.361673/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_train (0.361673/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_CHG_test (0.361673/((N_CHG_test/(N_CHG_train + N_CHG_test))*0.8+1.0))
+# define Scale_MIX_test (0.361673/((N_MIX_test/(N_MIX_train + N_MIX_test))*0.8+1.0))
+# define Scale_UUBAR_test (0.361673/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
 
 using std::string;
 
@@ -207,24 +207,24 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     double Pcms = -1;
 
     tree_data->SetBranchAddress("aplanarity", &Vars[0]);
-    tree_data->SetBranchAddress("Btag_chiProb", &Vars[1]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_1", &Vars[2]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_2", &Vars[3]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_3", &Vars[4]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_4", &Vars[5]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_5", &Vars[6]);
-    tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[7]);
-    tree_data->SetBranchAddress("Btag_deltaE", &Vars[8]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo1", &Vars[9]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo2", &Vars[10]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo3", &Vars[11]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo4", &Vars[12]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso01", &Vars[13]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso03", &Vars[14]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso04", &Vars[15]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso10", &Vars[16]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso12", &Vars[17]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso20", &Vars[18]);
+    tree_data->SetBranchAddress("Bsig_cosTBTO", &Vars[1]);
+    tree_data->SetBranchAddress("Bsig_useCMSFrame_p", &Vars[2]);
+    tree_data->SetBranchAddress("Btag_chiProb", &Vars[3]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_1", &Vars[4]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_2", &Vars[5]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_3", &Vars[6]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_4", &Vars[7]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_5", &Vars[8]);
+    tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[9]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo1", &Vars[10]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo2", &Vars[11]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo3", &Vars[12]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo4", &Vars[13]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso00", &Vars[14]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso01", &Vars[15]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso02", &Vars[16]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso03", &Vars[17]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso04", &Vars[18]);
     tree_data->SetBranchAddress("Btag_KSFWVariables_hso22", &Vars[19]);
     tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[20]);
     tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[21]);
@@ -234,23 +234,26 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     tree_data->SetBranchAddress("cleoConeThrust3", &Vars[25]);
     tree_data->SetBranchAddress("cleoConeThrust4", &Vars[26]);
     tree_data->SetBranchAddress("cleoConeThrust5", &Vars[27]);
-    tree_data->SetBranchAddress("foxWolframR1", &Vars[28]);
-    tree_data->SetBranchAddress("foxWolframR2", &Vars[29]);
-    tree_data->SetBranchAddress("foxWolframR3", &Vars[30]);
+    tree_data->SetBranchAddress("extraInfo__boEeclv133__bc", &Vars[28]);
+    tree_data->SetBranchAddress("foxWolframR3", &Vars[29]);
+    tree_data->SetBranchAddress("foxWolframR4", &Vars[30]);
     tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[31]);
-    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[32]);
-    tree_data->SetBranchAddress("harmonicMomentThrust4", &Vars[33]);
-    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[34]);
-    tree_data->SetBranchAddress("missingEnergyOfEventCMS", &Vars[35]);
+    tree_data->SetBranchAddress("harmonicMomentThrust2", &Vars[32]);
+    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[33]);
+    tree_data->SetBranchAddress("harmonicMomentThrust4", &Vars[34]);
+    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[35]);
     tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[36]);
     tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[37]);
     tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &Vars[38]);
-    tree_data->SetBranchAddress("roeEextra__bocleanMask__bc", &Vars[39]);
-    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[40]);
+    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[39]);
 
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &Dc_pvalue_med);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &Dc_chiProb);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &Dc_dz);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &Dc_M);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med", &D0_pvalue_med);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std", &D0_pvalue_std);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &D0_chiProb);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &D0_dz);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &D0_M);
@@ -279,16 +282,20 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
         for (unsigned int k = 0; k < Nvar - DvetoNvar; k++) input_vars[k].push_back((float) Vars[k]); 
 
         if(Dc_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_M);
+            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_pvalue_std);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float)Dc_M);
         }
         else {
-            input_vars[Nvar - DvetoNvar + 0].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 0].push_back((float)0.0);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float) 0.0);
         }
         if(D0_chiProb > -0.5){
-            input_vars[Nvar - DvetoNvar + 1].push_back((float) D0_M);
+            input_vars[Nvar - DvetoNvar + 2].push_back((float)D0_pvalue_std);
+            input_vars[Nvar - DvetoNvar + 3].push_back((float) D0_M);
         }
         else {
-            input_vars[Nvar - DvetoNvar + 1].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 2].push_back((float) 0.0);
+            input_vars[Nvar - DvetoNvar + 3].push_back((float) 0.0);
         }
 
         IsSignal->push_back(tempissignal);
