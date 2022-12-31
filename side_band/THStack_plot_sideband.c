@@ -63,7 +63,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define FEI_cal_B0 0.713
 # define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
 
-# define Nvar_num 90
+# define Nvar_num 112
 
 # define CAL 1.1728
 # define CAL_qq 1.0
@@ -1153,6 +1153,28 @@ void THStack_plot_sideband() {
     variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dr"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dz"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_M"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_thrustBm"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_thrustOm"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_cosTBTO"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_cosTBz"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_et"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_mm2"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso00"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso01"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso02"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso03"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso04"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso10"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso12"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso14"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso20"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso22"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso24"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo0"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo1"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo2"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo3"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo4"); branch_names.push_back("Bsig");
     variable_names.push_back("foxWolframR1"); branch_names.push_back("Upsilon");
     variable_names.push_back("foxWolframR2"); branch_names.push_back("Upsilon");
     variable_names.push_back("foxWolframR3"); branch_names.push_back("Upsilon");
