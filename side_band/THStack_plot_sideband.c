@@ -1184,6 +1184,8 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
 void THStack_plot_sideband() {
 
+    ReadPIDFile();
+
     Nevt nevt_CHG = { 0.0, 0.0 };
     Nevt nevt_MIX = { 0.0, 0.0 };
     Nevt nevt_UUBAR = { 0.0, 0.0 };

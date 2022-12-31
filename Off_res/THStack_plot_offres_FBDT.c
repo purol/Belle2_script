@@ -1174,6 +1174,8 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
 void THStack_plot_offres_FBDT() {
 
+    ReadPIDFile();
+
     Nevt nevt_UUBAR = { 0.0, 0.0 };
     Nevt nevt_DDBAR = { 0.0, 0.0 };
     Nevt nevt_SSBAR = { 0.0, 0.0 };

@@ -2364,6 +2364,8 @@ void ReadPIDFile() {
 
 void Signal_yield_fit_BDT_Rarity_HistFactory()
 {
+    ReadPIDFile();
+
     /* ====================================== */
     // Seting CDF module
     cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Kasen_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu", Scale_Kplus_test);
