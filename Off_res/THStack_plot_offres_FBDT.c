@@ -97,6 +97,93 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define CAL_qq 1.0
 # define Stream 0.25
 
+# define N_PID_syst 73
+double PID_correction[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+double PID_correction_stat_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+double PID_correction_sys_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+double PID_correction_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+
+void ReadPIDFile() {
+    const char* KID_true_file = "KaonEff.csv";
+    const char* KID_mis_file = "Kaonmis.csv";
+    const char* PID_true_file = "PionEff.csv";
+    const char* PID_mis_file = "Pionmis.csv";
+
+    FILE* fp_KID_true = fopen(KID_true_file, "r");
+    FILE* fp_KID_mis = fopen(KID_mis_file, "r");
+    FILE* fp_PID_true = fopen(PID_true_file, "r");
+    FILE* fp_PID_mis = fopen(PID_mis_file, "r");
+
+    fscanf(fp_KID_true, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+    fscanf(fp_KID_mis, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+    fscanf(fp_PID_true, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+    fscanf(fp_PID_mis, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+
+    double temp_p_min;
+    double temp_p_max;
+    double temp_cosTheta_min;
+    double temp_cosTheta_max;
+    double temp_data_MC_ratio;
+    double temp_data_MC_uncertainty_stat_up;
+    double temp_data_MC_uncertainty_stat_dn;
+    double temp_data_MC_uncertainty_sys_up;
+    double temp_data_MC_uncertainty_sys_dn;
+    double temp_data_efficiency;
+    double temp_data_uncertainty_stat_up;
+    double temp_data_uncertainty_stat_dn;
+    double temp_data_uncertainty_sys_up;
+    double temp_data_uncertainty_sys_dn;
+    double temp_MC_efficiency;
+    double temp_MC_uncertainty_stat_up;
+    double temp_MC_uncertainty_stat_dn;
+    double temp_MC_uncertainty_sys_up;
+    double temp_MC_uncertainty_sys_dn;
+    double temp_threshold;
+
+    double PID_correction[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double PID_correction_stat_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double PID_correction_sys_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double PID_correction_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+
+    for (int i = 0; i < N_PID_syst; i++) {
+        fscanf(fp_KID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,kaonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[0][i], &PID_correction_stat_uncer[0][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[0][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+        fscanf(fp_KID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,kaonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[1][i], &PID_correction_stat_uncer[1][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[1][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+        fscanf(fp_PID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[2][i], &PID_correction_stat_uncer[2][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[2][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+        fscanf(fp_PID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[3][i], &PID_correction_stat_uncer[3][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[3][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+
+        if (std::abs(PID_correction[0][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[0][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[0][i] - 1.0) < MyEPSILON) {
+            PID_correction[0][i] = 1.0;
+            PID_correction_stat_uncer[0][i] = 0.0;
+            PID_correction_sys_uncer[0][i] = 0.0;
+        }
+        if (std::abs(PID_correction[1][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[1][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[1][i] - 1.0) < MyEPSILON) {
+            PID_correction[1][i] = 1.0;
+            PID_correction_stat_uncer[1][i] = 0.0;
+            PID_correction_sys_uncer[1][i] = 0.0;
+        }
+        if (std::abs(PID_correction[2][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[2][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[2][i] - 1.0) < MyEPSILON) {
+            PID_correction[2][i] = 1.0;
+            PID_correction_stat_uncer[2][i] = 0.0;
+            PID_correction_sys_uncer[2][i] = 0.0;
+        }
+        if (std::abs(PID_correction[3][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[3][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[3][i] - 1.0) < MyEPSILON) {
+            PID_correction[3][i] = 1.0;
+            PID_correction_stat_uncer[3][i] = 0.0;
+            PID_correction_sys_uncer[3][i] = 0.0;
+        }
+
+        PID_correction_uncer[0][i] = std::sqrt(PID_correction_stat_uncer[0][i] * PID_correction_stat_uncer[0][i] + PID_correction_sys_uncer[0][i] * PID_correction_sys_uncer[0][i]);
+        PID_correction_uncer[1][i] = std::sqrt(PID_correction_stat_uncer[1][i] * PID_correction_stat_uncer[1][i] + PID_correction_sys_uncer[1][i] * PID_correction_sys_uncer[1][i]);
+        PID_correction_uncer[2][i] = std::sqrt(PID_correction_stat_uncer[2][i] * PID_correction_stat_uncer[2][i] + PID_correction_sys_uncer[2][i] * PID_correction_sys_uncer[2][i]);
+        PID_correction_uncer[3][i] = std::sqrt(PID_correction_stat_uncer[3][i] * PID_correction_stat_uncer[3][i] + PID_correction_sys_uncer[3][i] * PID_correction_sys_uncer[3][i]);
+    }
+
+    fclose(fp_KID_true);
+    fclose(fp_KID_mis);
+    fclose(fp_PID_true);
+    fclose(fp_PID_mis);
+}
+
 double BDTcToWeight(double BDTc) {
 
     if (BDTc > (5.0 / 6.0)) return 5.0;
@@ -165,8 +252,7 @@ void LetsFillOffres(const char* dirname, std::vector<std::string> variable_names
     float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
-    double temp_KaonID_correction = -1;
-    double temp_nKaon_excep = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
     double FEI_calibration_factor = -1;
 
@@ -194,8 +280,12 @@ void LetsFillOffres(const char* dirname, std::vector<std::string> variable_names
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -237,96 +327,103 @@ void LetsFillOffres(const char* dirname, std::vector<std::string> variable_names
             }
 
             // Fill calibration factors
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
             if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B2Kc
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B2KcPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B2Ks0Pic
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B2KcPicPic
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B2Ks0PicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B2KcPicPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B2Ks0PicPicPic
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B2KcPicPicPicPic
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B2Ks0PicPicPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B2KcPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B2Ks0PicPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B2KcPicPicPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B2KcKcKc
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B2KcKcKs0Pic
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B2KcKcKcPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B02Ks0
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B02KcPic
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B02Ks0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B02KcPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B02Ks0PicPic
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B02KcPicPicPic
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B02Ks0PicPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B02KcPicPicPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B02Ks0PicPicPicPic
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B02Ks0Pi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B02KcPicPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B02Ks0PicPicPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B02KcKcKs0
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B02KcKcKcPic
-                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B02KcKcKs0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * Stream * Correction_KID * Correction_PID);
             }
             else {
                 printf("[ERROR] unexpected decay ID\n");
@@ -360,8 +457,7 @@ void LetsFillOffres_ri(const char* dirname, std::vector<std::string> variable_na
     float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
-    double temp_KaonID_correction = -1;
-    double temp_nKaon_excep = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
     double FEI_calibration_factor = -1;
 
@@ -389,8 +485,12 @@ void LetsFillOffres_ri(const char* dirname, std::vector<std::string> variable_na
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -434,96 +534,103 @@ void LetsFillOffres_ri(const char* dirname, std::vector<std::string> variable_na
             }
 
             // Fill calibration factors
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
             if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B2Kc
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B2KcPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B2Ks0Pic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B2KcPicPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B2Ks0PicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B2KcPicPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B2Ks0PicPicPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B2KcPicPicPicPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B2Ks0PicPicPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B2KcPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B2Ks0PicPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B2KcPicPicPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B2KcKcKc
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B2KcKcKs0Pic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B2KcKcKcPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B02Ks0
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B02KcPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B02Ks0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B02KcPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B02Ks0PicPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B02KcPicPicPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B02Ks0PicPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B02KcPicPicPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B02Ks0PicPicPicPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B02Ks0Pi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B02KcPicPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B02Ks0PicPicPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B02KcKcKs0
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B02KcKcKcPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B02KcKcKs0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID);
             }
             else {
                 printf("[ERROR] unexpected decay ID\n");
@@ -635,8 +742,7 @@ void LetsFillOffres_ri_correction(const char* dirname, std::vector<std::string> 
     float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
-    double temp_KaonID_correction = -1;
-    double temp_nKaon_excep = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
     double FEI_calibration_factor = -1;
 
@@ -667,8 +773,12 @@ void LetsFillOffres_ri_correction(const char* dirname, std::vector<std::string> 
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -716,96 +826,103 @@ void LetsFillOffres_ri_correction(const char* dirname, std::vector<std::string> 
             }
 
             // Fill calibration factors
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
             if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B2Kc
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B2KcPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B2Ks0Pic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B2KcPicPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B2Ks0PicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B2KcPicPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B2Ks0PicPicPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B2KcPicPicPicPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B2Ks0PicPicPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B2KcPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B2Ks0PicPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B2KcPicPicPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B2KcKcKc
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B2KcKcKs0Pic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B2KcKcKcPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B02Ks0
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B02KcPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B02Ks0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B02KcPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B02Ks0PicPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B02KcPicPicPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B02Ks0PicPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B02KcPicPicPicPi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B02Ks0PicPicPicPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B02Ks0Pi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B02KcPicPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B02Ks0PicPicPi0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B02KcKcKs0
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B02KcKcKcPic
-                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B02KcKcKs0Pi0
-                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction);
+                weights->push_back(FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction);
             }
             else {
                 printf("[ERROR] unexpected decay ID\n");
@@ -844,8 +961,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
     float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
-    double temp_KaonID_correction = -1;
-    double temp_nKaon_excep = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
     double FEI_calibration_factor = -1;
 
@@ -866,8 +982,12 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Kaon_PID_correction", &temp_KaonID_correction);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nKexcep", &temp_nKaon_excep);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -909,126 +1029,133 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             }
 
             // Fill calibration factors
-            double Correction_KID = temp_KaonID_correction * std::pow(-1, temp_nKaon_excep);
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
             if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B2Kc
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B2KcPi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B2Ks0Pic
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B2KcPicPic
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B2Ks0PicPi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B2KcPicPicPi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B2Ks0PicPicPic
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B2KcPicPicPicPic
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B2Ks0PicPicPicPi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B2KcPi0Pi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B2Ks0PicPi0Pi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B2KcPicPicPi0Pi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B2KcKcKc
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B2KcKcKs0Pic
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B2KcKcKcPi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) { // B02Ks0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 0.5 && Bsig_ID < 1.5) { // B02KcPic
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 1.5 && Bsig_ID < 2.5) { // B02Ks0Pi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 2.5 && Bsig_ID < 3.5) { // B02KcPicPi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 3.5 && Bsig_ID < 4.5) { // B02Ks0PicPic
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 4.5 && Bsig_ID < 5.5) { // B02KcPicPicPic
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 5.5 && Bsig_ID < 6.5) { // B02Ks0PicPicPi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 6.5 && Bsig_ID < 7.5) { // B02KcPicPicPicPi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 7.5 && Bsig_ID < 8.5) { // B02Ks0PicPicPicPic
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 8.5 && Bsig_ID < 9.5) { // B02Ks0Pi0Pi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 9.5 && Bsig_ID < 10.5) { // B02KcPicPi0Pi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 10.5 && Bsig_ID < 11.5) { // B02Ks0PicPicPi0Pi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 11.5 && Bsig_ID < 12.5) { // B02KcKcKs0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 12.5 && Bsig_ID < 13.5) { // B02KcKcKcPic
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5 && Bsig_ID > 13.5 && Bsig_ID < 14.5) { // B02KcKcKs0Pi0
-                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID;
-                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * BDTc_correction;
+                nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID;
+                nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * pi0_correction * CAL * weight_ri * Correction_KID * Correction_PID * BDTc_correction;
             }
             else {
                 printf("[ERROR] unexpected decay ID\n");
