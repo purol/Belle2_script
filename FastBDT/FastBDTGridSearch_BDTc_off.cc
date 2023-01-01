@@ -40,7 +40,7 @@
 # define N_decay_nparticles 3 // # of nu_e, B, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
 
-# define Nvar 43
+# define Nvar 44
 # define DvetoNvar 2
 
 // arXiv:1409.4557v2
