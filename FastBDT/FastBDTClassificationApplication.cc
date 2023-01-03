@@ -641,6 +641,11 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        std::vector<float> inputs;
        inputs.push_back(temp_UpsilonDataToTree[33]); // aplanarity
        inputs.push_back(temp_BsigDataToTree[17]); // Bsig_cosTBTO
+       inputs.push_back(temp_BsigDataToTree[33]); // Bsig_KSFWVariables_hoo1
+       inputs.push_back(temp_BsigDataToTree[35]); // Bsig_KSFWVariables_hoo3
+       inputs.push_back(temp_BsigDataToTree[22]); // Bsig_KSFWVariables_hso01
+       inputs.push_back(temp_BsigDataToTree[24]); // Bsig_KSFWVariables_hso03
+       inputs.push_back(temp_BsigDataToTree[25]); // Bsig_KSFWVariables_hso04
        inputs.push_back(temp_BsigDataToTree[4]); // Bsig_useCMSFrame_p
        inputs.push_back(temp_BtagDataToTree[6]); // Btag_chiProb
        inputs.push_back(temp_DataToTree[23]); // Btag_CleoConeCS_1
@@ -656,17 +661,12 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        inputs.push_back(temp_DataToTree[7]); // Btag_KSFWVariables_hso00
        inputs.push_back(temp_DataToTree[8]); // Btag_KSFWVariables_hso01
        inputs.push_back(temp_DataToTree[9]); // Btag_KSFWVariables_hso02
-       inputs.push_back(temp_DataToTree[10]); // Btag_KSFWVariables_hso03
-       inputs.push_back(temp_DataToTree[11]); // Btag_KSFWVariables_hso04
        inputs.push_back(temp_DataToTree[16]); // Btag_KSFWVariables_hso22
        inputs.push_back(temp_DataToTree[17]); // Btag_KSFWVariables_hso24
        inputs.push_back(temp_DataToTree[34]); // Btag_useCMSFrame_theta
-       inputs.push_back(temp_UpsilonDataToTree[23]); // cleoConeThrust0
        inputs.push_back(temp_UpsilonDataToTree[24]); // cleoConeThrust1
        inputs.push_back(temp_UpsilonDataToTree[25]); // cleoConeThrust2
        inputs.push_back(temp_UpsilonDataToTree[26]); // cleoConeThrust3
-       inputs.push_back(temp_UpsilonDataToTree[27]); // cleoConeThrust4
-       inputs.push_back(temp_UpsilonDataToTree[28]); // cleoConeThrust5
        inputs.push_back(temp_UpsilonDataToTree[63]); // extraInfo__boEeclv133__bc
        inputs.push_back(temp_UpsilonDataToTree[16]); // foxWolframR3
        inputs.push_back(temp_UpsilonDataToTree[17]); // foxWolframR4
