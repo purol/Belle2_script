@@ -377,6 +377,35 @@ double PrintAUC(const FastBDT::Classifier& classifier, std::vector<std::vector<f
     return AUC;
 }
 
+double PrintAVG(const FastBDT::Classifier& classifier, std::vector<std::vector<float>> InputVariables, std::vector<bool> IsSignal, std::vector<float> weight, bool SelectSignal) {
+    double NBKG_total = 0;
+    double NSIG_total = 0;
+
+    double NBKG_AVG = 0;
+    double NSIG_AVG = 0;
+
+    for (unsigned int i = 0; i < IsSignal.size(); ++i) {
+        if (IsSignal[i]) NSIG_total = NSIG_total + weight[i];
+        else NBKG_total = NBKG_total + weight[i];
+    }
+
+    for (unsigned int i = 0; i < IsSignal.size(); ++i) {
+        std::vector<float> temp;
+        for (int j = 0; j < Nvar; j++) temp.push_back(InputVariables.at(j).at(i));
+        float p = classifier.predict(temp);
+
+        if (IsSignal[i]) NSIG_AVG = NSIG_AVG + p * weight[i];
+        else NBKG_AVG = NBKG_AVG + p * weight[i];
+
+    }
+
+    NSIG_AVG = NSIG_AVG / NSIG_total;
+    NBKG_AVG = NBKG_AVG / NBKG_total;
+
+    if (SelectSignal) return NSIG_AVG;
+    else return NBKG_AVG;
+}
+
 int main(int argc, char* argv[]) // offres total: 42.329/fb
 {
     // grid search
@@ -547,6 +576,10 @@ int main(int argc, char* argv[]) // offres total: 42.329/fb
     // get AUC for testing sample
     double test_AUC = PrintAUC(classifier, InputVariables2, IsSignal2, weight2);
 
+    // get average value for BKG and SIG
+    double AVG_SIG = PrintAVG(classifier, InputVariables2, IsSignal2, weight2, true);
+    double AVG_BKG = PrintAVG(classifier, InputVariables2, IsSignal2, weight2, false);
+
     // clear vector to save memory
     for (unsigned int i = 0; i < InputVariables2.size(); ++i) std::vector<float>().swap(InputVariables2.at(i));
     std::vector<std::vector<float>>().swap(InputVariables2);
@@ -556,7 +589,7 @@ int main(int argc, char* argv[]) // offres total: 42.329/fb
 
 
 
-    printf("%u_%u_%lf_%lf_%u %lf %lf\n", nTrees, depth, shrinkage, subsample, binning_num, train_AUC, test_AUC);
+    printf("%u_%u_%lf_%lf_%u %lf %lf %lf %lf\n", nTrees, depth, shrinkage, subsample, binning_num, train_AUC, test_AUC, AVG_SIG, AVG_BKG);
 
     FILE* fp;
     fp = fopen(("/home/belle2/junewoo/storage_b1/GridSearch_BDTc/out/Result_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])).c_str(), "w");

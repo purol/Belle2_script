@@ -386,6 +386,34 @@ double PrintAUC(const FastBDT::Classifier& classifier, std::vector<std::vector<f
     return AUC;
 }
 
+double PrintAVG(const FastBDT::Classifier& classifier, std::vector<std::vector<float>> InputVariables, std::vector<bool> IsSignal, std::vector<float> weight, bool SelectSignal) {
+    double NBKG_total = 0;
+    double NSIG_total = 0;
+
+    double NBKG_AVG = 0;
+    double NSIG_AVG = 0;
+
+    for (unsigned int i = 0; i < IsSignal.size(); ++i) {
+        if (IsSignal[i]) NSIG_total = NSIG_total + weight[i];
+        else NBKG_total = NBKG_total + weight[i];
+    }
+
+    for (unsigned int i = 0; i < IsSignal.size(); ++i) {
+        std::vector<float> temp;
+        for (int j = 0; j < Nvar; j++) temp.push_back(InputVariables.at(j).at(i));
+        float p = classifier.predict(temp);
+
+        if (IsSignal[i]) NSIG_AVG = NSIG_AVG + p * weight[i];
+        else NBKG_AVG = NBKG_AVG + p * weight[i];
+
+    }
+
+    NSIG_AVG = NSIG_AVG / NSIG_total;
+    NBKG_AVG = NBKG_AVG / NBKG_total;
+
+    if (SelectSignal) return NSIG_AVG;
+    else return NBKG_AVG;
+}
 
 int main(int argc, char* argv[])
 {
