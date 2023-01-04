@@ -503,6 +503,10 @@ int main(int argc, char* argv[]) // offres total: 42.329/fb
     double train_AUC = PrintAUC(classifier, InputVariables, IsSignal, weight);
 
 
+    // get average value for BKG and SIG
+    double train_AVG_SIG = PrintAVG(classifier, InputVariables, IsSignal, weight, true);
+    double train_AVG_BKG = PrintAVG(classifier, InputVariables, IsSignal, weight, false);
+
 
     // clear vector to save memory
     for (unsigned int i = 0; i < InputVariables.size(); ++i) std::vector<float>().swap(InputVariables.at(i));
@@ -584,7 +588,7 @@ int main(int argc, char* argv[]) // offres total: 42.329/fb
 
 
 
-    printf("%u_%u_%lf_%lf_%u %lf %lf %lf %lf\n", nTrees, depth, shrinkage, subsample, binning_num, train_AUC, test_AUC, AVG_SIG, AVG_BKG);
+    printf("%u_%u_%lf_%lf_%u %lf %lf %lf %lf %lf %lf\n", nTrees, depth, shrinkage, subsample, binning_num, train_AUC, test_AUC, train_AVG_SIG, train_AVG_BKG, AVG_SIG, AVG_BKG);
 
     FILE* fp;
     fp = fopen(("/home/belle2/junewoo/storage_b1/GridSearch_BDTc/out/Result_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])).c_str(), "w");
