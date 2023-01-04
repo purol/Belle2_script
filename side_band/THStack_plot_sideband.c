@@ -65,7 +65,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define FEI_cal_B0 0.713
 # define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
 
-# define Nvar_num 114
+# define Nvar_num 116
 
 # define CAL 1.1728
 # define CAL_qq 1.0
@@ -1257,6 +1257,7 @@ void THStack_plot_sideband() {
     variable_names.push_back("Btag_KSFWVariables_hoo2"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo3"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo4"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_useCMSFrame_phi"); branch_names.push_back("Btag");
     variable_names.push_back("roeEextra__bocleanMask__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("extraInfo__boEeclv133__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("extraInfo__boNgammav133__bc"); branch_names.push_back("Upsilon");
@@ -1316,6 +1317,7 @@ void THStack_plot_sideband() {
     variable_names.push_back("cleoConeThrust6"); branch_names.push_back("Upsilon");
     variable_names.push_back("cleoConeThrust7"); branch_names.push_back("Upsilon");
     variable_names.push_back("cleoConeThrust8"); branch_names.push_back("Upsilon");
+    variable_names.push_back("harmonicMomentThrust0"); branch_names.push_back("Upsilon");
     variable_names.push_back("harmonicMomentThrust1"); branch_names.push_back("Upsilon");
     variable_names.push_back("harmonicMomentThrust2"); branch_names.push_back("Upsilon");
     variable_names.push_back("harmonicMomentThrust3"); branch_names.push_back("Upsilon");
