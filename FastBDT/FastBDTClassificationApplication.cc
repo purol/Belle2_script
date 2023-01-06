@@ -662,7 +662,6 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        inputs.push_back(temp_DataToTree[16]); // Btag_KSFWVariables_hso22
        inputs.push_back(temp_DataToTree[17]); // Btag_KSFWVariables_hso24
        inputs.push_back(temp_DataToTree[34]); // Btag_useCMSFrame_theta
-       inputs.push_back(temp_BtagDataToTree[10]); // Btag_useCMSFrame_phi
        inputs.push_back(temp_UpsilonDataToTree[63]); // extraInfo__boEeclv133__bc
        inputs.push_back(temp_UpsilonDataToTree[16]); // foxWolframR3
        inputs.push_back(temp_UpsilonDataToTree[17]); // foxWolframR4
