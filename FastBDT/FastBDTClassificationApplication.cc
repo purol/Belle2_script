@@ -659,14 +659,15 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        inputs.push_back(temp_DataToTree[7]); // Btag_KSFWVariables_hso00
        inputs.push_back(temp_DataToTree[8]); // Btag_KSFWVariables_hso01
        inputs.push_back(temp_DataToTree[9]); // Btag_KSFWVariables_hso02
-       inputs.push_back(temp_DataToTree[16]); // Btag_KSFWVariables_hso22
        inputs.push_back(temp_DataToTree[17]); // Btag_KSFWVariables_hso24
        inputs.push_back(temp_DataToTree[34]); // Btag_useCMSFrame_theta
+       inputs.push_back(temp_UpsilonDataToTree[24]); // cleoConeThrust1
+       inputs.push_back(temp_UpsilonDataToTree[25]); // cleoConeThrust2
        inputs.push_back(temp_UpsilonDataToTree[63]); // extraInfo__boEeclv133__bc
+       inputs.push_back(temp_UpsilonDataToTree[62]); // extraInfo__boNgammav133__bc
        inputs.push_back(temp_UpsilonDataToTree[16]); // foxWolframR3
        inputs.push_back(temp_UpsilonDataToTree[17]); // foxWolframR4
        inputs.push_back(temp_UpsilonDataToTree[19]); // harmonicMomentThrust1
-       inputs.push_back(temp_UpsilonDataToTree[20]); // harmonicMomentThrust2
        inputs.push_back(temp_UpsilonDataToTree[21]); // harmonicMomentThrust3
        inputs.push_back(temp_UpsilonDataToTree[22]); // harmonicMomentThrust4
        inputs.push_back(temp_BtagDataToTree[5]); // Btag_extraInfo_SignalProbability

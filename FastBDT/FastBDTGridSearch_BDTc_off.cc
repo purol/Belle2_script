@@ -40,7 +40,7 @@
 # define N_decay_nparticles 3 // # of nu_e, B, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
 
-# define Nvar 39
+# define Nvar 40
 # define DvetoNvar 4
 
 // arXiv:1409.4557v2
@@ -226,21 +226,22 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     tree_data->SetBranchAddress("Btag_KSFWVariables_hso00", &Vars[17]);
     tree_data->SetBranchAddress("Btag_KSFWVariables_hso01", &Vars[18]);
     tree_data->SetBranchAddress("Btag_KSFWVariables_hso02", &Vars[19]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso22", &Vars[20]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[21]);
-    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[22]);
-    tree_data->SetBranchAddress("extraInfo__boEeclv133__bc", &Vars[23]);
-    tree_data->SetBranchAddress("foxWolframR3", &Vars[24]);
-    tree_data->SetBranchAddress("foxWolframR4", &Vars[25]);
-    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[26]);
-    tree_data->SetBranchAddress("harmonicMomentThrust2", &Vars[27]);
-    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[28]);
-    tree_data->SetBranchAddress("harmonicMomentThrust4", &Vars[29]);
-    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[30]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[31]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[32]);
-    tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &Vars[33]);
-    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[34]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[20]);
+    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[21]);
+    tree_data->SetBranchAddress("cleoConeThrust1", &Vars[22]);
+    tree_data->SetBranchAddress("cleoConeThrust2", &Vars[23]);
+    tree_data->SetBranchAddress("extraInfo__boEeclv133__bc", &Vars[24]);
+    tree_data->SetBranchAddress("extraInfo__boNgammav133__bc", &Vars[25]);
+    tree_data->SetBranchAddress("foxWolframR3", &Vars[26]);
+    tree_data->SetBranchAddress("foxWolframR4", &Vars[27]);
+    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[28]);
+    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[29]);
+    tree_data->SetBranchAddress("harmonicMomentThrust4", &Vars[30]);
+    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[31]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[32]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[33]);
+    tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &Vars[34]);
+    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[35]);
 
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &Dc_pvalue_med);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
@@ -450,7 +451,7 @@ int main(int argc, char* argv[]) // offres total: 42.329/fb
         std::vector<string> names;
         load_files(off_data, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 5 == 0) continue; // offresdata: 7890 of 10001 (33.3942/fb)
+            if (i % 7 == 0) continue; // offresdata: 7452 of 8721 (36.1697/fb)
             FillVariables((off_data + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, true, 1.0);
         }
     }
@@ -458,28 +459,28 @@ int main(int argc, char* argv[]) // offres total: 42.329/fb
         std::vector<string> names;
         load_files(off_MC_UUBAR_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((off_MC_UUBAR_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, Scale_UUBAR_train * (0.0333942 / 0.364436));
+            FillVariables((off_MC_UUBAR_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, Scale_UUBAR_train * (0.0361697 / 0.364436));
         }
     }
     {
         std::vector<string> names;
         load_files(off_MC_DDBAR_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((off_MC_DDBAR_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, Scale_DDBAR_train * (0.0333942 / 0.364436));
+            FillVariables((off_MC_DDBAR_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, Scale_DDBAR_train * (0.0361697 / 0.364436));
         }
     }
     {
         std::vector<string> names;
         load_files(off_MC_SSBAR_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((off_MC_SSBAR_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, Scale_SSBAR_train * (0.0333942 / 0.364436));
+            FillVariables((off_MC_SSBAR_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, Scale_SSBAR_train * (0.0361697 / 0.364436));
         }
     }
     {
         std::vector<string> names;
         load_files(off_MC_CHARM_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((off_MC_CHARM_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, Scale_CHARM_train * (0.0333942 / 0.364436));
+            FillVariables((off_MC_CHARM_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, Scale_CHARM_train * (0.0361697 / 0.364436));
         }
     }
 
@@ -527,7 +528,7 @@ int main(int argc, char* argv[]) // offres total: 42.329/fb
         std::vector<string> names;
         load_files(off_data, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            if (i % 5 != 0) continue; // offresdata: 2111 of 10001  (8.9345/fb)
+            if (i % 7 != 0) continue; // offresdata: 1269 of 8721  (6.1593/fb)
             FillVariables((off_data + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, 1.0);
         }
     }
@@ -535,28 +536,28 @@ int main(int argc, char* argv[]) // offres total: 42.329/fb
         std::vector<string> names;
         load_files(off_MC_UUBAR_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((off_MC_UUBAR_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, Scale_UUBAR_test * (0.0089348 / 0.364436));
+            FillVariables((off_MC_UUBAR_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, Scale_UUBAR_test * (0.0061593 / 0.364436));
         }
     }
     {
         std::vector<string> names;
         load_files(off_MC_DDBAR_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((off_MC_DDBAR_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, Scale_DDBAR_test * (0.0089348 / 0.364436));
+            FillVariables((off_MC_DDBAR_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, Scale_DDBAR_test * (0.0061593 / 0.364436));
         }
     }
     {
         std::vector<string> names;
         load_files(off_MC_SSBAR_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((off_MC_SSBAR_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, Scale_SSBAR_test * (0.0089348 / 0.364436));
+            FillVariables((off_MC_SSBAR_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, Scale_SSBAR_test * (0.0061593 / 0.364436));
         }
     }
     {
         std::vector<string> names;
         load_files(off_MC_CHARM_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((off_MC_CHARM_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, Scale_CHARM_test* (0.0089348 / 0.364436));
+            FillVariables((off_MC_CHARM_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, Scale_CHARM_test* (0.0061593 / 0.364436));
         }
     }
 
