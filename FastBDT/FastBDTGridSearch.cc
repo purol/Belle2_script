@@ -40,7 +40,7 @@
 # define N_decay_nparticles 3 // # of nu_e, B, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
 
-# define Nvar 40
+# define Nvar 37
 # define DvetoNvar 4
 
 // arXiv:1409.4557v2
@@ -228,20 +228,17 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     tree_data->SetBranchAddress("Btag_KSFWVariables_hso02", &Vars[19]);
     tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[20]);
     tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[21]);
-    tree_data->SetBranchAddress("cleoConeThrust1", &Vars[22]);
-    tree_data->SetBranchAddress("cleoConeThrust2", &Vars[23]);
-    tree_data->SetBranchAddress("extraInfo__boEeclv133__bc", &Vars[24]);
-    tree_data->SetBranchAddress("extraInfo__boNgammav133__bc", &Vars[25]);
-    tree_data->SetBranchAddress("foxWolframR3", &Vars[26]);
-    tree_data->SetBranchAddress("foxWolframR4", &Vars[27]);
-    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[28]);
-    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[29]);
-    tree_data->SetBranchAddress("harmonicMomentThrust4", &Vars[30]);
-    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[31]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[32]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[33]);
-    tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &Vars[34]);
-    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[35]);
+    tree_data->SetBranchAddress("extraInfo__boEeclv133__bc", &Vars[22]);
+    tree_data->SetBranchAddress("extraInfo__boNgammav133__bc", &Vars[23]);
+    tree_data->SetBranchAddress("foxWolframR3", &Vars[24]);
+    tree_data->SetBranchAddress("foxWolframR4", &Vars[25]);
+    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[26]);
+    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[27]);
+    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[28]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[29]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[30]);
+    tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &Vars[31]);
+    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[32]);
 
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &Dc_pvalue_med);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
