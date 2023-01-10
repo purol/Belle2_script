@@ -651,13 +651,13 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
         exit(1);
     }
 
-    if (strcmp(type, "CHG") == 0) {}
-    else if (strcmp(type, "MIX") == 0) {}
-    else if (strcmp(type, "UUBAR") == 0) {}
-    else if (strcmp(type, "DDBAR") == 0) {}
-    else if (strcmp(type, "SSBAR") == 0) {}
-    else if (strcmp(type, "CHARM") == 0) {}
-    else if (strcmp(type, "SIGNAL") == 0) {}
+    if (strcmp(sample, "CHG") == 0) {}
+    else if (strcmp(sample, "MIX") == 0) {}
+    else if (strcmp(sample, "UUBAR") == 0) {}
+    else if (strcmp(sample, "DDBAR") == 0) {}
+    else if (strcmp(sample, "SSBAR") == 0) {}
+    else if (strcmp(sample, "CHARM") == 0) {}
+    else if (strcmp(sample, "SIGNAL") == 0) {}
     else {
         printf("[ERROR] unexpected sample name\n");
         exit(1);
@@ -729,13 +729,13 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
 
     int ArrayBinID = -1;
     
-    if (strcmp(type, "CHG") == 0) ArrayBinID = 0;
-    else if (strcmp(type, "MIX") == 0) ArrayBinID = 1;
-    else if (strcmp(type, "UUBAR") == 0) ArrayBinID = 2;
-    else if (strcmp(type, "DDBAR") == 0) ArrayBinID = 3;
-    else if (strcmp(type, "SSBAR") == 0) ArrayBinID = 4;
-    else if (strcmp(type, "CHARM") == 0) ArrayBinID = 5;
-    else if (strcmp(type, "SIGNAL") == 0) ArrayBinID = 6;
+    if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
+    else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
+    else if (strcmp(sample, "UUBAR") == 0) ArrayBinID = 2;
+    else if (strcmp(sample, "DDBAR") == 0) ArrayBinID = 3;
+    else if (strcmp(sample, "SSBAR") == 0) ArrayBinID = 4;
+    else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
+    else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 6;
 
     for (int i = 0; i < RarityBins; i++) {
         Nevt_nominal[ArrayBinID * RarityBins + i] = Nevt_nominal[ArrayBinID * RarityBins + i] + hist->GetBinContent(i + 1);
@@ -753,13 +753,13 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
         exit(1);
     }
 
-    if (strcmp(type, "CHG") == 0) {}
-    else if (strcmp(type, "MIX") == 0) {}
-    else if (strcmp(type, "UUBAR") == 0) {}
-    else if (strcmp(type, "DDBAR") == 0) {}
-    else if (strcmp(type, "SSBAR") == 0) {}
-    else if (strcmp(type, "CHARM") == 0) {}
-    else if (strcmp(type, "SIGNAL") == 0) {}
+    if (strcmp(sample, "CHG") == 0) {}
+    else if (strcmp(sample, "MIX") == 0) {}
+    else if (strcmp(sample, "UUBAR") == 0) {}
+    else if (strcmp(sample, "DDBAR") == 0) {}
+    else if (strcmp(sample, "SSBAR") == 0) {}
+    else if (strcmp(sample, "CHARM") == 0) {}
+    else if (strcmp(sample, "SIGNAL") == 0) {}
     else {
         printf("[ERROR] unexpected sample name\n");
         exit(1);
@@ -850,13 +850,13 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
 
     int ArrayBinID = -1;
 
-    if (strcmp(type, "CHG") == 0) ArrayBinID = 0;
-    else if (strcmp(type, "MIX") == 0) ArrayBinID = 1;
-    else if (strcmp(type, "UUBAR") == 0) ArrayBinID = 2;
-    else if (strcmp(type, "DDBAR") == 0) ArrayBinID = 3;
-    else if (strcmp(type, "SSBAR") == 0) ArrayBinID = 4;
-    else if (strcmp(type, "CHARM") == 0) ArrayBinID = 5;
-    else if (strcmp(type, "SIGNAL") == 0) ArrayBinID = 6;
+    if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
+    else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
+    else if (strcmp(sample, "UUBAR") == 0) ArrayBinID = 2;
+    else if (strcmp(sample, "DDBAR") == 0) ArrayBinID = 3;
+    else if (strcmp(sample, "SSBAR") == 0) ArrayBinID = 4;
+    else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
+    else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 6;
 
     for (int i = 0; i < RarityBins; i++) {
         Nevt_fluc[ToyNum][ArrayBinID * RarityBins + i] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins + i] + hist->GetBinContent(i + 1);

@@ -213,7 +213,7 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
     13: hhISR
     */
 
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
@@ -426,7 +426,7 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
     13: hhISR
     */
 
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
@@ -651,7 +651,7 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
 }
 
 void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num]) {
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -690,7 +690,7 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 }
 
 void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], const char* included_string) {
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
 
     std::vector<string> names;
     load_files(dirname, &names, included_string);
@@ -746,7 +746,7 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
     13: hhISR
     */
 
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
@@ -980,7 +980,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
     14: signal (B-->Xs J/psi)
     */
 
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
