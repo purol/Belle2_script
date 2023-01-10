@@ -1203,6 +1203,8 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
 void THStack_Jpsi_FBDT_efficiency() {
 
+    ReadPIDFile();
+
     // dirnames
     const char* Jpsi_MC_SIGNAL_before_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_Jpsi/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application";
     const char* Jpsi_MC_CHG_before_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_Jpsi/CHG_analysis/validation_v000/final_output_root_after_MVA_Application";
