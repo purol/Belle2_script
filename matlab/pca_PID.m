@@ -18,7 +18,7 @@ Kaonlatent
 PIDfileID = fopen('PID_toys.txt','r');
 formatSpec = '%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f ';
 sizeP = [105 Inf];
-PionMatrix = fscanf(PIDfileID,formatSpec,sizeP);
+PionMatrix = fscanf(KIDfileID,formatSpec,sizeP);
 PionMatrix = PionMatrix';
 CovPionID = cov(PionMatrix);
 

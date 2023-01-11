@@ -812,16 +812,24 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
             double Correction_PID = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
 
-                std::lognormal_distribution<double> KID_true_distribution(0.0, PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]);
-                std::lognormal_distribution<double> KID_mis_distribution(0.0, PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]);
-                std::lognormal_distribution<double> PID_true_distribution(0.0, PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]);
-                std::lognormal_distribution<double> PID_mis_distribution(0.0, PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]);
+                std::normal_distribution<double> KID_true_distribution(1.0, PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]);
+                std::normal_distribution<double> KID_mis_distribution(1.0, PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]);
+                std::normal_distribution<double> PID_true_distribution(1.0, PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]);
+                std::normal_distribution<double> PID_mis_distribution(1.0, PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]);
 
                 if (IsItKID) {
                     if(std::abs(PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]) < MyEPSILON) Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
-                    else Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID] * KID_true_distribution(generator), temp_N_bin_PID[0][i_PID]); // true KID
+                    else {
+                        double temp_relative_uncertainty = KID_true_distribution(generator);
+                        while(temp_relative_uncertainty < 0.0) temp_relative_uncertainty = KID_true_distribution(generator);
+                        Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID] * temp_relative_uncertainty, temp_N_bin_PID[0][i_PID]); // true KID
+                    }
                     if(std::abs(PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]) < MyEPSILON) Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
-                    else Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID] * KID_mis_distribution(generator), temp_N_bin_PID[1][i_PID]); // mis KID
+                    else {
+                        double temp_relative_uncertainty = KID_mis_distribution(generator);
+                        while (temp_relative_uncertainty < 0.0) temp_relative_uncertainty = KID_mis_distribution(generator);
+                        Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID] * temp_relative_uncertainty, temp_N_bin_PID[1][i_PID]); // mis KID
+                    }
                     Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
                     Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
                 }
@@ -829,9 +837,17 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
                     Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
                     Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
                     if(std::abs(PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]) < MyEPSILON) Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
-                    else Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID] * PID_true_distribution(generator), temp_N_bin_PID[2][i_PID]); // true PID
+                    else {
+                        double temp_relative_uncertainty = PID_true_distribution(generator);
+                        while (temp_relative_uncertainty < 0.0) temp_relative_uncertainty = PID_true_distribution(generator);
+                        Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID] * temp_relative_uncertainty, temp_N_bin_PID[2][i_PID]); // true PID
+                    }
                     if(std::abs(PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]) < MyEPSILON) Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
-                    else Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID] * PID_mis_distribution(generator), temp_N_bin_PID[3][i_PID]); // mis PID
+                    else {
+                        double temp_relative_uncertainty = PID_mis_distribution(generator);
+                        while (temp_relative_uncertainty < 0.0) temp_relative_uncertainty = PID_mis_distribution(generator);
+                        Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID] * temp_relative_uncertainty, temp_N_bin_PID[3][i_PID]); // mis PID
+                    }
                 }
 
             }
