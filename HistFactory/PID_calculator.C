@@ -902,7 +902,7 @@ void ReadPIDFile() {
     double temp_MC_uncertainty_sys_dn;
     double temp_threshold;
 
-    for (int i = 0; i < N_PID_syst; i++) {
+    for (int i = 0; i < N_PID_syst - 1; i++) {
         fscanf(fp_KID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,kaonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[0][i], &PID_correction_stat_uncer[0][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[0][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
         fscanf(fp_KID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,kaonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[1][i], &PID_correction_stat_uncer[1][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[1][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
         fscanf(fp_PID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[2][i], &PID_correction_stat_uncer[2][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[2][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
@@ -934,6 +934,26 @@ void ReadPIDFile() {
         PID_correction_uncer[2][i] = std::sqrt(PID_correction_stat_uncer[2][i] * PID_correction_stat_uncer[2][i] + PID_correction_sys_uncer[2][i] * PID_correction_sys_uncer[2][i]);
         PID_correction_uncer[3][i] = std::sqrt(PID_correction_stat_uncer[3][i] * PID_correction_stat_uncer[3][i] + PID_correction_sys_uncer[3][i] * PID_correction_sys_uncer[3][i]);
     }
+
+    PID_correction[0][N_PID_syst - 1] = 1.0;
+    PID_correction_stat_uncer[0][N_PID_syst - 1] = 0.0;
+    PID_correction_sys_uncer[0][N_PID_syst - 1] = 0.0;
+    PID_correction_uncer[0][N_PID_syst - 1] = 0.0;
+
+    PID_correction[1][N_PID_syst - 1] = 1.0;
+    PID_correction_stat_uncer[1][N_PID_syst - 1] = 0.0;
+    PID_correction_sys_uncer[1][N_PID_syst - 1] = 0.0;
+    PID_correction_uncer[1][N_PID_syst - 1] = 0.0;
+
+    PID_correction[2][N_PID_syst - 1] = 1.0;
+    PID_correction_stat_uncer[2][N_PID_syst - 1] = 0.0;
+    PID_correction_sys_uncer[2][N_PID_syst - 1] = 0.0;
+    PID_correction_uncer[2][N_PID_syst - 1] = 0.0;
+
+    PID_correction[3][N_PID_syst - 1] = 1.0;
+    PID_correction_stat_uncer[3][N_PID_syst - 1] = 0.0;
+    PID_correction_sys_uncer[3][N_PID_syst - 1] = 0.0;
+    PID_correction_uncer[3][N_PID_syst - 1] = 0.0;
 
     fclose(fp_KID_true);
     fclose(fp_KID_mis);
