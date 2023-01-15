@@ -170,7 +170,8 @@ int WorkSpace() {
 	sig_temp.AddHistoSys("pi0_reco_uncer", "Signal_pi0_m", fname, "", "Signal_pi0_p", fname, "");
 	sig_temp.AddHistoSys("track_eff_uncer", "Signal_track_m", fname, "", "Signal_track_p", fname, "");
 	sig_temp.AddHistoSys("KS0_reco_uncer", "Signal_KS0_m", fname, "", "Signal_KS0_p", fname, "");
-	sig_temp.AddHistoSys("KID_eff_uncer", "Signal_KID_m", fname, "", "Signal_KID_p", fname, "");
+	sig_temp.AddShapeSys("Signal_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_KID_uncorrelated", fname, "");
+	sig_temp.AddShapeSys("Signal_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_PID_uncorrelated", fname, "");
 	sig_temp.AddHistoSys("Kff1_uncer", "Signal_Kff1_m", fname, "", "Signal_Kff1_p", fname, "");
 	sig_temp.AddHistoSys("Kff2_uncer", "Signal_Kff2_m", fname, "", "Signal_Kff2_p", fname, "");
 	sig_temp.AddHistoSys("Kff3_uncer", "Signal_Kff3_m", fname, "", "Signal_Kff3_p", fname, "");
@@ -232,7 +233,8 @@ int WorkSpace() {
 	CHG_temp.AddHistoSys("pi0_reco_uncer", "CHG_pi0_m", fname, "", "CHG_pi0_p", fname, "");
 	CHG_temp.AddHistoSys("track_eff_uncer", "CHG_track_m", fname, "", "CHG_track_p", fname, "");
 	CHG_temp.AddHistoSys("KS0_reco_uncer", "CHG_KS0_m", fname, "", "CHG_KS0_p", fname, "");
-	CHG_temp.AddHistoSys("KID_eff_uncer", "CHG_KID_m", fname, "", "CHG_KID_p", fname, "");
+	CHG_temp.AddShapeSys("CHG_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_KID_uncorrelated", fname, "");
+	CHG_temp.AddShapeSys("CHG_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_PID_uncorrelated", fname, "");
 	CHG_temp.AddHistoSys("BDTc_shape_BB", "CHG_BDTc_m", fname, "", "CHG_BDTc_p", fname, "");
     //CHG_temp.AddNormFactor("Norm_CHG_CAL", 1.3, 1.3, 1.3, true);
 	CHG_temp.AddOverallSys("mu_CHG", 0.7, 1.3);
@@ -247,7 +249,8 @@ int WorkSpace() {
 	MIX_temp.AddHistoSys("pi0_reco_uncer", "MIX_pi0_m", fname, "", "MIX_pi0_p", fname, "");
 	MIX_temp.AddHistoSys("track_eff_uncer", "MIX_track_m", fname, "", "MIX_track_p", fname, "");
 	MIX_temp.AddHistoSys("KS0_reco_uncer", "MIX_KS0_m", fname, "", "MIX_KS0_p", fname, "");
-	MIX_temp.AddHistoSys("KID_eff_uncer", "MIX_KID_m", fname, "", "MIX_KID_p", fname, "");
+	MIX_temp.AddShapeSys("MIX_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_KID_uncorrelated", fname, "");
+	MIX_temp.AddShapeSys("MIX_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_PID_uncorrelated", fname, "");
 	MIX_temp.AddHistoSys("BDTc_shape_BB", "MIX_BDTc_m", fname, "", "MIX_BDTc_p", fname, "");
     //MIX_temp.AddNormFactor("Norm_MIX_CAL", 1.3, 1.3, 1.3, true);
 	MIX_temp.AddOverallSys("mu_MIX", 0.7, 1.3);
@@ -261,7 +264,8 @@ int WorkSpace() {
 	UUBAR_temp.AddHistoSys("pi0_reco_uncer", "UUBAR_pi0_m", fname, "", "UUBAR_pi0_p", fname, "");
 	UUBAR_temp.AddHistoSys("track_eff_uncer", "UUBAR_track_m", fname, "", "UUBAR_track_p", fname, "");
 	UUBAR_temp.AddHistoSys("KS0_reco_uncer", "UUBAR_KS0_m", fname, "", "UUBAR_KS0_p", fname, "");
-	UUBAR_temp.AddHistoSys("KID_eff_uncer", "UUBAR_KID_m", fname, "", "UUBAR_KID_p", fname, "");
+	UUBAR_temp.AddShapeSys("UUBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "UUBAR_KID_uncorrelated", fname, "");
+	UUBAR_temp.AddShapeSys("UUBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "UUBAR_PID_uncorrelated", fname, "");
 	UUBAR_temp.AddHistoSys("BDTc_shape_qq", "UUBAR_BDTc_m", fname, "", "UUBAR_BDTc_p", fname, "");
 	UUBAR_temp.AddNormFactor("qq_CAL_UUBAR", 1.1119, 1.1119, 1.1119, true);
 	UUBAR_temp.AddOverallSys("qq_CAL_UUBAR_uncer", 0.9465, 1.0535);
@@ -277,7 +281,8 @@ int WorkSpace() {
 	DDBAR_temp.AddHistoSys("pi0_reco_uncer", "DDBAR_pi0_m", fname, "", "DDBAR_pi0_p", fname, "");
 	DDBAR_temp.AddHistoSys("track_eff_uncer", "DDBAR_track_m", fname, "", "DDBAR_track_p", fname, "");
 	DDBAR_temp.AddHistoSys("KS0_reco_uncer", "DDBAR_KS0_m", fname, "", "DDBAR_KS0_p", fname, "");
-	DDBAR_temp.AddHistoSys("KID_eff_uncer", "DDBAR_KID_m", fname, "", "DDBAR_KID_p", fname, "");
+	DDBAR_temp.AddShapeSys("DDBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "DDBAR_KID_uncorrelated", fname, "");
+	DDBAR_temp.AddShapeSys("DDBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "DDBAR_PID_uncorrelated", fname, "");
 	DDBAR_temp.AddHistoSys("BDTc_shape_qq", "DDBAR_BDTc_m", fname, "", "DDBAR_BDTc_p", fname, "");
 	DDBAR_temp.AddNormFactor("qq_CAL_DDBAR", 1.1119, 1.1119, 1.1119, true);
 	DDBAR_temp.AddOverallSys("qq_CAL_DDBAR_uncer", 0.9465, 1.0535);
@@ -293,7 +298,8 @@ int WorkSpace() {
 	SSBAR_temp.AddHistoSys("pi0_reco_uncer", "SSBAR_pi0_m", fname, "", "SSBAR_pi0_p", fname, "");
 	SSBAR_temp.AddHistoSys("track_eff_uncer", "SSBAR_track_m", fname, "", "SSBAR_track_p", fname, "");
 	SSBAR_temp.AddHistoSys("KS0_reco_uncer", "SSBAR_KS0_m", fname, "", "SSBAR_KS0_p", fname, "");
-	SSBAR_temp.AddHistoSys("KID_eff_uncer", "SSBAR_KID_m", fname, "", "SSBAR_KID_p", fname, "");
+	SSBAR_temp.AddShapeSys("SSBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "SSBAR_KID_uncorrelated", fname, "");
+	SSBAR_temp.AddShapeSys("SSBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "SSBAR_PID_uncorrelated", fname, "");
 	SSBAR_temp.AddHistoSys("BDTc_shape_qq", "SSBAR_BDTc_m", fname, "", "SSBAR_BDTc_p", fname, "");
 	SSBAR_temp.AddNormFactor("qq_CAL_SSBAR", 1.1119, 1.1119, 1.1119, true);
 	SSBAR_temp.AddOverallSys("qq_CAL_SSBAR_uncer", 0.9465, 1.0535);
@@ -309,7 +315,8 @@ int WorkSpace() {
 	CHARM_temp.AddHistoSys("pi0_reco_uncer", "CHARM_pi0_m", fname, "", "CHARM_pi0_p", fname, "");
 	CHARM_temp.AddHistoSys("track_eff_uncer", "CHARM_track_m", fname, "", "CHARM_track_p", fname, "");
 	CHARM_temp.AddHistoSys("KS0_reco_uncer", "CHARM_KS0_m", fname, "", "CHARM_KS0_p", fname, "");
-	CHARM_temp.AddHistoSys("KID_eff_uncer", "CHARM_KID_m", fname, "", "CHARM_KID_p", fname, "");
+	CHARM_temp.AddShapeSys("CHARM_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHARM_KID_uncorrelated", fname, "");
+	CHARM_temp.AddShapeSys("CHARM_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHARM_PID_uncorrelated", fname, "");
 	CHARM_temp.AddHistoSys("BDTc_shape_qq", "CHARM_BDTc_m", fname, "", "CHARM_BDTc_p", fname, "");
 	CHARM_temp.AddNormFactor("qq_CAL_CHARM", 1.1119, 1.1119, 1.1119, true);
 	CHARM_temp.AddOverallSys("qq_CAL_CHARM_uncer", 0.9465, 1.0535);
