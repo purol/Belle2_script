@@ -493,6 +493,7 @@ void ReadPIDsysFile(const char* dirname) {
     for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
     fclose(fp);
 
+    for (int i = 0; i < RarityBins * 7; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
 }
 
 int main(int argc, char* argv[]) {
