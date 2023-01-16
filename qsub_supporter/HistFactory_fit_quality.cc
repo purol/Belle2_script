@@ -160,7 +160,8 @@ int Toy_iter_num = 0.0;
 int LT_iter_num = 0.0;
 
 # define RarityBins 15
-double weight_sys[RarityBins * 7] = { 0.0 };
+double weight_KIDsys[RarityBins * 7] = { 0.0 };
+double weight_PIDsys[RarityBins * 7] = { 0.0 };
 
 std::random_device rd;
 std::default_random_engine generator(rd());
@@ -394,8 +395,15 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
             std::vector<std::string> temp_strings = split(names->at(i), '_');
             bin_index = stoi(temp_strings.back()); // from 0
 
-            std::normal_distribution<double> distribution(1.0, weight_sys[RarityBins * sample_index + bin_index]);
-            w->var(names->at(i).c_str())->setVal(distribution(generator));
+            if (names->at(i).find("KID") != std::string::npos) {
+                std::normal_distribution<double> distribution(1.0, weight_KIDsys[RarityBins * sample_index + bin_index]);
+                w->var(names->at(i).c_str())->setVal(distribution(generator));
+            }
+            else if (names->at(i).find("PID") != std::string::npos) {
+                std::normal_distribution<double> distribution(1.0, weight_PIDsys[RarityBins * sample_index + bin_index]);
+                w->var(names->at(i).c_str())->setVal(distribution(generator));
+            }
+
         }
     }
 
@@ -486,14 +494,18 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
     }
 }
 
-void ReadPIDsysFile(const char* dirname) {
+void ReadPIDuncorrsysFile(const char* dirname_KID, const char* dirname_PID) {
     FILE* fp;
-    fp = fopen(dirname, "r");
 
-    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    fp = fopen(dirname_KID, "r");
+    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_KIDsys[i]);
     fclose(fp);
+    for (int i = 0; i < RarityBins * 7; i++) weight_KIDsys[i] = std::sqrt(weight_KIDsys[i]);
 
-    for (int i = 0; i < RarityBins * 7; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
+    fp = fopen(dirname_PID, "r");
+    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_PIDsys[i]);
+    fclose(fp);
+    for (int i = 0; i < RarityBins * 7; i++) weight_PIDsys[i] = std::sqrt(weight_PIDsys[i]);
 }
 
 int main(int argc, char* argv[]) {
@@ -502,7 +514,7 @@ int main(int argc, char* argv[]) {
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
-    ReadPIDsysFile("");
+    ReadPIDuncorrsysFile("", "");
 
     // argv[1]: {ToyMC|LinearityTest}
     // argv[2]: injected mu when Linearity test
