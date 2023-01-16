@@ -362,7 +362,7 @@ RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, do
 }
 
 std::vector<std::string> split(std::string str, char Delimiter) {
-    istringstream iss(str);
+    std::istringstream iss(str);
     std::string buffer;
 
     std::vector<std::string> result;
