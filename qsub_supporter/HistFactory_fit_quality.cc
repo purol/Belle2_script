@@ -159,17 +159,20 @@ using std::endl;
 int Toy_iter_num = 0.0;
 int LT_iter_num = 0.0;
 
+# define RarityBins 15
+double weight_sys[RarityBins * 7] = { 0.0 };
+
 std::random_device rd;
 std::default_random_engine generator(rd());
 
 std::vector<std::string> Sample_names = {
-    "L_x_Signal_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_CHG_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_MIX_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_UUBAR_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_DDBAR_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_SSBAR_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_CHARM_nominal_channel_overallSyst_x_StatUncert"
+    "L_x_Signal_nominal_channel_overallSyst_x_StatUncert_x_channel_Signal_KID_eff_uncorr_uncer_ShapeSys_x_channel_Signal_PID_eff_uncorr_uncer_ShapeSys",
+    "L_x_CHG_nominal_channel_overallSyst_x_StatUncert_x_channel_CHG_KID_eff_uncorr_uncer_ShapeSys_x_channel_CHG_PID_eff_uncorr_uncer_ShapeSys",
+    "L_x_MIX_nominal_channel_overallSyst_x_StatUncert_x_channel_MIX_KID_eff_uncorr_uncer_ShapeSys_x_channel_MIX_PID_eff_uncorr_uncer_ShapeSys",
+    "L_x_UUBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_UUBAR_KID_eff_uncorr_uncer_ShapeSys_x_channel_UUBAR_PID_eff_uncorr_uncer_ShapeSys",
+    "L_x_DDBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_DDBAR_KID_eff_uncorr_uncer_ShapeSys_x_channel_DDBAR_PID_eff_uncorr_uncer_ShapeSys",
+    "L_x_SSBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_SSBAR_KID_eff_uncorr_uncer_ShapeSys_x_channel_SSBAR_PID_eff_uncorr_uncer_ShapeSys",
+    "L_x_CHARM_nominal_channel_overallSyst_x_StatUncert_x_channel_CHARM_KID_eff_uncorr_uncer_ShapeSys_x_channel_CHARM_PID_eff_uncorr_uncer_ShapeSys"
 };
 
 void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
@@ -376,6 +379,24 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
             std::poisson_distribution<> distribution(norm->getValV());
             w->var(names->at(i).c_str())->setVal(distribution(generator) / norm->getValV());
         }
+        else if ( (names->at(i).find("gamma") != std::string::npos) && (names->at(i).find("uncorr") != std::string::npos) && ((names->at(i).find("KID") != std::string::npos) || (names->at(i).find("PID") != std::string::npos)) ) {
+            int sample_index = -1;
+            int bin_index = -1;
+
+            if (names->at(i).find("CHG") != std::string::npos) sample_index = 0;
+            else if(names->at(i).find("MIX") != std::string::npos) sample_index = 1;
+            else if (names->at(i).find("UUBAR") != std::string::npos) sample_index = 2;
+            else if (names->at(i).find("DDBAR") != std::string::npos) sample_index = 3;
+            else if (names->at(i).find("SSBAR") != std::string::npos) sample_index = 4;
+            else if (names->at(i).find("CHARM") != std::string::npos) sample_index = 5;
+            else if (names->at(i).find("Signal") != std::string::npos) sample_index = 6;
+
+            std::vector<std::string> temp_strings = split(names->at(i), '_');
+            bin_index = stoi(temp_strings.back()); // from 0
+
+            std::normal_distribution<double> distribution(1.0, weight_sys[RarityBins * sample_index + bin_index]);
+            w->var(names->at(i).c_str())->setVal(distribution(generator));
+        }
     }
 
     w->var("mu")->setVal(injected_mu);
@@ -465,11 +486,22 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
     }
 }
 
+void ReadPIDsysFile(const char* dirname) {
+    FILE* fp;
+    fp = fopen(dirname, "r");
+
+    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    fclose(fp);
+
+}
+
 int main(int argc, char* argv[]) {
     RooMsgService::instance().setStreamStatus(1, false);
     RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
 
     RooRandom::randomGenerator()->SetSeed(rd());
+
+    ReadPIDsysFile("");
 
     // argv[1]: {ToyMC|LinearityTest}
     // argv[2]: injected mu when Linearity test

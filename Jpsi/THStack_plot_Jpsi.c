@@ -507,32 +507,32 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
             if (SampleName == "CHG") {
                 numberings->push_back(0);
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = (0.364436 / 0.8); // total 0.8/ab for BB
+                weight_ri = ((0.364436 - 0.002763) / 0.8); // total 0.8/ab for BB
             }
             else if (SampleName == "MIX") {
                 numberings->push_back(1);
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = (0.364436 / 0.8); // total 0.8/ab for BB
+                weight_ri = ((0.364436 - 0.002763) / 0.8); // total 0.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
                 numberings->push_back(2);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = (0.364436 / 1.0); // total 1.0/ab for qq
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             else if (SampleName == "DDBAR") {
                 numberings->push_back(3);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = (0.364436 / 1.0); // total 1.0/ab for qq
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             else if (SampleName == "SSBAR") {
                 numberings->push_back(4);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = (0.364436 / 1.0); // total 1.0/ab for qq
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             else if (SampleName == "CHARM") {
                 numberings->push_back(5);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = (0.364436 / 1.0); // total 1.0/ab for qq
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
@@ -551,7 +551,7 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
                     printf("ERROR 255");
                     exit(1);
                 }
-                weight_ri = (0.364436 / 25.0); // total 25.0/ab
+                weight_ri = ((0.364436 - 0.002763) / 1.8); // total 25.0/ab
             }
             else {
                 printf("undefined job id!\n");
@@ -826,32 +826,32 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             if (SampleName == "CHG") {
                 numberings->push_back(0);
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = (0.364436 / 0.8); // total 0.8/ab for BB
+                weight_ri = ((0.364436 - 0.002763) / 0.8); // total 0.8/ab for BB
             }
             else if (SampleName == "MIX") {
                 numberings->push_back(1);
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = (0.364436 / 0.8); // total 0.8/ab for BB
+                weight_ri = ((0.364436 - 0.002763) / 0.8); // total 0.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
                 numberings->push_back(2);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = (0.364436 / 1.0); // total 1.0/ab for qq
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             else if (SampleName == "DDBAR") {
                 numberings->push_back(3);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = (0.364436 / 1.0); // total 1.0/ab for qq
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             else if (SampleName == "SSBAR") {
                 numberings->push_back(4);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = (0.364436 / 1.0); // total 1.0/ab for qq
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             else if (SampleName == "CHARM") {
                 numberings->push_back(5);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = (0.364436 / 1.0); // total 1.0/ab for qq
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
@@ -1046,27 +1046,27 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = (0.364436 / 0.8); // total 0.8/ab for BB
+                weight_ri = ((0.364436 - 0.002763) / 0.8); // total 0.8/ab for BB
             }
             else if (SampleName == "MIX") {
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = (0.364436 / 0.8); // total 0.8/ab for BB
+                weight_ri = ((0.364436 - 0.002763) / 0.8); // total 0.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = (0.364436 / 1.0); // total 1.0/ab for qq
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             else if (SampleName == "DDBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = (0.364436 / 1.0); // total 1.0/ab for qq
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             else if (SampleName == "SSBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = (0.364436 / 1.0); // total 1.0/ab for qq
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             else if (SampleName == "CHARM") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = (0.364436 / 1.0); // total 1.0/ab for qq
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
