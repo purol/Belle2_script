@@ -6,6 +6,7 @@
 #include <numeric>
 #include <time.h>
 #include <random>
+#include <sstream>
 
 #include "TRandom3.h"
 #include "TCanvas.h"
@@ -358,6 +359,19 @@ RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, do
     }
 
     return minim.save();
+}
+
+std::vector<std::string> split(std::string str, char Delimiter) {
+    istringstream iss(str);
+    std::string buffer;
+
+    std::vector<std::string> result;
+
+    while (getline(iss, buffer, Delimiter)) {
+        result.push_back(buffer);
+    }
+
+    return result;
 }
 
 double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double injected_mu) {
