@@ -1,7 +1,7 @@
 clear all
 format long
 
-N_total_bins = 105;
+N_total_bins = 70;
 N_selected_vectors = 5;
 
 % Kaon ID
@@ -44,8 +44,8 @@ end
 fclose(KIDfileID_w);
 
 % print selected KID info into file
+KIDfileID_w = fopen('KID_selected.txt','w');
 for j = 1:N_selected_vectors
-    KIDfileID_w = fopen('KID_selected.txt','w');
     fprintf(KIDfileID_w,"%1.15f\n", sqrt(Kaonlatent(j)));
     for i = 1:N_total_bins
         temp_eigen_vector = Kaoncoeff(:,j);
@@ -138,8 +138,8 @@ end
 fclose(PIDfileID_w);
 
 % print selected PID info into file
+PIDfileID_w = fopen('PID_selected.txt','w');
 for j = 1:N_selected_vectors
-    PIDfileID_w = fopen('PID_selected.txt','w');
     fprintf(PIDfileID_w,"%1.15f\n", sqrt(Pionlatent(j)));
     for i = 1:N_total_bins
         temp_eigen_vector = Pioncoeff(:,j);
