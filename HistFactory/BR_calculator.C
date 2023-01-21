@@ -863,7 +863,7 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
             if(BR_relative_uncertainty < MyEPSILON) Correction_BR = 1.0;
             else Correction_BR = BR_distribution(generator);
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_BR;
 
             Nevt = Nevt + total_weight;
 
