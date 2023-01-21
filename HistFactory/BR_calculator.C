@@ -198,6 +198,12 @@ using std::to_string;
 std::random_device rd;
 std::default_random_engine generator(rd());
 
+# define N_PID_syst 73
+double PID_correction[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+double PID_correction_stat_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+double PID_correction_sys_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+double PID_correction_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+
 std::vector<double> Evt_experiments;
 std::vector<double> Evt_runs;
 std::vector<double> Evt_events;
@@ -962,8 +968,8 @@ double GetBRRelativeUncertainty(int experiment, int run, int event, int candidat
         exit(1);
     }
 
-    double temp_Relative_uncertainty1 = RelativeUncertainty.at(std::find(DMID.begin(), DMID.end(), temp_Evt_DMID1) - DMID.begin());
-    double temp_Relative_uncertainty2 = RelativeUncertainty.at(std::find(DMID.begin(), DMID.end(), temp_Evt_DMID2) - DMID.begin());
+    double temp_Relative_uncertainty1 = BRuncertainty.RelativeUncertainty.at(std::find(BRuncertainty.DMID.begin(), BRuncertainty.DMID.end(), temp_Evt_DMID1) - BRuncertainty.DMID.begin());
+    double temp_Relative_uncertainty2 = BRuncertainty.RelativeUncertainty.at(std::find(BRuncertainty.DMID.begin(), BRuncertainty.DMID.end(), temp_Evt_DMID2) - BRuncertainty.DMID.begin());
 
     if (temp_Evt_DMID1 == temp_Evt_DMID2) {
         return temp_Relative_uncertainty1 + temp_Relative_uncertainty2;
