@@ -934,7 +934,7 @@ void ReadEvtFile() {
         if (fscanf(fp_MIX_Evt, "%d\n", &temp_DMID1) == EOF) break;
         if (fscanf(fp_MIX_Evt, "%d\n", &temp_DMID2) == EOF) break;
 
-        if ((temp_DMID1 < 100) || (temp_DMID2 < 100)) {
+        if (((temp_DMID1 < 100) && (temp_DMID1 >= 0)) || ((temp_DMID2 < 100) && (temp_DMID2 >= 0)) ) {
             printf("[ReadEvtFile] DMID for MIX is smaller than 100!\n");
             exit(1);
         }
