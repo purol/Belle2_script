@@ -1,7 +1,7 @@
 clear all
 format long
 
-N_total_bins = 70;
+N_total_bins = 105;
 N_selected_vectors = 5;
 
 % Kaon ID

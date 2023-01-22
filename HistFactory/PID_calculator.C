@@ -812,10 +812,10 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
             double Correction_PID = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
 
-                std::normal_distribution<double> KID_true_distribution(1.0, PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]);
-                std::normal_distribution<double> KID_mis_distribution(1.0, PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]);
-                std::normal_distribution<double> PID_true_distribution(1.0, PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]);
-                std::normal_distribution<double> PID_mis_distribution(1.0, PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]);
+                std::lognormal_distribution<double> KID_true_distribution(0.0, PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]);
+                std::lognormal_distribution<double> KID_mis_distribution(0.0, PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]);
+                std::lognormal_distribution<double> PID_true_distribution(0.0, PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]);
+                std::lognormal_distribution<double> PID_mis_distribution(0.0, PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]);
 
                 if (IsItKID) {
                     if(std::abs(PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]) < MyEPSILON) Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
