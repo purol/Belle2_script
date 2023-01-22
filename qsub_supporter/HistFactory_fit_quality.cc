@@ -395,7 +395,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
             std::poisson_distribution<> distribution(norm->getValV());
             w->var(names->at(i).c_str())->setVal(distribution(generator) / norm->getValV());
         }
-        else if ( (names->at(i).find("gamma") != std::string::npos) && (names->at(i).find("uncorr") != std::string::npos) && ((names->at(i).find("KID") != std::string::npos) || (names->at(i).find("PID") != std::string::npos)) ) {
+        else if ( (names->at(i).find("gamma") != std::string::npos) && (names->at(i).find("uncorr") != std::string::npos) ) {
             int sample_index = -1;
             int bin_index = -1;
 
@@ -418,8 +418,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
                 std::normal_distribution<double> distribution(1.0, weight_PIDsys[RarityBins * sample_index + bin_index]);
                 w->var(names->at(i).c_str())->setVal(distribution(generator));
             }
-
-            if (names->at(i).find("BR_uncorr") != std::string::npos) {
+            else if (names->at(i).find("BR_uncorr") != std::string::npos) {
                 std::normal_distribution<double> distribution(1.0, weight_BRsys[RarityBins * sample_index + bin_index]);
                 w->var(names->at(i).c_str())->setVal(distribution(generator));
             }
