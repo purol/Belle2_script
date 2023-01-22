@@ -163,14 +163,15 @@ int LT_iter_num = 0.0;
 # define RarityBins 15
 double weight_KIDsys[RarityBins * 7] = { 0.0 };
 double weight_PIDsys[RarityBins * 7] = { 0.0 };
+double weight_BRsys[RarityBins * 2] = { 0.0 };
 
 std::random_device rd;
 std::default_random_engine generator(rd());
 
 std::vector<std::string> Sample_names = {
     "L_x_Signal_nominal_channel_overallSyst_x_StatUncert_x_channel_Signal_KID_eff_uncorr_uncer_ShapeSys_x_channel_Signal_PID_eff_uncorr_uncer_ShapeSys",
-    "L_x_CHG_nominal_channel_overallSyst_x_StatUncert_x_channel_CHG_KID_eff_uncorr_uncer_ShapeSys_x_channel_CHG_PID_eff_uncorr_uncer_ShapeSys",
-    "L_x_MIX_nominal_channel_overallSyst_x_StatUncert_x_channel_MIX_KID_eff_uncorr_uncer_ShapeSys_x_channel_MIX_PID_eff_uncorr_uncer_ShapeSys",
+    "L_x_CHG_nominal_channel_overallSyst_x_StatUncert_x_channel_CHG_KID_eff_uncorr_uncer_ShapeSys_x_channel_CHG_PID_eff_uncorr_uncer_ShapeSys_x_channel_CHG_BR_uncorr_uncer_ShapeSys",
+    "L_x_MIX_nominal_channel_overallSyst_x_StatUncert_x_channel_MIX_KID_eff_uncorr_uncer_ShapeSys_x_channel_MIX_PID_eff_uncorr_uncer_ShapeSys_x_channel_MIX_BR_uncorr_uncer_ShapeSys",
     "L_x_UUBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_UUBAR_KID_eff_uncorr_uncer_ShapeSys_x_channel_UUBAR_PID_eff_uncorr_uncer_ShapeSys",
     "L_x_DDBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_DDBAR_KID_eff_uncorr_uncer_ShapeSys_x_channel_DDBAR_PID_eff_uncorr_uncer_ShapeSys",
     "L_x_SSBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_SSBAR_KID_eff_uncorr_uncer_ShapeSys_x_channel_SSBAR_PID_eff_uncorr_uncer_ShapeSys",
@@ -418,6 +419,11 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
                 w->var(names->at(i).c_str())->setVal(distribution(generator));
             }
 
+            if (names->at(i).find("BR_uncorr") != std::string::npos) {
+                std::normal_distribution<double> distribution(1.0, weight_BRsys[RarityBins * sample_index + bin_index]);
+                w->var(names->at(i).c_str())->setVal(distribution(generator));
+            }
+
         }
     }
 
@@ -522,13 +528,24 @@ void ReadPIDuncorrsysFile(const char* dirname_KID, const char* dirname_PID) {
     for (int i = 0; i < RarityBins * 7; i++) weight_PIDsys[i] = std::sqrt(weight_PIDsys[i]);
 }
 
+void ReadBRuncorrsysFile(const char* dirname_BR) {
+    FILE* fp;
+
+    fp = fopen(dirname_BR, "r");
+    for (int i = 0; i < RarityBins * 2; i++) fscanf(fp, "%lf\n", &weight_BRsys[i]);
+    fclose(fp);
+    for (int i = 0; i < RarityBins * 2; i++) weight_BRsys[i] = std::sqrt(weight_BRsys[i]);
+
+}
+
 int main(int argc, char* argv[]) {
     RooMsgService::instance().setStreamStatus(1, false);
     RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
-    ReadPIDuncorrsysFile("", "");
+    ReadPIDuncorrsysFile("./KID_cov_all_truncated.txt", "./PID_cov_all_truncated.txt");
+    ReadBRuncorrsysFile("./BR_cov_all_truncated.txt");
 
     // argv[1]: {ToyMC|LinearityTest}
     // argv[2]: injected mu when Linearity test
