@@ -140,7 +140,7 @@ using std::to_string;
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define RarityBins 14
+# define RarityBins 15
 
 int WorkSpace() {
 
@@ -220,7 +220,7 @@ int WorkSpace() {
 	sig_temp.AddHistoSys("mb_uncer", "Signal_mb_m", fname, "", "Signal_mb_p", fname, "");
 	sig_temp.AddHistoSys("transition_uncer", "Signal_transition_m", fname, "", "Signal_transition_p", fname, "");
 	sig_temp.AddHistoSys("mKstar_uncer", "Signal_mKstar_m", fname, "", "Signal_mKstar_p", fname, "");
-	sig_temp.AddOverallSys("FBDT_efficiency_uncer", 0.85, 1.15);
+	sig_temp.AddOverallSys("FBDT_efficiency_uncer", 0.95, 1.05);
 	sig_temp.ActivateStatError();
 	sig_temp.SetNormalizeByTheory(kFALSE);
 	sig_temp.AddNormFactor("mu", expmu, -100.0, 100.0);
@@ -235,9 +235,10 @@ int WorkSpace() {
 	CHG_temp.AddHistoSys("KS0_reco_uncer", "CHG_KS0_m", fname, "", "CHG_KS0_p", fname, "");
 	CHG_temp.AddShapeSys("CHG_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_KID_uncorrelated", fname, "");
 	CHG_temp.AddShapeSys("CHG_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_PID_uncorrelated", fname, "");
+	CHG_temp.AddShapeSys("CHG_BR_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_BR_uncorrelated", fname, "");
 	CHG_temp.AddHistoSys("BDTc_shape_BB", "CHG_BDTc_m", fname, "", "CHG_BDTc_p", fname, "");
     //CHG_temp.AddNormFactor("Norm_CHG_CAL", 1.3, 1.3, 1.3, true);
-	CHG_temp.AddOverallSys("mu_CHG", 0.7, 1.3);
+	CHG_temp.AddOverallSys("mu_CHG", 0.75, 1.25);
 	CHG_temp.ActivateStatError();
 	CHG_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(CHG_temp);
@@ -251,9 +252,10 @@ int WorkSpace() {
 	MIX_temp.AddHistoSys("KS0_reco_uncer", "MIX_KS0_m", fname, "", "MIX_KS0_p", fname, "");
 	MIX_temp.AddShapeSys("MIX_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_KID_uncorrelated", fname, "");
 	MIX_temp.AddShapeSys("MIX_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_PID_uncorrelated", fname, "");
+	MIX_temp.AddShapeSys("MIX_BR_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_BR_uncorrelated", fname, "");
 	MIX_temp.AddHistoSys("BDTc_shape_BB", "MIX_BDTc_m", fname, "", "MIX_BDTc_p", fname, "");
     //MIX_temp.AddNormFactor("Norm_MIX_CAL", 1.3, 1.3, 1.3, true);
-	MIX_temp.AddOverallSys("mu_MIX", 0.7, 1.3);
+	MIX_temp.AddOverallSys("mu_MIX", 0.75, 1.25);
 	MIX_temp.ActivateStatError();
 	MIX_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(MIX_temp);
@@ -267,10 +269,10 @@ int WorkSpace() {
 	UUBAR_temp.AddShapeSys("UUBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "UUBAR_KID_uncorrelated", fname, "");
 	UUBAR_temp.AddShapeSys("UUBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "UUBAR_PID_uncorrelated", fname, "");
 	UUBAR_temp.AddHistoSys("BDTc_shape_qq", "UUBAR_BDTc_m", fname, "", "UUBAR_BDTc_p", fname, "");
-	UUBAR_temp.AddNormFactor("qq_CAL_UUBAR", 1.1119, 1.1119, 1.1119, true);
-	UUBAR_temp.AddOverallSys("qq_CAL_UUBAR_uncer", 0.9465, 1.0535);
+	UUBAR_temp.AddNormFactor("qq_CAL_UUBAR", 0.9444, 0.9444, 0.9444, true);
+	UUBAR_temp.AddOverallSys("qq_CAL_UUBAR_uncer", 0.9247, 1.0753);
     //UUBAR_temp.AddNormFactor("Norm_UUBAR_CAL", 1.3, 1.3, 1.3, true);
-	UUBAR_temp.AddOverallSys("mu_UUBAR", 0.7, 1.3);
+	UUBAR_temp.AddOverallSys("mu_UUBAR", 0.75, 1.25);
 	UUBAR_temp.ActivateStatError();
 	UUBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(UUBAR_temp);
@@ -284,10 +286,10 @@ int WorkSpace() {
 	DDBAR_temp.AddShapeSys("DDBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "DDBAR_KID_uncorrelated", fname, "");
 	DDBAR_temp.AddShapeSys("DDBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "DDBAR_PID_uncorrelated", fname, "");
 	DDBAR_temp.AddHistoSys("BDTc_shape_qq", "DDBAR_BDTc_m", fname, "", "DDBAR_BDTc_p", fname, "");
-	DDBAR_temp.AddNormFactor("qq_CAL_DDBAR", 1.1119, 1.1119, 1.1119, true);
-	DDBAR_temp.AddOverallSys("qq_CAL_DDBAR_uncer", 0.9465, 1.0535);
+	DDBAR_temp.AddNormFactor("qq_CAL_DDBAR", 0.9444, 0.9444, 0.9444, true);
+	DDBAR_temp.AddOverallSys("qq_CAL_DDBAR_uncer", 0.9247, 1.0753);
     //DDBAR_temp.AddNormFactor("Norm_DDBAR_CAL", 1.3, 1.3, 1.3, true);
-	DDBAR_temp.AddOverallSys("mu_DDBAR", 0.7, 1.3);
+	DDBAR_temp.AddOverallSys("mu_DDBAR", 0.75, 1.25);
 	DDBAR_temp.ActivateStatError();
 	DDBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(DDBAR_temp);
@@ -301,10 +303,10 @@ int WorkSpace() {
 	SSBAR_temp.AddShapeSys("SSBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "SSBAR_KID_uncorrelated", fname, "");
 	SSBAR_temp.AddShapeSys("SSBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "SSBAR_PID_uncorrelated", fname, "");
 	SSBAR_temp.AddHistoSys("BDTc_shape_qq", "SSBAR_BDTc_m", fname, "", "SSBAR_BDTc_p", fname, "");
-	SSBAR_temp.AddNormFactor("qq_CAL_SSBAR", 1.1119, 1.1119, 1.1119, true);
-	SSBAR_temp.AddOverallSys("qq_CAL_SSBAR_uncer", 0.9465, 1.0535);
+	SSBAR_temp.AddNormFactor("qq_CAL_SSBAR", 0.9444, 0.9444, 0.9444, true);
+	SSBAR_temp.AddOverallSys("qq_CAL_SSBAR_uncer", 0.9247, 1.0753);
     //SSBAR_temp.AddNormFactor("Norm_SSBAR_CAL", 1.3, 1.3, 1.3, true);
-	SSBAR_temp.AddOverallSys("mu_SSBAR", 0.7, 1.3);
+	SSBAR_temp.AddOverallSys("mu_SSBAR", 0.75, 1.25);
 	SSBAR_temp.ActivateStatError();
 	SSBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(SSBAR_temp);
@@ -318,10 +320,10 @@ int WorkSpace() {
 	CHARM_temp.AddShapeSys("CHARM_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHARM_KID_uncorrelated", fname, "");
 	CHARM_temp.AddShapeSys("CHARM_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHARM_PID_uncorrelated", fname, "");
 	CHARM_temp.AddHistoSys("BDTc_shape_qq", "CHARM_BDTc_m", fname, "", "CHARM_BDTc_p", fname, "");
-	CHARM_temp.AddNormFactor("qq_CAL_CHARM", 1.1119, 1.1119, 1.1119, true);
-	CHARM_temp.AddOverallSys("qq_CAL_CHARM_uncer", 0.9465, 1.0535);
+	CHARM_temp.AddNormFactor("qq_CAL_CHARM", 0.9444, 0.9444, 0.9444, true);
+	CHARM_temp.AddOverallSys("qq_CAL_CHARM_uncer", 0.9247, 1.0753);
     //CHARM_temp.AddNormFactor("Norm_CHARM_CAL", 1.3, 1.3, 1.3, true);
-	CHARM_temp.AddOverallSys("mu_CHARM", 0.7, 1.3);
+	CHARM_temp.AddOverallSys("mu_CHARM", 0.75, 1.25);
 	CHARM_temp.ActivateStatError();
 	CHARM_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(CHARM_temp);
