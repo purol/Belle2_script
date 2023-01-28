@@ -1153,7 +1153,8 @@ void BR_calculator()
     // get relative uncertainty
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 2; j++) {
-            Relative_Uncertainty[i][j] = Nevt_fluc[i][j] / Nevt_nominal[j];
+            if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty[i][j] = 1.0;
+            else Relative_Uncertainty[i][j] = Nevt_fluc[i][j] / Nevt_nominal[j];
         }
     }
     /* ====================================== */

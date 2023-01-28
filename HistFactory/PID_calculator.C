@@ -1130,12 +1130,14 @@ void PID_calculator()
     // get relative uncertainty
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 7; j++) {
-            Relative_Uncertainty_KID[i][j] = Nevt_fluc_KID[i][j] / Nevt_nominal[j];
+            if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty_KID[i][j] = 1.0;
+            else Relative_Uncertainty_KID[i][j] = Nevt_fluc_KID[i][j] / Nevt_nominal[j];
         }
     }
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 7; j++) {
-            Relative_Uncertainty_PID[i][j] = Nevt_fluc_PID[i][j] / Nevt_nominal[j];
+            if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty_PID[i][j] = 1.0;
+            else Relative_Uncertainty_PID[i][j] = Nevt_fluc_PID[i][j] / Nevt_nominal[j];
         }
     }
     /* ====================================== */
