@@ -857,6 +857,110 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
     return;
 }
 
+void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 7], int ToyNum, double weight_var = 1.0) { // get nominal PDF with appropriate correction
+    if (strcmp(type, "Bplus") == 0) {}
+    else if (strcmp(type, "Bzero") == 0) {}
+    else if (strcmp(type, "Continuum") == 0) {}
+    else {
+        printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if (strcmp(sample, "CHG") == 0) {}
+    else if (strcmp(sample, "MIX") == 0) {}
+    else if (strcmp(sample, "UUBAR") == 0) {}
+    else if (strcmp(sample, "DDBAR") == 0) {}
+    else if (strcmp(sample, "SSBAR") == 0) {}
+    else if (strcmp(sample, "CHARM") == 0) {}
+    else if (strcmp(sample, "SIGNAL") == 0) {}
+    else {
+        printf("[ERROR] unexpected sample name\n");
+        exit(1);
+    }
+
+    float MVA_var = 0;
+
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+
+    std::vector<string> names;
+    load_files(dirname, &names);
+
+    double Nevt = 0;
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
+
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+            tree_upsilon->GetEntry(j);
+            tree_Bsig->GetEntry(j);
+            tree_Btag->GetEntry(j);
+
+            double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
+
+            double Correction_pi0 = std::pow(pi0_correction, Npi0);
+            double Correction_FEI = 1.0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID] * PID_correction_fluctuated[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID] * PID_correction_fluctuated[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID] * PID_correction_fluctuated[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID] * PID_correction_fluctuated[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+
+            }
+
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
+
+            Nevt = Nevt + total_weight;
+
+            hist->Fill(MVA_var, total_weight);
+        }
+        input_file->Close();
+
+        printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
+    }
+
+    int ArrayBinID = -1;
+
+    if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
+    else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
+    else if (strcmp(sample, "UUBAR") == 0) ArrayBinID = 2;
+    else if (strcmp(sample, "DDBAR") == 0) ArrayBinID = 3;
+    else if (strcmp(sample, "SSBAR") == 0) ArrayBinID = 4;
+    else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
+    else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 6;
+
+    for (int i = 0; i < RarityBins; i++) {
+        Nevt_fluc[ToyNum][ArrayBinID * RarityBins + i] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins + i] + hist->GetBinContent(i + 1);
+    }
+
+    return;
+}
+
 void ReadPIDFile() {
     const char* KID_true_file = "KaonEff.csv";
     const char* KID_mis_file = "Kaonmis.csv";
@@ -978,6 +1082,28 @@ void FluctuatePIDCorrection(bool IsItKID) {
             if (std::abs(PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]) < MyEPSILON) PID_correction_fluctuated[3][i_PID] = 1.0; // mis PID
             else PID_correction_fluctuated[3][i_PID] = PID_mis_distribution(generator);
         }
+
+    }
+}
+
+void FluctuatePIDCorrection(bool IsItKID) {
+
+    for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+
+        std::lognormal_distribution<double> KID_true_distribution(0.0, PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]);
+        std::lognormal_distribution<double> KID_mis_distribution(0.0, PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]);
+        std::lognormal_distribution<double> PID_true_distribution(0.0, PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]);
+        std::lognormal_distribution<double> PID_mis_distribution(0.0, PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]);
+
+
+            if (std::abs(PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]) < MyEPSILON) PID_correction_fluctuated[0][i_PID] = 1.0; // true KID
+            else PID_correction_fluctuated[0][i_PID] = KID_true_distribution(generator);
+            if (std::abs(PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]) < MyEPSILON) PID_correction_fluctuated[1][i_PID] = 1.0; // mis KID
+            else PID_correction_fluctuated[1][i_PID] = KID_mis_distribution(generator);
+            if (std::abs(PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]) < MyEPSILON) PID_correction_fluctuated[2][i_PID] = 1.0; // true PID
+            else PID_correction_fluctuated[2][i_PID] = PID_true_distribution(generator);
+            if (std::abs(PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]) < MyEPSILON) PID_correction_fluctuated[3][i_PID] = 1.0; // mis PID
+            else PID_correction_fluctuated[3][i_PID] = PID_mis_distribution(generator);
 
     }
 }
