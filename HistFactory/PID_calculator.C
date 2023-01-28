@@ -202,6 +202,7 @@ double PID_correction[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-mi
 double PID_correction_stat_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 double PID_correction_sys_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 double PID_correction_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+double PID_correction_fluctuated[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
 enum DecayMode { // reco level
     B2Kc = 0,
@@ -812,42 +813,17 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
             double Correction_PID = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
 
-                std::lognormal_distribution<double> KID_true_distribution(0.0, PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]);
-                std::lognormal_distribution<double> KID_mis_distribution(0.0, PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]);
-                std::lognormal_distribution<double> PID_true_distribution(0.0, PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]);
-                std::lognormal_distribution<double> PID_mis_distribution(0.0, PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]);
-
                 if (IsItKID) {
-                    if(std::abs(PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]) < MyEPSILON) Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
-                    else {
-                        double temp_relative_uncertainty = KID_true_distribution(generator);
-                        while(temp_relative_uncertainty < 0.0) temp_relative_uncertainty = KID_true_distribution(generator);
-                        Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID] * temp_relative_uncertainty, temp_N_bin_PID[0][i_PID]); // true KID
-                    }
-                    if(std::abs(PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]) < MyEPSILON) Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
-                    else {
-                        double temp_relative_uncertainty = KID_mis_distribution(generator);
-                        while (temp_relative_uncertainty < 0.0) temp_relative_uncertainty = KID_mis_distribution(generator);
-                        Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID] * temp_relative_uncertainty, temp_N_bin_PID[1][i_PID]); // mis KID
-                    }
+                    Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID] * PID_correction_fluctuated[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                    Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID] * PID_correction_fluctuated[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
                     Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
                     Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
                 }
                 else {
                     Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
                     Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
-                    if(std::abs(PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]) < MyEPSILON) Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
-                    else {
-                        double temp_relative_uncertainty = PID_true_distribution(generator);
-                        while (temp_relative_uncertainty < 0.0) temp_relative_uncertainty = PID_true_distribution(generator);
-                        Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID] * temp_relative_uncertainty, temp_N_bin_PID[2][i_PID]); // true PID
-                    }
-                    if(std::abs(PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]) < MyEPSILON) Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
-                    else {
-                        double temp_relative_uncertainty = PID_mis_distribution(generator);
-                        while (temp_relative_uncertainty < 0.0) temp_relative_uncertainty = PID_mis_distribution(generator);
-                        Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID] * temp_relative_uncertainty, temp_N_bin_PID[3][i_PID]); // mis PID
-                    }
+                    Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID] * PID_correction_fluctuated[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                    Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID] * PID_correction_fluctuated[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
                 }
 
             }
@@ -977,6 +953,35 @@ void ReadPIDFile() {
     fclose(fp_PID_mis);
 }
 
+void FluctuatePIDCorrection(bool IsItKID) {
+
+    for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+
+        std::lognormal_distribution<double> KID_true_distribution(0.0, PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]);
+        std::lognormal_distribution<double> KID_mis_distribution(0.0, PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]);
+        std::lognormal_distribution<double> PID_true_distribution(0.0, PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]);
+        std::lognormal_distribution<double> PID_mis_distribution(0.0, PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]);
+
+        if (IsItKID) {
+            if (std::abs(PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]) < MyEPSILON) PID_correction_fluctuated[0][i_PID] = 1.0; // true KID
+            else PID_correction_fluctuated[0][i_PID] = KID_true_distribution(generator);
+            if (std::abs(PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]) < MyEPSILON) PID_correction_fluctuated[1][i_PID] = 1.0; // mis KID
+            else PID_correction_fluctuated[1][i_PID] = KID_mis_distribution(generator);
+            PID_correction_fluctuated[2][i_PID] = 1.0;
+            PID_correction_fluctuated[3][i_PID] = 1.0;
+        }
+        else {
+            PID_correction_fluctuated[0][i_PID] = 1.0;
+            PID_correction_fluctuated[1][i_PID] = 1.0;
+            if (std::abs(PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]) < MyEPSILON) PID_correction_fluctuated[2][i_PID] = 1.0; // true PID
+            else PID_correction_fluctuated[2][i_PID] = PID_true_distribution(generator);
+            if (std::abs(PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]) < MyEPSILON) PID_correction_fluctuated[3][i_PID] = 1.0; // mis PID
+            else PID_correction_fluctuated[3][i_PID] = PID_mis_distribution(generator);
+        }
+
+    }
+}
+
 void PID_calculator()
 {
     ReadPIDFile();
@@ -1064,6 +1069,8 @@ void PID_calculator()
     /* ====================================== */
     // get fluctuated Nevt for KID
     for (int i = 0; i < NToys; i++) {
+        FluctuatePIDCorrection(true);
+
         GetFlucNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Kplus_test);
         temp_hist->Reset();
         GetFlucNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Kplusstar_test);
@@ -1097,6 +1104,8 @@ void PID_calculator()
     /* ====================================== */
     // get fluctuated Nevt for PID
     for (int i = 0; i < NToys; i++) {
+        FluctuatePIDCorrection(false);
+
         GetFlucNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Kplus_test);
         temp_hist->Reset();
         GetFlucNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Kplusstar_test);
