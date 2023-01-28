@@ -215,33 +215,38 @@ std::vector<int> Evt_DMID2s;
 struct _BRuncertainty {
     std::vector<int> DMID;
     std::vector<double> RelativeUncertainty;
+    std::vector<double> BR_correction_fluctuated;
 } BRuncertainty = {
     {
         -1,
+
         0, 1, 2, 3, 4,
-        5, 6, 7, 8,9,
-        10, 11,12,13,14,
-        15, 16,17,18,19,
-        20,
-        100,101,102,103,104,
-        105,106,107,108,109,
-        110,111,112,113,114,
-        115,116,117,118,119,
-        120
+        5, 6, 7, 8, 9,
+        10, 11, 12, 13, 14,
+        15, 16, 17, 18, 19,
+        20, 21, 22, 23, 24,
+
+        100, 101, 102, 103, 104,
+        105, 106, 107, 108, 109,
+        110, 111, 112, 113, 114,
+        115, 116, 117, 118, 119,
+        120, 121, 122
     },
     {
         0,
-        0.03942, 0.03942, 0.03913, 0.03913, 0.13433,
-        0.26316, 0.10638, 0.46667, 0.32468, 0.02778,
-        0.17347, 0.02896, 0.8, 0.71429, 0.22222,
-        1.0, 1.0, 0.11650, 0.14035, 0.20732,
-        0.21053,
-        0.02414, 0.02414, 0.04018, 0.20769, 0.33333,
-        0.04018, 0.15789, 0.15341, 0.13235, 0.05696,
-        0.56140, 0.21905, 0.04744, 0.55, 0.48718,
-        0.03187, 0.11111, 0.1375, 0.21622, 0.07920,
-        0.04545
-    }
+        0.03943, 0.03913, 0.03913, 0.13433, 0.03943,
+        0.02778, 0.26316, 0.46667, 0.02896, 0.80000,
+        0.71429, 0.17347, 0.32468, 0.10638, 0.22222,
+        1.00000, 0.10000, 0.03809, 0.22018, 0.04336,
+        0.11650, 0.29091, 0.21053, 0.07381, 0.16296,
+
+        0.02414, 0.02414, 0.04018, 0.33333, 0.04018,
+        0.20769, 0.15789, 0.13235, 0.15341, 0.56140,
+        0.04745, 0.21905, 0.03187, 0.05696, 0.48718,
+        0.55000, 0.13750, 0.08333, 0.07910, 0.21622,
+        0.04545, 0.11111, 0.07910
+    },
+    {}
 };
 
 enum DecayMode { // reco level
@@ -349,8 +354,8 @@ enum DecayModeMC { // MC level
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define RarityBins 15
-# define NToys 2000
+# define RarityBins 8
+# define NToys 1000
 
 double GetBRRelativeUncertainty(int experiment, int run, int event, int candidate, int ncandidates);
 
@@ -857,11 +862,7 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
                 Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
             }
 
-            double BR_relative_uncertainty = GetBRRelativeUncertainty(__experiment__, __run__, __event__, __candidate__, __ncandidates__);
-            std::lognormal_distribution<double> BR_distribution(0.0, BR_relative_uncertainty);
-            double Correction_BR = 1.0;
-            if(BR_relative_uncertainty < MyEPSILON) Correction_BR = 1.0;
-            else Correction_BR = BR_distribution(generator);
+            double Correction_BR = GetBRRelativeUncertainty(__experiment__, __run__, __event__, __candidate__, __ncandidates__);
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_BR;
 
@@ -968,15 +969,10 @@ double GetBRRelativeUncertainty(int experiment, int run, int event, int candidat
         exit(1);
     }
 
-    double temp_Relative_uncertainty1 = BRuncertainty.RelativeUncertainty.at(std::find(BRuncertainty.DMID.begin(), BRuncertainty.DMID.end(), temp_Evt_DMID1) - BRuncertainty.DMID.begin());
-    double temp_Relative_uncertainty2 = BRuncertainty.RelativeUncertainty.at(std::find(BRuncertainty.DMID.begin(), BRuncertainty.DMID.end(), temp_Evt_DMID2) - BRuncertainty.DMID.begin());
+    double temp_Relative_uncertainty1 = BRuncertainty.BR_correction_fluctuated.at(std::find(BRuncertainty.DMID.begin(), BRuncertainty.DMID.end(), temp_Evt_DMID1) - BRuncertainty.DMID.begin());
+    double temp_Relative_uncertainty2 = BRuncertainty.BR_correction_fluctuated.at(std::find(BRuncertainty.DMID.begin(), BRuncertainty.DMID.end(), temp_Evt_DMID2) - BRuncertainty.DMID.begin());
 
-    if (temp_Evt_DMID1 == temp_Evt_DMID2) {
-        return temp_Relative_uncertainty1 + temp_Relative_uncertainty2;
-    }
-    else {
-        return std::sqrt(temp_Relative_uncertainty1 * temp_Relative_uncertainty1 + temp_Relative_uncertainty2 * temp_Relative_uncertainty2);
-    }
+    return temp_Relative_uncertainty1 * temp_Relative_uncertainty2;
 
 }
 
@@ -1076,6 +1072,24 @@ void ReadPIDFile() {
     fclose(fp_PID_mis);
 }
 
+void FluctuatePIDCorrection() {
+
+    BRuncertainty.BR_correction_fluctuated.clear();
+
+    for (unsigned int i = 0; i < BRuncertainty.RelativeUncertainty.size(); i++) {
+        double Correction_BR = 1.0;
+
+        if (std::abs(BRuncertainty.RelativeUncertainty.at(i)) < MyEPSILON) Correction_BR = 1.0;
+        else {
+            std::lognormal_distribution<double> BR_distribution(0.0, BRuncertainty.RelativeUncertainty.at(i));
+            Correction_BR = BR_distribution(generator);
+        }
+
+        BRuncertainty.BR_correction_fluctuated.push_back(Correction_BR);
+    }
+
+}
+
 void BR_calculator()
 {
     ReadPIDFile();
@@ -1102,7 +1116,7 @@ void BR_calculator()
 
     /* ====================================== */
     // define TH1D for temporary usage
-    TH1D* temp_hist = new TH1D("temp_hist", "temp_hist", RarityBins, 0.7, 1.0);
+    TH1D* temp_hist = new TH1D("temp_hist", "temp_hist", RarityBins, 0.96, 1.0);
     temp_hist->Reset();
     /* ====================================== */
 
@@ -1140,6 +1154,8 @@ void BR_calculator()
     /* ====================================== */
     // get fluctuated Nevt for BR
     for (int i = 0; i < NToys; i++) {
+        FluctuatePIDCorrection();
+
         GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc, i, true, Scale_CHG_test);
         temp_hist->Reset();
         GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc, i, true, Scale_MIX_test);
