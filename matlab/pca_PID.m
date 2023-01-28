@@ -49,9 +49,8 @@ for j = 1:N_selected_vectors
     fprintf(KIDfileID_w,"%1.15f\n", sqrt(Kaonlatent(j)));
     for i = 1:N_total_bins
         temp_eigen_vector = Kaoncoeff(:,j);
-        fprintf(KIDfileID_w,"%1.15f ", temp_eigen_vector(i));
+        fprintf(KIDfileID_w,"%1.15f\n", temp_eigen_vector(i));
     end
-    fprintf(KIDfileID_w,"\n");
 end
 fclose(KIDfileID_w);
 
@@ -143,9 +142,8 @@ for j = 1:N_selected_vectors
     fprintf(PIDfileID_w,"%1.15f\n", sqrt(Pionlatent(j)));
     for i = 1:N_total_bins
         temp_eigen_vector = Pioncoeff(:,j);
-        fprintf(PIDfileID_w,"%1.15f ", temp_eigen_vector(i));
+        fprintf(PIDfileID_w,"%1.15f\n", temp_eigen_vector(i));
     end
-    fprintf(PIDfileID_w,"\n");
 end
 fclose(PIDfileID_w);
 
