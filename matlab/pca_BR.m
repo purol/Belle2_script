@@ -1,8 +1,8 @@
 clear all
 format long
 
-N_total_bins = 30;
-N_selected_vectors = 5;
+N_total_bins = 16;
+N_selected_vectors = 8;
 
 % BR
 BRfileID = fopen('BR_toys.txt','r');
@@ -49,9 +49,8 @@ for j = 1:N_selected_vectors
     fprintf(BRfileID_w,"%1.15f\n", sqrt(BRlatent(j)));
     for i = 1:N_total_bins
         temp_eigen_vector = BRcoeff(:,j);
-        fprintf(BRfileID_w,"%1.15f ", temp_eigen_vector(i));
+        fprintf(BRfileID_w,"%1.15f\n", temp_eigen_vector(i));
     end
-    fprintf(BRfileID_w,"\n");
 end
 fclose(BRfileID_w);
 
