@@ -150,6 +150,18 @@ using std::to_string;
 // BB-counting correction
 # define Scale_BB (387500000.0/(0.361673*(N_BpBp_1invab + N_B0B0_1invab)))
 
+// several constant for systematic uncertainty
+# define KS0_rel_uncertainty 0.6 // %/cm
+# define track_rel_uncertainty 0.69 // %
+# define pi0_correction 0.932
+# define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
+# define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
+// https://indico.belle2.org/event/6872/contributions/37447/attachments/17127/25504/FEIperformance_B2GM.pdf
+# define FEI_cal_Bc 0.679
+# define FEI_cal_Bc_uncertainty (0.017/FEI_cal_Bc) // not percentage. relative uncertainty
+# define FEI_cal_B0 0.713
+# define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
+
 //# define Htransition_Xsu_change (-0.142)
 //# define Htransition_Xsd_change (-0.099)
 //# define Ltransition_Xsu_change (-0.002)
