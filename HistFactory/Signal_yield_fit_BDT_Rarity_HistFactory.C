@@ -1480,22 +1480,22 @@ int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
 
     for (int i = Nentry; i < 2* Nentry; i++) {
         if (IsItKID) {
-            (*CHG_hists)[i] = new TH1D(("CHG_KID_correlated" + std::to_string(i) + "_m").c_str(), ("CHG_KID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*MIX_hists)[i] = new TH1D(("MIX_KID_correlated" + std::to_string(i) + "_m").c_str(), ("MIX_KID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*UUBAR_hists)[i] = new TH1D(("UUBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), ("UUBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*DDBAR_hists)[i] = new TH1D(("DDBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), ("DDBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*SSBAR_hists)[i] = new TH1D(("SSBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), ("SSBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*CHARM_hists)[i] = new TH1D(("CHARM_KID_correlated" + std::to_string(i) + "_m").c_str(), ("CHARM_KID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*SIGNAL_hists)[i] = new TH1D(("Signal_KID_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_KID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*CHG_hists)[i] = new TH1D(("CHG_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*MIX_hists)[i] = new TH1D(("MIX_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("MIX_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*UUBAR_hists)[i] = new TH1D(("UUBAR_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("UUBAR_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*DDBAR_hists)[i] = new TH1D(("DDBAR_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("DDBAR_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*SSBAR_hists)[i] = new TH1D(("SSBAR_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("SSBAR_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*CHARM_hists)[i] = new TH1D(("CHARM_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHARM_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*SIGNAL_hists)[i] = new TH1D(("Signal_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
         }
         else {
-            (*CHG_hists)[i] = new TH1D(("CHG_PID_correlated" + std::to_string(i) + "_m").c_str(), ("CHG_PID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*MIX_hists)[i] = new TH1D(("MIX_PID_correlated" + std::to_string(i) + "_m").c_str(), ("MIX_PID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*UUBAR_hists)[i] = new TH1D(("UUBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), ("UUBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*DDBAR_hists)[i] = new TH1D(("DDBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), ("DDBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*SSBAR_hists)[i] = new TH1D(("SSBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), ("SSBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*CHARM_hists)[i] = new TH1D(("CHARM_PID_correlated" + std::to_string(i) + "_m").c_str(), ("CHARM_PID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*SIGNAL_hists)[i] = new TH1D(("Signal_PID_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_PID_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*CHG_hists)[i] = new TH1D(("CHG_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*MIX_hists)[i] = new TH1D(("MIX_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("MIX_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*UUBAR_hists)[i] = new TH1D(("UUBAR_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("UUBAR_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*DDBAR_hists)[i] = new TH1D(("DDBAR_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("DDBAR_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*SSBAR_hists)[i] = new TH1D(("SSBAR_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("SSBAR_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*CHARM_hists)[i] = new TH1D(("CHARM_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHARM_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*SIGNAL_hists)[i] = new TH1D(("Signal_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
         }
     }
 
@@ -1651,8 +1651,8 @@ int GetBRcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_n
     }
 
     for (int i = Nentry; i < 2 * Nentry; i++) {
-            (*CHG_hists)[i] = new TH1D(("CHG_BR_correlated" + std::to_string(i) + "_m").c_str(), ("CHG_BR_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*MIX_hists)[i] = new TH1D(("MIX_BR_correlated" + std::to_string(i) + "_m").c_str(), ("MIX_BR_correlated" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*CHG_hists)[i] = new TH1D(("CHG_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*MIX_hists)[i] = new TH1D(("MIX_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("MIX_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     fp = fopen(dirname, "r");
