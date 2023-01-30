@@ -1433,7 +1433,7 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
     return Nevt;
 }
 
-int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* UUBAR_nominal_hist, TH1D* DDBAR_nominal_hist, TH1D* SSBAR_nominal_hist, TH1D* CHARM_nominal_hist, TH1D* SIGNAL_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** UUBAR_hists, TH1D*** DDBAR_hists, TH1D*** SSBAR_hists, TH1D*** CHARM_hists, TH1D*** SIGNAL_hists, boos IsItKID) { // get shape sys histogram from txt file
+int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* UUBAR_nominal_hist, TH1D* DDBAR_nominal_hist, TH1D* SSBAR_nominal_hist, TH1D* CHARM_nominal_hist, TH1D* SIGNAL_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** UUBAR_hists, TH1D*** DDBAR_hists, TH1D*** SSBAR_hists, TH1D*** CHARM_hists, TH1D*** SIGNAL_hists, bool IsItKID) { // get shape sys histogram from txt file
     int Nentry = 0; // number of eigen values/vectors
     double eigen_value = 0; // eigen value
     double weight_sys[RarityBins * 7] = { 0.0 }; // eigen vector
@@ -1441,7 +1441,7 @@ int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
     FILE* fp;
     fp = fopen(dirname, "r");
     while (true) {
-        if (fscanf(fp, "%lf\n", eigen_value) == EOF) break;
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
         for (int i = 0; i < RarityBins * 7; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
@@ -1501,7 +1501,7 @@ int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
 
     fp = fopen(dirname, "r");
     for (int i = 0; i < Nentry; i++) {
-        fscanf(fp, "%lf\n", eigen_value);
+        fscanf(fp, "%lf\n", &eigen_value);
         for (int j = 0; j < RarityBins * 7; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
 
         for (int k = 0; k < RarityBins; k++) {
@@ -1634,7 +1634,7 @@ int GetBRcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_n
     FILE* fp;
     fp = fopen(dirname, "r");
     while (true) {
-        if (fscanf(fp, "%lf\n", eigen_value) == EOF) break;
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
         for (int i = 0; i < RarityBins * 2; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
@@ -1657,7 +1657,7 @@ int GetBRcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_n
 
     fp = fopen(dirname, "r");
     for (int i = 0; i < Nentry; i++) {
-        fscanf(fp, "%lf\n", eigen_value);
+        fscanf(fp, "%lf\n", &eigen_value);
         for (int j = 0; j < RarityBins * 2; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
 
         for (int k = 0; k < RarityBins; k++) {
