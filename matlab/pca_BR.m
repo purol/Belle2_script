@@ -91,7 +91,7 @@ BRremaincov = BRcoeff*diag(BRlatent)*BRcoeff';
 
 % print truncated remaining covariance matrix
 BRfileID_w = fopen('BR_cov_remain_truncated.txt','w');
-for i = 1:N_total_bins
+for i = N_selected_vectors + 1:N_total_bins
     fprintf(BRfileID_w,"%1.15f\n",BRremaincov(i,i));
 end
 fclose(BRfileID_w);

@@ -169,13 +169,13 @@ std::random_device rd;
 std::default_random_engine generator(rd());
 
 std::vector<std::string> Sample_names = {
-    "L_x_Signal_nominal_channel_overallSyst_x_StatUncert_x_channel_Signal_KID_eff_uncorr_uncer_ShapeSys_x_channel_Signal_PID_eff_uncorr_uncer_ShapeSys",
-    "L_x_CHG_nominal_channel_overallSyst_x_StatUncert_x_channel_CHG_KID_eff_uncorr_uncer_ShapeSys_x_channel_CHG_PID_eff_uncorr_uncer_ShapeSys_x_channel_CHG_BR_uncorr_uncer_ShapeSys",
-    "L_x_MIX_nominal_channel_overallSyst_x_StatUncert_x_channel_MIX_KID_eff_uncorr_uncer_ShapeSys_x_channel_MIX_PID_eff_uncorr_uncer_ShapeSys_x_channel_MIX_BR_uncorr_uncer_ShapeSys",
-    "L_x_UUBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_UUBAR_KID_eff_uncorr_uncer_ShapeSys_x_channel_UUBAR_PID_eff_uncorr_uncer_ShapeSys",
-    "L_x_DDBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_DDBAR_KID_eff_uncorr_uncer_ShapeSys_x_channel_DDBAR_PID_eff_uncorr_uncer_ShapeSys",
-    "L_x_SSBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_SSBAR_KID_eff_uncorr_uncer_ShapeSys_x_channel_SSBAR_PID_eff_uncorr_uncer_ShapeSys",
-    "L_x_CHARM_nominal_channel_overallSyst_x_StatUncert_x_channel_CHARM_KID_eff_uncorr_uncer_ShapeSys_x_channel_CHARM_PID_eff_uncorr_uncer_ShapeSys"
+    "L_x_Signal_nominal_channel_overallSyst_x_StatUncert",
+    "L_x_CHG_nominal_channel_overallSyst_x_StatUncert",
+    "L_x_MIX_nominal_channel_overallSyst_x_StatUncert",
+    "L_x_UUBAR_nominal_channel_overallSyst_x_StatUncert",
+    "L_x_DDBAR_nominal_channel_overallSyst_x_StatUncert",
+    "L_x_SSBAR_nominal_channel_overallSyst_x_StatUncert",
+    "L_x_CHARM_nominal_channel_overallSyst_x_StatUncert"
 };
 
 void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
@@ -543,8 +543,8 @@ int main(int argc, char* argv[]) {
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
-    ReadPIDuncorrsysFile("./KID_cov_all_truncated.txt", "./PID_cov_all_truncated.txt");
-    ReadBRuncorrsysFile("./BR_cov_all_truncated.txt");
+    //ReadPIDuncorrsysFile("./KID_cov_all_truncated.txt", "./PID_cov_all_truncated.txt");
+    //ReadBRuncorrsysFile("./BR_cov_all_truncated.txt");
 
     // argv[1]: {ToyMC|LinearityTest}
     // argv[2]: injected mu when Linearity test
