@@ -62,13 +62,6 @@ using std::to_string;
 # define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
 # define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
 
-// uncertainty of BR from parametric reason
-# define Sigma_BR_Kplus_nunubar 0.00000019
-# define Sigma_BR_K0star_nunubar 0.00000050
-# define Sigma_BR_K0_nunubar (Sigma_BR_Kplus_nunubar*TB0/TBp)
-# define Sigma_BR_Kplusstar_nunubar (Sigma_BR_K0star_nunubar*TBp/TB0)
-# define Sigma_BR_Xs_nunubar 0.000003
-
 // https://confluence.desy.de/pages/viewpage.action?pageId=107054222
 # define N_BpBp_1invab 565400000.0
 # define N_B0B0_1invab 534600000.0
@@ -80,8 +73,7 @@ using std::to_string;
 # define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
 # define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
 
-# define Lumi_validation_MC 0.3 // ab-1
-
+/*
 // my MC sample number
 # define N_Kplus_nunubar 10000000.0
 # define N_K0_nunubar 10000000.0
@@ -97,17 +89,66 @@ using std::to_string;
 # define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
 # define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
 # define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
+*/
 
-# define KS0_rel_uncertainty 0.6 // %/cm
-# define track_rel_uncertainty 0.69 // %
-# define pi0_correction 0.932
-# define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
-# define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
-// https://indico.belle2.org/event/6872/contributions/37447/attachments/17127/25504/FEIperformance_B2GM.pdf
-# define FEI_cal_Bc 0.679
-# define FEI_cal_Bc_uncertainty (0.017/FEI_cal_Bc) // not percentage. relative uncertainty
-# define FEI_cal_B0 0.713
-# define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
+// SIGNAL MC sample number
+# define N_Kplus_train 7039000.0
+# define N_K0_train 7166624.0
+# define N_Kplusstar_train 7039000.0
+# define N_K0star_train 7166624.0
+# define N_Xsu_nonresonant_train 35195000.0
+# define N_Xsd_nonresonant_train 34940430.0
+# define N_Kplus_test 2961000.0
+# define N_K0_test 2833376.0
+# define N_Kplusstar_test 2961000.0
+# define N_K0star_test 2833376.0
+# define N_Xsu_nonresonant_test 14805000.0
+# define N_Xsd_nonresonant_test 15059570.0
+
+// scale factor for SIGNAL MC sample (364.436 - 2.763 = 361.673/fb)
+# define Scale_Kplus_train (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_train)
+# define Scale_Kplusstar_train (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_train)
+# define Scale_Xsu_nonresonant_train (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_train)
+# define Scale_K0_train (0.361673 * N_K0_nunubar_1invab/N_K0_train)
+# define Scale_K0star_train (0.361673 * N_K0star_nunubar_1invab/N_K0star_train)
+# define Scale_Xsd_nonresonant_train (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_train)
+# define Scale_Kplus_test (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_test)
+# define Scale_Kplusstar_test (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_test)
+# define Scale_Xsu_nonresonant_test (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_test)
+# define Scale_K0_test (0.361673 * N_K0_nunubar_1invab/N_K0_test)
+# define Scale_K0star_test (0.361673 * N_K0star_nunubar_1invab/N_K0star_test)
+# define Scale_Xsd_nonresonant_test (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_test)
+
+// BKG MC sample number (0.8/ab for BB, 1.0/ab for qq)
+# define N_CHG_train 32042497.0
+# define N_MIX_train 24693710.0
+# define N_UUBAR_train 94447089.0
+# define N_DDBAR_train 22664556.0
+# define N_SSBAR_train 19244661.0
+# define N_CHARM_train 107541168.0
+# define N_CHG_test 48052238.0
+# define N_MIX_test 37030486.0
+# define N_UUBAR_test 141671998.0
+# define N_DDBAR_test 34114182.0
+# define N_SSBAR_test 28859338.0
+# define N_CHARM_test 161280679.0
+
+// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb)
+# define Scale_CHG_train (0.361673/((N_CHG_train/(N_CHG_train + N_CHG_test))*0.8+1.0))
+# define Scale_MIX_train (0.361673/((N_MIX_train/(N_MIX_train + N_MIX_test))*0.8+1.0))
+# define Scale_UUBAR_train (0.361673/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_train (0.361673/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_train (0.361673/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_train (0.361673/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_CHG_test (0.361673/((N_CHG_test/(N_CHG_train + N_CHG_test))*0.8+1.0))
+# define Scale_MIX_test (0.361673/((N_MIX_test/(N_MIX_train + N_MIX_test))*0.8+1.0))
+# define Scale_UUBAR_test (0.361673/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
+
+// BB-counting correction
+# define Scale_BB (387500000.0/(0.361673*(N_BpBp_1invab + N_B0B0_1invab)))
 
 //# define Htransition_Xsu_change (-0.142)
 //# define Htransition_Xsd_change (-0.099)
@@ -140,9 +181,51 @@ using std::to_string;
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define RarityBins 15
+# define RarityBins 8
+
+int ReadNPIDEigenVector(const char* dirname) {
+	int Nentry = 0; // number of eigen values/vectors
+	double eigen_value = 0; // eigen value
+	double weight_sys[RarityBins * 7] = { 0.0 }; // eigen vector
+
+	FILE* fp;
+	fp = fopen(dirname, "r");
+	while (true) {
+		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+		for (int i = 0; i < RarityBins * 7; i++) {
+			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+		}
+		Nentry++;
+	}
+	fclose(fp);
+
+	return Nentry;
+}
+
+int ReadNBREigenVector(const char* dirname) {
+	int Nentry = 0; // number of eigen values/vectors
+	double eigen_value = 0; // eigen value
+	double weight_sys[RarityBins * 2] = { 0.0 }; // eigen vector
+
+	FILE* fp;
+	fp = fopen(dirname, "r");
+	while (true) {
+		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+		for (int i = 0; i < RarityBins * 2; i++) {
+			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+		}
+		Nentry++;
+	}
+	fclose(fp);
+
+	return Nentry;
+}
 
 int WorkSpace() {
+
+	int NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
+	int NEntryPID = ReadNPIDEigenVector("./PID_selected.txt");
+	int NEntryBR = ReadNBREigenVector("./BR_selected.txt");
 
 	const double expmu = 1.0;
 	const char* fname = "PDFandDATA.root";
@@ -170,8 +253,10 @@ int WorkSpace() {
 	sig_temp.AddHistoSys("pi0_reco_uncer", "Signal_pi0_m", fname, "", "Signal_pi0_p", fname, "");
 	sig_temp.AddHistoSys("track_eff_uncer", "Signal_track_m", fname, "", "Signal_track_p", fname, "");
 	sig_temp.AddHistoSys("KS0_reco_uncer", "Signal_KS0_m", fname, "", "Signal_KS0_p", fname, "");
-	sig_temp.AddShapeSys("Signal_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_KID_uncorrelated", fname, "");
-	sig_temp.AddShapeSys("Signal_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_PID_uncorrelated", fname, "");
+	for (int i = 0; i < NEntryKID; i++) sig_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("Signal_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryPID; i++) sig_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("Signal_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	//sig_temp.AddShapeSys("Signal_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_KID_uncorrelated", fname, "");
+	//sig_temp.AddShapeSys("Signal_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_PID_uncorrelated", fname, "");
 	sig_temp.AddHistoSys("Kff1_uncer", "Signal_Kff1_m", fname, "", "Signal_Kff1_p", fname, "");
 	sig_temp.AddHistoSys("Kff2_uncer", "Signal_Kff2_m", fname, "", "Signal_Kff2_p", fname, "");
 	sig_temp.AddHistoSys("Kff3_uncer", "Signal_Kff3_m", fname, "", "Signal_Kff3_p", fname, "");
@@ -220,7 +305,9 @@ int WorkSpace() {
 	sig_temp.AddHistoSys("mb_uncer", "Signal_mb_m", fname, "", "Signal_mb_p", fname, "");
 	sig_temp.AddHistoSys("transition_uncer", "Signal_transition_m", fname, "", "Signal_transition_p", fname, "");
 	sig_temp.AddHistoSys("mKstar_uncer", "Signal_mKstar_m", fname, "", "Signal_mKstar_p", fname, "");
-	sig_temp.AddOverallSys("FBDT_efficiency_uncer", 0.95, 1.05);
+	sig_temp.AddOverallSys("FBDT_efficiency_uncer", 0.9, 1.1);
+	sig_temp.AddNormFactor("Norm_BB_counting", Scale_BB, Scale_BB, Scale_BB, true);
+	sig_temp.AddOverallSys("BB_counting_uncer", 0.985, 1.015);
 	sig_temp.ActivateStatError();
 	sig_temp.SetNormalizeByTheory(kFALSE);
 	sig_temp.AddNormFactor("mu", expmu, -100.0, 100.0);
@@ -233,12 +320,17 @@ int WorkSpace() {
 	CHG_temp.AddHistoSys("pi0_reco_uncer", "CHG_pi0_m", fname, "", "CHG_pi0_p", fname, "");
 	CHG_temp.AddHistoSys("track_eff_uncer", "CHG_track_m", fname, "", "CHG_track_p", fname, "");
 	CHG_temp.AddHistoSys("KS0_reco_uncer", "CHG_KS0_m", fname, "", "CHG_KS0_p", fname, "");
-	CHG_temp.AddShapeSys("CHG_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_KID_uncorrelated", fname, "");
-	CHG_temp.AddShapeSys("CHG_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_PID_uncorrelated", fname, "");
-	CHG_temp.AddShapeSys("CHG_BR_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_BR_uncorrelated", fname, "");
+	for (int i = 0; i < NEntryKID; i++) CHG_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("CHG_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryPID; i++) CHG_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("CHG_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryBR; i++) CHG_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("CHG_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	//CHG_temp.AddShapeSys("CHG_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_KID_uncorrelated", fname, "");
+	//CHG_temp.AddShapeSys("CHG_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_PID_uncorrelated", fname, "");
+	//CHG_temp.AddShapeSys("CHG_BR_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_BR_uncorrelated", fname, "");
 	CHG_temp.AddHistoSys("BDTc_shape_BB", "CHG_BDTc_m", fname, "", "CHG_BDTc_p", fname, "");
     //CHG_temp.AddNormFactor("Norm_CHG_CAL", 1.3, 1.3, 1.3, true);
-	CHG_temp.AddOverallSys("mu_CHG", 0.75, 1.25);
+	CHG_temp.AddOverallSys("mu_CHG", 0.7, 1.3);
+	CHG_temp.AddNormFactor("Norm_BB_counting", Scale_BB, Scale_BB, Scale_BB, true);
+	CHG_temp.AddOverallSys("BB_counting_uncer", 0.985, 1.015);
 	CHG_temp.ActivateStatError();
 	CHG_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(CHG_temp);
@@ -250,12 +342,17 @@ int WorkSpace() {
 	MIX_temp.AddHistoSys("pi0_reco_uncer", "MIX_pi0_m", fname, "", "MIX_pi0_p", fname, "");
 	MIX_temp.AddHistoSys("track_eff_uncer", "MIX_track_m", fname, "", "MIX_track_p", fname, "");
 	MIX_temp.AddHistoSys("KS0_reco_uncer", "MIX_KS0_m", fname, "", "MIX_KS0_p", fname, "");
-	MIX_temp.AddShapeSys("MIX_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_KID_uncorrelated", fname, "");
-	MIX_temp.AddShapeSys("MIX_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_PID_uncorrelated", fname, "");
-	MIX_temp.AddShapeSys("MIX_BR_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_BR_uncorrelated", fname, "");
+	for (int i = 0; i < NEntryKID; i++) MIX_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("MIX_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryPID; i++) MIX_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("MIX_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryBR; i++) MIX_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("MIX_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	//MIX_temp.AddShapeSys("MIX_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_KID_uncorrelated", fname, "");
+	//MIX_temp.AddShapeSys("MIX_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_PID_uncorrelated", fname, "");
+	//MIX_temp.AddShapeSys("MIX_BR_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_BR_uncorrelated", fname, "");
 	MIX_temp.AddHistoSys("BDTc_shape_BB", "MIX_BDTc_m", fname, "", "MIX_BDTc_p", fname, "");
     //MIX_temp.AddNormFactor("Norm_MIX_CAL", 1.3, 1.3, 1.3, true);
-	MIX_temp.AddOverallSys("mu_MIX", 0.75, 1.25);
+	MIX_temp.AddOverallSys("mu_MIX", 0.7, 1.3);
+	MIX_temp.AddNormFactor("Norm_BB_counting", Scale_BB, Scale_BB, Scale_BB, true);
+	MIX_temp.AddOverallSys("BB_counting_uncer", 0.985, 1.015);
 	MIX_temp.ActivateStatError();
 	MIX_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(MIX_temp);
@@ -266,13 +363,15 @@ int WorkSpace() {
 	UUBAR_temp.AddHistoSys("pi0_reco_uncer", "UUBAR_pi0_m", fname, "", "UUBAR_pi0_p", fname, "");
 	UUBAR_temp.AddHistoSys("track_eff_uncer", "UUBAR_track_m", fname, "", "UUBAR_track_p", fname, "");
 	UUBAR_temp.AddHistoSys("KS0_reco_uncer", "UUBAR_KS0_m", fname, "", "UUBAR_KS0_p", fname, "");
-	UUBAR_temp.AddShapeSys("UUBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "UUBAR_KID_uncorrelated", fname, "");
-	UUBAR_temp.AddShapeSys("UUBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "UUBAR_PID_uncorrelated", fname, "");
+	for (int i = 0; i < NEntryKID; i++) UUBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryPID; i++) UUBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	//UUBAR_temp.AddShapeSys("UUBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "UUBAR_KID_uncorrelated", fname, "");
+	//UUBAR_temp.AddShapeSys("UUBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "UUBAR_PID_uncorrelated", fname, "");
 	UUBAR_temp.AddHistoSys("BDTc_shape_qq", "UUBAR_BDTc_m", fname, "", "UUBAR_BDTc_p", fname, "");
-	UUBAR_temp.AddNormFactor("qq_CAL_UUBAR", 0.9444, 0.9444, 0.9444, true);
-	UUBAR_temp.AddOverallSys("qq_CAL_UUBAR_uncer", 0.9247, 1.0753);
+	UUBAR_temp.AddNormFactor("qq_CAL_UUBAR", 1.1052, 1.1052, 1.1052, true);
+	UUBAR_temp.AddOverallSys("qq_CAL_UUBAR_uncer", 0.7932, 1.2068);
     //UUBAR_temp.AddNormFactor("Norm_UUBAR_CAL", 1.3, 1.3, 1.3, true);
-	UUBAR_temp.AddOverallSys("mu_UUBAR", 0.75, 1.25);
+	UUBAR_temp.AddOverallSys("mu_UUBAR", 0.7, 1.3);
 	UUBAR_temp.ActivateStatError();
 	UUBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(UUBAR_temp);
@@ -283,13 +382,15 @@ int WorkSpace() {
 	DDBAR_temp.AddHistoSys("pi0_reco_uncer", "DDBAR_pi0_m", fname, "", "DDBAR_pi0_p", fname, "");
 	DDBAR_temp.AddHistoSys("track_eff_uncer", "DDBAR_track_m", fname, "", "DDBAR_track_p", fname, "");
 	DDBAR_temp.AddHistoSys("KS0_reco_uncer", "DDBAR_KS0_m", fname, "", "DDBAR_KS0_p", fname, "");
-	DDBAR_temp.AddShapeSys("DDBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "DDBAR_KID_uncorrelated", fname, "");
-	DDBAR_temp.AddShapeSys("DDBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "DDBAR_PID_uncorrelated", fname, "");
+	for (int i = 0; i < NEntryKID; i++) DDBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryPID; i++) DDBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	//DDBAR_temp.AddShapeSys("DDBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "DDBAR_KID_uncorrelated", fname, "");
+	//DDBAR_temp.AddShapeSys("DDBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "DDBAR_PID_uncorrelated", fname, "");
 	DDBAR_temp.AddHistoSys("BDTc_shape_qq", "DDBAR_BDTc_m", fname, "", "DDBAR_BDTc_p", fname, "");
-	DDBAR_temp.AddNormFactor("qq_CAL_DDBAR", 0.9444, 0.9444, 0.9444, true);
-	DDBAR_temp.AddOverallSys("qq_CAL_DDBAR_uncer", 0.9247, 1.0753);
+	DDBAR_temp.AddNormFactor("qq_CAL_DDBAR", 1.1052, 1.1052, 1.1052, true);
+	DDBAR_temp.AddOverallSys("qq_CAL_DDBAR_uncer", 0.7932, 1.2068);
     //DDBAR_temp.AddNormFactor("Norm_DDBAR_CAL", 1.3, 1.3, 1.3, true);
-	DDBAR_temp.AddOverallSys("mu_DDBAR", 0.75, 1.25);
+	DDBAR_temp.AddOverallSys("mu_DDBAR", 0.7, 1.3);
 	DDBAR_temp.ActivateStatError();
 	DDBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(DDBAR_temp);
@@ -300,13 +401,15 @@ int WorkSpace() {
 	SSBAR_temp.AddHistoSys("pi0_reco_uncer", "SSBAR_pi0_m", fname, "", "SSBAR_pi0_p", fname, "");
 	SSBAR_temp.AddHistoSys("track_eff_uncer", "SSBAR_track_m", fname, "", "SSBAR_track_p", fname, "");
 	SSBAR_temp.AddHistoSys("KS0_reco_uncer", "SSBAR_KS0_m", fname, "", "SSBAR_KS0_p", fname, "");
-	SSBAR_temp.AddShapeSys("SSBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "SSBAR_KID_uncorrelated", fname, "");
-	SSBAR_temp.AddShapeSys("SSBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "SSBAR_PID_uncorrelated", fname, "");
+	for (int i = 0; i < NEntryKID; i++) SSBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryPID; i++) SSBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	//SSBAR_temp.AddShapeSys("SSBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "SSBAR_KID_uncorrelated", fname, "");
+	//SSBAR_temp.AddShapeSys("SSBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "SSBAR_PID_uncorrelated", fname, "");
 	SSBAR_temp.AddHistoSys("BDTc_shape_qq", "SSBAR_BDTc_m", fname, "", "SSBAR_BDTc_p", fname, "");
-	SSBAR_temp.AddNormFactor("qq_CAL_SSBAR", 0.9444, 0.9444, 0.9444, true);
-	SSBAR_temp.AddOverallSys("qq_CAL_SSBAR_uncer", 0.9247, 1.0753);
+	SSBAR_temp.AddNormFactor("qq_CAL_SSBAR", 1.1052, 1.1052, 1.1052, true);
+	SSBAR_temp.AddOverallSys("qq_CAL_SSBAR_uncer", 0.7932, 1.2068);
     //SSBAR_temp.AddNormFactor("Norm_SSBAR_CAL", 1.3, 1.3, 1.3, true);
-	SSBAR_temp.AddOverallSys("mu_SSBAR", 0.75, 1.25);
+	SSBAR_temp.AddOverallSys("mu_SSBAR", 0.7, 1.3);
 	SSBAR_temp.ActivateStatError();
 	SSBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(SSBAR_temp);
@@ -317,13 +420,15 @@ int WorkSpace() {
 	CHARM_temp.AddHistoSys("pi0_reco_uncer", "CHARM_pi0_m", fname, "", "CHARM_pi0_p", fname, "");
 	CHARM_temp.AddHistoSys("track_eff_uncer", "CHARM_track_m", fname, "", "CHARM_track_p", fname, "");
 	CHARM_temp.AddHistoSys("KS0_reco_uncer", "CHARM_KS0_m", fname, "", "CHARM_KS0_p", fname, "");
-	CHARM_temp.AddShapeSys("CHARM_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHARM_KID_uncorrelated", fname, "");
-	CHARM_temp.AddShapeSys("CHARM_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHARM_PID_uncorrelated", fname, "");
+	for (int i = 0; i < NEntryKID; i++) CHARM_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("CHARM_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryPID; i++) CHARM_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("CHARM_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	//CHARM_temp.AddShapeSys("CHARM_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHARM_KID_uncorrelated", fname, "");
+	//CHARM_temp.AddShapeSys("CHARM_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHARM_PID_uncorrelated", fname, "");
 	CHARM_temp.AddHistoSys("BDTc_shape_qq", "CHARM_BDTc_m", fname, "", "CHARM_BDTc_p", fname, "");
-	CHARM_temp.AddNormFactor("qq_CAL_CHARM", 0.9444, 0.9444, 0.9444, true);
-	CHARM_temp.AddOverallSys("qq_CAL_CHARM_uncer", 0.9247, 1.0753);
+	CHARM_temp.AddNormFactor("qq_CAL_CHARM", 1.1052, 1.1052, 1.1052, true);
+	CHARM_temp.AddOverallSys("qq_CAL_CHARM_uncer", 0.7932, 1.2068);
     //CHARM_temp.AddNormFactor("Norm_CHARM_CAL", 1.3, 1.3, 1.3, true);
-	CHARM_temp.AddOverallSys("mu_CHARM", 0.75, 1.25);
+	CHARM_temp.AddOverallSys("mu_CHARM", 0.7, 1.3);
 	CHARM_temp.ActivateStatError();
 	CHARM_temp.SetNormalizeByTheory(kFALSE);
 	channel.AddSample(CHARM_temp);
