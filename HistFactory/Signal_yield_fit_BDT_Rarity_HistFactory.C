@@ -3288,7 +3288,7 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     CHARM_KS0_m->Write();
 
     // Kaon PID uncertainty (correlated)
-    for (int i = 0; i < NPDFs_KID; i++) {
+    for (int i = 0; i < 2 * NPDFs_KID; i++) {
         Signal_KID_correlated[i]->Write();
         CHG_KID_correlated[i]->Write();
         MIX_KID_correlated[i]->Write();
@@ -3308,7 +3308,7 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     //CHARM_KID_uncorrelated->Write();
 
     // Pion PID uncertainty (correlated)
-    for (int i = 0; i < NPDFs_PID; i++) {
+    for (int i = 0; i < 2 * NPDFs_PID; i++) {
         Signal_PID_correlated[i]->Write();
         CHG_PID_correlated[i]->Write();
         MIX_PID_correlated[i]->Write();
@@ -3328,7 +3328,7 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     //CHARM_PID_uncorrelated->Write();
 
     // BB BR uncertainty (correlated)
-    for (int i = 0; i < NPDFs_BR; i++) {
+    for (int i = 0; i < 2 * NPDFs_BR; i++) {
         CHG_BR_correlated[i]->Write();
         MIX_BR_correlated[i]->Write();
     }
