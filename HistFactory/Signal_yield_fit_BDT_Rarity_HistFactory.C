@@ -2557,6 +2557,25 @@ void ReadPIDFile() {
     fclose(fp_PID_mis);
 }
 
+void ClearHist(TH1D* Signal_hist, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* UUBAR_hist, TH1D* DDBAR_hist, TH1D* SSBAR_hist, TH1D* CHARM_hist) {
+    Signal_hist->Reset();
+    CHG_hist->Reset();
+    MIX_hist->Reset();
+    UUBAR_hist->Reset();
+    DDBAR_hist->Reset();
+    SSBAR_hist->Reset();
+    CHARM_hist->Reset();
+}
+
+void AddSQRTHist(TH1D* output_hist, TH1D* input_hist, int Nbin) {
+    for (int i = 0; i < Nbin; i++) {
+        double temp_1 = output_hist->GetBinContent(i + 1);
+        double temp_2 = input_hist->GetBinContent(i + 1);
+        double temp_3 = std::sqrt(temp_1 * temp_1 + temp_2 * temp_2);
+        output_hist->SetBinContent(i + 1, temp_3);
+    }
+}
+
 void Signal_yield_fit_BDT_Rarity_HistFactory()
 {
     ReadPIDFile();
@@ -2648,13 +2667,13 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     TH1D** CHARM_KID_correlated;
 
     // Kaon PID uncertainty (uncorrelated)
-    //TH1D* Signal_KID_uncorrelated = new TH1D("Signal_KID_uncorrelated", "Signal_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
-    //TH1D* CHG_KID_uncorrelated = new TH1D("CHG_KID_uncorrelated", "CHG_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
-    //TH1D* MIX_KID_uncorrelated = new TH1D("MIX_KID_uncorrelated", "MIX_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
-    //TH1D* UUBAR_KID_uncorrelated = new TH1D("UUBAR_KID_uncorrelated", "UUBAR_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
-    //TH1D* DDBAR_KID_uncorrelated = new TH1D("DDBAR_KID_uncorrelated", "DDBAR_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
-    //TH1D* SSBAR_KID_uncorrelated = new TH1D("SSBAR_KID_uncorrelated", "SSBAR_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
-    //TH1D* CHARM_KID_uncorrelated = new TH1D("CHARM_KID_uncorrelated", "CHARM_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_KID_uncorrelated = new TH1D("Signal_KID_uncorrelated", "Signal_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_KID_uncorrelated = new TH1D("CHG_KID_uncorrelated", "CHG_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_KID_uncorrelated = new TH1D("MIX_KID_uncorrelated", "MIX_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_KID_uncorrelated = new TH1D("UUBAR_KID_uncorrelated", "UUBAR_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_KID_uncorrelated = new TH1D("DDBAR_KID_uncorrelated", "DDBAR_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_KID_uncorrelated = new TH1D("SSBAR_KID_uncorrelated", "SSBAR_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_KID_uncorrelated = new TH1D("CHARM_KID_uncorrelated", "CHARM_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // Pion PID uncertainty (correlated)
     TH1D** Signal_PID_correlated;
@@ -2666,21 +2685,21 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     TH1D** CHARM_PID_correlated;
 
     // Pion PID uncertainty (uncorrelated)
-    //TH1D* Signal_PID_uncorrelated = new TH1D("Signal_PID_uncorrelated", "Signal_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
-    //TH1D* CHG_PID_uncorrelated = new TH1D("CHG_PID_uncorrelated", "CHG_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
-    //TH1D* MIX_PID_uncorrelated = new TH1D("MIX_PID_uncorrelated", "MIX_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
-    //TH1D* UUBAR_PID_uncorrelated = new TH1D("UUBAR_PID_uncorrelated", "UUBAR_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
-    //TH1D* DDBAR_PID_uncorrelated = new TH1D("DDBAR_PID_uncorrelated", "DDBAR_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
-    //TH1D* SSBAR_PID_uncorrelated = new TH1D("SSBAR_PID_uncorrelated", "SSBAR_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
-    //TH1D* CHARM_PID_uncorrelated = new TH1D("CHARM_PID_uncorrelated", "CHARM_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_PID_uncorrelated = new TH1D("Signal_PID_uncorrelated", "Signal_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_PID_uncorrelated = new TH1D("CHG_PID_uncorrelated", "CHG_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_PID_uncorrelated = new TH1D("MIX_PID_uncorrelated", "MIX_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_PID_uncorrelated = new TH1D("UUBAR_PID_uncorrelated", "UUBAR_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_PID_uncorrelated = new TH1D("DDBAR_PID_uncorrelated", "DDBAR_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_PID_uncorrelated = new TH1D("SSBAR_PID_uncorrelated", "SSBAR_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_PID_uncorrelated = new TH1D("CHARM_PID_uncorrelated", "CHARM_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // BB BR uncertainty(correlated)
     TH1D** CHG_BR_correlated;
     TH1D** MIX_BR_correlated;
 
     // BB BR uncertainty (uncorrelated)
-    //TH1D* CHG_BR_uncorrelated = new TH1D("CHG_BR_uncorrelated", "CHG_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
-    //TH1D* MIX_BR_uncorrelated = new TH1D("MIX_BR_uncorrelated", "MIX_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_BR_uncorrelated = new TH1D("CHG_BR_uncorrelated", "CHG_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_BR_uncorrelated = new TH1D("MIX_BR_uncorrelated", "MIX_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // K nu nubar form factor
     TH1D* Signal_Kff1_p = new TH1D("Signal_Kff1_p", "Signal_Kff1_p", RarityBins, BinMIN, BinMAX);
@@ -2774,6 +2793,15 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     TH1D* DDBAR_BDTc_m = new TH1D("DDBAR_BDTc_m", "DDBAR_BDTc_m", RarityBins, BinMIN, BinMAX);
     TH1D* SSBAR_BDTc_m = new TH1D("SSBAR_BDTc_m", "SSBAR_BDTc_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_BDTc_m = new TH1D("CHARM_BDTc_m", "CHARM_BDTc_m", RarityBins, BinMIN, BinMAX);
+
+    // all of uncorrelated uncertainties
+    TH1D* Signal_all_uncorrelated = new TH1D("Signal_all_uncorrelated", "Signal_all_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_all_uncorrelated = new TH1D("CHG_all_uncorrelated", "CHG_all_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_all_uncorrelated = new TH1D("MIX_all_uncorrelated", "MIX_all_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_all_uncorrelated = new TH1D("UUBAR_all_uncorrelated", "UUBAR_all_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_all_uncorrelated = new TH1D("DDBAR_all_uncorrelated", "DDBAR_all_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_all_uncorrelated = new TH1D("SSBAR_all_uncorrelated", "SSBAR_all_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_all_uncorrelated = new TH1D("CHARM_all_uncorrelated", "CHARM_all_uncorrelated", RarityBins, BinMIN, BinMAX);
     /* ====================================== */
 
 
@@ -2963,14 +2991,14 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     int NPDFs_PID = GetPIDcorrelatedPDFs(PID_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_nominal, &CHG_PID_correlated, &MIX_PID_correlated, &UUBAR_PID_correlated, &DDBAR_PID_correlated, &SSBAR_PID_correlated, &CHARM_PID_correlated, &Signal_PID_correlated, false);
 
     // get KID uncertainty pdfs (uncorrelated)
-    //GetPIDUncorrelatedPDFs(KID_uncorrelated_info, CHG_KID_uncorrelated, MIX_KID_uncorrelated, UUBAR_KID_uncorrelated, DDBAR_KID_uncorrelated, SSBAR_KID_uncorrelated, CHARM_KID_uncorrelated, Signal_KID_uncorrelated);
-    //GetPIDUncorrelatedPDFs(PID_uncorrelated_info, CHG_PID_uncorrelated, MIX_PID_uncorrelated, UUBAR_PID_uncorrelated, DDBAR_PID_uncorrelated, SSBAR_PID_uncorrelated, CHARM_PID_uncorrelated, Signal_PID_uncorrelated);
+    GetPIDUncorrelatedPDFs(KID_uncorrelated_info, CHG_KID_uncorrelated, MIX_KID_uncorrelated, UUBAR_KID_uncorrelated, DDBAR_KID_uncorrelated, SSBAR_KID_uncorrelated, CHARM_KID_uncorrelated, Signal_KID_uncorrelated);
+    GetPIDUncorrelatedPDFs(PID_uncorrelated_info, CHG_PID_uncorrelated, MIX_PID_uncorrelated, UUBAR_PID_uncorrelated, DDBAR_PID_uncorrelated, SSBAR_PID_uncorrelated, CHARM_PID_uncorrelated, Signal_PID_uncorrelated);
 
     // get BB BR uncertainty pdfs (correlated)
     int NPDFs_BR = GetBRcorrelatedPDFs(BR_correlated_info, CHG_nominal, MIX_nominal, &CHG_BR_correlated, &MIX_BR_correlated);
 
     // get BB BR uncertainty pdfs (uncorrelated)
-    //GetBRUncorrelatedPDFs(BR_uncorrelated_info, CHG_BR_uncorrelated, MIX_BR_uncorrelated);
+    GetBRUncorrelatedPDFs(BR_uncorrelated_info, CHG_BR_uncorrelated, MIX_BR_uncorrelated);
 
     // get Kff uncertainty pdfs
     TH1D* Signal_Kff_temp = new TH1D("Signal_Kff_temp", "Signal_Kff_temp", RarityBins, BinMIN, BinMAX);
@@ -3172,6 +3200,28 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetBDTcPDFs(MC_dirname_DDBAR, DDBAR_BDTc_m, "Continuum", Scale_DDBAR_test);
     GetBDTcPDFs(MC_dirname_SSBAR, SSBAR_BDTc_m, "Continuum", Scale_SSBAR_test);
     GetBDTcPDFs(MC_dirname_CHARM, CHARM_BDTc_m, "Continuum", Scale_CHARM_test);
+
+    // calculate all uncorrelated pdfs
+    ClearHist(Signal_all_uncorrelated, CHG_all_uncorrelated, MIX_all_uncorrelated, UUBAR_all_uncorrelated, DDBAR_all_uncorrelated, SSBAR_all_uncorrelated, CHARM_all_uncorrelated);
+
+    AddSQRTHist(Signal_all_uncorrelated, Signal_KID_uncorrelated, RarityBins);
+    AddSQRTHist(CHG_all_uncorrelated, CHG_KID_uncorrelated, RarityBins);
+    AddSQRTHist(MIX_all_uncorrelated, MIX_KID_uncorrelated, RarityBins);
+    AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_KID_uncorrelated, RarityBins);
+    AddSQRTHist(DDBAR_all_uncorrelated, DDBAR_KID_uncorrelated, RarityBins);
+    AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_KID_uncorrelated, RarityBins);
+    AddSQRTHist(CHARM_all_uncorrelated, CHARM_KID_uncorrelated, RarityBins);
+
+    AddSQRTHist(Signal_all_uncorrelated, Signal_PID_uncorrelated, RarityBins);
+    AddSQRTHist(CHG_all_uncorrelated, CHG_PID_uncorrelated, RarityBins);
+    AddSQRTHist(MIX_all_uncorrelated, MIX_PID_uncorrelated, RarityBins);
+    AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_PID_uncorrelated, RarityBins);
+    AddSQRTHist(DDBAR_all_uncorrelated, DDBAR_PID_uncorrelated, RarityBins);
+    AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_PID_uncorrelated, RarityBins);
+    AddSQRTHist(CHARM_all_uncorrelated, CHARM_PID_uncorrelated, RarityBins);
+
+    AddSQRTHist(CHG_all_uncorrelated, CHG_BR_uncorrelated, RarityBins);
+    AddSQRTHist(MIX_all_uncorrelated, MIX_BR_uncorrelated, RarityBins);
     /* ====================================== */
 
 
@@ -3299,13 +3349,13 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     }
 
     // Kaon PID uncertainty (uncorrelated)
-    //Signal_KID_uncorrelated->Write();
-    //CHG_KID_uncorrelated->Write();
-    //MIX_KID_uncorrelated->Write();
-    //UUBAR_KID_uncorrelated->Write();
-    //DDBAR_KID_uncorrelated->Write();
-    //SSBAR_KID_uncorrelated->Write();
-    //CHARM_KID_uncorrelated->Write();
+    Signal_KID_uncorrelated->Write();
+    CHG_KID_uncorrelated->Write();
+    MIX_KID_uncorrelated->Write();
+    UUBAR_KID_uncorrelated->Write();
+    DDBAR_KID_uncorrelated->Write();
+    SSBAR_KID_uncorrelated->Write();
+    CHARM_KID_uncorrelated->Write();
 
     // Pion PID uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_PID; i++) {
@@ -3319,13 +3369,13 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     }
 
     // Pion PID uncertainty (uncorrelated)
-    //Signal_PID_uncorrelated->Write();
-    //CHG_PID_uncorrelated->Write();
-    //MIX_PID_uncorrelated->Write();
-    //UUBAR_PID_uncorrelated->Write();
-    //DDBAR_PID_uncorrelated->Write();
-    //SSBAR_PID_uncorrelated->Write();
-    //CHARM_PID_uncorrelated->Write();
+    Signal_PID_uncorrelated->Write();
+    CHG_PID_uncorrelated->Write();
+    MIX_PID_uncorrelated->Write();
+    UUBAR_PID_uncorrelated->Write();
+    DDBAR_PID_uncorrelated->Write();
+    SSBAR_PID_uncorrelated->Write();
+    CHARM_PID_uncorrelated->Write();
 
     // BB BR uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_BR; i++) {
@@ -3334,8 +3384,8 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     }
 
     // BB BR uncertainty (uncorrelated)
-    //CHG_BR_uncorrelated->Write();
-    //MIX_BR_uncorrelated->Write();
+    CHG_BR_uncorrelated->Write();
+    MIX_BR_uncorrelated->Write();
 
     // K nu nubar form factor
     Signal_Kff1_p->Write();
@@ -3403,6 +3453,15 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     DDBAR_BDTc_m->Write();
     SSBAR_BDTc_m->Write();
     CHARM_BDTc_m->Write();
+
+    // all uncorrelated uncertainties
+    Signal_all_uncorrelated->Write();
+    CHG_all_uncorrelated->Write(); 
+    MIX_all_uncorrelated->Write(); 
+    UUBAR_all_uncorrelated->Write(); 
+    DDBAR_all_uncorrelated->Write(); 
+    SSBAR_all_uncorrelated->Write(); 
+    CHARM_all_uncorrelated->Write();
 
     total_DATA->Write();
 

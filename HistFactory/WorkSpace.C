@@ -265,8 +265,7 @@ int WorkSpace() {
 	sig_temp.AddHistoSys("KS0_reco_uncer", "Signal_KS0_m", fname, "", "Signal_KS0_p", fname, "");
 	for (int i = 0; i < NEntryKID; i++) sig_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("Signal_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryPID; i++) sig_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("Signal_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	//sig_temp.AddShapeSys("Signal_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_KID_uncorrelated", fname, "");
-	//sig_temp.AddShapeSys("Signal_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_PID_uncorrelated", fname, "");
+	sig_temp.AddShapeSys("Signal_all_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_all_uncorrelated", fname, "");
 	sig_temp.AddHistoSys("Kff1_uncer", "Signal_Kff1_m", fname, "", "Signal_Kff1_p", fname, "");
 	sig_temp.AddHistoSys("Kff2_uncer", "Signal_Kff2_m", fname, "", "Signal_Kff2_p", fname, "");
 	sig_temp.AddHistoSys("Kff3_uncer", "Signal_Kff3_m", fname, "", "Signal_Kff3_p", fname, "");
@@ -333,9 +332,7 @@ int WorkSpace() {
 	for (int i = 0; i < NEntryKID; i++) CHG_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("CHG_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryPID; i++) CHG_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("CHG_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryBR; i++) CHG_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("CHG_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	//CHG_temp.AddShapeSys("CHG_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_KID_uncorrelated", fname, "");
-	//CHG_temp.AddShapeSys("CHG_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_PID_uncorrelated", fname, "");
-	//CHG_temp.AddShapeSys("CHG_BR_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_BR_uncorrelated", fname, "");
+	CHG_temp.AddShapeSys("CHG_all_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_all_uncorrelated", fname, "");
 	CHG_temp.AddHistoSys("BDTc_shape_BB", "CHG_BDTc_m", fname, "", "CHG_BDTc_p", fname, "");
     //CHG_temp.AddNormFactor("Norm_CHG_CAL", 1.3, 1.3, 1.3, true);
 	CHG_temp.AddOverallSys("mu_CHG", 0.7, 1.3);
@@ -355,9 +352,7 @@ int WorkSpace() {
 	for (int i = 0; i < NEntryKID; i++) MIX_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("MIX_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryPID; i++) MIX_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("MIX_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryBR; i++) MIX_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("MIX_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	//MIX_temp.AddShapeSys("MIX_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_KID_uncorrelated", fname, "");
-	//MIX_temp.AddShapeSys("MIX_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_PID_uncorrelated", fname, "");
-	//MIX_temp.AddShapeSys("MIX_BR_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_BR_uncorrelated", fname, "");
+	MIX_temp.AddShapeSys("MIX_all_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_all_uncorrelated", fname, "");
 	MIX_temp.AddHistoSys("BDTc_shape_BB", "MIX_BDTc_m", fname, "", "MIX_BDTc_p", fname, "");
     //MIX_temp.AddNormFactor("Norm_MIX_CAL", 1.3, 1.3, 1.3, true);
 	MIX_temp.AddOverallSys("mu_MIX", 0.7, 1.3);
@@ -375,8 +370,7 @@ int WorkSpace() {
 	UUBAR_temp.AddHistoSys("KS0_reco_uncer", "UUBAR_KS0_m", fname, "", "UUBAR_KS0_p", fname, "");
 	for (int i = 0; i < NEntryKID; i++) UUBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryPID; i++) UUBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	//UUBAR_temp.AddShapeSys("UUBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "UUBAR_KID_uncorrelated", fname, "");
-	//UUBAR_temp.AddShapeSys("UUBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "UUBAR_PID_uncorrelated", fname, "");
+	UUBAR_temp.AddShapeSys("UUBAR_all_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "UUBAR_all_uncorrelated", fname, "");
 	UUBAR_temp.AddHistoSys("BDTc_shape_qq", "UUBAR_BDTc_m", fname, "", "UUBAR_BDTc_p", fname, "");
 	UUBAR_temp.AddNormFactor("qq_CAL_UUBAR", 1.1052, 1.1052, 1.1052, true);
 	UUBAR_temp.AddOverallSys("qq_CAL_UUBAR_uncer", 0.7932, 1.2068);
@@ -394,8 +388,7 @@ int WorkSpace() {
 	DDBAR_temp.AddHistoSys("KS0_reco_uncer", "DDBAR_KS0_m", fname, "", "DDBAR_KS0_p", fname, "");
 	for (int i = 0; i < NEntryKID; i++) DDBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryPID; i++) DDBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	//DDBAR_temp.AddShapeSys("DDBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "DDBAR_KID_uncorrelated", fname, "");
-	//DDBAR_temp.AddShapeSys("DDBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "DDBAR_PID_uncorrelated", fname, "");
+	DDBAR_temp.AddShapeSys("DDBAR_all_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "DDBAR_all_uncorrelated", fname, "");
 	DDBAR_temp.AddHistoSys("BDTc_shape_qq", "DDBAR_BDTc_m", fname, "", "DDBAR_BDTc_p", fname, "");
 	DDBAR_temp.AddNormFactor("qq_CAL_DDBAR", 1.1052, 1.1052, 1.1052, true);
 	DDBAR_temp.AddOverallSys("qq_CAL_DDBAR_uncer", 0.7932, 1.2068);
@@ -413,8 +406,7 @@ int WorkSpace() {
 	SSBAR_temp.AddHistoSys("KS0_reco_uncer", "SSBAR_KS0_m", fname, "", "SSBAR_KS0_p", fname, "");
 	for (int i = 0; i < NEntryKID; i++) SSBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryPID; i++) SSBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	//SSBAR_temp.AddShapeSys("SSBAR_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "SSBAR_KID_uncorrelated", fname, "");
-	//SSBAR_temp.AddShapeSys("SSBAR_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "SSBAR_PID_uncorrelated", fname, "");
+	SSBAR_temp.AddShapeSys("SSBAR_all_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "SSBAR_all_uncorrelated", fname, "");
 	SSBAR_temp.AddHistoSys("BDTc_shape_qq", "SSBAR_BDTc_m", fname, "", "SSBAR_BDTc_p", fname, "");
 	SSBAR_temp.AddNormFactor("qq_CAL_SSBAR", 1.1052, 1.1052, 1.1052, true);
 	SSBAR_temp.AddOverallSys("qq_CAL_SSBAR_uncer", 0.7932, 1.2068);
@@ -432,8 +424,7 @@ int WorkSpace() {
 	CHARM_temp.AddHistoSys("KS0_reco_uncer", "CHARM_KS0_m", fname, "", "CHARM_KS0_p", fname, "");
 	for (int i = 0; i < NEntryKID; i++) CHARM_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("CHARM_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryPID; i++) CHARM_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("CHARM_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	//CHARM_temp.AddShapeSys("CHARM_KID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHARM_KID_uncorrelated", fname, "");
-	//CHARM_temp.AddShapeSys("CHARM_PID_eff_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHARM_PID_uncorrelated", fname, "");
+	CHARM_temp.AddShapeSys("CHARM_all_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "CHARM_all_uncorrelated", fname, "");
 	CHARM_temp.AddHistoSys("BDTc_shape_qq", "CHARM_BDTc_m", fname, "", "CHARM_BDTc_p", fname, "");
 	CHARM_temp.AddNormFactor("qq_CAL_CHARM", 1.1052, 1.1052, 1.1052, true);
 	CHARM_temp.AddOverallSys("qq_CAL_CHARM_uncer", 0.7932, 1.2068);
