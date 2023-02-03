@@ -169,13 +169,13 @@ std::random_device rd;
 std::default_random_engine generator(rd());
 
 std::vector<std::string> Sample_names = {
-    "L_x_Signal_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_CHG_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_MIX_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_UUBAR_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_DDBAR_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_SSBAR_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_CHARM_nominal_channel_overallSyst_x_StatUncert"
+    "L_x_Signal_nominal_channel_overallSyst_x_StatUncert_x_channel_Signal_all_uncorr_uncer_ShapeSys",
+    "L_x_CHG_nominal_channel_overallSyst_x_StatUncert_x_channel_CHG_all_uncorr_uncer_ShapeSys",
+    "L_x_MIX_nominal_channel_overallSyst_x_StatUncert_x_channel_MIX_all_uncorr_uncer_ShapeSys",
+    "L_x_UUBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_UUBAR_all_uncorr_uncer_ShapeSys",
+    "L_x_DDBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_DDBAR_all_uncorr_uncer_ShapeSys",
+    "L_x_SSBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_SSBAR_all_uncorr_uncer_ShapeSys",
+    "L_x_CHARM_nominal_channel_overallSyst_x_StatUncert_x_channel_CHARM_all_uncorr_uncer_ShapeSys"
 };
 
 void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
@@ -410,16 +410,14 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
             std::vector<std::string> temp_strings = split(names->at(i), '_');
             bin_index = stoi(temp_strings.back()); // from 0
 
-            if (names->at(i).find("KID") != std::string::npos) {
-                std::normal_distribution<double> distribution(1.0, weight_KIDsys[RarityBins * sample_index + bin_index]);
-                w->var(names->at(i).c_str())->setVal(distribution(generator));
-            }
-            else if (names->at(i).find("PID") != std::string::npos) {
-                std::normal_distribution<double> distribution(1.0, weight_PIDsys[RarityBins * sample_index + bin_index]);
-                w->var(names->at(i).c_str())->setVal(distribution(generator));
-            }
-            else if (names->at(i).find("BR_uncorr") != std::string::npos) {
-                std::normal_distribution<double> distribution(1.0, weight_BRsys[RarityBins * sample_index + bin_index]);
+            if (names->at(i).find("all") != std::string::npos) {
+                double KID_uncertainty = weight_KIDsys[RarityBins * sample_index + bin_index];
+                double PID_uncertainty = weight_PIDsys[RarityBins * sample_index + bin_index];
+                double BR_uncertainty = 0.0;
+                if ((names->at(i).find("CHG") != std::string::npos) || (names->at(i).find("MIX") != std::string::npos)) BR_uncertainty = weight_BRsys[RarityBins * sample_index + bin_index];
+                
+                double total_uncertainty = std::sqrt(KID_uncertainty * KID_uncertainty + PID_uncertainty * PID_uncertainty + BR_uncertainty * BR_uncertainty);
+                std::normal_distribution<double> distribution(1.0, total_uncertainty);
                 w->var(names->at(i).c_str())->setVal(distribution(generator));
             }
 
@@ -543,8 +541,8 @@ int main(int argc, char* argv[]) {
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
-    //ReadPIDuncorrsysFile("./KID_cov_all_truncated.txt", "./PID_cov_all_truncated.txt");
-    //ReadBRuncorrsysFile("./BR_cov_all_truncated.txt");
+    ReadPIDuncorrsysFile("./KID_cov_remain_truncated.txt", "./PID_cov_remain_truncated.txt");
+    ReadBRuncorrsysFile("./BR_cov_remain_truncated.txt");
 
     // argv[1]: {ToyMC|LinearityTest}
     // argv[2]: injected mu when Linearity test

@@ -1,8 +1,8 @@
 clear all
 format long
 
-N_total_bins = 16;
-N_selected_vectors =8;
+N_total_bins = 10;
+N_selected_vectors = 7;
 
 % BR
 BRfileID = fopen('BR_toys.txt','r');
@@ -91,7 +91,7 @@ BRremaincov = BRcoeff*diag(BRlatent)*BRcoeff';
 
 % print truncated remaining covariance matrix
 BRfileID_w = fopen('BR_cov_remain_truncated.txt','w');
-for i = N_selected_vectors + 1:N_total_bins
+for i = 1:N_total_bins
     fprintf(BRfileID_w,"%1.15f\n",BRremaincov(i,i));
 end
 fclose(BRfileID_w);

@@ -1,8 +1,8 @@
 clear all
 format long
 
-N_total_bins = 56;
-N_selected_vectors = 25;
+N_total_bins = 35;
+N_selected_vectors = 20;
 
 % Kaon ID
 KIDfileID = fopen('KID_toys.txt','r');
@@ -91,7 +91,7 @@ Kaonremaincov = Kaoncoeff*diag(Kaonlatent)*Kaoncoeff';
 
 % print truncated remaining covariance matrix
 KIDfileID_w = fopen('KID_cov_remain_truncated.txt','w');
-for i = N_selected_vectors + 1:N_total_bins
+for i = 1:N_total_bins
     fprintf(KIDfileID_w,"%1.15f\n",Kaonremaincov(i,i));
 end
 fclose(KIDfileID_w);
@@ -184,7 +184,7 @@ Pionremaincov = Pioncoeff*diag(Pionlatent)*Pioncoeff';
 
 % print truncated remaining covariance matrix
 PIDfileID_w = fopen('PID_cov_remain_truncated.txt','w');
-for i = N_selected_vectors + 1:N_total_bins
+for i = 1:N_total_bins
     fprintf(PIDfileID_w,"%1.15f\n",Pionremaincov(i,i));
 end
 fclose(PIDfileID_w);
