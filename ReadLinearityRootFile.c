@@ -60,7 +60,7 @@ void ReadLinearityRootFile(){
             double out_mu;
             Nentry = temp_tree->GetEntries();
 
-            temp_tree->SetBranchAddress("mu", &out_mu);
+            temp_tree->SetBranchAddress("mu_value", &out_mu);
 
             for (unsigned int j = 0; j < Nentry; j++) { // Fill
                 temp_tree->GetEntry(j);
