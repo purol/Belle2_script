@@ -67,7 +67,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define Nvar_num 1
 
-# define CAL 1.1728
+# define CAL 1.0
 # define CAL_qq 1.0
 # define Stream 0.25
 
@@ -120,7 +120,7 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
 }
 
 void LetsFill(const char* dirname, TH1D* hist, double weight = 1.0) {
-    double var = 0.0;
+    float var = 0.0;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -143,7 +143,7 @@ void LetsFill(const char* dirname, TH1D* hist, double weight = 1.0) {
             tree_Btag->GetEntry(j);
 
             double total_weight = weight * CAL;
-            hist->push_back(var, total_weight);
+            hist->Fill(var, total_weight);
         }
         input_file->Close();
 
@@ -207,8 +207,11 @@ void THStack_plot_embedded_FBDT() {
 
     TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
+    MC_embedded->SetFillStyle(3004);
+    MC_embedded->SetLineColor(kBlue);
+    MC_embedded->SetFillColor(kBlue);
     MC_embedded->Draw("Hist");
-    data_embedded->Draw("SAME eP");
+    data_embedded->SetLineWidth(2); data_embedded->SetLineColor(kBlack); data_embedded->SetMarkerStyle(8); data_embedded->Draw("SAME eP");
 
     TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str()); pt->Draw();
 
