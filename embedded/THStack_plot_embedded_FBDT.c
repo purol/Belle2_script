@@ -198,8 +198,8 @@ void THStack_plot_embedded_FBDT() {
 
     const char* Embedded_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/data";
 
-    TH1D* MC_embedded = new TH1D("embedded_MC", "embedded_MC", 30, 0.0, 1.0);
-    TH1D* data_embedded = new TH1D("embedded_data", "embedded_data", 30, 0.0, 1.0);
+    TH1D* MC_embedded = new TH1D("embedded_MC", "MC", 30, 0.0, 1.0);
+    TH1D* data_embedded = new TH1D("embedded_data", "data", 30, 0.0, 1.0);
 
     LetsFill(Embedded_MC_CHGMIX_dirname, MC_embedded, 0.361673 / 2.8);
     LetsFill(Embedded_MC_UDSCHARM_dirname, MC_embedded, 0.361673 / 1.0);
@@ -213,7 +213,12 @@ void THStack_plot_embedded_FBDT() {
     MC_embedded->Draw("Hist");
     data_embedded->SetLineWidth(2); data_embedded->SetLineColor(kBlack); data_embedded->SetMarkerStyle(8); data_embedded->Draw("SAME eP");
 
+    TLegend* legend = pad1->BuildLegend(0.9, 0.9, 0.7, 0.7);
+    legend->SetFillStyle(0); legend->SetLineWidth(0);
+
     TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str()); pt->Draw();
+
+    MC_embedded->SetStats(FALSE);
 
     c_temp->SaveAs("embedded.png");
 
