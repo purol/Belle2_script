@@ -207,6 +207,10 @@ void THStack_plot_embedded_FBDT() {
 
     TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
+    TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
+    pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
+    pad1->SetGridx(); pad1->Draw(); pad1->cd();
+
     MC_embedded->SetFillStyle(3004);
     MC_embedded->SetLineColor(kBlue);
     MC_embedded->SetFillColor(kBlue);
@@ -218,7 +222,7 @@ void THStack_plot_embedded_FBDT() {
 
     TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str()); pt->Draw();
 
-    MC_embedded->SetStats(FALSE);
+    MC_embedded->SetStats(false);
 
     c_temp->SaveAs("embedded.png");
 
