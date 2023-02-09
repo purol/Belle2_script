@@ -110,7 +110,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
 
-# define Nvar_num 88
+# define Nvar_num 90
 
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
@@ -260,6 +260,7 @@ void THStack_plot() {
     variable_names.push_back("Btag_cosTBTO"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso00"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso01"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso02"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso03"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso04"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso10"); branch_names.push_back("Btag");
@@ -279,6 +280,7 @@ void THStack_plot() {
     variable_names.push_back("Bsig_cosTBTO"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_KSFWVariables_hso00"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_KSFWVariables_hso01"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso02"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_KSFWVariables_hso03"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_KSFWVariables_hso04"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_KSFWVariables_hso10"); branch_names.push_back("Bsig");
