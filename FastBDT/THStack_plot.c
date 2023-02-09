@@ -110,7 +110,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
 
-# define Nvar_num 84
+# define Nvar_num 88
 
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
@@ -266,7 +266,9 @@ void THStack_plot() {
     variable_names.push_back("Btag_KSFWVariables_hso14"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso24"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo1"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hoo2"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo3"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hoo4"); branch_names.push_back("Btag");
     variable_names.push_back("roeEextra__bocleanMask__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("extraInfo__boEeclv133__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("extraInfo__boNgammav133__bc"); branch_names.push_back("Upsilon");
@@ -283,7 +285,9 @@ void THStack_plot() {
     variable_names.push_back("Bsig_KSFWVariables_hso14"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_KSFWVariables_hso24"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_KSFWVariables_hoo1"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo2"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_KSFWVariables_hoo3"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo4"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_M"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_useCMSFrame_pt"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_useCMSFrame_p"); branch_names.push_back("Bsig");
