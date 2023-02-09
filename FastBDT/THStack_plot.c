@@ -494,7 +494,7 @@ void THStack_plot() {
         Stack[k]->Draw("pfc Hist"); SIGNAL_hist[k]->Draw("HistSAME");
         TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.7, 0.7);
         //gPad->BuildLegend();
-        legend->SetFillStyle(0);
+        legend->SetFillStyle(0); legend->SetLineWidth(0);
         c_temp->SaveAs((variable_names.at(k)+".png").c_str());
 
         delete c_temp;
