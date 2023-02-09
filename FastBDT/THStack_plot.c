@@ -36,6 +36,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
 # define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
 
+/*
 // my MC sample number
 # define N_Kplus_nunubar 10000000.0
 # define N_K0_nunubar 10000000.0
@@ -51,8 +52,65 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
 # define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
 # define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
+*/
 
-# define Nvar_num 65
+// SIGNAL MC sample number
+# define N_Kplus_train 7039000.0
+# define N_K0_train 7166624.0
+# define N_Kplusstar_train 7039000.0
+# define N_K0star_train 7166624.0
+# define N_Xsu_nonresonant_train 35195000.0
+# define N_Xsd_nonresonant_train 34940430.0
+# define N_Kplus_test 2961000.0
+# define N_K0_test 2833376.0
+# define N_Kplusstar_test 2961000.0
+# define N_K0star_test 2833376.0
+# define N_Xsu_nonresonant_test 14805000.0
+# define N_Xsd_nonresonant_test 15059570.0
+
+// scale factor for SIGNAL MC sample (364.436 - 2.763 = 361.673/fb)
+# define Scale_Kplus_train (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_train)
+# define Scale_Kplusstar_train (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_train)
+# define Scale_Xsu_nonresonant_train (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_train)
+# define Scale_K0_train (0.361673 * N_K0_nunubar_1invab/N_K0_train)
+# define Scale_K0star_train (0.361673 * N_K0star_nunubar_1invab/N_K0star_train)
+# define Scale_Xsd_nonresonant_train (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_train)
+# define Scale_Kplus_test (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_test)
+# define Scale_Kplusstar_test (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_test)
+# define Scale_Xsu_nonresonant_test (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_test)
+# define Scale_K0_test (0.361673 * N_K0_nunubar_1invab/N_K0_test)
+# define Scale_K0star_test (0.361673 * N_K0star_nunubar_1invab/N_K0star_test)
+# define Scale_Xsd_nonresonant_test (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_test)
+
+// BKG MC sample number (0.8/ab for BB, 1.0/ab for qq)
+# define N_CHG_train 32042497.0
+# define N_MIX_train 24693710.0
+# define N_UUBAR_train 94447089.0
+# define N_DDBAR_train 22664556.0
+# define N_SSBAR_train 19244661.0
+# define N_CHARM_train 107541168.0
+# define N_CHG_test 48052238.0
+# define N_MIX_test 37030486.0
+# define N_UUBAR_test 141671998.0
+# define N_DDBAR_test 34114182.0
+# define N_SSBAR_test 28859338.0
+# define N_CHARM_test 161280679.0
+
+// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb)
+# define Scale_CHG_train (0.361673/((N_CHG_train/(N_CHG_train + N_CHG_test))*0.8+1.0))
+# define Scale_MIX_train (0.361673/((N_MIX_train/(N_MIX_train + N_MIX_test))*0.8+1.0))
+# define Scale_UUBAR_train (0.361673/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_train (0.361673/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_train (0.361673/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_train (0.361673/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_CHG_test (0.361673/((N_CHG_test/(N_CHG_train + N_CHG_test))*0.8+1.0))
+# define Scale_MIX_test (0.361673/((N_MIX_test/(N_MIX_train + N_MIX_test))*0.8+1.0))
+# define Scale_UUBAR_test (0.361673/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
+
+# define Nvar_num 84
 
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
@@ -176,18 +234,18 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
 void THStack_plot() {
 
-    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori/SIGNAL_analysis/train_v000/final_output";
-    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori/SIGNAL_analysis/train_v000/final_output";
-    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori/SIGNAL_analysis/train_v000/final_output";
-    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori/SIGNAL_analysis/train_v000/final_output";
-    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori/SIGNAL_analysis/train_v000/final_output";
-    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori/SIGNAL_analysis/train_v000/final_output";
-    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori/CHG_analysis/train_v000/final_output";
-    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori/MIX_analysis/train_v000/final_output";
-    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori/UUBAR_analysis/train_v000/final_output";
-    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori/DDBAR_analysis/train_v000/final_output";
-    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori/SSBAR_analysis/train_v000/final_output";
-    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori/CHARM_analysis/train_v000/final_output";
+    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v000/final_output";
+    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v000/final_output";
+    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v000/final_output";
+    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v000/final_output";
+    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v000/final_output";
+    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v000/final_output";
+    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/CHG_analysis/train_v000/final_output";
+    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/MIX_analysis/train_v000/final_output";
+    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/UUBAR_analysis/train_v000/final_output";
+    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/DDBAR_analysis/train_v000/final_output";
+    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SSBAR_analysis/train_v000/final_output";
+    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/CHARM_analysis/train_v000/final_output";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
@@ -195,6 +253,7 @@ void THStack_plot() {
     variable_names.push_back("Btag_chiProb"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_extraInfo_SignalProbability"); branch_names.push_back("Btag");
     variable_names.push_back("thrustAxisCosTheta"); branch_names.push_back("Upsilon");
+    variable_names.push_back("missingMomentumOfEvent"); branch_names.push_back("Upsilon");
     variable_names.push_back("missingMomentumOfEvent_theta"); branch_names.push_back("Upsilon");
     variable_names.push_back("Btag_deltaE"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_useCMSFrame_theta"); branch_names.push_back("Btag");
@@ -209,11 +268,25 @@ void THStack_plot() {
     variable_names.push_back("Btag_KSFWVariables_hoo1"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo3"); branch_names.push_back("Btag");
     variable_names.push_back("roeEextra__bocleanMask__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("extraInfo__boEeclv133__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("extraInfo__boNgammav133__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("Btag_thrustOm"); branch_names.push_back("Btag");
     variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("Bsig_cosTBTO"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso00"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso01"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso03"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso04"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso10"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso14"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso24"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo1"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo3"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_M"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_useCMSFrame_pt"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_useCMSFrame_p"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_Dc_pValue_med"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_Dc_pValue_std"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb"); branch_names.push_back("Bsig");
@@ -239,6 +312,10 @@ void THStack_plot() {
     variable_names.push_back("harmonicMomentThrust2"); branch_names.push_back("Upsilon");
     variable_names.push_back("harmonicMomentThrust3"); branch_names.push_back("Upsilon");
     variable_names.push_back("harmonicMomentThrust4"); branch_names.push_back("Upsilon");
+    variable_names.push_back("foxWolframR1"); branch_names.push_back("Upsilon");
+    variable_names.push_back("foxWolframR2"); branch_names.push_back("Upsilon");
+    variable_names.push_back("foxWolframR3"); branch_names.push_back("Upsilon");
+    variable_names.push_back("foxWolframR4"); branch_names.push_back("Upsilon");
     variable_names.push_back("sphericity"); branch_names.push_back("Upsilon");
     variable_names.push_back("aplanarity"); branch_names.push_back("Upsilon");
     variable_names.push_back("Btag_thrustBm"); branch_names.push_back("Btag");
@@ -357,19 +434,19 @@ void THStack_plot() {
     }
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
-        for (int i = 0; i < (int)Knunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(Knunu_values[k].at(i), Scale_Kplus);
-        for (int i = 0; i < (int)Kstarnunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(Kstarnunu_values[k].at(i), Scale_Kplusstar);
-        for (int i = 0; i < (int)Xsununu_values[k].size(); i++) SIGNAL_hist[k]->Fill(Xsununu_values[k].at(i), Scale_Xsu_nonresonant);
-        for (int i = 0; i < (int)K0nunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(K0nunu_values[k].at(i), Scale_K0);
-        for (int i = 0; i < (int)K0starnunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(K0starnunu_values[k].at(i), Scale_K0star);
-        for (int i = 0; i < (int)Xsdnunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(Xsdnunu_values[k].at(i), Scale_Xsd_nonresonant);
+        for (int i = 0; i < (int)Knunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(Knunu_values[k].at(i), Scale_Kplus_train);
+        for (int i = 0; i < (int)Kstarnunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(Kstarnunu_values[k].at(i), Scale_Kplusstar_train);
+        for (int i = 0; i < (int)Xsununu_values[k].size(); i++) SIGNAL_hist[k]->Fill(Xsununu_values[k].at(i), Scale_Xsu_nonresonant_train);
+        for (int i = 0; i < (int)K0nunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(K0nunu_values[k].at(i), Scale_K0_train);
+        for (int i = 0; i < (int)K0starnunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(K0starnunu_values[k].at(i), Scale_K0star_train);
+        for (int i = 0; i < (int)Xsdnunu_values[k].size(); i++) SIGNAL_hist[k]->Fill(Xsdnunu_values[k].at(i), Scale_Xsd_nonresonant_train);
 
-        for (int i = 0; i < (int)CHG_values[k].size(); i++) CHG_hist[k]->Fill(CHG_values[k].at(i));
-        for (int i = 0; i < (int)MIX_values[k].size(); i++) MIX_hist[k]->Fill(MIX_values[k].at(i));
-        for (int i = 0; i < (int)UUBAR_values[k].size(); i++) UUBAR_hist[k]->Fill(UUBAR_values[k].at(i));
-        for (int i = 0; i < (int)DDBAR_values[k].size(); i++) DDBAR_hist[k]->Fill(DDBAR_values[k].at(i));
-        for (int i = 0; i < (int)SSBAR_values[k].size(); i++) SSBAR_hist[k]->Fill(SSBAR_values[k].at(i));
-        for (int i = 0; i < (int)CHARM_values[k].size(); i++) CHARM_hist[k]->Fill(CHARM_values[k].at(i));
+        for (int i = 0; i < (int)CHG_values[k].size(); i++) CHG_hist[k]->Fill(CHG_values[k].at(i), Scale_CHG_train);
+        for (int i = 0; i < (int)MIX_values[k].size(); i++) MIX_hist[k]->Fill(MIX_values[k].at(i), Scale_MIX_train);
+        for (int i = 0; i < (int)UUBAR_values[k].size(); i++) UUBAR_hist[k]->Fill(UUBAR_values[k].at(i), Scale_UUBAR_train);
+        for (int i = 0; i < (int)DDBAR_values[k].size(); i++) DDBAR_hist[k]->Fill(DDBAR_values[k].at(i), Scale_DDBAR_train);
+        for (int i = 0; i < (int)SSBAR_values[k].size(); i++) SSBAR_hist[k]->Fill(SSBAR_values[k].at(i), Scale_SSBAR_train);
+        for (int i = 0; i < (int)CHARM_values[k].size(); i++) CHARM_hist[k]->Fill(CHARM_values[k].at(i), Scale_CHARM_train);
     }
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
