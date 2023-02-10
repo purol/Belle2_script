@@ -134,8 +134,6 @@ void LetsFill(const char* dirname, TH1F* hist, const char* included_string, doub
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
-            tree_Bsig->GetEntry(j);
-            tree_Btag->GetEntry(j);
             hist->Fill(var, weight);
         }
         input_file->Close();
