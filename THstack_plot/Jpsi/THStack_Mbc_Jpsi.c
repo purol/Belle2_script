@@ -81,14 +81,14 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-THStack* Stack = new THStack("thstack", ";M_{bc}^{sig} [GeV];Arbitrary unit");
-TH1F* SIGNAL_hist = new TH1F("signal", ";M_{bc}^{sig} [GeV];Arbitrary unit", 100, 5.25, 5.29);
-TH1F* CHG_hist = new TH1F("charge", ";E_{ecl} [GeV];Arbitrary unit", 100, 5.25, 5.29);
-TH1F* MIX_hist = new TH1F("mix", ";E_{ecl} [GeV];Arbitrary unit", 100, 5.25, 5.29);
-TH1F* UUBAR_hist = new TH1F("uubar", ";E_{ecl} [GeV];Arbitrary unit", 100, 5.25, 5.29);
-TH1F* DDBAR_hist = new TH1F("ddbar", ";E_{ecl} [GeV];Arbitrary unit", 100, 5.25, 5.29);
-TH1F* SSBAR_hist = new TH1F("ssbar", ";E_{ecl} [GeV];Arbitrary unit", 100, 5.25, 5.29);
-TH1F* CHARM_hist = new TH1F("ccbar", ";E_{ecl} [GeV];Arbitrary unit", 100, 5.25, 5.29);
+THStack* Stack = new THStack("thstack", ";M_{bc}^{sig} [GeV];Candidates");
+TH1F* SIGNAL_hist = new TH1F("signal", ";M_{bc}^{sig} [GeV];Candidates", 100, 5.25, 5.29);
+TH1F* CHG_hist = new TH1F("charge", ";E_{ecl} [GeV];Candidates", 100, 5.25, 5.29);
+TH1F* MIX_hist = new TH1F("mix", ";E_{ecl} [GeV];Candidates", 100, 5.25, 5.29);
+TH1F* UUBAR_hist = new TH1F("uubar", ";E_{ecl} [GeV];Candidates", 100, 5.25, 5.29);
+TH1F* DDBAR_hist = new TH1F("ddbar", ";E_{ecl} [GeV];Candidates", 100, 5.25, 5.29);
+TH1F* SSBAR_hist = new TH1F("ssbar", ";E_{ecl} [GeV];Candidates", 100, 5.25, 5.29);
+TH1F* CHARM_hist = new TH1F("ccbar", ";E_{ecl} [GeV];Candidates", 100, 5.25, 5.29);
 
 void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
     double var = 0;
@@ -134,8 +134,6 @@ void LetsFill(const char* dirname, TH1F* hist, const char* included_string, doub
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
-            tree_Bsig->GetEntry(j);
-            tree_Btag->GetEntry(j);
             hist->Fill(var, weight);
         }
         input_file->Close();

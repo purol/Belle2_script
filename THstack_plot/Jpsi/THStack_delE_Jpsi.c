@@ -81,14 +81,14 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-THStack* Stack = new THStack("thstack", ";#Delta E [GeV];Arbitrary unit");
-TH1F* SIGNAL_hist = new TH1F("signal", ";#Delta E [GeV];Arbitrary unit", 100, -0.1, 0.1);
-TH1F* CHG_hist = new TH1F("charge", ";E_{ecl} [GeV];Arbitrary unit", 100, -0.1, 0.1);
-TH1F* MIX_hist = new TH1F("mix", ";E_{ecl} [GeV];Arbitrary unit", 100, -0.1, 0.1);
-TH1F* UUBAR_hist = new TH1F("uubar", ";E_{ecl} [GeV];Arbitrary unit", 100, -0.1, 0.1);
-TH1F* DDBAR_hist = new TH1F("ddbar", ";E_{ecl} [GeV];Arbitrary unit", 100, -0.1, 0.1);
-TH1F* SSBAR_hist = new TH1F("ssbar", ";E_{ecl} [GeV];Arbitrary unit", 100, -0.1, 0.1);
-TH1F* CHARM_hist = new TH1F("ccbar", ";E_{ecl} [GeV];Arbitrary unit", 100, -0.1, 0.1);
+THStack* Stack = new THStack("thstack", ";#Delta E [GeV];Candidates");
+TH1F* SIGNAL_hist = new TH1F("signal", ";#Delta E [GeV];Candidates", 100, -0.1, 0.1);
+TH1F* CHG_hist = new TH1F("charge", ";E_{ecl} [GeV];Candidates", 100, -0.1, 0.1);
+TH1F* MIX_hist = new TH1F("mix", ";E_{ecl} [GeV];Candidates", 100, -0.1, 0.1);
+TH1F* UUBAR_hist = new TH1F("uubar", ";E_{ecl} [GeV];Candidates", 100, -0.1, 0.1);
+TH1F* DDBAR_hist = new TH1F("ddbar", ";E_{ecl} [GeV];Candidates", 100, -0.1, 0.1);
+TH1F* SSBAR_hist = new TH1F("ssbar", ";E_{ecl} [GeV];Candidates", 100, -0.1, 0.1);
+TH1F* CHARM_hist = new TH1F("ccbar", ";E_{ecl} [GeV];Candidates", 100, -0.1, 0.1);
 
 void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
     double var = 0;
