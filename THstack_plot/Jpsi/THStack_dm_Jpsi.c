@@ -101,7 +101,7 @@ void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
         printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
 
-        TTree* tree_upsilon = (TTree*)input_file->Get("Jpsi");
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon_Jpsi");
 
         tree_upsilon->SetBranchAddress("daughter__bo1__cm__spdaughter__bo1__cm__spdM__bc__bc", &var);
 
@@ -127,11 +127,9 @@ void LetsFill(const char* dirname, TH1F* hist, const char* included_string, doub
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
         printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
 
-        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
-        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
-        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon_Jpsi");
 
-        tree_upsilon->SetBranchAddress("roeEextra__bocleanMask__bc", &var);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cm__spdaughter__bo1__cm__spdM__bc__bc", &var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -148,21 +146,21 @@ void LetsFill(const char* dirname, TH1F* hist, const char* included_string, doub
 
 void THStack_dm_Jpsi() {
 
-    const char* SIGNAL_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_Jpsi/Jpsi/SIGNAL_after_FEISKIM_Nitori";
-    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_Jpsi/Jpsi/CHG_after_FEISKIM_Nitori";
-    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_Jpsi/Jpsi/MIX_after_FEISKIM_Nitori";
-    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_Jpsi/Jpsi/UUBAR_after_FEISKIM_Nitori";
-    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_Jpsi/Jpsi/DDBAR_after_FEISKIM_Nitori";
-    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_Jpsi/Jpsi/SSBAR_after_FEISKIM_Nitori";
-    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nitori_Jpsi/Jpsi/CHARM_after_FEISKIM_Nitori";
+    const char* SIGNAL_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/SIGNAL";
+    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/CHG";
+    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/MIX";
+    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/UUBAR";
+    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/DDBAR";
+    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/SSBAR";
+    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/CHARM";
 
-    LetsFill(SIGNAL_dirname, SIGNAL_hist, (0.3/20.0));
-    LetsFill(CHG_dirname, CHG_hist);
-    LetsFill(MIX_dirname, MIX_hist);
-    LetsFill(UUBAR_dirname, UUBAR_hist);
-    LetsFill(DDBAR_dirname, DDBAR_hist);
-    LetsFill(SSBAR_dirname, SSBAR_hist);
-    LetsFill(CHARM_dirname, CHARM_hist);
+    LetsFill(SIGNAL_dirname, SIGNAL_hist, (0.3616 / 1.8));
+    LetsFill(CHG_dirname, CHG_hist, (0.3616 / 0.8));
+    LetsFill(MIX_dirname, MIX_hist, (0.3616 / 0.8));
+    LetsFill(UUBAR_dirname, UUBAR_hist, (0.3616 / 1.0));
+    LetsFill(DDBAR_dirname, DDBAR_hist, (0.3616 / 1.0));
+    LetsFill(SSBAR_dirname, SSBAR_hist, (0.3616 / 1.0));
+    LetsFill(CHARM_dirname, CHARM_hist, (0.3616 / 1.0));
 
 
     double CHG_int = CHG_hist->Integral();
