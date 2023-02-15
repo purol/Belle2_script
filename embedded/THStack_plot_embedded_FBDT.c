@@ -67,7 +67,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define Nvar_num 1
 
-# define CAL 1.0
+# define CAL 0.8394
 # define CAL_qq 1.0
 # define Stream 0.25
 
@@ -142,7 +142,7 @@ void LetsFill(const char* dirname, TH1D* hist, double weight = 1.0) {
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            double total_weight = weight * CAL;
+            double total_weight = weight;
             hist->Fill(var, total_weight);
         }
         input_file->Close();
@@ -193,16 +193,18 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
 void THStack_plot_embedded_FBDT() {
 
-    const char* Embedded_MC_CHGMIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/CHGMIX";
-    const char* Embedded_MC_UDSCHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/UDSCHARM";
+    const char* Embedded_MC_CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_embedded_fixed/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/CHG";
+    const char* Embedded_MC_MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_embedded_fixed/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/MIX";
+    const char* Embedded_MC_UDSCHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_embedded_fixed/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/UDSCHARM";
 
     const char* Embedded_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/data";
 
-    TH1D* MC_embedded = new TH1D("embedded_MC", "MC", 30, 0.0, 1.0);
-    TH1D* data_embedded = new TH1D("embedded_data", "data", 30, 0.0, 1.0);
+    TH1D* MC_embedded = new TH1D("embedded_MC", "embedded MC", 30, 0.0, 1.0);
+    TH1D* data_embedded = new TH1D("embedded_data", "embedded data", 30, 0.0, 1.0);
 
-    LetsFill(Embedded_MC_CHGMIX_dirname, MC_embedded, 0.361673 / 2.8);
-    LetsFill(Embedded_MC_UDSCHARM_dirname, MC_embedded, 0.361673 / 1.0);
+    LetsFill(Embedded_MC_CHG_dirname, MC_embedded, FEI_cal_Bc * CAL * 0.361673 / 2.8);
+    LetsFill(Embedded_MC_MIX_dirname, MC_embedded, FEI_cal_B0 * CAL * 0.361673 / 2.8);
+    LetsFill(Embedded_MC_UDSCHARM_dirname, MC_embedded, CAL * 0.361673 / 1.0);
     LetsFill(Embedded_data_dirname, data_embedded, 1.0);
 
     TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
@@ -210,6 +212,8 @@ void THStack_plot_embedded_FBDT() {
     TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
     pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
     pad1->SetGridx(); pad1->Draw(); pad1->cd();
+
+    gStyle->SetOptTitle(0);
 
     MC_embedded->SetFillStyle(3004);
     MC_embedded->SetLineColor(kBlue);
