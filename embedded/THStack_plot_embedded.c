@@ -1423,7 +1423,7 @@ void THStack_plot_embedded() {
 
         double min = *min_element(temp_v.begin(), temp_v.end());
         double max = *max_element(temp_v.begin(), temp_v.end());
-        int bins = 100;
+        int bins = 30;
 
         if (hasEnding(variable_names.at(k), std::string("dr"))) { // exceptions
             max = 0.2;
@@ -1518,9 +1518,9 @@ void THStack_plot_embedded() {
         if (ymax_1 > ymax_2) real_max = ymax_1;
         else real_max = ymax_2;
 
-        MC_hist[k]->SetFillStyle(3002);
-        MC_hist[k]->SetLineColor(38);
-        MC_hist[k]->SetFillColor(38);
+        MC_hist[k]->SetFillStyle(3001);
+        MC_hist[k]->SetLineColor(33);
+        MC_hist[k]->SetFillColor(33);
         MC_hist[k]->Draw("Hist");
 
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
