@@ -1314,7 +1314,7 @@ void THStack_plot_embedded_FBDT() {
         double max = *max_element(temp_v.begin(), temp_v.end());
         int bins = 30;
         min = 0.0;
-        max = 1.0
+        max = 1.0;
 
         if (hasEnding(variable_names.at(k), std::string("dr"))) { // exceptions
             max = 0.2;
@@ -1412,7 +1412,7 @@ void THStack_plot_embedded_FBDT() {
 
         gStyle->SetPalette(kPastel);
 
-        Float_t ymax_1 = MC_embedded[k]->GetMaximum();
+        Float_t ymax_1 = MC_hist[k]->GetMaximum();
         Float_t ymax_2 = data_hist[k]->GetMaximum();
         double real_max = 0;
         if (ymax_1 > ymax_2) real_max = ymax_1;
