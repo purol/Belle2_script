@@ -1512,16 +1512,16 @@ void THStack_plot_Jpsi() {
 
         gStyle->SetPalette(kPastel);
 
-        Float_t ymax_1 = Stack[k]->GetMaximum();
+        Float_t ymax_1 = MC_embedded[k]->GetMaximum();
         Float_t ymax_2 = data_hist[k]->GetMaximum();
         double real_max = 0;
         if (ymax_1 > ymax_2) real_max = ymax_1;
         else real_max = ymax_2;
 
-        MC_embedded->SetFillStyle(3002);
-        MC_embedded->SetLineColor(38);
-        MC_embedded->SetFillColor(38);
-        MC_embedded->Draw("Hist");
+        MC_embedded[k]->SetFillStyle(3002);
+        MC_embedded[k]->SetLineColor(38);
+        MC_embedded[k]->SetFillColor(38);
+        MC_embedded[k]->Draw("Hist");
 
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP");
