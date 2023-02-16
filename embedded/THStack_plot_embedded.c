@@ -1268,7 +1268,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
 }
 
-void THStack_plot_Jpsi() {
+void THStack_plot_embedded() {
 
     ReadPIDFile();
 
@@ -1518,10 +1518,10 @@ void THStack_plot_Jpsi() {
         if (ymax_1 > ymax_2) real_max = ymax_1;
         else real_max = ymax_2;
 
-        MC_embedded[k]->SetFillStyle(3002);
-        MC_embedded[k]->SetLineColor(38);
-        MC_embedded[k]->SetFillColor(38);
-        MC_embedded[k]->Draw("Hist");
+        MC_hist[k]->SetFillStyle(3002);
+        MC_hist[k]->SetLineColor(38);
+        MC_hist[k]->SetFillColor(38);
+        MC_hist[k]->Draw("Hist");
 
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP");
