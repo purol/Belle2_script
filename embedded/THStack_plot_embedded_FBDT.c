@@ -199,13 +199,21 @@ void THStack_plot_embedded_FBDT() {
 
     const char* Embedded_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/data";
 
+    std::vector<std::string> variable_names;
+    std::vector<std::string> branch_names;
+    variable_names.push_back("MVA_BB"); branch_names.push_back("Upsilon");
+
     TH1D* MC_embedded = new TH1D("embedded_MC", "embedded MC", 30, 0.0, 1.0);
     TH1D* data_embedded = new TH1D("embedded_data", "embedded data", 30, 0.0, 1.0);
+    TH1D* Ratio_embeddedd = new TH1D("embedded_ratio", ";;MC/data", 30, 0.0, 1.0);
 
     LetsFill(Embedded_MC_CHG_dirname, MC_embedded, FEI_cal_Bc * CAL * 0.361673 / 2.8);
     LetsFill(Embedded_MC_MIX_dirname, MC_embedded, FEI_cal_B0 * CAL * 0.361673 / 2.8);
     LetsFill(Embedded_MC_UDSCHARM_dirname, MC_embedded, CAL * 0.361673 / 1.0);
     LetsFill(Embedded_data_dirname, data_embedded, 1.0);
+
+    Ratio_embeddedd->SetLineColor(kBlack); Ratio_embeddedd->SetMarkerStyle(21); Ratio_embeddedd->Sumw2(); Ratio_embeddedd->SetStats(0);
+    Ratio_embeddedd->Divide(MC_embedded, data_embedded);
 
     TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
@@ -227,6 +235,17 @@ void THStack_plot_embedded_FBDT() {
     TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str()); pt->Draw();
 
     MC_embedded->SetStats(false);
+
+    c_temp->cd();
+    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+    Ratio_embedded->SetMinimum(0.5); Ratio_embedded->SetMaximum(1.5); Ratio_embedded->SetLineWidth(2);
+    Ratio_embedded->GetYaxis()->SetTitleSize(0.08); Ratio_embedded->GetYaxis()->SetTitleOffset(0.5);
+    Ratio_embedded->GetXaxis()->SetLabelSize(0.08); Ratio_embedded->GetYaxis()->SetLabelSize(0.08);
+    Ratio_embedded->Draw("e0p");
+    TLine* line = new TLine(Ratio_embedded->GetXaxis()->GetXmin(), 1.0, Ratio_embedded->GetXaxis()->GetXmax(), 1.0);
+    line->SetLineColor(kRed);
+    line->SetLineStyle(1); line->SetLineWidth(3);
+    line->Draw();
 
     c_temp->SaveAs("embedded.png");
 

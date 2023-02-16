@@ -192,7 +192,7 @@ void THStack_delE_Jpsi() {
     SIGNAL_hist->SetLineColor(2);
     SIGNAL_hist->SetFillStyle(0);
 
-    TCanvas* c_temp = new TCanvas("c", "", 1500, 1200); c_temp->cd();
+    TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
 
     gStyle->SetPalette(kGistEarth);
 
