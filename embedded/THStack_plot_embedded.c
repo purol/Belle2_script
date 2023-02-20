@@ -1518,9 +1518,11 @@ void THStack_plot_embedded() {
         if (ymax_1 > ymax_2) real_max = ymax_1;
         else real_max = ymax_2;
 
+        MC_hist[k]->SetStats(0);
         MC_hist[k]->SetFillStyle(3001);
         MC_hist[k]->SetLineColor(33);
         MC_hist[k]->SetFillColor(33);
+        MC_hist[k]->GetYaxis()->SetRangeUser(0.0, real_max * 1.1);
         MC_hist[k]->Draw("Hist");
 
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");

@@ -38,21 +38,33 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
 # define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
 
-// my MC sample number
-# define N_Kplus_nunubar 10000000.0
-# define N_K0_nunubar 10000000.0
-# define N_Kplusstar_nunubar 10000000.0
-# define N_K0star_nunubar 10000000.0
-# define N_Xsu_nonresonant_nunubar 50000000.0
-# define N_Xsd_nonresonant_nunubar 50000000.0
+// SIGNAL MC sample number
+# define N_Kplus_train 7039000.0
+# define N_K0_train 7166624.0
+# define N_Kplusstar_train 7039000.0
+# define N_K0star_train 7166624.0
+# define N_Xsu_nonresonant_train 35195000.0
+# define N_Xsd_nonresonant_train 34940430.0
+# define N_Kplus_test 2961000.0
+# define N_K0_test 2833376.0
+# define N_Kplusstar_test 2961000.0
+# define N_K0star_test 2833376.0
+# define N_Xsu_nonresonant_test 14805000.0
+# define N_Xsd_nonresonant_test 15059570.0
 
-// scale factor for each MC sample
-# define Scale_Kplus (N_Kplus_nunubar_1invab/N_Kplus_nunubar)
-# define Scale_Kplusstar (N_Kplusstar_nunubar_1invab/N_Kplusstar_nunubar)
-# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar)
-# define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
-# define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
-# define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
+// scale factor for SIGNAL MC sample (364.436 - 2.763 = 361.673/fb)
+# define Scale_Kplus_train (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_train)
+# define Scale_Kplusstar_train (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_train)
+# define Scale_Xsu_nonresonant_train (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_train)
+# define Scale_K0_train (0.361673 * N_K0_nunubar_1invab/N_K0_train)
+# define Scale_K0star_train (0.361673 * N_K0star_nunubar_1invab/N_K0star_train)
+# define Scale_Xsd_nonresonant_train (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_train)
+# define Scale_Kplus_test (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_test)
+# define Scale_Kplusstar_test (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_test)
+# define Scale_Xsu_nonresonant_test (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_test)
+# define Scale_K0_test (0.361673 * N_K0_nunubar_1invab/N_K0_test)
+# define Scale_K0star_test (0.361673 * N_K0star_nunubar_1invab/N_K0star_test)
+# define Scale_Xsd_nonresonant_test (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_test)
 
 // BKG MC sample number (0.8/ab for BB, 1.0/ab for qq)
 # define N_CHG_test 32042497.0
@@ -68,19 +80,19 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_SSBAR_train 28859338.0
 # define N_CHARM_train 161280679.0
 
-// scale factor for BKG MC sample (364.436/fb)
-# define Scale_CHG_train ((0.364436/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_train)
-# define Scale_MIX_train ((0.364436/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_train)
-# define Scale_UUBAR_train ((0.364436/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_train)
-# define Scale_DDBAR_train ((0.364436/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_train)
-# define Scale_SSBAR_train ((0.364436/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_train)
-# define Scale_CHARM_train ((0.364436/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_train)
-# define Scale_CHG_test ((0.364436/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_test)
-# define Scale_MIX_test ((0.364436/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_test)
-# define Scale_UUBAR_test ((0.364436/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_test)
-# define Scale_DDBAR_test ((0.364436/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_test)
-# define Scale_SSBAR_test ((0.364436/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_test)
-# define Scale_CHARM_test ((0.364436/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_test)
+// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb)
+# define Scale_CHG_train (0.361673/((N_CHG_train/(N_CHG_train + N_CHG_test))*0.8+1.0))
+# define Scale_MIX_train (0.361673/((N_MIX_train/(N_MIX_train + N_MIX_test))*0.8+1.0))
+# define Scale_UUBAR_train (0.361673/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_train (0.361673/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_train (0.361673/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_train (0.361673/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_CHG_test (0.361673/((N_CHG_test/(N_CHG_train + N_CHG_test))*0.8+1.0))
+# define Scale_MIX_test (0.361673/((N_MIX_test/(N_MIX_train + N_MIX_test))*0.8+1.0))
+# define Scale_UUBAR_test (0.361673/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
 
 # define KS0_rel_uncertainty 0.6 // %/cm
 # define track_rel_uncertainty 0.69 // %

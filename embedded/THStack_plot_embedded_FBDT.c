@@ -1369,19 +1369,15 @@ void THStack_plot_embedded_FBDT() {
             max = 0.4;
         }
 
-        MC_hist[k] = new TH1D("charged", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        MC_hist[k] = new TH1D("embedded MC", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        data_hist[k] = new TH1D("embedded data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;MC/data", bins, min, max);
 
         MC_one_bin[k] = new TH1D((variable_names.at(k) + "_MC_one_bin").c_str(), ";number of candidates", 1, min, max);
         data_one_bin[k] = new TH1D((variable_names.at(k) + "_data_one_bin").c_str(), ";number of candidates", 1, min, max);
         Ratio_one_bin[k] = new TH1D((variable_names.at(k) + "_ratio_one_bin").c_str(), ";number of candidates", 1, min, max);
     }
-
-    int index = std::find(variable_names.begin(), variable_names.end(), std::string("log_{10}SignalProbability")) - variable_names.begin();
-    for (int i = 0; i < (int)Jpsi_MC_values[index].size(); i++) Jpsi_MC_values[index].at(i) = log10l(Jpsi_MC_values[index].at(i));
-    for (int i = 0; i < (int)Jpsi_data_values[index].size(); i++) Jpsi_data_values[index].at(i) = log10l(Jpsi_data_values[index].at(i));
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
         for (int i = 0; i < (int)Jpsi_MC_values[k].size(); i++) {
@@ -1418,9 +1414,11 @@ void THStack_plot_embedded_FBDT() {
         if (ymax_1 > ymax_2) real_max = ymax_1;
         else real_max = ymax_2;
 
+        MC_hist[k]->SetStats(0);
         MC_hist[k]->SetFillStyle(3001);
         MC_hist[k]->SetLineColor(33);
         MC_hist[k]->SetFillColor(33);
+        MC_hist[k]->GetYaxis()->SetRangeUser(0.0, real_max * 1.1);
         MC_hist[k]->Draw("Hist");
 
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
