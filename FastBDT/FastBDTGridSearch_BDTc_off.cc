@@ -67,9 +67,9 @@
 # define N_Kplus_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplus_nunubar)
 # define N_Kplusstar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplusstar_nunubar)
 # define N_Xsu_nonresonant_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Xsu_nonresonant_nunubar)
-# define N_K0_nunubar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0_nunubar)
-# define N_K0star_nunubar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0star_nunubar)
-# define N_Xsd_nunubar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_Xsd_nonresonant_nunubar)
+# define N_K0_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0_nunubar)
+# define N_K0star_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0star_nunubar)
+# define N_Xsd_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_Xsd_nonresonant_nunubar)
 
 // SIGNAL MC sample number befor skimming
 # define N_Kplus_train 7039000.0
@@ -129,24 +129,24 @@
 
 class Corrector {
 private:
-    static const int STEP = 100;
+    const int STEP;
 
-    static const double mKp = 0.493677;
-    static const double mK0 = 0.497611;
+    const double mKp;
+    const double mK0;
 
-    static const double mBp = 5.27934;
-    static const double mB0 = 5.27965;
+    const double mBp;
+    const double mB0;
 
-    static const double alpha0_old = 0.432;
-    static const double alpha1_old = -0.664;
-    static const double alpha2_old = -1.2;
-    static const double mp_Bp_old = 5.27934 + 0.046;
-    static const double mp_B0_old = 5.27965 + 0.046;
+    const double alpha0_old;
+    const double alpha1_old;
+    const double alpha2_old;
+    const double mp_Bp_old;
+    const double mp_B0_old;
 
-    static const double alpha0_new = 0.2545; // 0.2545 +- 0.0090
-    static const double alpha1_new = -0.71; // -0.71 +- 0.14
-    static const double alpha2_new = 0.32; // 0.32 +- 0.59
-    static const double mp_B_new = 5.4158; //  5.4158 +- 0.0015
+    const double alpha0_new; // 0.2545 +- 0.0090
+    const double alpha1_new; // -0.71 +- 0.14
+    const double alpha2_new; // 0.32 +- 0.59
+    const double mp_B_new; //  5.4158 +- 0.0015
 
     double Total_Bp_old;
     double Total_B0_old;
@@ -159,7 +159,22 @@ public:
 
 Corrector corrector;
 
-Corrector::Corrector() {
+Corrector::Corrector() :
+    STEP(100),
+    mKp(0.493677),
+    mK0(0.497611),
+    mBp(5.27934),
+    mB0(5.27965),
+    alpha0_old(0.432),
+    alpha1_old(-0.664),
+    alpha2_old(-1.2),
+    mp_Bp_old(5.27934 + 0.046),
+    mp_B0_old(5.27965 + 0.046),
+    alpha0_new(0.2545),
+    alpha1_new(-0.71),
+    alpha2_new(0.32),
+    mp_B_new(5.4158)
+{
     Total_Bp_old = 0;
     Total_B0_old = 0;
     Total_Bp_new = 0;
