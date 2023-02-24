@@ -634,8 +634,8 @@ public:
     void BsigFitConvergeFor(Loader::Variable variable, int i);
     void OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type);
     void DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type, double minM, double maxM);
-    void PrintFOM(std::string filename, Loader::ScaleFactor scaleFactor_ = Loader::None, bool smartmode);
-    void PrintFOM1D(std::string filename, Loader::ScaleFactor scaleFactor_ = Loader::None, bool smartmode);
+    void PrintFOM(std::string filename, Loader::ScaleFactor scaleFactor_ = Loader::None, bool smartmode = true);
+    void PrintFOM1D(std::string filename, Loader::ScaleFactor scaleFactor_ = Loader::None, bool smartmode = true);
     void MVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
     void CountMCEvent(std::string filename = std::string(""), bool smartmode = true);
     void SelectDecayModeOf(Loader::DecayMode decaymode);
