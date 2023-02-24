@@ -634,8 +634,8 @@ public:
     void BsigFitConvergeFor(Loader::Variable variable, int i);
     void OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type);
     void DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type, double minM, double maxM);
-    void PrintFOM(Loader::ScaleFactor scaleFactor_ = Loader::None);
-    void PrintFOM1D(Loader::ScaleFactor scaleFactor_ = Loader::None);
+    void PrintFOM(std::string filename, Loader::ScaleFactor scaleFactor_ = Loader::None, bool smartmode);
+    void PrintFOM1D(std::string filename, Loader::ScaleFactor scaleFactor_ = Loader::None, bool smartmode);
     void MVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
     void CountMCEvent(std::string filename = std::string(""), bool smartmode = true);
     void SelectDecayModeOf(Loader::DecayMode decaymode);
@@ -3821,7 +3821,7 @@ void Loader::DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedve
     TotalData.swap(temp_queue);
 }
 
-void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_, bool smartmode) {
+void Loader::PrintFOM(std::string filename, Loader::ScaleFactor scaleFactor_, bool smartmode) {
     if (current_FOM > 0) { // allocate new int
         printf("The number of PrintFOM should not be larger than 1\n");
         printf("Only first PrintFOM is accepted\n");
@@ -3897,7 +3897,7 @@ void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_, bool smartmode) {
     current_FOM++;
 }
 
-void Loader::PrintFOM1D(Loader::ScaleFactor scaleFactor_, bool smartmode) {
+void Loader::PrintFOM1D(std::string filename, Loader::ScaleFactor scaleFactor_, bool smartmode) {
     if (current_FOM > 0) { // allocate new int
         printf("The number of PrintFOM should not be larger than 1\n");
         printf("Only first PrintFOM is accepted\n");
