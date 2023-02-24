@@ -21,52 +21,41 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_decay_nparticles 3 // # of nu_e, B, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
 # define N_PID_syst 73
+# define index_q2 0
 
 # define Nstep 20
 # define start 0.8
 # define end 1.0
 
-// arXiv:1409.4557v2
+// arXiv:1409.4557v2, PhysRevD.107.014511
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
-# define BR_Kplus_nunubar 0.00000398 // (eq. 10)
+# define BR_Kplus_nunubar 0.000005044 // Table VI = (5.044 +- 0.402) * 10^{-6}
 # define BR_K0star_nunubar 0.00000919 // (eq. 11)
-# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15)
+# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15). In Table VI = (4.6669 +- 0.3707) * 10^{-6}
 # define BR_Kplusstar_nunubar (BR_K0star_nunubar*TBp/TB0) // under (eq. 15)
 # define BR_Xs_nunubar 0.000029 // (eq. 23)
 # define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
 # define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
 
-// https://confluence.desy.de/pages/viewpage.action?pageId=107054222
-# define N_BpBp_1invab 565400000.0
-# define N_B0B0_1invab 534600000.0
+// according to DIRAC
+# define N_BpBp_1invab 540000000.0
+# define N_B0B0_1invab 510000000.0
 
-# define N_Kplus_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplus_nunubar)
-# define N_Kplusstar_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplusstar_nunubar)
-# define N_Xsu_nonresonant_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Xsu_nonresonant_nunubar)
-# define N_K0_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0_nunubar)
-# define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
-# define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
+# define BR_BpBp 0.514
+# define BR_B0B0 0.486
 
-/*
-// my MC sample number
-# define N_Kplus_nunubar 10000000.0
-# define N_K0_nunubar 10000000.0
-# define N_Kplusstar_nunubar 10000000.0
-# define N_K0star_nunubar 10000000.0
-# define N_Xsu_nonresonant_nunubar 50000000.0
-# define N_Xsd_nonresonant_nunubar 50000000.0
+// https://confluence.desy.de/pages/viewpage.action?spaceKey=BI&title=Conference+readiness
+# define N_BB_LS1 387100000.0 // NBB = (387.1 +/- 5.6) x 10^6
 
-// scale factor for each MC sample
-# define Scale_Kplus (N_Kplus_nunubar_1invab/N_Kplus_nunubar)
-# define Scale_Kplusstar (N_Kplusstar_nunubar_1invab/N_Kplusstar_nunubar)
-# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar)
-# define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
-# define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
-# define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
-*/
+# define N_Kplus_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplus_nunubar)
+# define N_Kplusstar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplusstar_nunubar)
+# define N_Xsu_nonresonant_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Xsu_nonresonant_nunubar)
+# define N_K0_nunubar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0_nunubar)
+# define N_K0star_nunubar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0star_nunubar)
+# define N_Xsd_nunubar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_Xsd_nonresonant_nunubar)
 
-// SIGNAL MC sample number
+// SIGNAL MC sample number befor skimming
 # define N_Kplus_train 7039000.0
 # define N_K0_train 7166624.0
 # define N_Kplusstar_train 7039000.0
@@ -80,21 +69,21 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_Xsu_nonresonant_test 14805000.0
 # define N_Xsd_nonresonant_test 15059570.0
 
-// scale factor for SIGNAL MC sample (364.436 - 2.763 = 361.673/fb)
-# define Scale_Kplus_train (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_train)
-# define Scale_Kplusstar_train (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_train)
-# define Scale_Xsu_nonresonant_train (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_train)
-# define Scale_K0_train (0.361673 * N_K0_nunubar_1invab/N_K0_train)
-# define Scale_K0star_train (0.361673 * N_K0star_nunubar_1invab/N_K0star_train)
-# define Scale_Xsd_nonresonant_train (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_train)
-# define Scale_Kplus_test (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_test)
-# define Scale_Kplusstar_test (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_test)
-# define Scale_Xsu_nonresonant_test (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_test)
-# define Scale_K0_test (0.361673 * N_K0_nunubar_1invab/N_K0_test)
-# define Scale_K0star_test (0.361673 * N_K0star_nunubar_1invab/N_K0star_test)
-# define Scale_Xsd_nonresonant_test (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_test)
+// scale factor for SIGNAL MC sample until LS1
+# define Scale_Kplus_train (N_Kplus_nunubar_LS1/N_Kplus_train)
+# define Scale_Kplusstar_train (N_Kplusstar_nunubar_LS1/N_Kplusstar_train)
+# define Scale_Xsu_nonresonant_train (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_train)
+# define Scale_K0_train (N_K0_nunubar_LS1/N_K0_train)
+# define Scale_K0star_train (N_K0star_nunubar_LS1/N_K0star_train)
+# define Scale_Xsd_nonresonant_train (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_train)
+# define Scale_Kplus_test (N_Kplus_nunubar_LS1/N_Kplus_test)
+# define Scale_Kplusstar_test (N_Kplusstar_nunubar_LS1/N_Kplusstar_test)
+# define Scale_Xsu_nonresonant_test (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_test)
+# define Scale_K0_test (N_K0_nunubar_LS1/N_K0_test)
+# define Scale_K0star_test (N_K0star_nunubar_LS1/N_K0star_test)
+# define Scale_Xsd_nonresonant_test (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_test)
 
-// BKG MC sample number (0.8/ab for BB, 1.0/ab for qq)
+// BKG MC sample number (0.8/ab for BB, 1.0/ab for qq) after skimming
 # define N_CHG_train 32042497.0
 # define N_MIX_train 24693710.0
 # define N_UUBAR_train 94447089.0
@@ -108,19 +97,158 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_SSBAR_test 28859338.0
 # define N_CHARM_test 161280679.0
 
-// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb)
-# define Scale_CHG_train (0.361673/((N_CHG_train/(N_CHG_train + N_CHG_test))*0.8+1.0))
-# define Scale_MIX_train (0.361673/((N_MIX_train/(N_MIX_train + N_MIX_test))*0.8+1.0))
+// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb), until LS1
+# define Scale_CHG_train ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab * (N_CHG_train / (N_CHG_train + N_CHG_test)) + N_BpBp_1invab))
+# define Scale_MIX_train ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab * (N_MIX_train / (N_MIX_train + N_MIX_test)) + N_B0B0_1invab))
 # define Scale_UUBAR_train (0.361673/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
 # define Scale_DDBAR_train (0.361673/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
 # define Scale_SSBAR_train (0.361673/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_train (0.361673/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
-# define Scale_CHG_test (0.361673/((N_CHG_test/(N_CHG_train + N_CHG_test))*0.8+1.0))
-# define Scale_MIX_test (0.361673/((N_MIX_test/(N_MIX_train + N_MIX_test))*0.8+1.0))
+# define Scale_CHG_test ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab * (N_CHG_test / (N_CHG_train + N_CHG_test)) + N_BpBp_1invab))
+# define Scale_MIX_test ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab * (N_MIX_test / (N_MIX_train + N_MIX_test)) + N_B0B0_1invab))
 # define Scale_UUBAR_test (0.361673/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
 # define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
 # define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
+
+class Corrector {
+private:
+    static const int STEP = 100;
+
+    static const double mKp = 0.493677;
+    static const double mK0 = 0.497611;
+
+    static const double mBp = 5.27934;
+    static const double mB0 = 5.27965;
+
+    static const double alpha0_old = 0.432;
+    static const double alpha1_old = -0.664;
+    static const double alpha2_old = -1.2;
+    static const double mp_Bp_old = 5.27934 + 0.046;
+    static const double mp_B0_old = 5.27965 + 0.046;
+
+    static const double alpha0_new = 0.2545; // 0.2545 +- 0.0090
+    static const double alpha1_new = -0.71; // -0.71 +- 0.14
+    static const double alpha2_new = 0.32; // 0.32 +- 0.59
+    static const double mp_B_new = 5.4158; //  5.4158 +- 0.0015
+
+    double Total_Bp_old;
+    double Total_B0_old;
+    double Total_Bp_new;
+    double Total_B0_new;
+public:
+    Corrector();
+    double GetCorrectionFactor(double q2, std::string type);
+};
+
+Corrector corrector;
+
+Corrector::Corrector() {
+    Total_Bp_old = 0;
+    Total_B0_old = 0;
+    Total_Bp_new = 0;
+    Total_B0_new = 0;
+
+    // Bp old
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+        double delq2 = (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+
+        double tp = (mBp + mKp) * (mBp + mKp);
+        double tm = (mBp - mKp) * (mBp - mKp);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_Bp_old * mp_Bp_old))) * (alpha0_old + alpha1_old * z + alpha2_old * z * z + (-alpha1_old + 2 * alpha2_old) * z * z * z / 3);
+        double lambda = std::pow(mBp, 4) + std::pow(mKp, 4) + std::pow(q2, 2) - 2 * (std::pow(mBp, 2) * std::pow(mKp, 2) + std::pow(mKp, 2) * q2 + std::pow(mBp, 2) * q2);
+
+        Total_Bp_old = Total_Bp_old + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+
+    // B0 old
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+        double delq2 = (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+
+        double tp = (mB0 + mK0) * (mB0 + mK0);
+        double tm = (mB0 - mK0) * (mB0 - mK0);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_B0_old * mp_B0_old))) * (alpha0_old + alpha1_old * z + alpha2_old * z * z + (-alpha1_old + 2 * alpha2_old) * z * z * z / 3);
+        double lambda = std::pow(mB0, 4) + std::pow(mK0, 4) + std::pow(q2, 2) - 2 * (std::pow(mB0, 2) * std::pow(mK0, 2) + std::pow(mK0, 2) * q2 + std::pow(mB0, 2) * q2);
+
+        Total_B0_old = Total_B0_old + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+
+    // Bp new
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+        double delq2 = (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+
+        double tp = (mBp + mKp) * (mBp + mKp);
+        double tm = (mBp - mKp) * (mBp - mKp);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z + alpha2_new * z * z + (-alpha1_new + 2 * alpha2_new) * z * z * z / 3);
+        double lambda = std::pow(mBp, 4) + std::pow(mKp, 4) + std::pow(q2, 2) - 2 * (std::pow(mBp, 2) * std::pow(mKp, 2) + std::pow(mKp, 2) * q2 + std::pow(mBp, 2) * q2);
+
+        Total_Bp_new = Total_Bp_new + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+
+    // B0 new
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+        double delq2 = (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+
+        double tp = (mB0 + mK0) * (mB0 + mK0);
+        double tm = (mB0 - mK0) * (mB0 - mK0);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z + alpha2_new * z * z + (-alpha1_new + 2 * alpha2_new) * z * z * z / 3);
+        double lambda = std::pow(mB0, 4) + std::pow(mK0, 4) + std::pow(q2, 2) - 2 * (std::pow(mB0, 2) * std::pow(mK0, 2) + std::pow(mK0, 2) * q2 + std::pow(mB0, 2) * q2);
+
+        Total_B0_new = Total_B0_new + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+}
+
+double Corrector::GetCorrectionFactor(double q2, std::string type) {
+    if (type == "Bplus") {
+        double tp = (mBp + mKp) * (mBp + mKp);
+        double tm = (mBp - mKp) * (mBp - mKp);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+
+        double fp_old = (1 / (1 - q2 / (mp_Bp_old * mp_Bp_old))) * (alpha0_old + alpha1_old * z + alpha2_old * z * z + (-alpha1_old + 2 * alpha2_old) * z * z * z / 3);
+        double fp_new = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z + alpha2_new * z * z + (-alpha1_new + 2 * alpha2_new) * z * z * z / 3);
+        double lambda = std::pow(mBp, 4) + std::pow(mKp, 4) + std::pow(q2, 2) - 2 * (std::pow(mBp, 2) * std::pow(mKp, 2) + std::pow(mKp, 2) * q2 + std::pow(mBp, 2) * q2);
+
+        if ((std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_Bp_old) == 0) {
+            printf("[ERROR] try to divide by 0!\n");
+            exit(1);
+        }
+        return (std::pow(lambda, 1.5) * std::pow(fp_new, 2) / Total_Bp_new) / (std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_Bp_old);
+    }
+    else if (type == "Bzero") {
+        double tp = (mB0 + mK0) * (mB0 + mK0);
+        double tm = (mB0 - mK0) * (mB0 - mK0);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+
+        double fp_old = (1 / (1 - q2 / (mp_B0_old * mp_B0_old))) * (alpha0_old + alpha1_old * z + alpha2_old * z * z + (-alpha1_old + 2 * alpha2_old) * z * z * z / 3);
+        double fp_new = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z + alpha2_new * z * z + (-alpha1_new + 2 * alpha2_new) * z * z * z / 3);
+        double lambda = std::pow(mB0, 4) + std::pow(mK0, 4) + std::pow(q2, 2) - 2 * (std::pow(mB0, 2) * std::pow(mK0, 2) + std::pow(mK0, 2) * q2 + std::pow(mB0, 2) * q2);
+
+        if ((std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_B0_old) == 0) {
+            printf("[ERROR] try to divide by 0!\n");
+            exit(1);
+        }
+        return (std::pow(lambda, 1.5) * std::pow(fp_new, 2) / Total_B0_new) / (std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_B0_old);
+    }
+
+    printf("[ERROR] undefined type name");
+    exit(1);
+
+    return 0;
+}
 
 void load_files(const char *dirname, std::vector<std::string>* names){
    TSystemDirectory dir(dirname, dirname);
@@ -386,7 +514,6 @@ private:
     std::vector<double> N_events;
     std::vector<double> N_candidates;
     std::vector<double> N_candidates_modes[Loader::MAX_NUM_DECAYMODE];
-    std::vector<double> N_events_modes[Loader::MAX_NUM_DECAYMODE];
     std::vector<double> N_MC_modes[Loader::MAX_NUM_DECAYMODE_MC];
     std::vector<std::string> titles;
     int current_N_event;
@@ -852,7 +979,7 @@ void Loader::GetData(TFile* input_file) {
         tree_Xs->SetBranchAddress("nParticlesInList__bonu_e__clMC_signal__bc", &temp.Decay_nparticles[0]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp.Decay_nparticles[1]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp.Decay_nparticles[2]);
-        tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp.Decay_syst_ff[0]);
+        tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp.Decay_syst_ff[index_q2]);
         tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp.Decay_syst_ff[1]);
         tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp.Decay_syst_ff[2]);
         tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp.Decay_syst_ff[3]);
@@ -1265,7 +1392,6 @@ void Loader::PrintInformation(std::string title, std::string filename, bool smar
         N_candidates.push_back(0);
         titles.push_back(title);
         for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) N_candidates_modes[i].push_back(0);
-        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) N_events_modes[i].push_back(0);
         for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) N_MC_modes[i].push_back(0);
     }
     else if (N_events.size() > current_N_event && N_candidates.size() > current_N_candidate && N_events.size() == N_candidates.size() && current_N_event == current_N_candidate) { // use what I have
@@ -1301,12 +1427,19 @@ void Loader::PrintInformation(std::string title, std::string filename, bool smar
             }
         }
         if (overlap == false) {
+            // Number of event
             if (smartmode == false) N_events.at(current_N_event) = N_events.at(current_N_event) + 1;
             else {
-                if (filename.find("B2Knunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplus_test;
+                if (filename.find("B2Knunu") != string::npos) {
+                    double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
+                    N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplus_test * correction_weight;
+                }
                 else if (filename.find("B2Kstarnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplusstar_test;
                 else if (filename.find("B2Xsnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsu_nonresonant_test;
-                else if (filename.find("B02K0nunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0_test;
+                else if (filename.find("B02K0nunu") != string::npos) {
+                    double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
+                    N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0_test * correction_weight;
+                }
                 else if (filename.find("B02Kstar0nunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0star_test;
                 else if (filename.find("B02Xsnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsd_nonresonant_test;
                 else { N_events.at(current_N_event) = N_events.at(current_N_event) + 1; }
@@ -1347,11 +1480,18 @@ void Loader::PrintInformation(std::string title, std::string filename, bool smar
                     exit(1);
                 }
 
+                // Number of event with MC decayID (scaled)
                 double temp_N = -1;
-                if (decaymodeid_MC == Loader::Xsu2Kc_MC) temp_N = Scale_Kplus_test;
+                if (decaymodeid_MC == Loader::Xsu2Kc_MC) {
+                    double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
+                    temp_N = Scale_Kplus_test * correction_weight;
+                }
                 else if (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC) temp_N = Scale_Kplusstar_test;
                 else if (static_cast<int>(Xsu2KcPi0_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(Xsu2KcKcKcPi0_MC)) temp_N = Scale_Xsu_nonresonant_test;
-                else if (decaymodeid_MC == Loader::Xsd2K0_MC) temp_N = Scale_K0_test;
+                else if (decaymodeid_MC == Loader::Xsd2K0_MC) {
+                    double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
+                    temp_N = Scale_K0_test * correction_weight;
+                }
                 else if (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC) temp_N = Scale_K0star_test;
                 else if (static_cast<int>(Xsd2KcPic_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(other)) temp_N = Scale_Xsd_nonresonant_test;
                 else {
@@ -1373,12 +1513,20 @@ void Loader::PrintInformation(std::string title, std::string filename, bool smar
             printf("ERROR! 029\n");
             exit(1);
         }
+
+        // Number of candidate of decayID
         if (smartmode == false) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0;
         else {
-            if (filename.find("B2Knunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplus_test;
+            if (filename.find("B2Knunu") != string::npos) {
+                double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
+                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplus_test * correction_weight;
+            }
             else if (filename.find("B2Kstarnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplusstar_test;
             else if (filename.find("B2Xsnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsu_nonresonant_test;
-            else if (filename.find("B02K0nunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0_test;
+            else if (filename.find("B02K0nunu") != string::npos) {
+                double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
+                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0_test * correction_weight;
+            }
             else if (filename.find("B02Kstar0nunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0star_test;
             else if (filename.find("B02Xsnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsd_nonresonant_test;
             else { N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0; }
@@ -1386,32 +1534,9 @@ void Loader::PrintInformation(std::string title, std::string filename, bool smar
 
         TotalData.push(temp);
     }
-    if (smartmode == false) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size();
-    else {
-        if (filename.find("B2Knunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Kplus_test;
-        else if (filename.find("B2Kstarnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Kplusstar_test;
-        else if (filename.find("B2Xsnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Xsu_nonresonant_test;
-        else if (filename.find("B02K0nunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_K0_test;
-        else if (filename.find("B02Kstar0nunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_K0star_test;
-        else if (filename.find("B02Xsnunu") != string::npos) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size() * Scale_Xsd_nonresonant_test;
-        else { N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size(); }
-    }
-    for (unsigned int i = 0; i < label_list.size(); i++) {
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) {
-            if (label_list.at(i).IsThisModeExist[j]) {
-                if (smartmode == false) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + 1;
-                else {
-                    if (filename.find("B2Knunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Kplus_test;
-                    else if (filename.find("B2Kstarnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Kplusstar_test;
-                    else if (filename.find("B2Xsnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Xsu_nonresonant_test;
-                    else if (filename.find("B02K0nunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_K0_test;
-                    else if (filename.find("B02Kstar0nunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_K0star_test;
-                    else if (filename.find("B02Xsnunu") != string::npos) N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + Scale_Xsd_nonresonant_test;
-                    else { N_events_modes[j].at(current_N_candidate) = N_events_modes[j].at(current_N_candidate) + 1; }
-                }
-            }
-        }
-    }
+
+    // Number of candidate
+    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + N_candidates_modes[i].at(current_N_candidate);
 
     current_N_event++;
     current_N_candidate++;
@@ -1745,7 +1870,6 @@ void Loader::End() {
         printf("Number of event: %lf\n", N_events.at(i));
         printf("Number of candidate: %lf\n", N_candidates.at(i));
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %lf\n", j, N_candidates_modes[j].at(i));
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of event including decayID %d: %lf\n", j, N_events_modes[j].at(i));
         if (AllOfThemHaveXsBranch) for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i));
     }
 
@@ -2220,7 +2344,7 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &DecayNparticlesDataToTree[0]);
         tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &DecayNparticlesDataToTree[1]);
         tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &DecayNparticlesDataToTree[2]);
-        tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &DecaySystFFDataToTree[0]);
+        tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &DecaySystFFDataToTree[index_q2]);
         tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &DecaySystFFDataToTree[1]);
         tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &DecaySystFFDataToTree[2]);
         tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &DecaySystFFDataToTree[3]);
@@ -2626,7 +2750,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
         temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
         temp_tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
-        temp_tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[0]);
+        temp_tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[index_q2]);
         temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[1]);
         temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[2]);
         temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[3]);
@@ -3017,7 +3141,7 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         temp_tree->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
         temp_tree->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
         temp_tree->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
-        temp_tree->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[0]);
+        temp_tree->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[index_q2]);
         temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[1]);
         temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[2]);
         temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[3]);
@@ -3450,7 +3574,22 @@ void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
             exit(1);
         }
 
-        Confusion[decaymodeid][decaymodeid_MC]++;
+        if (smartmode == false) Confusion[decaymodeid][decaymodeid_MC]++;
+        else {
+            if (filename.find("B2Knunu") != string::npos) {
+                double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
+                Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Kplus_test * correction_weight;
+            }
+            else if (filename.find("B2Kstarnunu") != string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Kplusstar_test;
+            else if (filename.find("B2Xsnunu") != string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Xsu_nonresonant_test;
+            else if (filename.find("B02K0nunu") != string::npos) {
+                double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
+                Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_K0_test * correction_weight;
+            }
+            else if (filename.find("B02Kstar0nunu") != string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_K0star_test;
+            else if (filename.find("B02Xsnunu") != string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Xsd_nonresonant_test;
+            else { printf("ERROR 142\n"); exit(1); }
+        }
 
         int decaymodeid_MC_for_square = -1;
         if (decaymodeid_MC == 0) decaymodeid_MC_for_square = 0;
@@ -3490,10 +3629,16 @@ void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
         else if (decaymodeid_MC == 34)decaymodeid_MC_for_square = 30;
         if(smartmode == false) Confusion_square[decaymodeid][decaymodeid_MC_for_square]++;
         else {
-            if(filename.find("B2Knunu") != string::npos ) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplus_test;
+            if (filename.find("B2Knunu") != string::npos) {
+                double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
+                Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplus_test * correction_weight;
+            }
             else if (filename.find("B2Kstarnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplusstar_test;
             else if (filename.find("B2Xsnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsu_nonresonant_test;
-            else if (filename.find("B02K0nunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0_test;
+            else if (filename.find("B02K0nunu") != string::npos) {
+                double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
+                Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0_test * correction_weight;
+            }
             else if (filename.find("B02Kstar0nunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0star_test;
             else if (filename.find("B02Xsnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsd_nonresonant_test;
             else { printf("ERROR 142\n"); exit(1); }
@@ -3661,7 +3806,7 @@ void Loader::DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedve
     TotalData.swap(temp_queue);
 }
 
-void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_) {
+void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_, bool smartmode) {
     if (current_FOM > 0) { // allocate new int
         printf("The number of PrintFOM should not be larger than 1\n");
         printf("Only first PrintFOM is accepted\n");
@@ -3701,7 +3846,22 @@ void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_) {
                         }
                     }
                     if (overlap == false) {
-                        EVT_num = EVT_num + 1.0;
+                        if (smartmode == false) EVT_num = EVT_num + 1.0;
+                        else {
+                            if (filename.find("B2Knunu") != string::npos) {
+                                double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
+                                EVT_num = EVT_num + correction_weight;
+                            }
+                            else if (filename.find("B2Kstarnunu") != string::npos) EVT_num = EVT_num + 1.0;
+                            else if (filename.find("B2Xsnunu") != string::npos) EVT_num = EVT_num + 1.0;
+                            else if (filename.find("B02K0nunu") != string::npos) {
+                                double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
+                                EVT_num = EVT_num + correction_weight;
+                            }
+                            else if (filename.find("B02Kstar0nunu") != string::npos) EVT_num = EVT_num + 1.0;
+                            else if (filename.find("B02Xsnunu") != string::npos) EVT_num = EVT_num + 1.0;
+                            else { printf("ERROR 142\n"); exit(1); }
+                        }
                         Labels temp_Labels;
                         temp_Labels.__experiment__ = temp.__experiment__;
                         temp_Labels.__run__ = temp.__run__;
@@ -3722,7 +3882,7 @@ void Loader::PrintFOM(Loader::ScaleFactor scaleFactor_) {
     current_FOM++;
 }
 
-void Loader::PrintFOM1D(Loader::ScaleFactor scaleFactor_) {
+void Loader::PrintFOM1D(Loader::ScaleFactor scaleFactor_, bool smartmode) {
     if (current_FOM > 0) { // allocate new int
         printf("The number of PrintFOM should not be larger than 1\n");
         printf("Only first PrintFOM is accepted\n");
@@ -3760,7 +3920,22 @@ void Loader::PrintFOM1D(Loader::ScaleFactor scaleFactor_) {
                     }
                 }
                 if (overlap == false) {
-                    EVT_num = EVT_num + 1.0;
+                    if (smartmode == false) EVT_num = EVT_num + 1.0;
+                    else {
+                        if (filename.find("B2Knunu") != string::npos) {
+                            double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
+                            EVT_num = EVT_num + correction_weight;
+                        }
+                        else if (filename.find("B2Kstarnunu") != string::npos) EVT_num = EVT_num + 1.0;
+                        else if (filename.find("B2Xsnunu") != string::npos) EVT_num = EVT_num + 1.0;
+                        else if (filename.find("B02K0nunu") != string::npos) {
+                            double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
+                            EVT_num = EVT_num + correction_weight;
+                        }
+                        else if (filename.find("B02Kstar0nunu") != string::npos) EVT_num = EVT_num + 1.0;
+                        else if (filename.find("B02Xsnunu") != string::npos) EVT_num = EVT_num + 1.0;
+                        else { printf("ERROR 142\n"); exit(1); }
+                    }
                     Labels temp_Labels;
                     temp_Labels.__experiment__ = temp.__experiment__;
                     temp_Labels.__run__ = temp.__run__;
@@ -3862,10 +4037,16 @@ void Loader::CountMCEvent(std::string filename, bool smartmode) {
 
             if (smartmode == false) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + 1;
             else {
-                if (filename.find("B2Knunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplus_test;
+                if (filename.find("B2Knunu") != string::npos) {
+                    double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
+                    MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplus_test * correction_weight;
+                }
                 else if (filename.find("B2Kstarnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplusstar_test;
                 else if (filename.find("B2Xsnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsu_nonresonant_test;
-                else if (filename.find("B02K0nunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0_test;
+                else if (filename.find("B02K0nunu") != string::npos) {
+                    double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
+                    MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0_test * correction_weight;
+                }
                 else if (filename.find("B02Kstar0nunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0star_test;
                 else if (filename.find("B02Xsnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsd_nonresonant_test;
                 else { printf("ERROR 142\n"); exit(1); }

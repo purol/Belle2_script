@@ -43,47 +43,35 @@
 # define Nvar 37
 # define DvetoNvar 4
 
-// arXiv:1409.4557v2
+// arXiv:1409.4557v2, PhysRevD.107.014511
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
-# define BR_Kplus_nunubar 0.00000398 // (eq. 10)
+# define BR_Kplus_nunubar 0.000005044 // Table VI = (5.044 +- 0.402) * 10^{-6}
 # define BR_K0star_nunubar 0.00000919 // (eq. 11)
-# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15)
+# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15). In Table VI = (4.6669 +- 0.3707) * 10^{-6}
 # define BR_Kplusstar_nunubar (BR_K0star_nunubar*TBp/TB0) // under (eq. 15)
 # define BR_Xs_nunubar 0.000029 // (eq. 23)
 # define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
 # define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
 
-// https://confluence.desy.de/pages/viewpage.action?pageId=107054222
-# define N_BpBp_1invab 565400000.0
-# define N_B0B0_1invab 534600000.0
+// according to DIRAC
+# define N_BpBp_1invab 540000000.0
+# define N_B0B0_1invab 510000000.0
 
-# define N_Kplus_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplus_nunubar)
-# define N_Kplusstar_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplusstar_nunubar)
-# define N_Xsu_nonresonant_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Xsu_nonresonant_nunubar)
-# define N_K0_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0_nunubar)
-# define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
-# define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
+# define BR_BpBp 0.514
+# define BR_B0B0 0.486
 
-/*
-// my MC sample number
-# define N_Kplus_nunubar 10000000.0
-# define N_K0_nunubar 10000000.0
-# define N_Kplusstar_nunubar 10000000.0
-# define N_K0star_nunubar 10000000.0
-# define N_Xsu_nonresonant_nunubar 50000000.0
-# define N_Xsd_nonresonant_nunubar 50000000.0
+// https://confluence.desy.de/pages/viewpage.action?spaceKey=BI&title=Conference+readiness
+# define N_BB_LS1 387100000.0 // NBB = (387.1 +/- 5.6) x 10^6
 
-// scale factor for each MC sample
-# define Scale_Kplus (N_Kplus_nunubar_1invab/N_Kplus_nunubar)
-# define Scale_Kplusstar (N_Kplusstar_nunubar_1invab/N_Kplusstar_nunubar)
-# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar)
-# define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
-# define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
-# define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
-*/
+# define N_Kplus_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplus_nunubar)
+# define N_Kplusstar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplusstar_nunubar)
+# define N_Xsu_nonresonant_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Xsu_nonresonant_nunubar)
+# define N_K0_nunubar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0_nunubar)
+# define N_K0star_nunubar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0star_nunubar)
+# define N_Xsd_nunubar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_Xsd_nonresonant_nunubar)
 
-// SIGNAL MC sample number
+// SIGNAL MC sample number befor skimming
 # define N_Kplus_train 7039000.0
 # define N_K0_train 7166624.0
 # define N_Kplusstar_train 7039000.0
@@ -97,47 +85,186 @@
 # define N_Xsu_nonresonant_test 14805000.0
 # define N_Xsd_nonresonant_test 15059570.0
 
-// scale factor for SIGNAL MC sample (364.436 - 2.763 = 361.673/fb)
-# define Scale_Kplus_train (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_train)
-# define Scale_Kplusstar_train (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_train)
-# define Scale_Xsu_nonresonant_train (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_train)
-# define Scale_K0_train (0.361673 * N_K0_nunubar_1invab/N_K0_train)
-# define Scale_K0star_train (0.361673 * N_K0star_nunubar_1invab/N_K0star_train)
-# define Scale_Xsd_nonresonant_train (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_train)
-# define Scale_Kplus_test (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_test)
-# define Scale_Kplusstar_test (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_test)
-# define Scale_Xsu_nonresonant_test (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_test)
-# define Scale_K0_test (0.361673 * N_K0_nunubar_1invab/N_K0_test)
-# define Scale_K0star_test (0.361673 * N_K0star_nunubar_1invab/N_K0star_test)
-# define Scale_Xsd_nonresonant_test (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_test)
+// scale factor for SIGNAL MC sample until LS1
+# define Scale_Kplus_train (N_Kplus_nunubar_LS1/N_Kplus_train)
+# define Scale_Kplusstar_train (N_Kplusstar_nunubar_LS1/N_Kplusstar_train)
+# define Scale_Xsu_nonresonant_train (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_train)
+# define Scale_K0_train (N_K0_nunubar_LS1/N_K0_train)
+# define Scale_K0star_train (N_K0star_nunubar_LS1/N_K0star_train)
+# define Scale_Xsd_nonresonant_train (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_train)
+# define Scale_Kplus_test (N_Kplus_nunubar_LS1/N_Kplus_test)
+# define Scale_Kplusstar_test (N_Kplusstar_nunubar_LS1/N_Kplusstar_test)
+# define Scale_Xsu_nonresonant_test (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_test)
+# define Scale_K0_test (N_K0_nunubar_LS1/N_K0_test)
+# define Scale_K0star_test (N_K0star_nunubar_LS1/N_K0star_test)
+# define Scale_Xsd_nonresonant_test (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_test)
 
-// BKG MC sample number (0.8/ab for BB, 1.0/ab for qq)
-# define N_CHG_test 32042497.0
-# define N_MIX_test 24693710.0
-# define N_UUBAR_test 94447089.0
-# define N_DDBAR_test 22664556.0
-# define N_SSBAR_test 19244661.0
-# define N_CHARM_test 107541168.0
-# define N_CHG_train 48052238.0
-# define N_MIX_train 37030486.0
-# define N_UUBAR_train 141671998.0
-# define N_DDBAR_train 34114182.0
-# define N_SSBAR_train 28859338.0
-# define N_CHARM_train 161280679.0
+// BKG MC sample number (0.8/ab for BB, 1.0/ab for qq) after skimming
+# define N_CHG_train 32042497.0
+# define N_MIX_train 24693710.0
+# define N_UUBAR_train 94447089.0
+# define N_DDBAR_train 22664556.0
+# define N_SSBAR_train 19244661.0
+# define N_CHARM_train 107541168.0
+# define N_CHG_test 48052238.0
+# define N_MIX_test 37030486.0
+# define N_UUBAR_test 141671998.0
+# define N_DDBAR_test 34114182.0
+# define N_SSBAR_test 28859338.0
+# define N_CHARM_test 161280679.0
 
-// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb)
-# define Scale_CHG_train (0.361673/((N_CHG_train/(N_CHG_train + N_CHG_test))*0.8+1.0))
-# define Scale_MIX_train (0.361673/((N_MIX_train/(N_MIX_train + N_MIX_test))*0.8+1.0))
+// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb), until LS1
+# define Scale_CHG_train ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab * (N_CHG_train / (N_CHG_train + N_CHG_test)) + N_BpBp_1invab))
+# define Scale_MIX_train ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab * (N_MIX_train / (N_MIX_train + N_MIX_test)) + N_B0B0_1invab))
 # define Scale_UUBAR_train (0.361673/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
 # define Scale_DDBAR_train (0.361673/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
 # define Scale_SSBAR_train (0.361673/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_train (0.361673/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
-# define Scale_CHG_test (0.361673/((N_CHG_test/(N_CHG_train + N_CHG_test))*0.8+1.0))
-# define Scale_MIX_test (0.361673/((N_MIX_test/(N_MIX_train + N_MIX_test))*0.8+1.0))
+# define Scale_CHG_test ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab * (N_CHG_test / (N_CHG_train + N_CHG_test)) + N_BpBp_1invab))
+# define Scale_MIX_test ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab * (N_MIX_test / (N_MIX_train + N_MIX_test)) + N_B0B0_1invab))
 # define Scale_UUBAR_test (0.361673/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
 # define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
 # define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
+
+class Corrector {
+private:
+    static const int STEP = 100;
+
+    static const double mKp = 0.493677;
+    static const double mK0 = 0.497611;
+
+    static const double mBp = 5.27934;
+    static const double mB0 = 5.27965;
+
+    static const double alpha0_old = 0.432;
+    static const double alpha1_old = -0.664;
+    static const double alpha2_old = -1.2;
+    static const double mp_Bp_old = 5.27934 + 0.046;
+    static const double mp_B0_old = 5.27965 + 0.046;
+
+    static const double alpha0_new = 0.2545; // 0.2545 +- 0.0090
+    static const double alpha1_new = -0.71; // -0.71 +- 0.14
+    static const double alpha2_new = 0.32; // 0.32 +- 0.59
+    static const double mp_B_new = 5.4158; //  5.4158 +- 0.0015
+
+    double Total_Bp_old;
+    double Total_B0_old;
+    double Total_Bp_new;
+    double Total_B0_new;
+public:
+    Corrector();
+    double GetCorrectionFactor(double q2, std::string type);
+};
+
+Corrector corrector;
+
+Corrector::Corrector() {
+    Total_Bp_old = 0;
+    Total_B0_old = 0;
+    Total_Bp_new = 0;
+    Total_B0_new = 0;
+
+    // Bp old
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+        double delq2 = (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+
+        double tp = (mBp + mKp) * (mBp + mKp);
+        double tm = (mBp - mKp) * (mBp - mKp);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_Bp_old * mp_Bp_old))) * (alpha0_old + alpha1_old * z + alpha2_old * z * z + (-alpha1_old + 2 * alpha2_old) * z * z * z / 3);
+        double lambda = std::pow(mBp, 4) + std::pow(mKp, 4) + std::pow(q2, 2) - 2 * (std::pow(mBp, 2) * std::pow(mKp, 2) + std::pow(mKp, 2) * q2 + std::pow(mBp, 2) * q2);
+
+        Total_Bp_old = Total_Bp_old + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+
+    // B0 old
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+        double delq2 = (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+
+        double tp = (mB0 + mK0) * (mB0 + mK0);
+        double tm = (mB0 - mK0) * (mB0 - mK0);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_B0_old * mp_B0_old))) * (alpha0_old + alpha1_old * z + alpha2_old * z * z + (-alpha1_old + 2 * alpha2_old) * z * z * z / 3);
+        double lambda = std::pow(mB0, 4) + std::pow(mK0, 4) + std::pow(q2, 2) - 2 * (std::pow(mB0, 2) * std::pow(mK0, 2) + std::pow(mK0, 2) * q2 + std::pow(mB0, 2) * q2);
+
+        Total_B0_old = Total_B0_old + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+
+    // Bp new
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+        double delq2 = (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+
+        double tp = (mBp + mKp) * (mBp + mKp);
+        double tm = (mBp - mKp) * (mBp - mKp);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z + alpha2_new * z * z + (-alpha1_new + 2 * alpha2_new) * z * z * z / 3);
+        double lambda = std::pow(mBp, 4) + std::pow(mKp, 4) + std::pow(q2, 2) - 2 * (std::pow(mBp, 2) * std::pow(mKp, 2) + std::pow(mKp, 2) * q2 + std::pow(mBp, 2) * q2);
+
+        Total_Bp_new = Total_Bp_new + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+
+    // B0 new
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+        double delq2 = (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+
+        double tp = (mB0 + mK0) * (mB0 + mK0);
+        double tm = (mB0 - mK0) * (mB0 - mK0);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z + alpha2_new * z * z + (-alpha1_new + 2 * alpha2_new) * z * z * z / 3);
+        double lambda = std::pow(mB0, 4) + std::pow(mK0, 4) + std::pow(q2, 2) - 2 * (std::pow(mB0, 2) * std::pow(mK0, 2) + std::pow(mK0, 2) * q2 + std::pow(mB0, 2) * q2);
+
+        Total_B0_new = Total_B0_new + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+}
+
+double Corrector::GetCorrectionFactor(double q2, std::string type) {
+    if (type == "Bplus") {
+        double tp = (mBp + mKp) * (mBp + mKp);
+        double tm = (mBp - mKp) * (mBp - mKp);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+
+        double fp_old = (1 / (1 - q2 / (mp_Bp_old * mp_Bp_old))) * (alpha0_old + alpha1_old * z + alpha2_old * z * z + (-alpha1_old + 2 * alpha2_old) * z * z * z / 3);
+        double fp_new = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z + alpha2_new * z * z + (-alpha1_new + 2 * alpha2_new) * z * z * z / 3);
+        double lambda = std::pow(mBp, 4) + std::pow(mKp, 4) + std::pow(q2, 2) - 2 * (std::pow(mBp, 2) * std::pow(mKp, 2) + std::pow(mKp, 2) * q2 + std::pow(mBp, 2) * q2);
+
+        if ((std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_Bp_old) == 0) {
+            printf("[ERROR] try to divide by 0!\n");
+            exit(1);
+        }
+        return (std::pow(lambda, 1.5) * std::pow(fp_new, 2) / Total_Bp_new) / (std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_Bp_old);
+    }
+    else if (type == "Bzero") {
+        double tp = (mB0 + mK0) * (mB0 + mK0);
+        double tm = (mB0 - mK0) * (mB0 - mK0);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+
+        double fp_old = (1 / (1 - q2 / (mp_B0_old * mp_B0_old))) * (alpha0_old + alpha1_old * z + alpha2_old * z * z + (-alpha1_old + 2 * alpha2_old) * z * z * z / 3);
+        double fp_new = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z + alpha2_new * z * z + (-alpha1_new + 2 * alpha2_new) * z * z * z / 3);
+        double lambda = std::pow(mB0, 4) + std::pow(mK0, 4) + std::pow(q2, 2) - 2 * (std::pow(mB0, 2) * std::pow(mK0, 2) + std::pow(mK0, 2) * q2 + std::pow(mB0, 2) * q2);
+
+        if ((std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_B0_old) == 0) {
+            printf("[ERROR] try to divide by 0!\n");
+            exit(1);
+        }
+        return (std::pow(lambda, 1.5) * std::pow(fp_new, 2) / Total_B0_new) / (std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_B0_old);
+    }
+
+    printf("[ERROR] undefined type name");
+    exit(1);
+
+    return 0;
+}
 
 using std::string;
 
@@ -206,6 +333,8 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     double Mxs = -1;
     double Pcms = -1;
 
+    double invM = -1;
+
     tree_data->SetBranchAddress("aplanarity", &Vars[0]);
     tree_data->SetBranchAddress("Bsig_cosTBTO", &Vars[1]);
     tree_data->SetBranchAddress("Bsig_KSFWVariables_hoo1", &Vars[2]);
@@ -263,6 +392,8 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     }
     tree_data->SetBranchAddress("Bsig_M", &Mxs);
 
+    tree_data->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+
     int Nevt = 0;
     //printf("%lld entries...\n", tree_data->GetEntries());
     for (unsigned int j = 0; j < tree_data->GetEntries(); j++) { // Fill
@@ -292,7 +423,11 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
 
         IsSignal->push_back(tempissignal);
 
-        weight->push_back(weight_N);
+        double FF_reweight = 1.0;
+        if (Decay_Kplus > 0.5) FF_reweight = FF_reweight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+        else if (Decay_K0 > 0.5) FF_reweight = FF_reweight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
+
+        weight->push_back(weight_N * FF_reweight);
 
     }
 
