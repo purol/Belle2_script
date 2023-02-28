@@ -1534,29 +1534,46 @@ void Loader::PrintInformation(std::string title, std::string filename, bool smar
             exit(1);
         }
 
-        // Number of candidate of decayID
-        if (smartmode == false) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0;
+        // Number of candidate of decayID & Number of candidate
+        if (smartmode == false) {
+            N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0;
+            N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + 1.0;
+        }
         else {
             if (filename.find("B2Knunu") != string::npos) {
                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
                 N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplus_test * correction_weight;
+                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_Kplus_test * correction_weight;
             }
-            else if (filename.find("B2Kstarnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplusstar_test;
-            else if (filename.find("B2Xsnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsu_nonresonant_test;
+            else if (filename.find("B2Kstarnunu") != string::npos) {
+                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplusstar_test;
+                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_Kplusstar_test;
+            }
+            else if (filename.find("B2Xsnunu") != string::npos) {
+                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsu_nonresonant_test;
+                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_Xsu_nonresonant_test;
+            }
             else if (filename.find("B02K0nunu") != string::npos) {
                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
                 N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0_test * correction_weight;
+                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_K0_test * correction_weight;
             }
-            else if (filename.find("B02Kstar0nunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0star_test;
-            else if (filename.find("B02Xsnunu") != string::npos) N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsd_nonresonant_test;
-            else { N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0; }
+            else if (filename.find("B02Kstar0nunu") != string::npos) {
+                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0star_test;
+                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_K0star_test;
+            }
+            else if (filename.find("B02Xsnunu") != string::npos) {
+                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsd_nonresonant_test;
+                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_Xsd_nonresonant_test;
+            }
+            else { 
+                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0;
+                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + 1.0;
+            }
         }
 
         TotalData.push(temp);
     }
-
-    // Number of candidate
-    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + N_candidates_modes[i].at(current_N_candidate);
 
     current_N_event++;
     current_N_candidate++;
