@@ -412,7 +412,7 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     }
     tree_data->SetBranchAddress("Bsig_M", &Mxs);
 
-    tree_data->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+    if(tempissignal) tree_data->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
 
     int Nevt = 0;
     //printf("%lld entries...\n", tree_data->GetEntries());
