@@ -685,6 +685,202 @@ public:
 
 CDF cdf;
 
+class Corrector {
+private:
+    const int STEP;
+
+    const double mKp;
+    const double mK0;
+
+    const double mBp;
+    const double mB0;
+
+    const double alpha0_old;
+    const double alpha1_old;
+    const double alpha2_old;
+    const double mp_Bp_old;
+    const double mp_B0_old;
+
+    const double alpha0_new; // 0.2545 +- 0.0090
+    const double alpha1_new; // -0.71 +- 0.14
+    const double alpha2_new; // 0.32 +- 0.59
+    const double mp_B_new; //  5.4158 +- 0.0015
+
+    double Total_Bp_old;
+    double Total_B0_old;
+    double Total_Bp_new;
+    double Total_B0_new;
+public:
+    Corrector();
+    double GetCorrectionFactor(double q2, std::string type);
+    double GetUncertaintyWeight(double q2, std::string type, double alpha0_other, double alpha1_other, double alpha2_other);
+    void Drawq2Plot(bool IsItNew, std::string type);
+};
+
+Corrector corrector;
+
+Corrector::Corrector() :
+    STEP(2000),
+    mKp(0.493677),
+    mK0(0.497611),
+    mBp(5.27934),
+    mB0(5.27965),
+    alpha0_old(0.432),
+    alpha1_old(-0.664),
+    alpha2_old(-1.2),
+    mp_Bp_old(5.27934 + 0.046),
+    mp_B0_old(5.27965 + 0.046),
+    alpha0_new(0.2545),
+    alpha1_new(-0.71),
+    alpha2_new(0.32),
+    mp_B_new(5.4158)
+{
+    Total_Bp_old = 0;
+    Total_B0_old = 0;
+    Total_Bp_new = 0;
+    Total_B0_new = 0;
+
+    // Bp old
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+        double delq2 = (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+
+        double tp = (mBp + mKp) * (mBp + mKp);
+        double tm = (mBp - mKp) * (mBp - mKp);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_Bp_old * mp_Bp_old))) * (alpha0_old + alpha1_old * z + alpha2_old * z * z + (-alpha1_old + 2 * alpha2_old) * z * z * z / 3);
+        double lambda = std::pow(mBp, 4) + std::pow(mKp, 4) + std::pow(q2, 2) - 2 * (std::pow(mBp, 2) * std::pow(mKp, 2) + std::pow(mKp, 2) * q2 + std::pow(mBp, 2) * q2);
+
+        Total_Bp_old = Total_Bp_old + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+
+    // B0 old
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+        double delq2 = (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+
+        double tp = (mB0 + mK0) * (mB0 + mK0);
+        double tm = (mB0 - mK0) * (mB0 - mK0);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_B0_old * mp_B0_old))) * (alpha0_old + alpha1_old * z + alpha2_old * z * z + (-alpha1_old + 2 * alpha2_old) * z * z * z / 3);
+        double lambda = std::pow(mB0, 4) + std::pow(mK0, 4) + std::pow(q2, 2) - 2 * (std::pow(mB0, 2) * std::pow(mK0, 2) + std::pow(mK0, 2) * q2 + std::pow(mB0, 2) * q2);
+
+        Total_B0_old = Total_B0_old + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+
+    // Bp new
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+        double delq2 = (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+
+        double tp = (mBp + mKp) * (mBp + mKp);
+        double tm = (mBp - mKp) * (mBp - mKp);
+        double t0 = 0.0;
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z + alpha2_new * z * z + (-alpha1_new + 2 * alpha2_new) * z * z * z / 3);
+        double lambda = std::pow(mBp, 4) + std::pow(mKp, 4) + std::pow(q2, 2) - 2 * (std::pow(mBp, 2) * std::pow(mKp, 2) + std::pow(mKp, 2) * q2 + std::pow(mBp, 2) * q2);
+
+        Total_Bp_new = Total_Bp_new + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+
+    // B0 new
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+        double delq2 = (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+
+        double tp = (mB0 + mK0) * (mB0 + mK0);
+        double tm = (mB0 - mK0) * (mB0 - mK0);
+        double t0 = 0.0;
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z + alpha2_new * z * z + (-alpha1_new + 2 * alpha2_new) * z * z * z / 3);
+        double lambda = std::pow(mB0, 4) + std::pow(mK0, 4) + std::pow(q2, 2) - 2 * (std::pow(mB0, 2) * std::pow(mK0, 2) + std::pow(mK0, 2) * q2 + std::pow(mB0, 2) * q2);
+
+        Total_B0_new = Total_B0_new + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+}
+
+double Corrector::GetCorrectionFactor(double q2, std::string type) {
+    if (type == "Bplus") {
+        double tp = (mBp + mKp) * (mBp + mKp);
+        double tm = (mBp - mKp) * (mBp - mKp);
+        double t0_old = tp * (1 - std::sqrt(1 - tm / tp));
+        double t0_new = 0.0;
+        double z_old = (std::sqrt(tp - q2) - std::sqrt(tp - t0_old)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0_old));
+        double z_new = (std::sqrt(tp - q2) - std::sqrt(tp - t0_new)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0_new));
+
+        double fp_old = (1 / (1 - q2 / (mp_Bp_old * mp_Bp_old))) * (alpha0_old + alpha1_old * z_old + alpha2_old * z_old * z_old + (-alpha1_old + 2 * alpha2_old) * z_old * z_old * z_old / 3);
+        double fp_new = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z_new + alpha2_new * z_new * z_new + (-alpha1_new + 2 * alpha2_new) * z_new * z_new * z_new / 3);
+        double lambda = std::pow(mBp, 4) + std::pow(mKp, 4) + std::pow(q2, 2) - 2 * (std::pow(mBp, 2) * std::pow(mKp, 2) + std::pow(mKp, 2) * q2 + std::pow(mBp, 2) * q2);
+
+        if ((std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_Bp_old) == 0) {
+            printf("[ERROR] try to divide by 0!\n");
+            exit(1);
+        }
+        return (std::pow(lambda, 1.5) * std::pow(fp_new, 2) / Total_Bp_new) / (std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_Bp_old);
+    }
+    else if (type == "Bzero") {
+        double tp = (mB0 + mK0) * (mB0 + mK0);
+        double tm = (mB0 - mK0) * (mB0 - mK0);
+        double t0_old = tp * (1 - std::sqrt(1 - tm / tp));
+        double t0_new = 0.0;
+        double z_old = (std::sqrt(tp - q2) - std::sqrt(tp - t0_old)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0_old));
+        double z_new = (std::sqrt(tp - q2) - std::sqrt(tp - t0_new)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0_new));
+
+        double fp_old = (1 / (1 - q2 / (mp_B0_old * mp_B0_old))) * (alpha0_old + alpha1_old * z_old + alpha2_old * z_old * z_old + (-alpha1_old + 2 * alpha2_old) * z_old * z_old * z_old / 3);
+        double fp_new = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z_new + alpha2_new * z_new * z_new + (-alpha1_new + 2 * alpha2_new) * z_new * z_new * z_new / 3);
+        double lambda = std::pow(mB0, 4) + std::pow(mK0, 4) + std::pow(q2, 2) - 2 * (std::pow(mB0, 2) * std::pow(mK0, 2) + std::pow(mK0, 2) * q2 + std::pow(mB0, 2) * q2);
+
+        if ((std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_B0_old) == 0) {
+            printf("[ERROR] try to divide by 0!\n");
+            exit(1);
+        }
+        return (std::pow(lambda, 1.5) * std::pow(fp_new, 2) / Total_B0_new) / (std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_B0_old);
+    }
+
+    printf("[ERROR] undefined type name");
+    exit(1);
+
+    return 0;
+}
+
+double Corrector::GetUncertaintyWeight(double q2, std::string type, double alpha0_other, double alpha1_other, double alpha2_other) {
+    if (type == "Bplus") {
+        double tp = (mBp + mKp) * (mBp + mKp);
+        double tm = (mBp - mKp) * (mBp - mKp);
+        double t0_new = 0.0;
+        double z_new = (std::sqrt(tp - q2) - std::sqrt(tp - t0_new)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0_new));
+
+        double fp_new = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z_new + alpha2_new * z_new * z_new + (-alpha1_new + 2 * alpha2_new) * z_new * z_new * z_new / 3);
+        double fp_other = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_other + alpha1_other * z_new + alpha2_other * z_new * z_new + (-alpha1_other + 2 * alpha2_other) * z_new * z_new * z_new / 3);
+        double lambda = std::pow(mBp, 4) + std::pow(mKp, 4) + std::pow(q2, 2) - 2 * (std::pow(mBp, 2) * std::pow(mKp, 2) + std::pow(mKp, 2) * q2 + std::pow(mBp, 2) * q2);
+
+        if (std::pow(lambda, 1.5) * std::pow(fp_new, 2) == 0) {
+            printf("[ERROR] try to divide by 0!\n");
+            exit(1);
+        }
+        return (std::pow(lambda, 1.5) * std::pow(fp_other, 2)) / (std::pow(lambda, 1.5) * std::pow(fp_new, 2));
+    }
+    else if (type == "Bzero") {
+        double tp = (mB0 + mK0) * (mB0 + mK0);
+        double tm = (mB0 - mK0) * (mB0 - mK0);
+        double t0_new = 0.0;
+   
+        double z_new = (std::sqrt(tp - q2) - std::sqrt(tp - t0_new)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0_new));
+
+        double fp_new = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z_new + alpha2_new * z_new * z_new + (-alpha1_new + 2 * alpha2_new) * z_new * z_new * z_new / 3);
+        double fp_other = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_other + alpha1_other * z_new + alpha2_other * z_new * z_new + (-alpha1_other + 2 * alpha2_other) * z_new * z_new * z_new / 3);
+        double lambda = std::pow(mB0, 4) + std::pow(mK0, 4) + std::pow(q2, 2) - 2 * (std::pow(mB0, 2) * std::pow(mK0, 2) + std::pow(mK0, 2) * q2 + std::pow(mB0, 2) * q2);
+
+        if (std::pow(lambda, 1.5) * std::pow(fp_new, 2) == 0) {
+            printf("[ERROR] try to divide by 0!\n");
+            exit(1);
+        }
+        return (std::pow(lambda, 1.5) * std::pow(fp_other, 2)) / (std::pow(lambda, 1.5) * std::pow(fp_new, 2));
+    }
+}
+
 /* ====================================== */
 
 // global variables to calculate uncertainties
@@ -877,7 +1073,7 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double 
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == 1) || (CorrectionType == 2)) tree_Xs->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -911,8 +1107,14 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double 
     return Nevt;
 }
 
-double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp, double weight_var = 1.0) { // get FEI uncertainty PDF with appropriate correction
+double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get FEI uncertainty PDF with appropriate correction
     // Be careful! You should combine this function with `GetNominalPDFs` function!
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    otherwise
+    */
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
     else if (strcmp(type, "Continuum") == 0) {}
@@ -927,6 +1129,8 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
     double Bsig_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
+    double invM = -1.0;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -940,6 +1144,10 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
+
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
@@ -950,12 +1158,14 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -981,6 +1191,8 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             }
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
 
             Nevt = Nevt + total_weight;
 
@@ -994,7 +1206,13 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
     return Nevt;
 }
 
-double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp, double weight_var = 1.0) { // get pi0 uncertainty PDF with appropriate correction
+double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get pi0 uncertainty PDF with appropriate correction
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    otherwise
+    */
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
     else if (strcmp(type, "Continuum") == 0) {}
@@ -1009,6 +1227,8 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
     double Bsig_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
+    double invM = -1.0;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -1022,6 +1242,10 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
+
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
@@ -1032,12 +1256,14 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -1058,6 +1284,8 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             }
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
 
             Nevt = Nevt + total_weight;
 
@@ -1071,7 +1299,13 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
     return Nevt;
 }
 
-double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp, double weight_var = 1.0) { // get track efficiency uncertainty PDF with appropriate correction
+double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get track efficiency uncertainty PDF with appropriate correction
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    otherwise
+    */
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
     else if (strcmp(type, "Continuum") == 0) {}
@@ -1086,6 +1320,8 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsIt
     double Bsig_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
+    double invM = -1.0;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -1099,6 +1335,10 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsIt
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
+
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
@@ -1109,12 +1349,14 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsIt
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
             double Ntrack = GetNtracks(Upsilon_ID, Bsig_ID);
@@ -1137,6 +1379,8 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsIt
             else Correction_track = (1 - (Ntrack * track_rel_uncertainty / 100.0));
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_track;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
 
             Nevt = Nevt + total_weight;
 
@@ -1150,7 +1394,13 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsIt
     return Nevt;
 }
 
-double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp, double weight_var = 1.0) { // get KS0 uncertainty PDF with appropriate correction
+double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get KS0 uncertainty PDF with appropriate correction
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    otherwise
+    */
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
     else if (strcmp(type, "Continuum") == 0) {}
@@ -1166,6 +1416,8 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_KS0_3D_distance = -1;
 
+    double invM = -1.0;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -1179,6 +1431,10 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
+
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
@@ -1190,12 +1446,14 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_KS0_3D_distance);
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -1217,6 +1475,8 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             else KS0_correction = 1 - (KS0_rel_uncertainty * temp_KS0_3D_distance / 100.0);
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * KS0_correction;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
 
             Nevt = Nevt + total_weight;
 
@@ -1408,7 +1668,7 @@ void GetBRUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist) 
     for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
 }
 
-void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[7], const char* type, int charge, double weight_var = 1.0) { // get Kff uncertainty PDF with appropriate correction
+void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[7], const char* type, int charge, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get Kff uncertainty PDF with appropriate correction
     // Be careful! You should combine this function with `GetNominalPDFs` function!
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
@@ -1421,34 +1681,32 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
     double m_b = -1; // B meson mass
     double m_k = -1; // Kaon mass
 
-    const double alpha0 = 0.432; // +-0.011
-    const double alpha1 = -0.664; // +-0.096
-    const double alpha2 = -1.2; // +-0.69
-    const double alpha0_sigma = 0.011;
-    const double alpha1_sigma = -0.664;
-    const double alpha2_sigma = -1.2;
+    const double alpha0 = 0.2545; // 0.2545 +- 0.0090
+    const double alpha1 = -0.71; // -0.71 +- 0.14
+    const double alpha2 = 0.32; // 0.32 +- 0.59
+
     /*
     <PCA>
-    e0 = -0.00586 alpha0 + 0.03681 alpha1 + 0.99931 alpha2
-    e1 = 0.05181 alpha0 + 0.99799 alpha1 - 0.03646 alpha2
-    e2 = 0.99864 alpha0 -0.05156 alpha2 + 0.00776 alpha2
-    lambda0 = 0.69047
-    lambda1 = 0.09274
-    lambda2 = 0.01007
+    e0 = 0.00090 alpha0 + 0.19987 alpha1 + 0.97982 alpha2
+    e1 = 0.06182 alpha0 + 0.97794 alpha1 - 0.19954 alpha2
+    e2 = 0.99809 alpha0 - 0.06075 alpha2 + 0.01148 alpha2
+    lambda0 = 0.60197
+    lambda1 = 0.07314
+    lambda2 = 0.00778
     */
     const double LinearCoefficients[3][3] = {
-        {-0.005860659921244,   0.051812539908648,   0.998639631385367},
-        {0.036811794399807,   0.997991063981209, -0.051562854912436},
-        {0.999305030738039, -0.036459524432847,   0.007756198796883}
+        {0.000898287544607,   0.199871550874459,   0.979821696141969},
+        {0.061817247836003,   0.977937066768286, - 0.199543782941545},
+        {0.998087080844888, - 0.060749128320321,   0.011477040509285}
     };
     const double Lambdas[7][3] = {
-        {0.0, 0.0, 0.0},
-        {0.690465567619637, 0.0, 0.0},
-        {-0.690465567619637, 0.0, 0.0},
-        {0.0, 0.092737087984295, 0.0},
-        {0.0, -0.092737087984295, 0.0},
-        {0.0, 0.0, 0.010065727287981},
-        {0.0, 0.0, -0.010065727287981}
+        { 0.0,                0.0,                0.0              },
+        { 0.601972208713257,  0.0,                0.0              },
+        {-0.601972208713257,  0.0,                0.0              },
+        { 0.0,                0.073143483537865,  0.0              },
+        { 0.0,               -0.073143483537865,  0.0              },
+        { 0.0,                0.0,                0.007777700923050},
+        { 0.0,                0.0,               -0.007777700923050}
     };
     double fluctuations[7][3] = { 0.0 };
     for (int i = 0; i < 7; i++) {
@@ -1460,24 +1718,24 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
     fluctuations[0][0] = 0.0; // alpha0 change
     fluctuations[0][1] = 0.0; // alpha1 change
     fluctuations[0][2] = 0.0; // alpha2 change
-    fluctuations[1][0] = 0.69047 * (-0.00586); // alpha0 change Lambdas[1][0]*LinearCoefficients[0][0] + Lambdas[1][1]*LinearCoefficients[1][0] + Lambdas[1][2]*LinearCoefficients[2][0]
-    fluctuations[1][1] = 0.69047 * 0.03681; // alpha1 change Lambdas[1][0]*LinearCoefficients[0][1] + Lambdas[1][1]*LinearCoefficients[1][1] + Lambdas[1][2]*LinearCoefficients[2][1]
-    fluctuations[1][2] = 0.69047 * 0.99931; // alpha2 change
-    fluctuations[2][0] = (-0.69047) * (-0.00586); // alpha0 change
-    fluctuations[2][1] = (-0.69047) * 0.03681; // alpha1 change
-    fluctuations[2][2] = (-0.69047) * 0.99931; // alpha2 change
-    fluctuations[3][0] = 0.09274 * 0.05181; // alpha0 change
-    fluctuations[3][1] = 0.09274 * 0.99799; // alpha1 change
-    fluctuations[3][2] = 0.09274 * (-0.03646); // alpha2 change
-    fluctuations[4][0] = (-0.09274) * 0.05181; // alpha0 change
-    fluctuations[4][1] = (-0.09274) * 0.99799; // alpha1 change
-    fluctuations[4][2] = (-0.09274) * (-0.03646); // alpha2 change
-    fluctuations[5][0] = 0.01007 * 0.99864; // alpha0 change
-    fluctuations[5][1] = 0.01007 * (-0.05156); // alpha1 change
-    fluctuations[5][2] = 0.01007 * 0.00775; // alpha2 change
-    fluctuations[6][0] = 0.01007 * 0.99864; // alpha0 change
-    fluctuations[6][1] = 0.01007 * (-0.05156); // alpha1 change
-    fluctuations[6][2] = 0.01007 * 0.00775; // alpha2 change
+    fluctuations[1][0] = 0.60197 * 0.00090; // alpha0 change Lambdas[1][0]*LinearCoefficients[0][0] + Lambdas[1][1]*LinearCoefficients[1][0] + Lambdas[1][2]*LinearCoefficients[2][0]
+    fluctuations[1][1] = 0.60197 * 0.19987; // alpha1 change Lambdas[1][0]*LinearCoefficients[0][1] + Lambdas[1][1]*LinearCoefficients[1][1] + Lambdas[1][2]*LinearCoefficients[2][1]
+    fluctuations[1][2] = 0.60197 * 0.97982; // alpha2 change
+    fluctuations[2][0] = (-0.60197) * 0.00090; // alpha0 change
+    fluctuations[2][1] = (-0.60197) * 0.19987; // alpha1 change
+    fluctuations[2][2] = (-0.60197) * 0.97982; // alpha2 change
+    fluctuations[3][0] = 0.07314 * 0.06182; // alpha0 change
+    fluctuations[3][1] = 0.07314 * 0.97794; // alpha1 change
+    fluctuations[3][2] = 0.07314 * (-0.19954); // alpha2 change
+    fluctuations[4][0] // alpha0 change
+    fluctuations[4][1] // alpha1 change
+    fluctuations[4][2] // alpha2 change
+    fluctuations[5][0] // alpha0 change
+    fluctuations[5][1] // alpha1 change
+    fluctuations[5][2] // alpha2 change
+    fluctuations[6][0] // alpha0 change
+    fluctuations[6][1] // alpha1 change
+    fluctuations[6][2] // alpha2 change
     */
     double value[7] = { 0.0 }; // value of lambda^1.5 * fp*fp
     double Nevts[7] = { 0.0 }; // number of events at each fluctuations
@@ -1557,16 +1815,18 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
                 const double alpha1_fluc = alpha1 + fluctuations[k][1];
                 const double alpha2_fluc = alpha2 + fluctuations[k][2];
 
-                double mp = m_b + 0.046;
+                double mp = 5.4158;
                 double tp = (m_b + m_k) * (m_b + m_k);
                 double tm = (m_b - m_k) * (m_b - m_k);
-                double t0 = tp * (1 - sqrt(1 - tm / tp));
+                double t0 = 0.0;
                 double z = (sqrt(tp - q2) - sqrt(tp - t0)) / (sqrt(tp - q2) + sqrt(tp - t0));
                 double fp = (1 / (1 - q2 / (mp * mp))) * (alpha0_fluc + alpha1_fluc * z + alpha2_fluc * z * z + (-alpha1_fluc + 2 * alpha2_fluc) * z * z * z / 3);
                 double lambda = (m_b * m_b * m_b * m_b) + (m_k * m_k * m_k * m_k) + (q2 * q2) - 2 * (m_b * m_b * m_k * m_k + m_b * m_b * q2 + m_k * m_k * q2);
 
                 value[k] = std::pow(lambda, 1.5) * fp * fp;
                 double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * (value[k] / value[0]);
+                if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(q2, "Bplus");
+                else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(q2, "Bzero");
                 hist[k]->Fill(MVA_var, total_weight );
                 Nevts[k] = Nevts[k] + total_weight;
             }
@@ -1600,10 +1860,10 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
         for (int i = 0; i < step; i++) {
             const double q2_integral = q2_min + delq2 * i;
 
-            double mp = m_b_fix + 0.046;
+            double mp = 5.4158;
             double tp = (m_b_fix + m_k_fix) * (m_b_fix + m_k_fix);
             double tm = (m_b_fix - m_k_fix) * (m_b_fix - m_k_fix);
-            double t0 = tp * (1 - sqrt(1 - tm / tp));
+            double t0 = 0.0;
             double z = (sqrt(tp - q2_integral) - sqrt(tp - t0)) / (sqrt(tp - q2_integral) + sqrt(tp - t0));
             double fp = (1 / (1 - q2_integral / (mp * mp))) * (alpha0_fluc + alpha1_fluc * z + alpha2_fluc * z * z + (-alpha1_fluc + 2 * alpha2_fluc) * z * z * z / 3);
             double lambda = (m_b_fix * m_b_fix * m_b_fix * m_b_fix) + (m_k_fix * m_k_fix * m_k_fix * m_k_fix) + (q2_integral * q2_integral) - 2 * (m_b_fix * m_b_fix * m_k_fix * m_k_fix + m_b_fix * m_b_fix * q2_integral + m_k_fix * m_k_fix * q2_integral);
@@ -2590,16 +2850,16 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNominalPDFs(MC_dirname_CHARM, CHARM_nominal, "Continuum", Scale_CHARM_test, "otherwise");
 
     // get FEI uncertainty pdfs
-    GetFEIPDFs(MC_dirname_Knunu, Signal_FEI_charged_p, "Bplus", true, Scale_Kplus_test);
-    GetFEIPDFs(MC_dirname_Kstarnunu, Signal_FEI_charged_p, "Bplus", true, Scale_Kplusstar_test);
-    GetFEIPDFs(MC_dirname_Xsununu, Signal_FEI_charged_p, "Bplus", true, Scale_Xsu_nonresonant_test);
+    GetFEIPDFs(MC_dirname_Knunu, Signal_FEI_charged_p, "Bplus", true, Scale_Kplus_test, "B2Knunu");
+    GetFEIPDFs(MC_dirname_Kstarnunu, Signal_FEI_charged_p, "Bplus", true, Scale_Kplusstar_test, "otherwise");
+    GetFEIPDFs(MC_dirname_Xsununu, Signal_FEI_charged_p, "Bplus", true, Scale_Xsu_nonresonant_test, "otherwise");
     GetNominalPDFs(MC_dirname_K0nunu, Signal_FEI_charged_p, "Bzero", Scale_K0_test, "B02K0nunu");
     GetNominalPDFs(MC_dirname_K0starnunu, Signal_FEI_charged_p, "Bzero", Scale_K0star_test, "otherwise");
     GetNominalPDFs(MC_dirname_Xsdnunu, Signal_FEI_charged_p, "Bzero", Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetFEIPDFs(MC_dirname_Knunu, Signal_FEI_charged_m, "Bplus", false, Scale_Kplus_test);
-    GetFEIPDFs(MC_dirname_Kstarnunu, Signal_FEI_charged_m, "Bplus", false, Scale_Kplusstar_test);
-    GetFEIPDFs(MC_dirname_Xsununu, Signal_FEI_charged_m, "Bplus", false, Scale_Xsu_nonresonant_test);
+    GetFEIPDFs(MC_dirname_Knunu, Signal_FEI_charged_m, "Bplus", false, Scale_Kplus_test, "B2Knunu");
+    GetFEIPDFs(MC_dirname_Kstarnunu, Signal_FEI_charged_m, "Bplus", false, Scale_Kplusstar_test, "otherwise");
+    GetFEIPDFs(MC_dirname_Xsununu, Signal_FEI_charged_m, "Bplus", false, Scale_Xsu_nonresonant_test, "otherwise");
     GetNominalPDFs(MC_dirname_K0nunu, Signal_FEI_charged_m, "Bzero", Scale_K0_test, "B02K0nunu");
     GetNominalPDFs(MC_dirname_K0starnunu, Signal_FEI_charged_m, "Bzero", Scale_K0star_test, "otherwise");
     GetNominalPDFs(MC_dirname_Xsdnunu, Signal_FEI_charged_m, "Bzero", Scale_Xsd_nonresonant_test, "otherwise");
@@ -2607,103 +2867,103 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNominalPDFs(MC_dirname_Knunu, Signal_FEI_neutral_p, "Bplus", Scale_Kplus_test, "B2Knunu");
     GetNominalPDFs(MC_dirname_Kstarnunu, Signal_FEI_neutral_p, "Bplus", Scale_Kplusstar_test, "otherwise");
     GetNominalPDFs(MC_dirname_Xsununu, Signal_FEI_neutral_p, "Bplus", Scale_Xsu_nonresonant_test, "otherwise");
-    GetFEIPDFs(MC_dirname_K0nunu, Signal_FEI_neutral_p, "Bzero", true, Scale_K0_test);
-    GetFEIPDFs(MC_dirname_K0starnunu, Signal_FEI_neutral_p, "Bzero", true, Scale_K0star_test);
-    GetFEIPDFs(MC_dirname_Xsdnunu, Signal_FEI_neutral_p, "Bzero", true, Scale_Xsd_nonresonant_test);
+    GetFEIPDFs(MC_dirname_K0nunu, Signal_FEI_neutral_p, "Bzero", true, Scale_K0_test, "B02K0nunu");
+    GetFEIPDFs(MC_dirname_K0starnunu, Signal_FEI_neutral_p, "Bzero", true, Scale_K0star_test, "otherwise");
+    GetFEIPDFs(MC_dirname_Xsdnunu, Signal_FEI_neutral_p, "Bzero", true, Scale_Xsd_nonresonant_test, "otherwise");
 
     GetNominalPDFs(MC_dirname_Knunu, Signal_FEI_neutral_m, "Bplus", Scale_Kplus_test, "B2Knunu");
     GetNominalPDFs(MC_dirname_Kstarnunu, Signal_FEI_neutral_m, "Bplus", Scale_Kplusstar_test, "otherwise");
     GetNominalPDFs(MC_dirname_Xsununu, Signal_FEI_neutral_m, "Bplus", Scale_Xsu_nonresonant_test, "otherwise");
-    GetFEIPDFs(MC_dirname_K0nunu, Signal_FEI_neutral_m, "Bzero", false, Scale_K0_test);
-    GetFEIPDFs(MC_dirname_K0starnunu, Signal_FEI_neutral_m, "Bzero", false, Scale_K0star_test);
-    GetFEIPDFs(MC_dirname_Xsdnunu, Signal_FEI_neutral_m, "Bzero", false, Scale_Xsd_nonresonant_test);
+    GetFEIPDFs(MC_dirname_K0nunu, Signal_FEI_neutral_m, "Bzero", false, Scale_K0_test, "B02K0nunu");
+    GetFEIPDFs(MC_dirname_K0starnunu, Signal_FEI_neutral_m, "Bzero", false, Scale_K0star_test, "otherwise");
+    GetFEIPDFs(MC_dirname_Xsdnunu, Signal_FEI_neutral_m, "Bzero", false, Scale_Xsd_nonresonant_test, "otherwise");
 
     // get pi0 uncertainty pdfs
-    GetPi0PDFs(MC_dirname_Knunu, Signal_pi0_p, "Bplus", true, Scale_Kplus_test);
-    GetPi0PDFs(MC_dirname_Kstarnunu, Signal_pi0_p, "Bplus", true, Scale_Kplusstar_test);
-    GetPi0PDFs(MC_dirname_Xsununu, Signal_pi0_p, "Bplus", true, Scale_Xsu_nonresonant_test);
-    GetPi0PDFs(MC_dirname_K0nunu, Signal_pi0_p, "Bzero", true, Scale_K0_test);
-    GetPi0PDFs(MC_dirname_K0starnunu, Signal_pi0_p, "Bzero", true, Scale_K0star_test);
-    GetPi0PDFs(MC_dirname_Xsdnunu, Signal_pi0_p, "Bzero", true, Scale_Xsd_nonresonant_test);
+    GetPi0PDFs(MC_dirname_Knunu, Signal_pi0_p, "Bplus", true, Scale_Kplus_test, "B2Knunu");
+    GetPi0PDFs(MC_dirname_Kstarnunu, Signal_pi0_p, "Bplus", true, Scale_Kplusstar_test, "otherwise");
+    GetPi0PDFs(MC_dirname_Xsununu, Signal_pi0_p, "Bplus", true, Scale_Xsu_nonresonant_test, "otherwise");
+    GetPi0PDFs(MC_dirname_K0nunu, Signal_pi0_p, "Bzero", true, Scale_K0_test, "B02K0nunu");
+    GetPi0PDFs(MC_dirname_K0starnunu, Signal_pi0_p, "Bzero", true, Scale_K0star_test, "otherwise");
+    GetPi0PDFs(MC_dirname_Xsdnunu, Signal_pi0_p, "Bzero", true, Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetPi0PDFs(MC_dirname_CHG, CHG_pi0_p, "Bplus", true, Scale_CHG_test);
-    GetPi0PDFs(MC_dirname_MIX, MIX_pi0_p, "Bzero", true, Scale_MIX_test);
-    GetPi0PDFs(MC_dirname_UUBAR, UUBAR_pi0_p, "Continuum", true, Scale_UUBAR_test);
-    GetPi0PDFs(MC_dirname_DDBAR, DDBAR_pi0_p, "Continuum", true, Scale_DDBAR_test);
-    GetPi0PDFs(MC_dirname_SSBAR, SSBAR_pi0_p, "Continuum", true, Scale_SSBAR_test);
-    GetPi0PDFs(MC_dirname_CHARM, CHARM_pi0_p, "Continuum", true, Scale_CHARM_test);
+    GetPi0PDFs(MC_dirname_CHG, CHG_pi0_p, "Bplus", true, Scale_CHG_test, "otherwise");
+    GetPi0PDFs(MC_dirname_MIX, MIX_pi0_p, "Bzero", true, Scale_MIX_test, "otherwise");
+    GetPi0PDFs(MC_dirname_UUBAR, UUBAR_pi0_p, "Continuum", true, Scale_UUBAR_test, "otherwise");
+    GetPi0PDFs(MC_dirname_DDBAR, DDBAR_pi0_p, "Continuum", true, Scale_DDBAR_test, "otherwise");
+    GetPi0PDFs(MC_dirname_SSBAR, SSBAR_pi0_p, "Continuum", true, Scale_SSBAR_test, "otherwise");
+    GetPi0PDFs(MC_dirname_CHARM, CHARM_pi0_p, "Continuum", true, Scale_CHARM_test, "otherwise");
 
-    GetPi0PDFs(MC_dirname_Knunu, Signal_pi0_m, "Bplus", false, Scale_Kplus_test);
-    GetPi0PDFs(MC_dirname_Kstarnunu, Signal_pi0_m, "Bplus", false, Scale_Kplusstar_test);
-    GetPi0PDFs(MC_dirname_Xsununu, Signal_pi0_m, "Bplus", false, Scale_Xsu_nonresonant_test);
-    GetPi0PDFs(MC_dirname_K0nunu, Signal_pi0_m, "Bzero", false, Scale_K0_test);
-    GetPi0PDFs(MC_dirname_K0starnunu, Signal_pi0_m, "Bzero", false, Scale_K0star_test);
-    GetPi0PDFs(MC_dirname_Xsdnunu, Signal_pi0_m, "Bzero", false, Scale_Xsd_nonresonant_test);
+    GetPi0PDFs(MC_dirname_Knunu, Signal_pi0_m, "Bplus", false, Scale_Kplus_test, "B2Knunu");
+    GetPi0PDFs(MC_dirname_Kstarnunu, Signal_pi0_m, "Bplus", false, Scale_Kplusstar_test, "otherwise");
+    GetPi0PDFs(MC_dirname_Xsununu, Signal_pi0_m, "Bplus", false, Scale_Xsu_nonresonant_test, "otherwise");
+    GetPi0PDFs(MC_dirname_K0nunu, Signal_pi0_m, "Bzero", false, Scale_K0_test, "B02K0nunu");
+    GetPi0PDFs(MC_dirname_K0starnunu, Signal_pi0_m, "Bzero", false, Scale_K0star_test, "otherwise");
+    GetPi0PDFs(MC_dirname_Xsdnunu, Signal_pi0_m, "Bzero", false, Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetPi0PDFs(MC_dirname_CHG, CHG_pi0_m, "Bplus", false, Scale_CHG_test);
-    GetPi0PDFs(MC_dirname_MIX, MIX_pi0_m, "Bzero", false, Scale_MIX_test);
-    GetPi0PDFs(MC_dirname_UUBAR, UUBAR_pi0_m, "Continuum", false, Scale_UUBAR_test);
-    GetPi0PDFs(MC_dirname_DDBAR, DDBAR_pi0_m, "Continuum", false, Scale_DDBAR_test);
-    GetPi0PDFs(MC_dirname_SSBAR, SSBAR_pi0_m, "Continuum", false, Scale_SSBAR_test);
-    GetPi0PDFs(MC_dirname_CHARM, CHARM_pi0_m, "Continuum", false, Scale_CHARM_test);
+    GetPi0PDFs(MC_dirname_CHG, CHG_pi0_m, "Bplus", false, Scale_CHG_test, "otherwise");
+    GetPi0PDFs(MC_dirname_MIX, MIX_pi0_m, "Bzero", false, Scale_MIX_test, "otherwise");
+    GetPi0PDFs(MC_dirname_UUBAR, UUBAR_pi0_m, "Continuum", false, Scale_UUBAR_test, "otherwise");
+    GetPi0PDFs(MC_dirname_DDBAR, DDBAR_pi0_m, "Continuum", false, Scale_DDBAR_test, "otherwise");
+    GetPi0PDFs(MC_dirname_SSBAR, SSBAR_pi0_m, "Continuum", false, Scale_SSBAR_test, "otherwise");
+    GetPi0PDFs(MC_dirname_CHARM, CHARM_pi0_m, "Continuum", false, Scale_CHARM_test, "otherwise");
 
     // get track uncertainty pdfs
-    GetTrackPDFs(MC_dirname_Knunu, Signal_track_p, "Bplus", true, Scale_Kplus_test);
-    GetTrackPDFs(MC_dirname_Kstarnunu, Signal_track_p, "Bplus", true, Scale_Kplusstar_test);
-    GetTrackPDFs(MC_dirname_Xsununu, Signal_track_p, "Bplus", true, Scale_Xsu_nonresonant_test);
-    GetTrackPDFs(MC_dirname_K0nunu, Signal_track_p, "Bzero", true, Scale_K0_test);
-    GetTrackPDFs(MC_dirname_K0starnunu, Signal_track_p, "Bzero", true, Scale_K0star_test);
-    GetTrackPDFs(MC_dirname_Xsdnunu, Signal_track_p, "Bzero", true, Scale_Xsd_nonresonant_test);
+    GetTrackPDFs(MC_dirname_Knunu, Signal_track_p, "Bplus", true, Scale_Kplus_test, "B2Knunu");
+    GetTrackPDFs(MC_dirname_Kstarnunu, Signal_track_p, "Bplus", true, Scale_Kplusstar_test, "otherwise");
+    GetTrackPDFs(MC_dirname_Xsununu, Signal_track_p, "Bplus", true, Scale_Xsu_nonresonant_test, "otherwise");
+    GetTrackPDFs(MC_dirname_K0nunu, Signal_track_p, "Bzero", true, Scale_K0_test, "B02K0nunu");
+    GetTrackPDFs(MC_dirname_K0starnunu, Signal_track_p, "Bzero", true, Scale_K0star_test, "otherwise");
+    GetTrackPDFs(MC_dirname_Xsdnunu, Signal_track_p, "Bzero", true, Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetTrackPDFs(MC_dirname_CHG, CHG_track_p, "Bplus", true, Scale_CHG_test);
-    GetTrackPDFs(MC_dirname_MIX, MIX_track_p, "Bzero", true, Scale_MIX_test);
-    GetTrackPDFs(MC_dirname_UUBAR, UUBAR_track_p, "Continuum", true, Scale_UUBAR_test);
-    GetTrackPDFs(MC_dirname_DDBAR, DDBAR_track_p, "Continuum", true, Scale_DDBAR_test);
-    GetTrackPDFs(MC_dirname_SSBAR, SSBAR_track_p, "Continuum", true, Scale_SSBAR_test);
-    GetTrackPDFs(MC_dirname_CHARM, CHARM_track_p, "Continuum", true, Scale_CHARM_test);
+    GetTrackPDFs(MC_dirname_CHG, CHG_track_p, "Bplus", true, Scale_CHG_test, "otherwise");
+    GetTrackPDFs(MC_dirname_MIX, MIX_track_p, "Bzero", true, Scale_MIX_test, "otherwise");
+    GetTrackPDFs(MC_dirname_UUBAR, UUBAR_track_p, "Continuum", true, Scale_UUBAR_test, "otherwise");
+    GetTrackPDFs(MC_dirname_DDBAR, DDBAR_track_p, "Continuum", true, Scale_DDBAR_test, "otherwise");
+    GetTrackPDFs(MC_dirname_SSBAR, SSBAR_track_p, "Continuum", true, Scale_SSBAR_test, "otherwise");
+    GetTrackPDFs(MC_dirname_CHARM, CHARM_track_p, "Continuum", true, Scale_CHARM_test, "otherwise");
 
-    GetTrackPDFs(MC_dirname_Knunu, Signal_track_m, "Bplus", false, Scale_Kplus_test);
-    GetTrackPDFs(MC_dirname_Kstarnunu, Signal_track_m, "Bplus", false, Scale_Kplusstar_test);
-    GetTrackPDFs(MC_dirname_Xsununu, Signal_track_m, "Bplus", false, Scale_Xsu_nonresonant_test);
-    GetTrackPDFs(MC_dirname_K0nunu, Signal_track_m, "Bzero", false, Scale_K0_test);
-    GetTrackPDFs(MC_dirname_K0starnunu, Signal_track_m, "Bzero", false, Scale_K0star_test);
-    GetTrackPDFs(MC_dirname_Xsdnunu, Signal_track_m, "Bzero", false, Scale_Xsd_nonresonant_test);
+    GetTrackPDFs(MC_dirname_Knunu, Signal_track_m, "Bplus", false, Scale_Kplus_test, "B2Knunu");
+    GetTrackPDFs(MC_dirname_Kstarnunu, Signal_track_m, "Bplus", false, Scale_Kplusstar_test, "otherwise");
+    GetTrackPDFs(MC_dirname_Xsununu, Signal_track_m, "Bplus", false, Scale_Xsu_nonresonant_test, "otherwise");
+    GetTrackPDFs(MC_dirname_K0nunu, Signal_track_m, "Bzero", false, Scale_K0_test, "B02K0nunu");
+    GetTrackPDFs(MC_dirname_K0starnunu, Signal_track_m, "Bzero", false, Scale_K0star_test, "otherwise");
+    GetTrackPDFs(MC_dirname_Xsdnunu, Signal_track_m, "Bzero", false, Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetTrackPDFs(MC_dirname_CHG, CHG_track_m, "Bplus", false, Scale_CHG_test);
-    GetTrackPDFs(MC_dirname_MIX, MIX_track_m, "Bzero", false, Scale_MIX_test);
-    GetTrackPDFs(MC_dirname_UUBAR, UUBAR_track_m, "Continuum", false, Scale_UUBAR_test);
-    GetTrackPDFs(MC_dirname_DDBAR, DDBAR_track_m, "Continuum", false, Scale_DDBAR_test);
-    GetTrackPDFs(MC_dirname_SSBAR, SSBAR_track_m, "Continuum", false, Scale_SSBAR_test);
-    GetTrackPDFs(MC_dirname_CHARM, CHARM_track_m, "Continuum", false, Scale_CHARM_test);
+    GetTrackPDFs(MC_dirname_CHG, CHG_track_m, "Bplus", false, Scale_CHG_test, "otherwise");
+    GetTrackPDFs(MC_dirname_MIX, MIX_track_m, "Bzero", false, Scale_MIX_test, "otherwise");
+    GetTrackPDFs(MC_dirname_UUBAR, UUBAR_track_m, "Continuum", false, Scale_UUBAR_test, "otherwise");
+    GetTrackPDFs(MC_dirname_DDBAR, DDBAR_track_m, "Continuum", false, Scale_DDBAR_test, "otherwise");
+    GetTrackPDFs(MC_dirname_SSBAR, SSBAR_track_m, "Continuum", false, Scale_SSBAR_test, "otherwise");
+    GetTrackPDFs(MC_dirname_CHARM, CHARM_track_m, "Continuum", false, Scale_CHARM_test, "otherwise");
 
     // get KS0 uncertainty pdfs
-    GetKS0PDFs(MC_dirname_Knunu, Signal_KS0_p, "Bplus", true, Scale_Kplus_test);
-    GetKS0PDFs(MC_dirname_Kstarnunu, Signal_KS0_p, "Bplus", true, Scale_Kplusstar_test);
-    GetKS0PDFs(MC_dirname_Xsununu, Signal_KS0_p, "Bplus", true, Scale_Xsu_nonresonant_test);
-    GetKS0PDFs(MC_dirname_K0nunu, Signal_KS0_p, "Bzero", true, Scale_K0_test);
-    GetKS0PDFs(MC_dirname_K0starnunu, Signal_KS0_p, "Bzero", true, Scale_K0star_test);
-    GetKS0PDFs(MC_dirname_Xsdnunu, Signal_KS0_p, "Bzero", true, Scale_Xsd_nonresonant_test);
+    GetKS0PDFs(MC_dirname_Knunu, Signal_KS0_p, "Bplus", true, Scale_Kplus_test, "B2Knunu");
+    GetKS0PDFs(MC_dirname_Kstarnunu, Signal_KS0_p, "Bplus", true, Scale_Kplusstar_test, "otherwise");
+    GetKS0PDFs(MC_dirname_Xsununu, Signal_KS0_p, "Bplus", true, Scale_Xsu_nonresonant_test, "otherwise");
+    GetKS0PDFs(MC_dirname_K0nunu, Signal_KS0_p, "Bzero", true, Scale_K0_test, "B02K0nunu");
+    GetKS0PDFs(MC_dirname_K0starnunu, Signal_KS0_p, "Bzero", true, Scale_K0star_test, "otherwise");
+    GetKS0PDFs(MC_dirname_Xsdnunu, Signal_KS0_p, "Bzero", true, Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetKS0PDFs(MC_dirname_CHG, CHG_KS0_p, "Bplus", true, Scale_CHG_test);
-    GetKS0PDFs(MC_dirname_MIX, MIX_KS0_p, "Bzero", true, Scale_MIX_test);
-    GetKS0PDFs(MC_dirname_UUBAR, UUBAR_KS0_p, "Continuum", true, Scale_UUBAR_test);
-    GetKS0PDFs(MC_dirname_DDBAR, DDBAR_KS0_p, "Continuum", true, Scale_DDBAR_test);
-    GetKS0PDFs(MC_dirname_SSBAR, SSBAR_KS0_p, "Continuum", true, Scale_SSBAR_test);
-    GetKS0PDFs(MC_dirname_CHARM, CHARM_KS0_p, "Continuum", true, Scale_CHARM_test);
+    GetKS0PDFs(MC_dirname_CHG, CHG_KS0_p, "Bplus", true, Scale_CHG_test, "otherwise");
+    GetKS0PDFs(MC_dirname_MIX, MIX_KS0_p, "Bzero", true, Scale_MIX_test, "otherwise");
+    GetKS0PDFs(MC_dirname_UUBAR, UUBAR_KS0_p, "Continuum", true, Scale_UUBAR_test, "otherwise");
+    GetKS0PDFs(MC_dirname_DDBAR, DDBAR_KS0_p, "Continuum", true, Scale_DDBAR_test, "otherwise");
+    GetKS0PDFs(MC_dirname_SSBAR, SSBAR_KS0_p, "Continuum", true, Scale_SSBAR_test, "otherwise");
+    GetKS0PDFs(MC_dirname_CHARM, CHARM_KS0_p, "Continuum", true, Scale_CHARM_test, "otherwise");
 
-    GetKS0PDFs(MC_dirname_Knunu, Signal_KS0_m, "Bplus", false, Scale_Kplus_test);
-    GetKS0PDFs(MC_dirname_Kstarnunu, Signal_KS0_m, "Bplus", false, Scale_Kplusstar_test);
-    GetKS0PDFs(MC_dirname_Xsununu, Signal_KS0_m, "Bplus", false, Scale_Xsu_nonresonant_test);
-    GetKS0PDFs(MC_dirname_K0nunu, Signal_KS0_m, "Bzero", false, Scale_K0_test);
-    GetKS0PDFs(MC_dirname_K0starnunu, Signal_KS0_m, "Bzero", false, Scale_K0star_test);
-    GetKS0PDFs(MC_dirname_Xsdnunu, Signal_KS0_m, "Bzero", false, Scale_Xsd_nonresonant_test);
+    GetKS0PDFs(MC_dirname_Knunu, Signal_KS0_m, "Bplus", false, Scale_Kplus_test, "B2Knunu");
+    GetKS0PDFs(MC_dirname_Kstarnunu, Signal_KS0_m, "Bplus", false, Scale_Kplusstar_test, "otherwise");
+    GetKS0PDFs(MC_dirname_Xsununu, Signal_KS0_m, "Bplus", false, Scale_Xsu_nonresonant_test, "otherwise");
+    GetKS0PDFs(MC_dirname_K0nunu, Signal_KS0_m, "Bzero", false, Scale_K0_test, "B02K0nunu");
+    GetKS0PDFs(MC_dirname_K0starnunu, Signal_KS0_m, "Bzero", false, Scale_K0star_test, "otherwise");
+    GetKS0PDFs(MC_dirname_Xsdnunu, Signal_KS0_m, "Bzero", false, Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetKS0PDFs(MC_dirname_CHG, CHG_KS0_m, "Bplus", false, Scale_CHG_test);
-    GetKS0PDFs(MC_dirname_MIX, MIX_KS0_m, "Bzero", false, Scale_MIX_test);
-    GetKS0PDFs(MC_dirname_UUBAR, UUBAR_KS0_m, "Continuum", false, Scale_UUBAR_test);
-    GetKS0PDFs(MC_dirname_DDBAR, DDBAR_KS0_m, "Continuum", false, Scale_DDBAR_test);
-    GetKS0PDFs(MC_dirname_SSBAR, SSBAR_KS0_m, "Continuum", false, Scale_SSBAR_test);
-    GetKS0PDFs(MC_dirname_CHARM, CHARM_KS0_m, "Continuum", false, Scale_CHARM_test);
+    GetKS0PDFs(MC_dirname_CHG, CHG_KS0_m, "Bplus", false, Scale_CHG_test, "otherwise");
+    GetKS0PDFs(MC_dirname_MIX, MIX_KS0_m, "Bzero", false, Scale_MIX_test, "otherwise");
+    GetKS0PDFs(MC_dirname_UUBAR, UUBAR_KS0_m, "Continuum", false, Scale_UUBAR_test, "otherwise");
+    GetKS0PDFs(MC_dirname_DDBAR, DDBAR_KS0_m, "Continuum", false, Scale_DDBAR_test, "otherwise");
+    GetKS0PDFs(MC_dirname_SSBAR, SSBAR_KS0_m, "Continuum", false, Scale_SSBAR_test, "otherwise");
+    GetKS0PDFs(MC_dirname_CHARM, CHARM_KS0_m, "Continuum", false, Scale_CHARM_test, "otherwise");
 
     // get KID uncertainty pdfs (correlated)
     int NPDFs_KID = GetPIDcorrelatedPDFs(KID_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_nominal, &CHG_KID_correlated, &MIX_KID_correlated, &UUBAR_KID_correlated, &DDBAR_KID_correlated, &SSBAR_KID_correlated, &CHARM_KID_correlated, &Signal_KID_correlated, true);
@@ -2725,13 +2985,13 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     double Correction_factor_BR_Kplus[7] = { 0.0 };
     double Correction_factor_BR_Kzero[7] = { 0.0 };
 
-    GetKffPDFs(MC_dirname_Knunu, Signal_Kff_array, Correction_factor_BR_Kplus, "Bplus", 1, Scale_Kplus_test);
+    GetKffPDFs(MC_dirname_Knunu, Signal_Kff_array, Correction_factor_BR_Kplus, "Bplus", 1, Scale_Kplus_test, "B2Knunu");
     for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Kff_array[i], "Bplus", Scale_Kplusstar_test, "otherwise");
     for (int i = 0; i < 7; i++) {
         const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplus_nunubar - BR_Kplus_nunubar * Correction_factor_BR_Kplus[i]) / BR_Xsu_nonresonant_nunubar;
         GetNominalPDFs(MC_dirname_Xsununu, Signal_Kff_array[i], "Bplus", Scale_Xsu_nonresonant_test * non_res_Xsu_correction_factor, "otherwise");
     }
-    GetKffPDFs(MC_dirname_K0nunu, Signal_Kff_array, Correction_factor_BR_Kzero, "Bzero", 0, Scale_K0_test);
+    GetKffPDFs(MC_dirname_K0nunu, Signal_Kff_array, Correction_factor_BR_Kzero, "Bzero", 0, Scale_K0_test, "B02K0nunu");
     for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_K0starnunu, Signal_Kff_array[i], "Bzero", Scale_K0star_test, "otherwise");
     for (int i = 0; i < 7; i++) {
         const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0_nunubar - BR_K0_nunubar * Correction_factor_BR_Kzero[i]) / BR_Xsd_nonresonant_nunubar;

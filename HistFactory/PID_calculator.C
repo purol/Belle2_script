@@ -34,56 +34,35 @@ using std::to_string;
 
 # define MyEPSILON 0.000001
 
-// arXiv:1409.4557v2
+// arXiv:1409.4557v2, PhysRevD.107.014511
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
-# define BR_Kplus_nunubar 0.00000398 // (eq. 10)
+# define BR_Kplus_nunubar 0.000005044 // Table VI = (5.044 +- 0.402) * 10^{-6}
 # define BR_K0star_nunubar 0.00000919 // (eq. 11)
-# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15)
+# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15). In Table VI = (4.6669 +- 0.3707) * 10^{-6}
 # define BR_Kplusstar_nunubar (BR_K0star_nunubar*TBp/TB0) // under (eq. 15)
 # define BR_Xs_nunubar 0.000029 // (eq. 23)
 # define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
 # define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
 
-// uncertainty of BR from parametric reason
-# define Sigma_BR_Kplus_nunubar 0.00000019
-# define Sigma_BR_K0star_nunubar 0.00000050
-# define Sigma_BR_K0_nunubar (Sigma_BR_Kplus_nunubar*TB0/TBp)
-# define Sigma_BR_Kplusstar_nunubar (Sigma_BR_K0star_nunubar*TBp/TB0)
-# define Sigma_BR_Xs_nunubar 0.000003
+// according to DIRAC
+# define N_BpBp_1invab 540000000.0
+# define N_B0B0_1invab 510000000.0
 
-// https://confluence.desy.de/pages/viewpage.action?pageId=107054222
-# define N_BpBp_1invab 565400000.0
-# define N_B0B0_1invab 534600000.0
+# define BR_BpBp 0.514
+# define BR_B0B0 0.486
 
-# define N_Kplus_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplus_nunubar)
-# define N_Kplusstar_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplusstar_nunubar)
-# define N_Xsu_nonresonant_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Xsu_nonresonant_nunubar)
-# define N_K0_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0_nunubar)
-# define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
-# define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
+// https://confluence.desy.de/pages/viewpage.action?spaceKey=BI&title=Conference+readiness
+# define N_BB_LS1 387100000.0 // NBB = (387.1 +/- 5.6) x 10^6
 
-# define Lumi_validation_MC (0.364436 - 0.002763) // ab-1
+# define N_Kplus_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplus_nunubar)
+# define N_Kplusstar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplusstar_nunubar)
+# define N_Xsu_nonresonant_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Xsu_nonresonant_nunubar)
+# define N_K0_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0_nunubar)
+# define N_K0star_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0star_nunubar)
+# define N_Xsd_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_Xsd_nonresonant_nunubar)
 
-/*
-// my MC sample number
-# define N_Kplus_nunubar 10000000.0
-# define N_K0_nunubar 10000000.0
-# define N_Kplusstar_nunubar 10000000.0
-# define N_K0star_nunubar 10000000.0
-# define N_Xsu_nonresonant_nunubar 50000000.0
-# define N_Xsd_nonresonant_nunubar 50000000.0
-
-// scale factor for each MC sample
-# define Scale_Kplus (N_Kplus_nunubar_1invab/N_Kplus_nunubar)
-# define Scale_Kplusstar (N_Kplusstar_nunubar_1invab/N_Kplusstar_nunubar)
-# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar)
-# define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
-# define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
-# define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
-*/
-
-// SIGNAL MC sample number
+// SIGNAL MC sample number before skimming
 # define N_Kplus_train 7039000.0
 # define N_K0_train 7166624.0
 # define N_Kplusstar_train 7039000.0
@@ -97,21 +76,21 @@ using std::to_string;
 # define N_Xsu_nonresonant_test 14805000.0
 # define N_Xsd_nonresonant_test 15059570.0
 
-// scale factor for SIGNAL MC sample (364.436 - 2.763 = 361.673/fb)
-# define Scale_Kplus_train ((0.364436 - 0.002763) * N_Kplus_nunubar_1invab/N_Kplus_train)
-# define Scale_Kplusstar_train ((0.364436 - 0.002763) * N_Kplusstar_nunubar_1invab/N_Kplusstar_train)
-# define Scale_Xsu_nonresonant_train ((0.364436 - 0.002763) * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_train)
-# define Scale_K0_train ((0.364436 - 0.002763) * N_K0_nunubar_1invab/N_K0_train)
-# define Scale_K0star_train ((0.364436 - 0.002763) * N_K0star_nunubar_1invab/N_K0star_train)
-# define Scale_Xsd_nonresonant_train ((0.364436 - 0.002763) * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_train)
-# define Scale_Kplus_test ((0.364436 - 0.002763) * N_Kplus_nunubar_1invab/N_Kplus_test)
-# define Scale_Kplusstar_test ((0.364436 - 0.002763) * N_Kplusstar_nunubar_1invab/N_Kplusstar_test)
-# define Scale_Xsu_nonresonant_test ((0.364436 - 0.002763) * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_test)
-# define Scale_K0_test ((0.364436 - 0.002763) * N_K0_nunubar_1invab/N_K0_test)
-# define Scale_K0star_test ((0.364436 - 0.002763) * N_K0star_nunubar_1invab/N_K0star_test)
-# define Scale_Xsd_nonresonant_test ((0.364436 - 0.002763) * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_test)
+// scale factor for SIGNAL MC sample until LS1
+# define Scale_Kplus_train (N_Kplus_nunubar_LS1/N_Kplus_train)
+# define Scale_Kplusstar_train (N_Kplusstar_nunubar_LS1/N_Kplusstar_train)
+# define Scale_Xsu_nonresonant_train (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_train)
+# define Scale_K0_train (N_K0_nunubar_LS1/N_K0_train)
+# define Scale_K0star_train (N_K0star_nunubar_LS1/N_K0star_train)
+# define Scale_Xsd_nonresonant_train (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_train)
+# define Scale_Kplus_test (N_Kplus_nunubar_LS1/N_Kplus_test)
+# define Scale_Kplusstar_test (N_Kplusstar_nunubar_LS1/N_Kplusstar_test)
+# define Scale_Xsu_nonresonant_test (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_test)
+# define Scale_K0_test (N_K0_nunubar_LS1/N_K0_test)
+# define Scale_K0star_test (N_K0star_nunubar_LS1/N_K0star_test)
+# define Scale_Xsd_nonresonant_test (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_test)
 
-// BKG MC sample number (0.8/ab for BB, 1.0/ab for qq)
+// BKG MC sample number (0.8/ab for BB, 1.0/ab for qq) after skimming
 # define N_CHG_train 32042497.0
 # define N_MIX_train 24693710.0
 # define N_UUBAR_train 94447089.0
@@ -125,19 +104,19 @@ using std::to_string;
 # define N_SSBAR_test 28859338.0
 # define N_CHARM_test 161280679.0
 
-// scale factor for BKG MC sample (364.436 - 2.763 = 361.673/fb)
-# define Scale_CHG_train (((0.364436 - 0.002763)/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_train)
-# define Scale_MIX_train (((0.364436 - 0.002763)/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_train)
-# define Scale_UUBAR_train (((0.364436 - 0.002763)/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_train)
-# define Scale_DDBAR_train (((0.364436 - 0.002763)/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_train)
-# define Scale_SSBAR_train (((0.364436 - 0.002763)/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_train)
-# define Scale_CHARM_train (((0.364436 - 0.002763)/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_train)
-# define Scale_CHG_test (((0.364436 - 0.002763)/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_test)
-# define Scale_MIX_test (((0.364436 - 0.002763)/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_test)
-# define Scale_UUBAR_test (((0.364436 - 0.002763)/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_test)
-# define Scale_DDBAR_test (((0.364436 - 0.002763)/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_test)
-# define Scale_SSBAR_test (((0.364436 - 0.002763)/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_test)
-# define Scale_CHARM_test (((0.364436 - 0.002763)/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_test)
+// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb), until LS1
+# define Scale_CHG_train ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab * (N_CHG_train / (N_CHG_train + N_CHG_test)) + N_BpBp_1invab))
+# define Scale_MIX_train ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab * (N_MIX_train / (N_MIX_train + N_MIX_test)) + N_B0B0_1invab))
+# define Scale_UUBAR_train (0.361673/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_train (0.361673/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_train (0.361673/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_train (0.361673/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_CHG_test ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab * (N_CHG_test / (N_CHG_train + N_CHG_test)) + N_BpBp_1invab))
+# define Scale_MIX_test ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab * (N_MIX_test / (N_MIX_train + N_MIX_test)) + N_B0B0_1invab))
+# define Scale_UUBAR_test (0.361673/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
 
 // scale facto for systematic MC sample
 # define N_K0star_nunubar_syst 10000000.0
@@ -146,10 +125,10 @@ using std::to_string;
 # define N_Xsd_nonresonant_nunubar_syst 10000000.0
 
 // scale factor for each systematic MC sample (364.436 - 2.763 = 361.673/fb)
-# define Scale_Kplusstar_syst ((0.364436 - 0.002763) * N_Kplusstar_nunubar_1invab/N_Kplusstar_nunubar_syst)
-# define Scale_Xsu_nonresonant_syst ((0.364436 - 0.002763) * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar_syst)
-# define Scale_K0star_syst ((0.364436 - 0.002763) * N_K0star_nunubar_1invab/N_K0star_nunubar_syst)
-# define Scale_Xsd_nonresonant_syst ((0.364436 - 0.002763) * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar_syst)
+# define Scale_Kplusstar_syst (N_Kplusstar_nunubar_LS1/N_Kplusstar_nunubar_syst)
+# define Scale_Xsu_nonresonant_syst (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_nunubar_syst)
+# define Scale_K0star_syst (N_K0star_nunubar_LS1/N_K0star_nunubar_syst)
+# define Scale_Xsd_nonresonant_syst (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar_syst)
 
 # define KS0_rel_uncertainty 0.6 // %/cm
 # define track_rel_uncertainty 0.69 // %
@@ -203,6 +182,165 @@ double PID_correction_stat_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-
 double PID_correction_sys_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 double PID_correction_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 double PID_correction_fluctuated[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+
+class Corrector {
+private:
+    const int STEP;
+
+    const double mKp;
+    const double mK0;
+
+    const double mBp;
+    const double mB0;
+
+    const double alpha0_old;
+    const double alpha1_old;
+    const double alpha2_old;
+    const double mp_Bp_old;
+    const double mp_B0_old;
+
+    const double alpha0_new; // 0.2545 +- 0.0090
+    const double alpha1_new; // -0.71 +- 0.14
+    const double alpha2_new; // 0.32 +- 0.59
+    const double mp_B_new; //  5.4158 +- 0.0015
+
+    double Total_Bp_old;
+    double Total_B0_old;
+    double Total_Bp_new;
+    double Total_B0_new;
+public:
+    Corrector();
+    double GetCorrectionFactor(double q2, std::string type);
+    void Drawq2Plot(bool IsItNew, std::string type);
+};
+
+Corrector corrector;
+
+Corrector::Corrector() :
+    STEP(100),
+    mKp(0.493677),
+    mK0(0.497611),
+    mBp(5.27934),
+    mB0(5.27965),
+    alpha0_old(0.432),
+    alpha1_old(-0.664),
+    alpha2_old(-1.2),
+    mp_Bp_old(5.27934 + 0.046),
+    mp_B0_old(5.27965 + 0.046),
+    alpha0_new(0.2545),
+    alpha1_new(-0.71),
+    alpha2_new(0.32),
+    mp_B_new(5.4158)
+{
+    Total_Bp_old = 0;
+    Total_B0_old = 0;
+    Total_Bp_new = 0;
+    Total_B0_new = 0;
+
+    // Bp old
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+        double delq2 = (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+
+        double tp = (mBp + mKp) * (mBp + mKp);
+        double tm = (mBp - mKp) * (mBp - mKp);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_Bp_old * mp_Bp_old))) * (alpha0_old + alpha1_old * z + alpha2_old * z * z + (-alpha1_old + 2 * alpha2_old) * z * z * z / 3);
+        double lambda = std::pow(mBp, 4) + std::pow(mKp, 4) + std::pow(q2, 2) - 2 * (std::pow(mBp, 2) * std::pow(mKp, 2) + std::pow(mKp, 2) * q2 + std::pow(mBp, 2) * q2);
+
+        Total_Bp_old = Total_Bp_old + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+
+    // B0 old
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+        double delq2 = (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+
+        double tp = (mB0 + mK0) * (mB0 + mK0);
+        double tm = (mB0 - mK0) * (mB0 - mK0);
+        double t0 = tp * (1 - std::sqrt(1 - tm / tp));
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_B0_old * mp_B0_old))) * (alpha0_old + alpha1_old * z + alpha2_old * z * z + (-alpha1_old + 2 * alpha2_old) * z * z * z / 3);
+        double lambda = std::pow(mB0, 4) + std::pow(mK0, 4) + std::pow(q2, 2) - 2 * (std::pow(mB0, 2) * std::pow(mK0, 2) + std::pow(mK0, 2) * q2 + std::pow(mB0, 2) * q2);
+
+        Total_B0_old = Total_B0_old + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+
+    // Bp new
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+        double delq2 = (mBp - mKp) * (mBp - mKp) / ((double)STEP);
+
+        double tp = (mBp + mKp) * (mBp + mKp);
+        double tm = (mBp - mKp) * (mBp - mKp);
+        double t0 = 0.0;
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z + alpha2_new * z * z + (-alpha1_new + 2 * alpha2_new) * z * z * z / 3);
+        double lambda = std::pow(mBp, 4) + std::pow(mKp, 4) + std::pow(q2, 2) - 2 * (std::pow(mBp, 2) * std::pow(mKp, 2) + std::pow(mKp, 2) * q2 + std::pow(mBp, 2) * q2);
+
+        Total_Bp_new = Total_Bp_new + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+
+    // B0 new
+    for (int i = 0; i < STEP; i++) {
+        double q2 = ((double)i) * (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+        double delq2 = (mB0 - mK0) * (mB0 - mK0) / ((double)STEP);
+
+        double tp = (mB0 + mK0) * (mB0 + mK0);
+        double tm = (mB0 - mK0) * (mB0 - mK0);
+        double t0 = 0.0;
+        double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
+        double fp = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z + alpha2_new * z * z + (-alpha1_new + 2 * alpha2_new) * z * z * z / 3);
+        double lambda = std::pow(mB0, 4) + std::pow(mK0, 4) + std::pow(q2, 2) - 2 * (std::pow(mB0, 2) * std::pow(mK0, 2) + std::pow(mK0, 2) * q2 + std::pow(mB0, 2) * q2);
+
+        Total_B0_new = Total_B0_new + std::pow(lambda, 1.5) * std::pow(fp, 2) * delq2;
+    }
+}
+
+double Corrector::GetCorrectionFactor(double q2, std::string type) {
+    if (type == "Bplus") {
+        double tp = (mBp + mKp) * (mBp + mKp);
+        double tm = (mBp - mKp) * (mBp - mKp);
+        double t0_old = tp * (1 - std::sqrt(1 - tm / tp));
+        double t0_new = 0.0;
+        double z_old = (std::sqrt(tp - q2) - std::sqrt(tp - t0_old)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0_old));
+        double z_new = (std::sqrt(tp - q2) - std::sqrt(tp - t0_new)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0_new));
+
+        double fp_old = (1 / (1 - q2 / (mp_Bp_old * mp_Bp_old))) * (alpha0_old + alpha1_old * z_old + alpha2_old * z_old * z_old + (-alpha1_old + 2 * alpha2_old) * z_old * z_old * z_old / 3);
+        double fp_new = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z_new + alpha2_new * z_new * z_new + (-alpha1_new + 2 * alpha2_new) * z_new * z_new * z_new / 3);
+        double lambda = std::pow(mBp, 4) + std::pow(mKp, 4) + std::pow(q2, 2) - 2 * (std::pow(mBp, 2) * std::pow(mKp, 2) + std::pow(mKp, 2) * q2 + std::pow(mBp, 2) * q2);
+
+        if ((std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_Bp_old) == 0) {
+            printf("[ERROR] try to divide by 0!\n");
+            exit(1);
+        }
+        return (std::pow(lambda, 1.5) * std::pow(fp_new, 2) / Total_Bp_new) / (std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_Bp_old);
+    }
+    else if (type == "Bzero") {
+        double tp = (mB0 + mK0) * (mB0 + mK0);
+        double tm = (mB0 - mK0) * (mB0 - mK0);
+        double t0_old = tp * (1 - std::sqrt(1 - tm / tp));
+        double t0_new = 0.0;
+        double z_old = (std::sqrt(tp - q2) - std::sqrt(tp - t0_old)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0_old));
+        double z_new = (std::sqrt(tp - q2) - std::sqrt(tp - t0_new)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0_new));
+
+        double fp_old = (1 / (1 - q2 / (mp_B0_old * mp_B0_old))) * (alpha0_old + alpha1_old * z_old + alpha2_old * z_old * z_old + (-alpha1_old + 2 * alpha2_old) * z_old * z_old * z_old / 3);
+        double fp_new = (1 / (1 - q2 / (mp_B_new * mp_B_new))) * (alpha0_new + alpha1_new * z_new + alpha2_new * z_new * z_new + (-alpha1_new + 2 * alpha2_new) * z_new * z_new * z_new / 3);
+        double lambda = std::pow(mB0, 4) + std::pow(mK0, 4) + std::pow(q2, 2) - 2 * (std::pow(mB0, 2) * std::pow(mK0, 2) + std::pow(mK0, 2) * q2 + std::pow(mB0, 2) * q2);
+
+        if ((std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_B0_old) == 0) {
+            printf("[ERROR] try to divide by 0!\n");
+            exit(1);
+        }
+        return (std::pow(lambda, 1.5) * std::pow(fp_new, 2) / Total_B0_new) / (std::pow(lambda, 1.5) * std::pow(fp_old, 2) / Total_B0_old);
+    }
+
+    printf("[ERROR] undefined type name");
+    exit(1);
+
+    return 0;
+}
 
 enum DecayMode { // reco level
     B2Kc = 0,
@@ -277,37 +415,6 @@ enum DecayModeMC { // MC level
 };
 
 # define N_decay 38 // five decay mode + others
-
-//# define Htransition_Xsu_change (-0.142)
-//# define Htransition_Xsd_change (-0.099)
-//# define Ltransition_Xsu_change (-0.002)
-//# define Ltransition_Xsd_change (0.067)
-//# define Hmb_Xsu_change (-0.067)
-//# define Hmb_Xsd_change (-0.058)
-//# define Lmb_Xsu_change (-0.062)
-//# define Lmb_Xsd_change (-0.046)
-//# define Hpf_Xsu_change (-0.120)
-//# define Hpf_Xsd_change (-0.073)
-//# define Lpf_Xsu_change (-0.014)
-//# define Lpf_Xsd_change (0.019)
-
-//# define FEI_cal_Bc 1.0
-//# define FEI_cal_Bc_uncertainty 0.0
-//# define FEI_cal_B0 1.0
-//# define FEI_cal_B0_uncertainty 0.0
-
-//# define Htransition_Xsu_change 0.0
-//# define Htransition_Xsd_change 0.0
-//# define Ltransition_Xsu_change 0.0
-//# define Ltransition_Xsd_change 0.0
-//# define Hmb_Xsu_change 0.0
-//# define Hmb_Xsd_change 0.0
-//# define Lmb_Xsu_change 0.0
-//# define Lmb_Xsd_change 0.0
-//# define Hpf_Xsu_change 0.0
-//# define Hpf_Xsd_change 0.0
-//# define Lpf_Xsu_change 0.0
-//# define Lpf_Xsd_change 0.0
 
 # define RarityBins 15
 # define NToys 500
@@ -538,31 +645,6 @@ void load_files(const char* dirname, std::vector<string>* names) {
     }
 }
 
-double GetEvtNum(const char* dirname, double weight_var = 1.0) {
-
-    double Total_Evt_Num = 0;
-
-    std::vector<string> names;
-    load_files(dirname, &names);
-
-    for (unsigned int i = 0; i < names.size(); i++) {
-
-        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
-
-        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
-        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
-        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
-
-        Total_Evt_Num = Total_Evt_Num + weight_var * tree_upsilon->GetEntries();
-
-        input_file->Close();
-
-    }
-
-    return Total_Evt_Num;
-
-}
-
 double GetNpi0(double Upsilon_ID, double Bsig_ID) {
 
     if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) return 0.0; // B2Kc
@@ -643,7 +725,13 @@ double GetNtracks(double Upsilon_ID, double Bsig_ID) {
     return -1.0;
 }
 
-void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_nominal[RarityBins * 7], double weight_var = 1.0) { // get nominal PDF with appropriate correction
+void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_nominal[RarityBins * 7], double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    otherwise
+    */
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
     else if (strcmp(type, "Continuum") == 0) {}
@@ -670,6 +758,8 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
     double Bsig_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
+    double invM = -1.0;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -683,6 +773,10 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
+
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
@@ -693,12 +787,14 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -717,6 +813,8 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
             }
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
 
             Nevt = Nevt + total_weight;
 
@@ -745,7 +843,13 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
     return;
 }
 
-void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 7], int ToyNum, bool IsItKID, double weight_var = 1.0) { // get nominal PDF with appropriate correction
+void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 7], int ToyNum, bool IsItKID, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    otherwise
+    */
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
     else if (strcmp(type, "Continuum") == 0) {}
@@ -772,6 +876,8 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
     double Bsig_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
+    double invM = -1.0;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -785,6 +891,10 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
+
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
@@ -795,12 +905,14 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -829,6 +941,8 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
             }
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
 
             Nevt = Nevt + total_weight;
 
@@ -857,7 +971,13 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
     return;
 }
 
-void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 7], int ToyNum, double weight_var = 1.0) { // get nominal PDF with appropriate correction
+void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 7], int ToyNum, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    otherwise
+    */
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
     else if (strcmp(type, "Continuum") == 0) {}
@@ -884,6 +1004,8 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
     double Bsig_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 
+    double invM = -1.0;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -897,6 +1019,10 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
+
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
@@ -907,12 +1033,14 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -933,6 +1061,8 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
             }
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
 
             Nevt = Nevt + total_weight;
 
@@ -1163,30 +1293,30 @@ void PID_calculator()
 
     /* ====================================== */
     // get nominal Nevt
-    GetNominalNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Kplus_test);
+    GetNominalNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Kplus_test, "B2Knunu");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Kplusstar_test);
+    GetNominalNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Kplusstar_test, "otherwise");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_Xsununu, temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Xsu_nonresonant_test);
+    GetNominalNevt(MC_dirname_Xsununu, temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Xsu_nonresonant_test, "otherwise");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_K0nunu, temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_K0_test);
+    GetNominalNevt(MC_dirname_K0nunu, temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_K0_test, "B02K0nunu");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_K0starnunu, temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_K0star_test);
+    GetNominalNevt(MC_dirname_K0starnunu, temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_K0star_test, "otherwise");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_Xsd_nonresonant_test);
+    GetNominalNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_Xsd_nonresonant_test, "otherwise");
     temp_hist->Reset();
 
-    GetNominalNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_nominal, Scale_CHG_test);
+    GetNominalNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_nominal, Scale_CHG_test, "otherwise");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_nominal, Scale_MIX_test);
+    GetNominalNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_nominal, Scale_MIX_test, "otherwise");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_UUBAR, temp_hist, "Continuum", "UUBAR", Nevt_nominal, Scale_UUBAR_test);
+    GetNominalNevt(MC_dirname_UUBAR, temp_hist, "Continuum", "UUBAR", Nevt_nominal, Scale_UUBAR_test, "otherwise");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_DDBAR, temp_hist, "Continuum", "DDBAR", Nevt_nominal, Scale_DDBAR_test);
+    GetNominalNevt(MC_dirname_DDBAR, temp_hist, "Continuum", "DDBAR", Nevt_nominal, Scale_DDBAR_test, "otherwise");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_SSBAR, temp_hist, "Continuum", "SSBAR", Nevt_nominal, Scale_SSBAR_test);
+    GetNominalNevt(MC_dirname_SSBAR, temp_hist, "Continuum", "SSBAR", Nevt_nominal, Scale_SSBAR_test, "otherwise");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_CHARM, temp_hist, "Continuum", "CHARM", Nevt_nominal, Scale_CHARM_test);
+    GetNominalNevt(MC_dirname_CHARM, temp_hist, "Continuum", "CHARM", Nevt_nominal, Scale_CHARM_test, "otherwise");
     temp_hist->Reset();
     /* ====================================== */
 
@@ -1197,30 +1327,30 @@ void PID_calculator()
     for (int i = 0; i < NToys; i++) {
         FluctuatePIDCorrection(true);
 
-        GetFlucNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Kplus_test);
+        GetFlucNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Kplus_test, "B2Knunu");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Kplusstar_test);
+        GetFlucNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Kplusstar_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Xsununu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Xsu_nonresonant_test);
+        GetFlucNevt(MC_dirname_Xsununu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Xsu_nonresonant_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_K0nunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, Scale_K0_test);
+        GetFlucNevt(MC_dirname_K0nunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, Scale_K0_test, "B02K0nunu");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_K0starnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, Scale_K0star_test);
+        GetFlucNevt(MC_dirname_K0starnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, Scale_K0star_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Xsd_nonresonant_test);
+        GetFlucNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Xsd_nonresonant_test, "otherwise");
         temp_hist->Reset();
 
-        GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc_KID, i, true, Scale_CHG_test);
+        GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc_KID, i, true, Scale_CHG_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc_KID, i, true, Scale_MIX_test);
+        GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc_KID, i, true, Scale_MIX_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_UUBAR, temp_hist, "Continuum", "UUBAR", Nevt_fluc_KID, i, true, Scale_UUBAR_test);
+        GetFlucNevt(MC_dirname_UUBAR, temp_hist, "Continuum", "UUBAR", Nevt_fluc_KID, i, true, Scale_UUBAR_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_DDBAR, temp_hist, "Continuum", "DDBAR", Nevt_fluc_KID, i, true, Scale_DDBAR_test);
+        GetFlucNevt(MC_dirname_DDBAR, temp_hist, "Continuum", "DDBAR", Nevt_fluc_KID, i, true, Scale_DDBAR_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_SSBAR, temp_hist, "Continuum", "SSBAR", Nevt_fluc_KID, i, true, Scale_SSBAR_test);
+        GetFlucNevt(MC_dirname_SSBAR, temp_hist, "Continuum", "SSBAR", Nevt_fluc_KID, i, true, Scale_SSBAR_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_CHARM, temp_hist, "Continuum", "CHARM", Nevt_fluc_KID, i, true, Scale_CHARM_test);
+        GetFlucNevt(MC_dirname_CHARM, temp_hist, "Continuum", "CHARM", Nevt_fluc_KID, i, true, Scale_CHARM_test, "otherwise");
         temp_hist->Reset();
     }
     /* ====================================== */
@@ -1232,30 +1362,30 @@ void PID_calculator()
     for (int i = 0; i < NToys; i++) {
         FluctuatePIDCorrection(false);
 
-        GetFlucNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Kplus_test);
+        GetFlucNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Kplus_test, "B2Knunu");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Kplusstar_test);
+        GetFlucNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Kplusstar_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Xsununu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Xsu_nonresonant_test);
+        GetFlucNevt(MC_dirname_Xsununu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Xsu_nonresonant_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_K0nunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, Scale_K0_test);
+        GetFlucNevt(MC_dirname_K0nunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, Scale_K0_test, "B02K0nunu");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_K0starnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, Scale_K0star_test);
+        GetFlucNevt(MC_dirname_K0starnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, Scale_K0star_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Xsd_nonresonant_test);
+        GetFlucNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Xsd_nonresonant_test, "otherwise");
         temp_hist->Reset();
 
-        GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc_PID, i, false, Scale_CHG_test);
+        GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc_PID, i, false, Scale_CHG_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc_PID, i, false, Scale_MIX_test);
+        GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc_PID, i, false, Scale_MIX_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_UUBAR, temp_hist, "Continuum", "UUBAR", Nevt_fluc_PID, i, false, Scale_UUBAR_test);
+        GetFlucNevt(MC_dirname_UUBAR, temp_hist, "Continuum", "UUBAR", Nevt_fluc_PID, i, false, Scale_UUBAR_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_DDBAR, temp_hist, "Continuum", "DDBAR", Nevt_fluc_PID, i, false, Scale_DDBAR_test);
+        GetFlucNevt(MC_dirname_DDBAR, temp_hist, "Continuum", "DDBAR", Nevt_fluc_PID, i, false, Scale_DDBAR_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_SSBAR, temp_hist, "Continuum", "SSBAR", Nevt_fluc_PID, i, false, Scale_SSBAR_test);
+        GetFlucNevt(MC_dirname_SSBAR, temp_hist, "Continuum", "SSBAR", Nevt_fluc_PID, i, false, Scale_SSBAR_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_CHARM, temp_hist, "Continuum", "CHARM", Nevt_fluc_PID, i, false, Scale_CHARM_test);
+        GetFlucNevt(MC_dirname_CHARM, temp_hist, "Continuum", "CHARM", Nevt_fluc_PID, i, false, Scale_CHARM_test, "otherwise");
         temp_hist->Reset();
     }
     /* ====================================== */
