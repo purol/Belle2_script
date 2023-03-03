@@ -3971,6 +3971,7 @@ void Loader::PrintFOM1D(std::string filename, Loader::ScaleFactor scaleFactor_, 
                         }
                         else if (filename.find("B02Kstar0nunu") != string::npos) EVT_num = EVT_num + 1.0;
                         else if (filename.find("B02Xsnunu") != string::npos) EVT_num = EVT_num + 1.0;
+                        else EVT_num = EVT_num + 1.0;
                     }
                     Labels temp_Labels;
                     temp_Labels.__experiment__ = temp.__experiment__;
