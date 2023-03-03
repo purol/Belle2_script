@@ -3940,7 +3940,7 @@ void Loader::PrintFOM1D(std::string filename, Loader::ScaleFactor scaleFactor_, 
         std::queue<Data> temp_queue;
         temp_queue.swap(TotalData);
 
-        double Continuum_output = start + (end - start) * j / Nstep;
+        double BB_output = start + (end - start) * j / Nstep;
 
         std::vector<Labels> label_list;
         double EVT_num = 0.0;
@@ -3949,7 +3949,7 @@ void Loader::PrintFOM1D(std::string filename, Loader::ScaleFactor scaleFactor_, 
             Data temp = temp_queue.front();
             temp_queue.pop();
 
-            if (temp.MVA_Continuum > Continuum_output) {
+            if (temp.MVA_BB > BB_output) {
                 bool overlap = false;
                 for (unsigned int k = 0; k < label_list.size(); k++) {
                     if (label_list.at(k).__experiment__ == temp.__experiment__ && label_list.at(k).__run__ == temp.__run__ && label_list.at(k).__event__ == temp.__event__ && label_list.at(k).__ncandidates__ == temp.__ncandidates__) {
