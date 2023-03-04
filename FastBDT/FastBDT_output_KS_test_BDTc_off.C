@@ -389,18 +389,21 @@ void FastBDT_output_KS_test_BDTc_off()
     gStyle->SetOptStat(0);
 
     TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd(); gPad->SetLogy();
-    //double OBB_BKG_train_max = OBB_BKG_train->GetMaximum(); double OBB_SIGNAL_train_max = OBB_SIGNAL_train->GetMaximum();
-    //if(OBB_BKG_train_max > OBB_SIGNAL_train_max) OBB_BKG_train->SetMaximum(1.05 * OBB_BKG_train_max);
-    //else OBB_BKG_train->SetMaximum(1.05 * OBB_SIGNAL_train_max);
+
+    double MC_train_max = FBDTc_MC_train->GetMaximum(); double data_train_max = FBDTc_data_train->GetMaximum();
+    if (MC_train_max > data_train_max) FBDTc_MC_train->SetMaximum(1.05 * MC_train_max);
+    else FBDTc_MC_train->SetMaximum(1.05 * data_train_max);
+
     FBDTc_MC_train->Draw("Hist"); FBDTc_data_train->Draw("HistSAME");
     FBDTc_MC_test->Draw("AP SAME"); FBDTc_data_test->Draw("AP SAME");
     gPad->BuildLegend(0.9, 0.9, 0.6, 0.6);
     c_temp->SaveAs("BDTc_BeforeCorrection.png");
 
     TCanvas* c_temp_2 = new TCanvas("c2", "", 600, 600); c_temp_2->cd(); gPad->SetLogy();
-    //double Oqq_BKG_train_max = Oqq_BKG_train->GetMaximum(); double Oqq_SIGNAL_train_max = Oqq_SIGNAL_train->GetMaximum();
-    //if(Oqq_BKG_train_max > Oqq_SIGNAL_train_max) Oqq_BKG_train->SetMaximum(1.05 * Oqq_BKG_train_max);
-    //else Oqq_BKG_train->SetMaximum(1.05 * Oqq_SIGNAL_train_max);
+
+    if (MC_train_max > data_train_max) FBDTc_MC_train_correction->SetMaximum(1.05 * MC_train_max);
+    else FBDTc_MC_train_correction->SetMaximum(1.05 * data_train_max);
+
     FBDTc_MC_train_correction->Draw("Hist"); FBDTc_data_train->Draw("HistSAME");
     FBDTc_MC_test_correction->Draw("AP SAME"); FBDTc_data_test->Draw("AP SAME");
     gPad->BuildLegend(0.9, 0.9, 0.6, 0.6);
