@@ -1474,7 +1474,7 @@ void THStack_plot_Jpsi_FBDT() {
         signal_hist[k] = new TH1D("signal", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;MC/data", bins, min, max);
+        Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;data/MC", bins, min, max);
 
         MC_one_bin[k] = new TH1D((variable_names.at(k) + "_MC_one_bin").c_str(), ";number of candidates", 1, min, max);
         data_one_bin[k] = new TH1D((variable_names.at(k) + "_data_one_bin").c_str(), ";number of candidates", 1, min, max);
@@ -1538,9 +1538,9 @@ void THStack_plot_Jpsi_FBDT() {
         Stack[k]->Add(signal_hist[k]);
 
         Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
-        Ratio_hist[k]->Divide(stat_error_hist[k], data_hist[k]);
+        Ratio_hist[k]->Divide(data_hist[k], stat_error_hist[k]);
 
-        Ratio_one_bin[k]->Divide(MC_one_bin[k], data_one_bin[k]);
+        Ratio_one_bin[k]->Divide(data_one_bin[k], MC_one_bin[k]);
 
         TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
@@ -1589,5 +1589,5 @@ void THStack_plot_Jpsi_FBDT() {
     printf("MC num with calibration: %lf\n", MC_sum);
     printf("MC with calibration: %lf +- %lf\n", MC_one_bin[0]->GetBinContent(1), MC_one_bin[0]->GetBinError(1));
     printf("data with calibration: %lf +- %lf\n", data_one_bin[0]->GetBinContent(1), data_one_bin[0]->GetBinError(1));
-    printf("MC/data with calibration: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent(1), Ratio_one_bin[0]->GetBinError(1));
+    printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent(1), Ratio_one_bin[0]->GetBinError(1));
 }

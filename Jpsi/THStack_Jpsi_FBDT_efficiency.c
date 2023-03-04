@@ -1397,5 +1397,5 @@ void THStack_Jpsi_FBDT_efficiency() {
     ); // it is relative uncertainty
     /* ============================== assume 100% correlation ============================== */
 
-    printf("eps_data/eps_MC = %lf +- %lf\n", efficiency_ratio, efficiency_ratio * efficiency_ratio_uncer);
+    printf("eps_data/eps_MC for FBDT = %lf +- %lf\n", efficiency_ratio, efficiency_ratio * efficiency_ratio_uncer);
 }
