@@ -16,43 +16,89 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define MyEPSILON 0.000001
 
-// arXiv:1409.4557v2
+// arXiv:1409.4557v2, PhysRevD.107.014511
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
-# define BR_Kplus_nunubar 0.00000398 // (eq. 10)
+# define BR_Kplus_nunubar 0.000005044 // Table VI = (5.044 +- 0.402) * 10^{-6}
 # define BR_K0star_nunubar 0.00000919 // (eq. 11)
-# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15)
+# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15). In Table VI = (4.6669 +- 0.3707) * 10^{-6}
 # define BR_Kplusstar_nunubar (BR_K0star_nunubar*TBp/TB0) // under (eq. 15)
 # define BR_Xs_nunubar 0.000029 // (eq. 23)
 # define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
 # define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
 
-// https://confluence.desy.de/pages/viewpage.action?pageId=107054222
-# define N_BpBp_1invab 565400000.0
-# define N_B0B0_1invab 534600000.0
+// according to DIRAC
+# define N_BpBp_1invab 540000000.0
+# define N_B0B0_1invab 510000000.0
 
-# define N_Kplus_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplus_nunubar)
-# define N_Kplusstar_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplusstar_nunubar)
-# define N_Xsu_nonresonant_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Xsu_nonresonant_nunubar)
-# define N_K0_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0_nunubar)
-# define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
-# define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
+# define BR_BpBp 0.514
+# define BR_B0B0 0.486
 
-// my MC sample number
-# define N_Kplus_nunubar 10000000.0
-# define N_K0_nunubar 10000000.0
-# define N_Kplusstar_nunubar 10000000.0
-# define N_K0star_nunubar 10000000.0
-# define N_Xsu_nonresonant_nunubar 50000000.0
-# define N_Xsd_nonresonant_nunubar 50000000.0
+// https://confluence.desy.de/pages/viewpage.action?spaceKey=BI&title=Conference+readiness
+# define N_BB_LS1 387100000.0 // NBB = (387.1 +/- 5.6) x 10^6
 
-// scale factor for each MC sample
-# define Scale_Kplus (N_Kplus_nunubar_1invab/N_Kplus_nunubar)
-# define Scale_Kplusstar (N_Kplusstar_nunubar_1invab/N_Kplusstar_nunubar)
-# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar)
-# define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
-# define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
-# define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
+# define N_Kplus_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplus_nunubar)
+# define N_Kplusstar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplusstar_nunubar)
+# define N_Xsu_nonresonant_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Xsu_nonresonant_nunubar)
+# define N_K0_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0_nunubar)
+# define N_K0star_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0star_nunubar)
+# define N_Xsd_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_Xsd_nonresonant_nunubar)
+
+// SIGNAL MC sample number befor skimming
+# define N_Kplus_train 7039000.0
+# define N_K0_train 7166624.0
+# define N_Kplusstar_train 7039000.0
+# define N_K0star_train 7166624.0
+# define N_Xsu_nonresonant_train 35195000.0
+# define N_Xsd_nonresonant_train 34940430.0
+# define N_Kplus_test 2961000.0
+# define N_K0_test 2833376.0
+# define N_Kplusstar_test 2961000.0
+# define N_K0star_test 2833376.0
+# define N_Xsu_nonresonant_test 14805000.0
+# define N_Xsd_nonresonant_test 15059570.0
+
+// scale factor for SIGNAL MC sample until LS1
+# define Scale_Kplus_train (N_Kplus_nunubar_LS1/N_Kplus_train)
+# define Scale_Kplusstar_train (N_Kplusstar_nunubar_LS1/N_Kplusstar_train)
+# define Scale_Xsu_nonresonant_train (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_train)
+# define Scale_K0_train (N_K0_nunubar_LS1/N_K0_train)
+# define Scale_K0star_train (N_K0star_nunubar_LS1/N_K0star_train)
+# define Scale_Xsd_nonresonant_train (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_train)
+# define Scale_Kplus_test (N_Kplus_nunubar_LS1/N_Kplus_test)
+# define Scale_Kplusstar_test (N_Kplusstar_nunubar_LS1/N_Kplusstar_test)
+# define Scale_Xsu_nonresonant_test (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_test)
+# define Scale_K0_test (N_K0_nunubar_LS1/N_K0_test)
+# define Scale_K0star_test (N_K0star_nunubar_LS1/N_K0star_test)
+# define Scale_Xsd_nonresonant_test (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_test)
+
+// BKG MC sample number (0.8/ab for BB, 1.0/ab for qq) after skimming
+# define N_CHG_train 32042497.0
+# define N_MIX_train 24693710.0
+# define N_UUBAR_train 94447089.0
+# define N_DDBAR_train 22664556.0
+# define N_SSBAR_train 19244661.0
+# define N_CHARM_train 107541168.0
+# define N_CHG_test 48052238.0
+# define N_MIX_test 37030486.0
+# define N_UUBAR_test 141671998.0
+# define N_DDBAR_test 34114182.0
+# define N_SSBAR_test 28859338.0
+# define N_CHARM_test 161280679.0
+
+// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb), until LS1
+# define Scale_CHG_train ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab * (N_CHG_train / (N_CHG_train + N_CHG_test)) + N_BpBp_1invab))
+# define Scale_MIX_train ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab * (N_MIX_train / (N_MIX_train + N_MIX_test)) + N_B0B0_1invab))
+# define Scale_UUBAR_train (0.361673/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_train (0.361673/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_train (0.361673/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_train (0.361673/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_CHG_test ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab * (N_CHG_test / (N_CHG_train + N_CHG_test)) + N_BpBp_1invab))
+# define Scale_MIX_test ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab * (N_MIX_test / (N_MIX_train + N_MIX_test)) + N_B0B0_1invab))
+# define Scale_UUBAR_test (0.361673/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
 
 # define KS0_rel_uncertainty 0.6 // %/cm
 # define track_rel_uncertainty 0.69 // %
@@ -554,12 +600,12 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
             if (SampleName == "CHG") {
                 numberings->push_back(0);
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = ((0.364436 - 0.002763) / 0.8); // total 0.8/ab for BB
+                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "MIX") {
                 numberings->push_back(1);
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = ((0.364436 - 0.002763) / 0.8); // total 0.8/ab for BB
+                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
                 numberings->push_back(2);
@@ -590,15 +636,26 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
             else if (SampleName == "SIGNAL") {
                 numberings->push_back(14);
                 FEI_calibration_factor = CAL_qq;
-                if(nXsu > 0) FEI_calibration_factor = FEI_cal_Bc;
-                else if(nXsd > 0) FEI_calibration_factor = FEI_cal_B0;
-                else if(Upsilon_ID > -0.5 && Upsilon_ID < 0.5) FEI_calibration_factor = FEI_cal_Bc;
-                else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5) FEI_calibration_factor = FEI_cal_B0;
+                if (nXsu > 0) {
+                    FEI_calibration_factor = FEI_cal_Bc;
+                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
+                }
+                else if (nXsd > 0) {
+                    FEI_calibration_factor = FEI_cal_B0;
+                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
+                }
+                else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5) {
+                    FEI_calibration_factor = FEI_cal_Bc;
+                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
+                }
+                else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5) {
+                    FEI_calibration_factor = FEI_cal_B0;
+                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
+                }
                 else {
                     printf("ERROR 255");
                     exit(1);
                 }
-                weight_ri = ((0.364436 - 0.002763) / 1.8); // total 25.0/ab
             }
             else {
                 printf("undefined job id!\n");
@@ -873,12 +930,12 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             if (SampleName == "CHG") {
                 numberings->push_back(0);
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = ((0.364436 - 0.002763) / 0.8); // total 0.8/ab for BB
+                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "MIX") {
                 numberings->push_back(1);
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = ((0.364436 - 0.002763) / 0.8); // total 0.8/ab for BB
+                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
                 numberings->push_back(2);
@@ -906,6 +963,30 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             //else if (job_id >= 256848292 && job_id <= 256848743) numberings->push_back(9);
             //else if (job_id >= 256848744 && job_id <= 256849128) numberings->push_back(10);
             //else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
+            else if (SampleName == "SIGNAL") {
+                numberings->push_back(14);
+                FEI_calibration_factor = CAL_qq;
+                if (nXsu > 0) {
+                    FEI_calibration_factor = FEI_cal_Bc;
+                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
+                }
+                else if (nXsd > 0) {
+                    FEI_calibration_factor = FEI_cal_B0;
+                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
+                }
+                else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5) {
+                    FEI_calibration_factor = FEI_cal_Bc;
+                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
+                }
+                else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5) {
+                    FEI_calibration_factor = FEI_cal_B0;
+                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
+                }
+                else {
+                    printf("ERROR 255");
+                    exit(1);
+                }
+            }
             else {
                 printf("undefined job id!\n");
                 exit(1);
@@ -1093,11 +1174,11 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = ((0.364436 - 0.002763) / 0.8); // total 0.8/ab for BB
+                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "MIX") {
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = ((0.364436 - 0.002763) / 0.8); // total 0.8/ab for BB
+                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
                 FEI_calibration_factor = CAL_qq;
@@ -1121,6 +1202,30 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             //else if (job_id >= 256848292 && job_id <= 256848743) numberings->push_back(9);
             //else if (job_id >= 256848744 && job_id <= 256849128) numberings->push_back(10);
             //else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
+            else if (SampleName == "SIGNAL") {
+                numberings->push_back(14);
+                FEI_calibration_factor = CAL_qq;
+                if (nXsu > 0) {
+                    FEI_calibration_factor = FEI_cal_Bc;
+                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
+                }
+                else if (nXsd > 0) {
+                    FEI_calibration_factor = FEI_cal_B0;
+                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
+                }
+                else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5) {
+                    FEI_calibration_factor = FEI_cal_Bc;
+                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
+                }
+                else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5) {
+                    FEI_calibration_factor = FEI_cal_B0;
+                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
+                }
+                else {
+                    printf("ERROR 255");
+                    exit(1);
+                }
+            }
             else {
                 printf("undefined job id!\n");
                 exit(1);
@@ -1290,8 +1395,8 @@ void THStack_plot_embedded_FBDT() {
 
     std::vector<double> weights;
 
-    LetsFillJpsi(Embedded_MC_CHG_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, FEI_cal_Bc * CAL * 0.361673 / 2.8);
-    LetsFillJpsi(Embedded_MC_MIX_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, FEI_cal_B0 * CAL * 0.361673 / 2.8);
+    LetsFillJpsi(Embedded_MC_CHG_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, FEI_cal_Bc * CAL * ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)) );
+    LetsFillJpsi(Embedded_MC_MIX_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, FEI_cal_B0 * CAL * ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)) );
     LetsFillJpsi(Embedded_MC_UDSCHARM_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, CAL * 0.361673 / 1.0);
     LetsFill(Embedded_data_dirname, variable_names, branch_names, Jpsi_data_values);
 
@@ -1372,7 +1477,7 @@ void THStack_plot_embedded_FBDT() {
         MC_hist[k] = new TH1D("embedded MC", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         data_hist[k] = new TH1D("embedded data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;MC/data", bins, min, max);
+        Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;data/MC", bins, min, max);
 
         MC_one_bin[k] = new TH1D((variable_names.at(k) + "_MC_one_bin").c_str(), ";number of candidates", 1, min, max);
         data_one_bin[k] = new TH1D((variable_names.at(k) + "_data_one_bin").c_str(), ";number of candidates", 1, min, max);
@@ -1396,9 +1501,9 @@ void THStack_plot_embedded_FBDT() {
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
 
         Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
-        Ratio_hist[k]->Divide(MC_hist[k], data_hist[k]);
+        Ratio_hist[k]->Divide(data_hist[k], MC_hist[k]);
 
-        Ratio_one_bin[k]->Divide(MC_one_bin[k], data_one_bin[k]);
+        Ratio_one_bin[k]->Divide(data_one_bin[k], MC_one_bin[k]);
 
         TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
@@ -1451,5 +1556,5 @@ void THStack_plot_embedded_FBDT() {
     printf("MC num with calibration: %lf\n", MC_sum);
     printf("MC with calibration: %lf +- %lf\n", MC_one_bin[0]->GetBinContent(1), MC_one_bin[0]->GetBinError(1));
     printf("data with calibration: %lf +- %lf\n", data_one_bin[0]->GetBinContent(1), data_one_bin[0]->GetBinError(1));
-    printf("MC/data with calibration: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent(1), Ratio_one_bin[0]->GetBinError(1));
+    printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent(1), Ratio_one_bin[0]->GetBinError(1));
 }
