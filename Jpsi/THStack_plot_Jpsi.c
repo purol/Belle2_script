@@ -830,6 +830,9 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
 
     double FEI_calibration_factor = -1;
 
+    int nXsu = -1;
+    int nXsd = -1;
+
     float BDTc = -1;
     double BDTc_correction = -1;
 
@@ -862,6 +865,10 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
+        if (SampleName == "SIGNAL") {
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &nXsu);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &nXsd);
         }
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
@@ -1088,6 +1095,9 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
     double FEI_calibration_factor = -1;
 
+    int nXsu = -1;
+    int nXsd = -1;
+
     float BDTc = -1;
     double BDTc_correction = -1;
 
@@ -1110,6 +1120,10 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
+        if (SampleName == "SIGNAL") {
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &nXsu);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &nXsd);
         }
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
@@ -1156,7 +1170,6 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             //else if (job_id >= 256848744 && job_id <= 256849128) numberings->push_back(10);
             //else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
             else if (SampleName == "SIGNAL") {
-                numberings->push_back(14);
                 FEI_calibration_factor = CAL_qq;
                 if (nXsu > 0) {
                     FEI_calibration_factor = FEI_cal_Bc;
