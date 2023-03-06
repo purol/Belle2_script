@@ -847,6 +847,8 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+        TTree* tree_Xs;
+        if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (branch_names.at(k) == std::string("Upsilon")) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -1112,6 +1114,8 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+        TTree* tree_Xs;
+        if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
