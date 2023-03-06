@@ -1221,7 +1221,6 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             //else if (job_id >= 256848744 && job_id <= 256849128) numberings->push_back(10);
             //else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
             else if (SampleName == "SIGNAL") {
-                numberings->push_back(14);
                 FEI_calibration_factor = CAL_qq;
                 if (nXsu > 0) {
                     FEI_calibration_factor = FEI_cal_Bc;
