@@ -1634,7 +1634,7 @@ void THStack_plot_embedded() {
 
         gStyle->SetPalette(kPastel);
 
-        Float_t ymax_1 = MC_embedded[k]->GetMaximum();
+        Float_t ymax_1 = MC_hist[k]->GetMaximum();
         Float_t ymax_2 = data_hist[k]->GetMaximum();
         double real_max = 0;
         if (ymax_1 > ymax_2) real_max = ymax_1;
