@@ -877,6 +877,9 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
 
     double FEI_calibration_factor = -1;
 
+    int nXsu = -1;
+    int nXsd = -1;
+
     float BDTc = -1;
     double BDTc_correction = -1;
 
@@ -891,6 +894,8 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+        TTree* tree_Xs;
+        if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (branch_names.at(k) == std::string("Upsilon")) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -909,6 +914,10 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
+        if (SampleName == "SIGNAL") {
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &nXsu);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &nXsd);
         }
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
@@ -1135,6 +1144,9 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
     double FEI_calibration_factor = -1;
 
+    int nXsu = -1;
+    int nXsd = -1;
+
     float BDTc = -1;
     double BDTc_correction = -1;
 
@@ -1149,6 +1161,8 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+        TTree* tree_Xs;
+        if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
@@ -1157,6 +1171,10 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
+        if (SampleName == "SIGNAL") {
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &nXsu);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &nXsd);
         }
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
