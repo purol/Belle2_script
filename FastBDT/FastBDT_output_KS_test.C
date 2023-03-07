@@ -179,11 +179,11 @@ void FastBDT_output_KS_test()
     LetsFill(train_dirname_Xsdnunu, OBB_Oqq_SIGNAL_train, OBB_SIGNAL_train, Oqq_SIGNAL_train, Scale_Xsd_nonresonant_train);
 
     const char* train_dirname_CHG = "./temp_v000_train/CHG";
-    const char* train_dirname_MIX = "./temp_v000_train/CHG";
-    const char* train_dirname_UUBAR = "./temp_v000_train/CHG";
-    const char* train_dirname_DDBAR = "./temp_v000_train/CHG";
-    const char* train_dirname_SSBAR = "./temp_v000_train/CHG";
-    const char* train_dirname_CHARM = "./temp_v000_train/CHG";
+    const char* train_dirname_MIX = "./temp_v000_train/MIX";
+    const char* train_dirname_UUBAR = "./temp_v000_train/UUBAR";
+    const char* train_dirname_DDBAR = "./temp_v000_train/DDBAR";
+    const char* train_dirname_SSBAR = "./temp_v000_train/SSBAR";
+    const char* train_dirname_CHARM = "./temp_v000_train/CHARM";
     LetsFill(train_dirname_CHG, OBB_Oqq_BKG_train, OBB_BKG_train, Oqq_BKG_train, Scale_CHG_train);
     LetsFill(train_dirname_MIX, OBB_Oqq_BKG_train, OBB_BKG_train, Oqq_BKG_train, Scale_MIX_train);
     LetsFill(train_dirname_UUBAR, OBB_Oqq_BKG_train, OBB_BKG_train, Oqq_BKG_train, Scale_UUBAR_train);
@@ -205,11 +205,11 @@ void FastBDT_output_KS_test()
     LetsFill(test_dirname_Xsdnunu, OBB_Oqq_SIGNAL_test, OBB_SIGNAL_test, Oqq_SIGNAL_test, Scale_Xsd_nonresonant_test);
 
     const char* test_dirname_CHG = "./temp_v000/CHG";
-    const char* test_dirname_MIX = "./temp_v000/CHG";
-    const char* test_dirname_UUBAR = "./temp_v000/CHG";
-    const char* test_dirname_DDBAR = "./temp_v000/CHG";
-    const char* test_dirname_SSBAR = "./temp_v000/CHG";
-    const char* test_dirname_CHARM = "./temp_v000/CHG";
+    const char* test_dirname_MIX = "./temp_v000/MIX";
+    const char* test_dirname_UUBAR = "./temp_v000/UUBAR";
+    const char* test_dirname_DDBAR = "./temp_v000/DDBAR";
+    const char* test_dirname_SSBAR = "./temp_v000/SSBAR";
+    const char* test_dirname_CHARM = "./temp_v000/CHARM";
     LetsFill(test_dirname_CHG, OBB_Oqq_BKG_test, OBB_BKG_test, Oqq_BKG_test, Scale_CHG_test);
     LetsFill(test_dirname_MIX, OBB_Oqq_BKG_test, OBB_BKG_test, Oqq_BKG_test, Scale_MIX_test);
     LetsFill(test_dirname_UUBAR, OBB_Oqq_BKG_test, OBB_BKG_test, Oqq_BKG_test, Scale_UUBAR_test);
