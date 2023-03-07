@@ -150,7 +150,6 @@ void LetsFill(const char* dirname, TH2F* OBB_Oqq_hist, TH1F* OBB_hist, TH1F* Oqq
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             
-            if(Mx < 1.1) continue;
             OBB_Oqq_hist->Fill(OBB_var, Oqq_var, weight_var);
             OBB_hist->Fill(OBB_var, weight_var);
             Oqq_hist->Fill(Oqq_var, weight_var);
