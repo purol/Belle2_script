@@ -1216,28 +1216,6 @@ void FluctuatePIDCorrection(bool IsItKID) {
     }
 }
 
-void FluctuatePIDCorrection(bool IsItKID) {
-
-    for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-
-        std::lognormal_distribution<double> KID_true_distribution(0.0, PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]);
-        std::lognormal_distribution<double> KID_mis_distribution(0.0, PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]);
-        std::lognormal_distribution<double> PID_true_distribution(0.0, PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]);
-        std::lognormal_distribution<double> PID_mis_distribution(0.0, PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]);
-
-
-            if (std::abs(PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]) < MyEPSILON) PID_correction_fluctuated[0][i_PID] = 1.0; // true KID
-            else PID_correction_fluctuated[0][i_PID] = KID_true_distribution(generator);
-            if (std::abs(PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]) < MyEPSILON) PID_correction_fluctuated[1][i_PID] = 1.0; // mis KID
-            else PID_correction_fluctuated[1][i_PID] = KID_mis_distribution(generator);
-            if (std::abs(PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]) < MyEPSILON) PID_correction_fluctuated[2][i_PID] = 1.0; // true PID
-            else PID_correction_fluctuated[2][i_PID] = PID_true_distribution(generator);
-            if (std::abs(PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]) < MyEPSILON) PID_correction_fluctuated[3][i_PID] = 1.0; // mis PID
-            else PID_correction_fluctuated[3][i_PID] = PID_mis_distribution(generator);
-
-    }
-}
-
 void PID_calculator()
 {
     ReadPIDFile();

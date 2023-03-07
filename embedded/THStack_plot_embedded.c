@@ -1600,9 +1600,9 @@ void THStack_plot_embedded() {
             max = 0.4;
         }
 
-        MC_hist[k] = new TH1D("charged", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        MC_hist[k] = new TH1D("embedded MC", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        data_hist[k] = new TH1D("embedded data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;data/MC", bins, min, max);
     }
 
