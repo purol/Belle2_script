@@ -50,33 +50,21 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_K0star_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0star_nunubar)
 # define N_Xsd_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_Xsd_nonresonant_nunubar)
 
-// SIGNAL MC sample number befor skimming
-# define N_Kplus_train 7039000.0
-# define N_K0_train 7166624.0
-# define N_Kplusstar_train 7039000.0
-# define N_K0star_train 7166624.0
-# define N_Xsu_nonresonant_train 35195000.0
-# define N_Xsd_nonresonant_train 34940430.0
-# define N_Kplus_test 2961000.0
-# define N_K0_test 2833376.0
-# define N_Kplusstar_test 2961000.0
-# define N_K0star_test 2833376.0
-# define N_Xsu_nonresonant_test 14805000.0
-# define N_Xsd_nonresonant_test 15059570.0
+// my MC sample number
+# define N_Kplus_nunubar 3000000.0
+# define N_K0_nunubar 3000000.0
+# define N_Kplusstar_nunubar 3000000.0
+# define N_K0star_nunubar 3000000.0
+# define N_Xsu_nonresonant_nunubar 15000000.0
+# define N_Xsd_nonresonant_nunubar 15000000.0
 
 // scale factor for SIGNAL MC sample until LS1
-# define Scale_Kplus_train (N_Kplus_nunubar_LS1/N_Kplus_train)
-# define Scale_Kplusstar_train (N_Kplusstar_nunubar_LS1/N_Kplusstar_train)
-# define Scale_Xsu_nonresonant_train (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_train)
-# define Scale_K0_train (N_K0_nunubar_LS1/N_K0_train)
-# define Scale_K0star_train (N_K0star_nunubar_LS1/N_K0star_train)
-# define Scale_Xsd_nonresonant_train (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_train)
-# define Scale_Kplus_test (N_Kplus_nunubar_LS1/N_Kplus_test)
-# define Scale_Kplusstar_test (N_Kplusstar_nunubar_LS1/N_Kplusstar_test)
-# define Scale_Xsu_nonresonant_test (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_test)
-# define Scale_K0_test (N_K0_nunubar_LS1/N_K0_test)
-# define Scale_K0star_test (N_K0star_nunubar_LS1/N_K0star_test)
-# define Scale_Xsd_nonresonant_test (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_test)
+# define Scale_Kplus (N_Kplus_nunubar_LS1/N_Kplus_nunubar)
+# define Scale_Kplusstar (N_Kplusstar_nunubar_LS1/N_Kplusstar_nunubar)
+# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_nunubar)
+# define Scale_K0 (N_K0_nunubar_LS1/N_K0_nunubar)
+# define Scale_K0star (N_K0star_nunubar_LS1/N_K0star_nunubar)
+# define Scale_Xsd_nonresonant (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar)
 
 void load_files(const char *dirname, std::vector<std::string>* names){
    TSystemDirectory dir(dirname, dirname);

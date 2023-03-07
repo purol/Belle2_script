@@ -110,18 +110,18 @@ void load_files(const char* dirname, std::vector<string>* names) {
 }
 
 TH2F* OBB_Oqq_BKG_train = new TH2F("OBB_Oqq_BKG_train", ";O_{BB};O{qq}", 40, 0, 1.0, 40, 0, 1.0);
-TH1F* OBB_BKG_train = new TH1F("FastBDT_{2} BKG train", ";FastBDT_{2};", 40, 0, 1.0);
-TH1F* Oqq_BKG_train = new TH1F("FastBDT_{1} BKG train", ";FastBDT_{1};", 40, 0, 1.0);
+TH1F* OBB_BKG_train = new TH1F("FastBDT BKG train", ";FastBDT;", 40, 0, 1.0);
+TH1F* Oqq_BKG_train = new TH1F("FastBDT BKG train", ";FastBDT;", 40, 0, 1.0);
 TH2F* OBB_Oqq_BKG_test = new TH2F("OBB_Oqq_BKG_test", ";O_{BB};O{qq}", 40, 0, 1.0, 40, 0, 1.0);
-TH1F* OBB_BKG_test = new TH1F("FastBDT_{2} BKG test", ";FastBDT_{2};", 40, 0, 1.0);
-TH1F* Oqq_BKG_test = new TH1F("FastBDT_{1} BKG test", ";FastBDT_{1};", 40, 0, 1.0);
+TH1F* OBB_BKG_test = new TH1F("FastBDT BKG test", ";FastBDT;", 40, 0, 1.0);
+TH1F* Oqq_BKG_test = new TH1F("FastBDT BKG test", ";FastBDT;", 40, 0, 1.0);
 
 TH2F* OBB_Oqq_SIGNAL_train = new TH2F("OBB_Oqq_SIGNAL_train", ";O_{BB};O{qq}", 40, 0, 1.0, 40, 0, 1.0);
-TH1F* OBB_SIGNAL_train = new TH1F("FastBDT_{2} SIGNAL train", ";FastBDT_{2};", 40, 0, 1.0);
-TH1F* Oqq_SIGNAL_train = new TH1F("FastBDT_{1} SIGNAL train", ";FastBDT_{1};", 40, 0, 1.0);
+TH1F* OBB_SIGNAL_train = new TH1F("FastBDT SIGNAL train", ";FastBDT;", 40, 0, 1.0);
+TH1F* Oqq_SIGNAL_train = new TH1F("FastBDT SIGNAL train", ";FastBDT;", 40, 0, 1.0);
 TH2F* OBB_Oqq_SIGNAL_test = new TH2F("OBB_Oqq_SIGNAL_test", ";O_{BB};O{qq}", 40, 0, 1.0, 40, 0, 1.0);
-TH1F* OBB_SIGNAL_test = new TH1F("FastBDT_{2} SIGNAL test", ";FastBDT_{2};", 40, 0, 1.0);
-TH1F* Oqq_SIGNAL_test = new TH1F("FastBDT_{1} SIGNAL test", ";FastBDT_{1};", 40, 0, 1.0);
+TH1F* OBB_SIGNAL_test = new TH1F("FastBDT SIGNAL test", ";FastBDT;", 40, 0, 1.0);
+TH1F* Oqq_SIGNAL_test = new TH1F("FastBDT SIGNAL test", ";FastBDT;", 40, 0, 1.0);
 
 void LetsFill(const char* dirname, TH2F* OBB_Oqq_hist, TH1F* OBB_hist, TH1F* Oqq_hist, double weight_var = 1.0) {
     float OBB_var = 0;
