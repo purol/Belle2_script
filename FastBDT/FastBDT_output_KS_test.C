@@ -287,7 +287,7 @@ void FastBDT_output_KS_test()
     else OBB_BKG_train->SetMaximum(1.05 * OBB_SIGNAL_train_max);
     OBB_BKG_train->Draw("Hist"); OBB_SIGNAL_train->Draw("HistSAME");
     OBB_BKG_test->Draw("AP SAME"); OBB_SIGNAL_test->Draw("AP SAME");
-    gPad->BuildLegend(0.9, 0.9, 0.6, 0.6);
+    TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.6, 0.6); legend->SetFillStyle(0); legend->SetLineWidth(0);
     c_temp->SaveAs("OBB_Plot.png");
 
     TCanvas* c_temp_2 = new TCanvas("c2", "", 600, 600); c_temp_2->cd(); gPad->SetLogy();
@@ -296,7 +296,7 @@ void FastBDT_output_KS_test()
     else Oqq_BKG_train->SetMaximum(1.05 * Oqq_SIGNAL_train_max);
     Oqq_BKG_train->Draw("Hist"); Oqq_SIGNAL_train->Draw("HistSAME");
     Oqq_BKG_test->Draw("AP SAME"); Oqq_SIGNAL_test->Draw("AP SAME");
-    TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.6, 0.6); legend->SetFillStyle(0); legend->SetLineWidth(0);
+    TLegend* legend_2 = gPad->BuildLegend(0.9, 0.9, 0.6, 0.6); legend_2->SetFillStyle(0); legend_2->SetLineWidth(0);
     c_temp_2->SaveAs("Oqq_Plot.png");
 
 }
