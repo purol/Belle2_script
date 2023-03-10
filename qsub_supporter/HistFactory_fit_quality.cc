@@ -204,6 +204,9 @@ private:
     double* m_true_param;
     double* m_fitting_param;
     double* m_fitting_param_error;
+    int m_covQual;
+    int m_status;
+    double m_edm;
 
     TFile* m_file;
     TTree* m_tree;
@@ -214,6 +217,7 @@ public:
     void CloseFile();
     void GetTrueValues(RooWorkspace* w, std::vector<std::string>* names);
     void GetFittingValues(RooFitResult* fitres, std::vector<std::string>* names);
+    void GetFittingStatus(RooFitResult* fitres);
     void WriteIntoBranch();
 };
 
@@ -221,6 +225,9 @@ FileSaver::FileSaver() {
     double* m_true_param = nullptr;
     double* m_fitting_param = nullptr;
     double* m_fitting_param_error = nullptr;
+    m_covQual = -1;
+    m_status = -1;
+    m_edm = -1;
     TFile* m_file = nullptr;
     TTree* m_tree = nullptr;
 }
@@ -250,6 +257,9 @@ void FileSaver::OpenFile(bool IsItToy, std::vector<std::string>* names, double m
         m_tree->Branch((names->at(i) + "_value").c_str(), &m_fitting_param[i]);
         m_tree->Branch((names->at(i) + "_error").c_str(), &m_fitting_param_error[i]);
     }
+    m_tree->Branch("covQual", &m_covQual);
+    m_tree->Branch("status", &m_status);
+    m_tree->Branch("edm", &m_edm);
 }
 
 void FileSaver::CloseFile() {
@@ -286,6 +296,14 @@ void FileSaver::GetFittingValues(RooFitResult* fitres, std::vector<std::string>*
         }
 
     }
+
+}
+
+void FileSaver::GetFittingStatus(RooFitResult* fitres) {
+
+    m_covQual = fitres->covQual();
+    m_status = fitres->status();
+    m_edm = fitres->edm();
 
 }
 
@@ -475,6 +493,7 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
             RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
 
             filesaver.GetFittingValues(fitres, names);
+            filesaver.GetFittingStatus(fitres);
             filesaver.WriteIntoBranch();
 
             delete fitres;
