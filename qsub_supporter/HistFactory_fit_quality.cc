@@ -523,6 +523,7 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
 
         filesaver.GetFittingValues(fitres, names);
+        filesaver.GetFittingStatus(fitres);
         filesaver.WriteIntoBranch();
 
         delete fitres;
