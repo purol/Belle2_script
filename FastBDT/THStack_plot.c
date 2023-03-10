@@ -14,47 +14,35 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # include <algorithm>
 # include <float.h>
 
-// arXiv:1409.4557v2
+// arXiv:1409.4557v2, PhysRevD.107.014511
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
-# define BR_Kplus_nunubar 0.00000398 // (eq. 10)
+# define BR_Kplus_nunubar 0.000005044 // Table VI = (5.044 +- 0.402) * 10^{-6}
 # define BR_K0star_nunubar 0.00000919 // (eq. 11)
-# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15)
+# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15). In Table VI = (4.6669 +- 0.3707) * 10^{-6}
 # define BR_Kplusstar_nunubar (BR_K0star_nunubar*TBp/TB0) // under (eq. 15)
 # define BR_Xs_nunubar 0.000029 // (eq. 23)
 # define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
 # define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
 
-// https://confluence.desy.de/pages/viewpage.action?pageId=107054222
-# define N_BpBp_1invab 565400000.0
-# define N_B0B0_1invab 534600000.0
+// according to DIRAC
+# define N_BpBp_1invab 540000000.0
+# define N_B0B0_1invab 510000000.0
 
-# define N_Kplus_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplus_nunubar)
-# define N_Kplusstar_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplusstar_nunubar)
-# define N_Xsu_nonresonant_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Xsu_nonresonant_nunubar)
-# define N_K0_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0_nunubar)
-# define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
-# define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
+# define BR_BpBp 0.514
+# define BR_B0B0 0.486
 
-/*
-// my MC sample number
-# define N_Kplus_nunubar 10000000.0
-# define N_K0_nunubar 10000000.0
-# define N_Kplusstar_nunubar 10000000.0
-# define N_K0star_nunubar 10000000.0
-# define N_Xsu_nonresonant_nunubar 50000000.0
-# define N_Xsd_nonresonant_nunubar 50000000.0
+// https://confluence.desy.de/pages/viewpage.action?spaceKey=BI&title=Conference+readiness
+# define N_BB_LS1 387100000.0 // NBB = (387.1 +/- 5.6) x 10^6
 
-// scale factor for each MC sample
-# define Scale_Kplus (N_Kplus_nunubar_1invab/N_Kplus_nunubar)
-# define Scale_Kplusstar (N_Kplusstar_nunubar_1invab/N_Kplusstar_nunubar)
-# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar)
-# define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
-# define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
-# define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
-*/
+# define N_Kplus_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplus_nunubar)
+# define N_Kplusstar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplusstar_nunubar)
+# define N_Xsu_nonresonant_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Xsu_nonresonant_nunubar)
+# define N_K0_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0_nunubar)
+# define N_K0star_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0star_nunubar)
+# define N_Xsd_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_Xsd_nonresonant_nunubar)
 
-// SIGNAL MC sample number
+// SIGNAL MC sample number befor skimming
 # define N_Kplus_train 7039000.0
 # define N_K0_train 7166624.0
 # define N_Kplusstar_train 7039000.0
@@ -68,49 +56,49 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_Xsu_nonresonant_test 14805000.0
 # define N_Xsd_nonresonant_test 15059570.0
 
-// scale factor for SIGNAL MC sample (364.436 - 2.763 = 361.673/fb)
-# define Scale_Kplus_train (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_train)
-# define Scale_Kplusstar_train (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_train)
-# define Scale_Xsu_nonresonant_train (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_train)
-# define Scale_K0_train (0.361673 * N_K0_nunubar_1invab/N_K0_train)
-# define Scale_K0star_train (0.361673 * N_K0star_nunubar_1invab/N_K0star_train)
-# define Scale_Xsd_nonresonant_train (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_train)
-# define Scale_Kplus_test (0.361673 * N_Kplus_nunubar_1invab/N_Kplus_test)
-# define Scale_Kplusstar_test (0.361673 * N_Kplusstar_nunubar_1invab/N_Kplusstar_test)
-# define Scale_Xsu_nonresonant_test (0.361673 * N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_test)
-# define Scale_K0_test (0.361673 * N_K0_nunubar_1invab/N_K0_test)
-# define Scale_K0star_test (0.361673 * N_K0star_nunubar_1invab/N_K0star_test)
-# define Scale_Xsd_nonresonant_test (0.361673 * N_Xsd_nunubar_1invab/N_Xsd_nonresonant_test)
+// scale factor for SIGNAL MC sample until LS1
+# define Scale_Kplus_train (N_Kplus_nunubar_LS1/N_Kplus_train)
+# define Scale_Kplusstar_train (N_Kplusstar_nunubar_LS1/N_Kplusstar_train)
+# define Scale_Xsu_nonresonant_train (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_train)
+# define Scale_K0_train (N_K0_nunubar_LS1/N_K0_train)
+# define Scale_K0star_train (N_K0star_nunubar_LS1/N_K0star_train)
+# define Scale_Xsd_nonresonant_train (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_train)
+# define Scale_Kplus_test (N_Kplus_nunubar_LS1/N_Kplus_test)
+# define Scale_Kplusstar_test (N_Kplusstar_nunubar_LS1/N_Kplusstar_test)
+# define Scale_Xsu_nonresonant_test (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_test)
+# define Scale_K0_test (N_K0_nunubar_LS1/N_K0_test)
+# define Scale_K0star_test (N_K0star_nunubar_LS1/N_K0star_test)
+# define Scale_Xsd_nonresonant_test (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_test)
 
 // BKG MC sample number (0.8/ab for BB, 1.0/ab for qq)
-# define N_CHG_train 32042497.0
-# define N_MIX_train 24693710.0
-# define N_UUBAR_train 94447089.0
-# define N_DDBAR_train 22664556.0
-# define N_SSBAR_train 19244661.0
-# define N_CHARM_train 107541168.0
-# define N_CHG_test 48052238.0
-# define N_MIX_test 37030486.0
-# define N_UUBAR_test 141671998.0
-# define N_DDBAR_test 34114182.0
-# define N_SSBAR_test 28859338.0
-# define N_CHARM_test 161280679.0
+# define N_CHG_test 32042497.0
+# define N_MIX_test 24693710.0
+# define N_UUBAR_test 94447089.0
+# define N_DDBAR_test 22664556.0
+# define N_SSBAR_test 19244661.0
+# define N_CHARM_test 107541168.0
+# define N_CHG_train 48052238.0
+# define N_MIX_train 37030486.0
+# define N_UUBAR_train 141671998.0
+# define N_DDBAR_train 34114182.0
+# define N_SSBAR_train 28859338.0
+# define N_CHARM_train 161280679.0
 
-// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb)
-# define Scale_CHG_train (0.361673/((N_CHG_train/(N_CHG_train + N_CHG_test))*0.8+1.0))
-# define Scale_MIX_train (0.361673/((N_MIX_train/(N_MIX_train + N_MIX_test))*0.8+1.0))
+// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb), until LS1
+# define Scale_CHG_train ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab * (N_CHG_train / (N_CHG_train + N_CHG_test)) + N_BpBp_1invab))
+# define Scale_MIX_train ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab * (N_MIX_train / (N_MIX_train + N_MIX_test)) + N_B0B0_1invab))
 # define Scale_UUBAR_train (0.361673/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
 # define Scale_DDBAR_train (0.361673/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
 # define Scale_SSBAR_train (0.361673/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_train (0.361673/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
-# define Scale_CHG_test (0.361673/((N_CHG_test/(N_CHG_train + N_CHG_test))*0.8+1.0))
-# define Scale_MIX_test (0.361673/((N_MIX_test/(N_MIX_train + N_MIX_test))*0.8+1.0))
+# define Scale_CHG_test ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab * (N_CHG_test / (N_CHG_train + N_CHG_test)) + N_BpBp_1invab))
+# define Scale_MIX_test ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab * (N_MIX_test / (N_MIX_train + N_MIX_test)) + N_B0B0_1invab))
 # define Scale_UUBAR_test (0.361673/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
 # define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
 # define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
 
-# define Nvar_num 90
+# define Nvar_num 116
 
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
@@ -234,18 +222,18 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
 void THStack_plot() {
 
-    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v000/final_output";
-    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v000/final_output";
-    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v000/final_output";
-    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v000/final_output";
-    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v000/final_output";
-    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v000/final_output";
-    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/CHG_analysis/train_v000/final_output";
-    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/MIX_analysis/train_v000/final_output";
-    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/UUBAR_analysis/train_v000/final_output";
-    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/DDBAR_analysis/train_v000/final_output";
-    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SSBAR_analysis/train_v000/final_output";
-    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/CHARM_analysis/train_v000/final_output";
+    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v009/final_output";
+    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v009/final_output";
+    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v009/final_output";
+    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v009/final_output";
+    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v009/final_output";
+    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v009/final_output";
+    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/CHG_analysis/train_v009/final_output";
+    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/MIX_analysis/train_v009/final_output";
+    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/UUBAR_analysis/train_v009/final_output";
+    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/DDBAR_analysis/train_v009/final_output";
+    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SSBAR_analysis/train_v009/final_output";
+    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/CHARM_analysis/train_v009/final_output";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
@@ -253,45 +241,44 @@ void THStack_plot() {
     variable_names.push_back("Btag_chiProb"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_extraInfo_SignalProbability"); branch_names.push_back("Btag");
     variable_names.push_back("thrustAxisCosTheta"); branch_names.push_back("Upsilon");
-    variable_names.push_back("missingMomentumOfEvent"); branch_names.push_back("Upsilon");
     variable_names.push_back("missingMomentumOfEvent_theta"); branch_names.push_back("Upsilon");
+    variable_names.push_back("missingEnergyOfEventCMS"); branch_names.push_back("Upsilon");
+    variable_names.push_back("missingMomentumOfEvent"); branch_names.push_back("Upsilon");
     variable_names.push_back("Btag_deltaE"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_Mbc"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_useCMSFrame_theta"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_R2"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_cosTBTO"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_et"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_mm2"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso00"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso01"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso02"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso03"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso04"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso10"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso12"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso14"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso20"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso22"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hso24"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hoo0"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo1"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo2"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo3"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo4"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_useCMSFrame_phi"); branch_names.push_back("Btag");
     variable_names.push_back("roeEextra__bocleanMask__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("extraInfo__boEeclv133__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("extraInfo__boNgammav133__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("Btag_thrustOm"); branch_names.push_back("Btag");
     variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT_loose__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT_tight__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("Bsig_cosTBTO"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso00"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso01"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso02"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso03"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso04"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso10"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso14"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso24"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hoo1"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hoo2"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hoo3"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hoo4"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_M"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_useCMSFrame_pt"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_useCMSFrame_p"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_Dc_pValue_med"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_Dc_pValue_std"); branch_names.push_back("Bsig");
@@ -305,6 +292,32 @@ void THStack_plot() {
     variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dr"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dz"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_M"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_thrustBm"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_thrustOm"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_cosTBTO"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_cosTBz"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_et"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_mm2"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso00"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso01"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso02"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso03"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso04"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso10"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso12"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso14"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso20"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso22"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso24"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo0"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo1"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo2"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo3"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo4"); branch_names.push_back("Bsig");
+    variable_names.push_back("foxWolframR1"); branch_names.push_back("Upsilon");
+    variable_names.push_back("foxWolframR2"); branch_names.push_back("Upsilon");
+    variable_names.push_back("foxWolframR3"); branch_names.push_back("Upsilon");
+    variable_names.push_back("foxWolframR4"); branch_names.push_back("Upsilon");
     variable_names.push_back("cleoConeThrust0"); branch_names.push_back("Upsilon");
     variable_names.push_back("cleoConeThrust1"); branch_names.push_back("Upsilon");
     variable_names.push_back("cleoConeThrust2"); branch_names.push_back("Upsilon");
@@ -314,14 +327,11 @@ void THStack_plot() {
     variable_names.push_back("cleoConeThrust6"); branch_names.push_back("Upsilon");
     variable_names.push_back("cleoConeThrust7"); branch_names.push_back("Upsilon");
     variable_names.push_back("cleoConeThrust8"); branch_names.push_back("Upsilon");
+    variable_names.push_back("harmonicMomentThrust0"); branch_names.push_back("Upsilon");
     variable_names.push_back("harmonicMomentThrust1"); branch_names.push_back("Upsilon");
     variable_names.push_back("harmonicMomentThrust2"); branch_names.push_back("Upsilon");
     variable_names.push_back("harmonicMomentThrust3"); branch_names.push_back("Upsilon");
     variable_names.push_back("harmonicMomentThrust4"); branch_names.push_back("Upsilon");
-    variable_names.push_back("foxWolframR1"); branch_names.push_back("Upsilon");
-    variable_names.push_back("foxWolframR2"); branch_names.push_back("Upsilon");
-    variable_names.push_back("foxWolframR3"); branch_names.push_back("Upsilon");
-    variable_names.push_back("foxWolframR4"); branch_names.push_back("Upsilon");
     variable_names.push_back("sphericity"); branch_names.push_back("Upsilon");
     variable_names.push_back("aplanarity"); branch_names.push_back("Upsilon");
     variable_names.push_back("Btag_thrustBm"); branch_names.push_back("Btag");
@@ -339,6 +349,10 @@ void THStack_plot() {
     variable_names.push_back("Bsig_daughter_0_extraInfo_mychiProb"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_mydr"); branch_names.push_back("Bsig");
     variable_names.push_back("Bsig_daughter_0_extraInfo_mydz"); branch_names.push_back("Bsig");
+    variable_names.push_back("nROE_KLMClusters"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nROE_ECLClusters__bocleanMask__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nROE_ParticlesInList__bopi0__clmyneutralPion__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nROE_ParticlesInList__bogamma__clmygamma__bc"); branch_names.push_back("Upsilon");
 
     int Nvar = static_cast<int>(variable_names.size());
     if (Nvar != Nvar_num) exit(1);

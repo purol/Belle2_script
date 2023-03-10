@@ -3027,10 +3027,6 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
         GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kstarff_array[i], "Bzero", Scale_Xsd_nonresonant_test * non_res_Xsd_correction_factor, "otherwise");
     }
 
-    // get fraction uncertainty pdfs
-    const double total_Xs_Num_plus = Lumi_validation_MC * (2.0 * N_BpBp_1invab * (BR_Xs_nunubar + Sigma_BR_Xs_nunubar) + 2.0 * N_B0B0_1invab * (BR_Xs_nunubar + Sigma_BR_Xs_nunubar));
-    const double total_Xs_Num_minus = Lumi_validation_MC * (2.0 * N_BpBp_1invab * (BR_Xs_nunubar - Sigma_BR_Xs_nunubar) + 2.0 * N_B0B0_1invab * (BR_Xs_nunubar - Sigma_BR_Xs_nunubar));
-
     GetNominalPDFs(MC_dirname_Knunu, Signal_Kfrac_p, "Bplus", Scale_Kplus_test * ((BR_Kplus_nunubar + Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu");
     GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Kfrac_p, "Bplus", Scale_Kplusstar_test, "otherwise");
     GetNominalPDFs(MC_dirname_Xsununu, Signal_Kfrac_p, "Bplus", Scale_Xsu_nonresonant_test * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "otherwise");
