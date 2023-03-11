@@ -60,9 +60,17 @@ void ReadToyRootFile(){
         double temp_mu_fitting = -1;
         double temp_mu_error = -1;
 
+        int temp_covQual = -1;
+        int temp_status = -1;
+        double temp_edm = -1;
+
         temp_tree->SetBranchAddress("mu_true", &temp_mu_true);
         temp_tree->SetBranchAddress("mu_value", &temp_mu_fitting);
         temp_tree->SetBranchAddress("mu_error", &temp_mu_error);
+
+        temp_tree->SetBranchAddress("covQual", &temp_covQual);
+        temp_tree->SetBranchAddress("status", &temp_status);
+        temp_tree->SetBranchAddress("edm", &temp_edm);
 
         for (unsigned int j = 0; j < temp_tree->GetEntries(); j++) { // Fill
             temp_tree->GetEntry(j);
