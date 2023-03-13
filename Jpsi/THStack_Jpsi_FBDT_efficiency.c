@@ -499,8 +499,8 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
 
     double FEI_calibration_factor = -1;
 
-    int nXsu = -1;
-    int nXsd = -1;
+    int nBp = -1;
+    int nB0 = -1;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -535,8 +535,8 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         if (SampleName == "SIGNAL") {
-            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &nXsu);
-            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &nXsd);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &nBp);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &nB0);
         }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -589,19 +589,11 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
             else if (SampleName == "SIGNAL") {
                 numberings->push_back(14);
                 FEI_calibration_factor = CAL_qq;
-                if (nXsu > 0) {
+                if (nBp > 0) {
                     FEI_calibration_factor = FEI_cal_Bc;
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
-                else if (nXsd > 0) {
-                    FEI_calibration_factor = FEI_cal_B0;
-                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
-                }
-                else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5) {
-                    FEI_calibration_factor = FEI_cal_Bc;
-                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
-                }
-                else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5) {
+                else if (nB0 > 0) {
                     FEI_calibration_factor = FEI_cal_B0;
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
@@ -830,8 +822,8 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
 
     double FEI_calibration_factor = -1;
 
-    int nXsu = -1;
-    int nXsd = -1;
+    int nBp = -1;
+    int nB0 = -1;
 
     float BDTc = -1;
     double BDTc_correction = -1;
@@ -869,8 +861,8 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         if (SampleName == "SIGNAL") {
-            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &nXsu);
-            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &nXsd);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &nBp);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &nB0);
         }
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
@@ -928,19 +920,11 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             else if (SampleName == "SIGNAL") {
                 numberings->push_back(14);
                 FEI_calibration_factor = CAL_qq;
-                if (nXsu > 0) {
+                if (nBp > 0) {
                     FEI_calibration_factor = FEI_cal_Bc;
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
-                else if (nXsd > 0) {
-                    FEI_calibration_factor = FEI_cal_B0;
-                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
-                }
-                else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5) {
-                    FEI_calibration_factor = FEI_cal_Bc;
-                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
-                }
-                else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5) {
+                else if (nB0 > 0) {
                     FEI_calibration_factor = FEI_cal_B0;
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
@@ -1097,8 +1081,8 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
     double FEI_calibration_factor = -1;
 
-    int nXsu = -1;
-    int nXsd = -1;
+    int nBp = -1;
+    int nB0 = -1;
 
     float BDTc = -1;
     double BDTc_correction = -1;
@@ -1126,8 +1110,8 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         if (SampleName == "SIGNAL") {
-            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &nXsu);
-            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &nXsd);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &nBp);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &nB0);
         }
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
@@ -1175,19 +1159,11 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             //else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
             else if (SampleName == "SIGNAL") {
                 FEI_calibration_factor = CAL_qq;
-                if (nXsu > 0) {
+                if (nBp > 0) {
                     FEI_calibration_factor = FEI_cal_Bc;
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
-                else if (nXsd > 0) {
-                    FEI_calibration_factor = FEI_cal_B0;
-                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
-                }
-                else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5) {
-                    FEI_calibration_factor = FEI_cal_Bc;
-                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
-                }
-                else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5) {
+                else if (nB0 > 0) {
                     FEI_calibration_factor = FEI_cal_B0;
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }

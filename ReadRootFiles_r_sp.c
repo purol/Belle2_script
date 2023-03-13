@@ -18,7 +18,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_Bsig_info 359
 # define N_Btag_info 11
 # define N_decay 38 // five decay mode + others
-# define N_decay_nparticles 3 // # of nu_e, B, B0
+# define N_decay_nparticles 5 // # of nu_e, B->Xs nu_e nu_e_bar, B0->Xs nu_e nu_e_bar, B+-, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
 # define N_PID_syst 73
 # define index_q2 0
@@ -999,6 +999,8 @@ void Loader::GetData(TFile* input_file) {
         tree_Xs->SetBranchAddress("nParticlesInList__bonu_e__clMC_signal__bc", &temp.Decay_nparticles[0]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp.Decay_nparticles[1]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp.Decay_nparticles[2]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &temp.Decay_nparticles[3]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &temp.Decay_nparticles[4]);
         tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp.Decay_syst_ff[index_q2]);
         tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp.Decay_syst_ff[1]);
         tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp.Decay_syst_ff[2]);
@@ -2381,6 +2383,8 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &DecayNparticlesDataToTree[0]);
         tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &DecayNparticlesDataToTree[1]);
         tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &DecayNparticlesDataToTree[2]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clPrimaryMC__bc", &DecayNparticlesDataToTree[3]);
+        tree_Xs->Branch("nParticlesInList__boB0__clPrimaryMC__bc", &DecayNparticlesDataToTree[4]);
         tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &DecaySystFFDataToTree[index_q2]);
         tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &DecaySystFFDataToTree[1]);
         tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &DecaySystFFDataToTree[2]);
@@ -2787,6 +2791,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
         temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
         temp_tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clPrimaryMC__bc", &temp_DecayNparticlesDataToTree[3]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clPrimaryMC__bc", &temp_DecayNparticlesDataToTree[4]);
         temp_tree_Xs->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[index_q2]);
         temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[1]);
         temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[2]);
@@ -3178,6 +3184,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
         temp_tree->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
         temp_tree->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
         temp_tree->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clPrimaryMC__bc", &temp_DecayNparticlesDataToTree[3]);
+        temp_tree->Branch("nParticlesInList__boB0__clPrimaryMC__bc", &temp_DecayNparticlesDataToTree[4]);
         temp_tree->Branch("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[index_q2]);
         temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[1]);
         temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[2]);
