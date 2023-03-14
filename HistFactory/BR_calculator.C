@@ -133,8 +133,8 @@ using std::to_string;
 
 # define KS0_rel_uncertainty 0.6 // %/cm
 # define track_rel_uncertainty 0.69 // %
-# define pi0_correction 0.932
-# define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
+// # define pi0_correction 0.932
+// # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
 // https://indico.belle2.org/event/6872/contributions/37447/attachments/17127/25504/FEIperformance_B2GM.pdf
 # define FEI_cal_Bc 0.679
@@ -182,6 +182,20 @@ double PID_correction[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-mi
 double PID_correction_stat_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 double PID_correction_sys_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
 double PID_correction_uncer[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+
+# define N_pi0_syst 8
+const double pi0_correction[N_pi0_syst] = {
+    0.917, 0.965, 0.988, 1.013, 1.042, 1.044, 1.011, 1.0
+};
+const double pi0_stat_uncer[N_pi0_syst] = {
+    0.004, 0.004, 0.004, 0.005, 0.004, 0.005, 0.005, 0.0
+};
+const double pi0_sys_uncer1[N_pi0_syst] = {
+    0.049, 0.036, 0.079, 0.058, 0.045, 0.041, 0.040, 0.0
+};
+const double pi0_sys_uncer2[N_pi0_syst] = {
+    0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0
+};
 
 class Corrector {
 private:
@@ -799,6 +813,7 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
 
     double invM = -1.0;
 
@@ -829,6 +844,7 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
         if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -840,19 +856,20 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
-            double Correction_pi0 = std::pow(pi0_correction, Npi0);
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
+            double Correction_pi0 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
                 Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
                 Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
                 Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
             }
+            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
@@ -880,7 +897,7 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
     return;
 }
 
-void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 2], int ToyNum, bool IsItKID, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 2], int ToyNum, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -907,6 +924,7 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
 
     double invM = -1.0;
 
@@ -943,6 +961,7 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
         if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
 
         tree_upsilon->SetBranchAddress("__experiment__", &__experiment__);
@@ -960,19 +979,20 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
-            double Correction_pi0 = std::pow(pi0_correction, Npi0);
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
+            double Correction_pi0 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
                 Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
                 Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
                 Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
             }
+            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
 
             double Correction_BR = GetBRRelativeUncertainty(__experiment__, __run__, __event__, __candidate__, __ncandidates__);
 
@@ -1270,9 +1290,9 @@ void BR_calculator()
     for (int i = 0; i < NToys; i++) {
         FluctuateBBBR();
 
-        GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc, i, true, Scale_CHG_test, "otherwise");
+        GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc, i, Scale_CHG_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc, i, true, Scale_MIX_test, "otherwise");
+        GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc, i, Scale_MIX_test, "otherwise");
         temp_hist->Reset();
     }
     /* ====================================== */
