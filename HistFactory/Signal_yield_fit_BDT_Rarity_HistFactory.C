@@ -1695,6 +1695,99 @@ void GetBRUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist) 
     for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
 }
 
+int Getpi0correlatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* UUBAR_nominal_hist, TH1D* DDBAR_nominal_hist, TH1D* SSBAR_nominal_hist, TH1D* CHARM_nominal_hist, TH1D* SIGNAL_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** UUBAR_hists, TH1D*** DDBAR_hists, TH1D*** SSBAR_hists, TH1D*** CHARM_hists, TH1D*** SIGNAL_hists) { // get shape sys histogram from txt file
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 7] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 7; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    *CHG_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *MIX_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *UUBAR_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *DDBAR_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *SSBAR_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *CHARM_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *SIGNAL_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+
+    for (int i = 0; i < Nentry; i++) {
+        (*CHG_hists)[i] = new TH1D(("CHG_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("CHG_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*MIX_hists)[i] = new TH1D(("MIX_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("MIX_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*UUBAR_hists)[i] = new TH1D(("UUBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("UUBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*DDBAR_hists)[i] = new TH1D(("DDBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("DDBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*SSBAR_hists)[i] = new TH1D(("SSBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("SSBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*CHARM_hists)[i] = new TH1D(("CHARM_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("CHARM_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*SIGNAL_hists)[i] = new TH1D(("Signal_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    }
+
+    for (int i = Nentry; i < 2 * Nentry; i++) {
+        (*CHG_hists)[i] = new TH1D(("CHG_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*MIX_hists)[i] = new TH1D(("MIX_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("MIX_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*UUBAR_hists)[i] = new TH1D(("UUBAR_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("UUBAR_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*DDBAR_hists)[i] = new TH1D(("DDBAR_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("DDBAR_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*SSBAR_hists)[i] = new TH1D(("SSBAR_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("SSBAR_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*CHARM_hists)[i] = new TH1D(("CHARM_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHARM_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*SIGNAL_hists)[i] = new TH1D(("Signal_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    }
+
+    fp = fopen(dirname, "r");
+    for (int i = 0; i < Nentry; i++) {
+        fscanf(fp, "%lf\n", &eigen_value);
+        for (int j = 0; j < RarityBins * 7; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
+
+        for (int k = 0; k < RarityBins; k++) {
+            (*CHG_hists)[i]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
+            (*MIX_hists)[i]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 1 * RarityBins]));
+            (*UUBAR_hists)[i]->SetBinContent(k + 1, UUBAR_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*DDBAR_hists)[i]->SetBinContent(k + 1, DDBAR_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 3 * RarityBins]));
+            (*SSBAR_hists)[i]->SetBinContent(k + 1, SSBAR_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 4 * RarityBins]));
+            (*CHARM_hists)[i]->SetBinContent(k + 1, CHARM_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 5 * RarityBins]));
+            (*SIGNAL_hists)[i]->SetBinContent(k + 1, SIGNAL_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 6 * RarityBins]));
+
+            (*CHG_hists)[i + Nentry]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 0 * RarityBins]));
+            (*MIX_hists)[i + Nentry]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 1 * RarityBins]));
+            (*UUBAR_hists)[i + Nentry]->SetBinContent(k + 1, UUBAR_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*DDBAR_hists)[i + Nentry]->SetBinContent(k + 1, DDBAR_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 3 * RarityBins]));
+            (*SSBAR_hists)[i + Nentry]->SetBinContent(k + 1, SSBAR_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 4 * RarityBins]));
+            (*CHARM_hists)[i + Nentry]->SetBinContent(k + 1, CHARM_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 5 * RarityBins]));
+            (*SIGNAL_hists)[i + Nentry]->SetBinContent(k + 1, SIGNAL_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 6 * RarityBins]));
+        }
+
+    }
+
+    fclose(fp);
+
+    return Nentry;
+}
+
+void Getpi0UncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* UUBAR_hist, TH1D* DDBAR_hist, TH1D* SSBAR_hist, TH1D* CHARM_hist, TH1D* SIGNAL_hist) { // get shape sys histogram from txt file
+    FILE* fp;
+    fp = fopen(dirname, "r");
+
+    double weight_sys[RarityBins * 7] = { 0.0 };
+    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    fclose(fp);
+
+    for (int i = 0; i < RarityBins * 7; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
+
+    for (int i = 0; i < RarityBins; i++) CHG_hist->SetBinContent(i + 1, weight_sys[i]);
+    for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) UUBAR_hist->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) DDBAR_hist->SetBinContent(i + 1, weight_sys[3 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) SSBAR_hist->SetBinContent(i + 1, weight_sys[4 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) CHARM_hist->SetBinContent(i + 1, weight_sys[5 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) SIGNAL_hist->SetBinContent(i + 1, weight_sys[6 * RarityBins + i]);
+}
+
 void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[7], const char* type, int charge, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get Kff uncertainty PDF with appropriate correction
     // Be careful! You should combine this function with `GetNominalPDFs` function!
     if (strcmp(type, "Bplus") == 0) {}
@@ -2627,22 +2720,6 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     TH1D* Signal_FEI_neutral_p = new TH1D("Signal_FEI_neutral_p", "Signal_FEI_neutral_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_FEI_neutral_m = new TH1D("Signal_FEI_neutral_m", "Signal_FEI_neutral_m", RarityBins, BinMIN, BinMAX);
 
-    // pi0 uncertainty
-    TH1D* Signal_pi0_p = new TH1D("Signal_pi0_p", "Signal_pi0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* CHG_pi0_p = new TH1D("CHG_pi0_p", "CHG_pi0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* MIX_pi0_p = new TH1D("MIX_pi0_p", "MIX_pi0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* UUBAR_pi0_p = new TH1D("UUBAR_pi0_p", "UUBAR_pi0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* DDBAR_pi0_p = new TH1D("DDBAR_pi0_p", "DDBAR_pi0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* SSBAR_pi0_p = new TH1D("SSBAR_pi0_p", "SSBAR_pi0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* CHARM_pi0_p = new TH1D("CHARM_pi0_p", "CHARM_pi0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_pi0_m = new TH1D("Signal_pi0_m", "Signal_pi0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* CHG_pi0_m = new TH1D("CHG_pi0_m", "CHG_pi0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* MIX_pi0_m = new TH1D("MIX_pi0_m", "MIX_pi0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* UUBAR_pi0_m = new TH1D("UUBAR_pi0_m", "UUBAR_pi0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* DDBAR_pi0_m = new TH1D("DDBAR_pi0_m", "DDBAR_pi0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* SSBAR_pi0_m = new TH1D("SSBAR_pi0_m", "SSBAR_pi0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* CHARM_pi0_m = new TH1D("CHARM_pi0_m", "CHARM_pi0_m", RarityBins, BinMIN, BinMAX);
-
     // track uncertainty
     TH1D* Signal_track_p = new TH1D("Signal_track_p", "Signal_track_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_track_p = new TH1D("CHG_track_p", "CHG_track_p", RarityBins, BinMIN, BinMAX);
@@ -2718,6 +2795,24 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     // BB BR uncertainty (uncorrelated)
     TH1D* CHG_BR_uncorrelated = new TH1D("CHG_BR_uncorrelated", "CHG_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BR_uncorrelated = new TH1D("MIX_BR_uncorrelated", "MIX_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
+
+    // pi0 uncertainty (correlated)
+    TH1D** Signal_pi0_correlated;
+    TH1D** CHG_pi0_correlated;
+    TH1D** MIX_pi0_correlated;
+    TH1D** UUBAR_pi0_correlated;
+    TH1D** DDBAR_pi0_correlated;
+    TH1D** SSBAR_pi0_correlated;
+    TH1D** CHARM_pi0_correlated;
+
+    // pi0 uncertainty (uncorrelated)
+    TH1D* Signal_pi0_uncorrelated = new TH1D("Signal_pi0_uncorrelated", "Signal_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_pi0_uncorrelated = new TH1D("CHG_pi0_uncorrelated", "CHG_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_pi0_uncorrelated = new TH1D("MIX_pi0_uncorrelated", "MIX_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_pi0_uncorrelated = new TH1D("UUBAR_pi0_uncorrelated", "UUBAR_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_pi0_uncorrelated = new TH1D("DDBAR_pi0_uncorrelated", "DDBAR_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_pi0_uncorrelated = new TH1D("SSBAR_pi0_uncorrelated", "SSBAR_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_pi0_uncorrelated = new TH1D("CHARM_pi0_uncorrelated", "CHARM_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // K nu nubar form factor
     TH1D* Signal_Kff1_p = new TH1D("Signal_Kff1_p", "Signal_Kff1_p", RarityBins, BinMIN, BinMAX);
@@ -2867,6 +2962,10 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     // for BB BR
     const char* BR_correlated_info = "./BR_selected.txt";
     const char* BR_uncorrelated_info = "./BR_cov_remain_truncated.txt";
+
+    // for pi0
+    const char* pi0_correlated_info = "./pi0_selected.txt";
+    const char* pi0_uncorrelated_info = "./pi0_cov_remain_truncated.txt";
     /* ====================================== */
 
 
@@ -2916,35 +3015,6 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetFEIPDFs(MC_dirname_K0nunu, Signal_FEI_neutral_m, "Bzero", false, Scale_K0_test, "B02K0nunu");
     GetFEIPDFs(MC_dirname_K0starnunu, Signal_FEI_neutral_m, "Bzero", false, Scale_K0star_test, "otherwise");
     GetFEIPDFs(MC_dirname_Xsdnunu, Signal_FEI_neutral_m, "Bzero", false, Scale_Xsd_nonresonant_test, "otherwise");
-
-    // get pi0 uncertainty pdfs
-    GetPi0PDFs(MC_dirname_Knunu, Signal_pi0_p, "Bplus", true, Scale_Kplus_test, "B2Knunu");
-    GetPi0PDFs(MC_dirname_Kstarnunu, Signal_pi0_p, "Bplus", true, Scale_Kplusstar_test, "otherwise");
-    GetPi0PDFs(MC_dirname_Xsununu, Signal_pi0_p, "Bplus", true, Scale_Xsu_nonresonant_test, "otherwise");
-    GetPi0PDFs(MC_dirname_K0nunu, Signal_pi0_p, "Bzero", true, Scale_K0_test, "B02K0nunu");
-    GetPi0PDFs(MC_dirname_K0starnunu, Signal_pi0_p, "Bzero", true, Scale_K0star_test, "otherwise");
-    GetPi0PDFs(MC_dirname_Xsdnunu, Signal_pi0_p, "Bzero", true, Scale_Xsd_nonresonant_test, "otherwise");
-
-    GetPi0PDFs(MC_dirname_CHG, CHG_pi0_p, "Bplus", true, Scale_CHG_test, "otherwise");
-    GetPi0PDFs(MC_dirname_MIX, MIX_pi0_p, "Bzero", true, Scale_MIX_test, "otherwise");
-    GetPi0PDFs(MC_dirname_UUBAR, UUBAR_pi0_p, "Continuum", true, Scale_UUBAR_test, "otherwise");
-    GetPi0PDFs(MC_dirname_DDBAR, DDBAR_pi0_p, "Continuum", true, Scale_DDBAR_test, "otherwise");
-    GetPi0PDFs(MC_dirname_SSBAR, SSBAR_pi0_p, "Continuum", true, Scale_SSBAR_test, "otherwise");
-    GetPi0PDFs(MC_dirname_CHARM, CHARM_pi0_p, "Continuum", true, Scale_CHARM_test, "otherwise");
-
-    GetPi0PDFs(MC_dirname_Knunu, Signal_pi0_m, "Bplus", false, Scale_Kplus_test, "B2Knunu");
-    GetPi0PDFs(MC_dirname_Kstarnunu, Signal_pi0_m, "Bplus", false, Scale_Kplusstar_test, "otherwise");
-    GetPi0PDFs(MC_dirname_Xsununu, Signal_pi0_m, "Bplus", false, Scale_Xsu_nonresonant_test, "otherwise");
-    GetPi0PDFs(MC_dirname_K0nunu, Signal_pi0_m, "Bzero", false, Scale_K0_test, "B02K0nunu");
-    GetPi0PDFs(MC_dirname_K0starnunu, Signal_pi0_m, "Bzero", false, Scale_K0star_test, "otherwise");
-    GetPi0PDFs(MC_dirname_Xsdnunu, Signal_pi0_m, "Bzero", false, Scale_Xsd_nonresonant_test, "otherwise");
-
-    GetPi0PDFs(MC_dirname_CHG, CHG_pi0_m, "Bplus", false, Scale_CHG_test, "otherwise");
-    GetPi0PDFs(MC_dirname_MIX, MIX_pi0_m, "Bzero", false, Scale_MIX_test, "otherwise");
-    GetPi0PDFs(MC_dirname_UUBAR, UUBAR_pi0_m, "Continuum", false, Scale_UUBAR_test, "otherwise");
-    GetPi0PDFs(MC_dirname_DDBAR, DDBAR_pi0_m, "Continuum", false, Scale_DDBAR_test, "otherwise");
-    GetPi0PDFs(MC_dirname_SSBAR, SSBAR_pi0_m, "Continuum", false, Scale_SSBAR_test, "otherwise");
-    GetPi0PDFs(MC_dirname_CHARM, CHARM_pi0_m, "Continuum", false, Scale_CHARM_test, "otherwise");
 
     // get track uncertainty pdfs
     GetTrackPDFs(MC_dirname_Knunu, Signal_track_p, "Bplus", true, Scale_Kplus_test, "B2Knunu");
@@ -3017,6 +3087,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
 
     // get BB BR uncertainty pdfs (uncorrelated)
     GetBRUncorrelatedPDFs(BR_uncorrelated_info, CHG_BR_uncorrelated, MIX_BR_uncorrelated);
+
+    // get pi0 uncertainty pdfs (correlated)
+    int NPDFs_pi0 = Getpi0correlatedPDFs(pi0_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_nominal, &CHG_pi0_correlated, &MIX_pi0_correlated, &UUBAR_pi0_correlated, &DDBAR_pi0_correlated, &SSBAR_pi0_correlated, &CHARM_pi0_correlated, &Signal_pi0_correlated);
+
+    // get pi0 uncertainty pdfs (uncorrelated)
+    Getpi0UncorrelatedPDFs(pi0_uncorrelated_info, CHG_pi0_uncorrelated, MIX_pi0_uncorrelated);
 
     // get Kff uncertainty pdfs
     TH1D* Signal_Kff_temp = new TH1D("Signal_Kff_temp", "Signal_Kff_temp", RarityBins, BinMIN, BinMAX);
@@ -3236,6 +3312,14 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
 
     AddSQRTHist(CHG_all_uncorrelated, CHG_BR_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_BR_uncorrelated, RarityBins);
+
+    AddSQRTHist(Signal_all_uncorrelated, Signal_pi0_uncorrelated, RarityBins);
+    AddSQRTHist(CHG_all_uncorrelated, CHG_pi0_uncorrelated, RarityBins);
+    AddSQRTHist(MIX_all_uncorrelated, MIX_pi0_uncorrelated, RarityBins);
+    AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_pi0_uncorrelated, RarityBins);
+    AddSQRTHist(DDBAR_all_uncorrelated, DDBAR_pi0_uncorrelated, RarityBins);
+    AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_pi0_uncorrelated, RarityBins);
+    AddSQRTHist(CHARM_all_uncorrelated, CHARM_pi0_uncorrelated, RarityBins);
     /* ====================================== */
 
 
@@ -3302,22 +3386,6 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     Signal_FEI_charged_m->Write();
     Signal_FEI_neutral_p->Write();
     Signal_FEI_neutral_m->Write();
-
-    // pi0 uncertainty
-    Signal_pi0_p->Write();
-    CHG_pi0_p->Write();
-    MIX_pi0_p->Write();
-    UUBAR_pi0_p->Write();
-    DDBAR_pi0_p->Write();
-    SSBAR_pi0_p->Write();
-    CHARM_pi0_p->Write();
-    Signal_pi0_m->Write();
-    CHG_pi0_m->Write();
-    MIX_pi0_m->Write();
-    UUBAR_pi0_m->Write();
-    DDBAR_pi0_m->Write();
-    SSBAR_pi0_m->Write();
-    CHARM_pi0_m->Write();
 
     // track uncertainty
     Signal_track_p->Write();
@@ -3400,6 +3468,26 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     // BB BR uncertainty (uncorrelated)
     CHG_BR_uncorrelated->Write();
     MIX_BR_uncorrelated->Write();
+
+    // pi0 uncertainty (correlated)
+    for (int i = 0; i < 2 * NPDFs_pi0; i++) {
+        Signal_pi0_correlated[i]->Write();
+        CHG_pi0_correlated[i]->Write();
+        MIX_pi0_correlated[i]->Write();
+        UUBAR_pi0_correlated[i]->Write();
+        DDBAR_pi0_correlated[i]->Write();
+        SSBAR_pi0_correlated[i]->Write();
+        CHARM_pi0_correlated[i]->Write();
+    }
+
+    // pi0 uncertainty (uncorrelated)
+    Signal_pi0_uncorrelated->Write();
+    CHG_pi0_uncorrelated->Write();
+    MIX_pi0_uncorrelated->Write();
+    UUBAR_pi0_uncorrelated->Write();
+    DDBAR_pi0_uncorrelated->Write();
+    SSBAR_pi0_uncorrelated->Write();
+    CHARM_pi0_uncorrelated->Write();
 
     // K nu nubar form factor
     Signal_Kff1_p->Write();

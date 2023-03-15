@@ -196,6 +196,9 @@ const double pi0_sys_uncer1[N_pi0_syst] = {
 const double pi0_sys_uncer2[N_pi0_syst] = {
     0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0
 };
+double pi0_correction_fluctuation_stat_uncer[N_pi0_syst] = { 0.0 }; // it is additive!
+double pi0_correction_fluctuation_sys_uncer1[N_pi0_syst] = { 0.0 }; // it is additive!
+double pi0_correction_fluctuation_sys_uncer2[N_pi0_syst] = { 0.0 }; // it is additive!
 
 class Corrector {
 private:
@@ -860,137 +863,6 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
     return;
 }
 
-void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 7], int ToyNum, bool IsItKID, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
-    /*
-    CorrectionType for new form factors
-    B2Knunu
-    B02K0nunu
-    otherwise
-    */
-    if (strcmp(type, "Bplus") == 0) {}
-    else if (strcmp(type, "Bzero") == 0) {}
-    else if (strcmp(type, "Continuum") == 0) {}
-    else {
-        printf("[ERROR] unexpected type name\n");
-        exit(1);
-    }
-
-    if (strcmp(sample, "CHG") == 0) {}
-    else if (strcmp(sample, "MIX") == 0) {}
-    else if (strcmp(sample, "UUBAR") == 0) {}
-    else if (strcmp(sample, "DDBAR") == 0) {}
-    else if (strcmp(sample, "SSBAR") == 0) {}
-    else if (strcmp(sample, "CHARM") == 0) {}
-    else if (strcmp(sample, "SIGNAL") == 0) {}
-    else {
-        printf("[ERROR] unexpected sample name\n");
-        exit(1);
-    }
-
-    float MVA_var = 0;
-
-    double Upsilon_ID = -1;
-    double Bsig_ID = -1;
-    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
-    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
-
-    double invM = -1.0;
-
-    std::vector<string> names;
-    load_files(dirname, &names);
-
-    double Nevt = 0;
-    for (unsigned int i = 0; i < names.size(); i++) {
-
-        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
-        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
-
-        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
-        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
-        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
-
-        TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs = (TTree*)input_file->Get("Xs");
-        else tree_Xs = nullptr;
-
-        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
-
-        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
-        }
-        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
-
-        printf("%lld entries...\n", tree_upsilon->GetEntries());
-        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
-            tree_upsilon->GetEntry(j);
-            tree_Bsig->GetEntry(j);
-            tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
-
-            double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
-
-            double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
-            else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = 1;
-            double Correction_PID = 1;
-            double Correction_pi0 = 1;
-            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-
-                if (IsItKID) {
-                    Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID] * PID_correction_fluctuated[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
-                    Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID] * PID_correction_fluctuated[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
-                    Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
-                    Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
-                }
-                else {
-                    Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
-                    Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
-                    Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID] * PID_correction_fluctuated[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
-                    Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID] * PID_correction_fluctuated[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
-                }
-
-            }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
-
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
-            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
-            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
-
-            Nevt = Nevt + total_weight;
-
-            hist->Fill(MVA_var, total_weight);
-        }
-        input_file->Close();
-
-        printf("%s has %lf events (with correction)\n", dirname, Nevt);
-
-    }
-
-    int ArrayBinID = -1;
-
-    if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
-    else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
-    else if (strcmp(sample, "UUBAR") == 0) ArrayBinID = 2;
-    else if (strcmp(sample, "DDBAR") == 0) ArrayBinID = 3;
-    else if (strcmp(sample, "SSBAR") == 0) ArrayBinID = 4;
-    else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
-    else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 6;
-
-    for (int i = 0; i < RarityBins; i++) {
-        Nevt_fluc[ToyNum][ArrayBinID * RarityBins + i] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins + i] + hist->GetBinContent(i + 1);
-    }
-
-    return;
-}
-
 void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 7], int ToyNum, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
@@ -1074,14 +946,20 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
             double Correction_PID = 1;
             double Correction_pi0 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-
-                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID] * PID_correction_fluctuated[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
-                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID] * PID_correction_fluctuated[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
-                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID] * PID_correction_fluctuated[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
-                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID] * PID_correction_fluctuated[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
+            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) {
+                Correction_pi0 = Correction_pi0 * std::pow(
+                    pi0_correction[i_pi0] + 
+                    pi0_correction_fluctuation_stat_uncer[i_pi0] + 
+                    pi0_correction_fluctuation_sys_uncer1[i_pi0] + 
+                    pi0_correction_fluctuation_sys_uncer2[i_pi0],
+                    temp_N_bin_pi0[i_pi0]);
 
             }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
@@ -1210,48 +1088,36 @@ void ReadPIDFile() {
     fclose(fp_PID_mis);
 }
 
-void FluctuatePIDCorrection(bool IsItKID) {
+void Fluctuatepi0Correction() {
 
-    for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+    for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) {
 
-        std::lognormal_distribution<double> KID_true_distribution(0.0, PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]);
-        std::lognormal_distribution<double> KID_mis_distribution(0.0, PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]);
-        std::lognormal_distribution<double> PID_true_distribution(0.0, PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]);
-        std::lognormal_distribution<double> PID_mis_distribution(0.0, PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]);
-
-        if (IsItKID) {
-            if (std::abs(PID_correction_uncer[0][i_PID] / PID_correction[0][i_PID]) < MyEPSILON) PID_correction_fluctuated[0][i_PID] = 1.0; // true KID
-            else PID_correction_fluctuated[0][i_PID] = KID_true_distribution(generator);
-            if (std::abs(PID_correction_uncer[1][i_PID] / PID_correction[1][i_PID]) < MyEPSILON) PID_correction_fluctuated[1][i_PID] = 1.0; // mis KID
-            else PID_correction_fluctuated[1][i_PID] = KID_mis_distribution(generator);
-            PID_correction_fluctuated[2][i_PID] = 1.0;
-            PID_correction_fluctuated[3][i_PID] = 1.0;
-        }
-        else {
-            PID_correction_fluctuated[0][i_PID] = 1.0;
-            PID_correction_fluctuated[1][i_PID] = 1.0;
-            if (std::abs(PID_correction_uncer[2][i_PID] / PID_correction[2][i_PID]) < MyEPSILON) PID_correction_fluctuated[2][i_PID] = 1.0; // true PID
-            else PID_correction_fluctuated[2][i_PID] = PID_true_distribution(generator);
-            if (std::abs(PID_correction_uncer[3][i_PID] / PID_correction[3][i_PID]) < MyEPSILON) PID_correction_fluctuated[3][i_PID] = 1.0; // mis PID
-            else PID_correction_fluctuated[3][i_PID] = PID_mis_distribution(generator);
-        }
+        std::normal_distribution<double> pi0_stat_distribution(0.0, pi0_stat_uncer[i_pi0]);
+        pi0_correction_fluctuation_stat_uncer[i_pi0] = pi0_stat_distribution(generator);
 
     }
+
+    std::normal_distribution<double> pi0_sys_distribution(0.0, 1.0);
+    double alpha = 0.0;
+
+    alpha = pi0_sys_distribution(generator);
+    for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) pi0_correction_fluctuation_sys_uncer1[i_pi0] = alpha * pi0_correction_fluctuation_sys_uncer1[i_pi0];
+
+    alpha = pi0_sys_distribution(generator);
+    for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) pi0_correction_fluctuation_sys_uncer2[i_pi0] = alpha * pi0_correction_fluctuation_sys_uncer2[i_pi0];
+
 }
 
-void PID_calculator()
+void pi0_calculator()
 {
     ReadPIDFile();
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
     double Nevt_nominal[RarityBins * 7] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL
-    double Nevt_fluc_KID[NToys][RarityBins * 7] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL
-    double Nevt_fluc_PID[NToys][RarityBins * 7] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL
-    double Relative_Uncertainty_KID[NToys][RarityBins * 7] = { 0.0 };
-    double Relative_Uncertainty_PID[NToys][RarityBins * 7] = { 0.0 };
-    double Covariance_KID[RarityBins * 7][RarityBins * 7] = { 0.0 };
-    double Covariance_PID[RarityBins * 7][RarityBins * 7] = { 0.0 };
+    double Nevt_fluc_pi0[NToys][RarityBins * 7] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL
+    double Relative_Uncertainty_pi0[NToys][RarityBins * 7] = { 0.0 };
+    double Covariance_pi0[RarityBins * 7][RarityBins * 7] = { 0.0 };
 
     /* ====================================== */
     // Seting CDF module
@@ -1324,86 +1190,46 @@ void PID_calculator()
 
 
     /* ====================================== */
-    // get fluctuated Nevt for KID
+    // get fluctuated Nevt for pi0
     for (int i = 0; i < NToys; i++) {
-        FluctuatePIDCorrection(true);
+        Fluctuatepi0Correction();
 
-        GetFlucNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Kplus_test, "B2Knunu");
+        GetFlucNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_pi0, i, Scale_Kplus_test, "B2Knunu");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Kplusstar_test, "otherwise");
+        GetFlucNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_pi0, i, Scale_Kplusstar_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Xsununu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Xsu_nonresonant_test, "otherwise");
+        GetFlucNevt(MC_dirname_Xsununu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_pi0, i, Scale_Xsu_nonresonant_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_K0nunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, Scale_K0_test, "B02K0nunu");
+        GetFlucNevt(MC_dirname_K0nunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_pi0, i, Scale_K0_test, "B02K0nunu");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_K0starnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, Scale_K0star_test, "otherwise");
+        GetFlucNevt(MC_dirname_K0starnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_pi0, i, Scale_K0star_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, Scale_Xsd_nonresonant_test, "otherwise");
+        GetFlucNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_pi0, i, Scale_Xsd_nonresonant_test, "otherwise");
         temp_hist->Reset();
 
-        GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc_KID, i, true, Scale_CHG_test, "otherwise");
+        GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc_pi0, i, Scale_CHG_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc_KID, i, true, Scale_MIX_test, "otherwise");
+        GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc_pi0, i, Scale_MIX_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_UUBAR, temp_hist, "Continuum", "UUBAR", Nevt_fluc_KID, i, true, Scale_UUBAR_test, "otherwise");
+        GetFlucNevt(MC_dirname_UUBAR, temp_hist, "Continuum", "UUBAR", Nevt_fluc_pi0, i, Scale_UUBAR_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_DDBAR, temp_hist, "Continuum", "DDBAR", Nevt_fluc_KID, i, true, Scale_DDBAR_test, "otherwise");
+        GetFlucNevt(MC_dirname_DDBAR, temp_hist, "Continuum", "DDBAR", Nevt_fluc_pi0, i, Scale_DDBAR_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_SSBAR, temp_hist, "Continuum", "SSBAR", Nevt_fluc_KID, i, true, Scale_SSBAR_test, "otherwise");
+        GetFlucNevt(MC_dirname_SSBAR, temp_hist, "Continuum", "SSBAR", Nevt_fluc_pi0, i, Scale_SSBAR_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_CHARM, temp_hist, "Continuum", "CHARM", Nevt_fluc_KID, i, true, Scale_CHARM_test, "otherwise");
+        GetFlucNevt(MC_dirname_CHARM, temp_hist, "Continuum", "CHARM", Nevt_fluc_pi0, i, Scale_CHARM_test, "otherwise");
         temp_hist->Reset();
     }
     /* ====================================== */
 
-
-
-    /* ====================================== */
-    // get fluctuated Nevt for PID
-    for (int i = 0; i < NToys; i++) {
-        FluctuatePIDCorrection(false);
-
-        GetFlucNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Kplus_test, "B2Knunu");
-        temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Kplusstar_test, "otherwise");
-        temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Xsununu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Xsu_nonresonant_test, "otherwise");
-        temp_hist->Reset();
-        GetFlucNevt(MC_dirname_K0nunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, Scale_K0_test, "B02K0nunu");
-        temp_hist->Reset();
-        GetFlucNevt(MC_dirname_K0starnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, Scale_K0star_test, "otherwise");
-        temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, Scale_Xsd_nonresonant_test, "otherwise");
-        temp_hist->Reset();
-
-        GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc_PID, i, false, Scale_CHG_test, "otherwise");
-        temp_hist->Reset();
-        GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc_PID, i, false, Scale_MIX_test, "otherwise");
-        temp_hist->Reset();
-        GetFlucNevt(MC_dirname_UUBAR, temp_hist, "Continuum", "UUBAR", Nevt_fluc_PID, i, false, Scale_UUBAR_test, "otherwise");
-        temp_hist->Reset();
-        GetFlucNevt(MC_dirname_DDBAR, temp_hist, "Continuum", "DDBAR", Nevt_fluc_PID, i, false, Scale_DDBAR_test, "otherwise");
-        temp_hist->Reset();
-        GetFlucNevt(MC_dirname_SSBAR, temp_hist, "Continuum", "SSBAR", Nevt_fluc_PID, i, false, Scale_SSBAR_test, "otherwise");
-        temp_hist->Reset();
-        GetFlucNevt(MC_dirname_CHARM, temp_hist, "Continuum", "CHARM", Nevt_fluc_PID, i, false, Scale_CHARM_test, "otherwise");
-        temp_hist->Reset();
-    }
-    /* ====================================== */
 
 
     /* ====================================== */
     // get relative uncertainty
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 7; j++) {
-            if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty_KID[i][j] = 1.0;
-            else Relative_Uncertainty_KID[i][j] = Nevt_fluc_KID[i][j] / Nevt_nominal[j];
-        }
-    }
-    for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 7; j++) {
-            if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty_PID[i][j] = 1.0;
-            else Relative_Uncertainty_PID[i][j] = Nevt_fluc_PID[i][j] / Nevt_nominal[j];
+            if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty_pi0[i][j] = 1.0;
+            else Relative_Uncertainty_pi0[i][j] = Nevt_fluc_pi0[i][j] / Nevt_nominal[j];
         }
     }
     /* ====================================== */
@@ -1414,19 +1240,10 @@ void PID_calculator()
     // file output
     FILE* fp;
     
-    fp = fopen("KID_toys.txt","w");
+    fp = fopen("pi0_toys.txt","w");
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 7; j++) {
-            fprintf(fp, "%lf ", Relative_Uncertainty_KID[i][j]);
-        }
-        fprintf(fp, "\n");
-    }
-    fclose(fp);
-
-    fp = fopen("PID_toys.txt", "w");
-    for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 7; j++) {
-            fprintf(fp, "%lf ", Relative_Uncertainty_PID[i][j]);
+            fprintf(fp, "%lf ", Relative_Uncertainty_pi0[i][j]);
         }
         fprintf(fp, "\n");
     }
