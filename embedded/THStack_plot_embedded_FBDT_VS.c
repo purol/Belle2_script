@@ -1121,8 +1121,11 @@ void THStack_plot_embedded_FBDT_VS() {
     // draw
     TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
-    TH1D* signal_hist = (TH1D*)f->Get("Signal_nominal");
-    TH1D* data_hist[Nvar_num];
+    Float_t ymax_1 = signal_hist->GetMaximum();
+    Float_t ymax_2 = data_hist[0]->GetMaximum();
+    double real_max = 0;
+    if (ymax_1 > ymax_2) real_max = ymax_1;
+    else real_max = ymax_2;
 
     signal_hist->Scale(1.0/ signal_hist->Integral(), "width");
     data_hist[0]->Scale(1.0 / data_hist[0]->Integral(), "width");
@@ -1131,6 +1134,7 @@ void THStack_plot_embedded_FBDT_VS() {
     signal_hist->SetFillStyle(3001);
     signal_hist->SetLineColor(33);
     signal_hist->SetFillColor(33);
+    signal_hist->GetYaxis()->SetRangeUser(0.0, real_max * 1.1);
     signal_hist->Draw("Hist");
     
     data_hist[0]->SetLineWidth(2);
@@ -1138,7 +1142,7 @@ void THStack_plot_embedded_FBDT_VS() {
     data_hist[0]->SetMarkerStyle(8);
     data_hist[0]->Draw("SAME eP");
 
-    c_temp->SaveAs((variable_names.at(k) + "_signalMC_vs_embeddedDATA.png").c_str());
+    c_temp->SaveAs("FBDT_signalMC_vs_embeddedDATA.png");
 
     delete c_temp;
 
