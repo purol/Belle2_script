@@ -1096,8 +1096,8 @@ void THStack_plot_embedded_FBDT_efficiency() {
         for (int i = 0; i < (int)Jpsi_MC_values[k].size(); i++) MC_one_bin[k]->Fill(Jpsi_MC_values[k].at(i), weights.at(i));
         for (int i = 0; i < (int)Jpsi_data_values[k].size(); i++) data_one_bin[k]->Fill(Jpsi_data_values[k].at(i));
 
-        for (int i = 0; i < (int)Jpsi_MC_before_FBDT_values[k].size(); i++) MC_before_FBDT_one_bin[k]->Fill(Jpsi_MC_before_FBDT_values[k].at(i), weights_before_FBDT.at(i));
-        for (int i = 0; i < (int)Jpsi_data_before_FBDT_values[k].size(); i++) data_before_FBDT_one_bin[k]->Fill(Jpsi_data_before_FBDT_values[k].at(i));
+        for (int i = 0; i < (int)Jpsi_MC_before_FBDT_values[k].size(); i++) MC_before_one_bin[k]->Fill(Jpsi_MC_before_FBDT_values[k].at(i), weights_before_FBDT.at(i));
+        for (int i = 0; i < (int)Jpsi_data_before_FBDT_values[k].size(); i++) data_before_one_bin[k]->Fill(Jpsi_data_before_FBDT_values[k].at(i));
     }
 
     for (int k = 0; k < (int)variable_names.size(); k++) {
@@ -1113,5 +1113,5 @@ void THStack_plot_embedded_FBDT_efficiency() {
     printf("data before FBDT: %lf +- %lf\n", data_before_one_bin[0]->GetBinContent(1), data_before_one_bin[0]->GetBinError(1));
     printf("data after FBDT: %lf +- %lf\n", data_one_bin[0]->GetBinContent(1), data_one_bin[0]->GetBinError(1));
     printf("data FBDT efficiency: %lf +- %lf\n", data_efficiency[0]->GetBinContent(1), data_efficiency[0]->GetBinError(1));
-    printf("eff_{data}/eff_{MC}: %lf +- lf\n", Ratio_one_bin[0]->GetBinContent(1), Ratio_one_bin[0]->GetBinError(1));
+    printf("eff_{data}/eff_{MC}: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent(1), Ratio_one_bin[0]->GetBinError(1));
 }
