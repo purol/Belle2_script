@@ -44,38 +44,6 @@ reco_list = [r"$B^{+}\rightarrow K^{+}\nu\bar{\nu}$",
              r"$B^{0}\rightarrow K^{+}K^{-}K^{+}\pi^{-}\nu\bar{\nu}$",
              r"$B^{0}\rightarrow K^{+}K^{-}K^{0}_{S}\pi^{0}\nu\bar{\nu}$"
              ]
-gen_list = [r"$B^{+}\rightarrow K^{+}\nu\bar{\nu}$",
-            r"$B^{+}\rightarrow K^{+}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{+}\rightarrow K^{0}\pi^{+}\nu\bar{\nu}$",      
-            r"$B^{+}\rightarrow K^{+}\pi^{-}\pi^{+}\nu\bar{\nu}$",
-            r"$B^{+}\rightarrow K^{0}\pi^{+}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{+}\rightarrow K^{+}\pi^{-}\pi^{+}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{+}\rightarrow K^{0}\pi^{+}\pi^{-}\pi^{+}\nu\bar{\nu}$",   
-            r"$B^{+}\rightarrow K^{+}\pi^{-}\pi^{+}\pi^{-}\pi^{+}\nu\bar{\nu}$",
-            r"$B^{+}\rightarrow K^{0}\pi^{+}\pi^{-}\pi^{+}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{+}\rightarrow K^{+}\pi^{0}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{+}\rightarrow K^{0}\pi^{+}\pi^{0}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{+}\rightarrow K^{+}\pi^{-}\pi^{+}\pi^{0}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{+}\rightarrow K^{+}K^{-}K^{+}\nu\bar{\nu}$",
-            r"$B^{+}\rightarrow K^{+}K^{-}K^{0}\pi^{+}\nu\bar{\nu}$",
-            r"$B^{+}\rightarrow K^{+}K^{-}K^{+}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{0}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{+}\pi^{-}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{0}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{+}\pi^{-}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{0}\pi^{+}\pi^{-}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{+}\pi^{-}\pi^{+}\pi^{-}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{0}\pi^{+}\pi^{-}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{+}\pi^{-}\pi^{+}\pi^{-}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{0}\pi^{+}\pi^{-}\pi^{+}\pi^{-}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{0}\pi^{0}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{+}\pi^{-}\pi^{0}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{0}\pi^{+}\pi^{-}\pi^{0}\pi^{0}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{+}K^{-}K^{0}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{+}K^{-}K^{+}\pi^{-}\nu\bar{\nu}$",
-            r"$B^{0}\rightarrow K^{+}K^{-}K^{0}\pi^{0}\nu\bar{\nu}$",
-            r"$others$"
-            ]
 
 correction = []
 correction.append(2007.3)
@@ -110,16 +78,53 @@ correction.append(16.0)
 correction.append(12.0)
 correction.append(1905.9)
 
+Efficiency_diagonal = []
+Efficiency = np.zeros((30,30))
+cross_feed = np.zeros((30,30))
+
 for i in range(0,30):
-    for j in range(0,31):
-        values[i][j] = (values[i][j] / correction[i])
+    Efficiency_diagonal.append(values[i][i] / correction[i])
+
+for i in range(0,30):
+    for j in range(0,30):
+        Efficiency[i][j] = (values[i][j] / correction[i])
+
+for i in range(0,30):
+    for j in range(0,30):
+        if Efficiency_diagonal[j] != 0:
+            cross_feed[i][j] = (Efficiency[i][j] / Efficiency_diagonal[j])
+        else:
+            cross_feed[i][j] = 0
 
 print(values[22][22])
 print(values[20][20])
 print(values[20][22])
+print(Efficiency[20][22])
+print(Efficiency_diagonal[22])
+print(cross_feed[20][22])
 
-df_cm = pd.DataFrame(values, index = [i for i in reco_list], columns = [i for i in gen_list])
-#df_cm = pd.DataFrame(confusion_matrix)
+reco_list.reverse()
+Efficiency_diagonal.reverse()
+
+plt.rcParams['figure.figsize'] = [15, 12]
+
+fig, ax = plt.subplots()
+bars = ax.barh(reco_list, Efficiency_diagonal)
+#ax.bar_label(bars)
+
+#plt.barh(y, Nevt)
+#plt.yticks(y, decay)
+
+plt.xlabel("Efficiency")
+plt.ylabel("Decay Modes")
+plt.grid(True, axis = "x", linestyle="--")
+
+plt.savefig("Diagonal_Efficiency.png", bbox_inches='tight')
+
+# draw cross-feed matrix
+reco_list.reverse()
+
+df_cm = pd.DataFrame(cross_feed, index = [i for i in reco_list], columns = [i for i in reco_list])
 
 plt.figure(figsize = (36,24))
 ax = sn.heatmap(df_cm, annot=True, cmap="YlGnBu", fmt='.1e')
@@ -127,4 +132,4 @@ ax.set_xticklabels(ax.get_xticklabels(), rotation=45, fontsize = 18, horizontala
 ax.set_yticklabels(ax.get_yticklabels(), fontsize = 18)
 plt.xlabel(r"MC decay modes", fontsize=25)
 plt.ylabel(r"Reconstructed decay modes", fontsize=25)
-plt.savefig("eff_matrix.png", bbox_inches='tight')
+plt.savefig("cross_feed_matrix.png", bbox_inches='tight')
