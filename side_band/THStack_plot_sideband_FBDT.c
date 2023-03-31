@@ -470,12 +470,12 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
             if (SampleName == "CHG") {
                 numberings->push_back(0);
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab)); // total 0.8/ab for BB
+                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 2.8/ab for BB
             }
             else if (SampleName == "MIX") {
                 numberings->push_back(1);
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab)); // total 0.8/ab for BB
+                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 2.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
                 numberings->push_back(2);
@@ -688,12 +688,12 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
             if (SampleName == "CHG") {
                 numberings->push_back(0);
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab)); // total 0.8/ab for BB
+                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 2.8/ab for BB
             }
             else if (SampleName == "MIX") {
                 numberings->push_back(1);
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab)); // total 0.8/ab for BB
+                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 2.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
                 numberings->push_back(2);
