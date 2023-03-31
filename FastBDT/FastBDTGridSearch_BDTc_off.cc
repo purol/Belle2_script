@@ -40,7 +40,7 @@
 # define N_decay_nparticles 3 // # of nu_e, B, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
 
-# define Nvar 37
+# define Nvar 23
 # define DvetoNvar 4
 
 // arXiv:1409.4557v2, PhysRevD.107.014511
@@ -353,39 +353,25 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     double Mxs = -1;
     double Pcms = -1;
 
-    tree_data->SetBranchAddress("aplanarity", &Vars[0]);
+    tree_data->SetBranchAddress("Bsig_KSFWVariables_hso04", &Vars[0]);
     tree_data->SetBranchAddress("Bsig_cosTBTO", &Vars[1]);
-    tree_data->SetBranchAddress("Bsig_KSFWVariables_hoo1", &Vars[2]);
-    tree_data->SetBranchAddress("Bsig_KSFWVariables_hso01", &Vars[3]);
-    tree_data->SetBranchAddress("Bsig_KSFWVariables_hso04", &Vars[4]);
-    tree_data->SetBranchAddress("Bsig_useCMSFrame_p", &Vars[5]);
-    tree_data->SetBranchAddress("Btag_chiProb", &Vars[6]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_1", &Vars[7]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_2", &Vars[8]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_3", &Vars[9]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_4", &Vars[10]);
-    tree_data->SetBranchAddress("Btag_CleoConeCS_5", &Vars[11]);
-    tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[12]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo1", &Vars[13]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo2", &Vars[14]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo3", &Vars[15]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo4", &Vars[16]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso00", &Vars[17]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso01", &Vars[18]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso02", &Vars[19]);
-    tree_data->SetBranchAddress("Btag_KSFWVariables_hso24", &Vars[20]);
-    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[21]);
-    tree_data->SetBranchAddress("extraInfo__boEeclv133__bc", &Vars[22]);
-    tree_data->SetBranchAddress("extraInfo__boNgammav133__bc", &Vars[23]);
-    tree_data->SetBranchAddress("foxWolframR3", &Vars[24]);
-    tree_data->SetBranchAddress("foxWolframR4", &Vars[25]);
-    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[26]);
-    tree_data->SetBranchAddress("harmonicMomentThrust3", &Vars[27]);
-    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[28]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[29]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[30]);
-    tree_data->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &Vars[31]);
-    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[32]);
+    tree_data->SetBranchAddress("Bsig_useCMSFrame_p", &Vars[2]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_1", &Vars[3]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_2", &Vars[4]);
+    tree_data->SetBranchAddress("Btag_CleoConeCS_3", &Vars[5]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo2", &Vars[6]);
+    tree_data->SetBranchAddress("Btag_KSFWVariables_hoo4", &Vars[7]);
+    tree_data->SetBranchAddress("Btag_cosTBTO", &Vars[8]);
+    tree_data->SetBranchAddress("Btag_extraInfo_SignalProbability", &Vars[9]);
+    tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[10]);
+    tree_data->SetBranchAddress("extraInfo__boEeclv133__bc", &Vars[11]);
+    tree_data->SetBranchAddress("extraInfo__boNgammav133__bc", &Vars[12]);
+    tree_data->SetBranchAddress("foxWolframR3", &Vars[13]);
+    tree_data->SetBranchAddress("harmonicMomentThrust2", &Vars[14]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[15]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[16]);
+    tree_data->SetBranchAddress("nRemainingTracksInEvent", &Vars[17]);
+    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[18]);
 
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &Dc_pvalue_med);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
