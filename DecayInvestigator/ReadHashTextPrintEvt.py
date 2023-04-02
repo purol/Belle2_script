@@ -1,5 +1,62 @@
 import pypdt
 import operator
+from collections import defaultdict
+
+def default_value_for_new_key():
+    return -1
+ 
+MagicTable = defaultdict(default_value_for_new_key)
+
+MagicTable['521=>-423|-13|14|'] = 0
+MagicTable['521=>-421|-13|14|'] = 1
+MagicTable['521=>-421|-11|12|'] = 2
+MagicTable['521=>213|-421|'] = 3
+MagicTable['521=>-423|-11|12|'] = 4
+MagicTable['521=>-421|211|'] = 5
+MagicTable['521=>-423|20213|'] = 6
+MagicTable['521=>-413|111|211|211|'] = 7
+MagicTable['521=>-423|211|'] = 8
+MagicTable['521=>-421|-211|211|211|'] = 9
+MagicTable['521=>-421|113|211|'] = 10
+MagicTable['521=>-423|213|'] = 11
+MagicTable['521=>-421|-15|16|'] = 12
+MagicTable['521=>-423|-15|16|'] = 13
+MagicTable['521=>-423|-211|211|211|111|'] = 14
+MagicTable['521=>20213|-421|'] = 15
+MagicTable['521=>-421|431|'] = 16
+MagicTable['521=>321|311|-311|'] = 17
+MagicTable['521=>-15|16|'] = 18
+MagicTable['521=>-421|321|'] = 19
+MagicTable['521=>-423|211|-211|211|'] = 20
+MagicTable['521=>-421|321|-311|'] = 21
+MagicTable['521=>433|-421|'] = 22
+MagicTable['521=>-423|321|'] = 23
+MagicTable['521=>-413|211|211|'] = 24
+MagicTable['521=>443|321|'] = 25
+MagicTable['521=>-423|431|'] = 26
+MagicTable['511=>-413|-13|14|'] = 100
+MagicTable['511=>-413|-11|12|'] = 101
+MagicTable['511=>-411|-13|14|'] = 102
+MagicTable['511=>-413|211|111|'] = 103
+MagicTable['511=>-411|-11|12|'] = 104
+MagicTable['511=>-413|20213|'] = 105
+MagicTable['511=>213|-411|'] = 106
+MagicTable['511=>213|-413|'] = 107
+MagicTable['511=>-413|211|211|-211|111|'] = 108
+MagicTable['511=>-413|113|211|'] = 109
+MagicTable['511=>-413|211|'] = 110
+MagicTable['511=>-411|-15|16|'] = 111
+MagicTable['511=>-411|211|'] = 112
+MagicTable['511=>-413|-15|16|'] = 113
+MagicTable['511=>-411|-211|211|211|'] = 114
+MagicTable['511=>20213|-411|'] = 115
+MagicTable['511=>-413|431|'] = 116
+MagicTable['511=>311|-311|311|'] = 117
+MagicTable['511=>433|-413|'] = 118
+MagicTable['511=>433|-411|'] = 119
+MagicTable['511=>-421|-211|211|'] = 120
+MagicTable['511=>-411|431|'] = 121
+MagicTable['511=>-413|433|'] = 122
 
 class Investigator:
     def __init__(self):
@@ -7,11 +64,14 @@ class Investigator:
         self.SecondBDecayString = []
         self.FirstBFinalParticles = {}
         self.SecondBFinalParticles = {}
+        self.AllString = []
     def PutString(self, string, Type):
         if Type == "firstB":
             self.FirstBDecayString.append(string)
         elif Type == "secondB":
             self.SecondBDecayString.append(string)
+        elif Type == "all":
+            self.AllString.append(string)
         else:
             print("Invalid Type!")
             exit()
@@ -20,6 +80,7 @@ class Investigator:
         self.SecondBDecayString = []
         self.FirstBFinalParticles = {}
         self.SecondBFinalParticles = {}
+        self.AllString = []
     def Investigate(self, Type):
         if Type == "firstB":
             DecayString = self.FirstBDecayString
@@ -86,12 +147,22 @@ class Investigator:
             ParticlePair[DecayParticles] = ParticlePair[DecayParticles] + 1
         else:
             ParticlePair[DecayParticles] = 1
+        DMID_1 = MagicTable[DecayParticles]
 
         DecayParticles = self.GetParticles(self.SecondBDecayString, 2)
         if DecayParticles in ParticlePair:
             ParticlePair[DecayParticles] = ParticlePair[DecayParticles] + 1
         else:
             ParticlePair[DecayParticles] = 1
+        DMID_2 = MagicTable[DecayParticles]
+
+        print(self.AllString[0], end='') 
+        print(self.AllString[1], end='')
+        print(self.AllString[2], end='')
+        print(self.AllString[3], end='')
+        print(self.AllString[4], end='')
+        print(DMID_1)
+        print(DMID_2)
 
 with open("MIX_test") as openfileobject:
     ParticlePair = {}
@@ -104,6 +175,7 @@ with open("MIX_test") as openfileobject:
     for line in openfileobject:
         if line == "\n":
             continue
+        Inv.PutString(line, "all")
 
         if (MeetTagB == False) and ((line.replace(" ", "") == "511\n") or (line.replace(" ", "") == "-511\n") or (line.replace(" ", "") == "521\n") or (line.replace(" ", "") == "-521\n")):
             MeetTagB = True
