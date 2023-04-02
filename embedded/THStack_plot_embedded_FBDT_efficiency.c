@@ -1107,11 +1107,32 @@ void THStack_plot_embedded_FBDT_efficiency() {
     }
 
     // Print data-MC discrepancy
-    printf("MC before FBDT: %lf +- %lf\n", MC_before_one_bin[0]->GetBinContent(1), MC_before_one_bin[0]->GetBinError(1));
-    printf("MC after FBDT: %lf +- %lf\n", MC_one_bin[0]->GetBinContent(1), MC_one_bin[0]->GetBinError(1));
-    printf("MC FBDT efficiency: %lf +- %lf\n", MC_efficiency[0]->GetBinContent(1), MC_efficiency[0]->GetBinError(1));
-    printf("data before FBDT: %lf +- %lf\n", data_before_one_bin[0]->GetBinContent(1), data_before_one_bin[0]->GetBinError(1));
-    printf("data after FBDT: %lf +- %lf\n", data_one_bin[0]->GetBinContent(1), data_one_bin[0]->GetBinError(1));
-    printf("data FBDT efficiency: %lf +- %lf\n", data_efficiency[0]->GetBinContent(1), data_efficiency[0]->GetBinError(1));
-    printf("eff_{data}/eff_{MC}: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent(1), Ratio_one_bin[0]->GetBinError(1));
+    double Nevt_MC_before = MC_before_one_bin[0]->GetBinContent(1);
+    double Nevt_MC_err_before = MC_before_one_bin[0]->GetBinError(1);
+    double MC_relative_err_before = Nevt_MC_err_before / Nevt_MC_before;
+    double Nevt_MC_after = MC_one_bin[0]->GetBinContent(1);
+    double Nevt_MC_err_after = MC_one_bin[0]->GetBinError(1);
+    double MC_relative_err_after = Nevt_MC_err_after / Nevt_MC_after;
+    double MC_FBDT_efficiency = Nevt_MC_after / Nevt_MC_before;
+    double MC_FBDT_efficiency_relative_error = sqrt(MC_relative_err_before * MC_relative_err_before + MC_relative_err_after * MC_relative_err_after - 2 * MC_relative_err_before * MC_relative_err_after);
+
+    double Nevt_data_before = data_before_one_bin[0]->GetBinContent(1);
+    double Nevt_data_err_before = data_before_one_bin[0]->GetBinError(1);
+    double data_relative_err_before = Nevt_data_err_before / Nevt_data_before;
+    double Nevt_data_after = data_one_bin[0]->GetBinContent(1);
+    double Nevt_data_err_after = data_one_bin[0]->GetBinError(1);
+    double data_relative_err_after = Nevt_data_err_after / Nevt_data_after;
+    double data_FBDT_efficiency = Nevt_data_after / Nevt_data_err_before;
+    double data_FBDT_efficiency_relative_error = sqrt(data_relative_err_before * data_relative_err_before + data_relative_err_after * data_relative_err_after - 2 * data_relative_err_before * data_relative_err_after);
+
+    double eff_ratio = data_FBDT_efficiency / MC_FBDT_efficiency;
+    double eff_ratio_relative_err = std::sqrt(MC_FBDT_efficiency_relative_error * MC_FBDT_efficiency_relative_error + data_FBDT_efficiency_relative_error * data_FBDT_efficiency_relative_error);
+
+    printf("MC before FBDT: %lf +- %lf\n", Nevt_MC_before, Nevt_MC_err_before);
+    printf("MC after FBDT: %lf +- %lf\n", Nevt_MC_after, Nevt_MC_err_after);
+    printf("MC FBDT efficiency: %lf +- %lf\n", MC_FBDT_efficiency, MC_FBDT_efficiency * MC_FBDT_efficiency_relative_error);
+    printf("data before FBDT: %lf +- %lf\n", Nevt_data_before, Nevt_data_err_before);
+    printf("data after FBDT: %lf +- %lf\n", Nevt_data_after, Nevt_data_err_after);
+    printf("data FBDT efficiency: %lf +- %lf\n", data_FBDT_efficiency, data_FBDT_efficiency * data_FBDT_efficiency_relative_error);
+    printf("eff_{data}/eff_{MC}: %lf +- %lf\n", eff_ratio, eff_ratio * eff_ratio_relative_err);
 }
