@@ -1122,7 +1122,7 @@ void THStack_plot_embedded_FBDT_efficiency() {
     double Nevt_data_after = data_one_bin[0]->GetBinContent(1);
     double Nevt_data_err_after = data_one_bin[0]->GetBinError(1);
     double data_relative_err_after = Nevt_data_err_after / Nevt_data_after;
-    double data_FBDT_efficiency = Nevt_data_after / Nevt_data_err_before;
+    double data_FBDT_efficiency = Nevt_data_after / Nevt_data_before;
     double data_FBDT_efficiency_relative_error = sqrt(data_relative_err_before * data_relative_err_before + data_relative_err_after * data_relative_err_after - 2 * data_relative_err_before * data_relative_err_after);
 
     double eff_ratio = data_FBDT_efficiency / MC_FBDT_efficiency;
