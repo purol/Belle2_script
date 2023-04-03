@@ -1087,7 +1087,7 @@ void ReadEvtFile() {
     }
 
     fclose(fp_CHG_Evt);
-    fclose(fp_CHG_Evt);
+    fclose(fp_MIX_Evt);
 }
 
 double GetBRRelativeUncertainty(int experiment, int run, int event, int candidate, int ncandidates) {
