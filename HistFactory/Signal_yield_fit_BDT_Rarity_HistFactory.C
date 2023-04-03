@@ -3092,7 +3092,7 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     int NPDFs_pi0 = Getpi0correlatedPDFs(pi0_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_nominal, &CHG_pi0_correlated, &MIX_pi0_correlated, &UUBAR_pi0_correlated, &DDBAR_pi0_correlated, &SSBAR_pi0_correlated, &CHARM_pi0_correlated, &Signal_pi0_correlated);
 
     // get pi0 uncertainty pdfs (uncorrelated)
-    Getpi0UncorrelatedPDFs(pi0_uncorrelated_info, CHG_pi0_uncorrelated, MIX_pi0_uncorrelated);
+    Getpi0UncorrelatedPDFs(pi0_uncorrelated_info, CHG_pi0_uncorrelated, MIX_pi0_uncorrelated, UUBAR_pi0_uncorrelated, DDBAR_pi0_uncorrelated, SSBAR_pi0_uncorrelated, CHARM_pi0_uncorrelated, SIGNAL_pi0_uncorrelated);
 
     // get Kff uncertainty pdfs
     TH1D* Signal_Kff_temp = new TH1D("Signal_Kff_temp", "Signal_Kff_temp", RarityBins, BinMIN, BinMAX);

@@ -2,7 +2,7 @@ clear all
 format long
 
 N_total_bins = 42;
-N_selected_vectors = 10;
+N_selected_vectors = 4;
 
 % pi0 correction
 pi0fileID = fopen('pi0_toys.txt','r');
