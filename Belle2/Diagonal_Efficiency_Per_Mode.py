@@ -102,6 +102,7 @@ print(values[20][22])
 print(Efficiency[20][22])
 print(Efficiency_diagonal[22])
 print(cross_feed[20][22])
+print(Efficiency_diagonal[0])
 
 reco_list.reverse()
 Efficiency_diagonal.reverse()

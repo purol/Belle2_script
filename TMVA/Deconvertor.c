@@ -14,9 +14,10 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 # define N_Needed_info 37
 //# define N_event_info 15
 # define N_Upsilon_info 66
-# define N_Bsig_info 367
+# define N_Bsig_info 371
 # define N_Btag_info 11
 # define N_decay 38 // five decay mode + others
+# define N_lepton_syst 58
 # define N_decay_nparticles 5 // # of nu_e, B, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
 # define N_PID_syst 73
@@ -69,6 +70,7 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             int temp_DecayDataToTree[N_decay];
             int temp_DecayNparticlesDataToTree[N_decay_nparticles];
             double temp_DecaySystFFDataToTree[N_decay_syst_ff];
+            double temp_LeptonSystDataToTree[N_lepton_syst];
             double temp_Upsilon_decayIDToTree;
             double temp_Bsig_decayIDToTree;
             int temp_flag;
@@ -82,6 +84,11 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             bool DoesItHaveXsBranch = false;
             for (int i = 0; i < temp_tree->GetListOfBranches()->LastIndex(); i++) {
                 if (temp_tree->GetListOfBranches()->At(i)->GetName() == std::string("nParticlesInList__boB__pl__clKcharge_total__bc")) DoesItHaveXsBranch = true;
+            }
+
+            bool DoesItHaveleptonBranch = false;
+            for (int i = 0; i < temp_tree->GetListOfBranches()->LastIndex(); i++) {
+                if (temp_tree->GetListOfBranches()->At(i)->GetName() == std::string("eventExtraInfo__bomu_0_muonID_noSVD__bc")) DoesItHaveleptonBranch = true;
             }
 
             bool DoesItHaveJpsiOutput = false;
@@ -244,6 +251,10 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                 temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[67 + 4 * i_PID + 3]);
             }
             for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_BsigDataToTree[359 + i_pi0]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKfrome", &temp_BsigDataToTree[367]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKfrommu", &temp_BsigDataToTree[368]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_npifrome", &temp_BsigDataToTree[369]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_npifrommu", &temp_BsigDataToTree[370]);
 
             // get Btag_info
             temp_tree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -351,6 +362,68 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                 temp_tree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
             }
 
+            if (DoesItHaveleptonBranch) {
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_muonID_noSVD__bc", &temp_LeptonSystDataToTree[0]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05__bc", &temp_LeptonSystDataToTree[1]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05__bc", &temp_LeptonSystDataToTree[2]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_stat_up__bc", &temp_LeptonSystDataToTree[3]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_stat_dn__bc", &temp_LeptonSystDataToTree[4]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_sys_up__bc", &temp_LeptonSystDataToTree[5]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_sys_dn__bc", &temp_LeptonSystDataToTree[6]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_stat_up__bc", &temp_LeptonSystDataToTree[7]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_stat_dn__bc", &temp_LeptonSystDataToTree[8]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_sys_up__bc", &temp_LeptonSystDataToTree[9]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_sys_dn__bc", &temp_LeptonSystDataToTree[10]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_rel_stat_up__bc", &temp_LeptonSystDataToTree[11]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_rel_stat_dn__bc", &temp_LeptonSystDataToTree[12]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_rel_sys_up__bc", &temp_LeptonSystDataToTree[13]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_rel_sys_dn__bc", &temp_LeptonSystDataToTree[14]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_stat_up__bc", &temp_LeptonSystDataToTree[15]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_stat_dn__bc", &temp_LeptonSystDataToTree[16]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_sys_up__bc", &temp_LeptonSystDataToTree[17]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_sys_dn__bc", &temp_LeptonSystDataToTree[18]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05__bc", &temp_LeptonSystDataToTree[19]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_stat_up__bc", &temp_LeptonSystDataToTree[20]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_stat_dn__bc", &temp_LeptonSystDataToTree[21]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_sys_up__bc", &temp_LeptonSystDataToTree[22]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_sys_dn__bc", &temp_LeptonSystDataToTree[23]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_rel_stat_up__bc", &temp_LeptonSystDataToTree[24]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_rel_stat_dn__bc", &temp_LeptonSystDataToTree[25]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_rel_sys_up__bc", &temp_LeptonSystDataToTree[26]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_rel_sys_dn__bc", &temp_LeptonSystDataToTree[27]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_0_mcPDG__bc", &temp_LeptonSystDataToTree[28]);
+
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_muonID_noSVD__bc", &temp_LeptonSystDataToTree[29]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05__bc", &temp_LeptonSystDataToTree[30]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05__bc", &temp_LeptonSystDataToTree[31]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_stat_up__bc", &temp_LeptonSystDataToTree[32]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_stat_dn__bc", &temp_LeptonSystDataToTree[33]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_sys_up__bc", &temp_LeptonSystDataToTree[34]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_sys_dn__bc", &temp_LeptonSystDataToTree[35]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_stat_up__bc", &temp_LeptonSystDataToTree[36]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_stat_dn__bc", &temp_LeptonSystDataToTree[37]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_sys_up__bc", &temp_LeptonSystDataToTree[38]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_sys_dn__bc", &temp_LeptonSystDataToTree[39]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_rel_stat_up__bc", &temp_LeptonSystDataToTree[40]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_rel_stat_dn__bc", &temp_LeptonSystDataToTree[41]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_rel_sys_up__bc", &temp_LeptonSystDataToTree[42]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_rel_sys_dn__bc", &temp_LeptonSystDataToTree[43]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_stat_up__bc", &temp_LeptonSystDataToTree[44]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_stat_dn__bc", &temp_LeptonSystDataToTree[45]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_sys_up__bc", &temp_LeptonSystDataToTree[46]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_sys_dn__bc", &temp_LeptonSystDataToTree[47]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05__bc", &temp_LeptonSystDataToTree[48]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_stat_up__bc", &temp_LeptonSystDataToTree[49]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_stat_dn__bc", &temp_LeptonSystDataToTree[50]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_sys_up__bc", &temp_LeptonSystDataToTree[51]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_sys_dn__bc", &temp_LeptonSystDataToTree[52]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_rel_stat_up__bc", &temp_LeptonSystDataToTree[53]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_rel_stat_dn__bc", &temp_LeptonSystDataToTree[54]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_rel_sys_up__bc", &temp_LeptonSystDataToTree[55]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_rel_sys_dn__bc", &temp_LeptonSystDataToTree[56]);
+                temp_tree->SetBranchAddress("eventExtraInfo__bomu_1_mcPDG__bc", &temp_LeptonSystDataToTree[57]);
+            }
+
             // flag
             temp_tree->SetBranchAddress("flag", &temp_flag);
 
@@ -379,7 +452,9 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             TTree* temp_tree_Bsig = new TTree("Bsig", "");
             TTree* temp_tree_Btag = new TTree("Btag", "");
             TTree* temp_tree_Xs = nullptr;
+            TTree* temp_tree_lepton_syst = nullptr;
             if (DoesItHaveXsBranch) temp_tree_Xs = new TTree("Xs", "");
+            if (DoesItHaveleptonBranch) temp_tree_lepton_syst = new TTree("lepton_syst", "");
 
             // print root file
                 /*================================================================*/
@@ -547,6 +622,10 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                 temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[67 + 4 * i_PID + 3]);
             }
             for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_BsigDataToTree[359 + i_pi0]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKfrome", &temp_BsigDataToTree[367]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKfrommu", &temp_BsigDataToTree[368]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_npifrome", &temp_BsigDataToTree[369]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_npifrommu", &temp_BsigDataToTree[370]);
 
             // get Btag_info
             temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -654,6 +733,69 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                 temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
             }
 
+            if (DoesItHaveleptonBranch) {
+                // for leptonID systematics
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_muonID_noSVD__bc", &temp_LeptonSystDataToTree[0]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05__bc", &temp_LeptonSystDataToTree[1]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05__bc", &temp_LeptonSystDataToTree[2]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_stat_up__bc", &temp_LeptonSystDataToTree[3]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_stat_dn__bc", &temp_LeptonSystDataToTree[4]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_sys_up__bc", &temp_LeptonSystDataToTree[5]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_sys_dn__bc", &temp_LeptonSystDataToTree[6]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_stat_up__bc", &temp_LeptonSystDataToTree[7]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_stat_dn__bc", &temp_LeptonSystDataToTree[8]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_sys_up__bc", &temp_LeptonSystDataToTree[9]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_sys_dn__bc", &temp_LeptonSystDataToTree[10]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_rel_stat_up__bc", &temp_LeptonSystDataToTree[11]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_rel_stat_dn__bc", &temp_LeptonSystDataToTree[12]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_rel_sys_up__bc", &temp_LeptonSystDataToTree[13]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05_rel_sys_dn__bc", &temp_LeptonSystDataToTree[14]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_stat_up__bc", &temp_LeptonSystDataToTree[15]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_stat_dn__bc", &temp_LeptonSystDataToTree[16]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_sys_up__bc", &temp_LeptonSystDataToTree[17]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_sys_dn__bc", &temp_LeptonSystDataToTree[18]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05__bc", &temp_LeptonSystDataToTree[19]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_stat_up__bc", &temp_LeptonSystDataToTree[20]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_stat_dn__bc", &temp_LeptonSystDataToTree[21]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_sys_up__bc", &temp_LeptonSystDataToTree[22]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_sys_dn__bc", &temp_LeptonSystDataToTree[23]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_rel_stat_up__bc", &temp_LeptonSystDataToTree[24]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_rel_stat_dn__bc", &temp_LeptonSystDataToTree[25]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_rel_sys_up__bc", &temp_LeptonSystDataToTree[26]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05_rel_sys_dn__bc", &temp_LeptonSystDataToTree[27]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_0_mcPDG__bc", &temp_LeptonSystDataToTree[28]);
+
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_muonID_noSVD__bc", &temp_LeptonSystDataToTree[29]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05__bc", &temp_LeptonSystDataToTree[30]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05__bc", &temp_LeptonSystDataToTree[31]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_stat_up__bc", &temp_LeptonSystDataToTree[32]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_stat_dn__bc", &temp_LeptonSystDataToTree[33]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_sys_up__bc", &temp_LeptonSystDataToTree[34]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_sys_dn__bc", &temp_LeptonSystDataToTree[35]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_stat_up__bc", &temp_LeptonSystDataToTree[36]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_stat_dn__bc", &temp_LeptonSystDataToTree[37]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_sys_up__bc", &temp_LeptonSystDataToTree[38]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_sys_dn__bc", &temp_LeptonSystDataToTree[39]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_rel_stat_up__bc", &temp_LeptonSystDataToTree[40]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_rel_stat_dn__bc", &temp_LeptonSystDataToTree[41]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_rel_sys_up__bc", &temp_LeptonSystDataToTree[42]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05_rel_sys_dn__bc", &temp_LeptonSystDataToTree[43]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_stat_up__bc", &temp_LeptonSystDataToTree[44]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_stat_dn__bc", &temp_LeptonSystDataToTree[45]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_sys_up__bc", &temp_LeptonSystDataToTree[46]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05_rel_sys_dn__bc", &temp_LeptonSystDataToTree[47]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05__bc", &temp_LeptonSystDataToTree[48]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_stat_up__bc", &temp_LeptonSystDataToTree[49]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_stat_dn__bc", &temp_LeptonSystDataToTree[50]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_sys_up__bc", &temp_LeptonSystDataToTree[51]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_sys_dn__bc", &temp_LeptonSystDataToTree[52]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_rel_stat_up__bc", &temp_LeptonSystDataToTree[53]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_rel_stat_dn__bc", &temp_LeptonSystDataToTree[54]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_rel_sys_up__bc", &temp_LeptonSystDataToTree[55]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05_rel_sys_dn__bc", &temp_LeptonSystDataToTree[56]);
+                temp_tree_lepton_syst->Branch("eventExtraInfo__bomu_1_mcPDG__bc", &temp_LeptonSystDataToTree[57]);
+            }
+
             temp_tree_upsilon->Branch("MVA_BB", &temp_BB_output);
             temp_tree_upsilon->Branch("MVA_Continuum", &temp_Continuum_output);
 
@@ -674,6 +816,7 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                     temp_tree_Bsig->Fill();
                     temp_tree_Btag->Fill();
                     if (DoesItHaveXsBranch) temp_tree_Xs->Fill();
+                    if (DoesItHaveleptonBranch) temp_tree_lepton_syst->Fill();
                 }
 
             }
@@ -685,6 +828,7 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
             temp_tree_Bsig->Write();
             temp_tree_Btag->Write();
             if (DoesItHaveXsBranch) temp_tree_Xs->Write();
+            if (DoesItHaveleptonBranch) temp_tree_lepton_syst->Write();
             temp_file->Close();
         }
 
