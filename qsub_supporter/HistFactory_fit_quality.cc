@@ -160,11 +160,10 @@ using std::endl;
 int Toy_iter_num = 0.0;
 int LT_iter_num = 0.0;
 
-# define RarityBins 6
+# define RarityBins 15
 double weight_KIDsys[RarityBins * 7] = { 0.0 };
 double weight_PIDsys[RarityBins * 7] = { 0.0 };
 double weight_BRsys[RarityBins * 2] = { 0.0 };
-double weight_pi0sys[RarityBins * 7] = { 0.0 };
 
 std::random_device rd;
 std::default_random_engine generator(rd());
@@ -433,10 +432,9 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
                 double KID_uncertainty = weight_KIDsys[RarityBins * sample_index + bin_index];
                 double PID_uncertainty = weight_PIDsys[RarityBins * sample_index + bin_index];
                 double BR_uncertainty = 0.0;
-                double pi0_uncertainty = weight_pi0sys[RarityBins * sample_index + bin_index];
                 if ((names->at(i).find("CHG") != std::string::npos) || (names->at(i).find("MIX") != std::string::npos)) BR_uncertainty = weight_BRsys[RarityBins * sample_index + bin_index];
                 
-                double total_uncertainty = std::sqrt(KID_uncertainty * KID_uncertainty + PID_uncertainty * PID_uncertainty + BR_uncertainty * BR_uncertainty + pi0_uncertainty * pi0_uncertainty);
+                double total_uncertainty = std::sqrt(KID_uncertainty * KID_uncertainty + PID_uncertainty * PID_uncertainty + BR_uncertainty * BR_uncertainty);
                 std::normal_distribution<double> distribution(1.0, total_uncertainty);
                 w->var(names->at(i).c_str())->setVal(distribution(generator));
             }
@@ -557,16 +555,6 @@ void ReadBRuncorrsysFile(const char* dirname_BR) {
 
 }
 
-void Readpi0uncorrsysFile(const char* dirname_pi0) {
-    FILE* fp;
-
-    fp = fopen(dirname_pi0, "r");
-    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_pi0sys[i]);
-    fclose(fp);
-    for (int i = 0; i < RarityBins * 7; i++) weight_pi0sys[i] = std::sqrt(weight_pi0sys[i]);
-
-}
-
 int main(int argc, char* argv[]) {
     RooMsgService::instance().setStreamStatus(1, false);
     RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
@@ -575,7 +563,6 @@ int main(int argc, char* argv[]) {
 
     ReadPIDuncorrsysFile("./KID_cov_remain_truncated.txt", "./PID_cov_remain_truncated.txt");
     ReadBRuncorrsysFile("./BR_cov_remain_truncated.txt");
-    Readpi0uncorrsysFile("./pi0_cov_remain_truncated.txt");
 
     // argv[1]: {ToyMC|LinearityTest}
     // argv[2]: injected mu when Linearity test
