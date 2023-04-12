@@ -13,7 +13,6 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # include <algorithm>
 # include <float.h>
-# include <cmath>
 
 # define MyEPSILON 0.000001
 
@@ -302,15 +301,6 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
 
     double FEI_calibration_factor = -1;
 
-    double mu0_weight = -1;
-    double mu0_mispi_weight = -1;
-    double mu0_misK_weight = -1;
-    double mu0_pid = -1;
-    double mu1_weight = -1;
-    double mu1_mispi_weight = -1;
-    double mu1_misK_weight = -1;
-    double mu1_pid = -1;
-
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -322,7 +312,6 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
-        TTree* tree_lepton_syst = (TTree*)input_file->Get("lepton_syst");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (branch_names.at(k) == std::string("Upsilon")) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -343,21 +332,12 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05__bc", &mu0_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05__bc", &mu0_mispi_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05__bc", &mu0_misK_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_mcPDG__bc", &mu0_pid);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05__bc", &mu1_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05__bc", &mu1_mispi_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05__bc", &mu1_misK_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_mcPDG__bc", &mu1_pid);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            tree_lepton_syst->GetEntry(j);
 
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
 
@@ -402,8 +382,6 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
             double Correction_KID = 1;
             double Correction_PID = 1;
             double Correction_pi0 = 1;
-            double Correction_mu0 = 1;
-            double Correction_mu1 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
                 Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
                 Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
@@ -411,14 +389,8 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
                 Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
             }
             for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
-            if (std::abs(mu0_pid) > 12.5 && std::abs(mu0_pid) < 13.5) Correction_mu0 = mu0_weight;
-            else if (std::abs(mu0_pid) > 210.5 && std::abs(mu0_pid) < 211.5) Correction_mu0 = mu0_mispi_weight;
-            else if (std::abs(mu0_pid) > 320.5 && std::abs(mu0_pid) < 321.5) Correction_mu0 = mu0_misK_weight;
-            if (std::abs(mu1_pid) > 12.5 && std::abs(mu1_pid) < 13.5) Correction_mu1 = mu1_weight;
-            else if (std::abs(mu1_pid) > 210.5 && std::abs(mu1_pid) < 211.5) Correction_mu1 = mu1_mispi_weight;
-            else if (std::abs(mu1_pid) > 320.5 && std::abs(mu1_pid) < 321.5) Correction_mu1 = mu1_misK_weight;
 
-            weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_pi0 * Correction_KID * Correction_PID * Correction_mu0 * Correction_mu1);
+            weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_pi0 * Correction_KID * Correction_PID);
 
 
         }
@@ -454,15 +426,6 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
 
     double FEI_calibration_factor = -1;
 
-    double mu0_weight = -1;
-    double mu0_mispi_weight = -1;
-    double mu0_misK_weight = -1;
-    double mu0_pid = -1;
-    double mu1_weight = -1;
-    double mu1_mispi_weight = -1;
-    double mu1_misK_weight = -1;
-    double mu1_pid = -1;
-
     int nBp = -1;
     int nB0 = -1;
 
@@ -479,7 +442,6 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
         TTree* tree_Xs;
         if(SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
-        TTree* tree_lepton_syst = (TTree*)input_file->Get("lepton_syst");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (branch_names.at(k) == std::string("Upsilon")) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -504,14 +466,6 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &nBp);
             tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &nB0);
         }
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05__bc", &mu0_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05__bc", &mu0_mispi_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05__bc", &mu0_misK_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_mcPDG__bc", &mu0_pid);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05__bc", &mu1_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05__bc", &mu1_mispi_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05__bc", &mu1_misK_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_mcPDG__bc", &mu1_pid);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -519,7 +473,6 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if (SampleName == "SIGNAL") tree_Xs->GetEntry(j);
-            tree_lepton_syst->GetEntry(j);
 
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
 
@@ -566,11 +519,11 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
                 FEI_calibration_factor = CAL_qq;
                 if (nBp > 0) {
                     FEI_calibration_factor = FEI_cal_Bc;
-                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 1.8/ab
+                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (nB0 > 0) {
                     FEI_calibration_factor = FEI_cal_B0;
-                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 1.8/ab
+                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else {
                     printf("ERROR 255");
@@ -586,8 +539,6 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
             double Correction_KID = 1;
             double Correction_PID = 1;
             double Correction_pi0 = 1;
-            double Correction_mu0 = 1;
-            double Correction_mu1 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
                 Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
                 Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
@@ -595,14 +546,8 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
                 Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
             }
             for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
-            if (std::abs(mu0_pid) > 12.5 && std::abs(mu0_pid) < 13.5) Correction_mu0 = mu0_weight;
-            else if (std::abs(mu0_pid) > 210.5 && std::abs(mu0_pid) < 211.5) Correction_mu0 = mu0_mispi_weight;
-            else if (std::abs(mu0_pid) > 320.5 && std::abs(mu0_pid) < 321.5) Correction_mu0 = mu0_misK_weight;
-            if (std::abs(mu1_pid) > 12.5 && std::abs(mu1_pid) < 13.5) Correction_mu1 = mu1_weight;
-            else if (std::abs(mu1_pid) > 210.5 && std::abs(mu1_pid) < 211.5) Correction_mu1 = mu1_mispi_weight;
-            else if (std::abs(mu1_pid) > 320.5 && std::abs(mu1_pid) < 321.5) Correction_mu1 = mu1_misK_weight;
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_mu0 * Correction_mu1);
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID);
 
 
         }
@@ -716,15 +661,6 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
 
     double FEI_calibration_factor = -1;
 
-    double mu0_weight = -1;
-    double mu0_mispi_weight = -1;
-    double mu0_misK_weight = -1;
-    double mu0_pid = -1;
-    double mu1_weight = -1;
-    double mu1_mispi_weight = -1;
-    double mu1_misK_weight = -1;
-    double mu1_pid = -1;
-
     int nBp = -1;
     int nB0 = -1;
 
@@ -744,7 +680,6 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
         TTree* tree_Xs;
         if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
-        TTree* tree_lepton_syst = (TTree*)input_file->Get("lepton_syst");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (branch_names.at(k) == std::string("Upsilon")) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -769,14 +704,6 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &nBp);
             tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &nB0);
         }
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05__bc", &mu0_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05__bc", &mu0_mispi_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05__bc", &mu0_misK_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_mcPDG__bc", &mu0_pid);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05__bc", &mu1_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05__bc", &mu1_mispi_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05__bc", &mu1_misK_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_mcPDG__bc", &mu1_pid);
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -784,7 +711,6 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            tree_lepton_syst->GetEntry(j);
 
             // BDTc correction factor
             if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
@@ -836,11 +762,11 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
                 FEI_calibration_factor = CAL_qq;
                 if (nBp > 0) {
                     FEI_calibration_factor = FEI_cal_Bc;
-                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 1.8/ab
+                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (nB0 > 0) {
                     FEI_calibration_factor = FEI_cal_B0;
-                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 1.8/ab
+                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else {
                     printf("ERROR 255");
@@ -856,8 +782,6 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             double Correction_KID = 1;
             double Correction_PID = 1;
             double Correction_pi0 = 1;
-            double Correction_mu0 = 1;
-            double Correction_mu1 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
                 Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
                 Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
@@ -865,14 +789,8 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
                 Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
             }
             for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
-            if (std::abs(mu0_pid) > 12.5 && std::abs(mu0_pid) < 13.5) Correction_mu0 = mu0_weight;
-            else if (std::abs(mu0_pid) > 210.5 && std::abs(mu0_pid) < 211.5) Correction_mu0 = mu0_mispi_weight;
-            else if (std::abs(mu0_pid) > 320.5 && std::abs(mu0_pid) < 321.5) Correction_mu0 = mu0_misK_weight;
-            if (std::abs(mu1_pid) > 12.5 && std::abs(mu1_pid) < 13.5) Correction_mu1 = mu1_weight;
-            else if (std::abs(mu1_pid) > 210.5 && std::abs(mu1_pid) < 211.5) Correction_mu1 = mu1_mispi_weight;
-            else if (std::abs(mu1_pid) > 320.5 && std::abs(mu1_pid) < 321.5) Correction_mu1 = mu1_misK_weight;
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_mu0 * Correction_mu1 * BDTc_correction);
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * BDTc_correction);
 
 
         }
@@ -914,15 +832,6 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
     double FEI_calibration_factor = -1;
 
-    double mu0_weight = -1;
-    double mu0_mispi_weight = -1;
-    double mu0_misK_weight = -1;
-    double mu0_pid = -1;
-    double mu1_weight = -1;
-    double mu1_mispi_weight = -1;
-    double mu1_misK_weight = -1;
-    double mu1_pid = -1;
-
     int nBp = -1;
     int nB0 = -1;
 
@@ -942,7 +851,6 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
         TTree* tree_Xs;
         if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
-        TTree* tree_lepton_syst = (TTree*)input_file->Get("lepton_syst");
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
@@ -957,14 +865,6 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &nBp);
             tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &nB0);
         }
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_eff_FixedThresh05__bc", &mu0_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_pi_FixedThresh05__bc", &mu0_mispi_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_weight_muonID_noSVD_misid_K_FixedThresh05__bc", &mu0_misK_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_0_mcPDG__bc", &mu0_pid);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_eff_FixedThresh05__bc", &mu1_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_pi_FixedThresh05__bc", &mu1_mispi_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_weight_muonID_noSVD_misid_K_FixedThresh05__bc", &mu1_misK_weight);
-        tree_lepton_syst->SetBranchAddress("eventExtraInfo__bomu_1_mcPDG__bc", &mu1_pid);
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -972,7 +872,6 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            tree_lepton_syst->GetEntry(j);
 
             // BDTc correction factor
             if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
@@ -982,11 +881,11 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 0.8/ab for BB
+                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "MIX") {
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 0.8/ab for BB
+                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
                 FEI_calibration_factor = CAL_qq;
@@ -1014,11 +913,11 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
                 FEI_calibration_factor = CAL_qq;
                 if (nBp > 0) {
                     FEI_calibration_factor = FEI_cal_Bc;
-                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 1.8/ab
+                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (nB0 > 0) {
                     FEI_calibration_factor = FEI_cal_B0;
-                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 1.8/ab
+                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else {
                     printf("ERROR 255");
@@ -1034,8 +933,6 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             double Correction_KID = 1;
             double Correction_PID = 1;
             double Correction_pi0 = 1;
-            double Correction_mu0 = 1;
-            double Correction_mu1 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
                 Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
                 Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
@@ -1043,15 +940,9 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
                 Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
             }
             for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
-            if (std::abs(mu0_pid) > 12.5 && std::abs(mu0_pid) < 13.5) Correction_mu0 = mu0_weight;
-            else if (std::abs(mu0_pid) > 210.5 && std::abs(mu0_pid) < 211.5) Correction_mu0 = mu0_mispi_weight;
-            else if (std::abs(mu0_pid) > 320.5 && std::abs(mu0_pid) < 321.5) Correction_mu0 = mu0_misK_weight;
-            if (std::abs(mu1_pid) > 12.5 && std::abs(mu1_pid) < 13.5) Correction_mu1 = mu1_weight;
-            else if (std::abs(mu1_pid) > 210.5 && std::abs(mu1_pid) < 211.5) Correction_mu1 = mu1_mispi_weight;
-            else if (std::abs(mu1_pid) > 320.5 && std::abs(mu1_pid) < 321.5) Correction_mu1 = mu1_misK_weight;
 
-            nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_mu0 * Correction_mu1;
-            nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_mu0 * Correction_mu1 * BDTc_correction;
+            nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID;
+            nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * BDTc_correction;
 
 
         }

@@ -747,7 +747,7 @@ void Loader::GetData(TFile* input_file) {
     else tree_Xs = nullptr;
 
     TTree* tree_lepton_syst;
-    if (DoesItHaveleptonBranch) tree_lepton_syst = (TTree*)input_file->Get("lepton_syst");
+    if (DoesItHaveleptonBranch) tree_lepton_syst = (TTree*)input_filt->Get("lepton_syst");
     else tree_lepton_syst = nullptr;
 
     DoesItHaveMVAOutput = false;
@@ -2221,7 +2221,7 @@ void Loader::PrintRootFile(std::string output_name) {
         TTree* tree_Bsig = new TTree("Bsig", "");
         TTree* tree_Btag = new TTree("Btag", "");
         TTree* tree_Xs = new TTree("Xs", "");
-        TTree* tree_lepton_syst = new TTree("lepton_syst", "");
+        TTree* tree_lepton_syst = new TTree("lepton_syst", "")
 
         /*================================================================*/
         // get event_info
