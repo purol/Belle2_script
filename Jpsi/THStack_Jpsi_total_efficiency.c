@@ -952,7 +952,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
 }
 
-void THStack_Jpsi_FBDT_efficiency() {
+void THStack_Jpsi_total_efficiency() {
 
     ReadPIDFile();
 
