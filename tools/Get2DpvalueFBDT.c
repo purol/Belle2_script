@@ -13,6 +13,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # include <algorithm>
 # include <float.h>
+# include <math.h>
 
 # define MyEPSILON 0.000001
 
@@ -390,7 +391,7 @@ double LetsFill_ri(const char* dirname, std::string SampleName, TH2D* hist) {
             }
             for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
 
-            hist->Fill(temp_FBDT, temp_SignalProbability, FEI_calibration_factor * weight_ri * Correction_pi0 * Correction_KID * Correction_PID);
+            hist->Fill(temp_FBDT, log10(temp_SignalProbability), FEI_calibration_factor * weight_ri * Correction_pi0 * Correction_KID * Correction_PID);
         }
         input_file->Close();
 
@@ -511,7 +512,7 @@ double LetsFill_ri(const char* dirname, std::string SampleName, const char* incl
             }
             for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
 
-            hist->Fill(temp_FBDT, temp_SignalProbability, FEI_calibration_factor * weight_ri * Correction_pi0 * Correction_KID * Correction_PID);
+            hist->Fill(temp_FBDT, log10(temp_SignalProbability), FEI_calibration_factor * weight_ri * Correction_pi0 * Correction_KID * Correction_PID);
         }
         input_file->Close();
 
