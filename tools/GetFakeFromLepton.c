@@ -137,6 +137,102 @@ const double pi0_sys_uncer2[N_pi0_syst] = {
     0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0
 };
 
+void ReadPIDFile() {
+    const char* KID_true_file = "KaonEff.csv";
+    const char* KID_mis_file = "Kaonmis.csv";
+    const char* PID_true_file = "PionEff.csv";
+    const char* PID_mis_file = "Pionmis.csv";
+
+    FILE* fp_KID_true = fopen(KID_true_file, "r");
+    FILE* fp_KID_mis = fopen(KID_mis_file, "r");
+    FILE* fp_PID_true = fopen(PID_true_file, "r");
+    FILE* fp_PID_mis = fopen(PID_mis_file, "r");
+
+    fscanf(fp_KID_true, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+    fscanf(fp_KID_mis, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+    fscanf(fp_PID_true, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+    fscanf(fp_PID_mis, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+
+    double temp_p_min;
+    double temp_p_max;
+    double temp_cosTheta_min;
+    double temp_cosTheta_max;
+    double temp_data_MC_ratio;
+    double temp_data_MC_uncertainty_stat_up;
+    double temp_data_MC_uncertainty_stat_dn;
+    double temp_data_MC_uncertainty_sys_up;
+    double temp_data_MC_uncertainty_sys_dn;
+    double temp_data_efficiency;
+    double temp_data_uncertainty_stat_up;
+    double temp_data_uncertainty_stat_dn;
+    double temp_data_uncertainty_sys_up;
+    double temp_data_uncertainty_sys_dn;
+    double temp_MC_efficiency;
+    double temp_MC_uncertainty_stat_up;
+    double temp_MC_uncertainty_stat_dn;
+    double temp_MC_uncertainty_sys_up;
+    double temp_MC_uncertainty_sys_dn;
+    double temp_threshold;
+
+    for (int i = 0; i < N_PID_syst - 1; i++) {
+        fscanf(fp_KID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,kaonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[0][i], &PID_correction_stat_uncer[0][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[0][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+        fscanf(fp_KID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,kaonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[1][i], &PID_correction_stat_uncer[1][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[1][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+        fscanf(fp_PID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[2][i], &PID_correction_stat_uncer[2][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[2][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+        fscanf(fp_PID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[3][i], &PID_correction_stat_uncer[3][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[3][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+
+        if ((std::abs(PID_correction[0][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[0][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[0][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction[0][i]) > 10000.0)) {
+            PID_correction[0][i] = 1.0;
+            PID_correction_stat_uncer[0][i] = 0.0;
+            PID_correction_sys_uncer[0][i] = 0.0;
+        }
+        if ((std::abs(PID_correction[1][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[1][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[1][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction[1][i]) > 10000.0)) {
+            PID_correction[1][i] = 1.0;
+            PID_correction_stat_uncer[1][i] = 0.0;
+            PID_correction_sys_uncer[1][i] = 0.0;
+        }
+        if ((std::abs(PID_correction[2][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[2][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[2][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction[2][i]) > 10000.0)) {
+            PID_correction[2][i] = 1.0;
+            PID_correction_stat_uncer[2][i] = 0.0;
+            PID_correction_sys_uncer[2][i] = 0.0;
+        }
+        if ((std::abs(PID_correction[3][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[3][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[3][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction[3][i]) > 10000.0)) {
+            PID_correction[3][i] = 1.0;
+            PID_correction_stat_uncer[3][i] = 0.0;
+            PID_correction_sys_uncer[3][i] = 0.0;
+        }
+
+        PID_correction_uncer[0][i] = std::sqrt(PID_correction_stat_uncer[0][i] * PID_correction_stat_uncer[0][i] + PID_correction_sys_uncer[0][i] * PID_correction_sys_uncer[0][i]);
+        PID_correction_uncer[1][i] = std::sqrt(PID_correction_stat_uncer[1][i] * PID_correction_stat_uncer[1][i] + PID_correction_sys_uncer[1][i] * PID_correction_sys_uncer[1][i]);
+        PID_correction_uncer[2][i] = std::sqrt(PID_correction_stat_uncer[2][i] * PID_correction_stat_uncer[2][i] + PID_correction_sys_uncer[2][i] * PID_correction_sys_uncer[2][i]);
+        PID_correction_uncer[3][i] = std::sqrt(PID_correction_stat_uncer[3][i] * PID_correction_stat_uncer[3][i] + PID_correction_sys_uncer[3][i] * PID_correction_sys_uncer[3][i]);
+    }
+
+    PID_correction[0][N_PID_syst - 1] = 1.0;
+    PID_correction_stat_uncer[0][N_PID_syst - 1] = 0.0;
+    PID_correction_sys_uncer[0][N_PID_syst - 1] = 0.0;
+    PID_correction_uncer[0][N_PID_syst - 1] = 0.0;
+
+    PID_correction[1][N_PID_syst - 1] = 1.0;
+    PID_correction_stat_uncer[1][N_PID_syst - 1] = 0.0;
+    PID_correction_sys_uncer[1][N_PID_syst - 1] = 0.0;
+    PID_correction_uncer[1][N_PID_syst - 1] = 0.0;
+
+    PID_correction[2][N_PID_syst - 1] = 1.0;
+    PID_correction_stat_uncer[2][N_PID_syst - 1] = 0.0;
+    PID_correction_sys_uncer[2][N_PID_syst - 1] = 0.0;
+    PID_correction_uncer[2][N_PID_syst - 1] = 0.0;
+
+    PID_correction[3][N_PID_syst - 1] = 1.0;
+    PID_correction_stat_uncer[3][N_PID_syst - 1] = 0.0;
+    PID_correction_sys_uncer[3][N_PID_syst - 1] = 0.0;
+    PID_correction_uncer[3][N_PID_syst - 1] = 0.0;
+
+    fclose(fp_KID_true);
+    fclose(fp_KID_mis);
+    fclose(fp_PID_true);
+    fclose(fp_PID_mis);
+}
+
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
         return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
