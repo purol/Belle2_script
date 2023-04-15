@@ -179,7 +179,7 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-double LetsCount_ri(const char* dirname, std::vector<double>* weights, std::string SampleName, double* Ncounts) {
+double LetsCount_ri(const char* dirname, std::string SampleName, double* Ncounts) {
 
     double Nevt = 0;
 
