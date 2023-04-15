@@ -539,8 +539,8 @@ void Get2DpvalueFBDT() {
     const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
     const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
 
-    TH2D* signal_hist = new TH2D("signal", "signal", 6, 0.96, 1.0, 3, -3, 0.0);
-    TH2D* bkg_hist = new TH2D("bkg", "bkg", 6, 0.96, 1.0, 3, -3, 0.0);
+    TH2D* signal_hist = new TH2D("signal", ";FBDT output;log_{10}SignalProbability", 6, 0.96, 1.0, 3, -3, 0.0);
+    TH2D* bkg_hist = new TH2D("bkg", ";FBDT output;log_{10}SignalProbability", 6, 0.96, 1.0, 3, -3, 0.0);
 
     double Nevt_B2Knunu = LetsFill_ri(Knunu_dirname, "B2Knunu", "B2Knunu", signal_hist);
     double Nevt_B2Kstarnunu = LetsFill_ri(Kstarnunu_dirname, "B2Kstarnunu", "B2Kstarnunu", signal_hist);
@@ -556,12 +556,15 @@ void Get2DpvalueFBDT() {
     double Nevt_SSBAR = LetsFill_ri(SSBAR_dirname, "SSBAR", bkg_hist);
     double Nevt_CHARM = LetsFill_ri(CHARM_dirname, "CHARM", bkg_hist);
 
-    TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+    signal_hist->SetStats(false);
+    bkg_hist->SetStats(false);
+
+    TCanvas* c_temp = new TCanvas("c", "", 800, 600); c_temp->cd();
     signal_hist->Draw("COLZ TEXT");
     c_temp->SaveAs("signal_2D_hist.png");
     delete c_temp;
 
-    c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+    c_temp = new TCanvas("c", "", 800, 600); c_temp->cd();
     bkg_hist->Draw("COLZ TEXT");
     c_temp->SaveAs("background_2D_hist.png");
     delete c_temp;
