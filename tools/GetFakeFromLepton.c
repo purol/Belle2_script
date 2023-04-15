@@ -559,7 +559,7 @@ double LetsCount_ri(const char* dirname, std::string SampleName, const char* inc
 
 }
 
-void THStack_plot() {
+void GetFakeFromLepton() {
 
     ReadPIDFile();
 
