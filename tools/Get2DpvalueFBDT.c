@@ -539,8 +539,8 @@ void Get2DpvalueFBDT() {
     const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
     const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
 
-    TH2D* signal_hist = new TH2D("signal", ";FBDT output;log_{10}SignalProbability", 6, 0.96, 1.0, 3, -3, 0.0);
-    TH2D* bkg_hist = new TH2D("bkg", ";FBDT output;log_{10}SignalProbability", 6, 0.96, 1.0, 3, -3, 0.0);
+    TH2D* signal_hist = new TH2D("signal", ";FBDT output;log_{10}SignalProbability;number of event", 6, 0.96, 1.0, 3, -3, 0.0);
+    TH2D* bkg_hist = new TH2D("bkg", ";FBDT output;log_{10}SignalProbability;number of event", 6, 0.96, 1.0, 3, -3, 0.0);
 
     double Nevt_B2Knunu = LetsFill_ri(Knunu_dirname, "B2Knunu", "B2Knunu", signal_hist);
     double Nevt_B2Kstarnunu = LetsFill_ri(Kstarnunu_dirname, "B2Kstarnunu", "B2Kstarnunu", signal_hist);
