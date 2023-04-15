@@ -233,51 +233,51 @@ double LetsCount_ri(const char* dirname, std::vector<double>* weights, std::stri
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = Scale_CHG_train;
+                weight_ri = Scale_CHG_test;
             }
             else if (SampleName == "MIX") {
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = Scale_MIX_train;
+                weight_ri = Scale_MIX_test;
             }
             else if (SampleName == "UUBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = Scale_UUBAR_train; // total 1.0/ab for qq
+                weight_ri = Scale_UUBAR_test; // total 1.0/ab for qq
             }
             else if (SampleName == "DDBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = Scale_DDBAR_train; // total 1.0/ab for qq
+                weight_ri = Scale_DDBAR_test; // total 1.0/ab for qq
             }
             else if (SampleName == "SSBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = Scale_SSBAR_train; // total 1.0/ab for qq
+                weight_ri = Scale_SSBAR_test; // total 1.0/ab for qq
             }
             else if (SampleName == "CHARM") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = Scale_CHARM_train; // total 1.0/ab for qq
+                weight_ri = Scale_CHARM_test; // total 1.0/ab for qq
             }
             else if (SampleName == "B2Knunu") {
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = Scale_Kplus_train;
+                weight_ri = Scale_Kplus_test;
             }
             else if (SampleName == "B2Kstarnunu") {
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = Scale_Kplusstar_train;
+                weight_ri = Scale_Kplusstar_test;
             }
             else if (SampleName == "B2Xsnunu") {
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = Scale_Xsu_nonresonant_train;
+                weight_ri = Scale_Xsu_nonresonant_test;
             }
             else if (SampleName == "B02K0nunu") {
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = Scale_K0_train;
+                weight_ri = Scale_K0_test;
             }
             else if (SampleName == "B02Kstar0nunu") {
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = Scale_K0star_train;
+                weight_ri = Scale_K0star_test;
             }
             else if (SampleName == "B02Xsnunu") {
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = Scale_Xsd_nonresonant_train;
+                weight_ri = Scale_Xsd_nonresonant_test;
             }
             else {
                 printf("undefined job id!\n");
@@ -373,51 +373,51 @@ double LetsCount_ri(const char* dirname, std::string SampleName, const char* inc
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = Scale_CHG_train;
+                weight_ri = Scale_CHG_test;
             }
             else if (SampleName == "MIX") {
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = Scale_MIX_train;
+                weight_ri = Scale_MIX_test;
             }
             else if (SampleName == "UUBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = Scale_UUBAR_train; // total 1.0/ab for qq
+                weight_ri = Scale_UUBAR_test; // total 1.0/ab for qq
             }
             else if (SampleName == "DDBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = Scale_DDBAR_train; // total 1.0/ab for qq
+                weight_ri = Scale_DDBAR_test; // total 1.0/ab for qq
             }
             else if (SampleName == "SSBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = Scale_SSBAR_train; // total 1.0/ab for qq
+                weight_ri = Scale_SSBAR_test; // total 1.0/ab for qq
             }
             else if (SampleName == "CHARM") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = Scale_CHARM_train; // total 1.0/ab for qq
+                weight_ri = Scale_CHARM_test; // total 1.0/ab for qq
             }
             else if (SampleName == "B2Knunu") {
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = Scale_Kplus_train;
+                weight_ri = Scale_Kplus_test;
             }
             else if (SampleName == "B2Kstarnunu") {
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = Scale_Kplusstar_train;
+                weight_ri = Scale_Kplusstar_test;
             }
             else if (SampleName == "B2Xsnunu") {
                 FEI_calibration_factor = FEI_cal_Bc;
-                weight_ri = Scale_Xsu_nonresonant_train;
+                weight_ri = Scale_Xsu_nonresonant_test;
             }
             else if (SampleName == "B02K0nunu") {
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = Scale_K0_train;
+                weight_ri = Scale_K0_test;
             }
             else if (SampleName == "B02Kstar0nunu") {
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = Scale_K0star_train;
+                weight_ri = Scale_K0star_test;
             }
             else if (SampleName == "B02Xsnunu") {
                 FEI_calibration_factor = FEI_cal_B0;
-                weight_ri = Scale_Xsd_nonresonant_train;
+                weight_ri = Scale_Xsd_nonresonant_test;
             }
             else {
                 printf("undefined job id!\n");
@@ -465,18 +465,18 @@ void THStack_plot() {
 
     ReadPIDFile();
 
-    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SIGNAL_analysis/train_v000/final_output_root_after_MVA_Application_after_cut";
-    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SIGNAL_analysis/train_v000/final_output_root_after_MVA_Application_after_cut";
-    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SIGNAL_analysis/train_v000/final_output_root_after_MVA_Application_after_cut";
-    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SIGNAL_analysis/train_v000/final_output_root_after_MVA_Application_after_cut";
-    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SIGNAL_analysis/train_v000/final_output_root_after_MVA_Application_after_cut";
-    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SIGNAL_analysis/train_v000/final_output_root_after_MVA_Application_after_cut";
-    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/CHG_analysis/train_v000/final_output_root_after_MVA_Application_after_cut";
-    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/MIX_analysis/train_v000/final_output_root_after_MVA_Application_after_cut";
-    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/UUBAR_analysis/train_v000/final_output_root_after_MVA_Application_after_cut";
-    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/DDBAR_analysis/train_v000/final_output_root_after_MVA_Application_after_cut";
-    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SSBAR_analysis/train_v000/final_output_root_after_MVA_Application_after_cut";
-    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/CHARM_analysis/train_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/CHG_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/MIX_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/UUBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/DDBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Suwako/CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
     
     /*
     * Ncounts:
