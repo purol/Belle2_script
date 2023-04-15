@@ -286,7 +286,7 @@ double LetsFill_ri(const char* dirname, std::string SampleName, TH2D* hist) {
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
 
-    double temp_FBDT = 0;
+    float temp_FBDT = 0;
     double temp_SignalProbability = 0;
 
     double FEI_calibration_factor = -1;
@@ -409,7 +409,7 @@ double LetsFill_ri(const char* dirname, std::string SampleName, const char* incl
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
 
-    double temp_FBDT = 0;
+    float temp_FBDT = 0;
     double temp_SignalProbability = 0;
 
     double FEI_calibration_factor = -1;
