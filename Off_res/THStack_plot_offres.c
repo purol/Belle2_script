@@ -111,7 +111,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define FEI_cal_B0 0.713
 # define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
 
-# define Nvar_num 116
+# define Nvar_num 126
 
 # define CAL 0.4790
 # define CAL_qq 1.0626
@@ -895,6 +895,9 @@ void THStack_plot_offres() {
     variable_names.push_back("Btag_KSFWVariables_hoo2"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo3"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo4"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_dr"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_dz"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_useCMSFrame_p"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_useCMSFrame_phi"); branch_names.push_back("Btag");
     variable_names.push_back("roeEextra__bocleanMask__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("extraInfo__boEeclv133__bc"); branch_names.push_back("Upsilon");
@@ -981,6 +984,13 @@ void THStack_plot_offres() {
     variable_names.push_back("nROE_ECLClusters__bocleanMask__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("nROE_ParticlesInList__bopi0__clmyneutralPion__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("nROE_ParticlesInList__bogamma__clmygamma__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("missingMass2OfEvent"); branch_names.push_back("Upsilon");
+    variable_names.push_back("visibleEnergyOfEventCMS"); branch_names.push_back("Upsilon");
+    variable_names.push_back("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("chiProb"); branch_names.push_back("Upsilon");
+    variable_names.push_back("dr"); branch_names.push_back("Upsilon");
+    variable_names.push_back("dz"); branch_names.push_back("Upsilon");
 
     int Nvar = static_cast<int>(variable_names.size());
     if (Nvar != Nvar_num) exit(1);
