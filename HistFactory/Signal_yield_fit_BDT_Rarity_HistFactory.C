@@ -2574,6 +2574,16 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
     return Nevt;
 }
 
+void GetNegativeBDTcPDFs(TH1D* nominal_hist, TH1D* BDTc_corrected_hist, TH1D* BDTc_negative_hist) {
+    for (int i = 0; i < RarityBins; i++) {
+        double nominal = nominal_hist->GetBinContent(i + 1);
+        double BDTc_corrected = BDTc_corrected_hist->GetBinContent(i + 1);
+        double deviation = BDTc_corrected - nominal;
+
+        BDTc_negative_hist->SetBinContent(i + 1, nominal - deviation);
+    }
+}
+
 void ReadPIDFile() {
     const char* KID_true_file = "KaonEff.csv";
     const char* KID_mis_file = "Kaonmis.csv";
@@ -3286,12 +3296,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetBDTcPDFs(MC_dirname_DDBAR, DDBAR_BDTc_p, "Continuum", Scale_DDBAR_test);
     GetBDTcPDFs(MC_dirname_SSBAR, SSBAR_BDTc_p, "Continuum", Scale_SSBAR_test);
     GetBDTcPDFs(MC_dirname_CHARM, CHARM_BDTc_p, "Continuum", Scale_CHARM_test);
-    GetBDTcPDFs(MC_dirname_CHG, CHG_BDTc_m, "Bplus", Scale_CHG_test);
-    GetBDTcPDFs(MC_dirname_MIX, MIX_BDTc_m, "Bzero", Scale_MIX_test);
-    GetBDTcPDFs(MC_dirname_UUBAR, UUBAR_BDTc_m, "Continuum", Scale_UUBAR_test);
-    GetBDTcPDFs(MC_dirname_DDBAR, DDBAR_BDTc_m, "Continuum", Scale_DDBAR_test);
-    GetBDTcPDFs(MC_dirname_SSBAR, SSBAR_BDTc_m, "Continuum", Scale_SSBAR_test);
-    GetBDTcPDFs(MC_dirname_CHARM, CHARM_BDTc_m, "Continuum", Scale_CHARM_test);
+    GetNegativeBDTcPDFs(CHG_nominal, CHG_BDTc_p, CHG_BDTc_m);
+    GetNegativeBDTcPDFs(MIX_nominal, MIX_BDTc_p, MIX_BDTc_m);
+    GetNegativeBDTcPDFs(UUBAR_nominal, UUBAR_BDTc_p, UUBAR_BDTc_m);
+    GetNegativeBDTcPDFs(DDBAR_nominal, DDBAR_BDTc_p, DDBAR_BDTc_m);
+    GetNegativeBDTcPDFs(SSBAR_nominal, SSBAR_BDTc_p, SSBAR_BDTc_m);
+    GetNegativeBDTcPDFs(CHARM_nominal, CHARM_BDTc_p, CHARM_BDTc_m);
 
     // calculate all uncorrelated pdfs
     ClearHist(Signal_all_uncorrelated, CHG_all_uncorrelated, MIX_all_uncorrelated, UUBAR_all_uncorrelated, DDBAR_all_uncorrelated, SSBAR_all_uncorrelated, CHARM_all_uncorrelated);
