@@ -1,0 +1,394 @@
+// last update: 2022-07-16
+// for Belle2 data
+
+// arXiv:1409.4557v2
+# define TB0 1.5195 // (Table. 1)
+# define TBp 1.6384 // (Table. 1)
+# define BR_Kplus_nunubar 0.000005044 // Table VI = (5.044 +- 0.402) * 10^{-6}
+# define BR_K0star_nunubar 0.00000919 // (eq. 11)
+# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15). In Table VI = (4.6669 +- 0.3707) * 10^{-6}
+# define BR_Kplusstar_nunubar (BR_K0star_nunubar*TBp/TB0) // under (eq. 15)
+# define BR_Xs_nunubar 0.000029 // (eq. 23)
+# define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
+# define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
+
+// according to DIRAC
+# define N_BpBp_1invab 540000000.0
+# define N_B0B0_1invab 510000000.0
+
+# define N_Kplus_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplus_nunubar)
+# define N_Kplusstar_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplusstar_nunubar)
+# define N_Xsu_nonresonant_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Xsu_nonresonant_nunubar)
+# define N_K0_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0_nunubar)
+# define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
+# define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
+
+// my MC sample number
+# define N_Xsu_nonresonant_nunubar 351950.0
+# define N_Xsd_nonresonant_nunubar 367794.0
+
+// scale factor for each MC sample
+# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar)
+# define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
+
+void load_files(const char *dirname, std::vector<std::string>* names){
+   TSystemDirectory dir(dirname, dirname);
+   TList *files = dir.GetListOfFiles();
+   if (files) {
+      TSystemFile *file;
+      TString fname;
+      TIter next(files);
+      while ((file=(TSystemFile*)next())) {
+         fname = file->GetName();
+         if (!file->IsDirectory() && fname.EndsWith(".root")) {
+            names->push_back(fname.Data());
+         }
+      }
+   }
+}
+
+void load_files(const char* dirname, std::vector<string>* names, const char* included_string) {
+    TSystemDirectory dir(dirname, dirname);
+    TList* files = dir.GetListOfFiles();
+    if (files) {
+        TSystemFile* file;
+        TString fname;
+        TIter next(files);
+        while ((file = (TSystemFile*)next())) {
+            fname = file->GetName();
+            if (!file->IsDirectory() && fname.EndsWith(".root") && fname.Contains(included_string)) {
+                names->push_back(fname.Data());
+            }
+        }
+    }
+}
+
+enum DecayMode { // reco level
+    B2Kc = 0,
+    B2KcPi0,
+    B2Ks0Pic,
+    B2KcPicPic,
+    B2Ks0PicPi0,
+    B2KcPicPicPi0,
+    B2Ks0PicPicPic,
+    B2KcPicPicPicPic,
+    B2Ks0PicPicPicPi0,
+    B2KcPi0Pi0,
+    B2Ks0PicPi0Pi0,
+    B2KcPicPicPi0Pi0,
+    B2KcKcKc,
+    B2KcKcKs0Pic,
+    B2KcKcKcPi0,
+    B02Ks0,
+    B02KcPic,
+    B02Ks0Pi0,
+    B02KcPicPi0,
+    B02Ks0PicPic,
+    B02KcPicPicPic,
+    B02Ks0PicPicPi0,
+    B02KcPicPicPicPi0,
+    B02Ks0PicPicPicPic,
+    B02Ks0Pi0Pi0,
+    B02KcPicPi0Pi0,
+    B02Ks0PicPicPi0Pi0,
+    B02KcKcKs0,
+    B02KcKcKcPic,
+    B02KcKcKs0Pi0,
+    MAX_NUM_DECAYMODE
+};
+enum DecayModeMC { // MC level
+    Xsu2Kc_MC = 0,
+    Xsu2Kcstar2KcPi0_MC,
+    Xsu2Kcstar2K0Pic_MC,
+    Xsu2KcPi0_MC,
+    Xsu2K0Pic_MC,
+    Xsu2KcPicPic_MC,
+    Xsu2K0PicPi0_MC,
+    Xsu2KcPicPicPi0_MC,
+    Xsu2K0PicPicPic_MC,
+    Xsu2KcPicPicPicPic_MC,
+    Xsu2K0PicPicPicPi0_MC,
+    Xsu2KcPi0Pi0_MC,
+    Xsu2K0PicPi0Pi0_MC,
+    Xsu2KcPicPicPi0Pi0_MC,
+    Xsu2KcKcKc_MC,
+    Xsu2KcKcK0Pic_MC,
+    Xsu2KcKcKcPi0_MC,
+    Xsd2K0_MC,
+    Xsd2K0star2KcPic_MC,
+    Xsd2K0star2K0Pi0_MC,
+    Xsd2KcPic_MC,
+    Xsd2K0Pi0_MC,
+    Xsd2KcPicPi0_MC,
+    Xsd2K0PicPic_MC,
+    Xsd2KcPicPicPic_MC,
+    Xsd2K0PicPicPi0_MC,
+    Xsd2KcPicPicPicPi0_MC,
+    Xsd2K0PicPicPicPic_MC,
+    Xsd2K0Pi0Pi0_MC,
+    Xsd2KcPicPi0Pi0_MC,
+    Xsd2K0PicPicPi0Pi0_MC,
+    Xsd2KcKcK0_MC,
+    Xsd2KcKcKcPic_MC,
+    Xsd2KcKcK0Pi0_MC,
+    other,
+    MAX_NUM_DECAYMODE_MC
+};
+
+bool TrueIfDecayModeMatch_MC(double Decay[N_decay], DecayModeMC decaymodeMC) {
+
+    switch (decaymodeMC) {
+    case Xsu2Kc_MC:
+        if (Decay[0] > 0) return true;
+        return false;
+        break;
+    case Xsu2Kcstar2KcPi0_MC:
+        if (Decay[2] > 0) return true;
+        return false;
+        break;
+    case Xsu2Kcstar2K0Pic_MC:
+        if (Decay[1] > 0) return true;
+        return false;
+        break;
+    case Xsu2KcPi0_MC:
+        if (Decay[5] > 0) return true;
+        return false;
+        break;
+    case Xsu2K0Pic_MC:
+        if (Decay[6] > 0) return true;
+        return false;
+        break;
+    case Xsu2KcPicPic_MC:
+        if (Decay[7] > 0) return true;
+        return false;
+        break;
+    case Xsu2K0PicPi0_MC:
+        if (Decay[8] > 0) return true;
+        return false;
+        break;
+    case Xsu2KcPicPicPi0_MC:
+        if (Decay[9] > 0) return true;
+        return false;
+        break;
+    case Xsu2K0PicPicPic_MC:
+        if (Decay[10] > 0) return true;
+        return false;
+        break;
+    case Xsu2KcPicPicPicPic_MC:
+        if (Decay[11] > 0) return true;
+        return false;
+        break;
+    case Xsu2K0PicPicPicPi0_MC:
+        if (Decay[12] > 0) return true;
+        return false;
+        break;
+    case Xsu2KcPi0Pi0_MC:
+        if (Decay[13] > 0) return true;
+        return false;
+        break;
+    case Xsu2K0PicPi0Pi0_MC:
+        if (Decay[14] > 0) return true;
+        return false;
+        break;
+    case Xsu2KcPicPicPi0Pi0_MC:
+        if (Decay[15] > 0) return true;
+        return false;
+        break;
+    case Xsu2KcKcKc_MC:
+        if (Decay[16] > 0) return true;
+        return false;
+        break;
+    case Xsu2KcKcK0Pic_MC:
+        if (Decay[17] > 0) return true;
+        return false;
+        break;
+    case Xsu2KcKcKcPi0_MC:
+        if (Decay[18] > 0) return true;
+        return false;
+        break;
+    case Xsd2K0_MC:
+        if (Decay[19] > 0) return true;
+        return false;
+        break;
+    case Xsd2K0star2KcPic_MC:
+        if (Decay[20] > 0) return true;
+        return false;
+        break;
+    case Xsd2K0star2K0Pi0_MC:
+        if (Decay[21] > 0) return true;
+        return false;
+        break;
+    case Xsd2KcPic_MC:
+        if (Decay[24] > 0) return true;
+        return false;
+        break;
+    case Xsd2K0Pi0_MC:
+        if (Decay[25] > 0) return true;
+        return false;
+        break;
+    case Xsd2KcPicPi0_MC:
+        if (Decay[26] > 0) return true;
+        return false;
+        break;
+    case Xsd2K0PicPic_MC:
+        if (Decay[27] > 0) return true;
+        return false;
+        break;
+    case Xsd2KcPicPicPic_MC:
+        if (Decay[28] > 0) return true;
+        return false;
+        break;
+    case Xsd2K0PicPicPi0_MC:
+        if (Decay[29] > 0) return true;
+        return false;
+        break;
+    case Xsd2KcPicPicPicPi0_MC:
+        if (Decay[30] > 0) return true;
+        return false;
+        break;
+    case Xsd2K0PicPicPicPic_MC:
+        if (Decay[31] > 0) return true;
+        return false;
+        break;
+    case Xsd2K0Pi0Pi0_MC:
+        if (Decay[32] > 0) return true;
+        return false;
+        break;
+    case Xsd2KcPicPi0Pi0_MC:
+        if (Decay[33] > 0) return true;
+        return false;
+        break;
+    case Xsd2K0PicPicPi0Pi0_MC:
+        if (Decay[34] > 0) return true;
+        return false;
+        break;
+    case Xsd2KcKcK0_MC:
+        if (Decay[35] > 0) return true;
+        return false;
+        break;
+    case Xsd2KcKcKcPic_MC:
+        if (Decay[36] > 0) return true;
+        return false;
+        break;
+    case Xsd2KcKcK0Pi0_MC:
+        if (Decay[37] > 0) return true;
+        return false;
+        break;
+    case other:
+        return true;
+        break;
+    default:
+        printf("ERROR! Input value of TrueIfDecayModeMatch_MC is not appropriate\n");
+        exit(1);
+        break;
+    }
+
+    printf("ERROR! Input value of TrueIfDecayModeMatch_MC is not appropriate\n");
+    exit(1);
+    return false;
+}
+
+void LetsFill(const char* dirname, double Decay_num[MAX_NUM_DECAYMODE_MC], double weight = 1) {
+    double var = 0;
+
+    std::vector<string> names;
+    load_files(dirname, &names);
+
+    double Decay[N_decay] = { 0.0 };
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_Xs = (TTree*)input_file->Get("Xs");
+
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clcomb__bc", &Decay[3]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch1__bc", &Decay[4]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch2__bc", &Decay[5]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch3__bc", &Decay[6]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch4__bc", &Decay[7]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch5__bc", &Decay[8]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch6__bc", &Decay[9]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch7__bc", &Decay[10]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch8__bc", &Decay[11]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch9__bc", &Decay[12]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch10__bc", &Decay[13]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch11__bc", &Decay[14]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch12__bc", &Decay[15]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch13__bc", &Decay[16]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch14__bc", &Decay[17]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch15__bc", &Decay[18]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &Decay[19]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &Decay[20]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay[21]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clcomb__bc", &Decay[22]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch16__bc", &Decay[23]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch17__bc", &Decay[24]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch18__bc", &Decay[25]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch19__bc", &Decay[26]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch20__bc", &Decay[27]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch21__bc", &Decay[28]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch22__bc", &Decay[29]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch23__bc", &Decay[30]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch24__bc", &Decay[31]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch25__bc", &Decay[32]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch26__bc", &Decay[33]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch27__bc", &Decay[34]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch28__bc", &Decay[35]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch29__bc", &Decay[36]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch30__bc", &Decay[37]);
+
+        printf("%lld entries...\n", tree_Xs->GetEntries());
+        for (unsigned int j = 0; j < tree_Xs->GetEntries(); j++) { // Fill
+            tree_Xs->GetEntry(j);
+
+            int decaymodeid_MC = -1;
+
+            for (int j = 0; j < MAX_NUM_DECAYMODE_MC; j++) { // find MC decay mode
+                if (TrueIfDecayModeMatch_MC(Decay, static_cast<DecayModeMC>(j))) {
+                    decaymodeid_MC = j;
+                    break;
+                }
+            }
+            if (decaymodeid_MC == MAX_NUM_DECAYMODE_MC) {
+                printf("ERROR! MC decay id cannot be found\n");
+                exit(1);
+            }
+
+            Decay_num[decaymodeid_MC] = Decay_num[decaymodeid_MC] + weight;
+
+        }
+        input_file->Close();
+
+    }
+
+}
+
+int fragmentation_counter(){
+
+    std::vector<string> names;
+    const char* Xsununu_dirname = "/home/jwpark/storage/20220114_SIGNAL_Count_decay/Xsununu";
+    const char* Xsdnunu_dirname = "/home/jwpark/storage/20220114_SIGNAL_Count_decay/Xsdnunu";
+
+    double Decay_num[MAX_NUM_DECAYMODE_MC] = { 0.0 };
+
+    LetsFill(Xsununu_dirname, Decay_num, Scale_Xsu_nonresonant);
+    LetsFill(Xsdnunu_dirname, Decay_num, Scale_Xsd_nonresonant);
+
+    double total_num = 0;
+    for (int i = 0; i < MAX_NUM_DECAYMODE_MC; i++) total_num = total_num + Decay_num[i];
+
+    printf("type a: %lf%%\n", (Decay_num[Xsu2K0Pic_MC] + Decay_num[Xsd2KcPic_MC]) / total_num);
+    printf("type b: %lf%%\n", (Decay_num[Xsu2KcPi0_MC] + Decay_num[Xsd2K0Pi0_MC]) / total_num);
+    printf("type c: %lf%%\n", (Decay_num[Xsu2KcPicPic_MC] + Decay_num[Xsd2K0PicPic_MC]) / total_num);
+    printf("type d: %lf%%\n", (Decay_num[Xsu2K0PicPi0_MC] + Decay_num[Xsd2KcPicPi0_MC]) / total_num);
+    printf("type e: %lf%%\n", (Decay_num[Xsu2K0PicPicPic_MC] + Decay_num[Xsd2KcPicPicPic_MC]) / total_num);
+    printf("type f: %lf%%\n", (Decay_num[Xsu2KcPicPicPi0_MC] + Decay_num[Xsd2K0PicPicPi0_MC]) / total_num);
+    printf("type g: %lf%%\n", (Decay_num[Xsu2KcPicPicPicPic_MC] + Decay_num[Xsu2K0PicPicPicPi0_MC] + Decay_num[Xsd2K0PicPicPicPic_MC] + Decay_num[Xsd2KcPicPicPicPi0_MC]) / total_num);
+
+    return 0;
+}
