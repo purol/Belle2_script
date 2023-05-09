@@ -1,6 +1,13 @@
 // last update: 2022-07-16
 // for Belle2 data
 
+# define N_Needed_info 37
+# define N_event_info 15
+# define N_Upsilon_info 55
+# define N_Bsig_info 81
+# define N_Btag_info 9
+# define N_decay 48 // five decay mode + others + 10 variables for systematics
+
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
@@ -135,7 +142,7 @@ enum DecayModeMC { // MC level
     MAX_NUM_DECAYMODE_MC
 };
 
-bool TrueIfDecayModeMatch_MC(double Decay[N_decay], DecayModeMC decaymodeMC) {
+bool TrueIfDecayModeMatch_MC(int Decay[N_decay], DecayModeMC decaymodeMC) {
 
     switch (decaymodeMC) {
     case Xsu2Kc_MC:
@@ -294,7 +301,7 @@ void LetsFill(const char* dirname, double Decay_num[MAX_NUM_DECAYMODE_MC], doubl
     std::vector<string> names;
     load_files(dirname, &names);
 
-    double Decay[N_decay] = { 0.0 };
+    int Decay[N_decay] = { 0 };
 
     for (unsigned int i = 0; i < names.size(); i++) {
 
@@ -382,13 +389,13 @@ int fragmentation_counter(){
     double total_num = 0;
     for (int i = 0; i < MAX_NUM_DECAYMODE_MC; i++) total_num = total_num + Decay_num[i];
 
-    printf("type a: %lf%%\n", (Decay_num[Xsu2K0Pic_MC] + Decay_num[Xsd2KcPic_MC]) / total_num);
-    printf("type b: %lf%%\n", (Decay_num[Xsu2KcPi0_MC] + Decay_num[Xsd2K0Pi0_MC]) / total_num);
-    printf("type c: %lf%%\n", (Decay_num[Xsu2KcPicPic_MC] + Decay_num[Xsd2K0PicPic_MC]) / total_num);
-    printf("type d: %lf%%\n", (Decay_num[Xsu2K0PicPi0_MC] + Decay_num[Xsd2KcPicPi0_MC]) / total_num);
-    printf("type e: %lf%%\n", (Decay_num[Xsu2K0PicPicPic_MC] + Decay_num[Xsd2KcPicPicPic_MC]) / total_num);
-    printf("type f: %lf%%\n", (Decay_num[Xsu2KcPicPicPi0_MC] + Decay_num[Xsd2K0PicPicPi0_MC]) / total_num);
-    printf("type g: %lf%%\n", (Decay_num[Xsu2KcPicPicPicPic_MC] + Decay_num[Xsu2K0PicPicPicPi0_MC] + Decay_num[Xsd2K0PicPicPicPic_MC] + Decay_num[Xsd2KcPicPicPicPi0_MC]) / total_num);
+    printf("type a: %lf%%\n", 100.0 * (Decay_num[Xsu2K0Pic_MC] + Decay_num[Xsd2KcPic_MC]) / total_num);
+    printf("type b: %lf%%\n", 100.0 * (Decay_num[Xsu2KcPi0_MC] + Decay_num[Xsd2K0Pi0_MC]) / total_num);
+    printf("type c: %lf%%\n", 100.0 * (Decay_num[Xsu2KcPicPic_MC] + Decay_num[Xsd2K0PicPic_MC]) / total_num);
+    printf("type d: %lf%%\n", 100.0 * (Decay_num[Xsu2K0PicPi0_MC] + Decay_num[Xsd2KcPicPi0_MC]) / total_num);
+    printf("type e: %lf%%\n", 100.0 * (Decay_num[Xsu2K0PicPicPic_MC] + Decay_num[Xsd2KcPicPicPic_MC]) / total_num);
+    printf("type f: %lf%%\n", 100.0 * (Decay_num[Xsu2KcPicPicPi0_MC] + Decay_num[Xsd2K0PicPicPi0_MC]) / total_num);
+    printf("type g: %lf%%\n", 100.0 * (Decay_num[Xsu2KcPicPicPicPic_MC] + Decay_num[Xsu2K0PicPicPicPi0_MC] + Decay_num[Xsd2K0PicPicPicPic_MC] + Decay_num[Xsd2KcPicPicPicPi0_MC]) / total_num);
 
     return 0;
 }

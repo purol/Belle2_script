@@ -1326,7 +1326,7 @@ void THStack_plot_Jpsi() {
         signal_hist[k] = new TH1D("signal", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;MC/data", bins, min, max);
+        Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;data/MC", bins, min, max);
     }
 
     int index = std::find(variable_names.begin(), variable_names.end(), std::string("log_{10}SignalProbability")) - variable_names.begin();
@@ -1403,7 +1403,7 @@ void THStack_plot_Jpsi() {
         Stack[k]->Add(signal_hist[k]);
 
         Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
-        Ratio_hist[k]->Divide(stat_error_hist[k], data_hist[k]);
+        Ratio_hist[k]->Divide(data_hist[k], stat_error_hist[k]);
 
         TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
