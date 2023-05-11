@@ -96,13 +96,9 @@ for i in range(0,30):
         else:
             cross_feed[i][j] = 0
 
-print(values[22][22])
-print(values[20][20])
-print(values[20][22])
-print(Efficiency[20][22])
-print(Efficiency_diagonal[22])
-print(cross_feed[20][22])
+
 print(Efficiency_diagonal[0])
+
 
 reco_list.reverse()
 Efficiency_diagonal.reverse()

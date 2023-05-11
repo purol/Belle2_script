@@ -7,6 +7,8 @@ import seaborn as sn
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from matplotlib.ticker import FixedLocator
+
 # BR
 file_BR_corr_all = "BR_corr_all.txt"
 file_BR_corr_partial = "BR_corr_partial.txt"
@@ -17,6 +19,14 @@ BR_corr_partial = np.loadtxt(file_BR_corr_partial, dtype=float)
 ar = np.array(BR_corr_all)
 ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[])#, vmin=-0.3, vmax=1.0)
 ax.tick_params(left=False, bottom=False)
+
+labels = ["CHG", "MIX"]
+ticks = [0, 6, 12]
+ax.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
+ax.set_yticklabels(labels, rotation=90, va="center")
+ax.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
+ax.set_xticklabels(labels, rotation=0)
+
 #plt.show()
 plt.savefig('BR_corr_all.png')
 
@@ -25,6 +35,14 @@ plt.clf()
 ar_p = np.array(BR_corr_partial)
 ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[])#, vmin=0.0, vmax=0.0001)
 ax_p.tick_params(left=False, bottom=False)
+
+labels = ["CHG", "MIX"]
+ticks = [0, 6, 12]
+ax_p.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
+ax_p.set_yticklabels(labels, rotation=90, va="center")
+ax_p.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
+ax_p.set_xticklabels(labels, rotation=0)
+
 #plt.show()
 plt.savefig('BR_corr_partial.png')
 
