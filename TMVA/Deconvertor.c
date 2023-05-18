@@ -14,12 +14,14 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 # define N_Needed_info 37
 //# define N_event_info 15
 # define N_Upsilon_info 66
-# define N_Bsig_info 371
+# define N_Bsig_info 738
 # define N_Btag_info 11
 # define N_decay 38 // five decay mode + others
 # define N_decay_nparticles 5 // # of nu_e, B, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
 # define N_PID_syst 73
+# define N_fakeE_syst 37
+# define N_fakeMU_syst 49
 # define N_pi0_syst 8
 
 // small: temp_BB_output > 0.6 && temp_Continuum_output > 0.94
@@ -244,10 +246,18 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                 temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[67 + 4 * i_PID + 3]);
             }
             for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_BsigDataToTree[359 + i_pi0]);
-            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKfrome", &temp_BsigDataToTree[367]);
-            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKfrommu", &temp_BsigDataToTree[368]);
-            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_npifrome", &temp_BsigDataToTree[369]);
-            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_npifrommu", &temp_BsigDataToTree[370]);
+            for (int i_PID = 0; i_PID < N_fakeE_syst; i_PID++) {
+                temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID]);
+                temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID + 1]);
+                temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID + 2]);
+                temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID + 3]);
+            }
+            for (int i_PID = 0; i_PID < N_fakeMU_syst; i_PID++) {
+                temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID]);
+                temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 1]);
+                temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 2]);
+                temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
+            }
 
             // get Btag_info
             temp_tree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -551,10 +561,18 @@ void Deconvertor(const char* dirname, double OBB, double OContinuum){
                 temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[67 + 4 * i_PID + 3]);
             }
             for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_BsigDataToTree[359 + i_pi0]);
-            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKfrome", &temp_BsigDataToTree[367]);
-            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nKfrommu", &temp_BsigDataToTree[368]);
-            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_npifrome", &temp_BsigDataToTree[369]);
-            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_npifrommu", &temp_BsigDataToTree[370]);
+            for (int i_PID = 0; i_PID < N_fakeE_syst; i_PID++) {
+                temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID]);
+                temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID + 1]);
+                temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID + 2]);
+                temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID + 3]);
+            }
+            for (int i_PID = 0; i_PID < N_fakeMU_syst; i_PID++) {
+                temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID]);
+                temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 1]);
+                temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 2]);
+                temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
+            }
 
             // get Btag_info
             temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
