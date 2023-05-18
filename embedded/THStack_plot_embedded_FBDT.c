@@ -339,6 +339,12 @@ void ReadFakePIDFile() {
 
             PID_fakeE_correction[1][bin] = temp_data_MC_ratio;
             PID_fakeE_uncer[1][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeE_correction[1][bin]) < MyEPSILON) {
+                PID_fakeE_correction[1][bin] = 1.0;
+                PID_fakeE_uncer[1][bin] = 0.0;
+            }
+
         }
         else if (temp_charge == '-') {
             double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
@@ -346,6 +352,12 @@ void ReadFakePIDFile() {
 
             PID_fakeE_correction[0][bin] = temp_data_MC_ratio;
             PID_fakeE_uncer[0][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeE_correction[0][bin]) < MyEPSILON) {
+                PID_fakeE_correction[0][bin] = 1.0;
+                PID_fakeE_uncer[0][bin] = 0.0;
+            }
+
         }
         else {
             printf("[ERROR] unknown charge!\n");
@@ -389,6 +401,12 @@ void ReadFakePIDFile() {
 
             PID_fakeE_correction[3][bin] = temp_data_MC_ratio;
             PID_fakeE_uncer[3][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeE_correction[3][bin]) < MyEPSILON) {
+                PID_fakeE_correction[3][bin] = 1.0;
+                PID_fakeE_uncer[3][bin] = 0.0;
+            }
+
         }
         else if (temp_charge == '-') {
             double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
@@ -396,6 +414,12 @@ void ReadFakePIDFile() {
 
             PID_fakeE_correction[2][bin] = temp_data_MC_ratio;
             PID_fakeE_uncer[2][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeE_correction[2][bin]) < MyEPSILON) {
+                PID_fakeE_correction[2][bin] = 1.0;
+                PID_fakeE_uncer[2][bin] = 0.0;
+            }
+
         }
         else {
             printf("[ERROR] unknown charge!\n");
@@ -441,6 +465,12 @@ void ReadFakePIDFile() {
 
             PID_fakeMU_correction[1][bin] = temp_data_MC_ratio;
             PID_fakeMU_uncer[1][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeMU_correction[1][bin]) < MyEPSILON) {
+                PID_fakeMU_correction[1][bin] = 1.0;
+                PID_fakeMU_uncer[1][bin] = 0.0;
+            }
+
         }
         else if (temp_charge == '-') {
             double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
@@ -448,6 +478,12 @@ void ReadFakePIDFile() {
 
             PID_fakeMU_correction[0][bin] = temp_data_MC_ratio;
             PID_fakeMU_uncer[0][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeMU_correction[0][bin]) < MyEPSILON) {
+                PID_fakeMU_correction[0][bin] = 1.0;
+                PID_fakeMU_uncer[0][bin] = 0.0;
+            }
+
         }
         else {
             printf("[ERROR] unknown charge!\n");
@@ -493,6 +529,12 @@ void ReadFakePIDFile() {
 
             PID_fakeMU_correction[3][bin] = temp_data_MC_ratio;
             PID_fakeMU_uncer[3][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeMU_correction[3][bin]) < MyEPSILON) {
+                PID_fakeMU_correction[3][bin] = 1.0;
+                PID_fakeMU_uncer[3][bin] = 0.0;
+            }
+
         }
         else if (temp_charge == '-') {
             double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
@@ -500,6 +542,12 @@ void ReadFakePIDFile() {
 
             PID_fakeMU_correction[2][bin] = temp_data_MC_ratio;
             PID_fakeMU_uncer[2][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeMU_correction[2][bin]) < MyEPSILON) {
+                PID_fakeMU_correction[2][bin] = 1.0;
+                PID_fakeMU_uncer[2][bin] = 0.0;
+            }
+
         }
         else {
             printf("[ERROR] unknown charge!\n");
