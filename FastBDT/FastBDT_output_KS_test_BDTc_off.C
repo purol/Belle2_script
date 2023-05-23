@@ -51,33 +51,33 @@ using namespace RooFit ;
 # define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
 # define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
 
-// BKG MC sample number (0.8/ab for BB, 1.0/ab for qq)
-# define N_CHG_test 32042497.0
-# define N_MIX_test 24693710.0
-# define N_UUBAR_test 94447089.0
-# define N_DDBAR_test 22664556.0
-# define N_SSBAR_test 19244661.0
-# define N_CHARM_test 107541168.0
-# define N_CHG_train 48052238.0
-# define N_MIX_train 37030486.0
-# define N_UUBAR_train 141671998.0
-# define N_DDBAR_train 34114182.0
-# define N_SSBAR_train 28859338.0
-# define N_CHARM_train 161280679.0
+// BKG MC sample number (2.8/ab for BB, 1.0/ab for qq)
+# define N_CHG_test 139768443.0
+# define N_MIX_test 104591690.0
+# define N_UUBAR_test 107641351.0
+# define N_DDBAR_test 25588403.0
+# define N_SSBAR_test 20668794.0
+# define N_CHARM_test 116108850.0
+# define N_CHG_train 151915459.0
+# define N_MIX_train 120136353.0
+# define N_UUBAR_train 158509639.0
+# define N_DDBAR_train 38644413.0
+# define N_SSBAR_train 31001866.0
+# define N_CHARM_train 174901296.0
 
-// scale factor for BKG MC sample (364.436/fb)
-# define Scale_CHG_train ((0.364436/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_train)
-# define Scale_MIX_train ((0.364436/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_train)
-# define Scale_UUBAR_train ((0.364436/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_train)
-# define Scale_DDBAR_train ((0.364436/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_train)
-# define Scale_SSBAR_train ((0.364436/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_train)
-# define Scale_CHARM_train ((0.364436/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_train)
-# define Scale_CHG_test ((0.364436/0.8)*(N_CHG_train + N_CHG_test)/ N_CHG_test)
-# define Scale_MIX_test ((0.364436/0.8)*(N_MIX_train + N_MIX_test)/ N_MIX_test)
-# define Scale_UUBAR_test ((0.364436/1.0)*(N_UUBAR_train + N_UUBAR_test)/ N_UUBAR_test)
-# define Scale_DDBAR_test ((0.364436/1.0)*(N_DDBAR_train + N_DDBAR_test)/ N_DDBAR_test)
-# define Scale_SSBAR_test ((0.364436/1.0)*(N_SSBAR_train + N_SSBAR_test)/ N_SSBAR_test)
-# define Scale_CHARM_test ((0.364436/1.0)*(N_CHARM_train + N_CHARM_test)/ N_CHARM_test)
+// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb), until LS1
+# define Scale_CHG_train ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab * (N_CHG_train / (N_CHG_train + N_CHG_test)) ))
+# define Scale_MIX_train ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab * (N_MIX_train / (N_MIX_train + N_MIX_test)) ))
+# define Scale_UUBAR_train (0.361673/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_train (0.361673/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_train (0.361673/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_train (0.361673/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_CHG_test ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab * (N_CHG_test / (N_CHG_train + N_CHG_test)) ))
+# define Scale_MIX_test ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab * (N_MIX_test / (N_MIX_train + N_MIX_test)) ))
+# define Scale_UUBAR_test (0.361673/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
 
 void load_files(const char* dirname, std::vector<string>* names) {
     TSystemDirectory dir(dirname, dirname);
