@@ -89,18 +89,18 @@ using std::to_string;
 # define Scale_Xsd_nonresonant_test (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_test)
 
 // BKG MC sample number (2.8/ab for BB, 1.0/ab for qq)
-# define N_CHG_test 135437652.0
-# define N_MIX_test 104176964.0
-# define N_UUBAR_test 106465323.0
-# define N_DDBAR_test 25669347.0
-# define N_SSBAR_test 20666484.0
-# define N_CHARM_test 116381155.0
-# define N_CHG_train 156250364.0
-# define N_MIX_train 120553880.0
-# define N_UUBAR_train 159685667.0
-# define N_DDBAR_train 38563469.0
-# define N_SSBAR_train 31004176.0
-# define N_CHARM_train 174628991.0
+# define N_CHG_test 139768443.0
+# define N_MIX_test 104591690.0
+# define N_UUBAR_test 107641351.0
+# define N_DDBAR_test 25588403.0
+# define N_SSBAR_test 20668794.0
+# define N_CHARM_test 116108850.0
+# define N_CHG_train 151915459.0
+# define N_MIX_train 120136353.0
+# define N_UUBAR_train 158509639.0
+# define N_DDBAR_train 38644413.0
+# define N_SSBAR_train 31001866.0
+# define N_CHARM_train 174901296.0
 
 // new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb), until LS1
 # define Scale_CHG_train ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab * (N_CHG_train / (N_CHG_train + N_CHG_test)) ))
