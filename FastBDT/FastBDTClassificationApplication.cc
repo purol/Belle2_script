@@ -1,13 +1,16 @@
 # define N_Needed_info 37
 //# define N_event_info 15
 # define N_Upsilon_info 66
-# define N_Bsig_info 371
+# define N_Bsig_info 738
 # define N_Btag_info 11
 # define N_decay 38 // five decay mode + others
-# define N_decay_nparticles 5 // # of nu_e, B, B0
+# define N_decay_nparticles 5 // # of nu_e, B->Xs nu_e nu_e_bar, B0->Xs nu_e nu_e_bar, B+-, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
 # define N_PID_syst 73
+# define N_fakeE_syst 37
+# define N_fakeMU_syst 49
 # define N_pi0_syst 8
+# define index_q2 0
 
 
 #include <cstdlib>
@@ -251,10 +254,18 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        theTree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[67 + 4 * i_PID + 3]);
    }
    for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) theTree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_BsigDataToTree[359 + i_pi0]);
-   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKfrome", &temp_BsigDataToTree[367]);
-   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nKfrommu", &temp_BsigDataToTree[368]);
-   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_npifrome", &temp_BsigDataToTree[369]);
-   theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_npifrommu", &temp_BsigDataToTree[370]);
+   for (int i_PID = 0; i_PID < N_fakeE_syst; i_PID++) {
+       theTree->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID]);
+       theTree->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID + 1]);
+       theTree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID + 2]);
+       theTree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID + 3]);
+   }
+   for (int i_PID = 0; i_PID < N_fakeMU_syst; i_PID++) {
+       theTree->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID]);
+       theTree->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 1]);
+       theTree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 2]);
+       theTree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
+   }
 
    // get Btag_info
    theTree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -357,7 +368,7 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        theTree->SetBranchAddress("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
        theTree->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &temp_DecayNparticlesDataToTree[3]);
        theTree->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &temp_DecayNparticlesDataToTree[4]);
-       theTree->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[0]);
+       theTree->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp_DecaySystFFDataToTree[index_q2]);
        theTree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[1]);
        theTree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &temp_DecaySystFFDataToTree[2]);
        theTree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[3]);
@@ -529,10 +540,18 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
        temp_tree->Branch(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[67 + 4 * i_PID + 3]);
    }
    for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) temp_tree->Branch(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_BsigDataToTree[359 + i_pi0]);
-   temp_tree->Branch("Bsig_daughter_0_extraInfo_nKfrome", &temp_BsigDataToTree[367]);
-   temp_tree->Branch("Bsig_daughter_0_extraInfo_nKfrommu", &temp_BsigDataToTree[368]);
-   temp_tree->Branch("Bsig_daughter_0_extraInfo_npifrome", &temp_BsigDataToTree[369]);
-   temp_tree->Branch("Bsig_daughter_0_extraInfo_npifrommu", &temp_BsigDataToTree[370]);
+   for (int i_PID = 0; i_PID < N_fakeE_syst; i_PID++) {
+       temp_tree->Branch(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID]);
+       temp_tree->Branch(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID + 1]);
+       temp_tree->Branch(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID + 2]);
+       temp_tree->Branch(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[367 + 4 * i_PID + 3]);
+   }
+   for (int i_PID = 0; i_PID < N_fakeMU_syst; i_PID++) {
+       temp_tree->Branch(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID]);
+       temp_tree->Branch(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 1]);
+       temp_tree->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 2]);
+       temp_tree->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
+   }
 
    // get Btag_info
    temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
