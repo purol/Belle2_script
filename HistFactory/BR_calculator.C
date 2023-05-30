@@ -205,6 +205,38 @@ const double pi0_sys_uncer2[N_pi0_syst] = {
     0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0
 };
 
+// define struct and sorting function for a binary search
+typedef struct EventInformation {
+    double experiment;
+    double run;
+    double event;
+    double candidate;
+    double ncandidates;
+    int DMID1;
+    int DMID2;
+} EvtInfo;
+
+bool compare(EvtInfo first, EvtInfo second) {
+    if (first.experiment > second.experiment) return true;
+    else if (first.experiment < second.experiment) return false;
+    else {
+        if (first.run > second.run) return true;
+        else if (first.run < second.run) return false;
+        else {
+            if (first.event > second.event) return true;
+            else if (first.event < second.event) return false;
+            else {
+                if (first.candidate > second.candidate) return true;
+                else if (first.candidate < second.candidate) return false;
+                else {
+                    if (first.ncandidates > second.ncandidates) return true;
+                    else return false;
+                }
+            }
+        }
+    }
+}
+
 class Corrector {
 private:
     const int STEP;
@@ -364,13 +396,7 @@ double Corrector::GetCorrectionFactor(double q2, std::string type) {
     return 0;
 }
 
-std::vector<double> Evt_experiments;
-std::vector<double> Evt_runs;
-std::vector<double> Evt_events;
-std::vector<double> Evt_candidate;
-std::vector<double> Evt_ncandidatess;
-std::vector<int> Evt_DMID1s;
-std::vector<int> Evt_DMID2s;
+std::vector<EvtInfo> EvtInfos;
 
 struct _BRuncertainty {
     std::vector<int> DMID;
@@ -1122,13 +1148,9 @@ void ReadEvtFile() {
             exit(1);
         }
 
-        Evt_experiments.push_back(temp_experiment);
-        Evt_runs.push_back(temp_run);
-        Evt_events.push_back(temp_event);
-        Evt_candidate.push_back(temp_candidate);
-        Evt_ncandidatess.push_back(temp_ncandidates);
-        Evt_DMID1s.push_back(temp_DMID1);
-        Evt_DMID2s.push_back(temp_DMID2);
+        EvtInfo temp_EvtInfo = { temp_experiment, temp_run, temp_event, temp_candidate, temp_ncandidates, temp_DMID1, temp_DMID2 };
+        EvtInfos.push_back(temp_EvtInfo);
+
     }
 
     while (true) {
@@ -1145,13 +1167,9 @@ void ReadEvtFile() {
             exit(1);
         }
 
-        Evt_experiments.push_back(temp_experiment);
-        Evt_runs.push_back(temp_run);
-        Evt_events.push_back(temp_event);
-        Evt_candidate.push_back(temp_candidate);
-        Evt_ncandidatess.push_back(temp_ncandidates);
-        Evt_DMID1s.push_back(temp_DMID1);
-        Evt_DMID2s.push_back(temp_DMID2);
+        EvtInfo temp_EvtInfo = { temp_experiment, temp_run, temp_event, temp_candidate, temp_ncandidates, temp_DMID1, temp_DMID2 };
+        EvtInfos.push_back(temp_EvtInfo);
+
     }
 
     while (true) {
@@ -1168,14 +1186,12 @@ void ReadEvtFile() {
             exit(1);
         }
 
-        Evt_experiments.push_back(temp_experiment);
-        Evt_runs.push_back(temp_run);
-        Evt_events.push_back(temp_event);
-        Evt_candidate.push_back(temp_candidate);
-        Evt_ncandidatess.push_back(temp_ncandidates);
-        Evt_DMID1s.push_back(temp_DMID1);
-        Evt_DMID2s.push_back(temp_DMID2);
+        EvtInfo temp_EvtInfo = { temp_experiment, temp_run, temp_event, temp_candidate, temp_ncandidates, temp_DMID1, temp_DMID2 };
+        EvtInfos.push_back(temp_EvtInfo);
+
     }
+
+    sort(EvtInfos.begin(), EvtInfos.end(), compare);
 
     fclose(fp_CHG_Evt);
     fclose(fp_MIX_Evt);
@@ -1193,8 +1209,13 @@ double GetBRRelativeUncertainty(int experiment, int run, int event, int candidat
         }
     }
 
-    if ((temp_Evt_DMID1 == -100) || (temp_Evt_DMID2 == -100)) {
-        printf("[GetBRRelativeUncertainty] improper DM ID\n");
+    EvtInfo temp_EvtInfo = { experiment, run, event, candidate, ncandidates, -100, -100 };
+    int temp_index = lower_bound(EvtInfos.begin(), EvtInfos.end(), temp_EvtInfo) - EvtInfos.begin();
+    temp_Evt_DMID1 = EvtInfos.at(temp_index).DMID1;
+    temp_Evt_DMID2 = EvtInfos.at(temp_index).DMID2;
+
+    if ( !((experiment == EvtInfos.at(temp_index).experiment) && (run == EvtInfos.at(temp_index).run) && (event == EvtInfos.at(temp_index).event) && (candidate == EvtInfos.at(temp_index).candidate) && (ncandidates == EvtInfos.at(temp_index).ncandidates)) ) {
+        printf("[GetBRRelativeUncertainty] Cannot find!\n");
         exit(1);
     }
 
