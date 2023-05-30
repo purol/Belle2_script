@@ -797,7 +797,7 @@ double GetNtracks(double Upsilon_ID, double Bsig_ID) {
     return -1.0;
 }
 
-void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_nominal[RarityBins * 2], double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_nominal[RarityBins * 3], double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -814,6 +814,7 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
 
     if (strcmp(sample, "CHG") == 0) {}
     else if (strcmp(sample, "MIX") == 0) {}
+    else if (strcmp(sample, "SIGNAL") == 0) {}
     else {
         printf("[ERROR] unexpected sample name\n");
         exit(1);
@@ -927,6 +928,7 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
     
     if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
     else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
+    else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 2;
 
     for (int i = 0; i < RarityBins; i++) {
         Nevt_nominal[ArrayBinID * RarityBins + i] = Nevt_nominal[ArrayBinID * RarityBins + i] + hist->GetBinContent(i + 1);
@@ -935,7 +937,7 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
     return;
 }
 
-void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 2], int ToyNum, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 3], int ToyNum, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -952,6 +954,7 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
 
     if (strcmp(sample, "CHG") == 0) {}
     else if (strcmp(sample, "MIX") == 0) {}
+    else if (strcmp(sample, "SIGNAL") == 0) {}
     else {
         printf("[ERROR] unexpected sample name\n");
         exit(1);
@@ -1079,6 +1082,7 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
 
     if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
     else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
+    else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 2;
 
     for (int i = 0; i < RarityBins; i++) {
         Nevt_fluc[ToyNum][ArrayBinID * RarityBins + i] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins + i] + hist->GetBinContent(i + 1);
@@ -1613,10 +1617,10 @@ void BR_calculator()
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
-    double Nevt_nominal[RarityBins * 2] = { 0.0 }; // CHG MIX
-    double Nevt_fluc[NToys][RarityBins * 2] = { 0.0 }; // CHG MIX
-    double Relative_Uncertainty[NToys][RarityBins * 2] = { 0.0 };
-    double Covariance[RarityBins * 2][RarityBins * 2] = { 0.0 };
+    double Nevt_nominal[RarityBins * 3] = { 0.0 }; // CHG MIX SIGNAL
+    double Nevt_fluc[NToys][RarityBins * 3] = { 0.0 }; // CHG MIX SIGNAL
+    double Relative_Uncertainty[NToys][RarityBins * 3] = { 0.0 };
+    double Covariance[RarityBins * 3][RarityBins * 3] = { 0.0 };
 
     /* ====================================== */
     // Seting CDF module
@@ -1659,6 +1663,19 @@ void BR_calculator()
 
     /* ====================================== */
     // get nominal Nevt
+    GetNominalNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Kplus_test, "B2Knunu");
+    temp_hist->Reset();
+    GetNominalNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Kplusstar_test, "otherwise");
+    temp_hist->Reset();
+    GetNominalNevt(MC_dirname_Xsununu, temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Xsu_nonresonant_test, "otherwise");
+    temp_hist->Reset();
+    GetNominalNevt(MC_dirname_K0nunu, temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_K0_test, "B02K0nunu");
+    temp_hist->Reset();
+    GetNominalNevt(MC_dirname_K0starnunu, temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_K0star_test, "otherwise");
+    temp_hist->Reset();
+    GetNominalNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_Xsd_nonresonant_test, "otherwise");
+    temp_hist->Reset();
+
     GetNominalNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_nominal, Scale_CHG_test, "otherwise");
     temp_hist->Reset();
     GetNominalNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_nominal, Scale_MIX_test, "otherwise");
@@ -1672,6 +1689,19 @@ void BR_calculator()
     for (int i = 0; i < NToys; i++) {
         FluctuateBBBR();
 
+        GetFlucNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc, i, Scale_Kplus_test, "B2Knunu");
+        temp_hist->Reset();
+        GetFlucNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc, i, Scale_Kplusstar_test, "otherwise");
+        temp_hist->Reset();
+        GetFlucNevt(MC_dirname_Xsununu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc, i, Scale_Xsu_nonresonant_test, "otherwise");
+        temp_hist->Reset();
+        GetFlucNevt(MC_dirname_K0nunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc, i, Scale_K0_test, "B02K0nunu");
+        temp_hist->Reset();
+        GetFlucNevt(MC_dirname_K0starnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc, i, Scale_K0star_test, "otherwise");
+        temp_hist->Reset();
+        GetFlucNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc, i, Scale_Xsd_nonresonant_test, "otherwise");
+        temp_hist->Reset();
+
         GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc, i, Scale_CHG_test, "otherwise");
         temp_hist->Reset();
         GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc, i, Scale_MIX_test, "otherwise");
@@ -1684,7 +1714,7 @@ void BR_calculator()
     /* ====================================== */
     // get relative uncertainty
     for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 2; j++) {
+        for (int j = 0; j < RarityBins * 3; j++) {
             if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty[i][j] = 1.0;
             else Relative_Uncertainty[i][j] = Nevt_fluc[i][j] / Nevt_nominal[j];
         }
@@ -1699,7 +1729,7 @@ void BR_calculator()
     
     fp = fopen("BR_toys.txt","w");
     for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 2; j++) {
+        for (int j = 0; j < RarityBins * 3; j++) {
             fprintf(fp, "%lf ", Relative_Uncertainty[i][j]);
         }
         fprintf(fp, "\n");
