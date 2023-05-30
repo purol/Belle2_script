@@ -1775,16 +1775,16 @@ void GetPIDUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist,
     for (int i = 0; i < RarityBins; i++) SIGNAL_hist->SetBinContent(i + 1, weight_sys[6 * RarityBins + i]);
 }
 
-int GetBRcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists) { // get shape sys histogram from txt file
+int GetBRcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists) { // get shape sys histogram from txt file
     int Nentry = 0; // number of eigen values/vectors
     double eigen_value = 0; // eigen value
-    double weight_sys[RarityBins * 2] = { 0.0 }; // eigen vector
+    double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
 
     FILE* fp;
     fp = fopen(dirname, "r");
     while (true) {
         if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-        for (int i = 0; i < RarityBins * 2; i++) {
+        for (int i = 0; i < RarityBins * 3; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
         Nentry++;
@@ -1793,28 +1793,33 @@ int GetBRcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_n
 
     *CHG_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
     *MIX_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
 
     for (int i = 0; i < Nentry; i++) {
         (*CHG_hists)[i] = new TH1D(("CHG_BR_correlated" + std::to_string(i) + "_p").c_str(), ("CHG_BR_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
         (*MIX_hists)[i] = new TH1D(("MIX_BR_correlated" + std::to_string(i) + "_p").c_str(), ("MIX_BR_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists)[i] = new TH1D(("Signal_BR_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_BR_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     for (int i = Nentry; i < 2 * Nentry; i++) {
-            (*CHG_hists)[i] = new TH1D(("CHG_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*MIX_hists)[i] = new TH1D(("MIX_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("MIX_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*CHG_hists)[i] = new TH1D(("CHG_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*MIX_hists)[i] = new TH1D(("MIX_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("MIX_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists)[i] = new TH1D(("Signal_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     fp = fopen(dirname, "r");
     for (int i = 0; i < Nentry; i++) {
         fscanf(fp, "%lf\n", &eigen_value);
-        for (int j = 0; j < RarityBins * 2; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
+        for (int j = 0; j < RarityBins * 3; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
 
         for (int k = 0; k < RarityBins; k++) {
             (*CHG_hists)[i]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
             (*MIX_hists)[i]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 1 * RarityBins]));
+            (*Signal_hists)[i]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
 
             (*CHG_hists)[i + Nentry]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 0 * RarityBins]));
             (*MIX_hists)[i + Nentry]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 1 * RarityBins]));
+            (*Signal_hists)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
         }
 
     }
@@ -1824,18 +1829,19 @@ int GetBRcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_n
     return Nentry;
 }
 
-void GetBRUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist) { // get shape sys histogram from txt file
+void GetBRUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* Signal_hist) { // get shape sys histogram from txt file
     FILE* fp;
     fp = fopen(dirname, "r");
 
-    double weight_sys[RarityBins * 2] = { 0.0 };
-    for (int i = 0; i < RarityBins * 2; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    double weight_sys[RarityBins * 3] = { 0.0 };
+    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
     fclose(fp);
 
-    for (int i = 0; i < RarityBins * 2; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
+    for (int i = 0; i < RarityBins * 3; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
 
     for (int i = 0; i < RarityBins; i++) CHG_hist->SetBinContent(i + 1, weight_sys[i]);
     for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
 }
 
 int Getpi0correlatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* UUBAR_nominal_hist, TH1D* DDBAR_nominal_hist, TH1D* SSBAR_nominal_hist, TH1D* CHARM_nominal_hist, TH1D* SIGNAL_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** UUBAR_hists, TH1D*** DDBAR_hists, TH1D*** SSBAR_hists, TH1D*** CHARM_hists, TH1D*** SIGNAL_hists) { // get shape sys histogram from txt file
@@ -3395,10 +3401,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     TH1D* CHARM_PID_uncorrelated = new TH1D("CHARM_PID_uncorrelated", "CHARM_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // BB BR uncertainty(correlated)
+    TH1D** Signal_BR_correlated;
     TH1D** CHG_BR_correlated;
     TH1D** MIX_BR_correlated;
 
     // BB BR uncertainty (uncorrelated)
+    TH1D* Signal_BR_uncorrelated = new TH1D("Signal_BR_uncorrelated", "Signal_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_BR_uncorrelated = new TH1D("CHG_BR_uncorrelated", "CHG_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BR_uncorrelated = new TH1D("MIX_BR_uncorrelated", "MIX_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
 
@@ -3689,10 +3697,10 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetPIDUncorrelatedPDFs(PID_uncorrelated_info, CHG_PID_uncorrelated, MIX_PID_uncorrelated, UUBAR_PID_uncorrelated, DDBAR_PID_uncorrelated, SSBAR_PID_uncorrelated, CHARM_PID_uncorrelated, Signal_PID_uncorrelated);
 
     // get BB BR uncertainty pdfs (correlated)
-    int NPDFs_BR = GetBRcorrelatedPDFs(BR_correlated_info, CHG_nominal, MIX_nominal, &CHG_BR_correlated, &MIX_BR_correlated);
+    int NPDFs_BR = GetBRcorrelatedPDFs(BR_correlated_info, CHG_nominal, MIX_nominal, Signal_nominal, &CHG_BR_correlated, &MIX_BR_correlated, &Signal_BR_correlated);
 
     // get BB BR uncertainty pdfs (uncorrelated)
-    GetBRUncorrelatedPDFs(BR_uncorrelated_info, CHG_BR_uncorrelated, MIX_BR_uncorrelated);
+    GetBRUncorrelatedPDFs(BR_uncorrelated_info, CHG_BR_uncorrelated, MIX_BR_uncorrelated, Signal_BR_uncorrelated);
 
     // get pi0 uncertainty pdfs (correlated)
     int NPDFs_pi0 = Getpi0correlatedPDFs(pi0_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_nominal, &CHG_pi0_correlated, &MIX_pi0_correlated, &UUBAR_pi0_correlated, &DDBAR_pi0_correlated, &SSBAR_pi0_correlated, &CHARM_pi0_correlated, &Signal_pi0_correlated);
@@ -3916,6 +3924,7 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_PID_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_PID_uncorrelated, RarityBins);
 
+    AddSQRTHist(Signal_all_uncorrelated, Signal_BR_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_BR_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_BR_uncorrelated, RarityBins);
 
@@ -4067,11 +4076,13 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
 
     // BB BR uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_BR; i++) {
+        Signal_BR_correlated[i]->Write();
         CHG_BR_correlated[i]->Write();
         MIX_BR_correlated[i]->Write();
     }
 
     // BB BR uncertainty (uncorrelated)
+    Signal_BR_uncorrelated->Write();
     CHG_BR_uncorrelated->Write();
     MIX_BR_uncorrelated->Write();
 
