@@ -1700,6 +1700,7 @@ void FluctuatePIDCorrection(bool IsItKID) {
 void PID_calculator()
 {
     ReadPIDFile();
+    ReadFakePIDFile();
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
