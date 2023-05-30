@@ -207,11 +207,11 @@ const double pi0_sys_uncer2[N_pi0_syst] = {
 
 // define struct and sorting function for a binary search
 typedef struct EventInformation {
-    double experiment;
-    double run;
-    double event;
-    double candidate;
-    double ncandidates;
+    int experiment;
+    int run;
+    unsigned int event;
+    int candidate;
+    int ncandidates;
     int DMID1;
     int DMID2;
 } EvtInfo;
@@ -1148,7 +1148,7 @@ void ReadEvtFile() {
             exit(1);
         }
 
-        EvtInfo temp_EvtInfo = { temp_experiment, temp_run, temp_event, temp_candidate, temp_ncandidates, temp_DMID1, temp_DMID2 };
+        EvtInfo temp_EvtInfo = { (int)lround(temp_experiment), (int)lround(temp_run), (unsigned int)lround(temp_event), (int)lround(temp_candidate), (int)lround(temp_ncandidates), temp_DMID1, temp_DMID2 };
         EvtInfos.push_back(temp_EvtInfo);
 
     }
@@ -1167,7 +1167,7 @@ void ReadEvtFile() {
             exit(1);
         }
 
-        EvtInfo temp_EvtInfo = { temp_experiment, temp_run, temp_event, temp_candidate, temp_ncandidates, temp_DMID1, temp_DMID2 };
+        EvtInfo temp_EvtInfo = { (int)lround(temp_experiment), (int)lround(temp_run), (unsigned int)lround(temp_event), (int)lround(temp_candidate), (int)lround(temp_ncandidates), temp_DMID1, temp_DMID2 };
         EvtInfos.push_back(temp_EvtInfo);
 
     }
@@ -1186,7 +1186,7 @@ void ReadEvtFile() {
             exit(1);
         }
 
-        EvtInfo temp_EvtInfo = { temp_experiment, temp_run, temp_event, temp_candidate, temp_ncandidates, temp_DMID1, temp_DMID2 };
+        EvtInfo temp_EvtInfo = { (int)lround(temp_experiment), (int)lround(temp_run), (unsigned int)lround(temp_event), (int)lround(temp_candidate), (int)lround(temp_ncandidates), temp_DMID1, temp_DMID2 };
         EvtInfos.push_back(temp_EvtInfo);
 
     }
@@ -1198,19 +1198,12 @@ void ReadEvtFile() {
     fclose(fp_SIGNAL_Evt);
 }
 
-double GetBRRelativeUncertainty(int experiment, int run, int event, int candidate, int ncandidates) {
+double GetBRRelativeUncertainty(int experiment, int run, unsigned int event, int candidate, int ncandidates) {
     int temp_Evt_DMID1 = -100;
     int temp_Evt_DMID2 = -100;
 
-    for (unsigned int i = 0; i < Evt_experiments.size(); i++) {
-        if ((experiment == Evt_experiments.at(i)) && (run == Evt_runs.at(i)) && (event == Evt_events.at(i)) && (candidate == Evt_candidate.at(i)) && (ncandidates == Evt_ncandidatess.at(i))) {
-            temp_Evt_DMID1 = Evt_DMID1s.at(i);
-            temp_Evt_DMID2 = Evt_DMID2s.at(i);
-        }
-    }
-
     EvtInfo temp_EvtInfo = { experiment, run, event, candidate, ncandidates, -100, -100 };
-    int temp_index = lower_bound(EvtInfos.begin(), EvtInfos.end(), temp_EvtInfo) - EvtInfos.begin();
+    int temp_index = lower_bound(EvtInfos.begin(), EvtInfos.end(), temp_EvtInfo, compare) - EvtInfos.begin();
     temp_Evt_DMID1 = EvtInfos.at(temp_index).DMID1;
     temp_Evt_DMID2 = EvtInfos.at(temp_index).DMID2;
 
