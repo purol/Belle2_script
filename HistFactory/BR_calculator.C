@@ -1094,9 +1094,11 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
 void ReadEvtFile() {
     const char* CHG_Evt_file = "CHG_Evt";
     const char* MIX_Evt_file = "MIX_Evt";
+    const char* SIGNAL_Evt_file = "SIGNAL_Evt";
 
     FILE* fp_CHG_Evt = fopen(CHG_Evt_file, "r");
     FILE* fp_MIX_Evt = fopen(MIX_Evt_file, "r");
+    FILE* fp_SIGNAL_Evt = fopen(SIGNAL_Evt_file, "r");
 
     double temp_experiment = -1;
     double temp_run = -1;
@@ -1152,8 +1154,32 @@ void ReadEvtFile() {
         Evt_DMID2s.push_back(temp_DMID2);
     }
 
+    while (true) {
+        if (fscanf(fp_SIGNAL_Evt, "%lf\n", &temp_experiment) == EOF) break;
+        if (fscanf(fp_SIGNAL_Evt, "%lf\n", &temp_run) == EOF) break;
+        if (fscanf(fp_SIGNAL_Evt, "%lf\n", &temp_event) == EOF) break;
+        if (fscanf(fp_SIGNAL_Evt, "%lf\n", &temp_candidate) == EOF) break;
+        if (fscanf(fp_SIGNAL_Evt, "%lf\n", &temp_ncandidates) == EOF) break;
+        if (fscanf(fp_SIGNAL_Evt, "%d\n", &temp_DMID1) == EOF) break;
+        if (fscanf(fp_SIGNAL_Evt, "%d\n", &temp_DMID2) == EOF) break;
+
+        if ( (temp_DMID1 > 0) && (temp_DMID2 > 0) ) {
+            printf("[ReadEvtFile] both DMID for SIGNAL is larger than 0!\n");
+            exit(1);
+        }
+
+        Evt_experiments.push_back(temp_experiment);
+        Evt_runs.push_back(temp_run);
+        Evt_events.push_back(temp_event);
+        Evt_candidate.push_back(temp_candidate);
+        Evt_ncandidatess.push_back(temp_ncandidates);
+        Evt_DMID1s.push_back(temp_DMID1);
+        Evt_DMID2s.push_back(temp_DMID2);
+    }
+
     fclose(fp_CHG_Evt);
     fclose(fp_MIX_Evt);
+    fclose(fp_SIGNAL_Evt);
 }
 
 double GetBRRelativeUncertainty(int experiment, int run, int event, int candidate, int ncandidates) {
