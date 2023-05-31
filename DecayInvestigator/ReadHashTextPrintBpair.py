@@ -93,7 +93,7 @@ class Investigator:
         else:
             ParticlePair[DecayParticles] = 1
 
-with open("MIX_test") as openfileobject:
+with open("CHG_test") as openfileobject:
     ParticlePair = {}
     MeetTagB = False
     MeetSigB = False

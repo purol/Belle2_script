@@ -8,57 +8,43 @@ import sys
 import os
 import glob
 
-fName = sys.argv[1] # unnamed root file (merged file)
-fFiles_path = sys.argv[2] # path which includes named root file
-fhash_path = sys.argv[3] # path which includes hashmap
+fFiles_path = sys.argv[1] # path which includes named root file
+fhash_path = sys.argv[2] # path which includes hashmap
 file_list = os.listdir(fFiles_path)
-data = root_pandas.read_root(fName,"Upsilon")
 
 #data = root_pandas.read_root("/home/belle2/junewoo/storage_ghi/20210903_B2Xsnunu_SKIM/Ntuple_for_hashmap/output/Ntuple/B2Xsnunu_669_gsim_SKIM_Ntuple.root", "Upsilon")
 #hashmap = DecayHashMap(data, removeRadiativeGammaFlag=False)
 #hashmappath="/home/belle2/junewoo/storage_ghi/20210903_B2Xsnunu_SKIM/Ntuple_for_hashmap/output/hashmap/"
 
+for i in range(0, len(file_list)):
+    if not file_list[i].endswith(".root"):
+        continue
+    data = root_pandas.read_root(os.path.join(fFiles_path, file_list[i]),"Upsilon")
+    if len(data) == 0:
+        continue
 
-if len(data) == 0:
-    sys.exit(0)
+    hashfile = glob.glob(fhash_path+"*_"+file_list[i].split('_')[4]+"_*.root")[0]
+    hashmap = DecayHashMap(hashfile, removeRadiativeGammaFlag=True)
 
-for i in range(0, len(data)):
-    # get one reconstructed J/psi
-    find = False
-    candidate = data.iloc[i][["extraInfo__boDecayHash__bc", "extraInfo__boDecayHashExtended__bc"]].values
-    print(data.iloc[i]["__experiment__"])
-    print(data.iloc[i]["__run__"])
-    print(data.iloc[i]["__event__"])
-    print(data.iloc[i]["__candidate__"])
-    print(data.iloc[i]["__ncandidates__"])
+    for j in range(0, len(data)):
+        candidate = data.iloc[j][["extraInfo__boDecayHash__bc", "extraInfo__boDecayHashExtended__bc"]].values
+        print(data.iloc[j]["__experiment__"])
+        print(data.iloc[j]["__run__"])
+        print(data.iloc[j]["__event__"])
+        print(data.iloc[j]["__candidate__"])
+        print(data.iloc[j]["__ncandidates__"])
 
-    for j in range(0, len(file_list)): # MVAoutput_Ntuple_01453_job299617287_00_test_v000_final_output_data_after_MVA_after_MVA_cut.root
-        if not file_list[j].endswith('.root'):
-            continue
-        if find == True:
-            break
-        data_temp = root_pandas.read_root(os.path.join(sys.argv[2], file_list[j]),"Upsilon")
-        if len(data_temp) == 0:
-            continue
-        for k in range(0, len(data_temp)):
-            if data_temp.iloc[k]["__event__"] == data.iloc[i]["__event__"] and data_temp.iloc[k]["__candidate__"] == data.iloc[i]["__candidate__"] and data_temp.iloc[k]["__ncandidates__"] == data.iloc[i]["__ncandidates__"]:
-                print(file_list[j])
-                for hash_file in glob.glob(fhash_path+"hashmap_Upsilon_"+file_list[j].split('_')[2]+"_"+file_list[j].split('_')[3]+"_*.root"):
-                    hashmap = DecayHashMap(hash_file, removeRadiativeGammaFlag=True)
+        # print the reconstruced decay
+        print("Reconstructed Decay: ")
+        rec = hashmap.get_reconstructed_decay(*candidate)
+        print(rec.to_string())
 
-                    # print the reconstruced decay
-                    print("Reconstructed Decay: ")
-                    rec = hashmap.get_reconstructed_decay(*candidate)
-                    print(rec.to_string())
+        # print the original decay as simulated in MC
+        print("Monte Carlo Decay: ")
+        org = hashmap.get_original_decay(*candidate)
+        print(org.to_string())
 
-                    # print the original decay as simulated in MC
-                    print("Monte Carlo Decay: ")
-                    org = hashmap.get_original_decay(*candidate)
-                    print(org.to_string())
-
-                print("===============================")
-                find = True
-                break
+        print("===============================")
 
 # search for a specific decay (sub-decay)
 #print("Search for decay:")

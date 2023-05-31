@@ -164,7 +164,7 @@ class Investigator:
         print(DMID_1)
         print(DMID_2)
 
-with open("MIX_test") as openfileobject:
+with open("SIGNAL_test") as openfileobject:
     ParticlePair = {}
     MeetTagB = False
     MeetSigB = False
