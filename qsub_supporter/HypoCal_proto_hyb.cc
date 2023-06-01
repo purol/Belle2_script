@@ -146,7 +146,7 @@ using std::endl;
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define RarityBins 10
+# define RarityBins 6
 
 void GetExpectedCL(RooStats::HypoTestInverterResult* fResults, const char* mu) {
 	// get CLs CLb CLs+b
@@ -318,7 +318,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: eps
 
 	RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)HybCalc.GetTestStatSampler();
 	toymcs->SetTestStatistic(plr);
-	HybCalc.SetToys(5000, 5000);
+	HybCalc.SetToys(2000, 2000);
 
 	RooStats::HypoTestInverter inverter(HybCalc);
 	//inverter.SetConfidenceLevel(0.90);

@@ -163,7 +163,7 @@ int LT_iter_num = 0.0;
 # define RarityBins 6
 double weight_KIDsys[RarityBins * 7] = { 0.0 };
 double weight_PIDsys[RarityBins * 7] = { 0.0 };
-double weight_BRsys[RarityBins * 2] = { 0.0 };
+double weight_BRsys[RarityBins * 3] = { 0.0 };
 double weight_pi0sys[RarityBins * 7] = { 0.0 };
 
 std::random_device rd;
@@ -435,6 +435,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
                 double BR_uncertainty = 0.0;
                 double pi0_uncertainty = weight_pi0sys[RarityBins * sample_index + bin_index];
                 if ((names->at(i).find("CHG") != std::string::npos) || (names->at(i).find("MIX") != std::string::npos)) BR_uncertainty = weight_BRsys[RarityBins * sample_index + bin_index];
+                else if(names->at(i).find("Signal") != std::string::npos) BR_uncertainty = weight_BRsys[RarityBins * sample_index + 2]; // exception for signal BB BR uncorrelated uncertainty!
                 
                 double total_uncertainty = std::sqrt(KID_uncertainty * KID_uncertainty + PID_uncertainty * PID_uncertainty + BR_uncertainty * BR_uncertainty + pi0_uncertainty * pi0_uncertainty);
                 std::normal_distribution<double> distribution(1.0, total_uncertainty);
@@ -551,9 +552,9 @@ void ReadBRuncorrsysFile(const char* dirname_BR) {
     FILE* fp;
 
     fp = fopen(dirname_BR, "r");
-    for (int i = 0; i < RarityBins * 2; i++) fscanf(fp, "%lf\n", &weight_BRsys[i]);
+    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_BRsys[i]);
     fclose(fp);
-    for (int i = 0; i < RarityBins * 2; i++) weight_BRsys[i] = std::sqrt(weight_BRsys[i]);
+    for (int i = 0; i < RarityBins * 3; i++) weight_BRsys[i] = std::sqrt(weight_BRsys[i]);
 
 }
 
