@@ -289,7 +289,8 @@ int WorkSpace() {
 	sig_temp.AddHistoSys("mb_uncer", "Signal_mb_m", fname, "", "Signal_mb_p", fname, "");
 	sig_temp.AddHistoSys("transition_uncer", "Signal_transition_m", fname, "", "Signal_transition_p", fname, "");
 	sig_temp.AddHistoSys("mKstar_uncer", "Signal_mKstar_m", fname, "", "Signal_mKstar_p", fname, "");
-	sig_temp.AddOverallSys("FBDT_efficiency_uncer", 0.9, 1.1);
+	sig_temp.AddNormFactor("FBDT_efficiency_CAL", 0.8605, 0.8605, 0.8605, true);
+	sig_temp.AddOverallSys("FBDT_efficiency_uncer", 0.9262, 1.0737);
 	sig_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	sig_temp.ActivateStatError();
 	sig_temp.SetNormalizeByTheory(kFALSE);
