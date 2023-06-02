@@ -2857,13 +2857,13 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
     return Nevt;
 }
 
-void GetNegativeBDTcPDFs(TH1D* nominal_hist, TH1D* BDTc_corrected_hist, TH1D* BDTc_negative_hist) {
+void GetNegativeChangePDFs(TH1D* nominal_hist, TH1D* positive_hist, TH1D* negative_hist) {
     for (int i = 0; i < RarityBins; i++) {
-        double nominal = nominal_hist->GetBinContent(i + 1);
-        double BDTc_corrected = BDTc_corrected_hist->GetBinContent(i + 1);
-        double deviation = BDTc_corrected - nominal;
+        double nominal_value = nominal_hist->GetBinContent(i + 1);
+        double positive_value = positive_hist->GetBinContent(i + 1);
+        double deviation = positive_value - nominal_value;
 
-        BDTc_negative_hist->SetBinContent(i + 1, nominal - deviation);
+        negative_hist->SetBinContent(i + 1, nominal_value - deviation);
     }
 }
 
@@ -3884,12 +3884,7 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNominalPDFs(MC_dirname_K0starnunu_mKstarfixed, Signal_mKstar_p, "Bzero", Scale_K0star_syst, "otherwise");
     GetNominalPDFs(MC_dirname_Xsdnunu, Signal_mKstar_p, "Bzero", Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetNominalPDFs(MC_dirname_Knunu, Signal_mKstar_m, "Bplus", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu_mKstarfixed, Signal_mKstar_m, "Bplus", Scale_Kplusstar_syst, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu, Signal_mKstar_m, "Bplus", Scale_Xsu_nonresonant_test, "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_mKstar_m, "Bzero", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu_mKstarfixed, Signal_mKstar_m, "Bzero", Scale_K0star_syst, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_mKstar_m, "Bzero", Scale_Xsd_nonresonant_test, "otherwise");
+    GetNegativeChangePDFs(Signal_nominal, Signal_mKstar_p, Signal_mKstar_m);
 
     // get BDTc uncertainty pdfs
     GetBDTcPDFs(MC_dirname_CHG, CHG_BDTc_p, "Bplus", Scale_CHG_test);
@@ -3898,12 +3893,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetBDTcPDFs(MC_dirname_DDBAR, DDBAR_BDTc_p, "Continuum", Scale_DDBAR_test);
     GetBDTcPDFs(MC_dirname_SSBAR, SSBAR_BDTc_p, "Continuum", Scale_SSBAR_test);
     GetBDTcPDFs(MC_dirname_CHARM, CHARM_BDTc_p, "Continuum", Scale_CHARM_test);
-    GetNegativeBDTcPDFs(CHG_nominal, CHG_BDTc_p, CHG_BDTc_m);
-    GetNegativeBDTcPDFs(MIX_nominal, MIX_BDTc_p, MIX_BDTc_m);
-    GetNegativeBDTcPDFs(UUBAR_nominal, UUBAR_BDTc_p, UUBAR_BDTc_m);
-    GetNegativeBDTcPDFs(DDBAR_nominal, DDBAR_BDTc_p, DDBAR_BDTc_m);
-    GetNegativeBDTcPDFs(SSBAR_nominal, SSBAR_BDTc_p, SSBAR_BDTc_m);
-    GetNegativeBDTcPDFs(CHARM_nominal, CHARM_BDTc_p, CHARM_BDTc_m);
+    GetNegativeChangePDFs(CHG_nominal, CHG_BDTc_p, CHG_BDTc_m);
+    GetNegativeChangePDFs(MIX_nominal, MIX_BDTc_p, MIX_BDTc_m);
+    GetNegativeChangePDFs(UUBAR_nominal, UUBAR_BDTc_p, UUBAR_BDTc_m);
+    GetNegativeChangePDFs(DDBAR_nominal, DDBAR_BDTc_p, DDBAR_BDTc_m);
+    GetNegativeChangePDFs(SSBAR_nominal, SSBAR_BDTc_p, SSBAR_BDTc_m);
+    GetNegativeChangePDFs(CHARM_nominal, CHARM_BDTc_p, CHARM_BDTc_m);
 
     // calculate all uncorrelated pdfs
     ClearHist(Signal_all_uncorrelated, CHG_all_uncorrelated, MIX_all_uncorrelated, UUBAR_all_uncorrelated, DDBAR_all_uncorrelated, SSBAR_all_uncorrelated, CHARM_all_uncorrelated);
