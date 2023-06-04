@@ -264,7 +264,7 @@ void THStack_Dn() {
     Stack->Draw("pfc Hist"); SIGNAL_hist->Draw("HistSAME");
 
     TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.7, 0.7);
-    legend->SetFillStyle(0);
+    legend->SetFillStyle(0); legend->SetLineWidth(0);
 
     Float_t ymax = Stack->GetMaximum();
     TLine* lineA = new TLine(1.83, 0, 1.83, ymax);
