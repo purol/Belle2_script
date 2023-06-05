@@ -884,11 +884,11 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
                 FEI_calibration_factor = CAL_qq;
                 if (nBp > 0) {
                     FEI_calibration_factor = FEI_cal_Bc;
-                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
+                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 2.8/ab
                 }
                 else if (nB0 > 0) {
                     FEI_calibration_factor = FEI_cal_B0;
-                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
+                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 2.8/ab
                 }
                 else {
                     printf("ERROR 255");
@@ -1154,11 +1154,11 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
                 FEI_calibration_factor = CAL_qq;
                 if (nBp > 0) {
                     FEI_calibration_factor = FEI_cal_Bc;
-                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
+                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 2.8/ab
                 }
                 else if (nB0 > 0) {
                     FEI_calibration_factor = FEI_cal_B0;
-                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
+                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 2.8/ab
                 }
                 else {
                     printf("ERROR 255");
@@ -1332,11 +1332,11 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
                 FEI_calibration_factor = CAL_qq;
                 if (nBp > 0) {
                     FEI_calibration_factor = FEI_cal_Bc;
-                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
+                    weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 2.8/ab
                 }
                 else if (nB0 > 0) {
                     FEI_calibration_factor = FEI_cal_B0;
-                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
+                    weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 2.8/ab
                 }
                 else {
                     printf("ERROR 255");
