@@ -693,7 +693,7 @@ void FitToData(RooWorkspace* w, double eps) {
     delete fitres;
 }
 
-void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, double eps, int indicator = 0) {
+void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, double eps) {
 
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
@@ -703,20 +703,26 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
 
     // construct PDfs from data
     RooAbsData* data = (RooAbsData*)w->data("asimovData");
-    TH1D* DataHist = (TH1D*)data->createHistogram("datahist", *x, Binning(RarityBins, BinMIN, BinMAX));
-    RooHistPdf dataPDF("dataPDF", "dataPDF", *x, DataHist);
+    TH1D* HistData = (TH1D*)data->createHistogram("HistData", *x, Binning(RarityBins, BinMIN, BinMAX));
+    RooDataHist DataHist("DataHist", "DataHist", *x, HistData);
+    RooHistPdf dataPDF("dataPDF", "dataPDF", RooArgSet(*x, model->indexCat()), DataHist);
 
-    /*
+    // get total number of event in data
+    double Nevt_data = 0;
+    int Nevt_data_int = 0;
+    for (int i = 0; i < RarityBins; i++) Nevt_data = Nevt_data + HistData->GetBinContent(i + 1);
+    Nevt_data_int = (int)std::round(Nevt_data);
+
+    
     for (int i = 0; i < Toy_iter_num; i++) { // Do Toy MC study
 
         w->loadSnapshot("NominalParamValues");
 
         filesaver.GetTrueValues(w, names);
 
-        RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, true, "", false, true);
+        RooDataSet* genData = dataPDF.generate(RooArgSet(*x, model->indexCat()), Nevt_data_int, false, true, "", false, true);
 
         w->loadSnapshot("NominalParamValues");
-        //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
         RooAbsReal* nll;
         RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
 
@@ -727,7 +733,7 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
         delete fitres;
 
     }
-    */
+    
 }
 
 int main(int argc, char* argv[]) {
