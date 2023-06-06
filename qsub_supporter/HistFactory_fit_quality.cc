@@ -568,6 +568,42 @@ void Readpi0uncorrsysFile(const char* dirname_pi0) {
 
 }
 
+void FitToData(RooWorkspace* w, double eps) {
+
+    w->loadSnapshot("NominalParamValues");
+
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
+    RooRealVar* x_val = w->var("obs_x_channel");
+
+    // get Category and data
+    RooCategory* idx = (RooCategory*)obs->find("channelCat");
+    RooAbsData* data = (RooAbsData*)w->data("asimovData");
+    RooAbsReal* nll;
+    RooFitResult* fitres = MinimizeNLL(w, data, nll, eps);
+
+    // draw
+    RooPlot* x_frame = x_val->frame(Title("FBDT"));
+    data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
+    model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kViolet), Components(Sample_names.at(0).c_str(), Sample_names.at(1).c_str(), Sample_names.at(2).c_str(), Sample_names.at(3).c_str(), Sample_names.at(4).c_str(), Sample_names.at(5).c_str(), Sample_names.at(6).c_str()));
+    model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed), Components(Sample_names.at(0).c_str(), Sample_names.at(1).c_str(), Sample_names.at(2).c_str(), Sample_names.at(3).c_str(), Sample_names.at(4).c_str(), Sample_names.at(5).c_str()));
+    model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kBlue), Components(Sample_names.at(0).c_str(), Sample_names.at(1).c_str(), Sample_names.at(2).c_str(), Sample_names.at(3).c_str(), Sample_names.at(4).c_str()));
+    model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kCyan), Components(Sample_names.at(0).c_str(), Sample_names.at(1).c_str(), Sample_names.at(2).c_str(), Sample_names.at(3).c_str()));
+    model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kOrange), Components(Sample_names.at(0).c_str(), Sample_names.at(1).c_str(), Sample_names.at(2).c_str()));
+    model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kPink), Components(Sample_names.at(0).c_str(), Sample_names.at(1).c_str()));
+    model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kMagenta), Components(Sample_names.at(0).c_str()));
+    data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
+
+    TCanvas* canvas = new TCanvas("sPlot", "sPlot demo", 700, 700);
+    x_frame->Draw();
+    canvas->SaveAs("fit_plot.png");
+
+    w->loadSnapshot("NominalParamValues");
+
+    delete fitres;
+}
+
 int main(int argc, char* argv[]) {
     RooMsgService::instance().setStreamStatus(1, false);
     RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
