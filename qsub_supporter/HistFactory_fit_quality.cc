@@ -161,6 +161,8 @@ int Toy_iter_num = 0.0;
 int LT_iter_num = 0.0;
 
 # define RarityBins 6
+# define BinMIN 0.96
+# define BinMAX 1.0
 double weight_KIDsys[RarityBins * 7] = { 0.0 };
 double weight_PIDsys[RarityBins * 7] = { 0.0 };
 double weight_BRsys[RarityBins * 3] = { 0.0 };
@@ -689,6 +691,43 @@ void FitToData(RooWorkspace* w, double eps) {
 
     delete canvas;
     delete fitres;
+}
+
+void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, double eps, int indicator = 0) {
+
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
+    RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
+
+    // construct PDfs from data
+    RooAbsData* data = (RooAbsData*)w->data("asimovData");
+    TH1D* DataHist = (TH1D*)data->createHistogram("datahist", *x, Binning(RarityBins, BinMIN, BinMAX));
+    RooHistPdf dataPDF("dataPDF", "dataPDF", *x, DataHist);
+
+    /*
+    for (int i = 0; i < Toy_iter_num; i++) { // Do Toy MC study
+
+        w->loadSnapshot("NominalParamValues");
+
+        filesaver.GetTrueValues(w, names);
+
+        RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, true, "", false, true);
+
+        w->loadSnapshot("NominalParamValues");
+        //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+        RooAbsReal* nll;
+        RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
+
+        filesaver.GetFittingValues(fitres, names);
+        filesaver.GetFittingStatus(fitres);
+        filesaver.WriteIntoBranch();
+
+        delete fitres;
+
+    }
+    */
 }
 
 int main(int argc, char* argv[]) {
