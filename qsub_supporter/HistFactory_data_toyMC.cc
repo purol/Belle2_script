@@ -756,7 +756,7 @@ int main(int argc, char* argv[]) {
         Toy_iter_num = std::atoi(argv[3]);
     }
     else {
-        printf("Toy MC requires 2 arguments {eps} {indicator} {Num of sample}\n");
+        printf("Toy MC requires 3 arguments {eps} {indicator} {Num of sample}\n");
         exit(1);
     }
 
