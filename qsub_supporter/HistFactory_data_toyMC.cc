@@ -750,7 +750,7 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::string> param_names;
 
-    if (argc == 3) {
+    if (argc == 4) {
         eps = std::atof(argv[1]);
         indicator = std::atoi(argv[2]);
         Toy_iter_num = std::atoi(argv[3]);
