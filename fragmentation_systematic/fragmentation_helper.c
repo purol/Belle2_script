@@ -1122,7 +1122,7 @@ void LetsFillJpsi_ri(const char* dirname, double Confusion[DecayMode::MAX_NUM_DE
             int decaymodeid_MC = -1;
 
             for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) { // find reco decay mode
-                if (TrueIfDecayModeMatch(Upsilon_decayID, Bsig_decayID, static_cast<DecayMode>(i))) {
+                if (TrueIfDecayModeMatch(Upsilon_ID, Bsig_ID, static_cast<DecayMode>(i))) {
                     decaymodeid = i;
                     break;
                 }
@@ -1132,13 +1132,13 @@ void LetsFillJpsi_ri(const char* dirname, double Confusion[DecayMode::MAX_NUM_DE
                 exit(1);
             }
 
-            for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE_MC; i++) { // find MC decay mode
-                if (TrueIfDecayModeMatch_MC(temp, static_cast<DecayMode::DecayModeMC>(i))) {
+            for (int i = 0; i < DecayModeMC::MAX_NUM_DECAYMODE_MC; i++) { // find MC decay mode
+                if (TrueIfDecayModeMatch_MC(Decay, static_cast<DecayModeMC::DecayModeMC>(i))) {
                     decaymodeid_MC = i;
                     break;
                 }
             }
-            if (decaymodeid_MC == DecayMode::MAX_NUM_DECAYMODE_MC) {
+            if (decaymodeid_MC == DecayModeMC::MAX_NUM_DECAYMODE_MC) {
                 printf("ERROR! MC decay id cannot be found\n");
                 exit(1);
             }
@@ -1284,7 +1284,7 @@ void LetsFillJpsi_ri(const char* dirname, double OneDConfusion[DecayMode::MAX_NU
             int decaymodeid = -1;
 
             for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) { // find reco decay mode
-                if (TrueIfDecayModeMatch(Upsilon_decayID, Bsig_decayID, static_cast<DecayMode>(i))) {
+                if (TrueIfDecayModeMatch(Upsilon_ID, Bsig_ID, static_cast<DecayMode>(i))) {
                     decaymodeid = i;
                     break;
                 }
@@ -1405,14 +1405,14 @@ void fragmentation_helper() {
     double OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco]
 
     // dirnames
-    const char* Jpsi_MC_SIGNAL_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_Jpsi/SIGNAL_analysis/validation_v000/final_output";
-    const char* Jpsi_MC_CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_Jpsi/CHG_analysis/validation_v000/final_output";
-    const char* Jpsi_MC_MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_Jpsi/MIX_analysis/validation_v000/final_output";
-    const char* Jpsi_MC_UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_Jpsi/UUBAR_analysis/validation_v000/final_output";
-    const char* Jpsi_MC_DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_Jpsi/DDBAR_analysis/validation_v000/final_output";
-    const char* Jpsi_MC_SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_Jpsi/SSBAR_analysis/validation_v000/final_output";
-    const char* Jpsi_MC_CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_Jpsi/CHARM_analysis/validation_v000/final_output";
-    const char* Jpsi_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_data_Jpsi/SIGNAL_analysis/validation_v000/final_output";
+    const char* Jpsi_MC_SIGNAL_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/SIGNAL_analysis/validation_v002/final_output";
+    const char* Jpsi_MC_CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/CHG_analysis/validation_v002/final_output";
+    const char* Jpsi_MC_MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/MIX_analysis/validation_v002/final_output";
+    const char* Jpsi_MC_UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/UUBAR_analysis/validation_v002/final_output";
+    const char* Jpsi_MC_DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/DDBAR_analysis/validation_v002/final_output";
+    const char* Jpsi_MC_SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/SSBAR_analysis/validation_v002/final_output";
+    const char* Jpsi_MC_CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/CHARM_analysis/validation_v002/final_output";
+    const char* Jpsi_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_data_Jpsi/SIGNAL_analysis/validation_v002/final_output";
 
     LetsFillJpsi_ri(Jpsi_MC_SIGNAL_dirname, Confusion, "SIGNAL");
     LetsFillJpsi_ri(Jpsi_MC_CHG_dirname, OneDConfusion, "CHG");
