@@ -1342,7 +1342,7 @@ void LetsFill(const char* dirname, double OneDConfusion[DecayMode::MAX_NUM_DECAY
                 exit(1);
             }
 
-            OneDConfusion[i] = OneDConfusion[i] + 1.0;
+            OneDConfusion[decaymodeid] = OneDConfusion[decaymodeid] + 1.0;
 
         }
         input_file->Close();
@@ -1384,8 +1384,12 @@ void LetsFill(const char* dirname, double OneDConfusion[DecayMode::MAX_NUM_DECAY
                     break;
                 }
             }
+            if (decaymodeid == DecayMode::MAX_NUM_DECAYMODE) {
+                printf("ERROR! Reco decay id cannot be found\n");
+                exit(1);
+            }
 
-            OneDConfusion[i] = OneDConfusion[i] + 1.0;
+            OneDConfusion[decaymodeid] = OneDConfusion[decaymodeid] + 1.0;
 
         }
         input_file->Close();
