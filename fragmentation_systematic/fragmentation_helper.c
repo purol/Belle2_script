@@ -1133,7 +1133,7 @@ void LetsFillJpsi_ri(const char* dirname, double Confusion[DecayMode::MAX_NUM_DE
             }
 
             for (int i = 0; i < DecayModeMC::MAX_NUM_DECAYMODE_MC; i++) { // find MC decay mode
-                if (TrueIfDecayModeMatch_MC(Decay, static_cast<DecayModeMC::DecayModeMC>(i))) {
+                if (TrueIfDecayModeMatch_MC(Decay, static_cast<DecayModeMC>(i))) {
                     decaymodeid_MC = i;
                     break;
                 }
