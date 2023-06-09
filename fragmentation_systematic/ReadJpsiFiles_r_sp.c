@@ -690,7 +690,7 @@ void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMOD
             + Confusion[i][DecayModeMC::Xsd2KcKcK0_MC]
             + Confusion[i][DecayModeMC::Xsd2KcKcKcPic_MC]
             + Confusion[i][DecayModeMC::Xsd2KcKcK0Pi0_MC]
-            + Confusion[i][DecayModeMC::other]
+            + Confusion[i][DecayModeMC::other];
     }
 }
 
