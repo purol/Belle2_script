@@ -155,6 +155,13 @@ enum DecayModeMC { // MC level
     other,
     MAX_NUM_DECAYMODE_MC
 };
+enum SimpleDecayModeMC { // MC level
+    Xs2KKstar = 0,
+    Xs2Kpi,
+    Xs2Kpipi,
+    other,
+    MAX_NUM_SIMPLE_DECAYMODE_MC
+};
 
 bool TrueIfDecayModeMatch(double Upsilon_decayID, double Bsig_decayID, DecayMode decaymode) {
     switch (decaymode) {
@@ -640,21 +647,76 @@ void LetsFill(const char* dirname, double OneDConfusion[DecayModeMC::MAX_NUM_DEC
 
 }
 
+void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC], double SimpleConfusion[DecayMode::MAX_NUM_DECAYMODE][SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC]) {
+    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
+        SimpleConfusion[i][SimpleDecayModeMC::Xs2KKstar]
+            = Confusion[i][DecayModeMC::Xsu2Kc_MC]
+            + Confusion[i][DecayModeMC::Xsu2Kcstar2KcPi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2Kcstar2K0Pic_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0star2KcPic_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0star2K0Pi0_MC];
+
+        SimpleConfusion[i][SimpleDecayModeMC::Xs2Kpi]
+            = Confusion[i][DecayModeMC::Xsu2KcPi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2K0Pic_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcPic_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0Pi0_MC];
+
+        SimpleConfusion[i][SimpleDecayModeMC::Xs2Kpipi]
+            = Confusion[i][DecayModeMC::Xsu2KcPicPic_MC]
+            + Confusion[i][DecayModeMC::Xsu2K0PicPi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2KcPi0Pi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcPicPi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0PicPic_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0Pi0Pi0_MC];
+
+        SimpleConfusion[i][SimpleDecayModeMC::other]
+            = Confusion[i][DecayModeMC::Xsu2KcPicPicPi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2K0PicPicPic_MC]
+            + Confusion[i][DecayModeMC::Xsu2KcPicPicPicPic_MC]
+            + Confusion[i][DecayModeMC::Xsu2K0PicPicPicPi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2K0PicPi0Pi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2KcPicPicPi0Pi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2KcKcKc_MC]
+            + Confusion[i][DecayModeMC::Xsu2KcKcK0Pic_MC]
+            + Confusion[i][DecayModeMC::Xsu2KcKcKcPi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcPicPicPic_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0PicPicPi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcPicPicPicPi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0PicPicPicPic_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcPicPi0Pi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0PicPicPi0Pi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcKcK0_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcKcKcPic_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcKcK0Pi0_MC]
+            + Confusion[i][DecayModeMC::other]
+    }
+}
+
 void ReadJpsiFiles_r_sp(){
 
-    double OneDConfusion[DecayModeMC::MAX_NUM_DECAYMODE_MC] = { 0.0 }; // [reco]
+    double OneDEvt[DecayModeMC::MAX_NUM_DECAYMODE_MC] = { 0.0 }; // [reco]
+    double SimpleEvt[DecayMode::MAX_NUM_DECAYMODE][SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
 
     std::vector<string> names;
     const char* dirname = "/home/jwpark/storage/DecayInfo/small";
 
-    LetsFill(dirname, OneDConfusion, "CHG", ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab))); // total 2.8/ab
-    LetsFill(dirname, OneDConfusion, "MIX", ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab))); // total 2.8/ab
+    LetsFill(dirname, OneDEvt, "CHG", ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab))); // total 2.8/ab
+    LetsFill(dirname, OneDEvt, "MIX", ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab))); // total 2.8/ab
+
+    DecayMatrixToSimpleDecayMatrix(OneDEvt, SimpleEvt);
 
     printf("--------------- Number of events ---------------\n");
     for (int i = 0; i < DecayModeMC::MAX_NUM_DECAYMODE_MC; i++) {
-        printf("%f ", OneDConfusion[i]);
+        printf("%f ", OneDEvt[i]);
         printf("\n");
     }
     printf("--------------- Number of events ---------------\n");
-
+    printf("--------------- Number of simplified events ---------------\n");
+    for (int i = 0; i < SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC; i++) {
+        printf("%f ", SimpleEvt[i]);
+        printf("\n");
+    }
+    printf("--------------- Number of simplified events ---------------\n");
 }

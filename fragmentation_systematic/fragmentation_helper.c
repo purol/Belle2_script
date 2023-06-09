@@ -629,6 +629,13 @@ enum DecayModeMC { // MC level
     other,
     MAX_NUM_DECAYMODE_MC
 };
+enum SimpleDecayModeMC { // MC level
+    Xs2KKstar = 0,
+    Xs2Kpi,
+    Xs2Kpipi,
+    other,
+    MAX_NUM_SIMPLE_DECAYMODE_MC
+};
 
 bool TrueIfDecayModeMatch(double Upsilon_decayID, double Bsig_decayID, DecayMode decaymode) {
     switch (decaymode) {
@@ -1398,6 +1405,53 @@ void LetsFill(const char* dirname, double OneDConfusion[DecayMode::MAX_NUM_DECAY
 
 }
 
+void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC], double SimpleConfusion[DecayMode::MAX_NUM_DECAYMODE][SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC]) {
+    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) { 
+        SimpleConfusion[i][SimpleDecayModeMC::Xs2KKstar]
+            = Confusion[i][DecayModeMC::Xsu2Kc_MC]
+            + Confusion[i][DecayModeMC::Xsu2Kcstar2KcPi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2Kcstar2K0Pic_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0star2KcPic_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0star2K0Pi0_MC];
+
+        SimpleConfusion[i][SimpleDecayModeMC::Xs2Kpi]
+            = Confusion[i][DecayModeMC::Xsu2KcPi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2K0Pic_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcPic_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0Pi0_MC];
+
+        SimpleConfusion[i][SimpleDecayModeMC::Xs2Kpipi]
+            = Confusion[i][DecayModeMC::Xsu2KcPicPic_MC]
+            + Confusion[i][DecayModeMC::Xsu2K0PicPi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2KcPi0Pi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcPicPi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0PicPic_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0Pi0Pi0_MC];
+
+        SimpleConfusion[i][SimpleDecayModeMC::other]
+            = Confusion[i][DecayModeMC::Xsu2KcPicPicPi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2K0PicPicPic_MC]
+            + Confusion[i][DecayModeMC::Xsu2KcPicPicPicPic_MC]
+            + Confusion[i][DecayModeMC::Xsu2K0PicPicPicPi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2K0PicPi0Pi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2KcPicPicPi0Pi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2KcKcKc_MC]
+            + Confusion[i][DecayModeMC::Xsu2KcKcK0Pic_MC]
+            + Confusion[i][DecayModeMC::Xsu2KcKcKcPi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcPicPicPic_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0PicPicPi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcPicPicPicPi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0PicPicPicPic_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcPicPi0Pi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0PicPicPi0Pi0_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcKcK0_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcKcKcPic_MC]
+            + Confusion[i][DecayModeMC::Xsd2KcKcK0Pi0_MC]
+            + Confusion[i][DecayModeMC::other]
+    }
+}
+
 void fragmentation_helper() {
 
     ReadPIDFile();
@@ -1405,6 +1459,7 @@ void fragmentation_helper() {
 
     // define confusion matrix
     double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
+    double SimpleConfusion[DecayMode::MAX_NUM_DECAYMODE][SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
     double OneDConfusion[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco]
     double OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco]
 
@@ -1427,6 +1482,8 @@ void fragmentation_helper() {
     LetsFillJpsi_ri(Jpsi_MC_CHARM_dirname, OneDConfusion, "CHARM");
     LetsFill(Jpsi_data_dirname, OneDConfusion_data);
 
+    DecayMatrixToSimpleDecayMatrix(Confusion, SimpleConfusion);
+
     printf("--------------- confusion matrix for XsJ/psi signal ---------------\n");
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
         for (int j = 0; j < DecayModeMC::MAX_NUM_DECAYMODE_MC; j++) {
@@ -1435,6 +1492,14 @@ void fragmentation_helper() {
         printf("\n");
     }
     printf("--------------- confusion matrix for XsJ/psi signal ---------------\n");
+    printf("--------------- simplified confusion matrix for XsJ/psi signal ---------------\n");
+    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
+        for (int j = 0; j < SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC; j++) {
+            printf("%f ", SimpleConfusion[i][j]);
+        }
+        printf("\n");
+    }
+    printf("--------------- simplified confusion matrix for XsJ/psi signal ---------------\n");
     printf("--------------- 1D confusion matrix for background ---------------\n");
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
         printf("%f ", OneDConfusion[i]);
