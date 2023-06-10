@@ -1495,7 +1495,7 @@ void fragmentation_helper() {
         if(i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("], ");
         else printf("]");
     }
-    printf("]\n")
+    printf("]\n");
     printf("--------------- confusion matrix for XsJ/psi signal ---------------\n");
 
     printf("--------------- simplified confusion matrix for XsJ/psi signal ---------------\n");
