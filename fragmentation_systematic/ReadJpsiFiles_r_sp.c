@@ -728,7 +728,7 @@ void ReadJpsiFiles_r_sp(){
 
     double BKGEvt
         = (N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) * (1 - 0.00128464685) // total evt: 1619975940, XsJ/psi: 2081097
-        + (N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) * 0.95
+        + (N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) * (1 - 0.0014012516) // total evt: 1528355786, XsJ/psi: 2141611
         + N_UUBAR_1invab * 0.361673
         + N_DDBAR_1invab * 0.361673
         + N_SSBAR_1invab * 0.361673
