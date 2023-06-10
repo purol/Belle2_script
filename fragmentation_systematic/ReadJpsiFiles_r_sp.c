@@ -733,4 +733,6 @@ void ReadJpsiFiles_r_sp(){
         + N_DDBAR_1invab * 0.361673
         + N_SSBAR_1invab * 0.361673
         + N_CHARM_1invab * 0.361673;
+
+    printf("Num of BKG: %lf\n", BKGEvt);
 }
