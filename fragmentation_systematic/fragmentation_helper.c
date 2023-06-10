@@ -1533,11 +1533,13 @@ void fragmentation_helper() {
 
     // get efficiency matrix
     double SimpleEff[DecayMode::MAX_NUM_DECAYMODE][SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
+    double OneDEff[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco]
 
     const double N_KKstar_initial = 57386.091117;
     const double N_Kpi_initial = 28358.606184;
     const double N_Kpipi_initial = 166401.827236;
     const double N_simple_other_initial = 266790.101735;
+    const double N_BKG_initial = 1704693583.076672;
 
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
         for (int j = 0; j < SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC; j++) {
@@ -1548,6 +1550,10 @@ void fragmentation_helper() {
             else if (j == SimpleDecayModeMC::simple_other) SimpleEff[i][j] = SimpleConfusion[i][j] / N_simple_other_initial;
 
         }
+    }
+
+    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
+        OneDEff[i] = OneDConfusion[i] / N_BKG_initial;
     }
 
     printf("--------------- simplified efficiency matrix for XsJ/psi signal ---------------\n");
@@ -1564,4 +1570,12 @@ void fragmentation_helper() {
     printf("]\n");
     printf("--------------- simplified efficiency matrix for XsJ/psi signal ---------------\n");
 
+    printf("--------------- 1D efficiency matrix for background ---------------\n");
+    printf("[");
+    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
+        if (i != DecayMode::MAX_NUM_DECAYMODE) printf("[%f],", OneDEff[i]);
+        else printf("[%f]", OneDEff[i]);
+    }
+    printf("]\n");
+    printf("--------------- 1D efficiency matrix for background ---------------\n");
 }
