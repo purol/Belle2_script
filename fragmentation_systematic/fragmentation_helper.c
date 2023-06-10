@@ -1573,7 +1573,7 @@ void fragmentation_helper() {
     printf("--------------- 1D efficiency matrix for background ---------------\n");
     printf("[");
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
-        if (i != DecayMode::MAX_NUM_DECAYMODE) printf("[%f],", OneDEff[i]);
+        if (i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("[%f],", OneDEff[i]);
         else printf("[%f]", OneDEff[i]);
     }
     printf("]\n");
