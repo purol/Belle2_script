@@ -1485,31 +1485,48 @@ void fragmentation_helper() {
     DecayMatrixToSimpleDecayMatrix(Confusion, SimpleConfusion);
 
     printf("--------------- confusion matrix for XsJ/psi signal ---------------\n");
+    printf("[");
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
+        printf("[");
         for (int j = 0; j < DecayModeMC::MAX_NUM_DECAYMODE_MC; j++) {
-            printf("%f ", Confusion[i][j]);
+            if(j != DecayModeMC::MAX_NUM_DECAYMODE_MC - 1) printf("%f,", Confusion[i][j]);
+            else printf("%f", Confusion[i][j]);
         }
-        printf("\n");
+        if(i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("], ");
+        else printf("]");
     }
+    printf("]\n")
     printf("--------------- confusion matrix for XsJ/psi signal ---------------\n");
+
     printf("--------------- simplified confusion matrix for XsJ/psi signal ---------------\n");
+    printf("[");
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
+        printf("[");
         for (int j = 0; j < SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC; j++) {
-            printf("%f ", SimpleConfusion[i][j]);
+            if(j != SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC - 1) printf("%f,", SimpleConfusion[i][j]);
+            else printf("%f", SimpleConfusion[i][j]);
         }
-        printf("\n");
+        if (i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("], ");
+        else printf("]");
     }
+    printf("]\n");
     printf("--------------- simplified confusion matrix for XsJ/psi signal ---------------\n");
+
     printf("--------------- 1D confusion matrix for background ---------------\n");
+    printf("[");
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
-        printf("%f ", OneDConfusion[i]);
-        printf("\n");
+        if(i != DecayMode::MAX_NUM_DECAYMODE) printf("[%f],", OneDConfusion[i]);
+        else printf("[%f]", OneDConfusion[i]);
     }
+    printf("]\n");
     printf("--------------- 1D confusion matrix for background ---------------\n");
+
     printf("--------------- 1D confusion matrix for data ---------------\n");
+    printf("[");
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
-        printf("%f ", OneDConfusion_data[i]);
-        printf("\n");
+        if (i != DecayMode::MAX_NUM_DECAYMODE) printf("[%f],", OneDConfusion_data[i]);
+        else printf("[%f]", OneDConfusion_data[i]);
     }
+    printf("]\n");
     printf("--------------- 1D confusion matrix for data ---------------\n");
 }
