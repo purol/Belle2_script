@@ -1561,8 +1561,8 @@ void fragmentation_helper() {
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
         printf("[");
         for (int j = 0; j < SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC; j++) {
-            if (j != SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC - 1) printf("%f,", SimpleEff[i][j]);
-            else printf("%f", SimpleEff[i][j]);
+            if (j != SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC - 1) printf("%.9lf,", SimpleEff[i][j]);
+            else printf("%.9lf", SimpleEff[i][j]);
         }
         if (i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("], ");
         else printf("]");
@@ -1573,8 +1573,8 @@ void fragmentation_helper() {
     printf("--------------- 1D efficiency matrix for background ---------------\n");
     printf("[");
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
-        if (i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("[%f],", OneDEff[i]);
-        else printf("[%f]", OneDEff[i]);
+        if (i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("[%.9lf],", OneDEff[i]);
+        else printf("[%.9lf]", OneDEff[i]);
     }
     printf("]\n");
     printf("--------------- 1D efficiency matrix for background ---------------\n");
