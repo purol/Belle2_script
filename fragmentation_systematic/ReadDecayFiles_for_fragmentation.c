@@ -512,41 +512,41 @@ void LetsFill(const char* dirname, double OneDConfusion[DecayModeMC::MAX_NUM_DEC
         tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
         tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
         tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clcomb__bc", &Decay[3]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch1__bc", &Decay[4]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch2__bc", &Decay[5]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch3__bc", &Decay[6]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch4__bc", &Decay[7]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch5__bc", &Decay[8]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch6__bc", &Decay[9]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch7__bc", &Decay[10]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch8__bc", &Decay[11]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch9__bc", &Decay[12]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch10__bc", &Decay[13]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch11__bc", &Decay[14]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch12__bc", &Decay[15]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch13__bc", &Decay[16]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch14__bc", &Decay[17]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch15__bc", &Decay[18]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clcomb__bc", &Decay[3]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch1__bc", &Decay[4]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch2__bc", &Decay[5]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch3__bc", &Decay[6]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch4__bc", &Decay[7]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch5__bc", &Decay[8]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch6__bc", &Decay[9]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch7__bc", &Decay[10]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch8__bc", &Decay[11]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch9__bc", &Decay[12]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch10__bc", &Decay[13]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch11__bc", &Decay[14]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch12__bc", &Decay[15]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch13__bc", &Decay[16]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch14__bc", &Decay[17]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch15__bc", &Decay[18]);
         tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &Decay[19]);
         tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &Decay[20]);
         tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay[21]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clcomb__bc", &Decay[22]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch16__bc", &Decay[23]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch17__bc", &Decay[24]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch18__bc", &Decay[25]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch19__bc", &Decay[26]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch20__bc", &Decay[27]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch21__bc", &Decay[28]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch22__bc", &Decay[29]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch23__bc", &Decay[30]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch24__bc", &Decay[31]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch25__bc", &Decay[32]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch26__bc", &Decay[33]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch27__bc", &Decay[34]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch28__bc", &Decay[35]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch29__bc", &Decay[36]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch30__bc", &Decay[37]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clcomb__bc", &Decay[22]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch16__bc", &Decay[23]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch17__bc", &Decay[24]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch18__bc", &Decay[25]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch19__bc", &Decay[26]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch20__bc", &Decay[27]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch21__bc", &Decay[28]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch22__bc", &Decay[29]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch23__bc", &Decay[30]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch24__bc", &Decay[31]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch25__bc", &Decay[32]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch26__bc", &Decay[33]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch27__bc", &Decay[34]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch28__bc", &Decay[35]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch29__bc", &Decay[36]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch30__bc", &Decay[37]);
 
         printf("%lld entries...\n", tree_Jpsi->GetEntries());
         for (unsigned int j = 0; j < tree_Jpsi->GetEntries(); j++) { // Fill
@@ -590,41 +590,41 @@ void LetsFill(const char* dirname, double OneDConfusion[DecayModeMC::MAX_NUM_DEC
         tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
         tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
         tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clcomb__bc", &Decay[3]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch1__bc", &Decay[4]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch2__bc", &Decay[5]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch3__bc", &Decay[6]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch4__bc", &Decay[7]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch5__bc", &Decay[8]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch6__bc", &Decay[9]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch7__bc", &Decay[10]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch8__bc", &Decay[11]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch9__bc", &Decay[12]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch10__bc", &Decay[13]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch11__bc", &Decay[14]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch12__bc", &Decay[15]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch13__bc", &Decay[16]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch14__bc", &Decay[17]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB__pl__clch15__bc", &Decay[18]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clcomb__bc", &Decay[3]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch1__bc", &Decay[4]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch2__bc", &Decay[5]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch3__bc", &Decay[6]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch4__bc", &Decay[7]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch5__bc", &Decay[8]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch6__bc", &Decay[9]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch7__bc", &Decay[10]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch8__bc", &Decay[11]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch9__bc", &Decay[12]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch10__bc", &Decay[13]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch11__bc", &Decay[14]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch12__bc", &Decay[15]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch13__bc", &Decay[16]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch14__bc", &Decay[17]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsu__clch15__bc", &Decay[18]);
         tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &Decay[19]);
         tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &Decay[20]);
         tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay[21]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clcomb__bc", &Decay[22]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch16__bc", &Decay[23]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch17__bc", &Decay[24]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch18__bc", &Decay[25]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch19__bc", &Decay[26]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch20__bc", &Decay[27]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch21__bc", &Decay[28]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch22__bc", &Decay[29]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch23__bc", &Decay[30]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch24__bc", &Decay[31]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch25__bc", &Decay[32]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch26__bc", &Decay[33]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch27__bc", &Decay[34]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch28__bc", &Decay[35]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch29__bc", &Decay[36]);
-        tree_Jpsi->SetBranchAddress("nParticlesInList__boB0__clch30__bc", &Decay[37]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clcomb__bc", &Decay[22]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch16__bc", &Decay[23]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch17__bc", &Decay[24]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch18__bc", &Decay[25]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch19__bc", &Decay[26]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch20__bc", &Decay[27]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch21__bc", &Decay[28]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch22__bc", &Decay[29]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch23__bc", &Decay[30]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch24__bc", &Decay[31]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch25__bc", &Decay[32]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch26__bc", &Decay[33]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch27__bc", &Decay[34]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch28__bc", &Decay[35]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch29__bc", &Decay[36]);
+        tree_Jpsi->SetBranchAddress("nParticlesInList__boXsd__clch30__bc", &Decay[37]);
 
         printf("%lld entries...\n", tree_Jpsi->GetEntries());
         for (unsigned int j = 0; j < tree_Jpsi->GetEntries(); j++) { // Fill
@@ -698,17 +698,19 @@ void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayModeMC::MAX_NUM_DECAYM
 
 }
 
-void ReadJpsiFiles_r_sp(){
+void ReadDecayFiles_for_fragmentation(){
 
     double OneDEvt[DecayModeMC::MAX_NUM_DECAYMODE_MC] = { 0.0 }; // [MC truth]
-    double SimpleEvt[SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
+    double SimpleEvt[SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC] = { 0.0 }; // [MC truth]
 
     std::vector<string> names;
-    const char* CHG_dirname = "./CHG_Count_Jpsi_A/";
-    const char* MIX_dirname = "./MIX_Count_Jpsi_A/";
+    const char* Xsununu_dirname = "./Xsu_count4/";
+    const char* Xsdnunu_dirname = "./Xsd_count4/";
 
-    LetsFill(CHG_dirname, OneDEvt, "CHG", ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (3.0 * N_BpBp_1invab))); // total 3.0/ab
-    LetsFill(MIX_dirname, OneDEvt, "MIX", ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (3.0 * N_B0B0_1invab))); // total 3.0/ab
+    OneDEvt[DecayModeMC::Xs2KKstar] = N_Kplus_nunubar_LS1 + N_Kplusstar_nunubar_LS1 + N_K0_nunubar_LS1 + N_K0star_nunubar_LS1;
+
+    LetsFill(Xsununu_dirname, OneDEvt, N_Xsu_nonresonant_nunubar_LS1 / (N_Xsu_nonresonant_train + N_Xsu_nonresonant_test));
+    LetsFill(Xsdnunu_dirname, OneDEvt, N_Xsd_nunubar_LS1 / (N_Xsd_nonresonant_train + N_Xsd_nonresonant_test));
 
     DecayMatrixToSimpleDecayMatrix(OneDEvt, SimpleEvt);
 
@@ -726,13 +728,4 @@ void ReadJpsiFiles_r_sp(){
     }
     printf("--------------- Number of simplified events ---------------\n");
 
-    double BKGEvt
-        = (N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) * (1 - 0.00128464685) // total evt: 1619975940, XsJ/psi: 2081097
-        + (N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) * (1 - 0.0014012516) // total evt: 1528355786, XsJ/psi: 2141611
-        + N_UUBAR_1invab * 0.361673
-        + N_DDBAR_1invab * 0.361673
-        + N_SSBAR_1invab * 0.361673
-        + N_CHARM_1invab * 0.361673;
-
-    printf("Num of BKG: %lf\n", BKGEvt);
 }
