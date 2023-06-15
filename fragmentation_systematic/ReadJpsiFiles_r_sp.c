@@ -552,6 +552,10 @@ void LetsFill(const char* dirname, double OneDConfusion[DecayModeMC::MAX_NUM_DEC
         for (unsigned int j = 0; j < tree_Jpsi->GetEntries(); j++) { // Fill
             tree_Jpsi->GetEntry(j);
 
+            // fix a double counting
+            if (Decay[1] > 0) Decay[6] = 0;
+            if (Decay[2] > 0) Decay[5] = 0;
+
             int decaymodeid_MC = -1;
             for (int i = 0; i < DecayModeMC::MAX_NUM_DECAYMODE_MC; i++) { // find MC decay mode
                 if (TrueIfDecayModeMatch_MC(Decay, static_cast<DecayModeMC>(i))) {
@@ -629,6 +633,10 @@ void LetsFill(const char* dirname, double OneDConfusion[DecayModeMC::MAX_NUM_DEC
         printf("%lld entries...\n", tree_Jpsi->GetEntries());
         for (unsigned int j = 0; j < tree_Jpsi->GetEntries(); j++) { // Fill
             tree_Jpsi->GetEntry(j);
+
+            // fix a double counting
+            if (Decay[1] > 0) Decay[6] = 0;
+            if (Decay[2] > 0) Decay[5] = 0;
 
             int decaymodeid_MC = -1;
             for (int i = 0; i < DecayModeMC::MAX_NUM_DECAYMODE_MC; i++) { // find MC decay mode

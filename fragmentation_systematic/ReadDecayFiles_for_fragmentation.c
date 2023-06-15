@@ -707,7 +707,12 @@ void ReadDecayFiles_for_fragmentation(){
     const char* Xsununu_dirname = "./Xsu_count4/";
     const char* Xsdnunu_dirname = "./Xsd_count4/";
 
-    OneDEvt[DecayModeMC::Xs2KKstar] = N_Kplus_nunubar_LS1 + N_Kplusstar_nunubar_LS1 + N_K0_nunubar_LS1 + N_K0star_nunubar_LS1;
+    OneDEvt[DecayModeMC::Xsu2Kc_MC] = N_Kplus_nunubar_LS1;
+    OneDEvt[DecayModeMC::Xsu2Kcstar2KcPi0_MC] = N_Kplusstar_nunubar_LS1 * (1.0 / 3.0);
+    OneDEvt[DecayModeMC::Xsu2Kcstar2K0Pic_MC] = N_Kplusstar_nunubar_LS1 * (2.0 / 3.0);
+    OneDEvt[DecayModeMC::Xsd2K0_MC] = N_K0_nunubar_LS1;
+    OneDEvt[DecayModeMC::Xsd2K0star2KcPic_MC] = N_K0star_nunubar_LS1 * (2.0 / 3.0);
+    OneDEvt[DecayModeMC::Xsd2K0star2K0Pi0_MC] = N_K0star_nunubar_LS1 * (1.0 / 3.0);
 
     LetsFill(Xsununu_dirname, OneDEvt, N_Xsu_nonresonant_nunubar_LS1 / (N_Xsu_nonresonant_train + N_Xsu_nonresonant_test));
     LetsFill(Xsdnunu_dirname, OneDEvt, N_Xsd_nunubar_LS1 / (N_Xsd_nonresonant_train + N_Xsd_nonresonant_test));

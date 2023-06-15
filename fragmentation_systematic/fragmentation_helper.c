@@ -1079,6 +1079,10 @@ void LetsFillJpsi_ri(const char* dirname, double Confusion[DecayMode::MAX_NUM_DE
             tree_Btag->GetEntry(j);
             tree_Xs->GetEntry(j);
 
+            // fix a double counting
+            if (Decay[1] > 0) Decay[6] = 0;
+            if (Decay[2] > 0) Decay[5] = 0;
+
             double weight_ri = 0.0;
             if (SampleName == "SIGNAL") {
                 FEI_calibration_factor = CAL_qq;
