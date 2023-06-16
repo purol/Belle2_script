@@ -163,6 +163,7 @@ enum SimpleDecayModeMC { // MC level
     Xs2KKstar = 0,
     Xs2Kpi,
     Xs2Kpipi,
+    reco_other,
     simple_other,
     MAX_NUM_SIMPLE_DECAYMODE_MC
 };
@@ -683,7 +684,7 @@ void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayModeMC::MAX_NUM_DECAYM
         + Confusion[DecayModeMC::Xsd2K0PicPic_MC]
         + Confusion[DecayModeMC::Xsd2K0Pi0Pi0_MC];
 
-    SimpleConfusion[SimpleDecayModeMC::simple_other]
+    SimpleConfusion[SimpleDecayModeMC::reco_other]
         = Confusion[DecayModeMC::Xsu2KcPicPicPi0_MC]
         + Confusion[DecayModeMC::Xsu2K0PicPicPic_MC]
         + Confusion[DecayModeMC::Xsu2KcPicPicPicPic_MC]
@@ -701,8 +702,10 @@ void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayModeMC::MAX_NUM_DECAYM
         + Confusion[DecayModeMC::Xsd2K0PicPicPi0Pi0_MC]
         + Confusion[DecayModeMC::Xsd2KcKcK0_MC]
         + Confusion[DecayModeMC::Xsd2KcKcKcPic_MC]
-        + Confusion[DecayModeMC::Xsd2KcKcK0Pi0_MC]
-        + Confusion[DecayModeMC::other];
+        + Confusion[DecayModeMC::Xsd2KcKcK0Pi0_MC];
+
+    SimpleConfusion[SimpleDecayModeMC::simple_other]
+        = Confusion[DecayModeMC::other];
 
 }
 

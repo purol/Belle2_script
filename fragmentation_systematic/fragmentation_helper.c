@@ -633,6 +633,7 @@ enum SimpleDecayModeMC { // MC level
     Xs2KKstar = 0,
     Xs2Kpi,
     Xs2Kpipi,
+    reco_other,
     simple_other,
     MAX_NUM_SIMPLE_DECAYMODE_MC
 };
@@ -1433,7 +1434,7 @@ void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMOD
             + Confusion[i][DecayModeMC::Xsd2K0PicPic_MC]
             + Confusion[i][DecayModeMC::Xsd2K0Pi0Pi0_MC];
 
-        SimpleConfusion[i][SimpleDecayModeMC::simple_other]
+        SimpleConfusion[i][SimpleDecayModeMC::reco_other]
             = Confusion[i][DecayModeMC::Xsu2KcPicPicPi0_MC]
             + Confusion[i][DecayModeMC::Xsu2K0PicPicPic_MC]
             + Confusion[i][DecayModeMC::Xsu2KcPicPicPicPic_MC]
@@ -1451,8 +1452,10 @@ void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMOD
             + Confusion[i][DecayModeMC::Xsd2K0PicPicPi0Pi0_MC]
             + Confusion[i][DecayModeMC::Xsd2KcKcK0_MC]
             + Confusion[i][DecayModeMC::Xsd2KcKcKcPic_MC]
-            + Confusion[i][DecayModeMC::Xsd2KcKcK0Pi0_MC]
-            + Confusion[i][DecayModeMC::other];
+            + Confusion[i][DecayModeMC::Xsd2KcKcK0Pi0_MC];
+
+        SimpleConfusion[i][SimpleDecayModeMC::simple_other]
+            = Confusion[i][DecayModeMC::other];
     }
 }
 
@@ -1542,6 +1545,7 @@ void fragmentation_helper() {
     const double N_KKstar_initial = 57386.091117;
     const double N_Kpi_initial = 28358.606184;
     const double N_Kpipi_initial = 166401.827236;
+    const double N_reco_other_initial = 266790.101735;
     const double N_simple_other_initial = 266790.101735;
     const double N_BKG_initial = 1704693583.076672;
 
@@ -1551,6 +1555,7 @@ void fragmentation_helper() {
             if (j == SimpleDecayModeMC::Xs2KKstar) SimpleEff[i][j] = SimpleConfusion[i][j] / N_KKstar_initial;
             else if(j == SimpleDecayModeMC::Xs2Kpi) SimpleEff[i][j] = SimpleConfusion[i][j] / N_Kpi_initial;
             else if (j == SimpleDecayModeMC::Xs2Kpipi) SimpleEff[i][j] = SimpleConfusion[i][j] / N_Kpipi_initial;
+            else if (j == SimpleDecayModeMC::reco_other) SimpleEff[i][j] = SimpleConfusion[i][j] / N_reco_other_initial;
             else if (j == SimpleDecayModeMC::simple_other) SimpleEff[i][j] = SimpleConfusion[i][j] / N_simple_other_initial;
 
         }
