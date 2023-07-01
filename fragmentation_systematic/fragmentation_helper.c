@@ -1432,21 +1432,14 @@ void LetsFill(const char* dirname, double OneDConfusion[DecayMode::MAX_NUM_DECAY
 
 void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC], double SimpleConfusion[DecayMode::MAX_NUM_DECAYMODE][SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC]) {
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) { 
-        SimpleConfusion[i][SimpleDecayModeMC::Xs2KKstar]
-            = Confusion[i][DecayModeMC::Xsu2Kc_MC]
-            + Confusion[i][DecayModeMC::Xsu2Kcstar2KcPi0_MC]
-            + Confusion[i][DecayModeMC::Xsu2Kcstar2K0Pic_MC]
-            + Confusion[i][DecayModeMC::Xsd2K0_MC]
-            + Confusion[i][DecayModeMC::Xsd2K0star2KcPic_MC]
-            + Confusion[i][DecayModeMC::Xsd2K0star2K0Pi0_MC];
 
-        SimpleConfusion[i][SimpleDecayModeMC::Xs2Kpi]
+        SimpleConfusion[i][SimpleDecayModeMC::Xs2Kpi_MC]
             = Confusion[i][DecayModeMC::Xsu2KcPi0_MC]
             + Confusion[i][DecayModeMC::Xsu2K0Pic_MC]
             + Confusion[i][DecayModeMC::Xsd2KcPic_MC]
             + Confusion[i][DecayModeMC::Xsd2K0Pi0_MC];
 
-        SimpleConfusion[i][SimpleDecayModeMC::Xs2Kpipi]
+        SimpleConfusion[i][SimpleDecayModeMC::Xs2Kpipi_MC]
             = Confusion[i][DecayModeMC::Xsu2KcPicPic_MC]
             + Confusion[i][DecayModeMC::Xsu2K0PicPi0_MC]
             + Confusion[i][DecayModeMC::Xsu2KcPi0Pi0_MC]
@@ -1454,7 +1447,7 @@ void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMOD
             + Confusion[i][DecayModeMC::Xsd2K0PicPic_MC]
             + Confusion[i][DecayModeMC::Xsd2K0Pi0Pi0_MC];
 
-        SimpleConfusion[i][SimpleDecayModeMC::reco_other]
+        SimpleConfusion[i][SimpleDecayModeMC::MC_other]
             = Confusion[i][DecayModeMC::Xsu2KcPicPicPi0_MC]
             + Confusion[i][DecayModeMC::Xsu2K0PicPicPic_MC]
             + Confusion[i][DecayModeMC::Xsu2KcPicPicPicPic_MC]
@@ -1472,10 +1465,9 @@ void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMOD
             + Confusion[i][DecayModeMC::Xsd2K0PicPicPi0Pi0_MC]
             + Confusion[i][DecayModeMC::Xsd2KcKcK0_MC]
             + Confusion[i][DecayModeMC::Xsd2KcKcKcPic_MC]
-            + Confusion[i][DecayModeMC::Xsd2KcKcK0Pi0_MC];
+            + Confusion[i][DecayModeMC::Xsd2KcKcK0Pi0_MC]
+            + Confusion[i][DecayModeMC::other];
 
-        SimpleConfusion[i][SimpleDecayModeMC::simple_other]
-            = Confusion[i][DecayModeMC::other];
     }
 }
 
@@ -1555,18 +1547,57 @@ void fragmentation_helper() {
     double Eff[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
 
     const double N_initial_MC[DecayModeMC::MAX_NUM_DECAYMODE_MC] = {
-
-
+        23733.733263,
+        11217.329797,
+        22435.028056,
+        4230.433342,
+        8386.683031,
+        34488.397795,
+        38705.566510,
+        21384.911778,
+        8143.375388,
+        5025.082736,
+        6635.015387,
+        7975.970886,
+        5662.030457,
+        5989.224581,
+        1379.152711,
+        747.977559,
+        393.762899,
+        19391.715296,
+        18894.214376,
+        9498.627921,
+        10499.285975,
+        5240.605341,
+        34712.309001,
+        46080.930494,
+        17038.115418,
+        20442.541511,
+        6439.845695,
+        3004.187464,
+        4427.954926,
+        5339.097244,
+        4745.440684,
+        1097.305539,
+        503.403056,
+        366.670228,
+        104680.699924
     };
     //const double N_BKG_initial = 1704693583.076672;
+
+    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
+        for (int j = 0; j < DecayModeMC::MAX_NUM_DECAYMODE_MC; j++) {
+            Eff[i][j] = Confusion[i][j] / N_initial_MC[j];
+        }
+    }
 
     printf("--------------- efficiency matrix for XsJ/psi signal ---------------\n");
     printf("[");
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
         printf("[");
         for (int j = 0; j < DecayModeMC::MAX_NUM_DECAYMODE_MC; j++) {
-            if (j != DecayModeMC::MAX_NUM_DECAYMODE_MC - 1) printf("%.9lf,", SimpleEff[i][j]);
-            else printf("%.9lf", SimpleEff[i][j]);
+            if (j != DecayModeMC::MAX_NUM_DECAYMODE_MC - 1) printf("%.9lf,", Eff[i][j]);
+            else printf("%.9lf", Eff[i][j]);
         }
         if (i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("], ");
         else printf("]");
