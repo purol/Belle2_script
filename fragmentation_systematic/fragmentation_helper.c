@@ -1471,7 +1471,7 @@ void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMOD
     }
 }
 
-void SetError(OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE], Error_OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE]) {
+void SetError(double OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE], double Error_OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE]) {
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
         if (OneDConfusion_data[i] < MyEPSILON) Error_OneDConfusion_data[i] = 1.0;
         else Error_OneDConfusion_data[i] = std::sqrt(OneDConfusion_data[i]);
