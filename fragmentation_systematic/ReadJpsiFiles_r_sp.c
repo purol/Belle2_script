@@ -159,12 +159,16 @@ enum DecayModeMC { // MC level
     other,
     MAX_NUM_DECAYMODE_MC
 };
-enum SimpleDecayModeMC { // MC level
-    Xs2KKstar = 0,
-    Xs2Kpi,
-    Xs2Kpipi,
+enum SimpleDecayMode { // reco level
+    B2Kpi = 0,
+    B2Kpipi,
     reco_other,
-    simple_other,
+    MAX_NUM_SIMPLE_DECAYMODE
+};
+enum SimpleDecayModeMC { // MC level
+    Xs2Kpi_MC = 0, // Xs -> K pi nonresonant
+    Xs2Kpipi_MC, // Xs -> K pi pi nonresonant
+    MC_other, // other non-resonant Xs decay
     MAX_NUM_SIMPLE_DECAYMODE_MC
 };
 
@@ -662,21 +666,13 @@ void LetsFill(const char* dirname, double OneDConfusion[DecayModeMC::MAX_NUM_DEC
 
 void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayModeMC::MAX_NUM_DECAYMODE_MC], double SimpleConfusion[SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC]) {
 
-    SimpleConfusion[SimpleDecayModeMC::Xs2KKstar]
-        = Confusion[DecayModeMC::Xsu2Kc_MC]
-        + Confusion[DecayModeMC::Xsu2Kcstar2KcPi0_MC]
-        + Confusion[DecayModeMC::Xsu2Kcstar2K0Pic_MC]
-        + Confusion[DecayModeMC::Xsd2K0_MC]
-        + Confusion[DecayModeMC::Xsd2K0star2KcPic_MC]
-        + Confusion[DecayModeMC::Xsd2K0star2K0Pi0_MC];
-
-    SimpleConfusion[SimpleDecayModeMC::Xs2Kpi]
+    SimpleConfusion[SimpleDecayModeMC::Xs2Kpi_MC]
         = Confusion[DecayModeMC::Xsu2KcPi0_MC]
         + Confusion[DecayModeMC::Xsu2K0Pic_MC]
         + Confusion[DecayModeMC::Xsd2KcPic_MC]
         + Confusion[DecayModeMC::Xsd2K0Pi0_MC];
 
-    SimpleConfusion[SimpleDecayModeMC::Xs2Kpipi]
+    SimpleConfusion[SimpleDecayModeMC::Xs2Kpipi_MC]
         = Confusion[DecayModeMC::Xsu2KcPicPic_MC]
         + Confusion[DecayModeMC::Xsu2K0PicPi0_MC]
         + Confusion[DecayModeMC::Xsu2KcPi0Pi0_MC]
@@ -684,7 +680,7 @@ void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayModeMC::MAX_NUM_DECAYM
         + Confusion[DecayModeMC::Xsd2K0PicPic_MC]
         + Confusion[DecayModeMC::Xsd2K0Pi0Pi0_MC];
 
-    SimpleConfusion[SimpleDecayModeMC::reco_other]
+    SimpleConfusion[SimpleDecayModeMC::MC_other]
         = Confusion[DecayModeMC::Xsu2KcPicPicPi0_MC]
         + Confusion[DecayModeMC::Xsu2K0PicPicPic_MC]
         + Confusion[DecayModeMC::Xsu2KcPicPicPicPic_MC]
@@ -702,10 +698,8 @@ void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayModeMC::MAX_NUM_DECAYM
         + Confusion[DecayModeMC::Xsd2K0PicPicPi0Pi0_MC]
         + Confusion[DecayModeMC::Xsd2KcKcK0_MC]
         + Confusion[DecayModeMC::Xsd2KcKcKcPic_MC]
-        + Confusion[DecayModeMC::Xsd2KcKcK0Pi0_MC];
-
-    SimpleConfusion[SimpleDecayModeMC::simple_other]
-        = Confusion[DecayModeMC::other];
+        + Confusion[DecayModeMC::Xsd2KcKcK0Pi0_MC]
+        + Confusion[DecayModeMC::other];
 
 }
 

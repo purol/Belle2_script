@@ -629,28 +629,17 @@ enum DecayModeMC { // MC level
     other,
     MAX_NUM_DECAYMODE_MC
 };
-enum SimpleDecayModeMC { // MC level
-    Xs2KKstar = 0,
-    Xs2Kpi,
-    Xs2Kpipi,
+enum SimpleDecayMode { // reco level
+    B2Kpi = 0,
+    B2Kpipi,
     reco_other,
-    simple_other,
+    MAX_NUM_SIMPLE_DECAYMODE
+};
+enum SimpleDecayModeMC { // MC level
+    Xs2Kpi_MC = 0, // Xs -> K pi nonresonant
+    Xs2Kpipi_MC, // Xs -> K pi pi nonresonant
+    MC_other, // other non-resonant Xs decay
     MAX_NUM_SIMPLE_DECAYMODE_MC
-};
-enum MoreSimpleDecayModeMC {
-    Xs2KKstar_simplest = 0, // resonant K(*) decay
-    Xs2Kpi_simplest, // non-resonant Kpi decay
-    Xs2Kpipi_simplest, // non-resonant Kpipi decay
-    reco_other_simplest, // non-resonant decay which is included in reconstructed modes
-    simplest_other,
-    MAX_NUM_MORESIMPLE_DECAYMODE_MC
-};
-enum MoreSimpleDecayMode {
-    B2K_simplest = 0, // K reco
-    B2Kpi_simplest, // Kpi reco
-    B2Kpipi_simplest, // Kpipi reco
-    Breco_other_simplest, // non-resonant reco modes
-    MAX_NUM_MORESIMPLE_DECAYMODE
 };
 
 bool TrueIfDecayModeMatch(double Upsilon_decayID, double Bsig_decayID, DecayMode decaymode) {
@@ -1490,48 +1479,11 @@ void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMOD
     }
 }
 
-void DecayMatrixToMoreSimpleDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC], double MoreSimpleConfusion[MoreSimpleDecayMode::MAX_NUM_MORESIMPLE_DECAYMODE][MoreSimpleDecayModeMC::MAX_NUM_MORESIMPLE_DECAYMODE_MC]) {
-
+void SetError(OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE], Error_OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE]) {
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
-        for (int j = 0; j < DecayModeMC::MAX_NUM_DECAYMODE_MC; j++) {
-
-            MoreSimpleDecayMode MoreSimpleDecayMode_temp;
-            MoreSimpleDecayModeMC MoreSimpleDecayModeMC_temp;
-
-            if ( (i == DecayMode::B2Kc) || (i == DecayMode::B02Ks0) ) MoreSimpleDecayMode_temp = MoreSimpleDecayMode::B2K_simplest;
-            else if ((i == DecayMode::B2KcPi0) || (i == DecayMode::B2Ks0Pic) || (i == DecayMode::B02KcPic) || (i == DecayMode::B02Ks0Pi0) ) MoreSimpleDecayMode_temp = MoreSimpleDecayMode::B2Kpi_simplest;
-            else if( (i == DecayMode::B2KcPicPic) || (i == DecayMode::B2Ks0PicPi0) || (i == DecayMode::B2KcPi0Pi0) || (i == DecayMode::B02KcPicPi0) || (i == DecayMode::B02Ks0PicPic) || (i == DecayMode::B02Ks0Pi0Pi0) ) MoreSimpleDecayMode_temp = MoreSimpleDecayMode::B2Kpipi_simplest;
-            else MoreSimpleDecayMode_temp = MoreSimpleDecayMode::Breco_other_simplest;
-
-            if ((j == DecayModeMC::Xsu2Kc_MC) || (j == DecayModeMC::Xsd2K0_MC) || (j == DecayModeMC::Xsu2Kcstar2KcPi0_MC) || (j == DecayModeMC::Xsu2Kcstar2K0Pic_MC) || (j == DecayModeMC::Xsd2K0star2KcPic_MC) || (j == DecayModeMC::Xsd2K0star2K0Pi0_MC)) MoreSimpleDecayModeMC_temp = MoreSimpleDecayModeMC::Xs2KKstar_simplest;
-            else if ( (j == DecayModeMC::Xsu2KcPi0_MC) || (j == DecayModeMC::Xsu2K0Pic_MC) ) MoreSimpleDecayModeMC_temp = MoreSimpleDecayModeMC::Xs2Kpi_simplest;
-            else if ( (j == DecayModeMC::Xsu2KcPicPic_MC) || (j == DecayModeMC::Xsu2K0PicPi0_MC) || (j == DecayModeMC::Xsu2KcPi0Pi0_MC) || (j == DecayModeMC::Xsd2KcPicPi0_MC) || (j == DecayModeMC::Xsd2K0PicPic_MC) || (j == DecayModeMC::Xsd2K0Pi0Pi0_MC) ) MoreSimpleDecayModeMC_temp = MoreSimpleDecayModeMC::Xs2Kpipi_simplest;
-            else if ( j != DecayModeMC::other ) MoreSimpleDecayModeMC_temp = MoreSimpleDecayModeMC::reco_other_simplest;
-            else MoreSimpleDecayModeMC_temp = MoreSimpleDecayModeMC::simplest_other;
-
-            MoreSimpleConfusion[MoreSimpleDecayMode_temp][MoreSimpleDecayModeMC_temp] += Confusion[i][j];
-
-        }
+        if (OneDConfusion_data[i] < MyEPSILON) Error_OneDConfusion_data[i] = 1.0;
+        else Error_OneDConfusion_data[i] = std::sqrt(OneDConfusion_data[i]);
     }
-
-}
-
-void DecayMatrixToMoreSimpleDecayMatrix(double OneDConfusion[DecayMode::MAX_NUM_DECAYMODE], double MoreSimpleOneDConfusion[MoreSimpleDecayMode::MAX_NUM_MORESIMPLE_DECAYMODE]) {
-
-    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
-
-            MoreSimpleDecayMode MoreSimpleDecayMode_temp;
-
-            if ((i == DecayMode::B2Kc) || (i == DecayMode::B02Ks0)) MoreSimpleDecayMode_temp = MoreSimpleDecayMode::B2K_simplest;
-            else if ((i == DecayMode::B2KcPi0) || (i == DecayMode::B2Ks0Pic) || (i == DecayMode::B02KcPic) || (i == DecayMode::B02Ks0Pi0)) MoreSimpleDecayMode_temp = MoreSimpleDecayMode::B2Kpi_simplest;
-            else if ((i == DecayMode::B2KcPicPic) || (i == DecayMode::B2Ks0PicPi0) || (i == DecayMode::B2KcPi0Pi0) || (i == DecayMode::B02KcPicPi0) || (i == DecayMode::B02Ks0PicPic) || (i == DecayMode::B02Ks0Pi0Pi0)) MoreSimpleDecayMode_temp = MoreSimpleDecayMode::B2Kpipi_simplest;
-            else MoreSimpleDecayMode_temp = MoreSimpleDecayMode::Breco_other_simplest;
-
-            MoreSimpleOneDConfusion[MoreSimpleDecayMode_temp] += OneDConfusion[i];
-
-    }
-    
-
 }
 
 void fragmentation_helper() {
@@ -1541,12 +1493,9 @@ void fragmentation_helper() {
 
     // define confusion matrix
     double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
-    double SimpleConfusion[DecayMode::MAX_NUM_DECAYMODE][SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
-    double MoreSimpleConfusion[MoreSimpleDecayMode::MAX_NUM_MORESIMPLE_DECAYMODE][MoreSimpleDecayModeMC::MAX_NUM_MORESIMPLE_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
     double OneDConfusion[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco]
-    double MoreSimpleOneDConfusion[MoreSimpleDecayMode::MAX_NUM_MORESIMPLE_DECAYMODE] = { 0.0 }; // [reco]
     double OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco]
-    double MoreSimpleOneDConfusion_data[MoreSimpleDecayMode::MAX_NUM_MORESIMPLE_DECAYMODE] = { 0.0 }; // [reco]
+    double Error_OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco] error
 
     // dirnames
     const char* Jpsi_MC_SIGNAL_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/SIGNAL_analysis/validation_v002/final_output";
@@ -1567,10 +1516,7 @@ void fragmentation_helper() {
     LetsFillJpsi_ri(Jpsi_MC_CHARM_dirname, OneDConfusion, "CHARM");
     LetsFill(Jpsi_data_dirname, OneDConfusion_data);
 
-    DecayMatrixToSimpleDecayMatrix(Confusion, SimpleConfusion);
-    DecayMatrixToMoreSimpleDecayMatrix(Confusion, MoreSimpleConfusion);
-    DecayMatrixToMoreSimpleDecayMatrix(OneDConfusion, MoreSimpleOneDConfusion);
-    DecayMatrixToMoreSimpleDecayMatrix(OneDConfusion_data, MoreSimpleOneDConfusion_data);
+    SetError(OneDConfusion_data, Error_OneDConfusion_data);
 
     printf("--------------- confusion matrix for XsJ/psi signal ---------------\n");
     printf("[");
@@ -1585,20 +1531,6 @@ void fragmentation_helper() {
     }
     printf("]\n");
     printf("--------------- confusion matrix for XsJ/psi signal ---------------\n");
-
-    printf("--------------- simplified confusion matrix for XsJ/psi signal ---------------\n");
-    printf("[");
-    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
-        printf("[");
-        for (int j = 0; j < SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC; j++) {
-            if(j != SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC - 1) printf("%f,", SimpleConfusion[i][j]);
-            else printf("%f", SimpleConfusion[i][j]);
-        }
-        if (i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("], ");
-        else printf("]");
-    }
-    printf("]\n");
-    printf("--------------- simplified confusion matrix for XsJ/psi signal ---------------\n");
 
     printf("--------------- 1D confusion matrix for background ---------------\n");
     printf("[");
@@ -1620,67 +1552,27 @@ void fragmentation_helper() {
 
 
     // get efficiency matrix
-    double SimpleEff[DecayMode::MAX_NUM_DECAYMODE][SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
-    double MoreSimpleEff[MoreSimpleDecayMode::MAX_NUM_MORESIMPLE_DECAYMODE][MoreSimpleDecayModeMC::MAX_NUM_MORESIMPLE_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
-    double OneDEff[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco]
+    double Eff[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
 
-    const double N_KKstar_initial = 105170.648711;
-    const double N_Kpi_initial = 28357.007689;
-    const double N_Kpipi_initial = 166391.129614;
-    const double N_reco_other_initial = 114337.140334;
-    const double N_simple_other_initial = 104680.699924;
-    const double N_BKG_initial = 1704693583.076672;
-
-    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
-        for (int j = 0; j < SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC; j++) {
-
-            if (j == SimpleDecayModeMC::Xs2KKstar) SimpleEff[i][j] = SimpleConfusion[i][j] / N_KKstar_initial;
-            else if(j == SimpleDecayModeMC::Xs2Kpi) SimpleEff[i][j] = SimpleConfusion[i][j] / N_Kpi_initial;
-            else if (j == SimpleDecayModeMC::Xs2Kpipi) SimpleEff[i][j] = SimpleConfusion[i][j] / N_Kpipi_initial;
-            else if (j == SimpleDecayModeMC::reco_other) SimpleEff[i][j] = SimpleConfusion[i][j] / N_reco_other_initial;
-            else if (j == SimpleDecayModeMC::simple_other) SimpleEff[i][j] = SimpleConfusion[i][j] / N_simple_other_initial;
-
-        }
-    }
-
-    for (int i = 0; i < MoreSimpleDecayMode::MAX_NUM_MORESIMPLE_DECAYMODE; i++) {
-        for (int j = 0; j < MoreSimpleDecayModeMC::MAX_NUM_MORESIMPLE_DECAYMODE_MC; j++) {
-
-            if (j == MoreSimpleDecayModeMC::Xs2KKstar_simplest) MoreSimpleEff[i][j] = MoreSimpleConfusion[i][j] / N_KKstar_initial;
-            else if (j == MoreSimpleDecayModeMC::Xs2Kpi_simplest) MoreSimpleEff[i][j] = MoreSimpleConfusion[i][j] / N_Kpi_initial;
-            else if (j == MoreSimpleDecayModeMC::Xs2Kpipi_simplest) MoreSimpleEff[i][j] = MoreSimpleConfusion[i][j] / N_Kpipi_initial;
-            else if (j == MoreSimpleDecayModeMC::reco_other_simplest) MoreSimpleEff[i][j] = MoreSimpleConfusion[i][j] / N_reco_other_initial;
-            else if (j == MoreSimpleDecayModeMC::simplest_other) MoreSimpleEff[i][j] = MoreSimpleConfusion[i][j] / N_simple_other_initial;
-        }
-    }
+    const double N_initial_MC[DecayModeMC::MAX_NUM_DECAYMODE_MC] = {
 
 
-    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
-        OneDEff[i] = OneDConfusion[i] / N_BKG_initial;
-    }
+    };
+    //const double N_BKG_initial = 1704693583.076672;
 
-    printf("--------------- simplified efficiency matrix for XsJ/psi signal ---------------\n");
+    printf("--------------- efficiency matrix for XsJ/psi signal ---------------\n");
     printf("[");
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
         printf("[");
-        for (int j = 0; j < SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC; j++) {
-            if (j != SimpleDecayModeMC::MAX_NUM_SIMPLE_DECAYMODE_MC - 1) printf("%.9lf,", SimpleEff[i][j]);
+        for (int j = 0; j < DecayModeMC::MAX_NUM_DECAYMODE_MC; j++) {
+            if (j != DecayModeMC::MAX_NUM_DECAYMODE_MC - 1) printf("%.9lf,", SimpleEff[i][j]);
             else printf("%.9lf", SimpleEff[i][j]);
         }
         if (i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("], ");
         else printf("]");
     }
     printf("]\n");
-    printf("--------------- simplified efficiency matrix for XsJ/psi signal ---------------\n");
-
-    printf("--------------- 1D efficiency matrix for background ---------------\n");
-    printf("[");
-    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
-        if (i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("[%.9lf],", OneDEff[i]);
-        else printf("[%.9lf]", OneDEff[i]);
-    }
-    printf("]\n");
-    printf("--------------- 1D efficiency matrix for background ---------------\n");
+    printf("--------------- efficiency matrix for XsJ/psi signal ---------------\n");
 
     printf("--------------- 1D confusion matrix for data - MC BKG ---------------\n");
     printf("[");
@@ -1691,28 +1583,13 @@ void fragmentation_helper() {
     printf("]\n");
     printf("--------------- 1D confusion matrix for data - MC BKG ---------------\n");
 
-    printf("--------------- more simplified efficiency matrix for XsJ/psi signal ---------------\n");
+    printf("--------------- 1D confusion matrix for data error ---------------\n");
     printf("[");
-    for (int i = MoreSimpleDecayMode::B2Kpi_simplest; i < MoreSimpleDecayMode::MAX_NUM_MORESIMPLE_DECAYMODE; i++) {
-        printf("[");
-        for (int j = MoreSimpleDecayModeMC::Xs2Kpi_simplest; j < MoreSimpleDecayModeMC::simplest_other; j++) {
-            if (j != MoreSimpleDecayModeMC::simplest_other - 1) printf("%.9lf,", MoreSimpleEff[i][j]);
-            else printf("%.9lf", MoreSimpleEff[i][j]);
-        }
-        if (i != MoreSimpleDecayMode::MAX_NUM_MORESIMPLE_DECAYMODE - 1) printf("], ");
-        else printf("]");
+    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
+        if (i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("[%f],", Error_OneDConfusion_data[i]);
+        else printf("[%f]", Error_OneDConfusion_data[i]);
     }
     printf("]\n");
-    printf("--------------- more simplified efficiency matrix for XsJ/psi signal ---------------\n");
-
-    printf("--------------- 1D confusion matrix for data - MC BKG - MC KJ/psi - MC K*J/psi - MC unreco others ---------------\n");
-    printf("[");
-    for (int i = MoreSimpleDecayMode::B2Kpi_simplest; i < MoreSimpleDecayMode::MAX_NUM_MORESIMPLE_DECAYMODE; i++) {
-        if (i != MoreSimpleDecayMode::MAX_NUM_MORESIMPLE_DECAYMODE - 1) printf("[%f],", MoreSimpleOneDConfusion_data[i] - MoreSimpleOneDConfusion[i] - MoreSimpleConfusion[i][MoreSimpleDecayModeMC::Xs2KKstar_simplest] - MoreSimpleConfusion[i][MoreSimpleDecayModeMC::simplest_other]);
-        else printf("[%f]", MoreSimpleOneDConfusion_data[i] - MoreSimpleOneDConfusion[i] - MoreSimpleConfusion[i][MoreSimpleDecayModeMC::Xs2KKstar_simplest] - MoreSimpleConfusion[i][MoreSimpleDecayModeMC::simplest_other]);
-    }
-    printf("]\n");
-    printf("--------------- 1D confusion matrix for data - MC BKG - MC KJ/psi - MC K*J/psi - MC unreco others ---------------\n");
-
+    printf("--------------- 1D confusion matrix for data error ---------------\n");
 
 }
