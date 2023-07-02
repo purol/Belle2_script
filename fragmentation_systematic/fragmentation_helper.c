@@ -1753,8 +1753,8 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
                 temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPicPicPi0Pi0_MC;
                 break;
             case DecayModeMC::Xsu2KcKcKc_MC:
-                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcKcKc_MC
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcKcKc_MC;
+                break;
             case DecayModeMC::Xsu2KcKcK0Pic_MC:
                 temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcKcK0Pic_MC;
                 break;
@@ -1789,8 +1789,8 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
                 temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPicPicPicPi0_MC;
                 break;
             case DecayModeMC::Xsd2K0PicPicPicPic_MC:
-                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPicPicPic_MC
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPicPicPic_MC;
+                break;
             case DecayModeMC::Xsd2K0Pi0Pi0_MC:
                 temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2K0Pi0Pi0_MC;
                 break;
@@ -1814,7 +1814,7 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
                 break;
             }
 
-            rConfusion[temp_DecayModeReduced][DecayModeReducedMC] = Confusion[i][j];
+            rConfusion[temp_DecayModeReduced][temp_DecayModeReducedMC] = Confusion[i][j];
 
         }
 
