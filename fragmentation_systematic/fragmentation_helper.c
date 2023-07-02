@@ -1620,8 +1620,11 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
             DecayModeReduced temp_DecayModeReduced;
             DecayModeReducedMC temp_DecayModeReducedMC;
 
+            bool IsItReduced = false;
+
             switch (static_cast<DecayMode>(i)) {
             case DecayMode::B2Kc:
+                IsItReduced = true;
                 break;
             case DecayMode::B2KcPi0:
                 temp_DecayModeReduced = DecayModeReduced::rB2KcPi0;
@@ -1666,6 +1669,7 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
                 temp_DecayModeReduced = DecayModeReduced::rB2KcKcKcPi0;
                 break;
             case DecayMode::B02Ks0:
+                IsItReduced = true;
                 break;
             case DecayMode::B02KcPic:
                 temp_DecayModeReduced = DecayModeReduced::rB02KcPic;
@@ -1718,10 +1722,13 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
 
             switch (static_cast<DecayModeMC>(i)) {
             case DecayModeMC::Xsu2Kc_MC:
+                IsItReduced = true;
                 break;
             case DecayModeMC::Xsu2Kcstar2KcPi0_MC:
+                IsItReduced = true;
                 break;
             case DecayModeMC::Xsu2Kcstar2K0Pic_MC:
+                IsItReduced = true;
                 break;
             case DecayModeMC::Xsu2KcPi0_MC:
                 temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPi0_MC;
@@ -1766,10 +1773,13 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
                 temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcKcKcPi0_MC;
                 break;
             case DecayModeMC::Xsd2K0_MC:
+                IsItReduced = true;
                 break;
             case DecayModeMC::Xsd2K0star2KcPic_MC:
+                IsItReduced = true;
                 break;
             case DecayModeMC::Xsd2K0star2K0Pi0_MC:
+                IsItReduced = true;
                 break;
             case DecayModeMC::Xsd2KcPic_MC:
                 temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPic_MC;
@@ -1822,6 +1832,8 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
                 break;
             }
 
+            if (IsItReduced) continue;
+
             rConfusion[temp_DecayModeReduced][temp_DecayModeReducedMC] = Confusion[i][j];
 
         }
@@ -1835,8 +1847,11 @@ void DecayMatrixToReducedDecayMatrix(double OneDConfusion[DecayMode::MAX_NUM_DEC
 
             DecayModeReduced temp_DecayModeReduced;
 
+            bool IsItReduced = false;
+
             switch (static_cast<DecayMode>(i)) {
             case DecayMode::B2Kc:
+                IsItReduced = true;
                 break;
             case DecayMode::B2KcPi0:
                 temp_DecayModeReduced = DecayModeReduced::rB2KcPi0;
@@ -1881,6 +1896,7 @@ void DecayMatrixToReducedDecayMatrix(double OneDConfusion[DecayMode::MAX_NUM_DEC
                 temp_DecayModeReduced = DecayModeReduced::rB2KcKcKcPi0;
                 break;
             case DecayMode::B02Ks0:
+                IsItReduced = true;
                 break;
             case DecayMode::B02KcPic:
                 temp_DecayModeReduced = DecayModeReduced::rB02KcPic;
@@ -1930,6 +1946,8 @@ void DecayMatrixToReducedDecayMatrix(double OneDConfusion[DecayMode::MAX_NUM_DEC
                 break;
             }
 
+            if (IsItReduced) continue;
+
             rOneDConfusion[temp_DecayModeReduced] = OneDConfusion[i];
 
     }
@@ -1940,8 +1958,11 @@ void ExtractReducedElement(double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayM
 
         DecayModeReduced temp_DecayModeReduced;
 
+        bool IsItReduced = false;
+
         switch (static_cast<DecayMode>(i)) {
         case DecayMode::B2Kc:
+            IsItReduced = true;
             break;
         case DecayMode::B2KcPi0:
             temp_DecayModeReduced = DecayModeReduced::rB2KcPi0;
@@ -1986,6 +2007,7 @@ void ExtractReducedElement(double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayM
             temp_DecayModeReduced = DecayModeReduced::rB2KcKcKcPi0;
             break;
         case DecayMode::B02Ks0:
+            IsItReduced = true;
             break;
         case DecayMode::B02KcPic:
             temp_DecayModeReduced = DecayModeReduced::rB02KcPic;
@@ -2034,6 +2056,8 @@ void ExtractReducedElement(double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayM
             exit(1);
             break;
         }
+
+        if (IsItReduced) continue;
 
         rOneDConfusion_KKstar[temp_DecayModeReduced]
             = Confusion[i][DecayModeMC::Xsu2Kc_MC]
