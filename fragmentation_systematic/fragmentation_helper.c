@@ -1620,7 +1620,7 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
             DecayModeReduced temp_DecayModeReduced;
             DecayModeReducedMC temp_DecayModeReducedMC;
 
-            switch (i) {
+            switch (static_cast<DecayMode>(i)) {
             case DecayMode::B2Kc:
                 break;
             case DecayMode::B2KcPi0:
@@ -1712,7 +1712,7 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
             }
 
 
-            switch (j) {
+            switch (static_cast<DecayModeMC>(i)) {
             case DecayModeMC::Xsu2Kc_MC:
                 break;
             case DecayModeMC::Xsu2Kcstar2KcPi0_MC:
@@ -1827,7 +1827,7 @@ void DecayMatrixToReducedDecayMatrix(double OneDConfusion[DecayMode::MAX_NUM_DEC
 
             DecayModeReduced temp_DecayModeReduced;
 
-            switch (i) {
+            switch (static_cast<DecayMode>(i)) {
             case DecayMode::B2Kc:
                 break;
             case DecayMode::B2KcPi0:
@@ -1928,7 +1928,7 @@ void ExtractReducedElement(double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayM
 
         DecayModeReduced temp_DecayModeReduced;
 
-        switch (i) {
+        switch (static_cast<DecayMode>(i)) {
         case DecayMode::B2Kc:
             break;
         case DecayMode::B2KcPi0:
