@@ -1716,102 +1716,102 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
             case DecayModeMC::Xsu2Kc_MC:
                 break;
             case DecayModeMC::Xsu2Kcstar2KcPi0_MC:
-                    break;
+                break;
             case DecayModeMC::Xsu2Kcstar2K0Pic_MC:
-                    break;
+                break;
             case DecayModeMC::Xsu2KcPi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPi0_MC;
+                break;
             case DecayModeMC::Xsu2K0Pic_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2K0Pic_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2K0Pic_MC;
+                break;
             case DecayModeMC::Xsu2KcPicPic_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPicPic_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPicPic_MC;
+                break;
             case DecayModeMC::Xsu2K0PicPi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2K0PicPi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2K0PicPi0_MC;
+                break;
             case DecayModeMC::Xsu2KcPicPicPi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPicPicPi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPicPicPi0_MC;
+                break;
             case DecayModeMC::Xsu2K0PicPicPic_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2K0PicPicPic_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2K0PicPicPic_MC;
+                break;
             case DecayModeMC::Xsu2KcPicPicPicPic_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPicPicPicPic_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPicPicPicPic_MC;
+                break;
             case DecayModeMC::Xsu2K0PicPicPicPi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2K0PicPicPicPi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2K0PicPicPicPi0_MC;
+                break;
             case DecayModeMC::Xsu2KcPi0Pi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPi0Pi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPi0Pi0_MC;
+                break;
             case DecayModeMC::Xsu2K0PicPi0Pi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2K0PicPi0Pi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2K0PicPi0Pi0_MC;
+                break;
             case DecayModeMC::Xsu2KcPicPicPi0Pi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPicPicPi0Pi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPicPicPi0Pi0_MC;
+                break;
             case DecayModeMC::Xsu2KcKcKc_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcKcKc_MC
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcKcKc_MC
                     break;
             case DecayModeMC::Xsu2KcKcK0Pic_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcKcK0Pic_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcKcK0Pic_MC;
+                break;
             case DecayModeMC::Xsu2KcKcKcPi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcKcKcPi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsu2KcKcKcPi0_MC;
+                break;
             case DecayModeMC::Xsd2K0_MC:
-                    break;
+                break;
             case DecayModeMC::Xsd2K0star2KcPic_MC:
-                    break;
+                break;
             case DecayModeMC::Xsd2K0star2K0Pi0_MC:
-                    break;
+                break;
             case DecayModeMC::Xsd2KcPic_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPic_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPic_MC;
+                break;
             case DecayModeMC::Xsd2K0Pi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2K0Pi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2K0Pi0_MC;
+                break;
             case DecayModeMC::Xsd2KcPicPi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPicPi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPicPi0_MC;
+                break;
             case DecayModeMC::Xsd2K0PicPic_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPic_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPic_MC;
+                break;
             case DecayModeMC::Xsd2KcPicPicPic_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPicPicPic_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPicPicPic_MC;
+                break;
             case DecayModeMC::Xsd2K0PicPicPi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPicPi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPicPi0_MC;
+                break;
             case DecayModeMC::Xsd2KcPicPicPicPi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPicPicPicPi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPicPicPicPi0_MC;
+                break;
             case DecayModeMC::Xsd2K0PicPicPicPic_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPicPicPic_MC
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPicPicPic_MC
                     break;
             case DecayModeMC::Xsd2K0Pi0Pi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2K0Pi0Pi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2K0Pi0Pi0_MC;
+                break;
             case DecayModeMC::Xsd2KcPicPi0Pi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPicPi0Pi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPicPi0Pi0_MC;
+                break;
             case DecayModeMC::Xsd2K0PicPicPi0Pi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPicPi0Pi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPicPi0Pi0_MC;
+                break;
             case DecayModeMC::Xsd2KcKcK0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcKcK0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2KcKcK0_MC;
+                break;
             case DecayModeMC::Xsd2KcKcKcPic_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcKcKcPic_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2KcKcKcPic_MC;
+                break;
             case DecayModeMC::Xsd2KcKcK0Pi0_MC:
-                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcKcK0Pi0_MC;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rXsd2KcKcK0Pi0_MC;
+                break;
             case DecayModeMC::other:
-                DecayModeReducedMC = DecayModeReducedMC::rother;
-                    break;
+                temp_DecayModeReducedMC = DecayModeReducedMC::rother;
+                break;
             }
 
             rConfusion[temp_DecayModeReduced][DecayModeReducedMC] = Confusion[i][j];
