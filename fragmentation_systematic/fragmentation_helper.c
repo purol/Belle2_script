@@ -1709,6 +1709,10 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
             case DecayMode::B02KcKcKs0Pi0:
                 temp_DecayModeReduced = DecayModeReduced::rB02KcKcKs0Pi0;
                 break;
+            default:
+                printf("[ERROR] switch\n");
+                exit(1);
+                break;
             }
 
 
@@ -1811,6 +1815,10 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
                 break;
             case DecayModeMC::other:
                 temp_DecayModeReducedMC = DecayModeReducedMC::rother;
+                break;
+            default:
+                printf("[ERROR] switch\n");
+                exit(1);
                 break;
             }
 
@@ -1916,6 +1924,10 @@ void DecayMatrixToReducedDecayMatrix(double OneDConfusion[DecayMode::MAX_NUM_DEC
             case DecayMode::B02KcKcKs0Pi0:
                 temp_DecayModeReduced = DecayModeReduced::rB02KcKcKs0Pi0;
                 break;
+            default:
+                printf("[ERROR] switch\n");
+                exit(1);
+                break;
             }
 
             rOneDConfusion[temp_DecayModeReduced] = OneDConfusion[i];
@@ -2016,6 +2028,10 @@ void ExtractReducedElement(double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayM
             break;
         case DecayMode::B02KcKcKs0Pi0:
             temp_DecayModeReduced = DecayModeReduced::rB02KcKcKs0Pi0;
+            break;
+        default:
+            printf("[ERROR] switch\n");
+            exit(1);
             break;
         }
 
