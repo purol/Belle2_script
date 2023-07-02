@@ -641,6 +641,140 @@ enum SimpleDecayModeMC { // MC level
     MC_other, // other non-resonant Xs decay
     MAX_NUM_SIMPLE_DECAYMODE_MC
 };
+enum DecayModeReduced { // reco level
+    rB2KcPi0 = 0,
+    rB2Ks0Pic,
+    rB2KcPicPic,
+    rB2Ks0PicPi0,
+    rB2KcPicPicPi0,
+    rB2Ks0PicPicPic,
+    rB2KcPicPicPicPic,
+    rB2Ks0PicPicPicPi0,
+    rB2KcPi0Pi0,
+    rB2Ks0PicPi0Pi0,
+    rB2KcPicPicPi0Pi0,
+    rB2KcKcKc,
+    rB2KcKcKs0Pic,
+    rB2KcKcKcPi0,
+    rB02KcPic,
+    rB02Ks0Pi0,
+    rB02KcPicPi0,
+    rB02Ks0PicPic,
+    rB02KcPicPicPic,
+    rB02Ks0PicPicPi0,
+    rB02KcPicPicPicPi0,
+    rB02Ks0PicPicPicPic,
+    rB02Ks0Pi0Pi0,
+    rB02KcPicPi0Pi0,
+    rB02Ks0PicPicPi0Pi0,
+    rB02KcKcKs0,
+    rB02KcKcKcPic,
+    rB02KcKcKs0Pi0,
+    rMAX_NUM_DECAYMODE
+};
+enum DecayModeReducedMC { // MC level
+    rXsu2KcPi0_MC = 0, // non-res
+    rXsu2K0Pic_MC,
+    rXsu2KcPicPic_MC,
+    rXsu2K0PicPi0_MC,
+    rXsu2KcPicPicPi0_MC,
+    rXsu2K0PicPicPic_MC,
+    rXsu2KcPicPicPicPic_MC,
+    rXsu2K0PicPicPicPi0_MC,
+    rXsu2KcPi0Pi0_MC,
+    rXsu2K0PicPi0Pi0_MC,
+    rXsu2KcPicPicPi0Pi0_MC,
+    rXsu2KcKcKc_MC,
+    rXsu2KcKcK0Pic_MC,
+    rXsu2KcKcKcPi0_MC,
+    rXsd2KcPic_MC,
+    rXsd2K0Pi0_MC,
+    rXsd2KcPicPi0_MC,
+    rXsd2K0PicPic_MC,
+    rXsd2KcPicPicPic_MC,
+    rXsd2K0PicPicPi0_MC,
+    rXsd2KcPicPicPicPi0_MC,
+    rXsd2K0PicPicPicPic_MC,
+    rXsd2K0Pi0Pi0_MC,
+    rXsd2KcPicPi0Pi0_MC,
+    rXsd2K0PicPicPi0Pi0_MC,
+    rXsd2KcKcK0_MC,
+    rXsd2KcKcKcPic_MC,
+    rXsd2KcKcK0Pi0_MC,
+    rother,
+    rMAX_NUM_DECAYMODE_MC
+};
+
+const double N_initial_MC[DecayModeMC::MAX_NUM_DECAYMODE_MC] = {
+    23733.733263,
+    11217.329797,
+    22435.028056,
+    4230.433342,
+    8386.683031,
+    34488.397795,
+    38705.566510,
+    21384.911778,
+    8143.375388,
+    5025.082736,
+    6635.015387,
+    7975.970886,
+    5662.030457,
+    5989.224581,
+    1379.152711,
+    747.977559,
+    393.762899,
+    19391.715296,
+    18894.214376,
+    9498.627921,
+    10499.285975,
+    5240.605341,
+    34712.309001,
+    46080.930494,
+    17038.115418,
+    20442.541511,
+    6439.845695,
+    3004.187464,
+    4427.954926,
+    5339.097244,
+    4745.440684,
+    1097.305539,
+    503.403056,
+    366.670228,
+    104680.699924
+};
+const double N_BKG_initial = 1704693583.076672;
+
+const double rN_initial_MC[DecayModeReducedMC::rMAX_NUM_DECAYMODE_MC] = {
+    4230.433342,
+    8386.683031,
+    34488.397795,
+    38705.566510,
+    21384.911778,
+    8143.375388,
+    5025.082736,
+    6635.015387,
+    7975.970886,
+    5662.030457,
+    5989.224581,
+    1379.152711,
+    747.977559,
+    393.762899,
+    10499.285975,
+    5240.605341,
+    34712.309001,
+    46080.930494,
+    17038.115418,
+    20442.541511,
+    6439.845695,
+    3004.187464,
+    4427.954926,
+    5339.097244,
+    4745.440684,
+    1097.305539,
+    503.403056,
+    366.670228,
+    104680.699924
+};
 
 bool TrueIfDecayModeMatch(double Upsilon_decayID, double Bsig_decayID, DecayMode decaymode) {
     switch (decaymode) {
@@ -1092,6 +1226,8 @@ void LetsFillJpsi_ri(const char* dirname, double Confusion[DecayMode::MAX_NUM_DE
             if (Decay[1] > 0) Decay[6] = 0;
             if (Decay[2] > 0) Decay[5] = 0;
 
+            if (Mxs < 1.1) continue;
+
             double weight_ri = 0.0;
             if (SampleName == "SIGNAL") {
                 FEI_calibration_factor = CAL_qq;
@@ -1244,6 +1380,8 @@ void LetsFillJpsi_ri(const char* dirname, double OneDConfusion[DecayMode::MAX_NU
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
+            if (Mxs < 1.1) continue;
+
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
                 FEI_calibration_factor = FEI_cal_Bc;
@@ -1358,6 +1496,8 @@ void LetsFill(const char* dirname, double OneDConfusion[DecayMode::MAX_NUM_DECAY
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
+            if (Mxs < 1.1) continue;
+
             int decaymodeid = -1;
             for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) { // find reco decay mode
                 if (TrueIfDecayModeMatch(Upsilon_decayID, Bsig_decayID, static_cast<DecayMode>(i))) {
@@ -1408,6 +1548,8 @@ void LetsFill(const char* dirname, double OneDConfusion[DecayMode::MAX_NUM_DECAY
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+
+            if (Mxs < 1.1) continue;
 
             int decaymodeid = -1;
             for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) { // find reco decay mode
@@ -1471,6 +1613,423 @@ void DecayMatrixToSimpleDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMOD
     }
 }
 
+void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC], double rConfusion[DecayModeReduced::rMAX_NUM_DECAYMODE][DecayModeReducedMC::rMAX_NUM_DECAYMODE_MC]) {
+    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
+        for (int j = 0; j < DecayModeMC::MAX_NUM_DECAYMODE_MC; j++) {
+
+            DecayModeReduced temp_DecayModeReduced;
+            DecayModeReducedMC temp_DecayModeReducedMC;
+
+            switch (i) {
+            case DecayMode::B2Kc:
+                break;
+            case DecayMode::B2KcPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcPi0;
+                break;
+            case DecayMode::B2Ks0Pic:
+                temp_DecayModeReduced = DecayModeReduced::rB2Ks0Pic;
+                break;
+            case DecayMode::B2KcPicPic:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcPicPic;
+                break;
+            case DecayMode::B2Ks0PicPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2Ks0PicPi0;
+                break;
+            case DecayMode::B2KcPicPicPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcPicPicPi0;
+                break;
+            case DecayMode::B2Ks0PicPicPic:
+                temp_DecayModeReduced = DecayModeReduced::rB2Ks0PicPicPic;
+                break;
+            case DecayMode::B2KcPicPicPicPic:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcPicPicPicPic;
+                break;
+            case DecayMode::B2Ks0PicPicPicPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2Ks0PicPicPicPi0;
+                break;
+            case DecayMode::B2KcPi0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcPi0Pi0;
+                break;
+            case DecayMode::B2Ks0PicPi0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2Ks0PicPi0Pi0;
+                break;
+            case DecayMode::B2KcPicPicPi0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcPicPicPi0Pi0;
+                break;
+            case DecayMode::B2KcKcKc:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcKcKc;
+                break;
+            case DecayMode::B2KcKcKs0Pic:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcKcKs0Pic;
+                break;
+            case DecayMode::B2KcKcKcPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcKcKcPi0;
+                break;
+            case DecayMode::B02Ks0:
+                break;
+            case DecayMode::B02KcPic:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcPic;
+                break;
+            case DecayMode::B02Ks0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02Ks0Pi0;
+                break;
+            case DecayMode::B02KcPicPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcPicPi0;
+                break;
+            case DecayMode::B02Ks0PicPic:
+                temp_DecayModeReduced = DecayModeReduced::rB02Ks0PicPic;
+                break;
+            case DecayMode::B02KcPicPicPic:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcPicPicPic;
+                break;
+            case DecayMode::B02Ks0PicPicPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02Ks0PicPicPi0;
+                break;
+            case DecayMode::B02KcPicPicPicPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcPicPicPicPi0;
+                break;
+            case DecayMode::B02Ks0PicPicPicPic:
+                temp_DecayModeReduced = DecayModeReduced::rB02Ks0PicPicPicPic;
+                break;
+            case DecayMode::B02Ks0Pi0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02Ks0Pi0Pi0;
+                break;
+            case DecayMode::B02KcPicPi0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcPicPi0Pi0;
+                break;
+            case DecayMode::B02Ks0PicPicPi0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02Ks0PicPicPi0Pi0;
+                break;
+            case DecayMode::B02KcKcKs0:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcKcKs0;
+                break;
+            case DecayMode::B02KcKcKcPic:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcKcKcPic;
+                break;
+            case DecayMode::B02KcKcKs0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcKcKs0Pi0;
+                break;
+            }
+
+
+            switch (j) {
+            case DecayModeMC::Xsu2Kc_MC:
+                break;
+            case DecayModeMC::Xsu2Kcstar2KcPi0_MC:
+                    break;
+            case DecayModeMC::Xsu2Kcstar2K0Pic_MC:
+                    break;
+            case DecayModeMC::Xsu2KcPi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPi0_MC;
+                    break;
+            case DecayModeMC::Xsu2K0Pic_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2K0Pic_MC;
+                    break;
+            case DecayModeMC::Xsu2KcPicPic_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPicPic_MC;
+                    break;
+            case DecayModeMC::Xsu2K0PicPi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2K0PicPi0_MC;
+                    break;
+            case DecayModeMC::Xsu2KcPicPicPi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPicPicPi0_MC;
+                    break;
+            case DecayModeMC::Xsu2K0PicPicPic_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2K0PicPicPic_MC;
+                    break;
+            case DecayModeMC::Xsu2KcPicPicPicPic_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPicPicPicPic_MC;
+                    break;
+            case DecayModeMC::Xsu2K0PicPicPicPi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2K0PicPicPicPi0_MC;
+                    break;
+            case DecayModeMC::Xsu2KcPi0Pi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPi0Pi0_MC;
+                    break;
+            case DecayModeMC::Xsu2K0PicPi0Pi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2K0PicPi0Pi0_MC;
+                    break;
+            case DecayModeMC::Xsu2KcPicPicPi0Pi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcPicPicPi0Pi0_MC;
+                    break;
+            case DecayModeMC::Xsu2KcKcKc_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcKcKc_MC
+                    break;
+            case DecayModeMC::Xsu2KcKcK0Pic_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcKcK0Pic_MC;
+                    break;
+            case DecayModeMC::Xsu2KcKcKcPi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsu2KcKcKcPi0_MC;
+                    break;
+            case DecayModeMC::Xsd2K0_MC:
+                    break;
+            case DecayModeMC::Xsd2K0star2KcPic_MC:
+                    break;
+            case DecayModeMC::Xsd2K0star2K0Pi0_MC:
+                    break;
+            case DecayModeMC::Xsd2KcPic_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPic_MC;
+                    break;
+            case DecayModeMC::Xsd2K0Pi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2K0Pi0_MC;
+                    break;
+            case DecayModeMC::Xsd2KcPicPi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPicPi0_MC;
+                    break;
+            case DecayModeMC::Xsd2K0PicPic_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPic_MC;
+                    break;
+            case DecayModeMC::Xsd2KcPicPicPic_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPicPicPic_MC;
+                    break;
+            case DecayModeMC::Xsd2K0PicPicPi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPicPi0_MC;
+                    break;
+            case DecayModeMC::Xsd2KcPicPicPicPi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPicPicPicPi0_MC;
+                    break;
+            case DecayModeMC::Xsd2K0PicPicPicPic_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPicPicPic_MC
+                    break;
+            case DecayModeMC::Xsd2K0Pi0Pi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2K0Pi0Pi0_MC;
+                    break;
+            case DecayModeMC::Xsd2KcPicPi0Pi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcPicPi0Pi0_MC;
+                    break;
+            case DecayModeMC::Xsd2K0PicPicPi0Pi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2K0PicPicPi0Pi0_MC;
+                    break;
+            case DecayModeMC::Xsd2KcKcK0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcKcK0_MC;
+                    break;
+            case DecayModeMC::Xsd2KcKcKcPic_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcKcKcPic_MC;
+                    break;
+            case DecayModeMC::Xsd2KcKcK0Pi0_MC:
+                DecayModeReducedMC = DecayModeReducedMC::rXsd2KcKcK0Pi0_MC;
+                    break;
+            case DecayModeMC::other:
+                DecayModeReducedMC = DecayModeReducedMC::rother;
+                    break;
+            }
+
+            rConfusion[temp_DecayModeReduced][DecayModeReducedMC] = Confusion[i][j];
+
+        }
+
+
+    }
+}
+
+void DecayMatrixToReducedDecayMatrix(double OneDConfusion[DecayMode::MAX_NUM_DECAYMODE], double rOneDConfusion[DecayModeReduced::rMAX_NUM_DECAYMODE]) {
+    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
+
+            DecayModeReduced temp_DecayModeReduced;
+
+            switch (i) {
+            case DecayMode::B2Kc:
+                break;
+            case DecayMode::B2KcPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcPi0;
+                break;
+            case DecayMode::B2Ks0Pic:
+                temp_DecayModeReduced = DecayModeReduced::rB2Ks0Pic;
+                break;
+            case DecayMode::B2KcPicPic:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcPicPic;
+                break;
+            case DecayMode::B2Ks0PicPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2Ks0PicPi0;
+                break;
+            case DecayMode::B2KcPicPicPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcPicPicPi0;
+                break;
+            case DecayMode::B2Ks0PicPicPic:
+                temp_DecayModeReduced = DecayModeReduced::rB2Ks0PicPicPic;
+                break;
+            case DecayMode::B2KcPicPicPicPic:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcPicPicPicPic;
+                break;
+            case DecayMode::B2Ks0PicPicPicPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2Ks0PicPicPicPi0;
+                break;
+            case DecayMode::B2KcPi0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcPi0Pi0;
+                break;
+            case DecayMode::B2Ks0PicPi0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2Ks0PicPi0Pi0;
+                break;
+            case DecayMode::B2KcPicPicPi0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcPicPicPi0Pi0;
+                break;
+            case DecayMode::B2KcKcKc:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcKcKc;
+                break;
+            case DecayMode::B2KcKcKs0Pic:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcKcKs0Pic;
+                break;
+            case DecayMode::B2KcKcKcPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB2KcKcKcPi0;
+                break;
+            case DecayMode::B02Ks0:
+                break;
+            case DecayMode::B02KcPic:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcPic;
+                break;
+            case DecayMode::B02Ks0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02Ks0Pi0;
+                break;
+            case DecayMode::B02KcPicPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcPicPi0;
+                break;
+            case DecayMode::B02Ks0PicPic:
+                temp_DecayModeReduced = DecayModeReduced::rB02Ks0PicPic;
+                break;
+            case DecayMode::B02KcPicPicPic:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcPicPicPic;
+                break;
+            case DecayMode::B02Ks0PicPicPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02Ks0PicPicPi0;
+                break;
+            case DecayMode::B02KcPicPicPicPi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcPicPicPicPi0;
+                break;
+            case DecayMode::B02Ks0PicPicPicPic:
+                temp_DecayModeReduced = DecayModeReduced::rB02Ks0PicPicPicPic;
+                break;
+            case DecayMode::B02Ks0Pi0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02Ks0Pi0Pi0;
+                break;
+            case DecayMode::B02KcPicPi0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcPicPi0Pi0;
+                break;
+            case DecayMode::B02Ks0PicPicPi0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02Ks0PicPicPi0Pi0;
+                break;
+            case DecayMode::B02KcKcKs0:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcKcKs0;
+                break;
+            case DecayMode::B02KcKcKcPic:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcKcKcPic;
+                break;
+            case DecayMode::B02KcKcKs0Pi0:
+                temp_DecayModeReduced = DecayModeReduced::rB02KcKcKs0Pi0;
+                break;
+            }
+
+            rOneDConfusion[temp_DecayModeReduced] = OneDConfusion[i];
+
+    }
+}
+
+void ExtractReducedElement(double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC], double rOneDConfusion_KKstar[DecayModeReduced::rMAX_NUM_DECAYMODE]) {
+    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
+
+        DecayModeReduced temp_DecayModeReduced;
+
+        switch (i) {
+        case DecayMode::B2Kc:
+            break;
+        case DecayMode::B2KcPi0:
+            temp_DecayModeReduced = DecayModeReduced::rB2KcPi0;
+            break;
+        case DecayMode::B2Ks0Pic:
+            temp_DecayModeReduced = DecayModeReduced::rB2Ks0Pic;
+            break;
+        case DecayMode::B2KcPicPic:
+            temp_DecayModeReduced = DecayModeReduced::rB2KcPicPic;
+            break;
+        case DecayMode::B2Ks0PicPi0:
+            temp_DecayModeReduced = DecayModeReduced::rB2Ks0PicPi0;
+            break;
+        case DecayMode::B2KcPicPicPi0:
+            temp_DecayModeReduced = DecayModeReduced::rB2KcPicPicPi0;
+            break;
+        case DecayMode::B2Ks0PicPicPic:
+            temp_DecayModeReduced = DecayModeReduced::rB2Ks0PicPicPic;
+            break;
+        case DecayMode::B2KcPicPicPicPic:
+            temp_DecayModeReduced = DecayModeReduced::rB2KcPicPicPicPic;
+            break;
+        case DecayMode::B2Ks0PicPicPicPi0:
+            temp_DecayModeReduced = DecayModeReduced::rB2Ks0PicPicPicPi0;
+            break;
+        case DecayMode::B2KcPi0Pi0:
+            temp_DecayModeReduced = DecayModeReduced::rB2KcPi0Pi0;
+            break;
+        case DecayMode::B2Ks0PicPi0Pi0:
+            temp_DecayModeReduced = DecayModeReduced::rB2Ks0PicPi0Pi0;
+            break;
+        case DecayMode::B2KcPicPicPi0Pi0:
+            temp_DecayModeReduced = DecayModeReduced::rB2KcPicPicPi0Pi0;
+            break;
+        case DecayMode::B2KcKcKc:
+            temp_DecayModeReduced = DecayModeReduced::rB2KcKcKc;
+            break;
+        case DecayMode::B2KcKcKs0Pic:
+            temp_DecayModeReduced = DecayModeReduced::rB2KcKcKs0Pic;
+            break;
+        case DecayMode::B2KcKcKcPi0:
+            temp_DecayModeReduced = DecayModeReduced::rB2KcKcKcPi0;
+            break;
+        case DecayMode::B02Ks0:
+            break;
+        case DecayMode::B02KcPic:
+            temp_DecayModeReduced = DecayModeReduced::rB02KcPic;
+            break;
+        case DecayMode::B02Ks0Pi0:
+            temp_DecayModeReduced = DecayModeReduced::rB02Ks0Pi0;
+            break;
+        case DecayMode::B02KcPicPi0:
+            temp_DecayModeReduced = DecayModeReduced::rB02KcPicPi0;
+            break;
+        case DecayMode::B02Ks0PicPic:
+            temp_DecayModeReduced = DecayModeReduced::rB02Ks0PicPic;
+            break;
+        case DecayMode::B02KcPicPicPic:
+            temp_DecayModeReduced = DecayModeReduced::rB02KcPicPicPic;
+            break;
+        case DecayMode::B02Ks0PicPicPi0:
+            temp_DecayModeReduced = DecayModeReduced::rB02Ks0PicPicPi0;
+            break;
+        case DecayMode::B02KcPicPicPicPi0:
+            temp_DecayModeReduced = DecayModeReduced::rB02KcPicPicPicPi0;
+            break;
+        case DecayMode::B02Ks0PicPicPicPic:
+            temp_DecayModeReduced = DecayModeReduced::rB02Ks0PicPicPicPic;
+            break;
+        case DecayMode::B02Ks0Pi0Pi0:
+            temp_DecayModeReduced = DecayModeReduced::rB02Ks0Pi0Pi0;
+            break;
+        case DecayMode::B02KcPicPi0Pi0:
+            temp_DecayModeReduced = DecayModeReduced::rB02KcPicPi0Pi0;
+            break;
+        case DecayMode::B02Ks0PicPicPi0Pi0:
+            temp_DecayModeReduced = DecayModeReduced::rB02Ks0PicPicPi0Pi0;
+            break;
+        case DecayMode::B02KcKcKs0:
+            temp_DecayModeReduced = DecayModeReduced::rB02KcKcKs0;
+            break;
+        case DecayMode::B02KcKcKcPic:
+            temp_DecayModeReduced = DecayModeReduced::rB02KcKcKcPic;
+            break;
+        case DecayMode::B02KcKcKs0Pi0:
+            temp_DecayModeReduced = DecayModeReduced::rB02KcKcKs0Pi0;
+            break;
+        }
+
+        rOneDConfusion_KKstar[temp_DecayModeReduced]
+            = Confusion[i][DecayModeMC::Xsu2Kc_MC]
+            + Confusion[i][DecayModeMC::Xsu2Kcstar2KcPi0_MC]
+            + Confusion[i][DecayModeMC::Xsu2Kcstar2K0Pic_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0star2KcPic_MC]
+            + Confusion[i][DecayModeMC::Xsd2K0star2K0Pi0_MC];
+
+    }
+}
+
 void SetError(double OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE], double Error_OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE]) {
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
         if (OneDConfusion_data[i] < MyEPSILON) Error_OneDConfusion_data[i] = 1.0;
@@ -1478,47 +2037,16 @@ void SetError(double OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE], double Er
     }
 }
 
-void fragmentation_helper() {
-
-    ReadPIDFile();
-    ReadFakePIDFile();
-
-    // define confusion matrix
-    double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
-    double OneDConfusion[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco]
-    double OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco]
-    double Error_OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco] error
-
-    // dirnames
-    const char* Jpsi_MC_SIGNAL_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/SIGNAL_analysis/validation_v002/final_output";
-    const char* Jpsi_MC_CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/CHG_analysis/validation_v002/final_output";
-    const char* Jpsi_MC_MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/MIX_analysis/validation_v002/final_output";
-    const char* Jpsi_MC_UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/UUBAR_analysis/validation_v002/final_output";
-    const char* Jpsi_MC_DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/DDBAR_analysis/validation_v002/final_output";
-    const char* Jpsi_MC_SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/SSBAR_analysis/validation_v002/final_output";
-    const char* Jpsi_MC_CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/CHARM_analysis/validation_v002/final_output";
-    const char* Jpsi_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_data_Jpsi/SIGNAL_analysis/validation_v002/final_output";
-
-    LetsFillJpsi_ri(Jpsi_MC_SIGNAL_dirname, Confusion, "SIGNAL");
-    LetsFillJpsi_ri(Jpsi_MC_CHG_dirname, OneDConfusion, "CHG");
-    LetsFillJpsi_ri(Jpsi_MC_MIX_dirname, OneDConfusion, "MIX");
-    LetsFillJpsi_ri(Jpsi_MC_UUBAR_dirname, OneDConfusion, "UUBAR");
-    LetsFillJpsi_ri(Jpsi_MC_DDBAR_dirname, OneDConfusion, "DDBAR");
-    LetsFillJpsi_ri(Jpsi_MC_SSBAR_dirname, OneDConfusion, "SSBAR");
-    LetsFillJpsi_ri(Jpsi_MC_CHARM_dirname, OneDConfusion, "CHARM");
-    LetsFill(Jpsi_data_dirname, OneDConfusion_data);
-
-    SetError(OneDConfusion_data, Error_OneDConfusion_data);
-
+void PrintConfusionMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC], double OneDConfusion[DecayMode::MAX_NUM_DECAYMODE], double OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE]) {
     printf("--------------- confusion matrix for XsJ/psi signal ---------------\n");
     printf("[");
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
         printf("[");
         for (int j = 0; j < DecayModeMC::MAX_NUM_DECAYMODE_MC; j++) {
-            if(j != DecayModeMC::MAX_NUM_DECAYMODE_MC - 1) printf("%f,", Confusion[i][j]);
+            if (j != DecayModeMC::MAX_NUM_DECAYMODE_MC - 1) printf("%f,", Confusion[i][j]);
             else printf("%f", Confusion[i][j]);
         }
-        if(i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("], ");
+        if (i != DecayMode::MAX_NUM_DECAYMODE - 1) printf("], ");
         else printf("]");
     }
     printf("]\n");
@@ -1527,7 +2055,7 @@ void fragmentation_helper() {
     printf("--------------- 1D confusion matrix for background ---------------\n");
     printf("[");
     for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
-        if(i != DecayMode::MAX_NUM_DECAYMODE) printf("[%f],", OneDConfusion[i]);
+        if (i != DecayMode::MAX_NUM_DECAYMODE) printf("[%f],", OneDConfusion[i]);
         else printf("[%f]", OneDConfusion[i]);
     }
     printf("]\n");
@@ -1541,55 +2069,43 @@ void fragmentation_helper() {
     }
     printf("]\n");
     printf("--------------- 1D confusion matrix for data ---------------\n");
+}
 
-
-    // get efficiency matrix
-    double Eff[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
-
-    const double N_initial_MC[DecayModeMC::MAX_NUM_DECAYMODE_MC] = {
-        23733.733263,
-        11217.329797,
-        22435.028056,
-        4230.433342,
-        8386.683031,
-        34488.397795,
-        38705.566510,
-        21384.911778,
-        8143.375388,
-        5025.082736,
-        6635.015387,
-        7975.970886,
-        5662.030457,
-        5989.224581,
-        1379.152711,
-        747.977559,
-        393.762899,
-        19391.715296,
-        18894.214376,
-        9498.627921,
-        10499.285975,
-        5240.605341,
-        34712.309001,
-        46080.930494,
-        17038.115418,
-        20442.541511,
-        6439.845695,
-        3004.187464,
-        4427.954926,
-        5339.097244,
-        4745.440684,
-        1097.305539,
-        503.403056,
-        366.670228,
-        104680.699924
-    };
-    //const double N_BKG_initial = 1704693583.076672;
-
-    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
-        for (int j = 0; j < DecayModeMC::MAX_NUM_DECAYMODE_MC; j++) {
-            Eff[i][j] = Confusion[i][j] / N_initial_MC[j];
+void PrintReducedConfusionMatrix(double rConfusion[DecayModeReduced::rMAX_NUM_DECAYMODE][DecayModeReducedMC::rMAX_NUM_DECAYMODE_MC], double rOneDConfusion[DecayModeReduced::rMAX_NUM_DECAYMODE], double rOneDConfusion_data[DecayModeReduced::rMAX_NUM_DECAYMODE]) {
+    printf("--------------- reduced confusion matrix for XsJ/psi signal ---------------\n");
+    printf("[");
+    for (int i = 0; i < DecayModeReduced::rMAX_NUM_DECAYMODE; i++) {
+        printf("[");
+        for (int j = 0; j < DecayModeReducedMC::rMAX_NUM_DECAYMODE_MC; j++) {
+            if (j != DecayModeReducedMC::rMAX_NUM_DECAYMODE_MC - 1) printf("%f,", rConfusion[i][j]);
+            else printf("%f", rConfusion[i][j]);
         }
+        if (i != DecayModeReduced::rMAX_NUM_DECAYMODE - 1) printf("], ");
+        else printf("]");
     }
+    printf("]\n");
+    printf("--------------- reduced confusion matrix for XsJ/psi signal ---------------\n");
+
+    printf("--------------- reduced 1D confusion matrix for background ---------------\n");
+    printf("[");
+    for (int i = 0; i < DecayModeReduced::rMAX_NUM_DECAYMODE; i++) {
+        if (i != DecayModeReduced::rMAX_NUM_DECAYMODE) printf("[%f],", rOneDConfusion[i]);
+        else printf("[%f]", rOneDConfusion[i]);
+    }
+    printf("]\n");
+    printf("--------------- reduced 1D confusion matrix for background ---------------\n");
+
+    printf("--------------- reduced 1D confusion matrix for data ---------------\n");
+    printf("[");
+    for (int i = 0; i < DecayModeReduced::rMAX_NUM_DECAYMODE; i++) {
+        if (i != DecayModeReduced::rMAX_NUM_DECAYMODE) printf("[%f],", rOneDConfusion_data[i]);
+        else printf("[%f]", rOneDConfusion_data[i]);
+    }
+    printf("]\n");
+    printf("--------------- reduced 1D confusion matrix for data ---------------\n");
+}
+
+void PrintFinalResults(double Eff[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC], double OneDConfusion[DecayMode::MAX_NUM_DECAYMODE], double OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE], double Error_OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE]) {
 
     printf("--------------- efficiency matrix for XsJ/psi signal ---------------\n");
     printf("[");
@@ -1622,5 +2138,110 @@ void fragmentation_helper() {
     }
     printf("]\n");
     printf("--------------- 1D confusion matrix for data error ---------------\n");
+
+}
+
+void PrintReducedFinalResults(double rEff[DecayModeReduced::rMAX_NUM_DECAYMODE][DecayModeReducedMC::rMAX_NUM_DECAYMODE_MC], double rOneDConfusion_KKstar[DecayModeReduced::rMAX_NUM_DECAYMODE], double rOneDConfusion[DecayModeReduced::rMAX_NUM_DECAYMODE], double rOneDConfusion_data[DecayModeReduced::rMAX_NUM_DECAYMODE], double rError_OneDConfusion_data[DecayModeReduced::rMAX_NUM_DECAYMODE]) {
+
+    printf("--------------- reduced efficiency matrix for XsJ/psi signal ---------------\n");
+    printf("[");
+    for (int i = 0; i < DecayModeReduced::rMAX_NUM_DECAYMODE; i++) {
+        printf("[");
+        for (int j = 0; j < DecayModeReducedMC::rMAX_NUM_DECAYMODE_MC; j++) {
+            if (j != DecayModeReducedMC::rMAX_NUM_DECAYMODE_MC - 1) printf("%.9lf,", rEff[i][j]);
+            else printf("%.9lf", rEff[i][j]);
+        }
+        if (i != DecayModeReduced::rMAX_NUM_DECAYMODE - 1) printf("], ");
+        else printf("]");
+    }
+    printf("]\n");
+    printf("--------------- reduced efficiency matrix for XsJ/psi signal ---------------\n");
+
+    printf("--------------- reduced 1D confusion matrix for data - MC BKG - KKstar ---------------\n");
+    printf("[");
+    for (int i = 0; i < DecayModeReduced::rMAX_NUM_DECAYMODE; i++) {
+        if (i != DecayModeReduced::rMAX_NUM_DECAYMODE - 1) printf("[%f],", rOneDConfusion_data[i] - rOneDConfusion[i] - rOneDConfusion_KKstar[i]);
+        else printf("[%f]", rOneDConfusion_data[i] - rOneDConfusion[i] - rOneDConfusion_KKstar[i]);
+    }
+    printf("]\n");
+    printf("--------------- reduced 1D confusion matrix for data - MC BKG - KKstar ---------------\n");
+
+    printf("--------------- reduced 1D confusion matrix for data error ---------------\n");
+    printf("[");
+    for (int i = 0; i < DecayModeReduced::rMAX_NUM_DECAYMODE; i++) {
+        if (i != DecayModeReduced::rMAX_NUM_DECAYMODE - 1) printf("[%f],", rError_OneDConfusion_data[i]);
+        else printf("[%f]", rError_OneDConfusion_data[i]);
+    }
+    printf("]\n");
+    printf("--------------- reduced 1D confusion matrix for data error ---------------\n");
+
+}
+
+void fragmentation_helper() {
+
+    ReadPIDFile();
+    ReadFakePIDFile();
+
+    // define confusion matrix
+    double Confusion[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth] SIGNAL
+    double OneDConfusion[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco] CHG MIX UUBAR DDBAR SSBAR CHARM
+    double OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco] data
+    double Error_OneDConfusion_data[DecayMode::MAX_NUM_DECAYMODE] = { 0.0 }; // [reco] data error
+
+    double rConfusion[DecayModeReduced::rMAX_NUM_DECAYMODE][DecayModeReducedMC::rMAX_NUM_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth] SIGNAL, remove resonant component
+    double rOneDConfusion[DecayModeReduced::rMAX_NUM_DECAYMODE] = { 0.0 }; // [reco] CHG MIX UUBAR DDBAR SSBAR CHARM
+    double rOneDConfusion_data[DecayModeReduced::rMAX_NUM_DECAYMODE] = { 0.0 }; // [reco] data
+    double rError_OneDConfusion_data[DecayModeReduced::rMAX_NUM_DECAYMODE] = { 0.0 }; // [reco] data error
+    double rOneDConfusion_KKstar[DecayModeReduced::rMAX_NUM_DECAYMODE] = { 0.0 }; // [reco][MC truth] SIGNAL, only resonant component
+
+    // dirnames
+    const char* Jpsi_MC_SIGNAL_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/SIGNAL_analysis/validation_v002/final_output";
+    const char* Jpsi_MC_CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/CHG_analysis/validation_v002/final_output";
+    const char* Jpsi_MC_MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/MIX_analysis/validation_v002/final_output";
+    const char* Jpsi_MC_UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/UUBAR_analysis/validation_v002/final_output";
+    const char* Jpsi_MC_DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/DDBAR_analysis/validation_v002/final_output";
+    const char* Jpsi_MC_SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/SSBAR_analysis/validation_v002/final_output";
+    const char* Jpsi_MC_CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_MC_Jpsi/CHARM_analysis/validation_v002/final_output";
+    const char* Jpsi_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Aunn_LS_data_Jpsi/SIGNAL_analysis/validation_v002/final_output";
+
+    LetsFillJpsi_ri(Jpsi_MC_SIGNAL_dirname, Confusion, "SIGNAL");
+    LetsFillJpsi_ri(Jpsi_MC_CHG_dirname, OneDConfusion, "CHG");
+    LetsFillJpsi_ri(Jpsi_MC_MIX_dirname, OneDConfusion, "MIX");
+    LetsFillJpsi_ri(Jpsi_MC_UUBAR_dirname, OneDConfusion, "UUBAR");
+    LetsFillJpsi_ri(Jpsi_MC_DDBAR_dirname, OneDConfusion, "DDBAR");
+    LetsFillJpsi_ri(Jpsi_MC_SSBAR_dirname, OneDConfusion, "SSBAR");
+    LetsFillJpsi_ri(Jpsi_MC_CHARM_dirname, OneDConfusion, "CHARM");
+    LetsFill(Jpsi_data_dirname, OneDConfusion_data);
+
+    SetError(OneDConfusion_data, Error_OneDConfusion_data);
+
+    DecayMatrixToReducedDecayMatrix(Confusion, rConfusion);
+    DecayMatrixToReducedDecayMatrix(OneDConfusion, rOneDConfusion);
+    DecayMatrixToReducedDecayMatrix(OneDConfusion_data, rOneDConfusion_data);
+    DecayMatrixToReducedDecayMatrix(Error_OneDConfusion_data, rError_OneDConfusion_data);
+
+    ExtractReducedElement(Confusion, rOneDConfusion_KKstar);
+
+    //PrintConfusionMatrix(Confusion, OneDConfusion, OneDConfusion_data);
+    PrintReducedConfusionMatrix(rConfusion, rOneDConfusion, rOneDConfusion_data);
+
+    // get efficiency matrix
+    double Eff[DecayMode::MAX_NUM_DECAYMODE][DecayModeMC::MAX_NUM_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
+    double rEff[DecayModeReduced::rMAX_NUM_DECAYMODE][DecayModeReducedMC::rMAX_NUM_DECAYMODE_MC] = { 0.0 }; // [reco][MC truth]
+
+    for (int i = 0; i < DecayMode::MAX_NUM_DECAYMODE; i++) {
+        for (int j = 0; j < DecayModeMC::MAX_NUM_DECAYMODE_MC; j++) {
+            Eff[i][j] = Confusion[i][j] / N_initial_MC[j];
+        }
+    }
+
+    for (int i = 0; i < DecayModeReduced::rMAX_NUM_DECAYMODE; i++) {
+        for (int j = 0; j < DecayModeReducedMC::rMAX_NUM_DECAYMODE_MC; j++) {
+            rEff[i][j] = rConfusion[i][j] / rN_initial_MC[j];
+        }
+    }
+
+    //PrintFinalResults(Eff, OneDConfusion, OneDConfusion_data, Error_OneDConfusion_data);
+    PrintReducedFinalResults(rEff, rOneDConfusion_KKstar, rOneDConfusion, rOneDConfusion_data, rError_OneDConfusion_data);
 
 }
