@@ -1720,7 +1720,7 @@ void DecayMatrixToReducedDecayMatrix(double Confusion[DecayMode::MAX_NUM_DECAYMO
             }
 
 
-            switch (static_cast<DecayModeMC>(i)) {
+            switch (static_cast<DecayModeMC>(j)) {
             case DecayModeMC::Xsu2Kc_MC:
                 IsItReduced = true;
                 break;
