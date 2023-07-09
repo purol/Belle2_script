@@ -136,7 +136,10 @@ void ReadKstarnnFiles_r_sp(){
         double PHSP_value = Plot->GetBinContent(j + 1);
         double FUNC_value = f->Eval(PHSP_bin_center);
         FUNC_value = FUNC_value / Area;
-        double weight = FUNC_value / PHSP_value;
+
+        double weight = 0;
+        if (PHSP_value > 0) weight = FUNC_value / PHSP_value;
+        else weight = 0;
 
         fprintf(fp, "%lf\n", weight);
     }
