@@ -206,6 +206,11 @@ const double pi0_sys_uncer2[N_pi0_syst] = {
     0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0
 };
 
+TH1D* Knn_weight;
+TH1D* Kstarnn_weight;
+TH1D* K0nn_weight;
+TH1D* K0starnn_weight;
+
 enum DecayMode { // reco level
     B2Kc = 0,
     B2KcPi0,
@@ -3277,6 +3282,59 @@ void ReadFakePIDFile() {
         }
     }
     fclose(fp_pi_fromMU);
+}
+
+void ReadKnnFile() {
+
+    FILE* fp;
+    int Nentry = 0;
+    double Q2MIN = -1;
+    double Q2MAX = -1;
+
+    // Knn
+    fp = fopen("Knn_weight.txt","r");
+    fscanf(fp, "%d %lf %lf\n", &Nentry, &Q2MIN, &Q2MAX);
+    Knn_weight = new TH1D("Knn_weight", ";;", Nentry, Q2MIN, Q2MAX);
+    for (int i = 0; i < Nentry; i++) {
+        double weight = 0;
+        fscanf(fp, "%lf\n", &weight);
+        Knn_weight->SetBinContent(i + 1, weight);
+    }
+    fclose(fp);
+
+    // Kstarnn
+    fp = fopen("Kstarnn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &Nentry, &Q2MIN, &Q2MAX);
+    Kstarnn_weight = new TH1D("Kstarnn_weight", ";;", Nentry, Q2MIN, Q2MAX);
+    for (int i = 0; i < Nentry; i++) {
+        double weight = 0;
+        fscanf(fp, "%lf\n", &weight);
+        Kstarnn_weight->SetBinContent(i + 1, weight);
+    }
+    fclose(fp);
+
+    // K0nn
+    fp = fopen("K0nn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &Nentry, &Q2MIN, &Q2MAX);
+    K0nn_weight = new TH1D("K0nn_weight", ";;", Nentry, Q2MIN, Q2MAX);
+    for (int i = 0; i < Nentry; i++) {
+        double weight = 0;
+        fscanf(fp, "%lf\n", &weight);
+        K0nn_weight->SetBinContent(i + 1, weight);
+    }
+    fclose(fp);
+
+    // K0starnn
+    fp = fopen("K0starnn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &Nentry, &Q2MIN, &Q2MAX);
+    K0starnn_weight = new TH1D("K0starnn_weight", ";;", Nentry, Q2MIN, Q2MAX);
+    for (int i = 0; i < Nentry; i++) {
+        double weight = 0;
+        fscanf(fp, "%lf\n", &weight);
+        K0starnn_weight->SetBinContent(i + 1, weight);
+    }
+    fclose(fp);
+
 }
 
 void ClearHist(TH1D* Signal_hist, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* UUBAR_hist, TH1D* DDBAR_hist, TH1D* SSBAR_hist, TH1D* CHARM_hist) {

@@ -1,7 +1,7 @@
 // last update: 2021-10-13
 // for Belle2 data
 
-# define Nentry 100
+# define Nentry 500
 # define MIN_QSQ 1.876
 # define MAX_QSQ 4.782
 
