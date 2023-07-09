@@ -1,0 +1,9 @@
+rasf
+- read the name of variable, and automatically deal with it
+- do not implement while myself.
+- cut, draw, ... can be done by the name of variable, instead of index number
+- make it to run at qsub
+
+python
+- make flag (MC/data) and (CHG/MIX/UUBAR/...)
+
