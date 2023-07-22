@@ -635,10 +635,10 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest], TH1D* hist_ngamma
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         for (int k = 0; k < NTest; k++) {
-            tree_upsilon->SetBranchAddress("extraInfo__boEeclv200" + words[k] + "_matched__bc", &Eecl_true_var[k]);
-            tree_upsilon->SetBranchAddress("extraInfo__boEeclv200" + words[k] + "_unmatched__bc", &Eecl_fake_var[k]);
-            tree_upsilon->SetBranchAddress("extraInfo__boNgammav200" + words[k] + "_matched__bc", &Ngamma_true_var[k]);
-            tree_upsilon->SetBranchAddress("extraInfo__boNgammav200" + words[k] + "_unmatched__bc", &Ngamma_fake_var[k]);
+            tree_upsilon->SetBranchAddress(("extraInfo__boEeclv200" + words[k] + "_matched__bc").c_str(), &Eecl_true_var[k]);
+            tree_upsilon->SetBranchAddress(("extraInfo__boEeclv200" + words[k] + "_unmatched__bc").c_str(), &Eecl_fake_var[k]);
+            tree_upsilon->SetBranchAddress(("extraInfo__boNgammav200" + words[k] + "_matched__bc").c_str(), &Ngamma_true_var[k]);
+            tree_upsilon->SetBranchAddress(("extraInfo__boNgammav200" + words[k] + "_unmatched__bc").c_str(), &Ngamma_fake_var[k]);
         }
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
@@ -672,32 +672,26 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest], TH1D* hist_ngamma
             // Fill numberings
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
-                numberings->push_back(0);
                 FEI_calibration_factor = FEI_cal_Bc;
                 weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 2.8/ab for BB
             }
             else if (SampleName == "MIX") {
-                numberings->push_back(1);
                 FEI_calibration_factor = FEI_cal_B0;
                 weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 2.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
-                numberings->push_back(2);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             else if (SampleName == "DDBAR") {
-                numberings->push_back(3);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             else if (SampleName == "SSBAR") {
-                numberings->push_back(4);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             else if (SampleName == "CHARM") {
-                numberings->push_back(5);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
@@ -891,8 +885,8 @@ void FakePhotonCalculator(){
     TH1D* Ngamma_v200_data;
 
     for (int i = 0; i < NTest; i++) {
-        Eecl_v200 = new TH1D("Eecl_v200_" + to_string(Scales[i]), ";E_{ecl} [GeV];number of candidates", NBin, 0, 6.0);
-        Ngamma_v200 = new TH1D("Ngamma_v200_" + to_string(Scales[i]), ";Number of gamma candidates;number of candidates", NBin, 0, 25.0);
+        Eecl_v200 = new TH1D(("Eecl_v200_" + to_string(Scales[i]), ";E_{ecl} [GeV];number of candidates").c_str(), NBin, 0, 6.0);
+        Ngamma_v200 = new TH1D(("Ngamma_v200_" + to_string(Scales[i]), ";Number of gamma candidates;number of candidates").c_str(), NBin, 0, 25.0);
     }
     Eecl_v200_data = new TH1D("Eecl_v200_data", ";E_{ecl} [GeV];number of candidates", NBin, 0, 6.0);
     Ngamma_v200_data = new TH1D("Ngamma_v200_data", ";Number of gamma candidates;number of candidates", NBin, 0, 25.0);
