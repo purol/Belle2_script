@@ -739,8 +739,8 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest], TH1D* hist_ngamma
             double weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake;
 
             for (int k = 0; k < NTest; k++) {
-                hist_eecl[k]->Fill(Eecl_true_var[4] + Eecl_fake_var[k] * Scales[k]);
-                hist_ngamma[k]->Fill(Ngamma_true_var[4] + Ngamma_fake_var[k]);
+                hist_eecl[k]->Fill(Eecl_true_var[4] + Eecl_fake_var[k] * Scales[k], weight);
+                hist_ngamma[k]->Fill(Ngamma_true_var[4] + Ngamma_fake_var[k], weight);
             }
 
 
@@ -889,5 +889,16 @@ void FakePhotonCalculator(){
     LetsFillEecl(Sideband_data_dirname, Eecl_v200_data, Ngamma_v200_data);
 
     CalculateChiSquared(Eecl_v200, Ngamma_v200, Eecl_v200_data, Ngamma_v200_data);
+
+    double MC_num = 0;
+    double data_num = 0;
+
+    for (int i = 0; i < NBin; i++) {
+        MC_num = MC_num + Eecl_v200[0]->GetBinContent(i + 1);
+        data_num = data_num + Eecl_v200_data->GetBinContent(i + 1);
+    }
+
+    printf("data num: %lf\n", data_num);
+    printf("MC num with calibration: %lf\n", MC_num);
 
 }
