@@ -3,6 +3,7 @@ rasf
 - do not implement while myself.
 - cut, draw, ... can be done by the name of variable, instead of index number
 - make it to run at qsub
+- find a way to place MakeShiftIntToDouble by elegant way
 
 python
 - make flag (MC/data) and (CHG/MIX/UUBAR/...)
