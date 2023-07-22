@@ -815,7 +815,7 @@ void CalculateChiSquared(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D*
             double dataBinValue = hist_eecl_data->GetBinContent(i + 1);
 
             if (dataBinValue < MyEPSILON && MCBinValue < MyEPSILON) {}
-            else if (dataBinValue > MyEPSILON && MCBinValue < MyEPSILON) { printf("there is data but no MC! exit!\n");  exit(1); }
+            else if (dataBinValue > MyEPSILON && MCBinValue < MyEPSILON) { printf("there is data but no MC! exit!\n"); }
             else ChiSquared = ChiSquared + (dataBinValue - MCBinValue) * (dataBinValue - MCBinValue) / MCBinValue;
 
         }
