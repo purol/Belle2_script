@@ -1027,6 +1027,7 @@ void CalculateKSProb(TH1D* hist_eecl[NTest][NTest], TH1D* hist_ngamma[NTest][NTe
 
 
     TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
+    KSProbs->SetStats(false);
     KSProbs->Draw("COLZ");
     c_temp->SaveAs("fe_fh_fit_KSprob_2D.png");
 
@@ -1046,12 +1047,14 @@ void DrawPlots(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D* hist_eecl
 
         // draw MC
         hist_eecl[i]->SetMaximum(yMax * 1.1);
+        hist_eecl[i]->SetStats(false);
         hist_eecl[i]->SetLineWidth(1);
         hist_eecl[i]->SetLineColor(38);
         hist_eecl[i]->Draw("Hist");
 
         // draw data points
         hist_eecl_data->SetLineWidth(2);
+        hist_eecl_data->SetStats(false);
         hist_eecl_data->SetLineColor(kBlack);
         hist_eecl_data->SetMarkerStyle(8);
         hist_eecl_data->Draw("SAME eP");
@@ -1073,12 +1076,14 @@ void DrawPlots(TH1D* hist_eecl[NTest][NTest], TH1D* hist_ngamma[NTest][NTest], T
 
             // draw MC
             hist_eecl[i][j]->SetMaximum(yMax * 1.1);
+            hist_eecl[i][j]->SetStats(false);
             hist_eecl[i][j]->SetLineWidth(1);
             hist_eecl[i][j]->SetLineColor(38);
             hist_eecl[i][j]->Draw("Hist");
 
             // draw data points
             hist_eecl_data->SetLineWidth(2);
+            hist_eecl_data->SetStats(false);
             hist_eecl_data->SetLineColor(kBlack);
             hist_eecl_data->SetMarkerStyle(8);
             hist_eecl_data->Draw("SAME eP");
