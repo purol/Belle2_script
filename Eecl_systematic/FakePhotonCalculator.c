@@ -746,6 +746,166 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest], TH1D* hist_ngamma
 
 }
 
+void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest][NTest], TH1D* hist_ngamma[NTest][NTest], std::string SampleName) {
+    /*
+    0: charged
+    1: mixed
+    2: uubar
+    3: ddbar
+    4: ssbar
+    5: ccbar
+    6: tautau
+    7: mumu
+    8: gg
+    9: ee
+    10: eeee
+    11: eemumu
+    12: llXX
+    13: hhISR
+    */
+
+    std::string words[NTest] = { "_900", "_925", "_950", "_975", "", "_025", "_050", "_075", "_100" };
+    double Scales[NTest] = ScaleList;
+
+    double Eecl_true_var[NTest] = { 0.0 }; // 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
+    double Eecl_fake_var[NTest] = { 0.0 }; // 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
+    double Ngamma_true_var[NTest] = { 0.0 }; // 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
+    double Ngamma_fake_var[NTest] = { 0.0 }; // 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
+    double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+    double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    double FEI_calibration_factor = -1;
+
+    std::vector<string> names;
+    load_files(dirname, &names);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        for (int k = 0; k < NTest; k++) {
+            tree_upsilon->SetBranchAddress(("extraInfo__boEeclv200" + words[k] + "_matched__bc").c_str(), &Eecl_true_var[k]);
+            tree_upsilon->SetBranchAddress(("extraInfo__boEeclv200" + words[k] + "_unmatched__bc").c_str(), &Eecl_fake_var[k]);
+            tree_upsilon->SetBranchAddress(("extraInfo__boNgammav200" + words[k] + "_matched__bc").c_str(), &Ngamma_true_var[k]);
+            tree_upsilon->SetBranchAddress(("extraInfo__boNgammav200" + words[k] + "_unmatched__bc").c_str(), &Ngamma_fake_var[k]);
+        }
+
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[2][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[3][i_fake]);
+        }
+        for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[0][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[1][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
+        }
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+            tree_upsilon->GetEntry(j);
+            tree_Bsig->GetEntry(j);
+            tree_Btag->GetEntry(j);
+
+            // Fill numberings
+            double weight_ri = 0.0;
+            if (SampleName == "CHG") {
+                FEI_calibration_factor = FEI_cal_Bc;
+                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 2.8/ab for BB
+            }
+            else if (SampleName == "MIX") {
+                FEI_calibration_factor = FEI_cal_B0;
+                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 2.8/ab for BB
+            }
+            else if (SampleName == "UUBAR") {
+                FEI_calibration_factor = CAL_qq;
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+            }
+            else if (SampleName == "DDBAR") {
+                FEI_calibration_factor = CAL_qq;
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+            }
+            else if (SampleName == "SSBAR") {
+                FEI_calibration_factor = CAL_qq;
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+            }
+            else if (SampleName == "CHARM") {
+                FEI_calibration_factor = CAL_qq;
+                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+            }
+            //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
+            //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
+            //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
+            //else if (job_id >= 256848292 && job_id <= 256848743) numberings->push_back(9);
+            //else if (job_id >= 256848744 && job_id <= 256849128) numberings->push_back(10);
+            //else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
+            else {
+                printf("undefined job id!\n");
+                exit(1);
+            }
+
+            // Fill calibration factors
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            double Correction_pi0 = 1;
+            double Correction_fake = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
+            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
+            for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
+                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[0][i_fake], temp_N_bin_fakeE[0][i_fake]); // K- from e
+                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[1][i_fake], temp_N_bin_fakeE[1][i_fake]); // K+ from e
+                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[2][i_fake], temp_N_bin_fakeE[2][i_fake]); // pi- from e
+                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[3][i_fake], temp_N_bin_fakeE[3][i_fake]); // pi+ from e
+            }
+            for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
+                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[0][i_fake], temp_N_bin_fakeMU[0][i_fake]); // K- from mu
+                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[1][i_fake], temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
+                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[2][i_fake], temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
+                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
+            }
+
+            double weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake;
+
+            for (int k = 0; k < NTest; k++) {
+                for (int l = 0; l < NTest; l++) {
+                    hist_eecl[k][l]->Fill(Eecl_true_var[k] * Scales[k] + Eecl_fake_var[l] * Scales[l], weight);
+                    hist_ngamma[k][l]->Fill(Ngamma_true_var[k] + Ngamma_fake_var[l], weight);
+                }
+            }
+
+
+        }
+        input_file->Close();
+
+    }
+
+}
+
 void LetsFillEecl(const char* dirname, TH1D* hist_eecl, TH1D* hist_ngamma) {
     /*
     0: charged
@@ -853,6 +1013,28 @@ void CalculateKSProb(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D* his
 
 }
 
+void CalculateKSProb(TH1D* hist_eecl[NTest][NTest], TH1D* hist_ngamma[NTest][NTest], TH1D* hist_eecl_data, TH1D* hist_ngamma_data) {
+    double Scales[NTest] = ScaleList;
+    
+    TH2D* KSProbs = new TH2D("KSprobs", ";f_{e};f_{h};KS probability", NTest, 0.9 - (1.1 - 0.9) / (2 * NTest), 1.1 + (1.1 - 0.9) / (2 * NTest), NTest, 0.9 - (1.1 - 0.9) / (2 * NTest), 1.1 + (1.1 - 0.9) / (2 * NTest));
+
+    for (int k = 0; k < NTest; k++) {
+        for (int l = 0; l < NTest; l++) {
+            double KSProb = hist_eecl[k][l]->KolmogorovTest(hist_eecl_data);
+            KSProbs->SetBinContent(k + 1, l + 1, KSProb);
+        }
+    }
+
+
+    TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
+    KSProbs->Draw("COLZ");
+    c_temp->SaveAs("fe_fh_fit_KSprob_2D.png");
+
+    delete KSProbs;
+    delete c_temp;
+
+}
+
 void DrawPlots(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D* hist_eecl_data, TH1D* hist_ngamma_data) {
     double Scales[NTest] = ScaleList;
 
@@ -873,6 +1055,31 @@ void DrawPlots(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D* hist_eecl
         c_temp->SaveAs( ("Eecl_MCVSdata_" + to_string(Scales[i]) + ".png").c_str());
 
         delete c_temp;
+    }
+}
+
+void DrawPlots(TH1D* hist_eecl[NTest][NTest], TH1D* hist_ngamma[NTest][NTest], TH1D* hist_eecl_data, TH1D* hist_ngamma_data) {
+    double Scales[NTest] = ScaleList;
+
+    for (int i = 0; i < NTest; i++) {
+        for (int j = 0; j < NTest; j++) {
+            TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+
+            // draw MC
+            hist_eecl[i][j]->SetLineWidth(1);
+            hist_eecl[i][j]->SetLineColor(38);
+            hist_eecl[i][j]->Draw("Hist");
+
+            // draw data points
+            hist_eecl_data->SetLineWidth(2);
+            hist_eecl_data->SetLineColor(kBlack);
+            hist_eecl_data->SetMarkerStyle(8);
+            hist_eecl_data->Draw("SAME eP");
+
+            c_temp->SaveAs(("Eecl_MCVSdata_" + to_string(Scales[i]) + "_" + to_string(Scales[j]) + ".png").c_str());
+
+            delete c_temp;
+        }
     }
 }
 
@@ -897,6 +1104,8 @@ void FakePhotonCalculator(){
 
     const char* Sideband_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_data_side/SIGNAL_analysis/validation_v000/final_output";
 
+    // 1D case
+    /*
     TH1D* Eecl_v200[NTest];
     TH1D* Ngamma_v200[NTest];
     double Scales[NTest] = ScaleList;
@@ -941,5 +1150,53 @@ void FakePhotonCalculator(){
 
     printf("data num: %lf\n", data_num);
     printf("MC num with calibration: %lf\n", MC_num);
+    */
 
+
+    // 2D case
+    TH1D* Eecl_2D_v200[NTest][NTest]; // [true][fake]
+    TH1D* Ngamma_2D_v200[NTest][NTest]; // [true][fake]
+    double Scales[NTest] = ScaleList;
+
+    TH1D* Eecl_v200_data;
+    TH1D* Ngamma_v200_data;
+
+    for (int i = 0; i < NTest; i++) {
+        for (int j = 0; j < NTest; j++) {
+            Eecl_2D_v200[i][j] = new TH1D(("Eecl_v200_" + to_string(Scales[i]) + "_" + to_string(Scales[j])).c_str(), ";E_{ecl} [GeV];number of candidates", NBin, 0, 6.0);
+            Ngamma_2D_v200[i][j] = new TH1D(("Ngamma_v200_" + to_string(Scales[i]) + "_" + to_string(Scales[j])).c_str(), ";Number of gamma candidates;number of candidates", NBin, 0, 25.0);
+        }
+    }
+    Eecl_v200_data = new TH1D("Eecl_v200_data", ";E_{ecl} [GeV];number of candidates", NBin, 0, 6.0);
+    Ngamma_v200_data = new TH1D("Ngamma_v200_data", ";Number of gamma candidates;number of candidates", NBin, 0, 25.0);
+
+    LetsFillEecl(Sideband_MC_CHG_train_dirname, Eecl_2D_v200, Ngamma_2D_v200, "CHG");
+    LetsFillEecl(Sideband_MC_MIX_train_dirname, Eecl_2D_v200, Ngamma_2D_v200, "MIX");
+    LetsFillEecl(Sideband_MC_UUBAR_train_dirname, Eecl_2D_v200, Ngamma_2D_v200, "UUBAR");
+    LetsFillEecl(Sideband_MC_DDBAR_train_dirname, Eecl_2D_v200, Ngamma_2D_v200, "DDBAR");
+    LetsFillEecl(Sideband_MC_SSBAR_train_dirname, Eecl_2D_v200, Ngamma_2D_v200, "SSBAR");
+    LetsFillEecl(Sideband_MC_CHARM_train_dirname, Eecl_2D_v200, Ngamma_2D_v200, "CHARM");
+    LetsFillEecl(Sideband_MC_CHG_test_dirname, Eecl_2D_v200, Ngamma_2D_v200, "CHG");
+    LetsFillEecl(Sideband_MC_MIX_test_dirname, Eecl_2D_v200, Ngamma_2D_v200, "MIX");
+    LetsFillEecl(Sideband_MC_UUBAR_test_dirname, Eecl_2D_v200, Ngamma_2D_v200, "UUBAR");
+    LetsFillEecl(Sideband_MC_DDBAR_test_dirname, Eecl_2D_v200, Ngamma_2D_v200, "DDBAR");
+    LetsFillEecl(Sideband_MC_SSBAR_test_dirname, Eecl_2D_v200, Ngamma_2D_v200, "SSBAR");
+    LetsFillEecl(Sideband_MC_CHARM_test_dirname, Eecl_2D_v200, Ngamma_2D_v200, "CHARM");
+
+    LetsFillEecl(Sideband_data_dirname, Eecl_v200_data, Ngamma_v200_data);
+
+    CalculateKSProb(Eecl_2D_v200, Ngamma_2D_v200, Eecl_v200_data, Ngamma_v200_data);
+
+    DrawPlots(Eecl_2D_v200, Ngamma_2D_v200, Eecl_v200_data, Ngamma_v200_data);
+
+    double MC_num = 0;
+    double data_num = 0;
+
+    for (int i = 0; i < NBin; i++) {
+        MC_num = MC_num + Eecl_2D_v200[0][0]->GetBinContent(i + 1);
+        data_num = data_num + Eecl_v200_data->GetBinContent(i + 1);
+    }
+
+    printf("data num: %lf\n", data_num);
+    printf("MC num with calibration: %lf\n", MC_num);
 }
