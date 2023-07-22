@@ -2,7 +2,7 @@
 // for Belle2 data
 
 # define NTest 9
-# define NBin 100
+# define NBin 50
 # define ScaleList { 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1 }
 
 # define MyEPSILON 0.000001
@@ -1026,7 +1026,7 @@ void CalculateKSProb(TH1D* hist_eecl[NTest][NTest], TH1D* hist_ngamma[NTest][NTe
     }
 
 
-    TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
+    TCanvas* c_temp = new TCanvas("c", "", 1200, 800); c_temp->cd();
     KSProbs->SetStats(false);
     KSProbs->Draw("COLZ");
     c_temp->SaveAs("fe_fh_fit_KSprob_2D.png");
