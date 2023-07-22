@@ -3,6 +3,7 @@
 
 # define NTest 9
 # define NBin 100
+# define ScaleList { 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1 }
 
 # define MyEPSILON 0.000001
 
@@ -606,7 +607,7 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest], TH1D* hist_ngamma
     */
 
     std::string words[NTest] = { "_900", "_925", "_950", "_975", "", "_025", "_050", "_075", "_100" };
-    double Scales[NTest] = { 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1 };
+    double Scales[NTest] = ScaleList;
 
     double Eecl_true_var[NTest] = { 0.0 }; // 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
     double Eecl_fake_var[NTest] = { 0.0 }; // 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
@@ -809,7 +810,7 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl, TH1D* hist_ngamma) {
 }
 
 void CalculateChiSquared(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D* hist_eecl_data, TH1D* hist_ngamma_data) {
-    double Scales[NTest] = { 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1 };
+    double Scales[NTest] = ScaleList;
     double ChiSquareds[NTest] = { 0.0 };
 
     for (int k = 0; k < NTest; k++) {
@@ -838,6 +839,29 @@ void CalculateChiSquared(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D*
 
 }
 
+void DrawPlots(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D* hist_eecl_data, TH1D* hist_ngamma_data) {
+    double Scales[NTest] = ScaleList;
+
+    for (int i = 0; i < NTest; i++) {
+        TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+
+        // draw MC
+        hist_eecl[i]->SetLineWidth(1);
+        hist_eecl[i]->SetLineColor(38);
+        hist_eecl[i]->Draw("Hist");
+
+        // draw data points
+        hist_eecl_data->SetLineWidth(2);
+        hist_eecl_data->SetLineColor(kBlack);
+        hist_eecl_data->SetMarkerStyle(8);
+        hist_eecl_data->Draw("SAME eP");
+
+        c_temp->SaveAs( ("Eecl_MCVSdata_" + to_string(Scales[i]) + ".png").c_str());
+
+        delete c_temp;
+    }
+}
+
 void FakePhotonCalculator(){
 
     ReadPIDFile();
@@ -861,7 +885,7 @@ void FakePhotonCalculator(){
 
     TH1D* Eecl_v200[NTest];
     TH1D* Ngamma_v200[NTest];
-    double Scales[NTest] = { 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1 };
+    double Scales[NTest] = ScaleList;
 
     TH1D* Eecl_v200_data;
     TH1D* Ngamma_v200_data;
