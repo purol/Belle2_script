@@ -814,7 +814,9 @@ void CalculateChiSquared(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D*
             double MCBinValue = hist_eecl[k]->GetBinContent(i + 1);
             double dataBinValue = hist_eecl_data->GetBinContent(i + 1);
 
-            ChiSquared = ChiSquared + (dataBinValue - MCBinValue) * (dataBinValue - MCBinValue) / MCBinValue;
+            if (dataBinValue < MyEPSILON && MCBinValue < MyEPSILON) {}
+            else if (dataBinValue > MyEPSILON && MCBinValue < MyEPSILON) { printf("there is data but no MC! exit!\n");  exit(1); }
+            else ChiSquared = ChiSquared + (dataBinValue - MCBinValue) * (dataBinValue - MCBinValue) / MCBinValue;
 
         }
         ChiSquared = ChiSquared / (NBin - 2); // DOF = NBin - 2 (the number of fitting variable, and the number of event)
@@ -907,6 +909,8 @@ void FakePhotonCalculator(){
     LetsFillEecl(Sideband_data_dirname, Eecl_v200_data, Ngamma_v200_data);
 
     CalculateChiSquared(Eecl_v200, Ngamma_v200, Eecl_v200_data, Ngamma_v200_data);
+
+    DrawPlots(Eecl_v200, Ngamma_v200, Eecl_v200_data, Ngamma_v200_data);
 
     double MC_num = 0;
     double data_num = 0;
