@@ -828,7 +828,25 @@ void CalculateChiSquared(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D*
 
     TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
     gr->Draw("AL");
-    c_temp->SaveAs("fh_fit.png");
+    c_temp->SaveAs("fh_fit_chi.png");
+
+    delete gr;
+    delete c_temp;
+
+}
+
+void CalculateKSProb(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D* hist_eecl_data, TH1D* hist_ngamma_data) {
+    double Scales[NTest] = ScaleList;
+    double KSProbs[NTest] = { 0.0 };
+
+    for (int k = 0; k < NTest; k++) KSProbs[k] = hist_eecl[k]->KolmogorovTest(hist_eecl_data);
+
+    TGraph* gr = new TGraph(NTest, Scales, KSProbs);
+    gr->SetTitle(";f_{h};KS probability");
+
+    TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
+    gr->Draw("AL");
+    c_temp->SaveAs("fh_fit_KSprob.png");
 
     delete gr;
     delete c_temp;
@@ -909,6 +927,7 @@ void FakePhotonCalculator(){
     LetsFillEecl(Sideband_data_dirname, Eecl_v200_data, Ngamma_v200_data);
 
     CalculateChiSquared(Eecl_v200, Ngamma_v200, Eecl_v200_data, Ngamma_v200_data);
+    CalculateKSProb(Eecl_v200, Ngamma_v200, Eecl_v200_data, Ngamma_v200_data);
 
     DrawPlots(Eecl_v200, Ngamma_v200, Eecl_v200_data, Ngamma_v200_data);
 
