@@ -885,8 +885,8 @@ void FakePhotonCalculator(){
     TH1D* Ngamma_v200_data;
 
     for (int i = 0; i < NTest; i++) {
-        Eecl_v200 = new TH1D(("Eecl_v200_" + to_string(Scales[i]), ";E_{ecl} [GeV];number of candidates").c_str(), NBin, 0, 6.0);
-        Ngamma_v200 = new TH1D(("Ngamma_v200_" + to_string(Scales[i]), ";Number of gamma candidates;number of candidates").c_str(), NBin, 0, 25.0);
+        Eecl_v200 = new TH1D(("Eecl_v200_" + to_string(Scales[i])).c_str(), ";E_{ecl} [GeV];number of candidates", NBin, 0, 6.0);
+        Ngamma_v200 = new TH1D(("Ngamma_v200_" + to_string(Scales[i])).c_str(), ";Number of gamma candidates;number of candidates", NBin, 0, 25.0);
     }
     Eecl_v200_data = new TH1D("Eecl_v200_data", ";E_{ecl} [GeV];number of candidates", NBin, 0, 6.0);
     Ngamma_v200_data = new TH1D("Ngamma_v200_data", ";Number of gamma candidates;number of candidates", NBin, 0, 25.0);
