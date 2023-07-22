@@ -2,7 +2,7 @@
 // for Belle2 data
 
 # define NTest 9
-# define NBin 50
+# define NBin 300
 # define ScaleList { 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1 }
 
 # define MyEPSILON 0.000001
