@@ -1038,10 +1038,14 @@ void CalculateKSProb(TH1D* hist_eecl[NTest][NTest], TH1D* hist_ngamma[NTest][NTe
 void DrawPlots(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D* hist_eecl_data, TH1D* hist_ngamma_data) {
     double Scales[NTest] = ScaleList;
 
+
+    double yMax = hist_eecl_data->GetMaximum();
+
     for (int i = 0; i < NTest; i++) {
         TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
         // draw MC
+        hist_eecl[i]->SetMaximum(yMax * 1.1);
         hist_eecl[i]->SetLineWidth(1);
         hist_eecl[i]->SetLineColor(38);
         hist_eecl[i]->Draw("Hist");
@@ -1061,11 +1065,14 @@ void DrawPlots(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D* hist_eecl
 void DrawPlots(TH1D* hist_eecl[NTest][NTest], TH1D* hist_ngamma[NTest][NTest], TH1D* hist_eecl_data, TH1D* hist_ngamma_data) {
     double Scales[NTest] = ScaleList;
 
+    double yMax = hist_eecl_data->GetMaximum();
+
     for (int i = 0; i < NTest; i++) {
         for (int j = 0; j < NTest; j++) {
             TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
             // draw MC
+            hist_eecl[i][j]->SetMaximum(yMax * 1.1);
             hist_eecl[i][j]->SetLineWidth(1);
             hist_eecl[i][j]->SetLineColor(38);
             hist_eecl[i][j]->Draw("Hist");
