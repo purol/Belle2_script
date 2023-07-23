@@ -435,6 +435,13 @@ public:
         larger_than = 0,
         smaller_than
     };
+    enum Arithmetic
+    {
+        plus = 0,
+        minus,
+        times,
+        dividedby
+    };
     enum BCS_criterion {
         Highest = 0,
         Lowest
@@ -650,6 +657,7 @@ public:
     void DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear);
     void PrintInformation(std::string title, std::string filename = std::string(""), bool smartmode = true);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value);
+    void Cut(Loader::Variable variable_1, int i_1, Loader::Arithmetic ari, Loader::Variable variable_2, int i_2, Loader::Inequality inq, double value);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::Variable variable_qual, int i_qual, Loader::Inequality inq_qual, double value_qual);
     void BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit);
@@ -1710,6 +1718,54 @@ void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, doubl
             printf("ERROR! 030\n");
             exit(1);
         }
+    }
+    TotalData.swap(temp_queue);
+}
+
+void Cut(Loader::Variable variable_1, int i_1, Loader::Arithmetic ari, Loader::Variable variable_2, int i_2, Loader::Inequality inq, double value) {
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+
+        double value_1 = 0;
+        double value_2 = 0;
+        double value_3 = 0;
+
+        if (variable_1 == Loader::Upsilon) value_1 = (double) temp_data.Upsilon_info[i_1];
+        else if (variable_1 == Loader::Bsig) value_1 = (double) temp_data.Bsig_info[i_1];
+        else if (variable_1 == Loader::Btag) value_1 = (double) temp_data.Btag_info[i_1];
+        else {
+            printf("ERROR! 1740\n");
+            exit(1);
+        }
+
+        if (variable_2 == Loader::Upsilon) value_2 = (double) temp_data.Upsilon_info[i_2];
+        else if (variable_2 == Loader::Bsig) value_2 = (double) temp_data.Bsig_info[i_2];
+        else if (variable_2 == Loader::Btag) value_2 = (double) temp_data.Btag_info[i_2];
+        else {
+            printf("ERROR! 1746\n");
+            exit(1);
+        }
+
+        if (ari == Loader::plus) value_3 = value_1 + value_2;
+        else if (ari == Loader::minus) value_3 = value_1 - value_2;
+        else if (ari == Loader::times) value_3 = value_1 * value_2;
+        else if (ari == Loader::dividedvy) {
+            if (value_2 == 0) {
+                printf("you try to divide by zero!\n");
+                exit(1);
+            }
+            value_3 = value_1 / value_2;
+        }
+        else {
+            printf("ERROR! 1762\n");
+            exit(1);
+        }
+
+        if (inq == Loader::larger_than && value_3 > value) temp_queue.push(temp_data);
+        else if (inq == Loader::smaller_than && value_3 < value) temp_queue.push(temp_data);
+
     }
     TotalData.swap(temp_queue);
 }
