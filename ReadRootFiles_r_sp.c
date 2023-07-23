@@ -1723,7 +1723,7 @@ void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, doubl
     TotalData.swap(temp_queue);
 }
 
-void Cut(Loader::Variable variable_1, int i_1, Loader::Arithmetic ari, Loader::Variable variable_2, int i_2, Loader::Inequality inq, double value) {
+void Loader::Cut(Loader::Variable variable_1, int i_1, Loader::Arithmetic ari, Loader::Variable variable_2, int i_2, Loader::Inequality inq, double value) {
     std::queue<Data> temp_queue;
     while (!TotalData.empty()) {
         Data temp_data = TotalData.front();
@@ -1771,7 +1771,7 @@ void Cut(Loader::Variable variable_1, int i_1, Loader::Arithmetic ari, Loader::V
     TotalData.swap(temp_queue);
 }
 
-void Cut(const char* bracket_1, double const_1, Loader::Arithmetic ari_1, Loader::Variable variable_1, int i_1, const char* bracket_2, Loader::Arithmetic ari, const char* bracket_3, double const_2, Loader::Arithmetic ari_2, Loader::Variable variable_2, int i_2, const char* bracket_4, Loader::Inequality inq, double value) {
+void Loader::Cut(const char* bracket_1, double const_1, Loader::Arithmetic ari_1, Loader::Variable variable_1, int i_1, const char* bracket_2, Loader::Arithmetic ari, const char* bracket_3, double const_2, Loader::Arithmetic ari_2, Loader::Variable variable_2, int i_2, const char* bracket_4, Loader::Inequality inq, double value) {
     if ((std::strcmp(bracket_1, "(") == 0) && (std::strcmp(bracket_2, ")") == 0) && (std::strcmp(bracket_3, "(") == 0) && (std::strcmp(bracket_4, ")") == 0)) {}
     else {
         printf("ERROR! 1777 Use proper brackets for Cut module!\n");
