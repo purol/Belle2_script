@@ -1752,7 +1752,7 @@ void Cut(Loader::Variable variable_1, int i_1, Loader::Arithmetic ari, Loader::V
         if (ari == Loader::plus) value_3 = value_1 + value_2;
         else if (ari == Loader::minus) value_3 = value_1 - value_2;
         else if (ari == Loader::times) value_3 = value_1 * value_2;
-        else if (ari == Loader::dividedvy) {
+        else if (ari == Loader::dividedby) {
             if (value_2 == 0) {
                 printf("you try to divide by zero!\n");
                 exit(1);
@@ -1798,7 +1798,7 @@ void Cut(const char* bracket_1, double const_1, Loader::Arithmetic ari_1, Loader
         if (ari_1 == Loader::plus) value_1 = const_1 + value_1;
         else if (ari_1 == Loader::minus) value_1 = const_1 - value_1;
         else if (ari_1 == Loader::times) value_1 = const_1 * value_1;
-        else if (ari_1 == Loader::dividedvy) {
+        else if (ari_1 == Loader::dividedby) {
             if (value_1 == 0) {
                 printf("you try to divide by zero!\n");
                 exit(1);
@@ -1821,7 +1821,7 @@ void Cut(const char* bracket_1, double const_1, Loader::Arithmetic ari_1, Loader
         if (ari_2 == Loader::plus) value_2 = const_2 + value_2;
         else if (ari_2 == Loader::minus) value_2 = const_2 - value_2;
         else if (ari_2 == Loader::times) value_2 = const_2 * value_2;
-        else if (ari_2 == Loader::dividedvy) {
+        else if (ari_2 == Loader::dividedby) {
             if (value_2 == 0) {
                 printf("you try to divide by zero!\n");
                 exit(1);
@@ -1836,7 +1836,7 @@ void Cut(const char* bracket_1, double const_1, Loader::Arithmetic ari_1, Loader
         if (ari == Loader::plus) value_3 = value_1 + value_2;
         else if (ari == Loader::minus) value_3 = value_1 - value_2;
         else if (ari == Loader::times) value_3 = value_1 * value_2;
-        else if (ari == Loader::dividedvy) {
+        else if (ari == Loader::dividedby) {
             if (value_2 == 0) {
                 printf("you try to divide by zero!\n");
                 exit(1);
