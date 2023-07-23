@@ -658,7 +658,7 @@ public:
     void PrintInformation(std::string title, std::string filename = std::string(""), bool smartmode = true);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value);
     void Cut(Loader::Variable variable_1, int i_1, Loader::Arithmetic ari, Loader::Variable variable_2, int i_2, Loader::Inequality inq, double value);
-    void Cut(double const_1, Loader::Arithmetic ari_1, Loader::Variable variable_1, int i_1, Loader::Arithmetic ari, double const_2, Loader::Arithmetic ari_2, Loader::Variable variable_2, int i_2, Loader::Inequality inq, double value);
+    void Cut(const char* bracket_1, double const_1, Loader::Arithmetic ari_1, Loader::Variable variable_1, int i_1, const char* bracket_2, Loader::Arithmetic ari, const char* bracket_3, double const_2, Loader::Arithmetic ari_2, Loader::Variable variable_2, int i_2, const char* bracket_4, Loader::Inequality inq, double value);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::Variable variable_qual, int i_qual, Loader::Inequality inq_qual, double value_qual);
     void BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit);
