@@ -2,8 +2,8 @@
 // for Belle2 data
 
 # define Nentry 500
-# define MIN_QSQ 1.876
-# define MAX_QSQ 4.782
+# define MIN_invM 1.876
+# define MAX_invM 4.782
 
 void load_files(const char *dirname, std::vector<string>* names){
    TSystemDirectory dir(dirname, dirname);
@@ -28,7 +28,7 @@ void ReadK0nnFiles_r_sp(){
 
     load_files(dirname, &names);
 
-    TH1D* Plot = new TH1D("M_{p#bar{p}}", ";M_{p#bar{p}} [GeV/c^{2}]; evt", Nentry, MIN_QSQ, MAX_QSQ);
+    TH1D* Plot = new TH1D("M_{p#bar{p}}", ";M_{p#bar{p}} [GeV/c^{2}]; evt", Nentry, MIN_invM, MAX_invM);
 
     for(unsigned int i = 0; i<names.size(); i++) {
 
@@ -112,16 +112,16 @@ void ReadK0nnFiles_r_sp(){
 
     // set x-axis range
     auto axis = gr->GetXaxis();
-    axis->SetLimits(MIN_QSQ, MAX_QSQ);
+    axis->SetLimits(MIN_invM, MAX_invM);
     gr->GetYaxis()->SetRangeUser(-0.1, 1.3);
 
     // fit by exponential
-    TF1* f = new TF1("f", "[0]*(x-[1])*(x-[1])+[2]", MIN_QSQ, MAX_QSQ);
+    TF1* f = new TF1("f", "[0]*(x-[1])*(x-[1])+[2]", MIN_invM, MAX_invM);
     f->SetParameter(0, 0.3);
     f->SetParameter(1, 3.5);
     f->SetParameter(2, 0.0);
-    gr->Fit("f", "", "", MIN_QSQ, MAX_QSQ);
-    double Area = f->Integral(MIN_QSQ, MAX_QSQ);
+    gr->Fit("f", "", "", MIN_invM, MAX_invM);
+    double Area = f->Integral(MIN_invM, MAX_invM);
     double First = f->GetParameter(0);
     double Second = f->GetParameter(1);
 
@@ -139,7 +139,7 @@ void ReadK0nnFiles_r_sp(){
 
     FILE* fp;
     fp = fopen("K0nn_weight.txt","w");
-    fprintf(fp,"%d %lf %lf\n", Nentry, MIN_QSQ, MAX_QSQ);
+    fprintf(fp,"%d %lf %lf\n", Nentry, MIN_invM, MAX_invM);
     for (int j = 0; j < Nentry; j++) {
         double PHSP_bin_center = Plot->GetBinCenter(j + 1);
         double PHSP_value = Plot->GetBinContent(j + 1);

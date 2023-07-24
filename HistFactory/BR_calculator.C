@@ -396,6 +396,217 @@ double Corrector::GetCorrectionFactor(double q2, std::string type) {
     return 0;
 }
 
+class Corrector_Knn {
+private:
+
+    // K+nn
+    int STEP_Knn;
+    double mininvM_Knn;
+    double maxinvM_Knn;
+    TH1D* weights_Knn;
+    const double DECAY_DEC_BR_Knn;
+    const double new_BR_Knn;
+    const double Nraw_initial_Knn;
+    double Nscale_initial_Knn;
+
+    // K*+nn
+    int STEP_Kstarnn;
+    double mininvM_Kstarnn;
+    double maxinvM_Kstarnn;
+    TH1D* weights_Kstarnn;
+    const double DECAY_DEC_BR_Kstarnn;
+    const double new_BR_Kstarnn;
+    const double Nraw_initial_Kstarnn;
+    double Nscale_initial_Kstarnn;
+
+    // K0nn
+    int STEP_K0nn;
+    double mininvM_K0nn;
+    double maxinvM_K0nn;
+    TH1D* weights_K0nn;
+    const double DECAY_DEC_BR_K0nn;
+    const double new_BR_K0nn;
+    const double Nraw_initial_K0nn;
+    double Nscale_initial_K0nn;
+
+    // K0*nn
+    int STEP_K0starnn;
+    double mininvM_K0starnn;
+    double maxinvM_K0starnn;
+    TH1D* weights_K0starnn;
+    const double DECAY_DEC_BR_K0starnn;
+    const double new_BR_K0starnn;
+    const double Nraw_initial_K0starnn;
+    double Nscale_initial_K0starnn;
+
+    const double N_EPSILON;
+    const double CUTOFF;
+
+public:
+    Corrector_Knn();
+    double GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
+    double GetCorrectionFactorAtGeneric(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
+};
+
+Corrector_Knn corrector_Knn;
+
+Corrector_Knn::Corrector_Knn() :
+    DECAY_DEC_BR_Knn(0.0000057),
+    new_BR_Knn(0.0000059),
+    Nraw_initial_Knn(1000000.0),
+    DECAY_DEC_BR_Kstarnn(0.0000057),
+    new_BR_Kstarnn(0.0000036),
+    Nraw_initial_Kstarnn(1000000.0),
+    DECAY_DEC_BR_K0nn(0.000002),
+    new_BR_K0nn(0.00000266),
+    Nraw_initial_K0nn(1000000.0),
+    DECAY_DEC_BR_K0starnn(0.0000056),
+    new_BR_K0starnn(0.00000124),
+    Nraw_initial_K0starnn(1000000.0),
+    N_EPSILON(0.01),
+    CUTOFF(50.0)
+{
+    FILE* fp;
+
+    // read Knn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/Knn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_Knn, &mininvM_Knn, &maxinvM_Knn);
+    weights_Knn = new TH1D("Knn_weights", ";;", STEP_Knn, mininvM_Knn, maxinvM_Knn);
+    for (int i = 0; i < STEP_Knn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        if (temp < CUTOFF) weights_Knn->SetBinContent(i + 1, temp);
+        else weights_Knn->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+    // read Kstarnn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/Kstarnn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_Kstarnn, &mininvM_Kstarnn, &maxinvM_Kstarnn);
+    weights_Kstarnn = new TH1D("Kstarnn_weights", ";;", STEP_Kstarnn, mininvM_Kstarnn, maxinvM_Kstarnn);
+    for (int i = 0; i < STEP_Kstarnn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        if (temp < CUTOFF) weights_Kstarnn->SetBinContent(i + 1, temp);
+        else weights_Kstarnn->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+    // read K0nn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/K0nn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_K0nn, &mininvM_K0nn, &maxinvM_K0nn);
+    weights_K0nn = new TH1D("K0nn_weights", ";;", STEP_K0nn, mininvM_K0nn, maxinvM_K0nn);
+    for (int i = 0; i < STEP_K0nn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        if (temp < CUTOFF) weights_K0nn->SetBinContent(i + 1, temp);
+        else weights_K0nn->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+    // read K0starnn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/K0starnn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_K0starnn, &mininvM_K0starnn, &maxinvM_K0starnn);
+    weights_K0starnn = new TH1D("K0starnn_weights", ";;", STEP_K0starnn, mininvM_K0starnn, maxinvM_K0starnn);
+    for (int i = 0; i < STEP_K0starnn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        if (temp < CUTOFF) weights_K0starnn->SetBinContent(i + 1, temp);
+        else weights_K0starnn->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+    // calculate the expected number of event
+    Nscale_initial_Knn = (2.0 * N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0)) * new_BR_Knn);
+    Nscale_initial_Kstarnn = (2.0 * N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0)) * new_BR_Kstarnn);
+    Nscale_initial_K0nn = (2.0 * N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0)) * new_BR_K0nn);
+    Nscale_initial_K0starnn = (2.0 * N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0)) * new_BR_K0starnn);
+}
+
+double Corrector_Knn::GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
+
+    double Correction_Knn = 1;
+    double Correction_Kstarnn = 1;
+    double Correction_K0nn = 1;
+    double Correction_K0starnn = 1;
+
+    if (N_Knn < N_EPSILON) Correction_Knn = 1;
+    else {
+        int Bin = weights_Knn->FindBin(invM_Knn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Knn) Bin = STEP_Knn;
+        Correction_Knn = std::pow((Nscale_initial_Knn / Nraw_initial_Knn) * weights_Knn->GetBinContent(Bin), N_Knn); // BR correction * invM correction
+    }
+
+    if (N_Kstarnn < N_EPSILON) Correction_Kstarnn = 1;
+    else {
+        int Bin = weights_Kstarnn->FindBin(invM_Kstarnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Kstarnn) Bin = STEP_Kstarnn;
+        Correction_Kstarnn = std::pow((Nscale_initial_Kstarnn / Nraw_initial_Kstarnn) * weights_Kstarnn->GetBinContent(Bin), N_Kstarnn); // BR correction * invM correction
+    }
+
+    if (N_K0nn < N_EPSILON) Correction_K0nn = 1;
+    else {
+        int Bin = weights_K0nn->FindBin(invM_K0nn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_K0nn) Bin = STEP_K0nn;
+        Correction_K0nn = std::pow((Nscale_initial_K0nn / Nraw_initial_K0nn) * weights_K0nn->GetBinContent(Bin), N_K0nn); // BR correction * invM correction
+    }
+
+    if (N_K0starnn < N_EPSILON) Correction_K0starnn = 1;
+    else {
+        int Bin = weights_K0starnn->FindBin(invM_K0starnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_K0starnn) Bin = STEP_K0starnn;
+        Correction_K0starnn = std::pow((Nscale_initial_K0starnn / Nraw_initial_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * invM correction
+    }
+
+    return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
+}
+
+double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
+
+    double Correction_Knn = 1;
+    double Correction_Kstarnn = 1;
+    double Correction_K0nn = 1;
+    double Correction_K0starnn = 1;
+
+    if (N_Knn < N_EPSILON) Correction_Knn = 1;
+    else {
+        int Bin = weights_Knn->FindBin(invM_Knn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Knn) Bin = STEP_Knn;
+        Correction_Knn = std::pow((new_BR_Knn / DECAY_DEC_BR_Knn) * weights_Knn->GetBinContent(Bin), N_Knn); // BR correction * invM correction
+    }
+
+    if (N_Kstarnn < N_EPSILON) Correction_Kstarnn = 1;
+    else {
+        int Bin = weights_Kstarnn->FindBin(invM_Kstarnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Kstarnn) Bin = STEP_Kstarnn;
+        Correction_Kstarnn = std::pow((new_BR_Kstarnn / DECAY_DEC_BR_Kstarnn) * weights_Kstarnn->GetBinContent(Bin), N_Kstarnn); // BR correction * invM correction
+    }
+
+    if (N_K0nn < N_EPSILON) Correction_K0nn = 1;
+    else {
+        int Bin = weights_K0nn->FindBin(invM_K0nn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_K0nn) Bin = STEP_K0nn;
+        Correction_K0nn = std::pow((new_BR_K0nn / DECAY_DEC_BR_K0nn) * weights_K0nn->GetBinContent(Bin), N_K0nn); // BR correction * invM correction
+    }
+
+    if (N_K0starnn < N_EPSILON) Correction_K0starnn = 1;
+    else {
+        int Bin = weights_K0starnn->FindBin(invM_K0starnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_K0starnn) Bin = STEP_K0starnn;
+        Correction_K0starnn = std::pow((new_BR_K0starnn / DECAY_DEC_BR_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * invM correction
+    }
+
+    return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
+}
+
 std::vector<EvtInfo> EvtInfos;
 
 struct _BRuncertainty {
@@ -828,6 +1039,10 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
     CorrectionType for new form factors
     B2Knunu
     B02K0nunu
+    B2Knn
+    B2Kstarnn
+    B02K0nn
+    B02K0starnn
     otherwise
     */
     if (strcmp(type, "Bplus") == 0) {}
@@ -841,6 +1056,10 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
     if (strcmp(sample, "CHG") == 0) {}
     else if (strcmp(sample, "MIX") == 0) {}
     else if (strcmp(sample, "SIGNAL") == 0) {}
+    else if (strcmp(sample, "Knn") == 0) {}
+    else if (strcmp(sample, "Kstarnn") == 0) {}
+    else if (strcmp(sample, "K0nn") == 0) {}
+    else if (strcmp(sample, "K0starnn") == 0) {}
     else {
         printf("[ERROR] unexpected sample name\n");
         exit(1);
@@ -856,6 +1075,15 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
     double invM = -1.0;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -898,6 +1126,16 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
         if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+        if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) {
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -905,6 +1143,12 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
+
+            // do not remove Knn bkg from CHG/MIX generic background. Because of technical hardness, special Knn background is not included for BR syst calculator
+            // if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            // else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            // else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            // else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -939,6 +1183,7 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
+            if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             Nevt = Nevt + total_weight;
 
@@ -955,6 +1200,10 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
     if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
     else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
     else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 2;
+    else if (strcmp(sample, "Knn") == 0) ArrayBinID = 0;
+    else if (strcmp(sample, "Kstarnn") == 0) ArrayBinID = 0;
+    else if (strcmp(sample, "K0nn") == 0) ArrayBinID = 1;
+    else if (strcmp(sample, "K0starnn") == 0) ArrayBinID = 1;
 
     for (int i = 0; i < RarityBins; i++) {
         Nevt_nominal[ArrayBinID * RarityBins + i] = Nevt_nominal[ArrayBinID * RarityBins + i] + hist->GetBinContent(i + 1);
@@ -968,6 +1217,10 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
     CorrectionType for new form factors
     B2Knunu
     B02K0nunu
+    B2Knn
+    B2Kstarnn
+    B02K0nn
+    B02K0starnn
     otherwise
     */
     if (strcmp(type, "Bplus") == 0) {}
@@ -981,6 +1234,10 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
     if (strcmp(sample, "CHG") == 0) {}
     else if (strcmp(sample, "MIX") == 0) {}
     else if (strcmp(sample, "SIGNAL") == 0) {}
+    else if (strcmp(sample, "Knn") == 0) {}
+    else if (strcmp(sample, "Kstarnn") == 0) {}
+    else if (strcmp(sample, "K0nn") == 0) {}
+    else if (strcmp(sample, "K0starnn") == 0) {}
     else {
         printf("[ERROR] unexpected sample name\n");
         exit(1);
@@ -996,6 +1253,15 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
     double invM = -1.0;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
 
     int __experiment__ = 0;
     int __run__ = 0;
@@ -1044,6 +1310,16 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
         if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+        if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) {
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        }
 
         tree_upsilon->SetBranchAddress("__experiment__", &__experiment__);
         tree_upsilon->SetBranchAddress("__run__", &__run__);
@@ -1057,6 +1333,12 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
+
+            // do not remove Knn bkg from CHG/MIX generic background. Because of technical hardness, special Knn background is not included for BR syst calculator
+            // if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            // else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            // else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            // else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -1093,6 +1375,7 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_BR;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
+            if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             Nevt = Nevt + total_weight;
 
@@ -1109,6 +1392,10 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
     if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
     else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
     else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 2;
+    else if (strcmp(sample, "Knn") == 0) ArrayBinID = 0;
+    else if (strcmp(sample, "Kstarnn") == 0) ArrayBinID = 0;
+    else if (strcmp(sample, "K0nn") == 0) ArrayBinID = 1;
+    else if (strcmp(sample, "K0starnn") == 0) ArrayBinID = 1;
 
     for (int i = 0; i < RarityBins; i++) {
         Nevt_fluc[ToyNum][ArrayBinID * RarityBins + i] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins + i] + hist->GetBinContent(i + 1);
@@ -1716,9 +2003,9 @@ void BR_calculator()
     GetNominalNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_Xsd_nonresonant_test, "otherwise");
     temp_hist->Reset();
 
-    GetNominalNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_nominal, Scale_CHG_test, "otherwise");
+    GetNominalNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_nominal, Scale_CHG_test, "B2Knn");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_nominal, Scale_MIX_test, "otherwise");
+    GetNominalNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_nominal, Scale_MIX_test, "B2Knn");
     temp_hist->Reset();
     /* ====================================== */
 
@@ -1742,9 +2029,9 @@ void BR_calculator()
         GetFlucNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc, i, Scale_Xsd_nonresonant_test, "otherwise");
         temp_hist->Reset();
 
-        GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc, i, Scale_CHG_test, "otherwise");
+        GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc, i, Scale_CHG_test, "B2Knn");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc, i, Scale_MIX_test, "otherwise");
+        GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc, i, Scale_MIX_test, "B2Knn");
         temp_hist->Reset();
     }
     /* ====================================== */
