@@ -351,48 +351,48 @@ Corrector_Knn::Corrector_Knn() :
     FILE* fp;
 
     // read Knn weights
-    fp = fopen("Knn_weight.txt", "r");
-    fscanf("%d %lf %lf\n", &STEP_Knn, &minQs_Knn, &maxQs_Knn);
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/Knn_weight.txt", "r");
+    fscanf(fp,"%d %lf %lf\n", &STEP_Knn, &minQs_Knn, &maxQs_Knn);
     weights_Knn = new TH1D("Knn_weights", ";;", STEP_Knn, minQs_Knn, maxQs_Knn);
     for (int i = 0; i < STEP_Knn; i++) {
         double temp;
-        fscanf("%lf\n", &temp);
+        fscanf(fp,"%lf\n", &temp);
         if(temp < CUTOFF) weights_Knn->SetBinContent(i + 1, temp);
         else weights_Knn->SetBinContent(i + 1, CUTOFF);
     }
     fclose(fp);
 
     // read Kstarnn weights
-    fp = fopen("Kstarnn_weight.txt", "r");
-    fscanf("%d %lf %lf\n", &STEP_Kstarnn, &minQs_Kstarnn, &maxQs_Kstarnn);
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/Kstarnn_weight.txt", "r");
+    fscanf(fp,"%d %lf %lf\n", &STEP_Kstarnn, &minQs_Kstarnn, &maxQs_Kstarnn);
     weights_Kstarnn = new TH1D("Kstarnn_weights", ";;", STEP_Kstarnn, minQs_Kstarnn, maxQs_Kstarnn);
     for (int i = 0; i < STEP_Kstarnn; i++) {
         double temp;
-        fscanf("%lf\n", &temp);
+        fscanf(fp,"%lf\n", &temp);
         if (temp < CUTOFF) weights_Kstarnn->SetBinContent(i + 1, temp);
         else weights_Kstarnn->SetBinContent(i + 1, CUTOFF);
     }
     fclose(fp);
 
     // read K0nn weights
-    fp = fopen("K0nn_weight.txt", "r");
-    fscanf("%d %lf %lf\n", &STEP_K0nn, &minQs_K0nn, &maxQs_K0nn);
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/K0nn_weight.txt", "r");
+    fscanf(fp,"%d %lf %lf\n", &STEP_K0nn, &minQs_K0nn, &maxQs_K0nn);
     weights_K0nn = new TH1D("K0nn_weights", ";;", STEP_K0nn, minQs_K0nn, maxQs_K0nn);
     for (int i = 0; i < STEP_K0nn; i++) {
         double temp;
-        fscanf("%lf\n", &temp);
+        fscanf(fp,"%lf\n", &temp);
         if (temp < CUTOFF) weights_K0nn->SetBinContent(i + 1, temp);
         else weights_K0nn->SetBinContent(i + 1, CUTOFF);
     }
     fclose(fp);
 
     // read K0starnn weights
-    fp = fopen("K0starnn_weight.txt", "r");
-    fscanf("%d %lf %lf\n", &STEP_K0starnn, &minQs_K0starnn, &maxQs_K0starnn);
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/K0starnn_weight.txt", "r");
+    fscanf(fp,"%d %lf %lf\n", &STEP_K0starnn, &minQs_K0starnn, &maxQs_K0starnn);
     weights_K0starnn = new TH1D("K0starnn_weights", ";;", STEP_K0starnn, minQs_K0starnn, maxQs_K0starnn);
     for (int i = 0; i < STEP_K0starnn; i++) {
         double temp;
-        fscanf("%lf\n", &temp);
+        fscanf(fp,"%lf\n", &temp);
         if (temp < CUTOFF) weights_K0starnn->SetBinContent(i + 1, temp);
         else weights_K0starnn->SetBinContent(i + 1, CUTOFF);
     }
