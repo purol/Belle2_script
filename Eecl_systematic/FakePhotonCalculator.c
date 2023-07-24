@@ -1059,6 +1059,13 @@ void DrawPlots(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D* hist_eecl
         hist_eecl_data->SetMarkerStyle(8);
         hist_eecl_data->Draw("SAME eP");
 
+        // draw legend
+        TLegend* legend = new TLegend(0.7, 0.8, 0.9, 0.9);
+        legend->AddEntry(hist_eecl[i], "MC", "f");
+        legend->AddEntry(hist_eecl_data, "data", "lpfe");
+        legend->SetFillStyle(0); legend->SetLineWidth(0);
+        legend->Draw("SAME");
+
         c_temp->SaveAs( ("Eecl_MCVSdata_" + to_string(Scales[i]) + ".png").c_str());
 
         delete c_temp;
