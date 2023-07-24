@@ -322,12 +322,6 @@ private:
 public:
     Corrector_Knn();
     double GetCorrectionFactor(double q2_Knn, double q2_Kstarnn, double q2_K0nn, double q2_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
-    ~Corrector_Knn() {
-        delete weights_Knn;
-        delete weights_Kstarnn;
-        delete weights_K0nn;
-        delete weights_K0starnn;
-    }
 };
 
 Corrector_Knn corrector_Knn;
