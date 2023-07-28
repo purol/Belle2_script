@@ -145,6 +145,219 @@ const double pi0_sys_uncer2[N_pi0_syst] = {
     0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0
 };
 
+class Corrector_Knn {
+private:
+
+    // K+nn
+    int STEP_Knn;
+    double minQs_Knn;
+    double maxQs_Knn;
+    TH1D* weights_Knn;
+    const double DECAY_DEC_BR_Knn;
+    const double new_BR_Knn;
+    const double Nraw_initial_Knn;
+    double Nscale_initial_Knn;
+
+    // K*+nn
+    int STEP_Kstarnn;
+    double minQs_Kstarnn;
+    double maxQs_Kstarnn;
+    TH1D* weights_Kstarnn;
+    const double DECAY_DEC_BR_Kstarnn;
+    const double new_BR_Kstarnn;
+    const double Nraw_initial_Kstarnn;
+    double Nscale_initial_Kstarnn;
+
+    // K0nn
+    int STEP_K0nn;
+    double minQs_K0nn;
+    double maxQs_K0nn;
+    TH1D* weights_K0nn;
+    const double DECAY_DEC_BR_K0nn;
+    const double new_BR_K0nn;
+    const double Nraw_initial_K0nn;
+    double Nscale_initial_K0nn;
+
+    // K0*nn
+    int STEP_K0starnn;
+    double minQs_K0starnn;
+    double maxQs_K0starnn;
+    TH1D* weights_K0starnn;
+    const double DECAY_DEC_BR_K0starnn;
+    const double new_BR_K0starnn;
+    const double Nraw_initial_K0starnn;
+    double Nscale_initial_K0starnn;
+
+    const double N_EPSILON;
+    const double CUTOFF;
+
+public:
+    Corrector_Knn();
+    double GetCorrectionFactor(double q2_Knn, double q2_Kstarnn, double q2_K0nn, double q2_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
+    double GetCorrectionFactorAtGeneric(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
+};
+
+Corrector_Knn corrector_Knn;
+
+Corrector_Knn::Corrector_Knn() :
+    DECAY_DEC_BR_Knn(0.0000057),
+    new_BR_Knn(0.0000059),
+    Nraw_initial_Knn(1000000.0),
+    DECAY_DEC_BR_Kstarnn(0.0000057),
+    new_BR_Kstarnn(0.0000036),
+    Nraw_initial_Kstarnn(1000000.0),
+    DECAY_DEC_BR_K0nn(0.000002),
+    new_BR_K0nn(0.00000266),
+    Nraw_initial_K0nn(1000000.0),
+    DECAY_DEC_BR_K0starnn(0.0000056),
+    new_BR_K0starnn(0.00000124),
+    Nraw_initial_K0starnn(1000000.0),
+    N_EPSILON(0.01),
+    CUTOFF(50.0)
+{
+    FILE* fp;
+
+    // read Knn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/Knn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_Knn, &minQs_Knn, &maxQs_Knn);
+    weights_Knn = new TH1D("Knn_weights", ";;", STEP_Knn, minQs_Knn, maxQs_Knn);
+    for (int i = 0; i < STEP_Knn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        if (temp < CUTOFF) weights_Knn->SetBinContent(i + 1, temp);
+        else weights_Knn->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+    // read Kstarnn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/Kstarnn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_Kstarnn, &minQs_Kstarnn, &maxQs_Kstarnn);
+    weights_Kstarnn = new TH1D("Kstarnn_weights", ";;", STEP_Kstarnn, minQs_Kstarnn, maxQs_Kstarnn);
+    for (int i = 0; i < STEP_Kstarnn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        if (temp < CUTOFF) weights_Kstarnn->SetBinContent(i + 1, temp);
+        else weights_Kstarnn->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+    // read K0nn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/K0nn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_K0nn, &minQs_K0nn, &maxQs_K0nn);
+    weights_K0nn = new TH1D("K0nn_weights", ";;", STEP_K0nn, minQs_K0nn, maxQs_K0nn);
+    for (int i = 0; i < STEP_K0nn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        if (temp < CUTOFF) weights_K0nn->SetBinContent(i + 1, temp);
+        else weights_K0nn->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+    // read K0starnn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/K0starnn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_K0starnn, &minQs_K0starnn, &maxQs_K0starnn);
+    weights_K0starnn = new TH1D("K0starnn_weights", ";;", STEP_K0starnn, minQs_K0starnn, maxQs_K0starnn);
+    for (int i = 0; i < STEP_K0starnn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        if (temp < CUTOFF) weights_K0starnn->SetBinContent(i + 1, temp);
+        else weights_K0starnn->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+    // calculate the expected number of event
+    Nscale_initial_Knn = (2.0 * N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0)) * new_BR_Knn);
+    Nscale_initial_Kstarnn = (2.0 * N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0)) * new_BR_Kstarnn);
+    Nscale_initial_K0nn = (2.0 * N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0)) * new_BR_K0nn);
+    Nscale_initial_K0starnn = (2.0 * N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0)) * new_BR_K0starnn);
+}
+
+double Corrector_Knn::GetCorrectionFactor(double q2_Knn, double q2_Kstarnn, double q2_K0nn, double q2_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
+
+    double Correction_Knn = 1;
+    double Correction_Kstarnn = 1;
+    double Correction_K0nn = 1;
+    double Correction_K0starnn = 1;
+
+    if (N_Knn < N_EPSILON) Correction_Knn = 1;
+    else {
+        int Bin = weights_Knn->FindBin(q2_Knn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Knn) Bin = STEP_Knn;
+        Correction_Knn = std::pow((Nscale_initial_Knn / Nraw_initial_Knn) * weights_Knn->GetBinContent(Bin), N_Knn); // BR correction * q2 correction
+    }
+
+    if (N_Kstarnn < N_EPSILON) Correction_Kstarnn = 1;
+    else {
+        int Bin = weights_Kstarnn->FindBin(q2_Kstarnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Kstarnn) Bin = STEP_Kstarnn;
+        Correction_Kstarnn = std::pow((Nscale_initial_Kstarnn / Nraw_initial_Kstarnn) * weights_Kstarnn->GetBinContent(Bin), N_Kstarnn); // BR correction * q2 correction
+    }
+
+    if (N_K0nn < N_EPSILON) Correction_K0nn = 1;
+    else {
+        int Bin = weights_K0nn->FindBin(q2_K0nn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_K0nn) Bin = STEP_K0nn;
+        Correction_K0nn = std::pow((Nscale_initial_K0nn / Nraw_initial_K0nn) * weights_K0nn->GetBinContent(Bin), N_K0nn); // BR correction * q2 correction
+    }
+
+    if (N_K0starnn < N_EPSILON) Correction_K0starnn = 1;
+    else {
+        int Bin = weights_K0starnn->FindBin(q2_K0starnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_K0starnn) Bin = STEP_K0starnn;
+        Correction_K0starnn = std::pow((Nscale_initial_K0starnn / Nraw_initial_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * q2 correction
+    }
+
+    return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
+}
+
+double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
+
+    double Correction_Knn = 1;
+    double Correction_Kstarnn = 1;
+    double Correction_K0nn = 1;
+    double Correction_K0starnn = 1;
+
+    if (N_Knn < N_EPSILON) Correction_Knn = 1;
+    else {
+        int Bin = weights_Knn->FindBin(invM_Knn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Knn) Bin = STEP_Knn;
+        Correction_Knn = std::pow((new_BR_Knn / DECAY_DEC_BR_Knn) * weights_Knn->GetBinContent(Bin), N_Knn); // BR correction * invM correction
+    }
+
+    if (N_Kstarnn < N_EPSILON) Correction_Kstarnn = 1;
+    else {
+        int Bin = weights_Kstarnn->FindBin(invM_Kstarnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Kstarnn) Bin = STEP_Kstarnn;
+        Correction_Kstarnn = std::pow((new_BR_Kstarnn / DECAY_DEC_BR_Kstarnn) * weights_Kstarnn->GetBinContent(Bin), N_Kstarnn); // BR correction * invM correction
+    }
+
+    if (N_K0nn < N_EPSILON) Correction_K0nn = 1;
+    else {
+        int Bin = weights_K0nn->FindBin(invM_K0nn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_K0nn) Bin = STEP_K0nn;
+        Correction_K0nn = std::pow((new_BR_K0nn / DECAY_DEC_BR_K0nn) * weights_K0nn->GetBinContent(Bin), N_K0nn); // BR correction * invM correction
+    }
+
+    if (N_K0starnn < N_EPSILON) Correction_K0starnn = 1;
+    else {
+        int Bin = weights_K0starnn->FindBin(invM_K0starnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_K0starnn) Bin = STEP_K0starnn;
+        Correction_K0starnn = std::pow((new_BR_K0starnn / DECAY_DEC_BR_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * invM correction
+    }
+
+    return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
+}
+
+/* ====================================== */
+
 void ReadPIDFile() {
     const char* KID_true_file = "KaonEff.csv";
     const char* KID_mis_file = "Kaonmis.csv";
@@ -752,6 +965,18 @@ void LetsFillSideBand(const char* dirname, std::vector<std::string> variable_nam
 
 void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName) {
     /*
+    SampleName for Knn
+    CHG
+    MIX
+    UUBAR
+    DDBAR
+    SSBAR
+    Knn
+    Kstarnn
+    K0nn
+    K0starnn
+    */
+    /*
     0: charged
     1: mixed
     2: uubar
@@ -777,6 +1002,15 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
     double FEI_calibration_factor = -1;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -821,12 +1055,27 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        if ((SampleName == "Knn") || (SampleName == "Kstarnn") || (SampleName == "K0nn") || (SampleName == "K0starnn")) {
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+
+            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
 
@@ -861,6 +1110,26 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
                 numberings->push_back(5);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+            }
+            else if (SampleName == "Knn") {
+                numberings->push_back(0);
+                FEI_calibration_factor = FEI_cal_Bc;
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            }
+            else if (SampleName == "Kstarnn") {
+                numberings->push_back(0);
+                FEI_calibration_factor = FEI_cal_Bc;
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            }
+            else if (SampleName == "K0nn") {
+                numberings->push_back(1);
+                FEI_calibration_factor = FEI_cal_B0;
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            }
+            else if (SampleName == "K0starnn") {
+                numberings->push_back(1);
+                FEI_calibration_factor = FEI_cal_B0;
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
@@ -988,6 +1257,18 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
 void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName, double NormFactor = 1.0) {
     /*
+    SampleName for Knn
+    CHG
+    MIX
+    UUBAR
+    DDBAR
+    SSBAR
+    Knn
+    Kstarnn
+    K0nn
+    K0starnn
+    */
+    /*
     0: charged
     1: mixed
     2: uubar
@@ -1013,6 +1294,15 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
     double FEI_calibration_factor = -1;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
 
     float BDTc = -1;
     double BDTc_correction = -1;
@@ -1060,6 +1350,16 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        if ((SampleName == "Knn") || (SampleName == "Kstarnn") || (SampleName == "K0nn") || (SampleName == "K0starnn")) {
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        }
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -1067,6 +1367,11 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+
+            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             // BDTc correction factor
             if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
@@ -1106,6 +1411,26 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
                 numberings->push_back(5);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+            }
+            else if (SampleName == "Knn") {
+                numberings->push_back(0);
+                FEI_calibration_factor = FEI_cal_Bc;
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            }
+            else if (SampleName == "Kstarnn") {
+                numberings->push_back(0);
+                FEI_calibration_factor = FEI_cal_Bc;
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            }
+            else if (SampleName == "K0nn") {
+                numberings->push_back(1);
+                FEI_calibration_factor = FEI_cal_B0;
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            }
+            else if (SampleName == "K0starnn") {
+                numberings->push_back(1);
+                FEI_calibration_factor = FEI_cal_B0;
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
@@ -1160,6 +1485,18 @@ typedef struct _Nevt {
 
 void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
     /*
+    SampleName for Knn
+    CHG
+    MIX
+    UUBAR
+    DDBAR
+    SSBAR
+    Knn
+    Kstarnn
+    K0nn
+    K0starnn
+    */
+    /*
     0: charged
     1: mixed
     2: uubar
@@ -1185,6 +1522,15 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
     double FEI_calibration_factor = -1;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
 
     float BDTc = -1;
     double BDTc_correction = -1;
@@ -1222,6 +1568,16 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        if ((SampleName == "Knn") || (SampleName == "Kstarnn") || (SampleName == "K0nn") || (SampleName == "K0starnn")) {
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        }
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -1229,6 +1585,11 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+
+            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             // BDTc correction factor
             if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
@@ -1259,6 +1620,22 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             else if (SampleName == "CHARM") {
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+            }
+            else if (SampleName == "Knn") {
+                FEI_calibration_factor = FEI_cal_Bc;
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            }
+            else if (SampleName == "Kstarnn") {
+                FEI_calibration_factor = FEI_cal_Bc;
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            }
+            else if (SampleName == "K0nn") {
+                FEI_calibration_factor = FEI_cal_B0;
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn); 
+            }
+            else if (SampleName == "K0starnn") {
+                FEI_calibration_factor = FEI_cal_B0;
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn); 
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
@@ -1333,6 +1710,11 @@ void THStack_plot_sideband() {
     const char* Sideband_MC_SSBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/SSBAR_analysis/test_v000/final_output";
     const char* Sideband_MC_CHARM_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/CHARM_analysis/test_v000/final_output";
 
+    const char* Sideband_MC_dirname_Knn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_side/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Knn";
+    const char* Sideband_MC_dirname_Kstarnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_side/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Kstarnn";
+    const char* Sideband_MC_dirname_K0nn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_side/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0nn";
+    const char* Sideband_MC_dirname_K0starnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_side/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0starnn";
+
     const char* Sideband_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_data_side/SIGNAL_analysis/validation_v000/final_output";
 
     NevtCount_ri(Sideband_MC_CHG_train_dirname, "CHG", &nevt_CHG);
@@ -1348,6 +1730,11 @@ void THStack_plot_sideband() {
     NevtCount_ri(Sideband_MC_DDBAR_test_dirname, "DDBAR", &nevt_DDBAR);
     NevtCount_ri(Sideband_MC_SSBAR_test_dirname, "SSBAR", &nevt_SSBAR);
     NevtCount_ri(Sideband_MC_CHARM_test_dirname, "CHARM", &nevt_CHARM);
+
+    NevtCount_ri(Sideband_MC_dirname_Knn, "Knn", &nevt_CHG);
+    NevtCount_ri(Sideband_MC_dirname_Kstarnn, "Kstarnn", &nevt_CHG);
+    NevtCount_ri(Sideband_MC_dirname_K0nn, "K0nn", &nevt_MIX);
+    NevtCount_ri(Sideband_MC_dirname_K0starnn, "K0starnn", &nevt_MIX);
 
     double NormFactor_CHG = nevt_CHG.NevtwithoutCorrection / nevt_CHG.NevtwithCorrection;
     double NormFactor_MIX = nevt_MIX.NevtwithoutCorrection / nevt_MIX.NevtwithCorrection;
@@ -1393,8 +1780,8 @@ void THStack_plot_sideband() {
     variable_names.push_back("Btag_useCMSFrame_p"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_useCMSFrame_phi"); branch_names.push_back("Btag");
     variable_names.push_back("roeEextra__bocleanMask__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("extraInfo__boEeclv133__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("extraInfo__boNgammav133__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("extraInfo__boEeclv200__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("extraInfo__boNgammav200__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("Btag_thrustOm"); branch_names.push_back("Btag");
     variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT__bc"); branch_names.push_back("Upsilon");
@@ -1534,6 +1921,10 @@ void THStack_plot_sideband() {
     LetsFillSideBand_ri_correction(Sideband_MC_DDBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR);
     LetsFillSideBand_ri_correction(Sideband_MC_SSBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR);
     LetsFillSideBand_ri_correction(Sideband_MC_CHARM_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM", NormFactor_CHARM);
+    LetsFillSideBand_ri(Sideband_MC_dirname_Knn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "Knn");
+    LetsFillSideBand_ri(Sideband_MC_dirname_Kstarnn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "Kstarnn");
+    LetsFillSideBand_ri(Sideband_MC_dirname_K0nn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "K0nn");
+    LetsFillSideBand_ri(Sideband_MC_dirname_K0starnn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "K0starnn");
     /*
     LetsFillSideBand_ri(Sideband_MC_CHG_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
     LetsFillSideBand_ri(Sideband_MC_MIX_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
@@ -1547,6 +1938,10 @@ void THStack_plot_sideband() {
     LetsFillSideBand_ri(Sideband_MC_DDBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR");
     LetsFillSideBand_ri(Sideband_MC_SSBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR");
     LetsFillSideBand_ri(Sideband_MC_CHARM_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM");
+    LetsFillSideBand_ri(Sideband_MC_dirname_Knn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "Knn");
+    LetsFillSideBand_ri(Sideband_MC_dirname_Kstarnn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "Kstarnn");
+    LetsFillSideBand_ri(Sideband_MC_dirname_K0nn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "K0nn");
+    LetsFillSideBand_ri(Sideband_MC_dirname_K0starnn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "K0starnn");
     */
     LetsFill(Sideband_data_dirname, variable_names, branch_names, Sideband_data_values);
 

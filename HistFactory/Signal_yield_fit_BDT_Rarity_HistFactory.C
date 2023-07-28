@@ -3937,10 +3937,10 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     const char* MC_dirname_K0starnunu_mKstarfixed = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02Kstar0nunu";
 
     // for Knn
-    const char* MC_dirname_Knn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Knn";
-    const char* MC_dirname_Kstarnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Kstarnn";
-    const char* MC_dirname_K0nn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0nn";
-    const char* MC_dirname_K0starnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0starnn";
+    const char* MC_dirname_Knn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Knn";
+    const char* MC_dirname_Kstarnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Kstarnn";
+    const char* MC_dirname_K0nn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0nn";
+    const char* MC_dirname_K0starnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0starnn";
  
     // for PID
     const char* KID_correlated_info = "./KID_selected.txt";
@@ -3971,10 +3971,10 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     const char* MC_dirname_SSBAR_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SSBAR_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     const char* MC_dirname_CHARM_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/CHARM_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
 
-    const char* MC_dirname_Knn_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/B2Knn";
-    const char* MC_dirname_Kstarnn_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/B2Kstarnn";
-    const char* MC_dirname_K0nn_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/B02K0nn";
-    const char* MC_dirname_K0starnn_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/B02K0starnn";
+    const char* MC_dirname_Knn_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn/SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/B2Knn";
+    const char* MC_dirname_Kstarnn_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn/SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/B2Kstarnn";
+    const char* MC_dirname_K0nn_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn/SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/B02K0nn";
+    const char* MC_dirname_K0starnn_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn/SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/B02K0starnn";
     /* ====================================== */
 
 

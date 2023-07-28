@@ -2070,10 +2070,10 @@ void PID_calculator()
     const char* MC_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SSBAR_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
     const char* MC_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Kokoro/CHARM_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
 
-    const char* MC_dirname_Knn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Knn";
-    const char* MC_dirname_Kstarnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Kstarnn";
-    const char* MC_dirname_K0nn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0nn";
-    const char* MC_dirname_K0starnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0starnn";
+    const char* MC_dirname_Knn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Knn";
+    const char* MC_dirname_Kstarnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Kstarnn";
+    const char* MC_dirname_K0nn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0nn";
+    const char* MC_dirname_K0starnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0starnn";
     /* ====================================== */
 
 
