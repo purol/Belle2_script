@@ -206,6 +206,14 @@ const double pi0_sys_uncer2[N_pi0_syst] = {
     0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0
 };
 
+# define N_Knn_type 4 //  B2Knn B2Kstarnn B02K0nn B02K0starnn
+const double B2Knn_up_uncer[N_Knn_type] = { // relative uncertainty
+    0.5/5.9, 0.8/3.6, 0.32/2.66, 0.28/1.24
+};
+const double B2Knn_dn_uncer[N_Knn_type] = { // relative uncertainty
+    0.5 / 5.9, 0.7 / 3.6, 0.32/2.66, 0.25/1.24
+};
+
 TH1D* Knn_weight;
 TH1D* Kstarnn_weight;
 TH1D* K0nn_weight;
@@ -1254,11 +1262,15 @@ double GetNtracks(double Upsilon_ID, double Bsig_ID) {
     return -1.0;
 }
 
-double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
     B02K0nunu
+    B2Knn
+    B2Kstarnn
+    B02K0nn
+    B02K0starnn
     otherwise
     */
     if (strcmp(type, "Bplus") == 0) {}
@@ -1279,6 +1291,15 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double 
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
     double invM = -1.0;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -1321,6 +1342,16 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double 
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
         if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+        if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) {
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1328,6 +1359,11 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double 
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
+
+            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -1362,6 +1398,7 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if(CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
+            if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             Nevt = Nevt + total_weight;
 
@@ -1375,12 +1412,16 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, double 
     return Nevt;
 }
 
-double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get FEI uncertainty PDF with appropriate correction
+double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get FEI uncertainty PDF with appropriate correction
     // Be careful! You should combine this function with `GetNominalPDFs` function!
     /*
     CorrectionType for new form factors
     B2Knunu
     B02K0nunu
+    B2Knn
+    B2Kstarnn
+    B02K0nn
+    B02K0starnn
     otherwise
     */
     if (strcmp(type, "Bplus") == 0) {}
@@ -1401,6 +1442,15 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
     double invM = -1.0;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -1443,6 +1493,16 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
         if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+        if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) {
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1450,6 +1510,11 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
+
+            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -1491,6 +1556,7 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
+            if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             Nevt = Nevt + total_weight;
 
@@ -1504,11 +1570,15 @@ double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
     return Nevt;
 }
 
-double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get pi0 uncertainty PDF with appropriate correction
+double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get track efficiency uncertainty PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
     B02K0nunu
+    B2Knn
+    B2Kstarnn
+    B02K0nn
+    B02K0starnn
     otherwise
     */
     if (strcmp(type, "Bplus") == 0) {}
@@ -1529,6 +1599,15 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
     double invM = -1.0;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -1571,6 +1650,16 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
         if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+        if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) {
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1579,126 +1668,10 @@ double GetPi0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             tree_Btag->GetEntry(j);
             if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
 
-            double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
-
-            double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
-            else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = 1;
-            double Correction_PID = 1;
-            double Correction_pi0 = 1;
-            double Correction_fake = 1;
-            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
-                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
-                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
-                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
-            }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
-            for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[0][i_fake], temp_N_bin_fakeE[0][i_fake]); // K- from e
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[1][i_fake], temp_N_bin_fakeE[1][i_fake]); // K+ from e
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[2][i_fake], temp_N_bin_fakeE[2][i_fake]); // pi- from e
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[3][i_fake], temp_N_bin_fakeE[3][i_fake]); // pi+ from e
-            }
-            for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[0][i_fake], temp_N_bin_fakeMU[0][i_fake]); // K- from mu
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[1][i_fake], temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[2][i_fake], temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
-            }
-
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake;
-            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
-            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
-
-            Nevt = Nevt + total_weight;
-
-            hist->Fill(MVA_var, total_weight);
-        }
-        input_file->Close();
-
-        printf("%s has %lf events (with correction)\n", dirname, Nevt);
-
-    }
-    return Nevt;
-}
-
-double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get track efficiency uncertainty PDF with appropriate correction
-    /*
-    CorrectionType for new form factors
-    B2Knunu
-    B02K0nunu
-    otherwise
-    */
-    if (strcmp(type, "Bplus") == 0) {}
-    else if (strcmp(type, "Bzero") == 0) {}
-    else if (strcmp(type, "Continuum") == 0) {}
-    else {
-        printf("[ERROR] unexpected type name\n");
-        exit(1);
-    }
-
-    float MVA_var = 0;
-
-    double Upsilon_ID = -1;
-    double Bsig_ID = -1;
-    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
-    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
-    double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-    double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-
-    double invM = -1.0;
-
-    std::vector<string> names;
-    load_files(dirname, &names);
-
-    double Nevt = 0;
-    for (unsigned int i = 0; i < names.size(); i++) {
-
-        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
-        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
-
-        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
-        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
-        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
-
-        TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs = (TTree*)input_file->Get("Xs");
-        else tree_Xs = nullptr;
-
-        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
-
-        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
-        }
-        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
-        for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[2][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[3][i_fake]);
-        }
-        for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[0][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[1][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
-        }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
-
-        printf("%lld entries...\n", tree_upsilon->GetEntries());
-        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
-            tree_upsilon->GetEntry(j);
-            tree_Bsig->GetEntry(j);
-            tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
+            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
             double Ntrack = GetNtracks(Upsilon_ID, Bsig_ID);
@@ -1737,6 +1710,7 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsIt
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_track;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
+            if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             Nevt = Nevt + total_weight;
 
@@ -1750,11 +1724,15 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, bool IsIt
     return Nevt;
 }
 
-double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get KS0 uncertainty PDF with appropriate correction
+double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get KS0 uncertainty PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
     B02K0nunu
+    B2Knn
+    B2Kstarnn
+    B02K0nn
+    B02K0starnn
     otherwise
     */
     if (strcmp(type, "Bplus") == 0) {}
@@ -1776,6 +1754,15 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
     double temp_KS0_3D_distance = -1;
 
     double invM = -1.0;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -1819,6 +1806,16 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
         }
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_KS0_3D_distance);
         if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+        if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) {
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1826,6 +1823,11 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
+
+            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -1863,6 +1865,7 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, bool IsItUp
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * KS0_correction;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
+            if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             Nevt = Nevt + total_weight;
 
@@ -2871,7 +2874,17 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
     return Nevt;
 }
 
-double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double weight_var = 1.0) { // get BDTc PDF with appropriate correction
+double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get BDTc PDF with appropriate correction
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    B2Knn
+    B2Kstarnn
+    B02K0nn
+    B02K0starnn
+    otherwise
+    */
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
     else if (strcmp(type, "Continuum") == 0) {}
@@ -2889,6 +2902,17 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    double invM = -1.0;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -2928,6 +2952,17 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+        if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) {
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        }
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc_var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -2935,6 +2970,11 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+
+            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -2967,6 +3007,9 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
             }
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
+            if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             Nevt = Nevt + total_weight;
         }
@@ -2975,6 +3018,11 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+
+            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -3010,6 +3058,9 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
             else BDTc_weight = (BDTc_var / (1.0 - BDTc_var));
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * BDTc_weight;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
+            if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             Nevt_with_BDTc = Nevt_with_BDTc + total_weight;
         }
@@ -3018,6 +3069,11 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+
+            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -3054,6 +3110,9 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, double wei
             BDTc_weight = BDTc_weight * (Nevt / Nevt_with_BDTc);
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * BDTc_weight;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
+            if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             Nevt_with_BDTc_with_norm = Nevt_with_BDTc_with_norm + total_weight;
 
@@ -3574,12 +3633,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
 
     /* ====================================== */
     // Seting CDF module
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu", Scale_Kplus_test);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu", Scale_Kplusstar_test);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu", Scale_Xsu_nonresonant_test);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu", Scale_K0_test);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu", Scale_K0star_test);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu", Scale_Xsd_nonresonant_test);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu", Scale_Kplus_test);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu", Scale_Kplusstar_test);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu", Scale_Xsu_nonresonant_test);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu", Scale_K0_test);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu", Scale_K0star_test);
+    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu", Scale_Xsd_nonresonant_test);
     /* ====================================== */
 
 
@@ -3790,6 +3849,43 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     TH1D* SSBAR_BDTc_m = new TH1D("SSBAR_BDTc_m", "SSBAR_BDTc_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_BDTc_m = new TH1D("CHARM_BDTc_m", "CHARM_BDTc_m", RarityBins, BinMIN, BinMAX);
 
+    // B2Knn BR
+    TH1D* CHG_Knn_p = new TH1D("CHG_Knn_p", "CHG_Knn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_Knn_p = new TH1D("MIX_Knn_p", "MIX_Knn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_Knn_m = new TH1D("CHG_Knn_m", "CHG_Knn_m", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_Knn_m = new TH1D("MIX_Knn_m", "MIX_Knn_m", RarityBins, BinMIN, BinMAX);
+
+    TH1D* CHG_Kstarnn_p = new TH1D("CHG_Kstarnn_p", "CHG_Kstarnn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_Kstarnn_p = new TH1D("MIX_Kstarnn_p", "MIX_Kstarnn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_Kstarnn_m = new TH1D("CHG_Kstarnn_m", "CHG_Kstarnn_m", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_Kstarnn_m = new TH1D("MIX_Kstarnn_m", "MIX_Kstarnn_m", RarityBins, BinMIN, BinMAX);
+
+    TH1D* CHG_K0nn_p = new TH1D("CHG_K0nn_p", "CHG_K0nn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_K0nn_p = new TH1D("MIX_K0nn_p", "MIX_K0nn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_K0nn_m = new TH1D("CHG_K0nn_m", "CHG_K0nn_m", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_K0nn_m = new TH1D("MIX_K0nn_m", "MIX_K0nn_m", RarityBins, BinMIN, BinMAX);
+
+    TH1D* CHG_K0starnn_p = new TH1D("CHG_K0starnn_p", "CHG_K0starnn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_K0starnn_p = new TH1D("MIX_K0starnn_p", "MIX_K0starnn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_K0starnn_m = new TH1D("CHG_K0starnn_m", "CHG_K0starnn_m", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_K0starnn_m = new TH1D("MIX_K0starnn_m", "MIX_K0starnn_m", RarityBins, BinMIN, BinMAX);
+
+    // Eecl
+    TH1D* Signal_Eecl_p = new TH1D("Signal_Eecl_p", "Signal_Eecl_p", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_Eecl_p = new TH1D("CHG_Eecl_p", "CHG_Eecl_p", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_Eecl_p = new TH1D("MIX_Eecl_p", "MIX_Eecl_p", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_Eecl_p = new TH1D("UUBAR_Eecl_p", "UUBAR_Eecl_p", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_Eecl_p = new TH1D("DDBAR_Eecl_p", "DDBAR_Eecl_p", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_Eecl_p = new TH1D("SSBAR_Eecl_p", "SSBAR_Eecl_p", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_Eecl_p = new TH1D("CHARM_Eecl_p", "CHARM_Eecl_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_Eecl_m = new TH1D("Signal_Eecl_m", "Signal_Eecl_m", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_Eecl_m = new TH1D("CHG_Eecl_m", "CHG_Eecl_m", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_Eecl_m = new TH1D("MIX_Eecl_m", "MIX_Eecl_m", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_Eecl_m = new TH1D("UUBAR_Eecl_m", "UUBAR_Eecl_m", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_Eecl_m = new TH1D("DDBAR_Eecl_m", "DDBAR_Eecl_m", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_Eecl_m = new TH1D("SSBAR_Eecl_m", "SSBAR_Eecl_m", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_Eecl_m = new TH1D("CHARM_Eecl_m", "CHARM_Eecl_m", RarityBins, BinMIN, BinMAX);
+
     // all of uncorrelated uncertainties
     TH1D* Signal_all_uncorrelated = new TH1D("Signal_all_uncorrelated", "Signal_all_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_all_uncorrelated = new TH1D("CHG_all_uncorrelated", "CHG_all_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -3804,37 +3900,43 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
 
     /* ====================================== */
     // define path for Ntuple
-    const char* MC_dirname_Knunu = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* MC_dirname_Kstarnunu = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* MC_dirname_Xsununu = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* MC_dirname_K0nunu = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* MC_dirname_K0starnunu = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* MC_dirname_Xsdnunu = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* MC_dirname_Knunu = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* MC_dirname_Kstarnunu = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
+    const char* MC_dirname_Xsununu = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
+    const char* MC_dirname_K0nunu = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
+    const char* MC_dirname_K0starnunu = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
+    const char* MC_dirname_Xsdnunu = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
 
-    const char* MC_dirname_CHG = "/home/jwpark/storage/BKG_gbasf2/Nazrin/CHG_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_MIX = "/home/jwpark/storage/BKG_gbasf2/Nazrin/MIX_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_UUBAR = "/home/jwpark/storage/BKG_gbasf2/Nazrin/UUBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_DDBAR = "/home/jwpark/storage/BKG_gbasf2/Nazrin/DDBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Nazrin/CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHG = "/home/jwpark/storage/BKG_gbasf2/Kokoro/CHG_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_MIX = "/home/jwpark/storage/BKG_gbasf2/Kokoro/MIX_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_UUBAR = "/home/jwpark/storage/BKG_gbasf2/Kokoro/UUBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_DDBAR = "/home/jwpark/storage/BKG_gbasf2/Kokoro/DDBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Kokoro/CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
 
     // for signal modeling
-    const char* MC_dirname_Xsununu_Hpf = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsu_Hpf";
-    const char* MC_dirname_Xsdnunu_Hpf = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsd_Hpf";
-    const char* MC_dirname_Xsununu_Lpf = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsu_Lpf";
-    const char* MC_dirname_Xsdnunu_Lpf = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsd_Lpf";
-    const char* MC_dirname_Xsununu_Hmb = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsu_Hmb";
-    const char* MC_dirname_Xsdnunu_Hmb = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsd_Hmb";
-    const char* MC_dirname_Xsununu_Lmb = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsu_Lmb";
-    const char* MC_dirname_Xsdnunu_Lmb = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsd_Lmb";
-    const char* MC_dirname_Xsununu_Htransition = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsu_Htransition";
-    const char* MC_dirname_Xsdnunu_Htransition = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsd_Htransition";
-    const char* MC_dirname_Xsununu_Ltransition = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsu_Ltransition";
-    const char* MC_dirname_Xsdnunu_Ltransition = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsd_Ltransition";
+    const char* MC_dirname_Xsununu_Hpf = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsu_Hpf";
+    const char* MC_dirname_Xsdnunu_Hpf = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsd_Hpf";
+    const char* MC_dirname_Xsununu_Lpf = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsu_Lpf";
+    const char* MC_dirname_Xsdnunu_Lpf = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsd_Lpf";
+    const char* MC_dirname_Xsununu_Hmb = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsu_Hmb";
+    const char* MC_dirname_Xsdnunu_Hmb = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsd_Hmb";
+    const char* MC_dirname_Xsununu_Lmb = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsu_Lmb";
+    const char* MC_dirname_Xsdnunu_Lmb = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsd_Lmb";
+    const char* MC_dirname_Xsununu_Htransition = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsu_Htransition";
+    const char* MC_dirname_Xsdnunu_Htransition = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsd_Htransition";
+    const char* MC_dirname_Xsununu_Ltransition = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsu_Ltransition";
+    const char* MC_dirname_Xsdnunu_Ltransition = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/Xsd_Ltransition";
 
     // for fixed mKstar
-    const char* MC_dirname_Kstarnunu_mKstarfixed = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Kstarnunu";
-    const char* MC_dirname_K0starnunu_mKstarfixed = "/home/jwpark/storage/BKG_gbasf2/Nazrin_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02Kstar0nunu";
+    const char* MC_dirname_Kstarnunu_mKstarfixed = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Kstarnunu";
+    const char* MC_dirname_K0starnunu_mKstarfixed = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02Kstar0nunu";
+
+    // for Knn
+    const char* MC_dirname_Knn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Knn";
+    const char* MC_dirname_Kstarnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Kstarnn";
+    const char* MC_dirname_K0nn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0nn";
+    const char* MC_dirname_K0starnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0starnn";
  
     // for PID
     const char* KID_correlated_info = "./KID_selected.txt";
@@ -3849,6 +3951,26 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     // for pi0
     const char* pi0_correlated_info = "./pi0_selected.txt";
     const char* pi0_uncorrelated_info = "./pi0_cov_remain_truncated.txt";
+
+    // for Eecl
+    const char* MC_dirname_Knunu_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* MC_dirname_Kstarnunu_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
+    const char* MC_dirname_Xsununu_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
+    const char* MC_dirname_K0nunu_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
+    const char* MC_dirname_K0starnunu_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
+    const char* MC_dirname_Xsdnunu_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SIGNAL_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+
+    const char* MC_dirname_CHG_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/CHG_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_MIX_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/MIX_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_UUBAR_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/UUBAR_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_DDBAR_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/DDBAR_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_SSBAR_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/SSBAR_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHARM_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro/CHARM_analysis/test_v002/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+
+    const char* MC_dirname_Knn_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/B2Knn";
+    const char* MC_dirname_Kstarnn_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/B2Kstarnn";
+    const char* MC_dirname_K0nn_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/B02K0nn";
+    const char* MC_dirname_K0starnn_Eecl = "/home/jwpark/storage/BKG_gbasf2/Kokoro_syst/SIGNAL_analysis/validation_v002/final_output_root_after_MVA_Application_after_cut/B02K0starnn";
     /* ====================================== */
 
 
@@ -3856,106 +3978,126 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     /* ====================================== */
     // Get PDFs
     // get nominal pdfs
-    GetNominalPDFs(MC_dirname_Knunu, Signal_nominal, "Bplus", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_nominal, "Bplus", Scale_Kplusstar_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu, Signal_nominal, "Bplus", Scale_Xsu_nonresonant_test, "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_nominal, "Bzero", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_nominal, "Bzero", Scale_K0star_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_nominal, "Bzero", Scale_Xsd_nonresonant_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_nominal, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_nominal, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu, Signal_nominal, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test, "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_nominal, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_nominal, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_nominal, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetNominalPDFs(MC_dirname_CHG, CHG_nominal, "Bplus", Scale_CHG_test, "otherwise");
-    GetNominalPDFs(MC_dirname_MIX, MIX_nominal, "Bzero", Scale_MIX_test, "otherwise");
-    GetNominalPDFs(MC_dirname_UUBAR, UUBAR_nominal, "Continuum", Scale_UUBAR_test, "otherwise");
-    GetNominalPDFs(MC_dirname_DDBAR, DDBAR_nominal, "Continuum", Scale_DDBAR_test, "otherwise");
-    GetNominalPDFs(MC_dirname_SSBAR, SSBAR_nominal, "Continuum", Scale_SSBAR_test, "otherwise");
-    GetNominalPDFs(MC_dirname_CHARM, CHARM_nominal, "Continuum", Scale_CHARM_test, "otherwise");
+    GetNominalPDFs(MC_dirname_CHG, CHG_nominal, "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    GetNominalPDFs(MC_dirname_MIX, MIX_nominal, "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    GetNominalPDFs(MC_dirname_UUBAR, UUBAR_nominal, "Continuum", "UUBAR", Scale_UUBAR_test, "otherwise");
+    GetNominalPDFs(MC_dirname_DDBAR, DDBAR_nominal, "Continuum", "DDBAR", Scale_DDBAR_test, "otherwise");
+    GetNominalPDFs(MC_dirname_SSBAR, SSBAR_nominal, "Continuum", "SSBAR", Scale_SSBAR_test, "otherwise");
+    GetNominalPDFs(MC_dirname_CHARM, CHARM_nominal, "Continuum", "CHARM", Scale_CHARM_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knn, CHG_nominal, "Bplus", "Knn", 1.0, "B2Knn");
+    GetNominalPDFs(MC_dirname_Kstarnn, CHG_nominal, "Bplus", "Kstarnn", 1.0, "B2Kstarnn");
+    GetNominalPDFs(MC_dirname_K0nn, MIX_nominal, "Bzero", "K0nn", 1.0, "B02K0nn");
+    GetNominalPDFs(MC_dirname_K0starnn, MIX_nominal, "Bzero", "K0starnn", 1.0, "B02K0starnn");
 
     // get FEI uncertainty pdfs
-    GetFEIPDFs(MC_dirname_Knunu, Signal_FEI_charged_p, "Bplus", true, Scale_Kplus_test, "B2Knunu");
-    GetFEIPDFs(MC_dirname_Kstarnunu, Signal_FEI_charged_p, "Bplus", true, Scale_Kplusstar_test, "otherwise");
-    GetFEIPDFs(MC_dirname_Xsununu, Signal_FEI_charged_p, "Bplus", true, Scale_Xsu_nonresonant_test, "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_FEI_charged_p, "Bzero", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_FEI_charged_p, "Bzero", Scale_K0star_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_FEI_charged_p, "Bzero", Scale_Xsd_nonresonant_test, "otherwise");
+    GetFEIPDFs(MC_dirname_Knunu, Signal_FEI_charged_p, "Bplus", "SIGNAL", true, Scale_Kplus_test, "B2Knunu");
+    GetFEIPDFs(MC_dirname_Kstarnunu, Signal_FEI_charged_p, "Bplus", "SIGNAL", true, Scale_Kplusstar_test, "otherwise");
+    GetFEIPDFs(MC_dirname_Xsununu, Signal_FEI_charged_p, "Bplus", "SIGNAL", true, Scale_Xsu_nonresonant_test, "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_FEI_charged_p, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_FEI_charged_p, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_FEI_charged_p, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetFEIPDFs(MC_dirname_Knunu, Signal_FEI_charged_m, "Bplus", false, Scale_Kplus_test, "B2Knunu");
-    GetFEIPDFs(MC_dirname_Kstarnunu, Signal_FEI_charged_m, "Bplus", false, Scale_Kplusstar_test, "otherwise");
-    GetFEIPDFs(MC_dirname_Xsununu, Signal_FEI_charged_m, "Bplus", false, Scale_Xsu_nonresonant_test, "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_FEI_charged_m, "Bzero", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_FEI_charged_m, "Bzero", Scale_K0star_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_FEI_charged_m, "Bzero", Scale_Xsd_nonresonant_test, "otherwise");
+    GetFEIPDFs(MC_dirname_Knunu, Signal_FEI_charged_m, "Bplus", "SIGNAL", false, Scale_Kplus_test, "B2Knunu");
+    GetFEIPDFs(MC_dirname_Kstarnunu, Signal_FEI_charged_m, "Bplus", "SIGNAL", false, Scale_Kplusstar_test, "otherwise");
+    GetFEIPDFs(MC_dirname_Xsununu, Signal_FEI_charged_m, "Bplus", "SIGNAL", false, Scale_Xsu_nonresonant_test, "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_FEI_charged_m, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_FEI_charged_m, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_FEI_charged_m, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetNominalPDFs(MC_dirname_Knunu, Signal_FEI_neutral_p, "Bplus", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_FEI_neutral_p, "Bplus", Scale_Kplusstar_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu, Signal_FEI_neutral_p, "Bplus", Scale_Xsu_nonresonant_test, "otherwise");
-    GetFEIPDFs(MC_dirname_K0nunu, Signal_FEI_neutral_p, "Bzero", true, Scale_K0_test, "B02K0nunu");
-    GetFEIPDFs(MC_dirname_K0starnunu, Signal_FEI_neutral_p, "Bzero", true, Scale_K0star_test, "otherwise");
-    GetFEIPDFs(MC_dirname_Xsdnunu, Signal_FEI_neutral_p, "Bzero", true, Scale_Xsd_nonresonant_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_FEI_neutral_p, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_FEI_neutral_p, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu, Signal_FEI_neutral_p, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test, "otherwise");
+    GetFEIPDFs(MC_dirname_K0nunu, Signal_FEI_neutral_p, "Bzero", "SIGNAL", true, Scale_K0_test, "B02K0nunu");
+    GetFEIPDFs(MC_dirname_K0starnunu, Signal_FEI_neutral_p, "Bzero", "SIGNAL", true, Scale_K0star_test, "otherwise");
+    GetFEIPDFs(MC_dirname_Xsdnunu, Signal_FEI_neutral_p, "Bzero", "SIGNAL", true, Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetNominalPDFs(MC_dirname_Knunu, Signal_FEI_neutral_m, "Bplus", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_FEI_neutral_m, "Bplus", Scale_Kplusstar_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu, Signal_FEI_neutral_m, "Bplus", Scale_Xsu_nonresonant_test, "otherwise");
-    GetFEIPDFs(MC_dirname_K0nunu, Signal_FEI_neutral_m, "Bzero", false, Scale_K0_test, "B02K0nunu");
-    GetFEIPDFs(MC_dirname_K0starnunu, Signal_FEI_neutral_m, "Bzero", false, Scale_K0star_test, "otherwise");
-    GetFEIPDFs(MC_dirname_Xsdnunu, Signal_FEI_neutral_m, "Bzero", false, Scale_Xsd_nonresonant_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_FEI_neutral_m, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_FEI_neutral_m, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu, Signal_FEI_neutral_m, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test, "otherwise");
+    GetFEIPDFs(MC_dirname_K0nunu, Signal_FEI_neutral_m, "Bzero", "SIGNAL", false, Scale_K0_test, "B02K0nunu");
+    GetFEIPDFs(MC_dirname_K0starnunu, Signal_FEI_neutral_m, "Bzero", "SIGNAL", false, Scale_K0star_test, "otherwise");
+    GetFEIPDFs(MC_dirname_Xsdnunu, Signal_FEI_neutral_m, "Bzero", "SIGNAL", false, Scale_Xsd_nonresonant_test, "otherwise");
 
     // get track uncertainty pdfs
-    GetTrackPDFs(MC_dirname_Knunu, Signal_track_p, "Bplus", true, Scale_Kplus_test, "B2Knunu");
-    GetTrackPDFs(MC_dirname_Kstarnunu, Signal_track_p, "Bplus", true, Scale_Kplusstar_test, "otherwise");
-    GetTrackPDFs(MC_dirname_Xsununu, Signal_track_p, "Bplus", true, Scale_Xsu_nonresonant_test, "otherwise");
-    GetTrackPDFs(MC_dirname_K0nunu, Signal_track_p, "Bzero", true, Scale_K0_test, "B02K0nunu");
-    GetTrackPDFs(MC_dirname_K0starnunu, Signal_track_p, "Bzero", true, Scale_K0star_test, "otherwise");
-    GetTrackPDFs(MC_dirname_Xsdnunu, Signal_track_p, "Bzero", true, Scale_Xsd_nonresonant_test, "otherwise");
+    GetTrackPDFs(MC_dirname_Knunu, Signal_track_p, "Bplus", "SIGNAL", true, Scale_Kplus_test, "B2Knunu");
+    GetTrackPDFs(MC_dirname_Kstarnunu, Signal_track_p, "Bplus", "SIGNAL", true, Scale_Kplusstar_test, "otherwise");
+    GetTrackPDFs(MC_dirname_Xsununu, Signal_track_p, "Bplus", "SIGNAL", true, Scale_Xsu_nonresonant_test, "otherwise");
+    GetTrackPDFs(MC_dirname_K0nunu, Signal_track_p, "Bzero", "SIGNAL", true, Scale_K0_test, "B02K0nunu");
+    GetTrackPDFs(MC_dirname_K0starnunu, Signal_track_p, "Bzero", "SIGNAL", true, Scale_K0star_test, "otherwise");
+    GetTrackPDFs(MC_dirname_Xsdnunu, Signal_track_p, "Bzero", "SIGNAL", true, Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetTrackPDFs(MC_dirname_CHG, CHG_track_p, "Bplus", true, Scale_CHG_test, "otherwise");
-    GetTrackPDFs(MC_dirname_MIX, MIX_track_p, "Bzero", true, Scale_MIX_test, "otherwise");
-    GetTrackPDFs(MC_dirname_UUBAR, UUBAR_track_p, "Continuum", true, Scale_UUBAR_test, "otherwise");
-    GetTrackPDFs(MC_dirname_DDBAR, DDBAR_track_p, "Continuum", true, Scale_DDBAR_test, "otherwise");
-    GetTrackPDFs(MC_dirname_SSBAR, SSBAR_track_p, "Continuum", true, Scale_SSBAR_test, "otherwise");
-    GetTrackPDFs(MC_dirname_CHARM, CHARM_track_p, "Continuum", true, Scale_CHARM_test, "otherwise");
+    GetTrackPDFs(MC_dirname_CHG, CHG_track_p, "Bplus", "CHG", true, Scale_CHG_test, "otherwise");
+    GetTrackPDFs(MC_dirname_MIX, MIX_track_p, "Bzero", "MIX", true, Scale_MIX_test, "otherwise");
+    GetTrackPDFs(MC_dirname_UUBAR, UUBAR_track_p, "Continuum", "UUBAR", true, Scale_UUBAR_test, "otherwise");
+    GetTrackPDFs(MC_dirname_DDBAR, DDBAR_track_p, "Continuum", "DDBAR", true, Scale_DDBAR_test, "otherwise");
+    GetTrackPDFs(MC_dirname_SSBAR, SSBAR_track_p, "Continuum", "SSBAR", true, Scale_SSBAR_test, "otherwise");
+    GetTrackPDFs(MC_dirname_CHARM, CHARM_track_p, "Continuum", "CHARM", true, Scale_CHARM_test, "otherwise");
+    GetTrackPDFs(MC_dirname_Knn, CHG_track_p, "Bplus", "Knn", true, 1.0, "B2Knn");
+    GetTrackPDFs(MC_dirname_Kstarnn, CHG_track_p, "Bplus", "Kstarnn", true, 1.0, "B2Kstarnn");
+    GetTrackPDFs(MC_dirname_K0nn, MIX_track_p, "Bzero", "K0nn", true, 1.0, "B02K0nn");
+    GetTrackPDFs(MC_dirname_K0starnn, MIX_track_p, "Bzero", "K0starnn", true, 1.0, "B02K0starnn");
 
-    GetTrackPDFs(MC_dirname_Knunu, Signal_track_m, "Bplus", false, Scale_Kplus_test, "B2Knunu");
-    GetTrackPDFs(MC_dirname_Kstarnunu, Signal_track_m, "Bplus", false, Scale_Kplusstar_test, "otherwise");
-    GetTrackPDFs(MC_dirname_Xsununu, Signal_track_m, "Bplus", false, Scale_Xsu_nonresonant_test, "otherwise");
-    GetTrackPDFs(MC_dirname_K0nunu, Signal_track_m, "Bzero", false, Scale_K0_test, "B02K0nunu");
-    GetTrackPDFs(MC_dirname_K0starnunu, Signal_track_m, "Bzero", false, Scale_K0star_test, "otherwise");
-    GetTrackPDFs(MC_dirname_Xsdnunu, Signal_track_m, "Bzero", false, Scale_Xsd_nonresonant_test, "otherwise");
+    GetTrackPDFs(MC_dirname_Knunu, Signal_track_m, "Bplus", "SIGNAL", false, Scale_Kplus_test, "B2Knunu");
+    GetTrackPDFs(MC_dirname_Kstarnunu, Signal_track_m, "Bplus", "SIGNAL", false, Scale_Kplusstar_test, "otherwise");
+    GetTrackPDFs(MC_dirname_Xsununu, Signal_track_m, "Bplus", "SIGNAL", false, Scale_Xsu_nonresonant_test, "otherwise");
+    GetTrackPDFs(MC_dirname_K0nunu, Signal_track_m, "Bzero", "SIGNAL", false, Scale_K0_test, "B02K0nunu");
+    GetTrackPDFs(MC_dirname_K0starnunu, Signal_track_m, "Bzero", "SIGNAL", false, Scale_K0star_test, "otherwise");
+    GetTrackPDFs(MC_dirname_Xsdnunu, Signal_track_m, "Bzero", "SIGNAL", false, Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetTrackPDFs(MC_dirname_CHG, CHG_track_m, "Bplus", false, Scale_CHG_test, "otherwise");
-    GetTrackPDFs(MC_dirname_MIX, MIX_track_m, "Bzero", false, Scale_MIX_test, "otherwise");
-    GetTrackPDFs(MC_dirname_UUBAR, UUBAR_track_m, "Continuum", false, Scale_UUBAR_test, "otherwise");
-    GetTrackPDFs(MC_dirname_DDBAR, DDBAR_track_m, "Continuum", false, Scale_DDBAR_test, "otherwise");
-    GetTrackPDFs(MC_dirname_SSBAR, SSBAR_track_m, "Continuum", false, Scale_SSBAR_test, "otherwise");
-    GetTrackPDFs(MC_dirname_CHARM, CHARM_track_m, "Continuum", false, Scale_CHARM_test, "otherwise");
+    GetTrackPDFs(MC_dirname_CHG, CHG_track_m, "Bplus", "CHG", false, Scale_CHG_test, "otherwise");
+    GetTrackPDFs(MC_dirname_MIX, MIX_track_m, "Bzero", "MIX", false, Scale_MIX_test, "otherwise");
+    GetTrackPDFs(MC_dirname_UUBAR, UUBAR_track_m, "Continuum", "UUBAR", false, Scale_UUBAR_test, "otherwise");
+    GetTrackPDFs(MC_dirname_DDBAR, DDBAR_track_m, "Continuum", "DDBAR", false, Scale_DDBAR_test, "otherwise");
+    GetTrackPDFs(MC_dirname_SSBAR, SSBAR_track_m, "Continuum", "SSBAR", false, Scale_SSBAR_test, "otherwise");
+    GetTrackPDFs(MC_dirname_CHARM, CHARM_track_m, "Continuum", "CHARM", false, Scale_CHARM_test, "otherwise");
+    GetTrackPDFs(MC_dirname_Knn, CHG_track_m, "Bplus", "Knn", false, 1.0, "B2Knn");
+    GetTrackPDFs(MC_dirname_Kstarnn, CHG_track_m, "Bplus", "Kstarnn", false, 1.0, "B2Kstarnn");
+    GetTrackPDFs(MC_dirname_K0nn, MIX_track_m, "Bzero", "K0nn", false, 1.0, "B02K0nn");
+    GetTrackPDFs(MC_dirname_K0starnn, MIX_track_m, "Bzero", "K0starnn", false, 1.0, "B02K0starnn");
 
     // get KS0 uncertainty pdfs
-    GetKS0PDFs(MC_dirname_Knunu, Signal_KS0_p, "Bplus", true, Scale_Kplus_test, "B2Knunu");
-    GetKS0PDFs(MC_dirname_Kstarnunu, Signal_KS0_p, "Bplus", true, Scale_Kplusstar_test, "otherwise");
-    GetKS0PDFs(MC_dirname_Xsununu, Signal_KS0_p, "Bplus", true, Scale_Xsu_nonresonant_test, "otherwise");
-    GetKS0PDFs(MC_dirname_K0nunu, Signal_KS0_p, "Bzero", true, Scale_K0_test, "B02K0nunu");
-    GetKS0PDFs(MC_dirname_K0starnunu, Signal_KS0_p, "Bzero", true, Scale_K0star_test, "otherwise");
-    GetKS0PDFs(MC_dirname_Xsdnunu, Signal_KS0_p, "Bzero", true, Scale_Xsd_nonresonant_test, "otherwise");
+    GetKS0PDFs(MC_dirname_Knunu, Signal_KS0_p, "Bplus", "SIGNAL", true, Scale_Kplus_test, "B2Knunu");
+    GetKS0PDFs(MC_dirname_Kstarnunu, Signal_KS0_p, "Bplus", "SIGNAL", true, Scale_Kplusstar_test, "otherwise");
+    GetKS0PDFs(MC_dirname_Xsununu, Signal_KS0_p, "Bplus", "SIGNAL", true, Scale_Xsu_nonresonant_test, "otherwise");
+    GetKS0PDFs(MC_dirname_K0nunu, Signal_KS0_p, "Bzero", "SIGNAL", true, Scale_K0_test, "B02K0nunu");
+    GetKS0PDFs(MC_dirname_K0starnunu, Signal_KS0_p, "Bzero", "SIGNAL", true, Scale_K0star_test, "otherwise");
+    GetKS0PDFs(MC_dirname_Xsdnunu, Signal_KS0_p, "Bzero", "SIGNAL", true, Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetKS0PDFs(MC_dirname_CHG, CHG_KS0_p, "Bplus", true, Scale_CHG_test, "otherwise");
-    GetKS0PDFs(MC_dirname_MIX, MIX_KS0_p, "Bzero", true, Scale_MIX_test, "otherwise");
-    GetKS0PDFs(MC_dirname_UUBAR, UUBAR_KS0_p, "Continuum", true, Scale_UUBAR_test, "otherwise");
-    GetKS0PDFs(MC_dirname_DDBAR, DDBAR_KS0_p, "Continuum", true, Scale_DDBAR_test, "otherwise");
-    GetKS0PDFs(MC_dirname_SSBAR, SSBAR_KS0_p, "Continuum", true, Scale_SSBAR_test, "otherwise");
-    GetKS0PDFs(MC_dirname_CHARM, CHARM_KS0_p, "Continuum", true, Scale_CHARM_test, "otherwise");
+    GetKS0PDFs(MC_dirname_CHG, CHG_KS0_p, "Bplus", "CHG", true, Scale_CHG_test, "otherwise");
+    GetKS0PDFs(MC_dirname_MIX, MIX_KS0_p, "Bzero", "MIX", true, Scale_MIX_test, "otherwise");
+    GetKS0PDFs(MC_dirname_UUBAR, UUBAR_KS0_p, "Continuum", "UUBAR", true, Scale_UUBAR_test, "otherwise");
+    GetKS0PDFs(MC_dirname_DDBAR, DDBAR_KS0_p, "Continuum", "DDBAR", true, Scale_DDBAR_test, "otherwise");
+    GetKS0PDFs(MC_dirname_SSBAR, SSBAR_KS0_p, "Continuum", "SSBAR", true, Scale_SSBAR_test, "otherwise");
+    GetKS0PDFs(MC_dirname_CHARM, CHARM_KS0_p, "Continuum", "CHARM", true, Scale_CHARM_test, "otherwise");
+    GetKS0PDFs(MC_dirname_Knn, CHG_KS0_p, "Bplus", "Knn", true, 1.0, "B2Knn");
+    GetKS0PDFs(MC_dirname_Kstarnn, CHG_KS0_p, "Bplus", "Kstarnn", true, 1.0, "B2Kstarnn");
+    GetKS0PDFs(MC_dirname_K0nn, MIX_KS0_p, "Bzero", "K0nn", true, 1.0, "B02K0nn");
+    GetKS0PDFs(MC_dirname_K0starnn, MIX_KS0_p, "Bzero", "K0starnn", true, 1.0, "B02K0starnn");
 
-    GetKS0PDFs(MC_dirname_Knunu, Signal_KS0_m, "Bplus", false, Scale_Kplus_test, "B2Knunu");
-    GetKS0PDFs(MC_dirname_Kstarnunu, Signal_KS0_m, "Bplus", false, Scale_Kplusstar_test, "otherwise");
-    GetKS0PDFs(MC_dirname_Xsununu, Signal_KS0_m, "Bplus", false, Scale_Xsu_nonresonant_test, "otherwise");
-    GetKS0PDFs(MC_dirname_K0nunu, Signal_KS0_m, "Bzero", false, Scale_K0_test, "B02K0nunu");
-    GetKS0PDFs(MC_dirname_K0starnunu, Signal_KS0_m, "Bzero", false, Scale_K0star_test, "otherwise");
-    GetKS0PDFs(MC_dirname_Xsdnunu, Signal_KS0_m, "Bzero", false, Scale_Xsd_nonresonant_test, "otherwise");
+    GetKS0PDFs(MC_dirname_Knunu, Signal_KS0_m, "Bplus", "SIGNAL", false, Scale_Kplus_test, "B2Knunu");
+    GetKS0PDFs(MC_dirname_Kstarnunu, Signal_KS0_m, "Bplus", "SIGNAL", false, Scale_Kplusstar_test, "otherwise");
+    GetKS0PDFs(MC_dirname_Xsununu, Signal_KS0_m, "Bplus", "SIGNAL", false, Scale_Xsu_nonresonant_test, "otherwise");
+    GetKS0PDFs(MC_dirname_K0nunu, Signal_KS0_m, "Bzero", "SIGNAL", false, Scale_K0_test, "B02K0nunu");
+    GetKS0PDFs(MC_dirname_K0starnunu, Signal_KS0_m, "Bzero", "SIGNAL", false, Scale_K0star_test, "otherwise");
+    GetKS0PDFs(MC_dirname_Xsdnunu, Signal_KS0_m, "Bzero", "SIGNAL", false, Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetKS0PDFs(MC_dirname_CHG, CHG_KS0_m, "Bplus", false, Scale_CHG_test, "otherwise");
-    GetKS0PDFs(MC_dirname_MIX, MIX_KS0_m, "Bzero", false, Scale_MIX_test, "otherwise");
-    GetKS0PDFs(MC_dirname_UUBAR, UUBAR_KS0_m, "Continuum", false, Scale_UUBAR_test, "otherwise");
-    GetKS0PDFs(MC_dirname_DDBAR, DDBAR_KS0_m, "Continuum", false, Scale_DDBAR_test, "otherwise");
-    GetKS0PDFs(MC_dirname_SSBAR, SSBAR_KS0_m, "Continuum", false, Scale_SSBAR_test, "otherwise");
-    GetKS0PDFs(MC_dirname_CHARM, CHARM_KS0_m, "Continuum", false, Scale_CHARM_test, "otherwise");
+    GetKS0PDFs(MC_dirname_CHG, CHG_KS0_m, "Bplus", "CHG", false, Scale_CHG_test, "otherwise");
+    GetKS0PDFs(MC_dirname_MIX, MIX_KS0_m, "Bzero", "MIX", false, Scale_MIX_test, "otherwise");
+    GetKS0PDFs(MC_dirname_UUBAR, UUBAR_KS0_m, "Continuum", "UUBAR", false, Scale_UUBAR_test, "otherwise");
+    GetKS0PDFs(MC_dirname_DDBAR, DDBAR_KS0_m, "Continuum", "DDBAR", false, Scale_DDBAR_test, "otherwise");
+    GetKS0PDFs(MC_dirname_SSBAR, SSBAR_KS0_m, "Continuum", "SSBAR", false, Scale_SSBAR_test, "otherwise");
+    GetKS0PDFs(MC_dirname_CHARM, CHARM_KS0_m, "Continuum", "CHARM", false, Scale_CHARM_test, "otherwise");
+    GetKS0PDFs(MC_dirname_Knn, CHG_KS0_m, "Bplus", "Knn", false, 1.0, "B2Knn");
+    GetKS0PDFs(MC_dirname_Kstarnn, CHG_KS0_m, "Bplus", "Kstarnn", false, 1.0, "B2Kstarnn");
+    GetKS0PDFs(MC_dirname_K0nn, MIX_KS0_m, "Bzero", "K0nn", false, 1.0, "B02K0nn");
+    GetKS0PDFs(MC_dirname_K0starnn, MIX_KS0_m, "Bzero", "K0starnn", false, 1.0, "B02K0starnn");
 
     // get KID uncertainty pdfs (correlated)
     int NPDFs_KID = GetPIDcorrelatedPDFs(KID_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_nominal, &CHG_KID_correlated, &MIX_KID_correlated, &UUBAR_KID_correlated, &DDBAR_KID_correlated, &SSBAR_KID_correlated, &CHARM_KID_correlated, &Signal_KID_correlated, true);
@@ -3984,16 +4126,16 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     double Correction_factor_BR_Kzero[7] = { 0.0 };
 
     GetKffPDFs(MC_dirname_Knunu, Signal_Kff_array, Correction_factor_BR_Kplus, "Bplus", 1, Scale_Kplus_test, "B2Knunu");
-    for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Kff_array[i], "Bplus", Scale_Kplusstar_test, "otherwise");
+    for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Kff_array[i], "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
     for (int i = 0; i < 7; i++) {
         const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplus_nunubar - BR_Kplus_nunubar * Correction_factor_BR_Kplus[i]) / BR_Xsu_nonresonant_nunubar;
-        GetNominalPDFs(MC_dirname_Xsununu, Signal_Kff_array[i], "Bplus", Scale_Xsu_nonresonant_test * non_res_Xsu_correction_factor, "otherwise");
+        GetNominalPDFs(MC_dirname_Xsununu, Signal_Kff_array[i], "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test * non_res_Xsu_correction_factor, "otherwise");
     }
     GetKffPDFs(MC_dirname_K0nunu, Signal_Kff_array, Correction_factor_BR_Kzero, "Bzero", 0, Scale_K0_test, "B02K0nunu");
-    for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_K0starnunu, Signal_Kff_array[i], "Bzero", Scale_K0star_test, "otherwise");
+    for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_K0starnunu, Signal_Kff_array[i], "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
     for (int i = 0; i < 7; i++) {
         const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0_nunubar - BR_K0_nunubar * Correction_factor_BR_Kzero[i]) / BR_Xsd_nonresonant_nunubar;
-        GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kff_array[i], "Bzero", Scale_Xsd_nonresonant_test * non_res_Xsd_correction_factor, "otherwise");
+        GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kff_array[i], "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test * non_res_Xsd_correction_factor, "otherwise");
     }
 
     // get Kstar ff uncertainty pdfs
@@ -4012,46 +4154,46 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     double Correction_factor_BR_Kstarplus[19] = { 0.0 };
     double Correction_factor_BR_Kstarzero[19] = { 0.0 };
 
-    for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_Knunu, Signal_Kstarff_array[i], "Bplus", Scale_Kplus_test, "B2Knunu");
+    for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_Knunu, Signal_Kstarff_array[i], "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
     GetKstarffPDFs(MC_dirname_Kstarnunu, Signal_Kstarff_array, Correction_factor_BR_Kstarplus, "Bplus", 1, Scale_Kplusstar_test);
     for (int i = 0; i < 19; i++) {
         const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplusstar_nunubar - BR_Kplusstar_nunubar * Correction_factor_BR_Kstarplus[i]) / BR_Xsu_nonresonant_nunubar;
-        GetNominalPDFs(MC_dirname_Xsununu, Signal_Kstarff_array[i], "Bplus", Scale_Xsu_nonresonant_test * non_res_Xsu_correction_factor, "otherwise");
+        GetNominalPDFs(MC_dirname_Xsununu, Signal_Kstarff_array[i], "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test * non_res_Xsu_correction_factor, "otherwise");
     }
-    for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_K0nunu, Signal_Kstarff_array[i], "Bzero", Scale_K0_test, "B02K0nunu");
+    for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_K0nunu, Signal_Kstarff_array[i], "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
     GetKstarffPDFs(MC_dirname_K0starnunu, Signal_Kstarff_array, Correction_factor_BR_Kstarzero, "Bzero", 0, Scale_K0star_test);
     for (int i = 0; i < 19; i++) {
         const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0star_nunubar - BR_K0star_nunubar * Correction_factor_BR_Kstarzero[i]) / BR_Xsd_nonresonant_nunubar;
-        GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kstarff_array[i], "Bzero", Scale_Xsd_nonresonant_test * non_res_Xsd_correction_factor, "otherwise");
+        GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kstarff_array[i], "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test * non_res_Xsd_correction_factor, "otherwise");
     }
 
-    GetNominalPDFs(MC_dirname_Knunu, Signal_Kfrac_p, "Bplus", Scale_Kplus_test * ((BR_Kplus_nunubar + Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Kfrac_p, "Bplus", Scale_Kplusstar_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu, Signal_Kfrac_p, "Bplus", Scale_Xsu_nonresonant_test * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_Kfrac_p, "Bzero", Scale_K0_test * ((BR_K0_nunubar + Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Kfrac_p, "Bzero", Scale_K0star_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kfrac_p, "Bzero", Scale_Xsd_nonresonant_test * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_Kfrac_p, "Bplus", "SIGNAL", Scale_Kplus_test * ((BR_Kplus_nunubar + Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Kfrac_p, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu, Signal_Kfrac_p, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_Kfrac_p, "Bzero", "SIGNAL", Scale_K0_test * ((BR_K0_nunubar + Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Kfrac_p, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kfrac_p, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "otherwise");
 
-    GetNominalPDFs(MC_dirname_Knunu, Signal_Kfrac_m, "Bplus", Scale_Kplus_test * ((BR_Kplus_nunubar - Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Kfrac_m, "Bplus", Scale_Kplusstar_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu, Signal_Kfrac_m, "Bplus", Scale_Xsu_nonresonant_test * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_Kfrac_m, "Bzero", Scale_K0_test * ((BR_K0_nunubar - Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Kfrac_m, "Bzero", Scale_K0star_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kfrac_m, "Bzero", Scale_Xsd_nonresonant_test * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_Kfrac_m, "Bplus", "SIGNAL", Scale_Kplus_test * ((BR_Kplus_nunubar - Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Kfrac_m, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu, Signal_Kfrac_m, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_Kfrac_m, "Bzero", "SIGNAL", Scale_K0_test * ((BR_K0_nunubar - Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Kfrac_m, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kfrac_m, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "otherwise");
 
-    GetNominalPDFs(MC_dirname_Knunu, Signal_Kstarfrac_p, "Bplus", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Kstarfrac_p, "Bplus", Scale_Kplusstar_test * ((BR_Kplusstar_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu, Signal_Kstarfrac_p, "Bplus", Scale_Xsu_nonresonant_test * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar), "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_Kstarfrac_p, "Bzero", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Kstarfrac_p, "Bzero", Scale_K0star_test * ((BR_K0star_nunubar + Sigma_BR_K0star_nunubar) / BR_K0star_nunubar), "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kstarfrac_p, "Bzero", Scale_Xsd_nonresonant_test * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_Kstarfrac_p, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Kstarfrac_p, "Bplus", "SIGNAL", Scale_Kplusstar_test * ((BR_Kplusstar_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu, Signal_Kstarfrac_p, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar), "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_Kstarfrac_p, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Kstarfrac_p, "Bzero", "SIGNAL", Scale_K0star_test * ((BR_K0star_nunubar + Sigma_BR_K0star_nunubar) / BR_K0star_nunubar), "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kstarfrac_p, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "otherwise");
 
-    GetNominalPDFs(MC_dirname_Knunu, Signal_Kstarfrac_m, "Bplus", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Kstarfrac_m, "Bplus", Scale_Kplusstar_test * ((BR_Kplusstar_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu, Signal_Kstarfrac_m, "Bplus", Scale_Xsu_nonresonant_test * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar), "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_Kstarfrac_m, "Bzero", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Kstarfrac_m, "Bzero", Scale_K0star_test * ((BR_K0star_nunubar - Sigma_BR_K0star_nunubar) / BR_K0star_nunubar), "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kstarfrac_m, "Bzero", Scale_Xsd_nonresonant_test * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_Kstarfrac_m, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Kstarfrac_m, "Bplus", "SIGNAL", Scale_Kplusstar_test * ((BR_Kplusstar_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu, Signal_Kstarfrac_m, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar), "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_Kstarfrac_m, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_Kstarfrac_m, "Bzero", "SIGNAL", Scale_K0star_test * ((BR_K0star_nunubar - Sigma_BR_K0star_nunubar) / BR_K0star_nunubar), "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Kstarfrac_m, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "otherwise");
 
     // get fragmentation uncertainty pdfs
     DecayModeMC Fragmentation_types[2 * (MAX_NUM_DECAYMODE_MC - 6 + 1)] = {
@@ -4081,93 +4223,182 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
             exit(1);
         }
 
-        GetNominalPDFs(MC_dirname_Knunu, Signal_Fragmentaions.at(i), "Bplus", Scale_Kplus_test, "B2Knunu");
-        GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Fragmentaions.at(i), "Bplus", Scale_Kplusstar_test, "otherwise");
+        GetNominalPDFs(MC_dirname_Knunu, Signal_Fragmentaions.at(i), "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+        GetNominalPDFs(MC_dirname_Kstarnunu, Signal_Fragmentaions.at(i), "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
         if(name_Signal_Fragmentation.at(i).find("Xsu") != string::npos) {
             GetFragmentationPDFs(MC_dirname_Xsununu, Signal_Fragmentaions.at(i), "Bplus", Fragmentation_types[i], IsItUp, Scale_Xsu_nonresonant_test);
         }
         else {
-            GetNominalPDFs(MC_dirname_Xsununu, Signal_Fragmentaions.at(i), "Bplus", Scale_Xsu_nonresonant_test, "otherwise");
+            GetNominalPDFs(MC_dirname_Xsununu, Signal_Fragmentaions.at(i), "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test, "otherwise");
         }
-        GetNominalPDFs(MC_dirname_K0nunu, Signal_Fragmentaions.at(i), "Bzero", Scale_K0_test, "B02K0nunu");
-        GetNominalPDFs(MC_dirname_K0starnunu, Signal_Fragmentaions.at(i), "Bzero", Scale_K0star_test, "otherwise");
+        GetNominalPDFs(MC_dirname_K0nunu, Signal_Fragmentaions.at(i), "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+        GetNominalPDFs(MC_dirname_K0starnunu, Signal_Fragmentaions.at(i), "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
         if (name_Signal_Fragmentation.at(i).find("Xsd") != string::npos) {
             GetFragmentationPDFs(MC_dirname_Xsdnunu, Signal_Fragmentaions.at(i), "Bzero", Fragmentation_types[i], IsItUp, Scale_Xsd_nonresonant_test);
         }
         else {
-            GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Fragmentaions.at(i), "Bzero", Scale_Xsd_nonresonant_test, "otherwise");
+            GetNominalPDFs(MC_dirname_Xsdnunu, Signal_Fragmentaions.at(i), "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test, "otherwise");
         }
 
     }
 
     // get pf uncertainty pdfs
-    GetNominalPDFs(MC_dirname_Knunu, Signal_pf_p, "Bplus", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_pf_p, "Bplus", Scale_Kplusstar_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu_Hpf, Signal_pf_p, "Bplus", Scale_Xsu_nonresonant_syst, "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_pf_p, "Bzero", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_pf_p, "Bzero", Scale_K0star_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu_Hpf, Signal_pf_p, "Bzero", Scale_Xsd_nonresonant_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_pf_p, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_pf_p, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu_Hpf, Signal_pf_p, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_pf_p, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_pf_p, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu_Hpf, Signal_pf_p, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_syst, "otherwise");
 
-    GetNominalPDFs(MC_dirname_Knunu, Signal_pf_m, "Bplus", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_pf_m, "Bplus", Scale_Kplusstar_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu_Lpf, Signal_pf_m, "Bplus", Scale_Xsu_nonresonant_syst, "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_pf_m, "Bzero", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_pf_m, "Bzero", Scale_K0star_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu_Lpf, Signal_pf_m, "Bzero", Scale_Xsd_nonresonant_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_pf_m, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_pf_m, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu_Lpf, Signal_pf_m, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_pf_m, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_pf_m, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu_Lpf, Signal_pf_m, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_syst, "otherwise");
 
     // mb
-    GetNominalPDFs(MC_dirname_Knunu, Signal_mb_p, "Bplus", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_mb_p, "Bplus", Scale_Kplusstar_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu_Hmb, Signal_mb_p, "Bplus", Scale_Xsu_nonresonant_syst, "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_mb_p, "Bzero", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_mb_p, "Bzero", Scale_K0star_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu_Hmb, Signal_mb_p, "Bzero", Scale_Xsd_nonresonant_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_mb_p, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_mb_p, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu_Hmb, Signal_mb_p, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_mb_p, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_mb_p, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu_Hmb, Signal_mb_p, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_syst, "otherwise");
 
-    GetNominalPDFs(MC_dirname_Knunu, Signal_mb_m, "Bplus", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_mb_m, "Bplus", Scale_Kplusstar_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu_Lmb, Signal_mb_m, "Bplus", Scale_Xsu_nonresonant_syst, "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_mb_m, "Bzero", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_mb_m, "Bzero", Scale_K0star_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu_Lmb, Signal_mb_m, "Bzero", Scale_Xsd_nonresonant_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_mb_m, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_mb_m, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu_Lmb, Signal_mb_m, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_mb_m, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_mb_m, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu_Lmb, Signal_mb_m, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_syst, "otherwise");
 
     // transition
-    GetNominalPDFs(MC_dirname_Knunu, Signal_transition_p, "Bplus", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_transition_p, "Bplus", Scale_Kplusstar_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu_Htransition, Signal_transition_p, "Bplus", Scale_Xsu_nonresonant_syst, "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_transition_p, "Bzero", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_transition_p, "Bzero", Scale_K0star_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu_Htransition, Signal_transition_p, "Bzero", Scale_Xsd_nonresonant_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_transition_p, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_transition_p, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu_Htransition, Signal_transition_p, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_transition_p, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_transition_p, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu_Htransition, Signal_transition_p, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_syst, "otherwise");
 
-    GetNominalPDFs(MC_dirname_Knunu, Signal_transition_m, "Bplus", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_transition_m, "Bplus", Scale_Kplusstar_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu_Ltransition, Signal_transition_m, "Bplus", Scale_Xsu_nonresonant_syst, "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_transition_m, "Bzero", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_transition_m, "Bzero", Scale_K0star_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu_Ltransition, Signal_transition_m, "Bzero", Scale_Xsd_nonresonant_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_transition_m, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_transition_m, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu_Ltransition, Signal_transition_m, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_transition_m, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu, Signal_transition_m, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu_Ltransition, Signal_transition_m, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_syst, "otherwise");
 
     // mKstar fixed
-    GetNominalPDFs(MC_dirname_Knunu, Signal_mKstar_p, "Bplus", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu_mKstarfixed, Signal_mKstar_p, "Bplus", Scale_Kplusstar_syst, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu, Signal_mKstar_p, "Bplus", Scale_Xsu_nonresonant_test, "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_mKstar_p, "Bzero", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu_mKstarfixed, Signal_mKstar_p, "Bzero", Scale_K0star_syst, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_mKstar_p, "Bzero", Scale_Xsd_nonresonant_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knunu, Signal_mKstar_p, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu_mKstarfixed, Signal_mKstar_p, "Bplus", "SIGNAL", Scale_Kplusstar_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu, Signal_mKstar_p, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test, "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu, Signal_mKstar_p, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu_mKstarfixed, Signal_mKstar_p, "Bzero", "SIGNAL", Scale_K0star_syst, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_mKstar_p, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test, "otherwise");
 
     GetNegativeChangePDFs(Signal_nominal, Signal_mKstar_p, Signal_mKstar_m);
 
     // get BDTc uncertainty pdfs
-    GetBDTcPDFs(MC_dirname_CHG, CHG_BDTc_p, "Bplus", Scale_CHG_test);
-    GetBDTcPDFs(MC_dirname_MIX, MIX_BDTc_p, "Bzero", Scale_MIX_test);
-    GetBDTcPDFs(MC_dirname_UUBAR, UUBAR_BDTc_p, "Continuum", Scale_UUBAR_test);
-    GetBDTcPDFs(MC_dirname_DDBAR, DDBAR_BDTc_p, "Continuum", Scale_DDBAR_test);
-    GetBDTcPDFs(MC_dirname_SSBAR, SSBAR_BDTc_p, "Continuum", Scale_SSBAR_test);
-    GetBDTcPDFs(MC_dirname_CHARM, CHARM_BDTc_p, "Continuum", Scale_CHARM_test);
+    GetBDTcPDFs(MC_dirname_CHG, CHG_BDTc_p, "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    GetBDTcPDFs(MC_dirname_MIX, MIX_BDTc_p, "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    GetBDTcPDFs(MC_dirname_UUBAR, UUBAR_BDTc_p, "Continuum", "UUBAR", Scale_UUBAR_test, "otherwise");
+    GetBDTcPDFs(MC_dirname_DDBAR, DDBAR_BDTc_p, "Continuum", "DDBAR", Scale_DDBAR_test, "otherwise");
+    GetBDTcPDFs(MC_dirname_SSBAR, SSBAR_BDTc_p, "Continuum", "SSBAR", Scale_SSBAR_test, "otherwise");
+    GetBDTcPDFs(MC_dirname_CHARM, CHARM_BDTc_p, "Continuum", "CHARM", Scale_CHARM_test, "otherwise");
+    GetBDTcPDFs(MC_dirname_Knn, CHG_BDTc_p, "Bplus", "Knn", 1.0, "B2Knn");
+    GetBDTcPDFs(MC_dirname_Kstarnn, CHG_BDTc_p, "Bplus", "Kstarnn", 1.0, "B2Kstarnn");
+    GetBDTcPDFs(MC_dirname_K0nn, MIX_BDTc_p, "Bzero", "K0nn", 1.0, "B02K0nn");
+    GetBDTcPDFs(MC_dirname_K0starnn, MIX_BDTc_p, "Bzero", "K0starnn", 1.0, "B02K0starnn");
+
     GetNegativeChangePDFs(CHG_nominal, CHG_BDTc_p, CHG_BDTc_m);
     GetNegativeChangePDFs(MIX_nominal, MIX_BDTc_p, MIX_BDTc_m);
     GetNegativeChangePDFs(UUBAR_nominal, UUBAR_BDTc_p, UUBAR_BDTc_m);
     GetNegativeChangePDFs(DDBAR_nominal, DDBAR_BDTc_p, DDBAR_BDTc_m);
     GetNegativeChangePDFs(SSBAR_nominal, SSBAR_BDTc_p, SSBAR_BDTc_m);
     GetNegativeChangePDFs(CHARM_nominal, CHARM_BDTc_p, CHARM_BDTc_m);
+
+    // B2Knn BR
+    GetNominalPDFs(MC_dirname_CHG, CHG_Knn_p, "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    GetNominalPDFs(MC_dirname_MIX, MIX_Knn_p, "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knn, CHG_Knn_p, "Bplus", "Knn", 1.0 + B2Knn_up_uncer[0], "B2Knn");
+    GetNominalPDFs(MC_dirname_Kstarnn, CHG_Knn_p, "Bplus", "Kstarnn", 1.0, "B2Kstarnn");
+    GetNominalPDFs(MC_dirname_K0nn, MIX_Knn_p, "Bzero", "K0nn", 1.0, "B02K0nn");
+    GetNominalPDFs(MC_dirname_K0starnn, MIX_Knn_p, "Bzero", "K0starnn", 1.0, "B02K0starnn");
+
+    GetNominalPDFs(MC_dirname_CHG, CHG_Knn_m, "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    GetNominalPDFs(MC_dirname_MIX, MIX_Knn_m, "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knn, CHG_Knn_m, "Bplus", "Knn", 1.0 - B2Knn_dn_uncer[0], "B2Knn");
+    GetNominalPDFs(MC_dirname_Kstarnn, CHG_Knn_m, "Bplus", "Kstarnn", 1.0, "B2Kstarnn");
+    GetNominalPDFs(MC_dirname_K0nn, MIX_Knn_m, "Bzero", "K0nn", 1.0, "B02K0nn");
+    GetNominalPDFs(MC_dirname_K0starnn, MIX_Knn_m, "Bzero", "K0starnn", 1.0, "B02K0starnn");
+    
+    GetNominalPDFs(MC_dirname_CHG, CHG_Kstarnn_p, "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    GetNominalPDFs(MC_dirname_MIX, MIX_Kstarnn_p, "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knn, CHG_Kstarnn_p, "Bplus", "Knn", 1.0, "B2Knn");
+    GetNominalPDFs(MC_dirname_Kstarnn, CHG_Kstarnn_p, "Bplus", "Kstarnn", 1.0 + B2Knn_up_uncer[1], "B2Kstarnn");
+    GetNominalPDFs(MC_dirname_K0nn, MIX_Kstarnn_p, "Bzero", "K0nn", 1.0, "B02K0nn");
+    GetNominalPDFs(MC_dirname_K0starnn, MIX_Kstarnn_p, "Bzero", "K0starnn", 1.0, "B02K0starnn");
+
+    GetNominalPDFs(MC_dirname_CHG, CHG_Kstarnn_m, "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    GetNominalPDFs(MC_dirname_MIX, MIX_Kstarnn_m, "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knn, CHG_Kstarnn_m, "Bplus", "Knn", 1.0, "B2Knn");
+    GetNominalPDFs(MC_dirname_Kstarnn, CHG_Kstarnn_m, "Bplus", "Kstarnn", 1.0 - B2Knn_dn_uncer[1], "B2Kstarnn");
+    GetNominalPDFs(MC_dirname_K0nn, MIX_Kstarnn_m, "Bzero", "K0nn", 1.0, "B02K0nn");
+    GetNominalPDFs(MC_dirname_K0starnn, MIX_Kstarnn_m, "Bzero", "K0starnn", 1.0, "B02K0starnn");
+
+    GetNominalPDFs(MC_dirname_CHG, CHG_K0nn_p, "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    GetNominalPDFs(MC_dirname_MIX, MIX_K0nn_p, "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knn, CHG_K0nn_p, "Bplus", "Knn", 1.0, "B2Knn");
+    GetNominalPDFs(MC_dirname_Kstarnn, CHG_K0nn_p, "Bplus", "Kstarnn", 1.0, "B2Kstarnn");
+    GetNominalPDFs(MC_dirname_K0nn, MIX_K0nn_p, "Bzero", "K0nn", 1.0 + B2Knn_up_uncer[2], "B02K0nn");
+    GetNominalPDFs(MC_dirname_K0starnn, MIX_K0nn_p, "Bzero", "K0starnn", 1.0, "B02K0starnn");
+
+    GetNominalPDFs(MC_dirname_CHG, CHG_K0nn_m, "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    GetNominalPDFs(MC_dirname_MIX, MIX_K0nn_m, "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knn, CHG_K0nn_m, "Bplus", "Knn", 1.0, "B2Knn");
+    GetNominalPDFs(MC_dirname_Kstarnn, CHG_K0nn_m, "Bplus", "Kstarnn", 1.0, "B2Kstarnn");
+    GetNominalPDFs(MC_dirname_K0nn, MIX_K0nn_m, "Bzero", "K0nn", 1.0 - B2Knn_dn_uncer[2], "B02K0nn");
+    GetNominalPDFs(MC_dirname_K0starnn, MIX_K0nn_m, "Bzero", "K0starnn", 1.0, "B02K0starnn");
+
+    GetNominalPDFs(MC_dirname_CHG, CHG_K0starnn_p, "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    GetNominalPDFs(MC_dirname_MIX, MIX_K0starnn_p, "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knn, CHG_K0starnn_p, "Bplus", "Knn", 1.0, "B2Knn");
+    GetNominalPDFs(MC_dirname_Kstarnn, CHG_K0starnn_p, "Bplus", "Kstarnn", 1.0, "B2Kstarnn");
+    GetNominalPDFs(MC_dirname_K0nn, MIX_K0starnn_p, "Bzero", "K0nn", 1.0, "B02K0nn");
+    GetNominalPDFs(MC_dirname_K0starnn, MIX_K0starnn_p, "Bzero", "K0starnn", 1.0 + B2Knn_up_uncer[3], "B02K0starnn");
+
+    GetNominalPDFs(MC_dirname_CHG, CHG_K0starnn_m, "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    GetNominalPDFs(MC_dirname_MIX, MIX_K0starnn_m, "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knn, CHG_K0starnn_m, "Bplus", "Knn", 1.0, "B2Knn");
+    GetNominalPDFs(MC_dirname_Kstarnn, CHG_K0starnn_m, "Bplus", "Kstarnn", 1.0, "B2Kstarnn");
+    GetNominalPDFs(MC_dirname_K0nn, MIX_K0starnn_m, "Bzero", "K0nn", 1.0, "B02K0nn");
+    GetNominalPDFs(MC_dirname_K0starnn, MIX_K0starnn_m, "Bzero", "K0starnn", 1.0 - B2Knn_dn_uncer[3], "B02K0starnn");
+
+    // Eecl
+    GetNominalPDFs(MC_dirname_Knunu_Eecl, Signal_Eecl_p, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+    GetNominalPDFs(MC_dirname_Kstarnunu_Eecl, Signal_Eecl_p, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsununu_Eecl, Signal_Eecl_p, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test, "otherwise");
+    GetNominalPDFs(MC_dirname_K0nunu_Eecl, Signal_Eecl_p, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+    GetNominalPDFs(MC_dirname_K0starnunu_Eecl, Signal_Eecl_p, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Xsdnunu_Eecl, Signal_Eecl_p, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test, "otherwise");
+
+    GetNominalPDFs(MC_dirname_CHG_Eecl, CHG_Eecl_p, "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    GetNominalPDFs(MC_dirname_MIX_Eecl, MIX_Eecl_p, "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    GetNominalPDFs(MC_dirname_UUBAR_Eecl, UUBAR_Eecl_p, "Continuum", "UUBAR", Scale_UUBAR_test, "otherwise");
+    GetNominalPDFs(MC_dirname_DDBAR_Eecl, DDBAR_Eecl_p, "Continuum", "DDBAR", Scale_DDBAR_test, "otherwise");
+    GetNominalPDFs(MC_dirname_SSBAR_Eecl, SSBAR_Eecl_p, "Continuum", "SSBAR", Scale_SSBAR_test, "otherwise");
+    GetNominalPDFs(MC_dirname_CHARM_Eecl, CHARM_Eecl_p, "Continuum", "CHARM", Scale_CHARM_test, "otherwise");
+    GetNominalPDFs(MC_dirname_Knn_Eecl, CHG_Eecl_p, "Bplus", "Knn", 1.0, "B2Knn");
+    GetNominalPDFs(MC_dirname_Kstarnn_Eecl, CHG_Eecl_p, "Bplus", "Kstarnn", 1.0, "B2Kstarnn");
+    GetNominalPDFs(MC_dirname_K0nn_Eecl, MIX_Eecl_p, "Bzero", "K0nn", 1.0, "B02K0nn");
+    GetNominalPDFs(MC_dirname_K0starnn_Eecl, MIX_Eecl_p, "Bzero", "K0starnn", 1.0, "B02K0starnn");
+
+    GetNegativeChangePDFs(Signal_nominal, Signal_Eecl_p, Signal_Eecl_m);
+    GetNegativeChangePDFs(CHG_nominal, CHG_Eecl_p, CHG_Eecl_m);
+    GetNegativeChangePDFs(MIX_nominal, MIX_Eecl_p, MIX_Eecl_m);
+    GetNegativeChangePDFs(UUBAR_nominal, UUBAR_Eecl_p, UUBAR_Eecl_m);
+    GetNegativeChangePDFs(DDBAR_nominal, DDBAR_Eecl_p, DDBAR_Eecl_m);
+    GetNegativeChangePDFs(SSBAR_nominal, SSBAR_Eecl_p, SSBAR_Eecl_m);
+    GetNegativeChangePDFs(CHARM_nominal, CHARM_Eecl_p, CHARM_Eecl_m);
 
     // calculate all uncorrelated pdfs
     ClearHist(Signal_all_uncorrelated, CHG_all_uncorrelated, MIX_all_uncorrelated, UUBAR_all_uncorrelated, DDBAR_all_uncorrelated, SSBAR_all_uncorrelated, CHARM_all_uncorrelated);
@@ -4231,19 +4462,19 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
 
     /* ====================================== */
     // Save data
-    GetNominalPDFs(DATA_dirname_Knunu, total_DATA, "Bplus", Scale_Kplus_test);
-    GetNominalPDFs(DATA_dirname_Kstarnunu, total_DATA, "Bplus", Scale_Kplusstar_test);
-    GetNominalPDFs(DATA_dirname_Xsununu, total_DATA, "Bplus", Scale_Xsu_nonresonant_test);
-    GetNominalPDFs(DATA_dirname_K0nunu, total_DATA, "Bzero", Scale_K0_test);
-    GetNominalPDFs(DATA_dirname_K0starnunu, total_DATA, "Bzero", Scale_K0star_test);
-    GetNominalPDFs(DATA_dirname_Xsdnunu, total_DATA, "Bzero", Scale_Xsd_nonresonant_test);
+    GetNominalPDFs(DATA_dirname_Knunu, total_DATA, "Bplus", "DATA", Scale_Kplus_test);
+    GetNominalPDFs(DATA_dirname_Kstarnunu, total_DATA, "Bplus", "DATA", Scale_Kplusstar_test);
+    GetNominalPDFs(DATA_dirname_Xsununu, total_DATA, "Bplus", "DATA", Scale_Xsu_nonresonant_test);
+    GetNominalPDFs(DATA_dirname_K0nunu, total_DATA, "Bzero", "DATA", Scale_K0_test);
+    GetNominalPDFs(DATA_dirname_K0starnunu, total_DATA, "Bzero", "DATA", Scale_K0star_test);
+    GetNominalPDFs(DATA_dirname_Xsdnunu, total_DATA, "Bzero", "DATA", Scale_Xsd_nonresonant_test);
 
-    GetNominalPDFs(DATA_dirname_CHG, total_DATA, "Bplus", 1.0);
-    GetNominalPDFs(DATA_dirname_MIX, total_DATA, "Bzero", 1.0);
-    GetNominalPDFs(DATA_dirname_UUBAR, total_DATA, "Continuum", 1.0);
-    GetNominalPDFs(DATA_dirname_DDBAR, total_DATA, "Continuum", 1.0);
-    GetNominalPDFs(DATA_dirname_SSBAR, total_DATA, "Continuum", 1.0);
-    GetNominalPDFs(DATA_dirname_CHARM, total_DATA, "Continuum", 1.0);
+    GetNominalPDFs(DATA_dirname_CHG, total_DATA, "Bplus", "DATA", 1.0);
+    GetNominalPDFs(DATA_dirname_MIX, total_DATA, "Bzero", "DATA", 1.0);
+    GetNominalPDFs(DATA_dirname_UUBAR, total_DATA, "Continuum", "DATA", 1.0);
+    GetNominalPDFs(DATA_dirname_DDBAR, total_DATA, "Continuum", "DATA", 1.0);
+    GetNominalPDFs(DATA_dirname_SSBAR, total_DATA, "Continuum", "DATA", 1.0);
+    GetNominalPDFs(DATA_dirname_CHARM, total_DATA, "Continuum", "DATA", 1.0);
     /* ====================================== */
 
 
@@ -4436,6 +4667,40 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     DDBAR_BDTc_m->Write();
     SSBAR_BDTc_m->Write();
     CHARM_BDTc_m->Write();
+
+    // B2Knn BR uncertainty
+    CHG_Knn_p->Write();
+    MIX_Knn_p->Write();
+    CHG_Knn_m->Write();
+    MIX_Knn_m->Write();
+    CHG_Kstarnn_p->Write();
+    MIX_Kstarnn_p->Write();
+    CHG_Kstarnn_m->Write();
+    MIX_Kstarnn_m->Write();
+    CHG_K0nn_p->Write();
+    MIX_K0nn_p->Write();
+    CHG_K0nn_m->Write();
+    MIX_K0nn_m->Write();
+    CHG_K0starnn_p->Write();
+    MIX_K0starnn_p->Write();
+    CHG_K0starnn_m->Write();
+    MIX_K0starnn_m->Write();
+
+    // fh uncertainty
+    Signal_Eecl_p->Write();
+    CHG_Eecl_p->Write();
+    MIX_Eecl_p->Write();
+    UUBAR_Eecl_p->Write();
+    DDBAR_Eecl_p->Write();
+    SSBAR_Eecl_p->Write();
+    CHARM_Eecl_p->Write();
+    Signal_Eecl_m->Write();
+    CHG_Eecl_m->Write();
+    MIX_Eecl_m->Write();
+    UUBAR_Eecl_m->Write();
+    DDBAR_Eecl_m->Write();
+    SSBAR_Eecl_m->Write();
+    CHARM_Eecl_m->Write();
 
     // all uncorrelated uncertainties
     Signal_all_uncorrelated->Write();
