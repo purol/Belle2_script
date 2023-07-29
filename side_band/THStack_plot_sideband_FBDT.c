@@ -1072,10 +1072,10 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
+            if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
 
@@ -1368,10 +1368,10 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
+            if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             // BDTc correction factor
             if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
@@ -1586,10 +1586,10 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
+            if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             // BDTc correction factor
             if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
