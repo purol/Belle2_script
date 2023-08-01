@@ -105,11 +105,13 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 // # define pi0_correction 0.932
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
-// https://indico.belle2.org/event/6872/contributions/37447/attachments/17127/25504/FEIperformance_B2GM.pdf
-# define FEI_cal_Bc 0.679
-# define FEI_cal_Bc_uncertainty (0.017/FEI_cal_Bc) // not percentage. relative uncertainty
-# define FEI_cal_B0 0.713
-# define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
+
+# define FEI_cal_Bc_num 12
+# define FEI_cal_B0_num 11
+double FEI_cal_Bc[FEI_cal_Bc_num] = { 1.04, 0.79, 0.69, 0.56, 0.97, 0.95, 0.74, 0.57, 0.91, 0.51, 0.34, 0.59 };
+double FEI_cal_Bc_uncertainty[FEI_cal_Bc_num] = { 0.03, 0.03, 0.05, 0.11, 0.03, 0.03, 0.02, 0.06, 0.1, 0.13, 0.07, 0.02 }; // not relative uncertainty. absolute uncertainty
+double FEI_cal_B0[FEI_cal_B0_num] = { 1.16, 0.95, 0.84, 0.78, 0.99, 1.01, 0.67, 0.65, 0.69, 0.58, 0.81 };
+double FEI_cal_B0_uncertainty[FEI_cal_B0_num] = { 0.04, 0.03, 0.02, 0.02, 0.03, 0.03, 0.02, 0.02, 0.02, 0.16, 0.13 }; // not relative uncertainty. absolute uncertainty
 
 # define Nvar_num 126
 

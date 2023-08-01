@@ -328,7 +328,7 @@ int WorkSpace() {
 	MIX_temp.AddHistoSys("KS0_reco_uncer", "MIX_KS0_m", fname, "", "MIX_KS0_p", fname, "");
 	MIX_temp.AddHistoSys("Eecl_uncer", "MIX_Eecl_m", fname, "", "MIX_Eecl_p", fname, "");
 	MIX_temp.AddHistoSys("K0nn_BR_uncer", "MIX_K0nn_m", fname, "", "MIX_K0nn_p", fname, "");
-	MIX_temp.AddHistoSys("K0starnn_BR_uncer", "MIX_K0star_m", fname, "", "MIX_K0star_p", fname, "");
+	MIX_temp.AddHistoSys("K0starnn_BR_uncer", "MIX_K0starnn_m", fname, "", "MIX_K0starnn_p", fname, "");
 	for (int i = 0; i < NEntryKID; i++) MIX_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("MIX_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryPID; i++) MIX_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("MIX_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryBR; i++) MIX_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("MIX_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
