@@ -561,19 +561,47 @@ void ReadFakePIDFile() {
     fclose(fp_pi_fromMU);
 }
 
-double GetFEICalFactor(double UpsilonID, double Btag_ID) {
+double GetFEICalFactor(double UpsilonID, double BtagID) {
     // UpsilonID => charged: 0, mixed: 1
     
-    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charge
-
+    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+            if (BtagID > FEI_cal_Bc_modeID[i] - 0.5 && BtagID < FEI_cal_Bc_modeID[i] + 0.5) return FEI_cal_Bc[i];
+        }
+        return FEI_cal_Bc[FEI_cal_Bc_num - 1];
+    }
+    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+            if (BtagID > FEI_cal_B0_modeID[i] - 0.5 && BtagID < FEI_cal_B0_modeID[i] + 0.5) return FEI_cal_B0[i];
+        }
+        return FEI_cal_B0[FEI_cal_B0_num - 1];
     }
 
-    double FEI_cal_Bc[FEI_cal_Bc_num] = { 1.04, 0.79, 0.69, 0.56, 0.97, 0.95, 0.74, 0.57, 0.91, 0.51, 0.34, 0.59 };
-    double FEI_cal_Bc_uncertainty[FEI_cal_Bc_num] = { 0.03, 0.03, 0.05, 0.11, 0.03, 0.03, 0.02, 0.06, 0.1, 0.13, 0.07, 0.02 }; // not relative uncertainty. absolute uncertainty
-    double FEI_cal_Bc_modeID[FEI_cal_Bc_num] = { 0.0, 1.0, 3.0, 4.0, 15.0, 16.0, 18.0, 19.0, 23.0, 24.0, 30.0, -1.0 };
-    double FEI_cal_B0[FEI_cal_B0_num] = { 1.16, 0.95, 0.84, 0.78, 0.99, 1.01, 0.67, 0.65, 0.69, 0.58, 0.81 };
-    double FEI_cal_B0_uncertainty[FEI_cal_B0_num] = { 0.04, 0.03, 0.02, 0.02, 0.03, 0.03, 0.02, 0.02, 0.02, 0.16, 0.13 }; // not relative uncertainty. absolute uncertainty
-    double FEI_cal_B0_modeID[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0, 18.0, 19.0, 26.0, -1.0 };
+    printf("[GetFEICalFactor] error! unexpected decay ID\n");
+    exit(1);
+    return 0;
+
+}
+
+double GetFEICalFactorUncer(double UpsilonID, double BtagID) {
+    // UpsilonID => charged: 0, mixed: 1
+
+    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+            if (BtagID > FEI_cal_Bc_modeID[i] - 0.5 && BtagID < FEI_cal_Bc_modeID[i] + 0.5) return FEI_cal_Bc_uncertainty[i];
+        }
+        return FEI_cal_Bc_uncertainty[FEI_cal_Bc_num - 1];
+    }
+    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+            if (BtagID > FEI_cal_B0_modeID[i] - 0.5 && BtagID < FEI_cal_B0_modeID[i] + 0.5) return FEI_cal_B0[i];
+        }
+        return FEI_cal_B0_uncertainty[FEI_cal_B0_num - 1];
+    }
+
+    printf("[GetFEICalFactor] error! unexpected decay ID\n");
+    exit(1);
+    return 0;
 
 }
 
