@@ -105,11 +105,15 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 // # define pi0_correction 0.932
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
-// https://indico.belle2.org/event/6872/contributions/37447/attachments/17127/25504/FEIperformance_B2GM.pdf
-# define FEI_cal_Bc 0.679
-# define FEI_cal_Bc_uncertainty (0.017/FEI_cal_Bc) // not percentage. relative uncertainty
-# define FEI_cal_B0 0.713
-# define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
+
+# define FEI_cal_Bc_num 12
+# define FEI_cal_B0_num 11
+double FEI_cal_Bc[FEI_cal_Bc_num] = { 1.04, 0.79, 0.69, 0.56, 0.97, 0.95, 0.74, 0.57, 0.91, 0.51, 0.34, 0.59 };
+double FEI_cal_Bc_uncertainty[FEI_cal_Bc_num] = { 0.03, 0.03, 0.05, 0.11, 0.03, 0.03, 0.02, 0.06, 0.1, 0.13, 0.07, 0.02 }; // not relative uncertainty. absolute uncertainty
+double FEI_cal_Bc_modeID[FEI_cal_Bc_num] = { 0.0, 1.0, 3.0, 4.0, 15.0, 16.0, 18.0, 19.0, 23.0, 24.0, 30.0, -1.0 };
+double FEI_cal_B0[FEI_cal_B0_num] = { 1.16, 0.95, 0.84, 0.78, 0.99, 1.01, 0.67, 0.65, 0.69, 0.58, 0.81 };
+double FEI_cal_B0_uncertainty[FEI_cal_B0_num] = { 0.04, 0.03, 0.02, 0.02, 0.03, 0.03, 0.02, 0.02, 0.02, 0.16, 0.13 }; // not relative uncertainty. absolute uncertainty
+double FEI_cal_B0_modeID[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0, 18.0, 19.0, 26.0, -1.0 };
 
 # define Nvar_num 1
 
@@ -557,6 +561,50 @@ void ReadFakePIDFile() {
     fclose(fp_pi_fromMU);
 }
 
+double GetFEICalFactor(double UpsilonID, double BtagID) {
+    // UpsilonID => charged: 0, mixed: 1
+
+    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+            if (BtagID > FEI_cal_Bc_modeID[i] - 0.5 && BtagID < FEI_cal_Bc_modeID[i] + 0.5) return FEI_cal_Bc[i];
+        }
+        return FEI_cal_Bc[FEI_cal_Bc_num - 1];
+    }
+    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+            if (BtagID > FEI_cal_B0_modeID[i] - 0.5 && BtagID < FEI_cal_B0_modeID[i] + 0.5) return FEI_cal_B0[i];
+        }
+        return FEI_cal_B0[FEI_cal_B0_num - 1];
+    }
+
+    printf("[GetFEICalFactor] error! unexpected decay ID\n");
+    exit(1);
+    return 0;
+
+}
+
+double GetFEICalFactorUncer(double UpsilonID, double BtagID) {
+    // UpsilonID => charged: 0, mixed: 1
+
+    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+            if (BtagID > FEI_cal_Bc_modeID[i] - 0.5 && BtagID < FEI_cal_Bc_modeID[i] + 0.5) return FEI_cal_Bc_uncertainty[i];
+        }
+        return FEI_cal_Bc_uncertainty[FEI_cal_Bc_num - 1];
+    }
+    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+            if (BtagID > FEI_cal_B0_modeID[i] - 0.5 && BtagID < FEI_cal_B0_modeID[i] + 0.5) return FEI_cal_B0[i];
+        }
+        return FEI_cal_B0_uncertainty[FEI_cal_B0_num - 1];
+    }
+
+    printf("[GetFEICalFactor] error! unexpected decay ID\n");
+    exit(1);
+    return 0;
+
+}
+
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
         return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
@@ -620,6 +668,7 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
     float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -651,6 +700,7 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Bsig->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -683,11 +733,11 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
             int job_id = stoi(names.at(i).substr(16, 9));
             if (job_id >= 265736574 && job_id <= 265736629) {
                 numberings->push_back(0);
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
             }
             else if (job_id >= 265736630 && job_id <= 265736675) {
                 numberings->push_back(1);
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
             }
             else if (job_id >= 265736722 && job_id <= 265736767) {
                 numberings->push_back(2);
@@ -819,6 +869,7 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
     float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -855,6 +906,7 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Bsig->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -892,12 +944,12 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
                 numberings->push_back(0);
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "MIX") {
                 numberings->push_back(1);
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
@@ -930,19 +982,19 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
                 numberings->push_back(14);
                 FEI_calibration_factor = CAL_qq;
                 if (nXsu > 0) {
-                    FEI_calibration_factor = FEI_cal_Bc;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (nXsd > 0) {
-                    FEI_calibration_factor = FEI_cal_B0;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5) {
-                    FEI_calibration_factor = FEI_cal_Bc;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5) {
-                    FEI_calibration_factor = FEI_cal_B0;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else {
@@ -1089,6 +1141,7 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
     float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -1128,6 +1181,7 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Bsig->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -1170,12 +1224,12 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
                 numberings->push_back(0);
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "MIX") {
                 numberings->push_back(1);
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
@@ -1208,19 +1262,19 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
                 numberings->push_back(14);
                 FEI_calibration_factor = CAL_qq;
                 if (nXsu > 0) {
-                    FEI_calibration_factor = FEI_cal_Bc;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (nXsd > 0) {
-                    FEI_calibration_factor = FEI_cal_B0;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5) {
-                    FEI_calibration_factor = FEI_cal_Bc;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5) {
-                    FEI_calibration_factor = FEI_cal_B0;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else {
@@ -1295,6 +1349,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
     float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -1324,6 +1379,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Bsig->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -1362,11 +1418,11 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             // Fill numberings
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "MIX") {
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
@@ -1394,19 +1450,19 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             else if (SampleName == "SIGNAL") {
                 FEI_calibration_factor = CAL_qq;
                 if (nXsu > 0) {
-                    FEI_calibration_factor = FEI_cal_Bc;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (nXsd > 0) {
-                    FEI_calibration_factor = FEI_cal_B0;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5) {
-                    FEI_calibration_factor = FEI_cal_Bc;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5) {
-                    FEI_calibration_factor = FEI_cal_B0;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else {
