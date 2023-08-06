@@ -587,8 +587,6 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
     return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
 }
 
-std::vector<EvtInfo> EvtInfos;
-
 struct _BRuncertainty {
     std::vector<int> DMID;
     std::vector<double> RelativeUncertainty;
