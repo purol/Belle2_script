@@ -10,8 +10,8 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator
 
 # BR
-file_BR_corr_all = "FEI_Bp_corr_all.txt"
-file_BR_corr_partial = "FEI_Bp_corr_partial.txt"
+file_BR_corr_all = "FEI_corr_all.txt"
+file_BR_corr_partial = "FEI_corr_partial.txt"
 
 BR_corr_all = np.loadtxt(file_BR_corr_all, dtype=float)
 BR_corr_partial = np.loadtxt(file_BR_corr_partial, dtype=float)
@@ -28,7 +28,7 @@ ax.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:
 ax.set_xticklabels(labels, rotation=0)
 
 #plt.show()
-plt.savefig('BR_corr_all.png')
+plt.savefig('FEI_corr_all.png')
 
 plt.clf()
 
@@ -44,6 +44,6 @@ ax_p.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks
 ax_p.set_xticklabels(labels, rotation=0)
 
 #plt.show()
-plt.savefig('BR_corr_partial.png')
+plt.savefig('FEI_corr_partial.png')
 
 plt.clf()
