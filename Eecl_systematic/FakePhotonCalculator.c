@@ -1,9 +1,9 @@
 // last update: 2021-10-13
 // for Belle2 data
 
-# define NTest 9
+# define NTest 13
 # define NBin 100
-# define ScaleList { 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1 }
+# define ScaleList { 0.8, 0.825, 0.85, 0.875, 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1 }
 
 # define MyEPSILON 0.000001
 
@@ -96,11 +96,15 @@
 // # define pi0_correction 0.932
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
-// https://indico.belle2.org/event/6872/contributions/37447/attachments/17127/25504/FEIperformance_B2GM.pdf
-# define FEI_cal_Bc 0.679
-# define FEI_cal_Bc_uncertainty (0.017/FEI_cal_Bc) // not percentage. relative uncertainty
-# define FEI_cal_B0 0.713
-# define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
+
+# define FEI_cal_Bc_num 12
+# define FEI_cal_B0_num 11
+double FEI_cal_Bc[FEI_cal_Bc_num] = { 1.04, 0.79, 0.69, 0.56, 0.97, 0.95, 0.74, 0.57, 0.91, 0.51, 0.34, 0.59 };
+double FEI_cal_Bc_uncertainty[FEI_cal_Bc_num] = { 0.03, 0.03, 0.05, 0.11, 0.03, 0.03, 0.02, 0.06, 0.1, 0.13, 0.07, 0.02 }; // not relative uncertainty. absolute uncertainty
+double FEI_cal_Bc_modeID[FEI_cal_Bc_num] = { 0.0, 1.0, 3.0, 4.0, 15.0, 16.0, 18.0, 19.0, 23.0, 24.0, 30.0, -1.0 };
+double FEI_cal_B0[FEI_cal_B0_num] = { 1.16, 0.95, 0.84, 0.78, 0.99, 1.01, 0.67, 0.65, 0.69, 0.58, 0.81 };
+double FEI_cal_B0_uncertainty[FEI_cal_B0_num] = { 0.04, 0.03, 0.02, 0.02, 0.03, 0.03, 0.02, 0.02, 0.02, 0.16, 0.13 }; // not relative uncertainty. absolute uncertainty
+double FEI_cal_B0_modeID[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0, 18.0, 19.0, 26.0, -1.0 };
 
 # define CAL 1.1728
 # define CAL_qq 1.0
@@ -546,6 +550,50 @@ void ReadFakePIDFile() {
     fclose(fp_pi_fromMU);
 }
 
+double GetFEICalFactor(double UpsilonID, double BtagID) {
+    // UpsilonID => charged: 0, mixed: 1
+
+    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+            if (BtagID > FEI_cal_Bc_modeID[i] - 0.5 && BtagID < FEI_cal_Bc_modeID[i] + 0.5) return FEI_cal_Bc[i];
+        }
+        return FEI_cal_Bc[FEI_cal_Bc_num - 1];
+    }
+    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+            if (BtagID > FEI_cal_B0_modeID[i] - 0.5 && BtagID < FEI_cal_B0_modeID[i] + 0.5) return FEI_cal_B0[i];
+        }
+        return FEI_cal_B0[FEI_cal_B0_num - 1];
+    }
+
+    printf("[GetFEICalFactor] error! unexpected decay ID\n");
+    exit(1);
+    return 0;
+
+}
+
+double GetFEICalFactorUncer(double UpsilonID, double BtagID) {
+    // UpsilonID => charged: 0, mixed: 1
+
+    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+            if (BtagID > FEI_cal_Bc_modeID[i] - 0.5 && BtagID < FEI_cal_Bc_modeID[i] + 0.5) return FEI_cal_Bc_uncertainty[i];
+        }
+        return FEI_cal_Bc_uncertainty[FEI_cal_Bc_num - 1];
+    }
+    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+            if (BtagID > FEI_cal_B0_modeID[i] - 0.5 && BtagID < FEI_cal_B0_modeID[i] + 0.5) return FEI_cal_B0[i];
+        }
+        return FEI_cal_B0_uncertainty[FEI_cal_B0_num - 1];
+    }
+
+    printf("[GetFEICalFactor] error! unexpected decay ID\n");
+    exit(1);
+    return 0;
+
+}
+
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
         return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
@@ -606,15 +654,16 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest], TH1D* hist_ngamma
     13: hhISR
     */
 
-    std::string words[NTest] = { "_900", "_925", "_950", "_975", "", "_025", "_050", "_075", "_100" };
+    std::string words[NTest] = { "_800", "_825", "_850", "_875", "_900", "_925", "_950", "_975", "", "_025", "_050", "_075", "_100" };
     double Scales[NTest] = ScaleList;
 
-    double Eecl_true_var[NTest] = { 0.0 }; // 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
-    double Eecl_fake_var[NTest] = { 0.0 }; // 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
-    double Ngamma_true_var[NTest] = { 0.0 }; // 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
-    double Ngamma_fake_var[NTest] = { 0.0 }; // 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
+    double Eecl_true_var[NTest] = { 0.0 }; // 0.8, 0.825, 0.85, 0.875, 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
+    double Eecl_fake_var[NTest] = { 0.0 }; // 0.8, 0.825, 0.85, 0.875, 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
+    double Ngamma_true_var[NTest] = { 0.0 }; // 0.8, 0.825, 0.85, 0.875, 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
+    double Ngamma_fake_var[NTest] = { 0.0 }; // 0.8, 0.825, 0.85, 0.875, 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -643,6 +692,7 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest], TH1D* hist_ngamma
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -672,11 +722,11 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest], TH1D* hist_ngamma
             // Fill numberings
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 2.8/ab for BB
             }
             else if (SampleName == "MIX") {
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 2.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
@@ -734,8 +784,8 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest], TH1D* hist_ngamma
             double weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake;
 
             for (int k = 0; k < NTest; k++) {
-                hist_eecl[k]->Fill(Eecl_true_var[4] + Eecl_fake_var[k] * Scales[k], weight);
-                hist_ngamma[k]->Fill(Ngamma_true_var[4] + Ngamma_fake_var[k], weight);
+                hist_eecl[k]->Fill(Eecl_true_var[8] + Eecl_fake_var[k] * Scales[k], weight);
+                hist_ngamma[k]->Fill(Ngamma_true_var[8] + Ngamma_fake_var[k], weight);
             }
 
 
@@ -764,7 +814,7 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest][NTest], TH1D* hist
     13: hhISR
     */
 
-    std::string words[NTest] = { "_900", "_925", "_950", "_975", "", "_025", "_050", "_075", "_100" };
+    std::string words[NTest] = { "_800", "_825", "_850", "_875", "_900", "_925", "_950", "_975", "", "_025", "_050", "_075", "_100" };
     double Scales[NTest] = ScaleList;
 
     double Eecl_true_var[NTest] = { 0.0 }; // 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
@@ -773,6 +823,7 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest][NTest], TH1D* hist
     double Ngamma_fake_var[NTest] = { 0.0 }; // 0.9, 0.925, 0.95, 0.975, 1.0, 1.025, 1.05, 1.075, 1.1
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -801,6 +852,7 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest][NTest], TH1D* hist
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -830,11 +882,11 @@ void LetsFillEecl(const char* dirname, TH1D* hist_eecl[NTest][NTest], TH1D* hist
             // Fill numberings
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 2.8/ab for BB
             }
             else if (SampleName == "MIX") {
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 2.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
@@ -1016,7 +1068,7 @@ void CalculateKSProb(TH1D* hist_eecl[NTest], TH1D* hist_ngamma[NTest], TH1D* his
 void CalculateKSProb(TH1D* hist_eecl[NTest][NTest], TH1D* hist_ngamma[NTest][NTest], TH1D* hist_eecl_data, TH1D* hist_ngamma_data) {
     double Scales[NTest] = ScaleList;
     
-    TH2D* KSProbs = new TH2D("KSprobs", ";f_{e};f_{h};KS probability", NTest, 0.9 - (1.1 - 0.9) / (2 * NTest), 1.1 + (1.1 - 0.9) / (2 * NTest), NTest, 0.9 - (1.1 - 0.9) / (2 * NTest), 1.1 + (1.1 - 0.9) / (2 * NTest));
+    TH2D* KSProbs = new TH2D("KSprobs", ";f_{e};f_{h};KS probability", NTest, 0.8 - (1.1 - 0.8) / (2 * NTest), 1.1 + (1.1 - 0.8) / (2 * NTest), NTest, 0.8 - (1.1 - 0.8) / (2 * NTest), 1.1 + (1.1 - 0.8) / (2 * NTest));
 
     for (int k = 0; k < NTest; k++) {
         for (int l = 0; l < NTest; l++) {
@@ -1107,24 +1159,23 @@ void FakePhotonCalculator(){
     ReadPIDFile();
     ReadFakePIDFile();
     
-    const char* Sideband_MC_CHG_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/CHG_analysis/train_v000/final_output";
-    const char* Sideband_MC_MIX_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/MIX_analysis/train_v000/final_output";
-    const char* Sideband_MC_UUBAR_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/UUBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_DDBAR_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/DDBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_SSBAR_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/SSBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_CHARM_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/CHARM_analysis/train_v000/final_output";
+    const char* Sideband_MC_CHG_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Murasa_LS_MC_side/CHG_analysis/train_v000/final_output";
+    const char* Sideband_MC_MIX_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Murasa_LS_MC_side/MIX_analysis/train_v000/final_output";
+    const char* Sideband_MC_UUBAR_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Murasa_LS_MC_side/UUBAR_analysis/train_v000/final_output";
+    const char* Sideband_MC_DDBAR_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Murasa_LS_MC_side/DDBAR_analysis/train_v000/final_output";
+    const char* Sideband_MC_SSBAR_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Murasa_LS_MC_side/SSBAR_analysis/train_v000/final_output";
+    const char* Sideband_MC_CHARM_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Murasa_LS_MC_side/CHARM_analysis/train_v000/final_output";
 
-    const char* Sideband_MC_CHG_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/CHG_analysis/test_v000/final_output";
-    const char* Sideband_MC_MIX_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/MIX_analysis/test_v000/final_output";
-    const char* Sideband_MC_UUBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/UUBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_DDBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/DDBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_SSBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/SSBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_CHARM_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/CHARM_analysis/test_v000/final_output";
+    const char* Sideband_MC_CHG_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Murasa_LS_MC_side/CHG_analysis/test_v000/final_output";
+    const char* Sideband_MC_MIX_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Murasa_LS_MC_side/MIX_analysis/test_v000/final_output";
+    const char* Sideband_MC_UUBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Murasa_LS_MC_side/UUBAR_analysis/test_v000/final_output";
+    const char* Sideband_MC_DDBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Murasa_LS_MC_side/DDBAR_analysis/test_v000/final_output";
+    const char* Sideband_MC_SSBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Murasa_LS_MC_side/SSBAR_analysis/test_v000/final_output";
+    const char* Sideband_MC_CHARM_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Murasa_LS_MC_side/CHARM_analysis/test_v000/final_output";
 
-    const char* Sideband_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_data_side/SIGNAL_analysis/validation_v000/final_output";
+    const char* Sideband_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Murasa_LS_data_side/SIGNAL_analysis/validation_v000/final_output";
 
     // 1D case
-    /*
     TH1D* Eecl_v200[NTest];
     TH1D* Ngamma_v200[NTest];
     double Scales[NTest] = ScaleList;
@@ -1169,10 +1220,10 @@ void FakePhotonCalculator(){
 
     printf("data num: %lf\n", data_num);
     printf("MC num with calibration: %lf\n", MC_num);
-    */
 
 
     // 2D case
+    /*
     TH1D* Eecl_2D_v200[NTest][NTest]; // [true][fake]
     TH1D* Ngamma_2D_v200[NTest][NTest]; // [true][fake]
     double Scales[NTest] = ScaleList;
@@ -1218,4 +1269,5 @@ void FakePhotonCalculator(){
 
     printf("data num: %lf\n", data_num);
     printf("MC num with calibration: %lf\n", MC_num);
+    */
 }
