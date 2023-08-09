@@ -3,7 +3,7 @@
 
 # define Nentry 500
 # define MIN_invM 1.876
-# define MAX_invM 4.79
+# define MAX_invM 4.5
 
 void load_files(const char *dirname, std::vector<string>* names){
    TSystemDirectory dir(dirname, dirname);
@@ -22,13 +22,18 @@ void load_files(const char *dirname, std::vector<string>* names){
 }
 
 void ReadK0starnnFiles_r_sp(){
+    /*
+    get correction factor for B*0 --> K*0 n nbar MC
+    MC:   B*0 --> K*0 n nbar
+    data: B*+ --> K*+ p pbar
+    */
     
     std::vector<string> names;
-    const char* dirname = "./";
+    const char* dirname = "./K0starnn";
 
     load_files(dirname, &names);
 
-    TH1D* Plot = new TH1D("M_{p#bar{p}}", ";M_{p#bar{p}} [GeV/c^{2}]; evt", Nentry, MIN_invM, MAX_invM);
+    TH1D* Plot = new TH1D("M", ";M [GeV/c^{2}]; evt", Nentry, MIN_invM, MAX_invM);
 
     for(unsigned int i = 0; i<names.size(); i++) {
 
@@ -72,13 +77,14 @@ void ReadK0starnnFiles_r_sp(){
     //Plot->SetMarkerSize(2);
 
     // draw experimental data [Phys. Rev. Lett. 100, 251801]
+    // B*+ --> K*+ p pbar data
     Float_t Knn_bd_x[7] = { 1.938, 2.1, 2.3, 2.5, 2.725, 3.2215, 4.0675 };
-    Float_t Knn_bd_y[7] = { 0.3, 0.31, 0.26, 0.22, 0.02, 0.05, 0.02 };
+    Float_t Knn_bd_y[7] = { 0.43, 1.28, 0.37, 0.3, 0.62, 0.11, 0.27 };
 
     // create the error arrays
     Float_t ex[7] = { 0.062, 0.1, 0.1, 0.1, 0.125, 0.0935, 0.3325 };
-    Float_t Knn_bd_y_plus_tot[7] = { 0.11, 0.12, 0.10, 0.11, 0.09, 0.09, 0.14 };
-    Float_t Knn_bd_y_minus_tot[7] = { 0.10, 0.11, 0.09, 0.07, 0.06, 0.11 };
+    Float_t Knn_bd_y_plus_tot[7] = { 0.21, 0.36, 0.31, 0.22, 0.31, 0.15, 0.31 };
+    Float_t Knn_bd_y_minus_tot[7] = { 0.18, 0.32, 0.26, 0.17, 0.25, 0.11, 0.22 };
 
     // calculate dBR/dM
     for (int j = 0; j < 7; j++) {
@@ -89,9 +95,9 @@ void ReadK0starnnFiles_r_sp(){
 
     // normalization
     for (int j = 0; j < 7; j++) {
-        Knn_bd_y[j] = Knn_bd_y[j] / 1.18;
-        Knn_bd_y_plus_tot[j] = Knn_bd_y_plus_tot[j] / 1.18;
-        Knn_bd_y_minus_tot[j] = Knn_bd_y_minus_tot[j] / 1.18;
+        Knn_bd_y[j] = Knn_bd_y[j] / 3.38;
+        Knn_bd_y_plus_tot[j] = Knn_bd_y_plus_tot[j] / 3.38;
+        Knn_bd_y_minus_tot[j] = Knn_bd_y_minus_tot[j] / 3.38;
     }
 
 
@@ -101,7 +107,7 @@ void ReadK0starnnFiles_r_sp(){
     gr->SetMarkerStyle(21);
     gr->SetLineWidth(2);
     gr->SetMinimum(0.0);
-    gr->SetTitle(";M_{p#bar{p}} [GeV/c^{2}];dBR/dM_{p#bar{p}} [arbitrary unit]");
+    gr->SetTitle(";M [GeV/c^{2}];dBR/dM [arbitrary unit]");
 
     // set x-axis range
     auto axis = gr->GetXaxis();

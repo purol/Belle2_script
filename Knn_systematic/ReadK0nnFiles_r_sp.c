@@ -3,7 +3,7 @@
 
 # define Nentry 500
 # define MIN_invM 1.876
-# define MAX_invM 4.782
+# define MAX_invM 4.8
 
 void load_files(const char *dirname, std::vector<string>* names){
    TSystemDirectory dir(dirname, dirname);
@@ -22,13 +22,18 @@ void load_files(const char *dirname, std::vector<string>* names){
 }
 
 void ReadK0nnFiles_r_sp(){
+    /*
+    get correction factor for B0 --> K0 n nbar MC
+    MC:   B0 --> K0 n nbar
+    data: B+ --> K+ p pbar
+    */
     
     std::vector<string> names;
-    const char* dirname = "./";
+    const char* dirname = "./K0nn";
 
     load_files(dirname, &names);
 
-    TH1D* Plot = new TH1D("M_{p#bar{p}}", ";M_{p#bar{p}} [GeV/c^{2}]; evt", Nentry, MIN_invM, MAX_invM);
+    TH1D* Plot = new TH1D("M", ";M [GeV/c^{2}]; evt", Nentry, MIN_invM, MAX_invM);
 
     for(unsigned int i = 0; i<names.size(); i++) {
 
@@ -71,55 +76,54 @@ void ReadK0nnFiles_r_sp(){
     //Plot->SetMarkerStyle(21);
     //Plot->SetMarkerSize(2);
 
-    // draw experimental data [Phys. Rev. D 76, 092004]
-    Float_t Knn_bd_x[12] = { 1.988, 2.225, 2.475, 2.725, 3.0, 3.275, 3.5, 3.75, 4.025, 4.2685, 4.4835, 4.681 };
-    Float_t Knn_bd_y[12] = { 160, 151, 80, 60, 48, -2, 3, 13, 41, 24, 49, 25 };
+    // draw experimental data [Phys. Lett. B 659 (2008) 80-86]
+    // B+ --> K+ p pbar data
+    Float_t Knn_bd_x[9] = { 1.938, 2.1, 2.3, 2.5, 2.725, 3.2215, 3.8675, 4.3, 4.7 };
+    Float_t Knn_bd_y[9] = { 0.7, 1.39, 1.19, 0.87, 0.84, 0.19, 0.11, 0.22, 0.02 };
 
     // create the error arrays
-    Float_t ex[12] = { 0.112, 0.125, 0.125, 0.125, 0.15, 0.125, 0.1, 0.15, 0.125, 0.1185, 0.0965, 0.101 };
-    Float_t Knn_bd_y_plus[12] = { 50, 50, 40, 31, 23, 13, 22, 27, 25, 25, 29, 34 };
-    Float_t Knn_bd_y_minus[12] = { 50, 50, 40, 31, 23, 13, 22, 27, 25, 25, 29, 34 };
-    Float_t Knn_bd_y_sym[12] = { 14, 13, 7, 6, 8, 5, 8, 5, 10 ,9, 10, 6 };
-    Float_t Knn_bd_y_plus_tot[12] = { 0.0 };
-    Float_t Knn_bd_y_minus_tot[12] = { 0.0 };
-    for (int j = 0; j < 12; j++) {
+    Float_t ex[9] = { 0.062, 0.1, 0.1, 0.1, 0.125, 0.0935, 0.1325, 0.3, 0.1 };
+    Float_t Knn_bd_y_plus[9] = { 0.09, 0.12, 0.12, 0.11, 0.10, 0.06, 0.05, 0.09, 0.05 };
+    Float_t Knn_bd_y_minus[9] = { 0.08, 0.11, 0.11, 0.10, 0.09, 0.05, 0.04, 0.08, 0.03 };
+    Float_t Knn_bd_y_sym[9] = { 0.05, 0.09, 0.08, 0.06, 0.05, 0.01, 0.01, 0.01, 0.00 };
+    Float_t Knn_bd_y_plus_tot[9] = { 0.0 };
+    Float_t Knn_bd_y_minus_tot[9] = { 0.0 };
+    for (int j = 0; j < 9; j++) {
         Knn_bd_y_plus_tot[j] = std::sqrt(Knn_bd_y_plus[j] * Knn_bd_y_plus[j] + Knn_bd_y_sym[j] * Knn_bd_y_sym[j]);
         Knn_bd_y_minus_tot[j] = std::sqrt(Knn_bd_y_minus[j] * Knn_bd_y_minus[j] + Knn_bd_y_sym[j] * Knn_bd_y_sym[j]);
     }
 
     // calculate dBR/dM
-    for (int j = 0; j < 12; j++) {
+    for (int j = 0; j < 9; j++) {
         Knn_bd_y[j] = Knn_bd_y[j] / (2 * ex[j]);
         Knn_bd_y_plus_tot[j] = Knn_bd_y_plus_tot[j] / (2 * ex[j]);
         Knn_bd_y_minus_tot[j] = Knn_bd_y_minus_tot[j] / (2 * ex[j]);
     }
 
     // normalization
-    for (int j = 0; j < 12; j++) {
-        Knn_bd_y[j] = Knn_bd_y[j] / 831.0;
-        Knn_bd_y_plus_tot[j] = Knn_bd_y_plus_tot[j] / 831.0;
-        Knn_bd_y_minus_tot[j] = Knn_bd_y_minus_tot[j] / 831.0;
+    for (int j = 0; j < 9; j++) {
+        Knn_bd_y[j] = Knn_bd_y[j] / 5.54;
+        Knn_bd_y_plus_tot[j] = Knn_bd_y_plus_tot[j] / 5.54;
+        Knn_bd_y_minus_tot[j] = Knn_bd_y_minus_tot[j] / 5.54;
     }
 
 
     // create the TGraphErrors and draw it
-    TGraphAsymmErrors* gr = new TGraphAsymmErrors(12, Knn_bd_x, Knn_bd_y, ex, ex, Knn_bd_y_plus_tot, Knn_bd_y_minus_tot);
+    TGraphAsymmErrors* gr = new TGraphAsymmErrors(9, Knn_bd_x, Knn_bd_y, ex, ex, Knn_bd_y_plus_tot, Knn_bd_y_minus_tot);
     gr->SetMarkerColor(1);
     gr->SetMarkerStyle(21);
     gr->SetLineWidth(2);
     gr->SetMinimum(0.0);
-    gr->SetTitle(";M_{p#bar{p}} [GeV/c^{2}];dBR/dM_{p#bar{p}} [arbitrary unit]");
+    gr->SetTitle(";M [GeV/c^{2}];dBR/dM [arbitrary unit]");
 
     // set x-axis range
     auto axis = gr->GetXaxis();
     axis->SetLimits(MIN_invM, MAX_invM);
-    gr->GetYaxis()->SetRangeUser(-0.1, 1.3);
 
     // fit by exponential
-    TF1* f = new TF1("f", "[0]*(x-[1])*(x-[1])+[2]", MIN_invM, MAX_invM);
-    f->SetParameter(0, 0.3);
-    f->SetParameter(1, 3.5);
-    f->SetParameter(2, 0.0);
+    TF1* f = new TF1("f", "[0]*exp(x*[1])", MIN_invM, MAX_invM);
+    f->SetParameter(0, 1);
+    f->SetParameter(1, -0.4);
     gr->Fit("f", "", "", MIN_invM, MAX_invM);
     double Area = f->Integral(MIN_invM, MAX_invM);
     double First = f->GetParameter(0);
@@ -128,7 +132,7 @@ void ReadK0nnFiles_r_sp(){
     TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
     TLegend *legend = new TLegend(0.6, 0.7, 0.9, 0.9);
     legend->AddEntry(Plot,"Phase space","f");
-    legend->AddEntry(gr,"[Phys. Rev. D 76, 092004]","lpfe");
+    legend->AddEntry(gr,"[Phys. Lett. B 659 (2008) 80-86]","lpfe");
     legend->SetFillStyle(0);
     legend->SetLineWidth(0);
     gr->Draw("AP");
