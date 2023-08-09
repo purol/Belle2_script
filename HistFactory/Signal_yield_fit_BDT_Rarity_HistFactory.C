@@ -208,10 +208,10 @@ const double pi0_sys_uncer2[N_pi0_syst] = {
 
 # define N_Knn_type 4 //  B2Knn B2Kstarnn B02K0nn B02K0starnn
 const double B2Knn_up_uncer[N_Knn_type] = { // relative uncertainty
-    0.5/5.9, 0.8/3.6, 0.32/2.66, 0.28/1.24
+    0.32 / 2.66, 0.28 / 1.24, 0.5 / 5.9, 0.8 / 3.6
 };
 const double B2Knn_dn_uncer[N_Knn_type] = { // relative uncertainty
-    0.5 / 5.9, 0.7 / 3.6, 0.32/2.66, 0.25/1.24
+    0.32 / 2.66, 0.25 / 1.24, 0.5 / 5.9, 0.7 / 3.6
 };
 
 TH1D* Knn_weight;
@@ -921,50 +921,57 @@ private:
 
     // K+nn
     int STEP_Knn;
-    double minQs_Knn;
-    double maxQs_Knn;
+    double mininvM_Knn;
+    double maxinvM_Knn;
     TH1D* weights_Knn;
     const double DECAY_DEC_BR_Knn;
-    const double new_BR_Knn;
+    const double new_BR_K0pp;
+    double new_BR_Knn;
     const double Nraw_initial_Knn;
     double Nscale_initial_Knn;
 
     // K*+nn
     int STEP_Kstarnn;
-    double minQs_Kstarnn;
-    double maxQs_Kstarnn;
+    double mininvM_Kstarnn;
+    double maxinvM_Kstarnn;
     TH1D* weights_Kstarnn;
     const double DECAY_DEC_BR_Kstarnn;
-    const double new_BR_Kstarnn;
+    const double new_BR_K0starpp;
+    double new_BR_Kstarnn;
     const double Nraw_initial_Kstarnn;
     double Nscale_initial_Kstarnn;
 
     // K0nn
     int STEP_K0nn;
-    double minQs_K0nn;
-    double maxQs_K0nn;
+    double mininvM_K0nn;
+    double maxinvM_K0nn;
     TH1D* weights_K0nn;
     const double DECAY_DEC_BR_K0nn;
-    const double new_BR_K0nn;
+    const double new_BR_Kpp;
+    double new_BR_K0nn;
     const double Nraw_initial_K0nn;
     double Nscale_initial_K0nn;
 
     // K0*nn
     int STEP_K0starnn;
-    double minQs_K0starnn;
-    double maxQs_K0starnn;
+    double mininvM_K0starnn;
+    double maxinvM_K0starnn;
     TH1D* weights_K0starnn;
     const double DECAY_DEC_BR_K0starnn;
-    const double new_BR_K0starnn;
+    const double new_BR_Kstarpp;
+    double new_BR_K0starnn;
     const double Nraw_initial_K0starnn;
     double Nscale_initial_K0starnn;
 
     const double N_EPSILON;
     const double CUTOFF;
 
+    const double tau_Bp;
+    const double tau_B0;
+
 public:
     Corrector_Knn();
-    double GetCorrectionFactor(double q2_Knn, double q2_Kstarnn, double q2_K0nn, double q2_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
+    double GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
     double GetCorrectionFactorAtGeneric(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
 };
 
@@ -972,26 +979,28 @@ Corrector_Knn corrector_Knn;
 
 Corrector_Knn::Corrector_Knn() :
     DECAY_DEC_BR_Knn(0.0000057),
-    new_BR_Knn(0.0000059),
+    new_BR_K0pp(0.00000266),
     Nraw_initial_Knn(1000000.0),
     DECAY_DEC_BR_Kstarnn(0.0000057),
-    new_BR_Kstarnn(0.0000036),
+    new_BR_K0starpp(0.00000124),
     Nraw_initial_Kstarnn(1000000.0),
     DECAY_DEC_BR_K0nn(0.000002),
-    new_BR_K0nn(0.00000266),
+    new_BR_Kpp(0.0000059),
     Nraw_initial_K0nn(1000000.0),
     DECAY_DEC_BR_K0starnn(0.0000056),
-    new_BR_K0starnn(0.00000124),
+    new_BR_Kstarpp(0.0000036),
     Nraw_initial_K0starnn(1000000.0),
     N_EPSILON(0.01),
-    CUTOFF(50.0)
+    CUTOFF(50.0),
+    tau_Bp(1.6384), // ps
+    tau_B0(1.5195) // ps
 {
     FILE* fp;
 
     // read Knn weights
-    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/Knn_weight.txt", "r");
-    fscanf(fp, "%d %lf %lf\n", &STEP_Knn, &minQs_Knn, &maxQs_Knn);
-    weights_Knn = new TH1D("Knn_weights", ";;", STEP_Knn, minQs_Knn, maxQs_Knn);
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/Knn_weight/Knn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_Knn, &mininvM_Knn, &maxinvM_Knn);
+    weights_Knn = new TH1D("Knn_weights", ";;", STEP_Knn, mininvM_Knn, maxinvM_Knn);
     for (int i = 0; i < STEP_Knn; i++) {
         double temp;
         fscanf(fp, "%lf\n", &temp);
@@ -1001,9 +1010,9 @@ Corrector_Knn::Corrector_Knn() :
     fclose(fp);
 
     // read Kstarnn weights
-    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/Kstarnn_weight.txt", "r");
-    fscanf(fp, "%d %lf %lf\n", &STEP_Kstarnn, &minQs_Kstarnn, &maxQs_Kstarnn);
-    weights_Kstarnn = new TH1D("Kstarnn_weights", ";;", STEP_Kstarnn, minQs_Kstarnn, maxQs_Kstarnn);
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/Knn_weight/Kstarnn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_Kstarnn, &mininvM_Kstarnn, &maxinvM_Kstarnn);
+    weights_Kstarnn = new TH1D("Kstarnn_weights", ";;", STEP_Kstarnn, mininvM_Kstarnn, maxinvM_Kstarnn);
     for (int i = 0; i < STEP_Kstarnn; i++) {
         double temp;
         fscanf(fp, "%lf\n", &temp);
@@ -1013,9 +1022,9 @@ Corrector_Knn::Corrector_Knn() :
     fclose(fp);
 
     // read K0nn weights
-    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/K0nn_weight.txt", "r");
-    fscanf(fp, "%d %lf %lf\n", &STEP_K0nn, &minQs_K0nn, &maxQs_K0nn);
-    weights_K0nn = new TH1D("K0nn_weights", ";;", STEP_K0nn, minQs_K0nn, maxQs_K0nn);
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/Knn_weight/K0nn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_K0nn, &mininvM_K0nn, &maxinvM_K0nn);
+    weights_K0nn = new TH1D("K0nn_weights", ";;", STEP_K0nn, mininvM_K0nn, maxinvM_K0nn);
     for (int i = 0; i < STEP_K0nn; i++) {
         double temp;
         fscanf(fp, "%lf\n", &temp);
@@ -1025,9 +1034,9 @@ Corrector_Knn::Corrector_Knn() :
     fclose(fp);
 
     // read K0starnn weights
-    fp = fopen("/home/jwpark/storage/BKG_gbasf2/Knn_weight/K0starnn_weight.txt", "r");
-    fscanf(fp, "%d %lf %lf\n", &STEP_K0starnn, &minQs_K0starnn, &maxQs_K0starnn);
-    weights_K0starnn = new TH1D("K0starnn_weights", ";;", STEP_K0starnn, minQs_K0starnn, maxQs_K0starnn);
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/Knn_weight/K0starnn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_K0starnn, &mininvM_K0starnn, &maxinvM_K0starnn);
+    weights_K0starnn = new TH1D("K0starnn_weights", ";;", STEP_K0starnn, mininvM_K0starnn, maxinvM_K0starnn);
     for (int i = 0; i < STEP_K0starnn; i++) {
         double temp;
         fscanf(fp, "%lf\n", &temp);
@@ -1037,6 +1046,12 @@ Corrector_Knn::Corrector_Knn() :
     fclose(fp);
 
     // calculate the expected number of event
+    // use proper isospin
+    new_BR_Knn = new_BR_K0pp * (tau_Bp / tau_B0);
+    new_BR_Kstarnn = new_BR_K0starpp * (tau_Bp / tau_B0);
+    new_BR_K0nn = new_BR_Kpp * (tau_B0 / tau_Bp);
+    new_BR_K0starnn = new_BR_Kstarpp * (tau_B0 / tau_Bp);
+
     Nscale_initial_Knn = (2.0 * N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0)) * new_BR_Knn);
     Nscale_initial_Kstarnn = (2.0 * N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0)) * new_BR_Kstarnn);
     Nscale_initial_K0nn = (2.0 * N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0)) * new_BR_K0nn);
