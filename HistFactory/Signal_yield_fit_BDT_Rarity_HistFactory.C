@@ -224,7 +224,7 @@ TH1D* Xsd_Hpf_weight;
 TH1D* Xsd_Lpf_weight;
 TH1D* Kstar_delta_weight;
 TH1D* K0star_delta_weight;
-void ReadWeightHist(TH1D* hist, double value);
+double ReadWeightHist(TH1D* hist, double value);
 
 enum DecayMode { // reco level
     B2Kc = 0,
@@ -1420,164 +1420,6 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, const c
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if(CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
-            if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-
-            Nevt = Nevt + total_weight;
-
-            hist->Fill(MVA_var, total_weight);
-        }
-        input_file->Close();
-
-        printf("%s has %lf events (with correction)\n", dirname, Nevt);
-
-    }
-    return Nevt;
-}
-
-double GetFEIPDFs(const char* dirname, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get FEI uncertainty PDF with appropriate correction
-    // Be careful! You should combine this function with `GetNominalPDFs` function!
-    /*
-    CorrectionType for new form factors
-    B2Knunu
-    B02K0nunu
-    B2Knn
-    B2Kstarnn
-    B02K0nn
-    B02K0starnn
-    otherwise
-    */
-    if (strcmp(type, "Bplus") == 0) {}
-    else if (strcmp(type, "Bzero") == 0) {}
-    else if (strcmp(type, "Continuum") == 0) {}
-    else {
-        printf("[ERROR] unexpected type name\n");
-        exit(1);
-    }
-
-    float MVA_var = 0;
-
-    double Upsilon_ID = -1;
-    double Bsig_ID = -1;
-    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
-    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
-    double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-    double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-
-    double invM = -1.0;
-
-    double invM_Knn = 0;
-    double invM_Kstarnn = 0;
-    double invM_K0nn = 0;
-    double invM_K0starnn = 0;
-    double N_Knn = 0;
-    double N_Kstarnn = 0;
-    double N_K0nn = 0;
-    double N_K0starnn = 0;
-
-    std::vector<string> names;
-    load_files(dirname, &names);
-
-    double Nevt = 0;
-    for (unsigned int i = 0; i < names.size(); i++) {
-
-        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
-        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
-
-        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
-        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
-        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
-
-        TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs = (TTree*)input_file->Get("Xs");
-        else tree_Xs = nullptr;
-
-        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
-
-        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
-        }
-        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
-        for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[2][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[3][i_fake]);
-        }
-        for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[0][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[1][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
-        }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
-        if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) {
-            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
-            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
-            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
-            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
-            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
-            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
-            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
-            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
-        }
-
-        printf("%lld entries...\n", tree_upsilon->GetEntries());
-        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
-            tree_upsilon->GetEntry(j);
-            tree_Bsig->GetEntry(j);
-            tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
-
-            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
-
-            double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
-
-            double Correction_FEI = 1.0;
-            if (IsItUp == true) { // + sigma value
-                if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc * (1 + FEI_cal_Bc_uncertainty);
-                else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0 * (1 + FEI_cal_B0_uncertainty);
-                else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            }
-            else { // - sigma value
-                if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc * (1 - FEI_cal_Bc_uncertainty);
-                else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0 * (1 - FEI_cal_B0_uncertainty);
-                else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            }
-            double Correction_KID = 1;
-            double Correction_PID = 1;
-            double Correction_pi0 = 1;
-            double Correction_fake = 1;
-            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
-                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
-                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
-                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
-            }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
-            for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[0][i_fake], temp_N_bin_fakeE[0][i_fake]); // K- from e
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[1][i_fake], temp_N_bin_fakeE[1][i_fake]); // K+ from e
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[2][i_fake], temp_N_bin_fakeE[2][i_fake]); // pi- from e
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[3][i_fake], temp_N_bin_fakeE[3][i_fake]); // pi+ from e
-            }
-            for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[0][i_fake], temp_N_bin_fakeMU[0][i_fake]); // K- from mu
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[1][i_fake], temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[2][i_fake], temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
-            }
-
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake;
-            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
-            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             Nevt = Nevt + total_weight;
@@ -4122,7 +3964,7 @@ double GetKstardeltaPDFs(const char* dirname, TH1D* hist, const char* type, cons
     return Nevt;
 }
 
-void ReadWeightHist(TH1D* hist, double value) {
+double ReadWeightHist(TH1D* hist, double value) {
     int Bin = hist->FindBin(value);
     if (Bin < 1) Bin = 1;
     else if (Bin > hist->GetNbinsX()) Bin = hist->GetNbinsX();
@@ -4634,35 +4476,6 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNominalPDFs(MC_dirname_K0nn, MIX_nominal, "Bzero", "K0nn", 1.0, "B02K0nn");
     GetNominalPDFs(MC_dirname_K0starnn, MIX_nominal, "Bzero", "K0starnn", 1.0, "B02K0starnn");
 
-    // get FEI uncertainty pdfs
-    GetFEIPDFs(MC_dirname_Knunu, Signal_FEI_charged_p, "Bplus", "SIGNAL", true, Scale_Kplus_test, "B2Knunu");
-    GetFEIPDFs(MC_dirname_Kstarnunu, Signal_FEI_charged_p, "Bplus", "SIGNAL", true, Scale_Kplusstar_test, "otherwise");
-    GetFEIPDFs(MC_dirname_Xsununu, Signal_FEI_charged_p, "Bplus", "SIGNAL", true, Scale_Xsu_nonresonant_test, "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_FEI_charged_p, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_FEI_charged_p, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_FEI_charged_p, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test, "otherwise");
-
-    GetFEIPDFs(MC_dirname_Knunu, Signal_FEI_charged_m, "Bplus", "SIGNAL", false, Scale_Kplus_test, "B2Knunu");
-    GetFEIPDFs(MC_dirname_Kstarnunu, Signal_FEI_charged_m, "Bplus", "SIGNAL", false, Scale_Kplusstar_test, "otherwise");
-    GetFEIPDFs(MC_dirname_Xsununu, Signal_FEI_charged_m, "Bplus", "SIGNAL", false, Scale_Xsu_nonresonant_test, "otherwise");
-    GetNominalPDFs(MC_dirname_K0nunu, Signal_FEI_charged_m, "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
-    GetNominalPDFs(MC_dirname_K0starnunu, Signal_FEI_charged_m, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsdnunu, Signal_FEI_charged_m, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test, "otherwise");
-
-    GetNominalPDFs(MC_dirname_Knunu, Signal_FEI_neutral_p, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_FEI_neutral_p, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu, Signal_FEI_neutral_p, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test, "otherwise");
-    GetFEIPDFs(MC_dirname_K0nunu, Signal_FEI_neutral_p, "Bzero", "SIGNAL", true, Scale_K0_test, "B02K0nunu");
-    GetFEIPDFs(MC_dirname_K0starnunu, Signal_FEI_neutral_p, "Bzero", "SIGNAL", true, Scale_K0star_test, "otherwise");
-    GetFEIPDFs(MC_dirname_Xsdnunu, Signal_FEI_neutral_p, "Bzero", "SIGNAL", true, Scale_Xsd_nonresonant_test, "otherwise");
-
-    GetNominalPDFs(MC_dirname_Knunu, Signal_FEI_neutral_m, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
-    GetNominalPDFs(MC_dirname_Kstarnunu, Signal_FEI_neutral_m, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
-    GetNominalPDFs(MC_dirname_Xsununu, Signal_FEI_neutral_m, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test, "otherwise");
-    GetFEIPDFs(MC_dirname_K0nunu, Signal_FEI_neutral_m, "Bzero", "SIGNAL", false, Scale_K0_test, "B02K0nunu");
-    GetFEIPDFs(MC_dirname_K0starnunu, Signal_FEI_neutral_m, "Bzero", "SIGNAL", false, Scale_K0star_test, "otherwise");
-    GetFEIPDFs(MC_dirname_Xsdnunu, Signal_FEI_neutral_m, "Bzero", "SIGNAL", false, Scale_Xsd_nonresonant_test, "otherwise");
-
     // get track uncertainty pdfs
     GetTrackPDFs(MC_dirname_Knunu, Signal_track_p, "Bplus", "SIGNAL", true, Scale_Kplus_test, "B2Knunu");
     GetTrackPDFs(MC_dirname_Kstarnunu, Signal_track_p, "Bplus", "SIGNAL", true, Scale_Kplusstar_test, "otherwise");
@@ -5138,12 +4951,6 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     DDBAR_nominal->Write();
     SSBAR_nominal->Write();
     CHARM_nominal->Write();
-
-    // FEI uncertainty, BKGs will be cared by overall syst
-    Signal_FEI_charged_p->Write();
-    Signal_FEI_charged_m->Write();
-    Signal_FEI_neutral_p->Write();
-    Signal_FEI_neutral_m->Write();
 
     // track uncertainty
     Signal_track_p->Write();
