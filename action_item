@@ -8,6 +8,9 @@ rasf
 - make abstract class for each module (ex. Cut, BCS, Draw, etc.). This can automatize module handling
 - do not use data format.
 
+Signal_yield
+- unify functions
+
 python
 - make flag (MC/data) and (CHG/MIX/UUBAR/...)
 - only one tree

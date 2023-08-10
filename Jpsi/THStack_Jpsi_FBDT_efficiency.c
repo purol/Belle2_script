@@ -291,7 +291,7 @@ Corrector_Knn::Corrector_Knn() :
     Nscale_initial_K0starnn = (2.0 * N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0)) * new_BR_K0starnn);
 }
 
-double Corrector_Knn::GetCorrectionFactor(double q2_Knn, double q2_Kstarnn, double q2_K0nn, double q2_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
+double Corrector_Knn::GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
 
     double Correction_Knn = 1;
     double Correction_Kstarnn = 1;
@@ -300,34 +300,34 @@ double Corrector_Knn::GetCorrectionFactor(double q2_Knn, double q2_Kstarnn, doub
 
     if (N_Knn < N_EPSILON) Correction_Knn = 1;
     else {
-        int Bin = weights_Knn->FindBin(q2_Knn);
+        int Bin = weights_Knn->FindBin(invM_Knn);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_Knn) Bin = STEP_Knn;
-        Correction_Knn = std::pow((Nscale_initial_Knn / Nraw_initial_Knn) * weights_Knn->GetBinContent(Bin), N_Knn); // BR correction * q2 correction
+        Correction_Knn = std::pow((Nscale_initial_Knn / Nraw_initial_Knn) * weights_Knn->GetBinContent(Bin), N_Knn); // BR correction * invM correction
     }
 
     if (N_Kstarnn < N_EPSILON) Correction_Kstarnn = 1;
     else {
-        int Bin = weights_Kstarnn->FindBin(q2_Kstarnn);
+        int Bin = weights_Kstarnn->FindBin(invM_Kstarnn);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_Kstarnn) Bin = STEP_Kstarnn;
-        Correction_Kstarnn = std::pow((Nscale_initial_Kstarnn / Nraw_initial_Kstarnn) * weights_Kstarnn->GetBinContent(Bin), N_Kstarnn); // BR correction * q2 correction
+        Correction_Kstarnn = std::pow((Nscale_initial_Kstarnn / Nraw_initial_Kstarnn) * weights_Kstarnn->GetBinContent(Bin), N_Kstarnn); // BR correction * invM correction
     }
 
     if (N_K0nn < N_EPSILON) Correction_K0nn = 1;
     else {
-        int Bin = weights_K0nn->FindBin(q2_K0nn);
+        int Bin = weights_K0nn->FindBin(invM_K0nn);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_K0nn) Bin = STEP_K0nn;
-        Correction_K0nn = std::pow((Nscale_initial_K0nn / Nraw_initial_K0nn) * weights_K0nn->GetBinContent(Bin), N_K0nn); // BR correction * q2 correction
+        Correction_K0nn = std::pow((Nscale_initial_K0nn / Nraw_initial_K0nn) * weights_K0nn->GetBinContent(Bin), N_K0nn); // BR correction * invM correction
     }
 
     if (N_K0starnn < N_EPSILON) Correction_K0starnn = 1;
     else {
-        int Bin = weights_K0starnn->FindBin(q2_K0starnn);
+        int Bin = weights_K0starnn->FindBin(invM_K0starnn);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_K0starnn) Bin = STEP_K0starnn;
-        Correction_K0starnn = std::pow((Nscale_initial_K0starnn / Nraw_initial_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * q2 correction
+        Correction_K0starnn = std::pow((Nscale_initial_K0starnn / Nraw_initial_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * invM correction
     }
 
     return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
