@@ -254,7 +254,7 @@ int WorkSpace() {
 	RooStats::HistFactory::Sample sig_temp("Signal_nominal", "Signal_nominal", fname);
 	sig_temp.AddHistoSys("track_eff_uncer", "Signal_track_m", fname, "", "Signal_track_p", fname, "");
 	sig_temp.AddHistoSys("KS0_reco_uncer", "Signal_KS0_m", fname, "", "Signal_KS0_p", fname, "");
-	sig_temp.AddHistoSys("Eecl_uncer", "Signal_Eecl_m", fname, "", "Signal_Eecl_p", fname, "");
+	sig_temp.AddHistoSys("multiplicity_uncer", "Signal_multiplicity_m", fname, "", "Signal_multiplicity_p", fname, "");
 	for (int i = 0; i < NEntryFEI; i++) sig_temp.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryKID; i++) sig_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("Signal_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryPID; i++) sig_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("Signal_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -322,7 +322,7 @@ int WorkSpace() {
 	RooStats::HistFactory::Sample CHG_temp("CHG_nominal", "CHG_nominal", fname);
 	CHG_temp.AddHistoSys("track_eff_uncer", "CHG_track_m", fname, "", "CHG_track_p", fname, "");
 	CHG_temp.AddHistoSys("KS0_reco_uncer", "CHG_KS0_m", fname, "", "CHG_KS0_p", fname, "");
-	CHG_temp.AddHistoSys("Eecl_uncer", "CHG_Eecl_m", fname, "", "CHG_Eecl_p", fname, "");
+	CHG_temp.AddHistoSys("multiplicity_uncer", "CHG_multiplicity_m", fname, "", "CHG_multiplicity_p", fname, "");
 	CHG_temp.AddHistoSys("Knn_BR_uncer", "CHG_Knn_m", fname, "", "CHG_Knn_p", fname, "");
 	CHG_temp.AddHistoSys("Kstarnn_BR_uncer", "CHG_Kstarnn_m", fname, "", "CHG_Kstarnn_p", fname, "");
 	for (int i = 0; i < NEntryFEI; i++) CHG_temp.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("CHG_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -344,7 +344,7 @@ int WorkSpace() {
 	RooStats::HistFactory::Sample MIX_temp("MIX_nominal", "MIX_nominal", fname);
 	MIX_temp.AddHistoSys("track_eff_uncer", "MIX_track_m", fname, "", "MIX_track_p", fname, "");
 	MIX_temp.AddHistoSys("KS0_reco_uncer", "MIX_KS0_m", fname, "", "MIX_KS0_p", fname, "");
-	MIX_temp.AddHistoSys("Eecl_uncer", "MIX_Eecl_m", fname, "", "MIX_Eecl_p", fname, "");
+	MIX_temp.AddHistoSys("multiplicity_uncer", "MIX_multiplicity_m", fname, "", "MIX_multiplicity_p", fname, "");
 	MIX_temp.AddHistoSys("K0nn_BR_uncer", "MIX_K0nn_m", fname, "", "MIX_K0nn_p", fname, "");
 	MIX_temp.AddHistoSys("K0starnn_BR_uncer", "MIX_K0starnn_m", fname, "", "MIX_K0starnn_p", fname, "");
 	for (int i = 0; i < NEntryFEI; i++) MIX_temp.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("MIX_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -366,7 +366,7 @@ int WorkSpace() {
 	RooStats::HistFactory::Sample UUBAR_temp("UUBAR_nominal", "UUBAR_nominal", fname);
 	UUBAR_temp.AddHistoSys("track_eff_uncer", "UUBAR_track_m", fname, "", "UUBAR_track_p", fname, "");
 	UUBAR_temp.AddHistoSys("KS0_reco_uncer", "UUBAR_KS0_m", fname, "", "UUBAR_KS0_p", fname, "");
-	UUBAR_temp.AddHistoSys("Eecl_uncer", "UUBAR_Eecl_m", fname, "", "UUBAR_Eecl_p", fname, "");
+	UUBAR_temp.AddHistoSys("multiplicity_uncer", "UUBAR_multiplicity_m", fname, "", "UUBAR_multiplicity_p", fname, "");
 	for (int i = 0; i < NEntryKID; i++) UUBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryPID; i++) UUBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntrypi0; i++) UUBAR_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -385,7 +385,7 @@ int WorkSpace() {
 	RooStats::HistFactory::Sample DDBAR_temp("DDBAR_nominal", "DDBAR_nominal", fname);
 	DDBAR_temp.AddHistoSys("track_eff_uncer", "DDBAR_track_m", fname, "", "DDBAR_track_p", fname, "");
 	DDBAR_temp.AddHistoSys("KS0_reco_uncer", "DDBAR_KS0_m", fname, "", "DDBAR_KS0_p", fname, "");
-	DDBAR_temp.AddHistoSys("Eecl_uncer", "DDBAR_Eecl_m", fname, "", "DDBAR_Eecl_p", fname, "");
+	DDBAR_temp.AddHistoSys("multiplicity_uncer", "DDBAR_multiplicity_m", fname, "", "DDBAR_multiplicity_p", fname, "");
 	for (int i = 0; i < NEntryKID; i++) DDBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryPID; i++) DDBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntrypi0; i++) DDBAR_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -404,7 +404,7 @@ int WorkSpace() {
 	RooStats::HistFactory::Sample SSBAR_temp("SSBAR_nominal", "SSBAR_nominal", fname);
 	SSBAR_temp.AddHistoSys("track_eff_uncer", "SSBAR_track_m", fname, "", "SSBAR_track_p", fname, "");
 	SSBAR_temp.AddHistoSys("KS0_reco_uncer", "SSBAR_KS0_m", fname, "", "SSBAR_KS0_p", fname, "");
-	SSBAR_temp.AddHistoSys("Eecl_uncer", "SSBAR_Eecl_m", fname, "", "SSBAR_Eecl_p", fname, "");
+	SSBAR_temp.AddHistoSys("multiplicity_uncer", "SSBAR_multiplicity_m", fname, "", "SSBAR_multiplicity_p", fname, "");
 	for (int i = 0; i < NEntryKID; i++) SSBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryPID; i++) SSBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntrypi0; i++) SSBAR_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -423,7 +423,7 @@ int WorkSpace() {
 	RooStats::HistFactory::Sample CHARM_temp("CHARM_nominal", "CHARM_nominal", fname);
 	CHARM_temp.AddHistoSys("track_eff_uncer", "CHARM_track_m", fname, "", "CHARM_track_p", fname, "");
 	CHARM_temp.AddHistoSys("KS0_reco_uncer", "CHARM_KS0_m", fname, "", "CHARM_KS0_p", fname, "");
-	CHARM_temp.AddHistoSys("Eecl_uncer", "CHARM_Eecl_m", fname, "", "CHARM_Eecl_p", fname, "");
+	CHARM_temp.AddHistoSys("multiplicity_uncer", "CHARM_multiplicity_m", fname, "", "CHARM_multiplicity_p", fname, "");
 	for (int i = 0; i < NEntryKID; i++) CHARM_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("CHARM_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryPID; i++) CHARM_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("CHARM_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntrypi0; i++) CHARM_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("CHARM_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
