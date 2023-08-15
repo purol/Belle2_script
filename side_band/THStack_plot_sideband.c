@@ -375,6 +375,52 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
     return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
 }
 
+class Corrector_Multiplicity {
+private:
+
+    int NgammaMAX;
+    TH1D* weights_Ngamma;
+    const double CUTOFF;
+
+public:
+    Corrector_Multiplicity();
+    double GetCorrectionFactor(double Ngamma);
+};
+
+Corrector_Multiplicity corrector_Multiplicity;
+
+Corrector_Multiplicity::Corrector_Multiplicity() :
+    CUTOFF(50.0)
+{
+    FILE* fp;
+
+    // read Knn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/multiplicity/multiplicity_weight.txt", "r");
+    fscanf(fp, "%d\n", &NgammaMAX);
+    weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    for (int i = 0; i < NgammaMAX + 1; i++) {
+        double temp1;
+        double temp2;
+        double temp3;
+        fscanf(fp, "%lf %lf %lf\n", &temp1, &temp2, &temp3);
+        if (temp3 < CUTOFF) weights_Ngamma->SetBinContent(i + 1, temp3);
+        else weights_Ngamma->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+}
+
+double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma) {
+    int Bin = weights_Ngamma->FindBin(Ngamma);
+    if (Bin < 1) {
+        printf("[ERROR] Ngamma is smaller than 0!\n");
+        exit(1);
+    }
+    else if (Bin > NgammaMAX + 1) return 1.0;
+
+    return weights_Ngamma->GetBinContent(Bin);
+}
+
 /* ====================================== */
 
 void ReadPIDFile() {

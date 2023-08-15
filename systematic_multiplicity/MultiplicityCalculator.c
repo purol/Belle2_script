@@ -1025,11 +1025,12 @@ void MultiplicityCalculator(){
 
     // print weight file
     FILE* fp = fopen("multiplicity_weight.txt","w");
-    fprintf(fp, "%lf", NgammaMAX + 1);
+    fprintf(fp, "%d", NgammaMAX);
     for (int i = 0; i < NgammaMAX + 1; i++) {
         double MC_num_bin = Ngamma_v200_MC->GetBinContent(i + 1);
         double data_num_bin = Ngamma_v200_data->GetBinContent(i + 1);
-        fprintf(fp, "%lf %lf %lf\n", data_num_bin, MC_num_bin, data_num_bin / MC_num_bin);
+        if (MC_num_bin > MyEPSILON) fprintf(fp, "%lf %lf %lf\n", data_num_bin, MC_num_bin, data_num_bin / MC_num_bin);
+        else fprintf(fp, "%lf %lf %lf\n", data_num_bin, MC_num_bin, 1.0);
     }
     fclose(fp);
 
