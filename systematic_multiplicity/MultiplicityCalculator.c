@@ -136,6 +136,280 @@ const double pi0_sys_uncer2[N_pi0_syst] = {
     0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0
 };
 
+class Corrector_Knn {
+private:
+
+    // K+nn
+    int STEP_Knn;
+    double mininvM_Knn;
+    double maxinvM_Knn;
+    TH1D* weights_Knn;
+    const double DECAY_DEC_BR_Knn;
+    const double new_BR_K0pp;
+    double new_BR_Knn;
+    const double Nraw_initial_Knn;
+    double Nscale_initial_Knn;
+
+    // K*+nn
+    int STEP_Kstarnn;
+    double mininvM_Kstarnn;
+    double maxinvM_Kstarnn;
+    TH1D* weights_Kstarnn;
+    const double DECAY_DEC_BR_Kstarnn;
+    const double new_BR_K0starpp;
+    double new_BR_Kstarnn;
+    const double Nraw_initial_Kstarnn;
+    double Nscale_initial_Kstarnn;
+
+    // K0nn
+    int STEP_K0nn;
+    double mininvM_K0nn;
+    double maxinvM_K0nn;
+    TH1D* weights_K0nn;
+    const double DECAY_DEC_BR_K0nn;
+    const double new_BR_Kpp;
+    double new_BR_K0nn;
+    const double Nraw_initial_K0nn;
+    double Nscale_initial_K0nn;
+
+    // K0*nn
+    int STEP_K0starnn;
+    double mininvM_K0starnn;
+    double maxinvM_K0starnn;
+    TH1D* weights_K0starnn;
+    const double DECAY_DEC_BR_K0starnn;
+    const double new_BR_Kstarpp;
+    double new_BR_K0starnn;
+    const double Nraw_initial_K0starnn;
+    double Nscale_initial_K0starnn;
+
+    const double N_EPSILON;
+    const double CUTOFF;
+
+    const double tau_Bp;
+    const double tau_B0;
+
+public:
+    Corrector_Knn();
+    double GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
+    double GetCorrectionFactorAtGeneric(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
+};
+
+Corrector_Knn corrector_Knn;
+
+Corrector_Knn::Corrector_Knn() :
+    DECAY_DEC_BR_Knn(0.0000057),
+    new_BR_K0pp(0.00000266),
+    Nraw_initial_Knn(1000000.0),
+    DECAY_DEC_BR_Kstarnn(0.0000057),
+    new_BR_K0starpp(0.00000124),
+    Nraw_initial_Kstarnn(1000000.0),
+    DECAY_DEC_BR_K0nn(0.000002),
+    new_BR_Kpp(0.0000059),
+    Nraw_initial_K0nn(1000000.0),
+    DECAY_DEC_BR_K0starnn(0.0000056),
+    new_BR_Kstarpp(0.0000036),
+    Nraw_initial_K0starnn(1000000.0),
+    N_EPSILON(0.01),
+    CUTOFF(50.0),
+    tau_Bp(1.6384), // ps
+    tau_B0(1.5195) // ps
+{
+    FILE* fp;
+
+    // read Knn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/Knn_weight/Knn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_Knn, &mininvM_Knn, &maxinvM_Knn);
+    weights_Knn = new TH1D("Knn_weights", ";;", STEP_Knn, mininvM_Knn, maxinvM_Knn);
+    for (int i = 0; i < STEP_Knn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        if (temp < CUTOFF) weights_Knn->SetBinContent(i + 1, temp);
+        else weights_Knn->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+    // read Kstarnn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/Knn_weight/Kstarnn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_Kstarnn, &mininvM_Kstarnn, &maxinvM_Kstarnn);
+    weights_Kstarnn = new TH1D("Kstarnn_weights", ";;", STEP_Kstarnn, mininvM_Kstarnn, maxinvM_Kstarnn);
+    for (int i = 0; i < STEP_Kstarnn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        if (temp < CUTOFF) weights_Kstarnn->SetBinContent(i + 1, temp);
+        else weights_Kstarnn->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+    // read K0nn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/Knn_weight/K0nn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_K0nn, &mininvM_K0nn, &maxinvM_K0nn);
+    weights_K0nn = new TH1D("K0nn_weights", ";;", STEP_K0nn, mininvM_K0nn, maxinvM_K0nn);
+    for (int i = 0; i < STEP_K0nn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        if (temp < CUTOFF) weights_K0nn->SetBinContent(i + 1, temp);
+        else weights_K0nn->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+    // read K0starnn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/Knn_weight/K0starnn_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_K0starnn, &mininvM_K0starnn, &maxinvM_K0starnn);
+    weights_K0starnn = new TH1D("K0starnn_weights", ";;", STEP_K0starnn, mininvM_K0starnn, maxinvM_K0starnn);
+    for (int i = 0; i < STEP_K0starnn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        if (temp < CUTOFF) weights_K0starnn->SetBinContent(i + 1, temp);
+        else weights_K0starnn->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+    // calculate the expected number of event
+    // use proper isospin
+    new_BR_Knn = new_BR_K0pp * (tau_Bp / tau_B0);
+    new_BR_Kstarnn = new_BR_K0starpp * (tau_Bp / tau_B0);
+    new_BR_K0nn = new_BR_Kpp * (tau_B0 / tau_Bp);
+    new_BR_K0starnn = new_BR_Kstarpp * (tau_B0 / tau_Bp);
+
+    Nscale_initial_Knn = (2.0 * N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0)) * new_BR_Knn);
+    Nscale_initial_Kstarnn = (2.0 * N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0)) * new_BR_Kstarnn);
+    Nscale_initial_K0nn = (2.0 * N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0)) * new_BR_K0nn);
+    Nscale_initial_K0starnn = (2.0 * N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0)) * new_BR_K0starnn);
+}
+
+double Corrector_Knn::GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
+
+    double Correction_Knn = 1;
+    double Correction_Kstarnn = 1;
+    double Correction_K0nn = 1;
+    double Correction_K0starnn = 1;
+
+    if (N_Knn < N_EPSILON) Correction_Knn = 1;
+    else {
+        int Bin = weights_Knn->FindBin(invM_Knn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Knn) Bin = STEP_Knn;
+        Correction_Knn = std::pow((Nscale_initial_Knn / Nraw_initial_Knn) * weights_Knn->GetBinContent(Bin), N_Knn); // BR correction * invM correction
+    }
+
+    if (N_Kstarnn < N_EPSILON) Correction_Kstarnn = 1;
+    else {
+        int Bin = weights_Kstarnn->FindBin(invM_Kstarnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Kstarnn) Bin = STEP_Kstarnn;
+        Correction_Kstarnn = std::pow((Nscale_initial_Kstarnn / Nraw_initial_Kstarnn) * weights_Kstarnn->GetBinContent(Bin), N_Kstarnn); // BR correction * invM correction
+    }
+
+    if (N_K0nn < N_EPSILON) Correction_K0nn = 1;
+    else {
+        int Bin = weights_K0nn->FindBin(invM_K0nn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_K0nn) Bin = STEP_K0nn;
+        Correction_K0nn = std::pow((Nscale_initial_K0nn / Nraw_initial_K0nn) * weights_K0nn->GetBinContent(Bin), N_K0nn); // BR correction * invM correction
+    }
+
+    if (N_K0starnn < N_EPSILON) Correction_K0starnn = 1;
+    else {
+        int Bin = weights_K0starnn->FindBin(invM_K0starnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_K0starnn) Bin = STEP_K0starnn;
+        Correction_K0starnn = std::pow((Nscale_initial_K0starnn / Nraw_initial_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * invM correction
+    }
+
+    return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
+}
+
+double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
+
+    double Correction_Knn = 1;
+    double Correction_Kstarnn = 1;
+    double Correction_K0nn = 1;
+    double Correction_K0starnn = 1;
+
+    if (N_Knn < N_EPSILON) Correction_Knn = 1;
+    else {
+        int Bin = weights_Knn->FindBin(invM_Knn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Knn) Bin = STEP_Knn;
+        Correction_Knn = std::pow((new_BR_Knn / DECAY_DEC_BR_Knn) * weights_Knn->GetBinContent(Bin), N_Knn); // BR correction * invM correction
+    }
+
+    if (N_Kstarnn < N_EPSILON) Correction_Kstarnn = 1;
+    else {
+        int Bin = weights_Kstarnn->FindBin(invM_Kstarnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Kstarnn) Bin = STEP_Kstarnn;
+        Correction_Kstarnn = std::pow((new_BR_Kstarnn / DECAY_DEC_BR_Kstarnn) * weights_Kstarnn->GetBinContent(Bin), N_Kstarnn); // BR correction * invM correction
+    }
+
+    if (N_K0nn < N_EPSILON) Correction_K0nn = 1;
+    else {
+        int Bin = weights_K0nn->FindBin(invM_K0nn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_K0nn) Bin = STEP_K0nn;
+        Correction_K0nn = std::pow((new_BR_K0nn / DECAY_DEC_BR_K0nn) * weights_K0nn->GetBinContent(Bin), N_K0nn); // BR correction * invM correction
+    }
+
+    if (N_K0starnn < N_EPSILON) Correction_K0starnn = 1;
+    else {
+        int Bin = weights_K0starnn->FindBin(invM_K0starnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_K0starnn) Bin = STEP_K0starnn;
+        Correction_K0starnn = std::pow((new_BR_K0starnn / DECAY_DEC_BR_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * invM correction
+    }
+
+    return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
+}
+
+class Corrector_Multiplicity {
+private:
+
+    int NgammaMAX;
+    TH1D* weights_Ngamma;
+    const double CUTOFF;
+
+public:
+    Corrector_Multiplicity();
+    double GetCorrectionFactor(double Ngamma);
+};
+
+Corrector_Multiplicity *corrector_Multiplicity;
+
+Corrector_Multiplicity::Corrector_Multiplicity() :
+    CUTOFF(50.0)
+{
+    FILE* fp;
+
+    // read Knn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/multiplicity/multiplicity_weight.txt", "r");
+    fscanf(fp, "%d\n", &NgammaMAX);
+    weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    for (int i = 0; i < NgammaMAX + 1; i++) {
+        double temp1;
+        double temp2;
+        double temp3;
+        fscanf(fp, "%lf %lf %lf\n", &temp1, &temp2, &temp3);
+        if (temp3 < CUTOFF) weights_Ngamma->SetBinContent(i + 1, temp3);
+        else weights_Ngamma->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+}
+
+double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma) {
+    int Bin = weights_Ngamma->FindBin(Ngamma);
+    if (Bin < 1) {
+        printf("[ERROR] Ngamma is smaller than 0!\n");
+        exit(1);
+    }
+    else if (Bin > NgammaMAX + 1) return 1.0;
+
+    return weights_Ngamma->GetBinContent(Bin);
+}
+
+/* ====================================== */
+
 void ReadPIDFile() {
     const char* KID_true_file = "/home/jwpark/storage/BKG_gbasf2/systematic/MC15ri_PID/KaonEff.csv";
     const char* KID_mis_file = "/home/jwpark/storage/BKG_gbasf2/systematic/MC15ri_PID/Kaonmis.csv";
@@ -634,7 +908,24 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleName) {
+void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleName, int option, bool IsMultiplicityCorrectionApplied) {
+    /*
+    SampleName for Knn
+    CHG
+    MIX
+    UUBAR
+    DDBAR
+    SSBAR
+    Knn
+    Kstarnn
+    K0nn
+    K0starnn
+    */
+    /*
+    option 0: select all Btag
+    option 1: select Btag+
+    option 2: select Btag0
+    */
     /*
     0: charged
     1: mixed
@@ -663,6 +954,15 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
     double FEI_calibration_factor = -1;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -700,12 +1000,30 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        if ((SampleName == "Knn") || (SampleName == "Kstarnn") || (SampleName == "K0nn") || (SampleName == "K0starnn")) {
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        }
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+
+            if (option == 1 && Upsilon_ID != 0) continue;
+            else if (option == 2 && Upsilon_ID != 1) continue;
+
+            if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             // Fill numberings
             double weight_ri = 0.0;
@@ -732,6 +1050,26 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
             else if (SampleName == "CHARM") {
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+            }
+            else if (SampleName == "Knn") {
+                numberings->push_back(0);
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            }
+            else if (SampleName == "Kstarnn") {
+                numberings->push_back(0);
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            }
+            else if (SampleName == "K0nn") {
+                numberings->push_back(1);
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            }
+            else if (SampleName == "K0starnn") {
+                numberings->push_back(1);
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
@@ -769,7 +1107,14 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
-            double weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake;
+            // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
+            double Ngamma_v200 = var;
+            double Correction_multiplicity = 1.0;
+            if (IsMultiplicityCorrectionApplied) Correction_multiplicity = corrector_Multiplicity->GetCorrectionFactor(Ngamma_v200);
+
+            double weight = 1.0;
+            if (IsMultiplicityCorrectionApplied) weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity;
+            else weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake;
 
             hist_Ngamma->Fill(var, weight);
 
@@ -781,7 +1126,12 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
 
 }
 
-void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma) {
+void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, int option) {
+    /*
+    option 0: select all Btag
+    option 1: select Btag+
+    option 2: select Btag0
+    */
     /*
     0: charged
     1: mixed
@@ -827,6 +1177,9 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma) {
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
+            if (option == 1 && Upsilon_ID != 0) continue;
+            else if (option == 2 && Upsilon_ID != 1) continue;
+
             hist_Ngamma->Fill(var);
 
         }
@@ -841,40 +1194,50 @@ void MultiplicityCalculator(){
     ReadPIDFile();
     ReadFakePIDFile();
     
-    const char* Sideband_MC_CHG_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_side/CHG_analysis/train_v000/final_output";
-    const char* Sideband_MC_MIX_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_side/MIX_analysis/train_v000/final_output";
-    const char* Sideband_MC_UUBAR_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_side/UUBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_DDBAR_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_side/DDBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_SSBAR_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_side/SSBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_CHARM_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_side/CHARM_analysis/train_v000/final_output";
+    const char* ChargeSideband_MC_CHG_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/CHG_analysis/train_v000/final_output";
+    const char* ChargeSideband_MC_MIX_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/MIX_analysis/train_v000/final_output";
+    const char* ChargeSideband_MC_UUBAR_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/UUBAR_analysis/train_v000/final_output";
+    const char* ChargeSideband_MC_DDBAR_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/DDBAR_analysis/train_v000/final_output";
+    const char* ChargeSideband_MC_SSBAR_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/SSBAR_analysis/train_v000/final_output";
+    const char* ChargeSideband_MC_CHARM_train_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/CHARM_analysis/train_v000/final_output";
 
-    const char* Sideband_MC_CHG_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_side/CHG_analysis/test_v000/final_output";
-    const char* Sideband_MC_MIX_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_side/MIX_analysis/test_v000/final_output";
-    const char* Sideband_MC_UUBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_side/UUBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_DDBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_side/DDBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_SSBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_side/SSBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_CHARM_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_side/CHARM_analysis/test_v000/final_output";
+    const char* ChargeSideband_MC_CHG_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/CHG_analysis/test_v000/final_output";
+    const char* ChargeSideband_MC_MIX_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/MIX_analysis/test_v000/final_output";
+    const char* ChargeSideband_MC_UUBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/UUBAR_analysis/test_v000/final_output";
+    const char* ChargeSideband_MC_DDBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/DDBAR_analysis/test_v000/final_output";
+    const char* ChargeSideband_MC_SSBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/SSBAR_analysis/test_v000/final_output";
+    const char* ChargeSideband_MC_CHARM_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/CHARM_analysis/test_v000/final_output";
 
-    const char* Sideband_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_data_side/SIGNAL_analysis/validation_v000/final_output";
+    const char* ChargeSideband_MC_dirname_Knn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_cside/SIGNAL_analysis/validation_v000/final_output/B2Knn";
+    const char* ChargeSideband_MC_dirname_Kstarnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_cside/SIGNAL_analysis/validation_v000/final_output/B2Kstarnn";
+    const char* ChargeSideband_MC_dirname_K0nn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_cside/SIGNAL_analysis/validation_v000/final_output/B02K0nn";
+    const char* ChargeSideband_MC_dirname_K0starnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_cside/SIGNAL_analysis/validation_v000/final_output/B02K0starnn";
+
+    const char* ChargeSideband_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_data_cside/SIGNAL_analysis/validation_v000/final_output";
 
     // Lets fill!
     TH1D* Ngamma_v200_MC = new TH1D("Ngamma_v200_MC", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
     TH1D* Ngamma_v200_data = new TH1D("Ngamma_v200_data", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
 
-    LetsFillNgamma(Sideband_MC_CHG_train_dirname, Ngamma_v200_MC, "CHG");
-    LetsFillNgamma(Sideband_MC_MIX_train_dirname, Ngamma_v200_MC, "MIX");
-    LetsFillNgamma(Sideband_MC_UUBAR_train_dirname, Ngamma_v200_MC, "UUBAR");
-    LetsFillNgamma(Sideband_MC_DDBAR_train_dirname, Ngamma_v200_MC, "DDBAR");
-    LetsFillNgamma(Sideband_MC_SSBAR_train_dirname, Ngamma_v200_MC, "SSBAR");
-    LetsFillNgamma(Sideband_MC_CHARM_train_dirname, Ngamma_v200_MC, "CHARM");
-    LetsFillNgamma(Sideband_MC_CHG_test_dirname, Ngamma_v200_MC, "CHG");
-    LetsFillNgamma(Sideband_MC_MIX_test_dirname, Ngamma_v200_MC, "MIX");
-    LetsFillNgamma(Sideband_MC_UUBAR_test_dirname, Ngamma_v200_MC, "UUBAR");
-    LetsFillNgamma(Sideband_MC_DDBAR_test_dirname, Ngamma_v200_MC, "DDBAR");
-    LetsFillNgamma(Sideband_MC_SSBAR_test_dirname, Ngamma_v200_MC, "SSBAR");
-    LetsFillNgamma(Sideband_MC_CHARM_test_dirname, Ngamma_v200_MC, "CHARM");
+    LetsFillNgamma(ChargeSideband_MC_CHG_train_dirname, Ngamma_v200_MC, "CHG", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_MIX_train_dirname, Ngamma_v200_MC, "MIX", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_UUBAR_train_dirname, Ngamma_v200_MC, "UUBAR", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_DDBAR_train_dirname, Ngamma_v200_MC, "DDBAR", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_SSBAR_train_dirname, Ngamma_v200_MC, "SSBAR", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_CHARM_train_dirname, Ngamma_v200_MC, "CHARM", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_CHG_test_dirname, Ngamma_v200_MC, "CHG", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_MIX_test_dirname, Ngamma_v200_MC, "MIX", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_UUBAR_test_dirname, Ngamma_v200_MC, "UUBAR", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_DDBAR_test_dirname, Ngamma_v200_MC, "DDBAR", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_SSBAR_test_dirname, Ngamma_v200_MC, "SSBAR", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_CHARM_test_dirname, Ngamma_v200_MC, "CHARM", 1, false);
 
-    LetsFillNgamma(Sideband_data_dirname, Ngamma_v200_data);
+    LetsFillNgamma(ChargeSideband_MC_dirname_Knn, Ngamma_v200_MC, "Knn", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_dirname_Kstarnn, Ngamma_v200_MC, "Kstarnn", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_dirname_K0nn, Ngamma_v200_MC, "K0nn", 1, false);
+    LetsFillNgamma(ChargeSideband_MC_dirname_K0starnn, Ngamma_v200_MC, "K0starnn", 1, false);
+
+    LetsFillNgamma(ChargeSideband_data_dirname, Ngamma_v200_data, 1);
 
     // print weight file
     FILE* fp = fopen("multiplicity_weight.txt","w");
@@ -895,7 +1258,53 @@ void MultiplicityCalculator(){
         data_num = data_num + Ngamma_v200_data->GetBinContent(i + 1);
     }
 
-    printf("data num: %lf\n", data_num);
-    printf("MC num with calibration: %lf\n", MC_num);
+    printf("option1 data num: %lf\n", data_num);
+    printf("option1 MC num with calibration: %lf\n", MC_num);
 
+
+
+
+    corrector_Multiplicity = new Corrector_Multiplicity();
+
+    LetsFillNgamma(ChargeSideband_MC_CHG_train_dirname, Ngamma_v200_MC, "CHG", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_MIX_train_dirname, Ngamma_v200_MC, "MIX", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_UUBAR_train_dirname, Ngamma_v200_MC, "UUBAR", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_DDBAR_train_dirname, Ngamma_v200_MC, "DDBAR", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_SSBAR_train_dirname, Ngamma_v200_MC, "SSBAR", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_CHARM_train_dirname, Ngamma_v200_MC, "CHARM", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_CHG_test_dirname, Ngamma_v200_MC, "CHG", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_MIX_test_dirname, Ngamma_v200_MC, "MIX", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_UUBAR_test_dirname, Ngamma_v200_MC, "UUBAR", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_DDBAR_test_dirname, Ngamma_v200_MC, "DDBAR", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_SSBAR_test_dirname, Ngamma_v200_MC, "SSBAR", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_CHARM_test_dirname, Ngamma_v200_MC, "CHARM", 2, true);
+
+    LetsFillNgamma(ChargeSideband_MC_dirname_Knn, Ngamma_v200_MC, "Knn", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_dirname_Kstarnn, Ngamma_v200_MC, "Kstarnn", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_dirname_K0nn, Ngamma_v200_MC, "K0nn", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_dirname_K0starnn, Ngamma_v200_MC, "K0starnn", 2, true);
+
+    LetsFillNgamma(ChargeSideband_data_dirname, Ngamma_v200_data, 2);
+
+    // print weight file
+    fp = fopen("multiplicity_weight_uncertainty.txt", "w");
+    fprintf(fp, "%d\n", NgammaMAX);
+    for (int i = 0; i < NgammaMAX + 1; i++) {
+        double MC_num_bin = Ngamma_v200_MC->GetBinContent(i + 1);
+        double data_num_bin = Ngamma_v200_data->GetBinContent(i + 1);
+        if (MC_num_bin > MyEPSILON) fprintf(fp, "%lf %lf %lf\n", data_num_bin, MC_num_bin, data_num_bin / MC_num_bin);
+        else fprintf(fp, "%lf %lf %lf\n", data_num_bin, MC_num_bin, 1.0);
+    }
+    fclose(fp);
+
+    MC_num = 0;
+    data_num = 0;
+
+    for (int i = 0; i < NgammaMAX + 1; i++) {
+        MC_num = MC_num + Ngamma_v200_MC->GetBinContent(i + 1);
+        data_num = data_num + Ngamma_v200_data->GetBinContent(i + 1);
+    }
+
+    printf("option2 data num: %lf\n", data_num);
+    printf("option2 MC num with calibration: %lf\n", MC_num);
 }
