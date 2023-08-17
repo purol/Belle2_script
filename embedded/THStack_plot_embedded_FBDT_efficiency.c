@@ -149,6 +149,54 @@ const double pi0_sys_uncer2[N_pi0_syst] = {
     0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0
 };
 
+class Corrector_Multiplicity {
+private:
+
+    int NgammaMAX;
+    TH1D* weights_Ngamma;
+    const double CUTOFF;
+
+public:
+    Corrector_Multiplicity();
+    double GetCorrectionFactor(double Ngamma);
+};
+
+Corrector_Multiplicity corrector_Multiplicity;
+
+Corrector_Multiplicity::Corrector_Multiplicity() :
+    CUTOFF(50.0)
+{
+    FILE* fp;
+
+    // read Knn weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/multiplicity/multiplicity_weight.txt", "r");
+    fscanf(fp, "%d\n", &NgammaMAX);
+    weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    for (int i = 0; i < NgammaMAX + 1; i++) {
+        double temp1;
+        double temp2;
+        double temp3;
+        fscanf(fp, "%lf %lf %lf\n", &temp1, &temp2, &temp3);
+        if (temp3 < CUTOFF) weights_Ngamma->SetBinContent(i + 1, temp3);
+        else weights_Ngamma->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+}
+
+double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma) {
+    int Bin = weights_Ngamma->FindBin(Ngamma);
+    if (Bin < 1) {
+        printf("[ERROR] Ngamma is smaller than 0!\n");
+        exit(1);
+    }
+    else if (Bin > NgammaMAX + 1) return 1.0;
+
+    return weights_Ngamma->GetBinContent(Bin);
+}
+
+/* ====================================== */
+
 void ReadPIDFile() {
     const char* KID_true_file = "KaonEff.csv";
     const char* KID_mis_file = "Kaonmis.csv";
@@ -810,6 +858,9 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
 
     double FEI_calibration_factor = -1;
 
+    int Ngamma_v200_index = -1;
+    double Ngamma_v200 = -1;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -836,6 +887,8 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
         tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
 
+        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
+
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
@@ -846,7 +899,11 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
 
             FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
 
-            weights->push_back(FEI_calibration_factor * weight);
+            // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
+            Ngamma_v200 = var[Ngamma_v200_index];
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
+            weights->push_back(FEI_calibration_factor * Correction_multiplicity * weight);
         }
         input_file->Close();
 
@@ -882,6 +939,9 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
     double FEI_calibration_factor = -1;
+
+    int Ngamma_v200_index = -1;
+    double Ngamma_v200 = -1;
 
     int nXsu = -1;
     int nXsd = -1;
@@ -936,6 +996,7 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1038,7 +1099,11 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake);
+            // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
+            Ngamma_v200 = var[Ngamma_v200_index];
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity);
 
 
         }
@@ -1155,6 +1220,9 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
 
     double FEI_calibration_factor = -1;
 
+    int Ngamma_v200_index = -1;
+    double Ngamma_v200 = -1;
+
     int nXsu = -1;
     int nXsd = -1;
 
@@ -1211,6 +1279,7 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -1318,7 +1387,11 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * BDTc_correction);
+            // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
+            Ngamma_v200 = var[Ngamma_v200_index];
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * BDTc_correction);
 
 
         }
@@ -1362,6 +1435,8 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
     double FEI_calibration_factor = -1;
+
+    double Ngamma_v200 = -1;
 
     int nXsu = -1;
     int nXsd = -1;
@@ -1409,6 +1484,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &nXsu);
             tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &nXsd);
         }
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -1506,8 +1582,11 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
-            nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake;
-            nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * BDTc_correction;
+            // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
+            nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity;
+            nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * BDTc_correction;
 
 
         }
