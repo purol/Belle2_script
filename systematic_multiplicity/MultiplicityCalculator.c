@@ -365,7 +365,7 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
 class Corrector_Multiplicity {
 private:
 
-    int NgammaMAX;
+    int NgammaMAX_;
     TH1D* weights_Ngamma;
     const double CUTOFF;
 
@@ -383,9 +383,9 @@ Corrector_Multiplicity::Corrector_Multiplicity() :
 
     // read Knn weights
     fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/multiplicity/multiplicity_weight.txt", "r");
-    fscanf(fp, "%d\n", &NgammaMAX);
-    weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
-    for (int i = 0; i < NgammaMAX + 1; i++) {
+    fscanf(fp, "%d\n", &NgammaMAX_);
+    weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX_ + 1, -0.5, NgammaMAX_ + 0.5);
+    for (int i = 0; i < NgammaMAX_ + 1; i++) {
         double temp1;
         double temp2;
         double temp3;
@@ -403,7 +403,7 @@ double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma) {
         printf("[ERROR] Ngamma is smaller than 0!\n");
         exit(1);
     }
-    else if (Bin > NgammaMAX + 1) return 1.0;
+    else if (Bin > NgammaMAX_ + 1) return 1.0;
 
     return weights_Ngamma->GetBinContent(Bin);
 }
@@ -1052,22 +1052,18 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
                 weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
             else if (SampleName == "Knn") {
-                numberings->push_back(0);
                 FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
             }
             else if (SampleName == "Kstarnn") {
-                numberings->push_back(0);
                 FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
             }
             else if (SampleName == "K0nn") {
-                numberings->push_back(1);
                 FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
             }
             else if (SampleName == "K0starnn") {
-                numberings->push_back(1);
                 FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
             }
