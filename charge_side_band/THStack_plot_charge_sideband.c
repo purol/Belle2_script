@@ -424,10 +424,10 @@ double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma) {
 /* ====================================== */
 
 void ReadPIDFile() {
-    const char* KID_true_file = "KaonEff.csv";
-    const char* KID_mis_file = "Kaonmis.csv";
-    const char* PID_true_file = "PionEff.csv";
-    const char* PID_mis_file = "Pionmis.csv";
+    const char* KID_true_file = "/home/jwpark/storage/BKG_gbasf2/systematic/MC15ri_PID/KaonEff.csv";
+    const char* KID_mis_file = "/home/jwpark/storage/BKG_gbasf2/systematic/MC15ri_PID/Kaonmis.csv";
+    const char* PID_true_file = "/home/jwpark/storage/BKG_gbasf2/systematic/MC15ri_PID/PionEff.csv";
+    const char* PID_mis_file = "/home/jwpark/storage/BKG_gbasf2/systematic/MC15ri_PID/Pionmis.csv";
 
     FILE* fp_KID_true = fopen(KID_true_file, "r");
     FILE* fp_KID_mis = fopen(KID_mis_file, "r");
@@ -545,10 +545,10 @@ void ReadFakePIDFile() {
         PID_fakeMU_uncer[3][i] = 0.0;
     }
 
-    const char* K_fromE_file = "kaonID_efficiency_electron.csv";
-    const char* K_fromMU_file = "kaonID_efficiency_muon.csv";
-    const char* pi_fromE_file = "pionID_efficiency_electron.csv";
-    const char* pi_fromMU_file = "pionID_efficiency_muon.csv";
+    const char* K_fromE_file = "/home/jwpark/storage/BKG_gbasf2/systematic/MC15ri_PID/kaonID_efficiency_electron.csv";
+    const char* K_fromMU_file = "/home/jwpark/storage/BKG_gbasf2/systematic/MC15ri_PID/kaonID_efficiency_muon.csv";
+    const char* pi_fromE_file = "/home/jwpark/storage/BKG_gbasf2/systematic/MC15ri_PID/pionID_efficiency_electron.csv";
+    const char* pi_fromMU_file = "/home/jwpark/storage/BKG_gbasf2/systematic/MC15ri_PID/pionID_efficiency_muon.csv";
 
     FILE* fp_K_fromE = fopen(K_fromE_file, "r");
     FILE* fp_K_fromMU = fopen(K_fromMU_file, "r");
@@ -1368,6 +1368,9 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
     */
 
     double var[Nvar_num] = { 0.0 };
+
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
 
     std::vector<string> names;
     load_files(dirname, &names, included_string);
