@@ -362,6 +362,8 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
     return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
 }
 
+// Corrector_Multiplicity is fixed for MultiplicityCalculator! Do not copy-paste it!
+
 class Corrector_Multiplicity {
 private:
 
@@ -382,7 +384,7 @@ Corrector_Multiplicity::Corrector_Multiplicity() :
     FILE* fp;
 
     // read Knn weights
-    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/multiplicity/multiplicity_weight.txt", "r");
+    fp = fopen("./multiplicity_weight.txt", "r");
     fscanf(fp, "%d\n", &NgammaMAX_);
     weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX_ + 1, -0.5, NgammaMAX_ + 0.5);
     for (int i = 0; i < NgammaMAX_ + 1; i++) {
