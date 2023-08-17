@@ -1262,32 +1262,36 @@ void MultiplicityCalculator(){
 
     corrector_Multiplicity = new Corrector_Multiplicity();
 
-    LetsFillNgamma(ChargeSideband_MC_CHG_train_dirname, Ngamma_v200_MC, "CHG", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_MIX_train_dirname, Ngamma_v200_MC, "MIX", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_UUBAR_train_dirname, Ngamma_v200_MC, "UUBAR", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_DDBAR_train_dirname, Ngamma_v200_MC, "DDBAR", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_SSBAR_train_dirname, Ngamma_v200_MC, "SSBAR", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_CHARM_train_dirname, Ngamma_v200_MC, "CHARM", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_CHG_test_dirname, Ngamma_v200_MC, "CHG", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_MIX_test_dirname, Ngamma_v200_MC, "MIX", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_UUBAR_test_dirname, Ngamma_v200_MC, "UUBAR", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_DDBAR_test_dirname, Ngamma_v200_MC, "DDBAR", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_SSBAR_test_dirname, Ngamma_v200_MC, "SSBAR", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_CHARM_test_dirname, Ngamma_v200_MC, "CHARM", 2, true);
+    // Lets fill!
+    TH1D* Ngamma_v200_MC_test = new TH1D("Ngamma_v200_MC_test", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    TH1D* Ngamma_v200_data_test = new TH1D("Ngamma_v200_data_test", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
 
-    LetsFillNgamma(ChargeSideband_MC_dirname_Knn, Ngamma_v200_MC, "Knn", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_dirname_Kstarnn, Ngamma_v200_MC, "Kstarnn", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_dirname_K0nn, Ngamma_v200_MC, "K0nn", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_dirname_K0starnn, Ngamma_v200_MC, "K0starnn", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_CHG_train_dirname, Ngamma_v200_MC_test, "CHG", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_MIX_train_dirname, Ngamma_v200_MC_test, "MIX", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_UUBAR_train_dirname, Ngamma_v200_MC_test, "UUBAR", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_DDBAR_train_dirname, Ngamma_v200_MC_test, "DDBAR", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_SSBAR_train_dirname, Ngamma_v200_MC_test, "SSBAR", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_CHARM_train_dirname, Ngamma_v200_MC_test, "CHARM", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_CHG_test_dirname, Ngamma_v200_MC_test, "CHG", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_MIX_test_dirname, Ngamma_v200_MC_test, "MIX", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_UUBAR_test_dirname, Ngamma_v200_MC_test, "UUBAR", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_DDBAR_test_dirname, Ngamma_v200_MC_test, "DDBAR", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_SSBAR_test_dirname, Ngamma_v200_MC_test, "SSBAR", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_CHARM_test_dirname, Ngamma_v200_MC_test, "CHARM", 2, true);
 
-    LetsFillNgamma(ChargeSideband_data_dirname, Ngamma_v200_data, 2);
+    LetsFillNgamma(ChargeSideband_MC_dirname_Knn, Ngamma_v200_MC_test, "Knn", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_dirname_Kstarnn, Ngamma_v200_MC_test, "Kstarnn", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_dirname_K0nn, Ngamma_v200_MC_test, "K0nn", 2, true);
+    LetsFillNgamma(ChargeSideband_MC_dirname_K0starnn, Ngamma_v200_MC_test, "K0starnn", 2, true);
+
+    LetsFillNgamma(ChargeSideband_data_dirname, Ngamma_v200_data_test, 2);
 
     // print weight file
     fp = fopen("multiplicity_weight_uncertainty.txt", "w");
     fprintf(fp, "%d\n", NgammaMAX);
     for (int i = 0; i < NgammaMAX + 1; i++) {
-        double MC_num_bin = Ngamma_v200_MC->GetBinContent(i + 1);
-        double data_num_bin = Ngamma_v200_data->GetBinContent(i + 1);
+        double MC_num_bin = Ngamma_v200_MC_test->GetBinContent(i + 1);
+        double data_num_bin = Ngamma_v200_data_test->GetBinContent(i + 1);
         if (MC_num_bin > MyEPSILON) fprintf(fp, "%lf %lf %lf\n", data_num_bin, MC_num_bin, data_num_bin / MC_num_bin);
         else fprintf(fp, "%lf %lf %lf\n", data_num_bin, MC_num_bin, 1.0);
     }
@@ -1297,8 +1301,8 @@ void MultiplicityCalculator(){
     data_num = 0;
 
     for (int i = 0; i < NgammaMAX + 1; i++) {
-        MC_num = MC_num + Ngamma_v200_MC->GetBinContent(i + 1);
-        data_num = data_num + Ngamma_v200_data->GetBinContent(i + 1);
+        MC_num = MC_num + Ngamma_v200_MC_test->GetBinContent(i + 1);
+        data_num = data_num + Ngamma_v200_data_test->GetBinContent(i + 1);
     }
 
     printf("option2 data num: %lf\n", data_num);
