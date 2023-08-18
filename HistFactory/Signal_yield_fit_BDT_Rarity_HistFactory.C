@@ -4416,7 +4416,7 @@ void CheckMaxNgamma(const char* dirname) {
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
 
-            if (N_correction_multiplicity_MCsample > std::lround(Ngamma_v200)) N_correction_multiplicity_MCsample = std::lround(Ngamma_v200);
+            if (N_correction_multiplicity_MCsample < std::lround(Ngamma_v200)) N_correction_multiplicity_MCsample = std::lround(Ngamma_v200);
 
         }
         input_file->Close();
