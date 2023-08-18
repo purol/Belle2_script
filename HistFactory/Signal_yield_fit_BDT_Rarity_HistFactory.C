@@ -4426,7 +4426,7 @@ void CheckMaxNgamma(const char* dirname) {
 
 }
 
-int AllocateMultiplicityPDFs(TH1D*** hist, const char* prefix, bool IsItPositive) {
+void AllocateMultiplicityPDFs(TH1D*** hist, const char* prefix, bool IsItPositive) {
     // prefix: Signal CHG MIX UUBAR DDBAR SSBAR CHARM
 
     int N_hist = -1;
@@ -4440,6 +4440,21 @@ int AllocateMultiplicityPDFs(TH1D*** hist, const char* prefix, bool IsItPositive
         if(IsItPositive) (*hist)[i] = new TH1D((std::string(prefix) + "_multiplicity" + std::to_string(i) + "_p").c_str(), (std::string(prefix) + "_multiplicity" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
         else (*hist)[i] = new TH1D((std::string(prefix) + "_multiplicity" + std::to_string(i) + "_m").c_str(), (std::string(prefix) + "_multiplicity" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
     }
+
+    return N_hist;
+}
+
+int PrintInfoMultiplicity() {
+
+    int N_hist = -1;
+
+    if (N_correction_multiplicity_weightfile > N_correction_multiplicity_MCsample) N_hist = N_correction_multiplicity_MCsample + 1;
+    else N_hist = N_correction_multiplicity_weightfile + 1;
+
+    FILE* fp;
+    fp = fopen("Multiplicity_info.txt", "w");
+    fprintf("%d", N_hist);
+    fclose(fp);
 
     return N_hist;
 }
@@ -5184,8 +5199,8 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     CheckMaxNgamma(MC_dirname_Kstarnn);
     CheckMaxNgamma(MC_dirname_K0nn);
     CheckMaxNgamma(MC_dirname_K0starnn);
-
-    int N_hist_multiplicity = AllocateMultiplicityPDFs(&Signal_multiplicity_p, "Signal", true);
+    
+    AllocateMultiplicityPDFs(&Signal_multiplicity_p, "Signal", true);
     AllocateMultiplicityPDFs(&CHG_multiplicity_p, "CHG", true);
     AllocateMultiplicityPDFs(&MIX_multiplicity_p, "MIX", true);
     AllocateMultiplicityPDFs(&UUBAR_multiplicity_p, "UUBAR", true);
@@ -5218,6 +5233,8 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetMultiplicityPDFs(MC_dirname_Kstarnn, CHG_multiplicity_p, "Bplus", "Kstarnn", 1.0, "B2Kstarnn");
     GetMultiplicityPDFs(MC_dirname_K0nn, MIX_multiplicity_p, "Bzero", "K0nn", 1.0, "B02K0nn");
     GetMultiplicityPDFs(MC_dirname_K0starnn, MIX_multiplicity_p, "Bzero", "K0starnn", 1.0, "B02K0starnn");
+
+    int N_hist_multiplicity = PrintInfoMultiplicity();
 
     for (int i = 0; i < N_hist_multiplicity; i++) {
         GetNegativeChangePDFs(Signal_nominal, Signal_multiplicity_p[i], Signal_multiplicity_m[i]);
