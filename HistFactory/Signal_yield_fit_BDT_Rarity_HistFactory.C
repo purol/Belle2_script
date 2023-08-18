@@ -214,6 +214,10 @@ const double B2Knn_dn_uncer[N_Knn_type] = { // relative uncertainty
     0.32 / 2.66, 0.25 / 1.24, 0.5 / 5.9, 0.7 / 3.6
 };
 
+int N_correction_multiplicity_weightfile = 0; // maximum value of Ngamma in weightfile
+int N_correction_multiplicity_MCsample = -1; // maximum value of Ngamma in MC samples
+TH1D* weights_Ngamma_uncer; // multiplication factor. If this number is multiplied to the number of event, result is the number of event with 1 sigma (nominal + 1 sigma)
+
 TH1D* Xsu_Hmb_weight;
 TH1D* Xsu_Lmb_weight;
 TH1D* Xsu_Hpf_weight;
@@ -1369,6 +1373,8 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, const c
     double N_K0nn = 0;
     double N_K0starnn = 0;
 
+    double Ngamma_v200 = -1;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -1420,6 +1426,7 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, const c
             tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
             tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
         }
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1463,7 +1470,10 @@ double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, const c
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake;
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if(CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
@@ -1519,6 +1529,8 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, const cha
     double N_K0nn = 0;
     double N_K0starnn = 0;
 
+    double Ngamma_v200 = -1;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -1570,6 +1582,7 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, const cha
             tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
             tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
         }
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1613,11 +1626,15 @@ double GetTrackPDFs(const char* dirname, TH1D* hist, const char* type, const cha
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[2][i_fake], temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
+
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
             double Correction_track = 1.0;
             if (IsItUp == true) Correction_track = (1 + (Ntrack * track_rel_uncertainty / 100.0));
             else Correction_track = (1 - (Ntrack * track_rel_uncertainty / 100.0));
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_track;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * Correction_track;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
@@ -1674,6 +1691,8 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, const char*
     double N_K0nn = 0;
     double N_K0starnn = 0;
 
+    double Ngamma_v200 = -1;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -1726,6 +1745,7 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, const char*
             tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
             tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
         }
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1768,11 +1788,15 @@ double GetKS0PDFs(const char* dirname, TH1D* hist, const char* type, const char*
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[2][i_fake], temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
+
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
             double KS0_correction = 1.0;
             if(IsItUp == true) KS0_correction = 1 + (KS0_rel_uncertainty * temp_KS0_3D_distance / 100.0);
             else KS0_correction = 1 - (KS0_rel_uncertainty * temp_KS0_3D_distance / 100.0);
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * KS0_correction;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * KS0_correction;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
@@ -2219,6 +2243,8 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
+    double Ngamma_v200 = -1;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -2255,6 +2281,7 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
 
         TTree* tree_Xs = (TTree*)input_file->Get("Xs");
 
@@ -2305,6 +2332,9 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
             q2 = q2 * q2;
 
             for (int k = 0; k < 7; k++) {
@@ -2321,7 +2351,7 @@ void GetKffPDFs(const char* dirname, TH1D* hist[7], double Correction_factor_BR[
                 double lambda = (m_b * m_b * m_b * m_b) + (m_k * m_k * m_k * m_k) + (q2 * q2) - 2 * (m_b * m_b * m_k * m_k + m_b * m_b * q2 + m_k * m_k * q2);
 
                 value[k] = std::pow(lambda, 1.5) * fp * fp;
-                double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * (value[k] / value[0]);
+                double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * (value[k] / value[0]);
                 if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(q2, "Bplus");
                 else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(q2, "Bzero");
                 hist[k]->Fill(MVA_var, total_weight );
@@ -2480,6 +2510,8 @@ void GetKstarffPDFs(const char* dirname, TH1D* hist[19], double Correction_facto
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
+    double Ngamma_v200 = -1;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -2516,6 +2548,7 @@ void GetKstarffPDFs(const char* dirname, TH1D* hist[19], double Correction_facto
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
 
         TTree* tree_Xs = (TTree*)input_file->Get("Xs");
 
@@ -2568,6 +2601,9 @@ void GetKstarffPDFs(const char* dirname, TH1D* hist[19], double Correction_facto
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
             q2 = q2 * q2;
 
             for (int k = 0; k < 19; k++) {
@@ -2602,7 +2638,7 @@ void GetKstarffPDFs(const char* dirname, TH1D* hist[19], double Correction_facto
                 double Amp_0 = -1 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (1.0 / m_k_tilda) * (1.0 / std::pow(sB, 0.5)) * ((1 - m_k_tilda * m_k_tilda - sB) * (1 + m_k_tilda) * A1 - Lambda * A2 / (1 + m_k_tilda));
 
                 value[k] = (3.0 / 4.0) * (Amp_vertical * Amp_vertical + Amp_parallel * Amp_parallel) * (1 - costheta * costheta) + (3.0 / 2.0) * Amp_0 * Amp_0 * costheta * costheta;
-                double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * (value[k] / value[0]);
+                double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * (value[k] / value[0]);
                 hist[k]->Fill(MVA_var, total_weight);
                 Nevts[k] = Nevts[k] + total_weight;
             }
@@ -2706,6 +2742,9 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    double Ngamma_v200 = -1;
+
     int Decay[N_decay] = { 0 };
 
     double weight_not_Selected = GetFragmentationWeight(type, SelectedDecayMode, IsItUp);
@@ -2747,6 +2786,7 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
 
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
@@ -2824,6 +2864,9 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
             double output_Decay[MAX_NUM_DECAYMODE_MC] = { 0.0 };
             DecayArrayToXsOutputDecay(Decay, output_Decay);
             double fragmentation_weight = 1.0;
@@ -2839,164 +2882,7 @@ double GetFragmentationPDFs(const char* dirname, TH1D* hist, const char* type, D
                 }
             }
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * fragmentation_weight;
-
-            Nevt = Nevt + total_weight;
-
-            hist->Fill(MVA_var, total_weight);
-        }
-        input_file->Close();
-
-        printf("%s has %lf events (with correction)\n", dirname, Nevt);
-
-    }
-    return Nevt;
-}
-
-double GetMultiplicityPDFs(const char* dirname, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with multiplicity correction
-    /*
-    CorrectionType for new form factors
-    B2Knunu
-    B02K0nunu
-    B2Knn
-    B2Kstarnn
-    B02K0nn
-    B02K0starnn
-    otherwise
-    */
-    if (strcmp(type, "Bplus") == 0) {}
-    else if (strcmp(type, "Bzero") == 0) {}
-    else if (strcmp(type, "Continuum") == 0) {}
-    else {
-        printf("[ERROR] unexpected type name\n");
-        exit(1);
-    }
-
-    float MVA_var = 0;
-
-    double Upsilon_ID = -1;
-    double Bsig_ID = -1;
-    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
-    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
-    double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-    double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-
-    double invM = -1.0;
-
-    double invM_Knn = 0;
-    double invM_Kstarnn = 0;
-    double invM_K0nn = 0;
-    double invM_K0starnn = 0;
-    double N_Knn = 0;
-    double N_Kstarnn = 0;
-    double N_K0nn = 0;
-    double N_K0starnn = 0;
-
-    double Ngamma_v200 = -1;
-
-    std::vector<string> names;
-    load_files(dirname, &names);
-
-    double Nevt = 0;
-    for (unsigned int i = 0; i < names.size(); i++) {
-
-        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
-        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
-
-        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
-        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
-        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
-
-        TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs = (TTree*)input_file->Get("Xs");
-        else tree_Xs = nullptr;
-
-        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
-
-        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
-        }
-        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
-        for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[2][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[3][i_fake]);
-        }
-        for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[0][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[1][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
-        }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
-        if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) {
-            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
-            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
-            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
-            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
-            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
-            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
-            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
-            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
-        }
-        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
-
-        printf("%lld entries...\n", tree_upsilon->GetEntries());
-        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
-            tree_upsilon->GetEntry(j);
-            tree_Bsig->GetEntry(j);
-            tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
-
-            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
-            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
-
-            double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
-
-            double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
-            else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = 1;
-            double Correction_PID = 1;
-            double Correction_pi0 = 1;
-            double Correction_fake = 1;
-            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
-                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
-                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
-                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
-            }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
-            for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[0][i_fake], temp_N_bin_fakeE[0][i_fake]); // K- from e
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[1][i_fake], temp_N_bin_fakeE[1][i_fake]); // K+ from e
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[2][i_fake], temp_N_bin_fakeE[2][i_fake]); // pi- from e
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[3][i_fake], temp_N_bin_fakeE[3][i_fake]); // pi+ from e
-            }
-            for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[0][i_fake], temp_N_bin_fakeMU[0][i_fake]); // K- from mu
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[1][i_fake], temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[2][i_fake], temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
-            }
-
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake;
-            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
-            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
-            if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-
-            // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
-            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
-            total_weight = total_weight * Correction_multiplicity;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * fragmentation_weight;
 
             Nevt = Nevt + total_weight;
 
@@ -3038,6 +2924,8 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, const char
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    double Ngamma_v200 = -1;
 
     double invM = -1.0;
 
@@ -3103,6 +2991,7 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, const char
             tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
             tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
         }
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc_var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -3146,7 +3035,10 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, const char
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake;
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
@@ -3193,11 +3085,15 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, const char
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[2][i_fake], temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
+
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
             double BDTc_weight = 0;
             if (BDTc_var > (5.0 / 6.0)) BDTc_weight = 5.0;
             else BDTc_weight = (BDTc_var / (1.0 - BDTc_var));
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * BDTc_weight;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * BDTc_weight;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
@@ -3244,12 +3140,16 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, const char
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[2][i_fake], temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
+
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
             double BDTc_weight = 0;
             if (BDTc_var > (5.0 / 6.0)) BDTc_weight = 5.0;
             else BDTc_weight = (BDTc_var / (1.0 - BDTc_var));
             BDTc_weight = BDTc_weight * (Nevt / Nevt_with_BDTc);
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * BDTc_weight;
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * BDTc_weight;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
@@ -3726,6 +3626,8 @@ double GetmbPDFs(const char* dirname, TH1D* hist, const char* type, const char* 
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
+    double Ngamma_v200 = -1;
+
     double invM = -1.0;
 
     double invM_Knn = 0;
@@ -3785,6 +3687,7 @@ double GetmbPDFs(const char* dirname, TH1D* hist, const char* type, const char* 
             tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
             tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
         }
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
         tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -3829,7 +3732,10 @@ double GetmbPDFs(const char* dirname, TH1D* hist, const char* type, const char* 
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake;
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
@@ -3883,6 +3789,8 @@ double GetpfPDFs(const char* dirname, TH1D* hist, const char* type, const char* 
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
+    double Ngamma_v200 = -1;
+
     double invM = -1.0;
     double MXs = -1.0;
 
@@ -3943,6 +3851,7 @@ double GetpfPDFs(const char* dirname, TH1D* hist, const char* type, const char* 
             tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
             tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
         }
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
         if(IsItXsu) tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &MXs);
         else tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &MXs);
 
@@ -3988,7 +3897,10 @@ double GetpfPDFs(const char* dirname, TH1D* hist, const char* type, const char* 
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake;
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
@@ -4042,6 +3954,8 @@ double GetKstardeltaPDFs(const char* dirname, TH1D* hist, const char* type, cons
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
+    double Ngamma_v200 = -1;
+
     double invM = -1.0;
     double MXs = -1.0;
 
@@ -4102,6 +4016,7 @@ double GetKstardeltaPDFs(const char* dirname, TH1D* hist, const char* type, cons
             tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
             tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
         }
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
         if (IsItXsu) tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &MXs);
         else tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &MXs);
 
@@ -4147,7 +4062,10 @@ double GetKstardeltaPDFs(const char* dirname, TH1D* hist, const char* type, cons
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
-            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake;
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
@@ -4165,6 +4083,167 @@ double GetKstardeltaPDFs(const char* dirname, TH1D* hist, const char* type, cons
 
     }
     return Nevt;
+}
+
+void GetMultiplicityPDFs(const char* dirname, TH1D** hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with uncertainties on multiplicity correction
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    B2Knn
+    B2Kstarnn
+    B02K0nn
+    B02K0starnn
+    otherwise
+    */
+    if (strcmp(type, "Bplus") == 0) {}
+    else if (strcmp(type, "Bzero") == 0) {}
+    else if (strcmp(type, "Continuum") == 0) {}
+    else {
+        printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    float MVA_var = 0;
+
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
+    double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+    double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    double invM = -1.0;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
+
+    double Ngamma_v200 = -1;
+
+    int N_hist = -1;
+
+    if (N_correction_multiplicity_weightfile > N_correction_multiplicity_MCsample) N_hist = N_correction_multiplicity_MCsample + 1;
+    else N_hist = N_correction_multiplicity_weightfile + 1;
+
+    std::vector<string> names;
+    load_files(dirname, &names);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
+
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
+
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[2][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[3][i_fake]);
+        }
+        for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[0][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[1][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
+        }
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+        if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) {
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        }
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+            tree_upsilon->GetEntry(j);
+            tree_Bsig->GetEntry(j);
+            tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
+
+            if ((strcmp(sample, "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
+            else if ((strcmp(sample, "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
+
+            double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
+
+            double Correction_FEI = 1.0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            double Correction_pi0 = 1;
+            double Correction_fake = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
+            }
+            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
+            for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
+                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[0][i_fake], temp_N_bin_fakeE[0][i_fake]); // K- from e
+                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[1][i_fake], temp_N_bin_fakeE[1][i_fake]); // K+ from e
+                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[2][i_fake], temp_N_bin_fakeE[2][i_fake]); // pi- from e
+                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[3][i_fake], temp_N_bin_fakeE[3][i_fake]); // pi+ from e
+            }
+            for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
+                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[0][i_fake], temp_N_bin_fakeMU[0][i_fake]); // K- from mu
+                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[1][i_fake], temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
+                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[2][i_fake], temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
+                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
+            }
+
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
+            double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
+            if ((CorrectionType == "B2Knn") || (CorrectionType == "B2Kstarnn") || (CorrectionType == "B02K0nn") || (CorrectionType == "B02K0starnn")) total_weight = total_weight * corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+
+            for (int k = 0; k < N_hist; k++) {
+                double Correction_multiplicity_uncertainty = 1.0;
+                if (std::abs(k - Ngamma_v200) < MyEPSILON) Correction_multiplicity_uncertainty = weights_Ngamma_uncer->GetBinContent(k + 1);
+                hist[k]->Fill(MVA_var, total_weight * Correction_multiplicity_uncertainty);
+            }
+            
+        }
+        input_file->Close();
+
+    }
+
 }
 
 double ReadWeightHist(TH1D* hist, double value) {
@@ -4293,6 +4372,78 @@ void ReadSignalModelingFile() {
 
 }
 
+void ReadMultiplicityFile() {
+
+    FILE* fp;
+    int NgammaMAX = 0;
+    const double CUTOFF = 50;
+
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/multiplicity/multiplicity_weight_uncertainty.txt", "r");
+    fscanf(fp, "%d\n", &NgammaMAX);
+    weights_Ngamma_uncer = new TH1D("weights_Ngamma_uncer", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    for (int i = 0; i < NgammaMAX + 1; i++) {
+        double temp1;
+        double temp2;
+        double temp3;
+        fscanf(fp, "%lf %lf %lf\n", &temp1, &temp2, &temp3);
+        if (temp3 < CUTOFF) weights_Ngamma_uncer->SetBinContent(i + 1, temp3);
+        else weights_Ngamma_uncer->SetBinContent(i + 1, CUTOFF);
+
+        if(temp2 > MyEPSILON) N_correction_multiplicity_weightfile = i;
+    }
+
+    fclose(fp);
+
+}
+
+void CheckMaxNgamma(const char* dirname) {
+
+    double Ngamma_v200 = -1;
+
+    std::vector<string> names;
+    load_files(dirname, &names);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+            tree_upsilon->GetEntry(j);
+
+            if (N_correction_multiplicity_MCsample > std::lround(Ngamma_v200)) N_correction_multiplicity_MCsample = std::lround(Ngamma_v200);
+
+        }
+        input_file->Close();
+
+
+    }
+
+}
+
+int AllocateMultiplicityPDFs(TH1D*** hist, const char* prefix, bool IsItPositive) {
+    // prefix: Signal CHG MIX UUBAR DDBAR SSBAR CHARM
+
+    int N_hist = -1;
+
+    if (N_correction_multiplicity_weightfile > N_correction_multiplicity_MCsample) N_hist = N_correction_multiplicity_MCsample + 1;
+    else N_hist = N_correction_multiplicity_weightfile + 1;
+
+    *hist = (TH1D**)malloc(sizeof(TH1D*) * N_hist);
+
+    for (int i = 0; i < N_hist; i++) {
+        if(IsItPositive) (*hist)[i] = new TH1D((std::string(prefix) + "_multiplicity" + std::to_string(i) + "_p").c_str(), (std::string(prefix) + "_multiplicity" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        else (*hist)[i] = new TH1D((std::string(prefix) + "_multiplicity" + std::to_string(i) + "_m").c_str(), (std::string(prefix) + "_multiplicity" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    }
+
+    return N_hist;
+}
+
 void ClearHist(TH1D* Signal_hist, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* UUBAR_hist, TH1D* DDBAR_hist, TH1D* SSBAR_hist, TH1D* CHARM_hist) {
     Signal_hist->Reset();
     CHG_hist->Reset();
@@ -4317,6 +4468,7 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     ReadPIDFile();
     ReadFakePIDFile();
     ReadSignalModelingFile();
+    ReadMultiplicityFile();
 
     /* ====================================== */
     // Seting CDF module
@@ -4562,20 +4714,20 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     TH1D* MIX_K0starnn_m = new TH1D("MIX_K0starnn_m", "MIX_K0starnn_m", RarityBins, BinMIN, BinMAX);
 
     // multiplicity
-    TH1D* Signal_multiplicity_p = new TH1D("Signal_multiplicity_p", "Signal_multiplicity_p", RarityBins, BinMIN, BinMAX);
-    TH1D* CHG_multiplicity_p = new TH1D("CHG_multiplicity_p", "CHG_multiplicity_p", RarityBins, BinMIN, BinMAX);
-    TH1D* MIX_multiplicity_p = new TH1D("MIX_multiplicity_p", "MIX_multiplicity_p", RarityBins, BinMIN, BinMAX);
-    TH1D* UUBAR_multiplicity_p = new TH1D("UUBAR_multiplicity_p", "UUBAR_multiplicity_p", RarityBins, BinMIN, BinMAX);
-    TH1D* DDBAR_multiplicity_p = new TH1D("DDBAR_multiplicity_p", "DDBAR_multiplicity_p", RarityBins, BinMIN, BinMAX);
-    TH1D* SSBAR_multiplicity_p = new TH1D("SSBAR_multiplicity_p", "SSBAR_multiplicity_p", RarityBins, BinMIN, BinMAX);
-    TH1D* CHARM_multiplicity_p = new TH1D("CHARM_multiplicity_p", "CHARM_multiplicity_p", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_multiplicity_m = new TH1D("Signal_multiplicity_m", "Signal_multiplicity_m", RarityBins, BinMIN, BinMAX);
-    TH1D* CHG_multiplicity_m = new TH1D("CHG_multiplicity_m", "CHG_multiplicity_m", RarityBins, BinMIN, BinMAX);
-    TH1D* MIX_multiplicity_m = new TH1D("MIX_multiplicity_m", "MIX_multiplicity_m", RarityBins, BinMIN, BinMAX);
-    TH1D* UUBAR_multiplicity_m = new TH1D("UUBAR_multiplicity_m", "UUBAR_multiplicity_m", RarityBins, BinMIN, BinMAX);
-    TH1D* DDBAR_multiplicity_m = new TH1D("DDBAR_multiplicity_m", "DDBAR_multiplicity_m", RarityBins, BinMIN, BinMAX);
-    TH1D* SSBAR_multiplicity_m = new TH1D("SSBAR_multiplicity_m", "SSBAR_multiplicity_m", RarityBins, BinMIN, BinMAX);
-    TH1D* CHARM_multiplicity_m = new TH1D("CHARM_multiplicity_m", "CHARM_multiplicity_m", RarityBins, BinMIN, BinMAX);
+    TH1D** Signal_multiplicity_p;
+    TH1D** CHG_multiplicity_p;
+    TH1D** MIX_multiplicity_p;
+    TH1D** UUBAR_multiplicity_p;
+    TH1D** DDBAR_multiplicity_p;
+    TH1D** SSBAR_multiplicity_p;
+    TH1D** CHARM_multiplicity_p;
+    TH1D** Signal_multiplicity_m;
+    TH1D** CHG_multiplicity_m;
+    TH1D** MIX_multiplicity_m;
+    TH1D** UUBAR_multiplicity_m;
+    TH1D** DDBAR_multiplicity_m;
+    TH1D** SSBAR_multiplicity_m;
+    TH1D** CHARM_multiplicity_m;
 
     // all of uncorrelated uncertainties
     TH1D* Signal_all_uncorrelated = new TH1D("Signal_all_uncorrelated", "Signal_all_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -5015,6 +5167,40 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNominalPDFs(MC_dirname_K0starnn, MIX_K0starnn_m, "Bzero", "K0starnn", 1.0 - B2Knn_dn_uncer[3], "B02K0starnn");
 
     // multiplicity
+    CheckMaxNgamma(MC_dirname_Knunu);
+    CheckMaxNgamma(MC_dirname_Kstarnunu);
+    CheckMaxNgamma(MC_dirname_Xsununu);
+    CheckMaxNgamma(MC_dirname_K0nunu);
+    CheckMaxNgamma(MC_dirname_K0starnunu);
+    CheckMaxNgamma(MC_dirname_Xsdnunu);
+
+    CheckMaxNgamma(MC_dirname_CHG);
+    CheckMaxNgamma(MC_dirname_MIX);
+    CheckMaxNgamma(MC_dirname_UUBAR);
+    CheckMaxNgamma(MC_dirname_DDBAR);
+    CheckMaxNgamma(MC_dirname_SSBAR);
+    CheckMaxNgamma(MC_dirname_CHARM);
+    CheckMaxNgamma(MC_dirname_Knn);
+    CheckMaxNgamma(MC_dirname_Kstarnn);
+    CheckMaxNgamma(MC_dirname_K0nn);
+    CheckMaxNgamma(MC_dirname_K0starnn);
+
+    int N_hist_multiplicity = AllocateMultiplicityPDFs(&Signal_multiplicity_p, "Signal", true);
+    AllocateMultiplicityPDFs(&CHG_multiplicity_p, "CHG", true);
+    AllocateMultiplicityPDFs(&MIX_multiplicity_p, "MIX", true);
+    AllocateMultiplicityPDFs(&UUBAR_multiplicity_p, "UUBAR", true);
+    AllocateMultiplicityPDFs(&DDBAR_multiplicity_p, "DDBAR", true);
+    AllocateMultiplicityPDFs(&SSBAR_multiplicity_p, "SSBAR", true);
+    AllocateMultiplicityPDFs(&CHARM_multiplicity_p, "CHARM", true);
+
+    AllocateMultiplicityPDFs(&Signal_multiplicity_m, "Signal", false);
+    AllocateMultiplicityPDFs(&CHG_multiplicity_m, "CHG", false);
+    AllocateMultiplicityPDFs(&MIX_multiplicity_m, "MIX", false);
+    AllocateMultiplicityPDFs(&UUBAR_multiplicity_m, "UUBAR", false);
+    AllocateMultiplicityPDFs(&DDBAR_multiplicity_m, "DDBAR", false);
+    AllocateMultiplicityPDFs(&SSBAR_multiplicity_m, "SSBAR", false);
+    AllocateMultiplicityPDFs(&CHARM_multiplicity_m, "CHARM", false);
+
     GetMultiplicityPDFs(MC_dirname_Knunu, Signal_multiplicity_p, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
     GetMultiplicityPDFs(MC_dirname_Kstarnunu, Signal_multiplicity_p, "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
     GetMultiplicityPDFs(MC_dirname_Xsununu, Signal_multiplicity_p, "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test, "otherwise");
@@ -5033,13 +5219,15 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetMultiplicityPDFs(MC_dirname_K0nn, MIX_multiplicity_p, "Bzero", "K0nn", 1.0, "B02K0nn");
     GetMultiplicityPDFs(MC_dirname_K0starnn, MIX_multiplicity_p, "Bzero", "K0starnn", 1.0, "B02K0starnn");
 
-    GetNegativeChangePDFs(Signal_nominal, Signal_multiplicity_p, Signal_multiplicity_m);
-    GetNegativeChangePDFs(CHG_nominal, CHG_multiplicity_p, CHG_multiplicity_m);
-    GetNegativeChangePDFs(MIX_nominal, MIX_multiplicity_p, MIX_multiplicity_m);
-    GetNegativeChangePDFs(UUBAR_nominal, UUBAR_multiplicity_p, UUBAR_multiplicity_m);
-    GetNegativeChangePDFs(DDBAR_nominal, DDBAR_multiplicity_p, DDBAR_multiplicity_m);
-    GetNegativeChangePDFs(SSBAR_nominal, SSBAR_multiplicity_p, SSBAR_multiplicity_m);
-    GetNegativeChangePDFs(CHARM_nominal, CHARM_multiplicity_p, CHARM_multiplicity_m);
+    for (int i = 0; i < N_hist_multiplicity; i++) {
+        GetNegativeChangePDFs(Signal_nominal, Signal_multiplicity_p[i], Signal_multiplicity_m[i]);
+        GetNegativeChangePDFs(CHG_nominal, CHG_multiplicity_p[i], CHG_multiplicity_m[i]);
+        GetNegativeChangePDFs(MIX_nominal, MIX_multiplicity_p[i], MIX_multiplicity_m[i]);
+        GetNegativeChangePDFs(UUBAR_nominal, UUBAR_multiplicity_p[i], UUBAR_multiplicity_m[i]);
+        GetNegativeChangePDFs(DDBAR_nominal, DDBAR_multiplicity_p[i], DDBAR_multiplicity_m[i]);
+        GetNegativeChangePDFs(SSBAR_nominal, SSBAR_multiplicity_p[i], SSBAR_multiplicity_m[i]);
+        GetNegativeChangePDFs(CHARM_nominal, CHARM_multiplicity_p[i], CHARM_multiplicity_m[i]);
+    }
 
     // calculate all uncorrelated pdfs
     ClearHist(Signal_all_uncorrelated, CHG_all_uncorrelated, MIX_all_uncorrelated, UUBAR_all_uncorrelated, DDBAR_all_uncorrelated, SSBAR_all_uncorrelated, CHARM_all_uncorrelated);
@@ -5338,20 +5526,22 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     MIX_K0starnn_m->Write();
 
     // multiplicity uncertainty
-    Signal_multiplicity_p->Write();
-    CHG_multiplicity_p->Write();
-    MIX_multiplicity_p->Write();
-    UUBAR_multiplicity_p->Write();
-    DDBAR_multiplicity_p->Write();
-    SSBAR_multiplicity_p->Write();
-    CHARM_multiplicity_p->Write();
-    Signal_multiplicity_m->Write();
-    CHG_multiplicity_m->Write();
-    MIX_multiplicity_m->Write();
-    UUBAR_multiplicity_m->Write();
-    DDBAR_multiplicity_m->Write();
-    SSBAR_multiplicity_m->Write();
-    CHARM_multiplicity_m->Write();
+    for (int i = 0; i < N_hist_multiplicity; i++) {
+        Signal_multiplicity_p[i]->Write();
+        CHG_multiplicity_p[i]->Write();
+        MIX_multiplicity_p[i]->Write();
+        UUBAR_multiplicity_p[i]->Write();
+        DDBAR_multiplicity_p[i]->Write();
+        SSBAR_multiplicity_p[i]->Write();
+        CHARM_multiplicity_p[i]->Write();
+        Signal_multiplicity_m[i]->Write();
+        CHG_multiplicity_m[i]->Write();
+        MIX_multiplicity_m[i]->Write();
+        UUBAR_multiplicity_m[i]->Write();
+        DDBAR_multiplicity_m[i]->Write();
+        SSBAR_multiplicity_m[i]->Write();
+        CHARM_multiplicity_m[i]->Write();
+    }
 
     // all uncorrelated uncertainties
     Signal_all_uncorrelated->Write();
