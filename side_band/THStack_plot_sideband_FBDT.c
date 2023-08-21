@@ -1113,7 +1113,6 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
-    int Ngamma_v200_index = -1;
     double Ngamma_v200 = -1;
 
     double invM_Knn = 0;
@@ -1179,7 +1178,7 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
             tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
             tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
         }
-        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1283,7 +1282,6 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
             }
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
-            Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
             weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID* Correction_fake * Correction_multiplicity);
@@ -1424,7 +1422,6 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
     double N_K0nn = 0;
     double N_K0starnn = 0;
 
-    int Ngamma_v200_index = -1;
     double Ngamma_v200 = -1;
 
     float BDTc = -1;
@@ -1484,7 +1481,7 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
             tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
             tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
         }
-        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -1594,7 +1591,6 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
             }
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
-            Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
             weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID* Correction_fake * Correction_multiplicity * BDTc_correction);

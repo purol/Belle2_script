@@ -870,7 +870,6 @@ void LetsFillOffres_ri(const char* dirname, std::vector<std::string> variable_na
 
     double FEI_calibration_factor = -1;
 
-    int Ngamma_v200_index = -1;
     double Ngamma_v200 = -1;
 
     std::vector<string> names;
@@ -916,7 +915,7 @@ void LetsFillOffres_ri(const char* dirname, std::vector<std::string> variable_na
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -985,7 +984,6 @@ void LetsFillOffres_ri(const char* dirname, std::vector<std::string> variable_na
             }
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
-            Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
             weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity);
@@ -1102,7 +1100,6 @@ void LetsFillOffres_ri_correction(const char* dirname, std::vector<std::string> 
 
     double FEI_calibration_factor = -1;
 
-    int Ngamma_v200_index = -1;
     double Ngamma_v200 = -1;
 
     float BDTc = -1;
@@ -1151,7 +1148,7 @@ void LetsFillOffres_ri_correction(const char* dirname, std::vector<std::string> 
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -1224,7 +1221,6 @@ void LetsFillOffres_ri_correction(const char* dirname, std::vector<std::string> 
             }
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
-            Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
             weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * BDTc_correction);
