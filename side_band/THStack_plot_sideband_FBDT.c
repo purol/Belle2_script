@@ -1113,6 +1113,8 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
+    double FEI_calibration_factor = -1;
+
     double Ngamma_v200 = -1;
 
     double invM_Knn = 0;
