@@ -1334,6 +1334,13 @@ double GetNtracks(double Upsilon_ID, double Bsig_ID) {
     return -1.0;
 }
 
+double BDTcToWeight(double BDTc) {
+
+    if (BDTc > (5.0 / 6.0)) return 5.0;
+    else return (BDTc / (1.0 - BDTc));
+
+}
+
 double GetNominalPDFs(const char* dirname, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
@@ -3089,9 +3096,7 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, const char
             // Multiplicity correction factor
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
-            double BDTc_weight = 0;
-            if (BDTc_var > (5.0 / 6.0)) BDTc_weight = 5.0;
-            else BDTc_weight = (BDTc_var / (1.0 - BDTc_var));
+            double BDTc_weight = BDTcToWeight(BDTc_var);
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * BDTc_weight;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
@@ -3144,9 +3149,7 @@ double GetBDTcPDFs(const char* dirname, TH1D* hist, const char* type, const char
             // Multiplicity correction factor
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
-            double BDTc_weight = 0;
-            if (BDTc_var > (5.0 / 6.0)) BDTc_weight = 5.0;
-            else BDTc_weight = (BDTc_var / (1.0 - BDTc_var));
+            double BDTc_weight = BDTcToWeight(BDTc_var);
             BDTc_weight = BDTc_weight * (Nevt / Nevt_with_BDTc);
 
             double total_weight = weight_var * Correction_pi0 * Correction_FEI * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * BDTc_weight;
