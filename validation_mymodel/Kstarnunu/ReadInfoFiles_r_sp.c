@@ -17,6 +17,48 @@ void load_files(const char *dirname, std::vector<string>* names){
    }
 }
 
+TH1D* Kstar_delta_weight;
+TH1D* K0star_delta_weight;
+double ReadWeightHist(TH1D* hist, double value);
+
+double ReadWeightHist(TH1D* hist, double value) {
+    int Bin = hist->FindBin(value);
+    if (Bin < 1) Bin = 1;
+    else if (Bin > hist->GetNbinsX()) Bin = hist->GetNbinsX();
+    return hist->GetBinContent(Bin);
+}
+
+void ReadSignalModelingFile() {
+
+    FILE* fp;
+    int Nentry = 0;
+    double RangeMIN = -1;
+    double RangeMAX = -1;
+
+    // Kstar_delta_weight
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/signal_modeling/MKstar_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &Nentry, &RangeMIN, &RangeMAX);
+    Kstar_delta_weight = new TH1D("Kstar_delta_weight", ";;", Nentry, RangeMIN, RangeMAX);
+    for (int i = 0; i < Nentry; i++) {
+        double weight = 0;
+        fscanf(fp, "%lf\n", &weight);
+        Kstar_delta_weight->SetBinContent(i + 1, weight);
+    }
+    fclose(fp);
+
+    // K0star_delta_weight
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/signal_modeling/MK0star_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &Nentry, &RangeMIN, &RangeMAX);
+    K0star_delta_weight = new TH1D("K0star_delta_weight", ";;", Nentry, RangeMIN, RangeMAX);
+    for (int i = 0; i < Nentry; i++) {
+        double weight = 0;
+        fscanf(fp, "%lf\n", &weight);
+        K0star_delta_weight->SetBinContent(i + 1, weight);
+    }
+    fclose(fp);
+
+}
+
 void ReadInfoFiles_r_sp(){
 
     std::vector<string> names;
@@ -50,6 +92,8 @@ void ReadInfoFiles_r_sp(){
         int __ncandidates__;
         double s;
 
+        double MXs = -1.0;
+
         // get event_info
         tree_info->SetBranchAddress("__experiment__", &__experiment__);
         tree_info->SetBranchAddress("__run__", &__run__);
@@ -57,11 +101,12 @@ void ReadInfoFiles_r_sp(){
         tree_info->SetBranchAddress("__candidate__", &__candidate__);
         tree_info->SetBranchAddress("__ncandidates__", &__ncandidates__);
         tree_info->SetBranchAddress("invMassInLists__bonu_e__clPrimaryMC_signal__bc", &s);
+        tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &MXs);
 
         printf("%lld entries...\n", tree_info->GetEntries());
         for (unsigned int j = 0; j < tree_info->GetEntries(); j++) { // Fill
             tree_info->GetEntry(j);
-            Plot->Fill(s*s);
+            Plot->Fill(s*s, ReadWeightHist(Kstar_delta_weight, MXs););
         }
         input_file->Close();
     }

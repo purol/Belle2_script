@@ -1189,11 +1189,6 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
-            else if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
-            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
-            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
-
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
 
             // Fill numberings
@@ -1227,26 +1222,6 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
                 numberings->push_back(5);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
-            }
-            else if (SampleName == "Knn") {
-                numberings->push_back(0);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-            }
-            else if (SampleName == "Kstarnn") {
-                numberings->push_back(0);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-            }
-            else if (SampleName == "K0nn") {
-                numberings->push_back(1);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-            }
-            else if (SampleName == "K0starnn") {
-                numberings->push_back(1);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
@@ -1284,11 +1259,14 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
+            // Knn correction factor
+            double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity);
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity);
 
 
         }
@@ -1495,11 +1473,6 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
-            else if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
-            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
-            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
-
             // BDTc correction factor
             if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
             else BDTc_correction = (BDTc / (1.0 - BDTc));
@@ -1539,26 +1512,6 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
             }
-            else if (SampleName == "Knn") {
-                numberings->push_back(0);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-            }
-            else if (SampleName == "Kstarnn") {
-                numberings->push_back(0);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-            }
-            else if (SampleName == "K0nn") {
-                numberings->push_back(1);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-            }
-            else if (SampleName == "K0starnn") {
-                numberings->push_back(1);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-            }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
             //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
@@ -1595,11 +1548,14 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
+            // Knn correction factor
+            double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * BDTc_correction);
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * Correction_Knn * BDTc_correction);
 
 
         }
@@ -1722,11 +1678,6 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
-            else if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
-            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
-            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
-
             // BDTc correction factor
             if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
             else BDTc_correction = (BDTc / (1.0 - BDTc));
@@ -1756,22 +1707,6 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             else if (SampleName == "CHARM") {
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
-            }
-            else if (SampleName == "Knn") {
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-            }
-            else if (SampleName == "Kstarnn") {
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-            }
-            else if (SampleName == "K0nn") {
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn); 
-            }
-            else if (SampleName == "K0starnn") {
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn); 
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
@@ -1809,11 +1744,14 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
+            // Knn correction factor
+            double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
-            nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity;
-            nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity * BDTc_correction;
+            nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity;
+            nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * BDTc_correction;
 
 
         }
@@ -1849,11 +1787,6 @@ void THStack_plot_sideband() {
     const char* Sideband_MC_SSBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/SSBAR_analysis/test_v000/final_output";
     const char* Sideband_MC_CHARM_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_side/CHARM_analysis/test_v000/final_output";
 
-    const char* Sideband_MC_dirname_Knn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_side/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Knn";
-    const char* Sideband_MC_dirname_Kstarnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_side/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B2Kstarnn";
-    const char* Sideband_MC_dirname_K0nn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_side/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0nn";
-    const char* Sideband_MC_dirname_K0starnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_side/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/B02K0starnn";
-
     const char* Sideband_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_data_side/SIGNAL_analysis/validation_v000/final_output";
 
     NevtCount_ri(Sideband_MC_CHG_train_dirname, "CHG", &nevt_CHG);
@@ -1869,11 +1802,6 @@ void THStack_plot_sideband() {
     NevtCount_ri(Sideband_MC_DDBAR_test_dirname, "DDBAR", &nevt_DDBAR);
     NevtCount_ri(Sideband_MC_SSBAR_test_dirname, "SSBAR", &nevt_SSBAR);
     NevtCount_ri(Sideband_MC_CHARM_test_dirname, "CHARM", &nevt_CHARM);
-
-    NevtCount_ri(Sideband_MC_dirname_Knn, "Knn", &nevt_CHG);
-    NevtCount_ri(Sideband_MC_dirname_Kstarnn, "Kstarnn", &nevt_CHG);
-    NevtCount_ri(Sideband_MC_dirname_K0nn, "K0nn", &nevt_MIX);
-    NevtCount_ri(Sideband_MC_dirname_K0starnn, "K0starnn", &nevt_MIX);
 
     double NormFactor_CHG = nevt_CHG.NevtwithoutCorrection / nevt_CHG.NevtwithCorrection;
     double NormFactor_MIX = nevt_MIX.NevtwithoutCorrection / nevt_MIX.NevtwithCorrection;
@@ -2062,10 +1990,6 @@ void THStack_plot_sideband() {
     LetsFillSideBand_ri_correction(Sideband_MC_DDBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR);
     LetsFillSideBand_ri_correction(Sideband_MC_SSBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR);
     LetsFillSideBand_ri_correction(Sideband_MC_CHARM_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM", NormFactor_CHARM);
-    LetsFillSideBand_ri(Sideband_MC_dirname_Knn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "Knn");
-    LetsFillSideBand_ri(Sideband_MC_dirname_Kstarnn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "Kstarnn");
-    LetsFillSideBand_ri(Sideband_MC_dirname_K0nn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "K0nn");
-    LetsFillSideBand_ri(Sideband_MC_dirname_K0starnn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "K0starnn");
     /*
     LetsFillSideBand_ri(Sideband_MC_CHG_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
     LetsFillSideBand_ri(Sideband_MC_MIX_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
@@ -2079,10 +2003,6 @@ void THStack_plot_sideband() {
     LetsFillSideBand_ri(Sideband_MC_DDBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR");
     LetsFillSideBand_ri(Sideband_MC_SSBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR");
     LetsFillSideBand_ri(Sideband_MC_CHARM_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM");
-    LetsFillSideBand_ri(Sideband_MC_dirname_Knn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "Knn");
-    LetsFillSideBand_ri(Sideband_MC_dirname_Kstarnn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "Kstarnn");
-    LetsFillSideBand_ri(Sideband_MC_dirname_K0nn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "K0nn");
-    LetsFillSideBand_ri(Sideband_MC_dirname_K0starnn, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "K0starnn");
     */
     LetsFill(Sideband_data_dirname, variable_names, branch_names, Sideband_data_values);
 
