@@ -1002,7 +1002,7 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((SampleName == "Knn") || (SampleName == "Kstarnn") || (SampleName == "K0nn") || (SampleName == "K0starnn")) {
+        if ((SampleName == "CHG") || (SampleName == "MIX")) {
             tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
             tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
             tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
@@ -1021,11 +1021,6 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
 
             if (option == 1 && Upsilon_ID != 0) continue;
             else if (option == 2 && Upsilon_ID != 1) continue;
-
-            if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Knn > MyEPSILON)) continue;
-            else if ((strcmp(SampleName.c_str(), "CHG") == 0) && (N_Kstarnn > MyEPSILON)) continue;
-            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0nn > MyEPSILON)) continue;
-            else if ((strcmp(SampleName.c_str(), "MIX") == 0) && (N_K0starnn > MyEPSILON)) continue;
 
             // Fill numberings
             double weight_ri = 0.0;
@@ -1052,22 +1047,6 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
             else if (SampleName == "CHARM") {
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
-            }
-            else if (SampleName == "Knn") {
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-            }
-            else if (SampleName == "Kstarnn") {
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-            }
-            else if (SampleName == "K0nn") {
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-            }
-            else if (SampleName == "K0starnn") {
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = corrector_Knn.GetCorrectionFactor(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
@@ -1105,13 +1084,16 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
                 Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
+            // Knn correction factor
+            double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             double Ngamma_v200 = var;
             double Correction_multiplicity = 1.0;
             if (IsMultiplicityCorrectionApplied) Correction_multiplicity = corrector_Multiplicity->GetCorrectionFactor(Ngamma_v200);
 
             double weight = 1.0;
-            if (IsMultiplicityCorrectionApplied) weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_multiplicity;
+            if (IsMultiplicityCorrectionApplied) weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity;
             else weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake;
 
             hist_Ngamma->Fill(var, weight);
@@ -1206,11 +1188,6 @@ void MultiplicityCalculator(){
     const char* ChargeSideband_MC_SSBAR_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/SSBAR_analysis/test_v000/final_output";
     const char* ChargeSideband_MC_CHARM_test_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_cside/CHARM_analysis/test_v000/final_output";
 
-    const char* ChargeSideband_MC_dirname_Knn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_cside/SIGNAL_analysis/validation_v000/final_output/B2Knn";
-    const char* ChargeSideband_MC_dirname_Kstarnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_cside/SIGNAL_analysis/validation_v000/final_output/B2Kstarnn";
-    const char* ChargeSideband_MC_dirname_K0nn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_cside/SIGNAL_analysis/validation_v000/final_output/B02K0nn";
-    const char* ChargeSideband_MC_dirname_K0starnn = "/home/jwpark/storage/BKG_gbasf2/Kokoro_Knn_LS_MC_cside/SIGNAL_analysis/validation_v000/final_output/B02K0starnn";
-
     const char* ChargeSideband_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_data_cside/SIGNAL_analysis/validation_v000/final_output";
 
     // Lets fill!
@@ -1229,11 +1206,6 @@ void MultiplicityCalculator(){
     LetsFillNgamma(ChargeSideband_MC_DDBAR_test_dirname, Ngamma_v200_MC, "DDBAR", 1, false);
     LetsFillNgamma(ChargeSideband_MC_SSBAR_test_dirname, Ngamma_v200_MC, "SSBAR", 1, false);
     LetsFillNgamma(ChargeSideband_MC_CHARM_test_dirname, Ngamma_v200_MC, "CHARM", 1, false);
-
-    LetsFillNgamma(ChargeSideband_MC_dirname_Knn, Ngamma_v200_MC, "Knn", 1, false);
-    LetsFillNgamma(ChargeSideband_MC_dirname_Kstarnn, Ngamma_v200_MC, "Kstarnn", 1, false);
-    LetsFillNgamma(ChargeSideband_MC_dirname_K0nn, Ngamma_v200_MC, "K0nn", 1, false);
-    LetsFillNgamma(ChargeSideband_MC_dirname_K0starnn, Ngamma_v200_MC, "K0starnn", 1, false);
 
     LetsFillNgamma(ChargeSideband_data_dirname, Ngamma_v200_data, 1);
 
@@ -1280,11 +1252,6 @@ void MultiplicityCalculator(){
     LetsFillNgamma(ChargeSideband_MC_DDBAR_test_dirname, Ngamma_v200_MC_test, "DDBAR", 2, true);
     LetsFillNgamma(ChargeSideband_MC_SSBAR_test_dirname, Ngamma_v200_MC_test, "SSBAR", 2, true);
     LetsFillNgamma(ChargeSideband_MC_CHARM_test_dirname, Ngamma_v200_MC_test, "CHARM", 2, true);
-
-    LetsFillNgamma(ChargeSideband_MC_dirname_Knn, Ngamma_v200_MC_test, "Knn", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_dirname_Kstarnn, Ngamma_v200_MC_test, "Kstarnn", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_dirname_K0nn, Ngamma_v200_MC_test, "K0nn", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_dirname_K0starnn, Ngamma_v200_MC_test, "K0starnn", 2, true);
 
     LetsFillNgamma(ChargeSideband_data_dirname, Ngamma_v200_data_test, 2);
 
