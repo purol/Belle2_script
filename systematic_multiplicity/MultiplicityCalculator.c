@@ -1094,7 +1094,7 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
 
             double weight = 1.0;
             if (IsMultiplicityCorrectionApplied) weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity;
-            else weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake;
+            else weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn;
 
             hist_Ngamma->Fill(var, weight);
 
