@@ -375,28 +375,28 @@ std::complex<double> Amplitude(double s13, double s23, const char* resonance) { 
 
     if (strcmp(resonance, "f980") == 0) {
         std::complex<double> a;
-        a = c_f980 * std::exp(1i * DegreeToRadian(phi_f980));
+        a = c_f980 * std::exp(1i * phi_f980);
         return a * (DynamicalAmplitude(s13, s23, resonance) + DynamicalAmplitude(s12, s23, resonance) + DynamicalAmplitude(s12, s13, resonance));
     }
     else if (strcmp(resonance, "f1710") == 0) {
         std::complex<double> a;
-        a = c_f1710 * std::exp(1i * DegreeToRadian(phi_f1710));
+        a = c_f1710 * std::exp(1i * phi_f1710);
         return a * (DynamicalAmplitude(s13, s23, resonance) + DynamicalAmplitude(s12, s23, resonance) + DynamicalAmplitude(s12, s13, resonance));
     }
     else if (strcmp(resonance, "f2010") == 0) {
         std::complex<double> a;
-        a = c_f2010 * std::exp(1i * DegreeToRadian(phi_f2010));
+        a = c_f2010 * std::exp(1i * phi_f2010);
         return a * (DynamicalAmplitude(s13, s23, resonance) + DynamicalAmplitude(s12, s23, resonance) + DynamicalAmplitude(s12, s13, resonance));
     }
     else if (strcmp(resonance, "chic0") == 0) {
         std::complex<double> a;
-        a = c_chic0 * std::exp(1i * (DegreeToRadian(phi_chic0)));
+        a = c_chic0 * std::exp(1i * phi_chic0);
         return a * (DynamicalAmplitude(s13, s23, resonance) + DynamicalAmplitude(s12, s23, resonance) + DynamicalAmplitude(s12, s13, resonance));
     }
     else if (strcmp(resonance, "NR") == 0) {
 
         std::complex<double> a;
-        a = c_NR * std::exp(1i * (DegreeToRadian(phi_NR)));
+        a = c_NR * std::exp(1i * phi_NR);
 
         return a * (std::exp(alpha_NR * s13) + std::exp(alpha_NR * s12) + std::exp(alpha_NR * s23));
     }
