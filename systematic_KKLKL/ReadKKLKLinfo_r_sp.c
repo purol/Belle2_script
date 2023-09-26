@@ -797,8 +797,8 @@ void GetWeights() {
             double s13 = (i + 0.5) * (s13_max - s13_min) / NBin + s13_min;
             double s23 = (j + 0.5) * (s23_max - s23_min) / NBin + s23_min;
 
-            int GLobalBin_PHSP = N_evt->FindBin(s13, s23);
-            double PHSP_val = N_evt->GetBinContent(GLobalBin_PHSP);
+            int GLobalBin_PHSP = Prob_PHSP->FindBin(s13, s23);
+            double PHSP_val = Prob_PHSP->GetBinContent(GLobalBin_PHSP);
 
             int GLobalBin_model = Prob->FindBin(s13, s23);
             double model_val = Prob->GetBinContent(GLobalBin_model);
