@@ -526,7 +526,28 @@ void GetProbabilityHist() {
             if (DalitzValue < 0 && s23 >= s13) {
                 if (isnan(Probability_value)) continue;
                 Prob->Fill(s13, s23, Probability_value);
-                Prob_1D_s23->Fill(std::sqrt(s23), Probability_value);
+            }
+
+        }
+    }
+
+    for (int i = 0; i < NBin_cal; i++) {
+        for (int j = 0; j < NBin_cal; j++) {
+
+            double m13 = (i + 0.5) * (std::sqrt(s13_max) - std::sqrt(s13_min)) / NBin_cal + std::sqrt(s13_min);
+            double m23 = (j + 0.5) * (std::sqrt(s23_max) - std::sqrt(s23_min)) / NBin_cal + std::sqrt(s23_min);
+
+            double s13 = m13 * m13;
+            double s23 = m23 * m23;
+            double s12 = mB * mB + mKp * mKp + mKL0 * mKL0 + mKL0 * mKL0 - s13 - s23;
+            double Probability_value = Probability(s13, s23) * ((std::sqrt(s13_max) - std::sqrt(s13_min)) / NBin_cal) * ((std::sqrt(s23_max) - std::sqrt(s23_min)) / NBin_cal);
+
+            // https://halldweb.jlab.org/DocDB/0033/003345/002/dalitz.pdf.
+            double DalitzValue = s23 * s12 * s12 + (s23 * s23 + (mKp * mKp - mKL0 * mKL0) * (mB * mB - mKL0 * mKL0) - s23 * (mB * mB + mKL0 * mKL0 + mKL0 * mKL0 + mKp * mKp)) * s12 + ((mKL0 * mKL0 * mB * mB - mKL0 * mKL0 * mKp * mKp) * (mB * mB - mKL0 * mKL0 + mKL0 * mKL0 - mKp * mKp));
+
+            if (DalitzValue < 0 && s23 >= s13) {
+                if (isnan(Probability_value)) continue;
+                Prob_1D_s23->Fill(m23, Probability_value);
             }
 
         }
@@ -546,8 +567,29 @@ void GetProbabilityHist() {
             if (DalitzValue < 0 && s23 >= s13) {
                 if (isnan(Probability_value)) continue;
                 Prob_conv->Fill(s12, s13, Probability_value);
-                Prob_1D_s12->Fill(std::sqrt(s12), Probability_value);
-                Prob_1D_s13->Fill(std::sqrt(s13), Probability_value);
+            }
+
+        }
+    }
+
+    for (int i = 0; i < NBin_cal; i++) {
+        for (int j = 0; j < NBin_cal; j++) {
+
+            double m12 = (i + 0.5) * (std::sqrt(s12_max) - std::sqrt(s12_min)) / NBin_cal + std::sqrt(s12_min);
+            double m13 = (j + 0.5) * (std::sqrt(s13_max) - std::sqrt(s13_min)) / NBin_cal + std::sqrt(s13_min);
+
+            double s12 = m12 * m12;
+            double s13 = m13 * m13;
+            double s23 = mB * mB + mKp * mKp + mKL0 * mKL0 + mKL0 * mKL0 - s12 - s13;
+            double Probability_value = Probability(s13, s23) * ((std::sqrt(s12_max) - std::sqrt(s12_min)) / NBin_cal) * ((std::sqrt(s13_max) - std::sqrt(s13_min)) / NBin_cal);
+
+            // https://halldweb.jlab.org/DocDB/0033/003345/002/dalitz.pdf.
+            double DalitzValue = s23 * s12 * s12 + (s23 * s23 + (mKp * mKp - mKL0 * mKL0) * (mB * mB - mKL0 * mKL0) - s23 * (mB * mB + mKL0 * mKL0 + mKL0 * mKL0 + mKp * mKp)) * s12 + ((mKL0 * mKL0 * mB * mB - mKL0 * mKL0 * mKp * mKp) * (mB * mB - mKL0 * mKL0 + mKL0 * mKL0 - mKp * mKp));
+
+            if (DalitzValue < 0 && s23 >= s13) {
+                if (isnan(Probability_value)) continue;
+                Prob_1D_s12->Fill(m12, Probability_value);
+                Prob_1D_s13->Fill(m13, Probability_value);
             }
 
         }
