@@ -371,7 +371,7 @@ std::complex<double> DynamicalAmplitude(double s13, double s23, const char* reso
 
 std::complex<double> Amplitude(double s13, double s23, const char* resonance) { // resonance: 1+2
 
-    double s12 = std::sqrt(mB0 * mB0 + mKp * mKp + mKL0 * mKL0 + mKL0 * mKL0 - s13 - s23);
+    double s12 = std::sqrt(mB0 * mB0 + mKS0 * mKS0 + mKL0 * mKL0 + mKL0 * mKL0 - s13 - s23);
 
     if (strcmp(resonance, "f980") == 0) {
         std::complex<double> a;
@@ -419,7 +419,7 @@ void GetProbabilityHist() {
 
             double smax = (i + 0.5) * (smax_max - smax_min) / NBin_cal + smax_min;
             double smin = (j + 0.5) * (smin_max - smin_min) / NBin_cal + smin_min;
-            double smed = mB0 * mB0 + mKp * mKp + mKL0 * mKL0 + mKL0 * mKL0 - smax - smin;
+            double smed = mB0 * mB0 + mKS0 * mKS0 + mKL0 * mKL0 + mKL0 * mKL0 - smax - smin;
             double Probability_value = Probability(smax, smin) * ((smax_max - smax_min) / NBin_cal) * ((smin_max - smin_min) / NBin_cal);
 
             // https://halldweb.jlab.org/DocDB/0033/003345/002/dalitz.pdf.
@@ -441,7 +441,7 @@ void GetProbabilityHist() {
 
             double smax = mmax * mmax;
             double smin = mmin * mmin;
-            double smed = mB0 * mB0 + mKp * mKp + mKL0 * mKL0 + mKL0 * mKL0 - smax - smin;
+            double smed = mB0 * mB0 + mKS0 * mKS0 + mKL0 * mKL0 + mKL0 * mKL0 - smax - smin;
             double Probability_value = Probability(smax, smin) * ((smax_max - smax_min) / NBin_cal) * ((smin_max - smin_min) / NBin_cal);
 
             // https://halldweb.jlab.org/DocDB/0033/003345/002/dalitz.pdf.
@@ -475,11 +475,11 @@ void Draw1DPlots() {
 
     Prob_1D_sqrt_smin->SetStats(0);
     Prob_1D_sqrt_smin->Draw("Hist");
-    c->SaveAs("1D_sqrt_sminDraw1DPlots.png");
+    c->SaveAs("1D_sqrt_smin_K0KLKL.png");
 
     Prob_1D_sqrt_smax->SetStats(0);
     Prob_1D_sqrt_smax->Draw("Hist");
-    c->SaveAs("1D_sqrt_smaxDraw1DPlots.png");
+    c->SaveAs("1D_sqrt_smax_K0KLKL.png");
 
     delete c;
 }
@@ -577,7 +577,7 @@ void FillInfo(const char* dirname) {
             double smed = s12_ + s13_ + s23_ - smax - smin;
 
             // Makeshift to remove photon production decay
-            if (std::abs(s12_ -(mB0 * mB0 + mKp * mKp + mKL0 * mKL0 + mKL0 * mKL0 - s13_ - s23_)) > MyEPSILON) continue;
+            if (std::abs(s12_ -(mB0 * mB0 + mKS0 * mKS0 + mKL0 * mKL0 + mKL0 * mKL0 - s13_ - s23_)) > MyEPSILON) continue;
 
             Information temp_info = { smax, smin, smed };
 
