@@ -475,11 +475,11 @@ void Draw1DPlots() {
 
     Prob_1D_sqrt_smin->SetStats(0);
     Prob_1D_sqrt_smin->Draw("Hist");
-    c->SaveAs("1D_sqrt_smin.png");
+    c->SaveAs("1D_sqrt_sminDraw1DPlots.png");
 
     Prob_1D_sqrt_smax->SetStats(0);
     Prob_1D_sqrt_smax->Draw("Hist");
-    c->SaveAs("1D_sqrt_smax.png");
+    c->SaveAs("1D_sqrt_smaxDraw1DPlots.png");
 
     delete c;
 }
@@ -629,11 +629,11 @@ int main(){
     FillHist();
     GetZeros();
 
-    DrawDalitz(N_evt, "PHSP.png");
+    DrawDalitz(N_evt, "PHSP_K0KLKL.png");
 
     GetProbabilityHist();
 
-    DrawDalitz(Prob, "model.png");
+    DrawDalitz(Prob, "model_K0KLKL.png");
 
     Draw1DPlots();
 
