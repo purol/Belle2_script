@@ -659,7 +659,7 @@ int main(){
 
     Draw1DPlots();
 
-    //GetWeights();
+    GetWeights();
 
     return 0;
 }
