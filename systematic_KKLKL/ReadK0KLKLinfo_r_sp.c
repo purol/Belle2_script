@@ -371,34 +371,56 @@ std::complex<double> DynamicalAmplitude(double s13, double s23, const char* reso
 
 std::complex<double> Amplitude(double s13, double s23, const char* resonance) { // resonance: 1+2
 
+    /*
+     * my FF
+     * f980:  30.222805945
+     * f1710: 136.555962030
+     * f2010: 82.699701704
+     * chic0: 677.282967269
+     * NR:    51.262701105
+     *
+     * paper's FF
+     * f980:  0.44
+     * f1710: 0.07
+     * f2010: 0.09
+     * chic0: 0.07
+     * NR:    2.16
+     */
+
+    double MagicNumber_f980 = std::sqrt(0.44 / 30.222805945);
+    double MagicNumber_f1710 = std::sqrt(0.07 / 136.555962030);
+    double MagicNumber_f2010 = std::sqrt(0.09 / 82.699701704);
+    double MagicNumber_chic0 = std::sqrt(0.07 / 677.282967269);
+    double MagicNumber_NR = std::sqrt(2.16 / 51.262701105);
+
     double s12 = mB0 * mB0 + mKS0 * mKS0 + mKL0 * mKL0 + mKL0 * mKL0 - s13 - s23;
 
     if (strcmp(resonance, "f980") == 0) {
         std::complex<double> a;
         a = c_f980 * std::exp(1i * phi_f980);
-        return a * (DynamicalAmplitude(s13, s23, resonance) + DynamicalAmplitude(s12, s23, resonance) + DynamicalAmplitude(s12, s13, resonance));
+        return MagicNumber_f980 * a * (DynamicalAmplitude(s13, s23, resonance) + DynamicalAmplitude(s12, s23, resonance) + DynamicalAmplitude(s12, s13, resonance));
     }
     else if (strcmp(resonance, "f1710") == 0) {
         std::complex<double> a;
         a = c_f1710 * std::exp(1i * phi_f1710);
-        return a * (DynamicalAmplitude(s13, s23, resonance) + DynamicalAmplitude(s12, s23, resonance) + DynamicalAmplitude(s12, s13, resonance));
+        return MagicNumber_f1710 * a * (DynamicalAmplitude(s13, s23, resonance) + DynamicalAmplitude(s12, s23, resonance) + DynamicalAmplitude(s12, s13, resonance));
     }
     else if (strcmp(resonance, "f2010") == 0) {
         std::complex<double> a;
         a = c_f2010 * std::exp(1i * phi_f2010);
-        return a * (DynamicalAmplitude(s13, s23, resonance) + DynamicalAmplitude(s12, s23, resonance) + DynamicalAmplitude(s12, s13, resonance));
+        return MagicNumber_f2010 * a * (DynamicalAmplitude(s13, s23, resonance) + DynamicalAmplitude(s12, s23, resonance) + DynamicalAmplitude(s12, s13, resonance));
     }
     else if (strcmp(resonance, "chic0") == 0) {
         std::complex<double> a;
         a = c_chic0 * std::exp(1i * phi_chic0);
-        return a * (DynamicalAmplitude(s13, s23, resonance) + DynamicalAmplitude(s12, s23, resonance) + DynamicalAmplitude(s12, s13, resonance));
+        return MagicNumber_chic0 * a * (DynamicalAmplitude(s13, s23, resonance) + DynamicalAmplitude(s12, s23, resonance) + DynamicalAmplitude(s12, s13, resonance));
     }
     else if (strcmp(resonance, "NR") == 0) {
 
         std::complex<double> a;
         a = c_NR * std::exp(1i * phi_NR);
 
-        return a * (std::exp(alpha_NR * s13) + std::exp(alpha_NR * s12) + std::exp(alpha_NR * s23));
+        return MagicNumber_NR * a * (std::exp(alpha_NR * s13) + std::exp(alpha_NR * s12) + std::exp(alpha_NR * s23));
     }
     else {
         printf("[Amplitude] unsupported resonance\n");
@@ -587,36 +609,36 @@ void FillInfo(const char* dirname) {
         input_file->Close();
     }
 }
-/*
+
 void GetWeights() {
     FILE* fp;
 
-    fp = fopen("KpKLKL_weight.txt","w");
+    fp = fopen("K0KLKL_weight.txt","w");
 
-    fprintf(fp, "s13: %d %lf %lf\n", NBin, s13_min, s13_max);
-    fprintf(fp, "s23: %d %lf %lf\n", NBin, s23_min, s23_max);
+    fprintf(fp, "smax: %d %lf %lf\n", NBin, smax_min, smax_max);
+    fprintf(fp, "smin: %d %lf %lf\n", NBin, smin_min, smin_max);
     for (int i = 0; i < NBin; i++) {
         for (int j = 0; j < NBin; j++) {
-            double s13 = (i + 0.5) * (s13_max - s13_min) / NBin + s13_min;
-            double s23 = (j + 0.5) * (s23_max - s23_min) / NBin + s23_min;
+            double smax = (i + 0.5) * (smax_max - smax_min) / NBin + smax_min;
+            double smin = (j + 0.5) * (smin_max - smin_min) / NBin + smin_min;
 
-            int GLobalBin_PHSP = N_evt->FindBin(s13, s23);
+            int GLobalBin_PHSP = N_evt->FindBin(smax, smin);
             double PHSP_val = N_evt->GetBinContent(GLobalBin_PHSP);
 
-            int GLobalBin_model = Prob->FindBin(s13, s23);
+            int GLobalBin_model = Prob->FindBin(smax, smin);
             double model_val = Prob->GetBinContent(GLobalBin_model);
 
-            int GLobalBin_Nevt = N_evt->FindBin(s13, s23);
+            int GLobalBin_Nevt = N_evt->FindBin(smax, smin);
             double Nevt = N_evt->GetBinContent(GLobalBin_Nevt);
 
-            if (Nevt < MyEPSILON) fprintf(fp, "%lf %lf %lf\n", s13, s23, 0.0);
-            else fprintf(fp, "%lf %lf %lf\n", s13, s23, model_val / PHSP_val);
+            if (Nevt < MyEPSILON) fprintf(fp, "%lf %lf %lf\n", smax, smin, 0.0);
+            else fprintf(fp, "%lf %lf %lf\n", smax, smin, model_val / PHSP_val);
         }
     }
 
     fclose(fp);
 }
-*/
+
 int main(){
     /*
     get correction factor for B+ --> K+ KL0 KL0 MC
