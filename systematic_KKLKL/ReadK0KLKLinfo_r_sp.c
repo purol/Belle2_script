@@ -371,7 +371,7 @@ std::complex<double> DynamicalAmplitude(double s13, double s23, const char* reso
 
 std::complex<double> Amplitude(double s13, double s23, const char* resonance) { // resonance: 1+2
 
-    double s12 = std::sqrt(mB0 * mB0 + mKS0 * mKS0 + mKL0 * mKL0 + mKL0 * mKL0 - s13 - s23);
+    double s12 = mB0 * mB0 + mKS0 * mKS0 + mKL0 * mKL0 + mKL0 * mKL0 - s13 - s23;
 
     if (strcmp(resonance, "f980") == 0) {
         std::complex<double> a;
@@ -457,7 +457,7 @@ void GetProbabilityHist() {
     }
 
     double norm = 1.0 / Prob->Integral();
-    printf("Initial area of Prob: %.9lf\nnormalized to zero\n", 1.0 / norm);
+    printf("Initial area of Prob: %.9lf\nnormalized to one\n", 1.0 / norm);
     Prob->Scale(norm);
 
     double norm_1D;
@@ -577,7 +577,7 @@ void FillInfo(const char* dirname) {
             double smed = s12_ + s13_ + s23_ - smax - smin;
 
             // Makeshift to remove photon production decay
-            if (std::abs(s12_ -(mB0 * mB0 + mKS0 * mKS0 + mKL0 * mKL0 + mKL0 * mKL0 - s13_ - s23_)) > MyEPSILON) continue;
+            if (std::abs(s12_ - (mB0 * mB0 + mKS0 * mKS0 + mKL0 * mKL0 + mKL0 * mKL0 - s13_ - s23_)) > MyEPSILON) continue;
 
             Information temp_info = { smax, smin, smed };
 

@@ -596,7 +596,7 @@ void GetProbabilityHist() {
     }
 
     double norm = 1.0 / Prob->Integral();
-    printf("Initial area of Prob: %.9lf\nnormalized to zero\n", 1.0 / norm);
+    printf("Initial area of Prob: %.9lf\nnormalized to one\n", 1.0 / norm);
     Prob->Scale(norm);
 
     double norm_conv = 1.0 / Prob_conv->Integral();
