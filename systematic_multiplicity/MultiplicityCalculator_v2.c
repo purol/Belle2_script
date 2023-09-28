@@ -1264,7 +1264,7 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma_zero, TH1D* hist_Ngam
 
             if (pi0_multiplicity == 0) hist_Ngamma_zero->Fill(var);
             else if (pi0_multiplicity == 1) hist_Ngamma_one->Fill(var);
-            else if (pi0_multiplicity == 2) hist_Ngamma_two->Fill(var;
+            else if (pi0_multiplicity == 2) hist_Ngamma_two->Fill(var);
 
         }
         input_file->Close();
