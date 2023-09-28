@@ -1260,7 +1260,11 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma_zero, TH1D* hist_Ngam
             if (option == 1 && Upsilon_ID != 0) continue;
             else if (option == 2 && Upsilon_ID != 1) continue;
 
-            hist_Ngamma->Fill(var);
+            int pi0_multiplicity = Getpi0Multiplicity(Upsilon_ID, Bsig_ID);
+
+            if (pi0_multiplicity == 0) hist_Ngamma_zero->Fill(var);
+            else if (pi0_multiplicity == 1) hist_Ngamma_one->Fill(var);
+            else if (pi0_multiplicity == 2) hist_Ngamma_two->Fill(var;
 
         }
         input_file->Close();
