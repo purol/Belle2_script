@@ -47,7 +47,7 @@ double pstar0_f1710 = 0;
 # define c_f1710 1.0
 # define phi_f1710 1.11
 
-# define spin_f2010 0
+# define spin_f2010 2
 # define m0_f2010 2.011
 # define Gamma0_f2010 0.202
 double q0_f2010 = 0;
@@ -375,7 +375,7 @@ std::complex<double> Amplitude(double s13, double s23, const char* resonance) { 
      * my FF
      * f980:  30.222805945
      * f1710: 136.555962030
-     * f2010: 82.699701704
+     * f2010: 310762.546712675
      * chic0: 677.282967269
      * NR:    51.262701105
      *
@@ -389,7 +389,7 @@ std::complex<double> Amplitude(double s13, double s23, const char* resonance) { 
 
     double MagicNumber_f980 = std::sqrt(0.44 / 30.222805945);
     double MagicNumber_f1710 = std::sqrt(0.07 / 136.555962030);
-    double MagicNumber_f2010 = std::sqrt(0.09 / 82.699701704);
+    double MagicNumber_f2010 = std::sqrt(0.09 / 310762.546712675);
     double MagicNumber_chic0 = std::sqrt(0.07 / 677.282967269);
     double MagicNumber_NR = std::sqrt(2.16 / 51.262701105);
 
