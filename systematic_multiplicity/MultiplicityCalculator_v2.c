@@ -375,7 +375,7 @@ private:
 
 public:
     Corrector_Multiplicity();
-    double GetCorrectionFactor(double Ngamma);
+    double GetCorrectionFactor(double Ngamma, int pi0_multiplicity);
 };
 
 Corrector_Multiplicity *corrector_Multiplicity;
@@ -1260,9 +1260,7 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma_zero, TH1D* hist_Ngam
             if (option == 1 && Upsilon_ID != 0) continue;
             else if (option == 2 && Upsilon_ID != 1) continue;
 
-            if (Getpi0Multiplicity(Upsilon_ID, Bsig_ID) == 0) hist_Ngamma_zero->Fill(var, weight);
-            else if (Getpi0Multiplicity(Upsilon_ID, Bsig_ID) == 1) hist_Ngamma_one->Fill(var, weight);
-            else if (Getpi0Multiplicity(Upsilon_ID, Bsig_ID) == 2) hist_Ngamma_two->Fill(var, weight);
+            hist_Ngamma->Fill(var);
 
         }
         input_file->Close();
@@ -1315,7 +1313,7 @@ void MultiplicityCalculator_v2(){
     LetsFillNgamma(ChargeSideband_MC_SSBAR_test_dirname, Ngamma_zero_v200_MC, Ngamma_one_v200_MC, Ngamma_two_v200_MC, "SSBAR", 1, false);
     LetsFillNgamma(ChargeSideband_MC_CHARM_test_dirname, Ngamma_zero_v200_MC, Ngamma_one_v200_MC, Ngamma_two_v200_MC, "CHARM", 1, false);
 
-    LetsFillNgamma(ChargeSideband_data_dirname, Ngamma_zero_v200_data, Ngamma_one_v200_data, Ngamma_two_v200_data, , 1);
+    LetsFillNgamma(ChargeSideband_data_dirname, Ngamma_zero_v200_data, Ngamma_one_v200_data, Ngamma_two_v200_data, 1);
 
     // print weight file
     FILE* fp = fopen("multiplicity_weight_zero.txt","w");
