@@ -398,9 +398,9 @@ Corrector_Multiplicity::Corrector_Multiplicity() :
 
     // read Knn weights
     fp = fopen("./multiplicity_weight_zero.txt", "r");
-    fscanf(fp, "%d\n", &NgammaMAX_);
-    weights_Ngamma_zero = new TH1D("weights_Ngamma_zero", ";;", NgammaMAX_ + 1, -0.5, NgammaMAX_ + 0.5);
-    for (int i = 0; i < NgammaMAX_ + 1; i++) {
+    fscanf(fp, "%d\n", &NgammaMAX);
+    weights_Ngamma_zero = new TH1D("weights_Ngamma_zero", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    for (int i = 0; i < NgammaMAX + 1; i++) {
         double temp1;
         double temp2;
         double temp3;
@@ -411,9 +411,9 @@ Corrector_Multiplicity::Corrector_Multiplicity() :
     fclose(fp);
 
     fp = fopen("./multiplicity_weight_one.txt", "r");
-    fscanf(fp, "%d\n", &NgammaMAX_);
-    weights_Ngamma_one = new TH1D("weights_Ngamma_one", ";;", NgammaMAX_ + 1, -0.5, NgammaMAX_ + 0.5);
-    for (int i = 0; i < NgammaMAX_ + 1; i++) {
+    fscanf(fp, "%d\n", &NgammaMAX);
+    weights_Ngamma_one = new TH1D("weights_Ngamma_one", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    for (int i = 0; i < NgammaMAX + 1; i++) {
         double temp1;
         double temp2;
         double temp3;
@@ -424,9 +424,9 @@ Corrector_Multiplicity::Corrector_Multiplicity() :
     fclose(fp);
 
     fp = fopen("./multiplicity_weight_two.txt", "r");
-    fscanf(fp, "%d\n", &NgammaMAX_);
-    weights_Ngamma_two = new TH1D("weights_Ngamma_two", ";;", NgammaMAX_ + 1, -0.5, NgammaMAX_ + 0.5);
-    for (int i = 0; i < NgammaMAX_ + 1; i++) {
+    fscanf(fp, "%d\n", &NgammaMAX);
+    weights_Ngamma_two = new TH1D("weights_Ngamma_two", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    for (int i = 0; i < NgammaMAX + 1; i++) {
         double temp1;
         double temp2;
         double temp3;
@@ -445,7 +445,7 @@ double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma, int pi0_multip
             printf("[ERROR] Ngamma is smaller than 0!\n");
             exit(1);
         }
-        else if (Bin > NgammaMAX_ + 1) return 1.0;
+        else if (Bin > NgammaMAX + 1) return 1.0;
 
         return weights_Ngamma_zero->GetBinContent(Bin);
     }
@@ -455,7 +455,7 @@ double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma, int pi0_multip
             printf("[ERROR] Ngamma is smaller than 0!\n");
             exit(1);
         }
-        else if (Bin > NgammaMAX_ + 1) return 1.0;
+        else if (Bin > NgammaMAX + 1) return 1.0;
 
         return weights_Ngamma_one->GetBinContent(Bin);
     }
@@ -465,7 +465,7 @@ double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma, int pi0_multip
             printf("[ERROR] Ngamma is smaller than 0!\n");
             exit(1);
         }
-        else if (Bin > NgammaMAX_ + 1) return 1.0;
+        else if (Bin > NgammaMAX + 1) return 1.0;
 
         return weights_Ngamma_two->GetBinContent(Bin);
     }
