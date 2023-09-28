@@ -4,7 +4,7 @@
 /*
 when you add new variables:
 revise # define N_Needed_info ...
-revise typedef struct data
+revise typedef struct dataLoader::ConvertIntoSeparateDataFile(std::string output_name, double flag = 0)
 revise void Loader::GetData(TFile* input_file)
 check MakeShiftDoubleToInt if it affects the code
 revise void Loader::PrintRootFile(std::string output_name)
@@ -14,7 +14,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define N_Needed_info 37
 //# define N_event_info 15
-# define N_Upsilon_info 154
+# define N_Upsilon_info 164
 # define N_Bsig_info 738
 # define N_Btag_info 11
 # define N_decay 38 // five decay mode + others
@@ -615,6 +615,8 @@ typedef struct data{
     // 72-143: Eecl_systematics
     // 144: nDplustoKL0, 145: nDzerotoKL0
     // 146: nBplustoKnn, 147: inv_Knn, 148: nBplustoK*nn, 149: inv_K*nn, 150: nBzerotoK0nn, 151: inv_K0nn, 152: nBzerotoK0*nn, 153: inv_K0*nn
+    // 154: nBplustoKpKLKL_all, 155: nBplustoKpKLKL_NR, 156: BplustoKpKLKL_M01, 157: BplustoKpKLKL_M02, 158: BplustoKpKLKL_M12
+    // 159: nBzerotoKSKLKL_all, 160: nBzerotoKSKLKL_NR, 161: BzerotoKSKLKL_M01, 162: BzerotoKSKLKL_M02, 163: BzerotoKSKLKL_M12
 
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
@@ -1029,7 +1031,7 @@ void Loader::GetData(TFile* input_file) {
 
     Data temp = { 0 };
 
-    int MakeShiftDoubleToInt[13] = { 0 }; // intermediate variable to convert from int to double
+    int MakeShiftDoubleToInt[17] = { 0 }; // intermediate variable to convert from int to double
 
     // get event_info
     tree_upsilon->SetBranchAddress("__experiment__", &temp.upsilon_experiment);
@@ -1207,6 +1209,16 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &temp.Upsilon_info[151]);
     tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &MakeShiftDoubleToInt[12]); // temp.Upsilon_info[152]
     tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &temp.Upsilon_info[153]);
+    tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_all__bc", &MakeShiftDoubleToInt[13]); // temp.Upsilon_info[154]
+    tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_NR__bc", &MakeShiftDoubleToInt[14]); // temp.Upsilon_info[155]
+    tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp.Upsilon_info[156]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp.Upsilon_info[157]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp.Upsilon_info[158]);
+    tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_all__bc", &MakeShiftDoubleToInt[15]); // temp.Upsilon_info[159]
+    tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_NR__bc", &MakeShiftDoubleToInt[16]); // temp.Upsilon_info[160]
+    tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp.Upsilon_info[161]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp.Upsilon_info[162]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp.Upsilon_info[163]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
@@ -1450,6 +1462,10 @@ void Loader::GetData(TFile* input_file) {
         temp.Upsilon_info[148] = static_cast<double>(MakeShiftDoubleToInt[10]);
         temp.Upsilon_info[150] = static_cast<double>(MakeShiftDoubleToInt[11]);
         temp.Upsilon_info[152] = static_cast<double>(MakeShiftDoubleToInt[12]);
+        temp.Upsilon_info[154] = static_cast<double>(MakeShiftDoubleToInt[13]);
+        temp.Upsilon_info[155] = static_cast<double>(MakeShiftDoubleToInt[14]);
+        temp.Upsilon_info[159] = static_cast<double>(MakeShiftDoubleToInt[15]);
+        temp.Upsilon_info[160] = static_cast<double>(MakeShiftDoubleToInt[16]);
 
         TotalData.push(temp);
     }
@@ -2831,6 +2847,16 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("invMassInLists__bon0__clK0nn__bc", &UpsilonDataToTree[151]);
         tree_upsilon->Branch("nParticlesInList__boB0__clKstar0nn__bc", &UpsilonDataToTree[152]);
         tree_upsilon->Branch("invMassInLists__bon0__clKstar0nn__bc", &UpsilonDataToTree[153]);
+        tree_upsilon->Branch("nParticlesInList__boB__pl__clKpKLKL_all__bc", &UpsilonDataToTree[154]);
+        tree_upsilon->Branch("nParticlesInList__boB__pl__clKpKLKL_NR__bc", &UpsilonDataToTree[155]);
+        tree_upsilon->Branch("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &UpsilonDataToTree[156]);
+        tree_upsilon->Branch("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &UpsilonDataToTree[157]);
+        tree_upsilon->Branch("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &UpsilonDataToTree[158]);
+        tree_upsilon->Branch("nParticlesInList__boB0__clKSKLKL_all__bc", &UpsilonDataToTree[159]);
+        tree_upsilon->Branch("nParticlesInList__boB0__clKSKLKL_NR__bc", &UpsilonDataToTree[160]);
+        tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &UpsilonDataToTree[161]);
+        tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &UpsilonDataToTree[162]);
+        tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &UpsilonDataToTree[163]);
 
         // get Bsig_info
         tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
@@ -3339,6 +3365,16 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("invMassInLists__bon0__clK0nn__bc", &temp_UpsilonDataToTree[151]);
     temp_tree_upsilon->Branch("nParticlesInList__boB0__clKstar0nn__bc", &temp_UpsilonDataToTree[152]);
     temp_tree_upsilon->Branch("invMassInLists__bon0__clKstar0nn__bc", &temp_UpsilonDataToTree[153]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB__pl__clKpKLKL_all__bc", &temp_UpsilonDataToTree[154]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB__pl__clKpKLKL_NR__bc", &temp_UpsilonDataToTree[155]);
+    temp_tree_upsilon->Branch("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp_UpsilonDataToTree[156]);
+    temp_tree_upsilon->Branch("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp_UpsilonDataToTree[157]);
+    temp_tree_upsilon->Branch("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp_UpsilonDataToTree[158]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB0__clKSKLKL_all__bc", &temp_UpsilonDataToTree[159]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB0__clKSKLKL_NR__bc", &temp_UpsilonDataToTree[160]);
+    temp_tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp_UpsilonDataToTree[161]);
+    temp_tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp_UpsilonDataToTree[162]);
+    temp_tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp_UpsilonDataToTree[163]);
 
     // get Bsig_info
     temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -3833,6 +3869,16 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) 
     temp_tree->Branch("invMassInLists__bon0__clK0nn__bc", &temp_UpsilonDataToTree[151]);
     temp_tree->Branch("nParticlesInList__boB0__clKstar0nn__bc", &temp_UpsilonDataToTree[152]);
     temp_tree->Branch("invMassInLists__bon0__clKstar0nn__bc", &temp_UpsilonDataToTree[153]);
+    temp_tree->Branch("nParticlesInList__boB__pl__clKpKLKL_all__bc", &temp_UpsilonDataToTree[154]);
+    temp_tree->Branch("nParticlesInList__boB__pl__clKpKLKL_NR__bc", &temp_UpsilonDataToTree[155]);
+    temp_tree->Branch("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp_UpsilonDataToTree[156]);
+    temp_tree->Branch("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp_UpsilonDataToTree[157]);
+    temp_tree->Branch("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp_UpsilonDataToTree[158]);
+    temp_tree->Branch("nParticlesInList__boB0__clKSKLKL_all__bc", &temp_UpsilonDataToTree[159]);
+    temp_tree->Branch("nParticlesInList__boB0__clKSKLKL_NR__bc", &temp_UpsilonDataToTree[160]);
+    temp_tree->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp_UpsilonDataToTree[161]);
+    temp_tree->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp_UpsilonDataToTree[162]);
+    temp_tree->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp_UpsilonDataToTree[163]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
