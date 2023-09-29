@@ -669,6 +669,41 @@ double Corrector_KSKLKL::GetCorrectionFactorAtGeneric(double smax, double smin, 
     return Correction;
 }
 
+class Corrector_BtoDtoXKL {
+private:
+
+    const double Nominal_correction;
+    const double relative_uncertainty_correction; // relative uncertainty
+
+public:
+    Corrector_BtoDtoXKL();
+    double GetCorrectionFactorAtGeneric(int nBtoDtoXKL);
+    double GetRelativeUncertainty(int nBtoDtoXKL);
+};
+
+Corrector_BtoDtoXKL Corrector_BtoDtoXKL;
+
+Corrector_BtoDtoXKL::Corrector_BtoDtoXKL() :
+    Nominal_correction(1.3),
+    relative_uncertainty_correction(0.1 / 1.3)
+{
+
+}
+
+double Corrector_BtoDtoXKL::GetCorrectionFactorAtGeneric(int nBtoDtoXKL) {
+
+    double Correction = std::pow(Nominal_correction, nBtoDtoXKL);
+
+    return Correction;
+}
+
+double Corrector_BtoDtoXKL::GetRelativeUncertainty(int nBtoDtoXKL) {
+
+    double RelativeUncertainty = nBtoDtoXKL * relative_uncertainty_correction;
+
+    return RelativeUncertainty;
+}
+
 void load_files(const char *dirname, std::vector<std::string>* names){
    TSystemDirectory dir(dirname, dirname);
    TList *files = dir.GetListOfFiles();
