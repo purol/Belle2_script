@@ -545,6 +545,130 @@ double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma) {
     return weights_Ngamma->GetBinContent(Bin);
 }
 
+class Corrector_KpKLKL {
+private:
+
+    int s13_NBin;
+    double s13_min;
+    double s13_max;
+
+    int s23_NBin;
+    double s23_min;
+    double s23_max;
+
+    TH2D* weights_KpKLKL;
+
+    const double N_EPSILON;
+
+public:
+    Corrector_KpKLKL();
+    double GetCorrectionFactorAtGeneric(double s13, double s23);
+};
+
+Corrector_KpKLKL corrector_KpKLKL;
+
+Corrector_KpKLKL::Corrector_KpKLKL() :
+    N_EPSILON(0.01)
+{
+    FILE* fp;
+
+    // read KpKLKL weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/KpKLKL/KpKLKL_weight.txt", "r");
+    fscanf(fp, "s13: %d %lf %lf\n", &s13_NBin, &s13_min, &s13_max);
+    fscanf(fp, "s23: %d %lf %lf\n", &s23_NBin, &s23_min, &s23_max);
+    weights_KpKLKL = new TH2D("KpKLKL_weights", ";;", s13_NBin, s13_min, s13_max, s23_NBin, s23_min, s23_max);
+    for (int i = 0; i < s13_NBin; i++) {
+        for (int j = 0; j < s23_NBin; j++) {
+            double s13;
+            double s23;
+            double weight;
+            fscanf(fp, "%lf %lf %lf\n", &s13, &s23, &weight);
+            weights_KpKLKL->Fill(s13, s23, weight);
+        }
+    }
+    fclose(fp);
+
+}
+
+double Corrector_KpKLKL::GetCorrectionFactorAtGeneric(double s13, double s23, double nB2KpKLKL_all, double nB2KpKLKL_NR) {
+
+    if (nB2KpKLKL_all < N_EPSILON) return 1.0; // no correction needed
+    if (nB2KpKLKL_all - nB2KpKLKL_NR > N_EPSILON) return 0.0; // remove B+ --> K+ [X --> KL0 KL0]
+
+    // check s13 and s23
+    double s13_ = std::min(s13, s23);
+    double s23_ = std::max(s13, s23);
+
+    double Correction = 1;
+
+    int GLobalBin_weight = weights_KpKLKL->FindBin(s13_, s23_);
+    Correction = weights_KpKLKL->GetBinContent(GLobalBin_weight);
+
+    return Correction;
+}
+
+class Corrector_KSKLKL {
+private:
+
+    int smax_NBin;
+    double smax_min;
+    double smax_max;
+
+    int smin_NBin;
+    double smin_min;
+    double smin_max;
+
+    TH2D* weights_KSKLKL;
+
+    const double N_EPSILON;
+
+public:
+    Corrector_KSKLKL();
+    double GetCorrectionFactorAtGeneric(double smax, double smin);
+};
+
+Corrector_KSKLKL corrector_KSKLKL;
+
+Corrector_KSKLKL::Corrector_KSKLKL() :
+    N_EPSILON(0.01)
+{
+    FILE* fp;
+
+    // read KSKLKL weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/KSKLKL/KSKLKL_weight.txt", "r");
+    fscanf(fp, "smax: %d %lf %lf\n", &smax_NBin, &smax_min, &smax_max);
+    fscanf(fp, "smin: %d %lf %lf\n", &smin_NBin, &smin_min, &smin_max);
+    weights_KSKLKL = new TH2D("KSKLKL_weights", ";;", smax_NBin, smax_min, smax_max, smin_NBin, smin_min, smin_max);
+    for (int i = 0; i < smax_NBin; i++) {
+        for (int j = 0; j < smin_NBin; j++) {
+            double smax;
+            double smin;
+            double weight;
+            fscanf(fp, "%lf %lf %lf\n", &smax, &smin, &weight);
+            weights_KSKLKL->Fill(smax, smin, weight);
+        }
+    }
+    fclose(fp);
+
+}
+
+double Corrector_KSKLKL::GetCorrectionFactorAtGeneric(double smax, double smin, double nB2KSKLKL_all, double nB2KSKLKL_NR) {
+
+    if (nB2KSKLKL_all < N_EPSILON) return 1.0; // no correction needed
+    if (nB2KSKLKL_all - nB2KSKLKL_NR > N_EPSILON) return 0.0; // remove B+ --> K+ [X --> KL0 KL0]
+
+    // check smax and smin
+    double smax_ = std::max(smax, smin);
+    double smin_ = std::min(smax, smin);
+
+    double Correction = 1;
+
+    int GLobalBin_weight = weights_KSKLKL->FindBin(smax_, smin_);
+    Correction = weights_KSKLKL->GetBinContent(GLobalBin_weight);
+
+    return Correction;
+}
+
 void load_files(const char *dirname, std::vector<std::string>* names){
    TSystemDirectory dir(dirname, dirname);
    TList *files = dir.GetListOfFiles();
