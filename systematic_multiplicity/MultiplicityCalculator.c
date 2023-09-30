@@ -410,6 +410,186 @@ double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma) {
     return weights_Ngamma->GetBinContent(Bin);
 }
 
+class Corrector_KpKLKL {
+private:
+
+    int s13_NBin;
+    double s13_min;
+    double s13_max;
+
+    int s23_NBin;
+    double s23_min;
+    double s23_max;
+
+    TH2D* weights_KpKLKL;
+
+    const double N_EPSILON;
+
+public:
+    Corrector_KpKLKL();
+    double GetCorrectionFactorAtGeneric(double s13, double s23, double nB2KpKLKL_all, double nB2KpKLKL_NR);
+};
+
+Corrector_KpKLKL corrector_KpKLKL;
+
+Corrector_KpKLKL::Corrector_KpKLKL() :
+    N_EPSILON(0.01)
+{
+    FILE* fp;
+
+    // read KpKLKL weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/KpKLKL/KpKLKL_weight.txt", "r");
+    fscanf(fp, "s13: %d %lf %lf\n", &s13_NBin, &s13_min, &s13_max);
+    fscanf(fp, "s23: %d %lf %lf\n", &s23_NBin, &s23_min, &s23_max);
+    weights_KpKLKL = new TH2D("KpKLKL_weights", ";;", s13_NBin, s13_min, s13_max, s23_NBin, s23_min, s23_max);
+    for (int i = 0; i < s13_NBin; i++) {
+        for (int j = 0; j < s23_NBin; j++) {
+            double s13;
+            double s23;
+            double weight;
+            fscanf(fp, "%lf %lf %lf\n", &s13, &s23, &weight);
+            weights_KpKLKL->Fill(s13, s23, weight);
+        }
+    }
+    fclose(fp);
+
+}
+
+double Corrector_KpKLKL::GetCorrectionFactorAtGeneric(double s13, double s23, double nB2KpKLKL_all, double nB2KpKLKL_NR) {
+
+    if (nB2KpKLKL_all < N_EPSILON) return 1.0; // no correction needed
+    if (nB2KpKLKL_all - nB2KpKLKL_NR > N_EPSILON) return 0.0; // remove B+ --> K+ [X --> KL0 KL0]
+    if (nB2KpKLKL_all < 0 || nB2KpKLKL_NR < 0) {
+        printf("[Corrector_KpKLKL] number of decay is smaller than 0!\n");
+        exit(1);
+    }
+
+    // check s13 and s23
+    double s13_ = std::min(s13, s23);
+    double s23_ = std::max(s13, s23);
+
+    double Correction = 1;
+
+    int GLobalBin_weight = weights_KpKLKL->FindBin(s13_, s23_);
+    Correction = weights_KpKLKL->GetBinContent(GLobalBin_weight);
+
+    return Correction;
+}
+
+class Corrector_KSKLKL {
+private:
+
+    int smax_NBin;
+    double smax_min;
+    double smax_max;
+
+    int smin_NBin;
+    double smin_min;
+    double smin_max;
+
+    TH2D* weights_KSKLKL;
+
+    const double N_EPSILON;
+
+public:
+    Corrector_KSKLKL();
+    double GetCorrectionFactorAtGeneric(double smax, double smin, double nB2KSKLKL_all, double nB2KSKLKL_NR);
+};
+
+Corrector_KSKLKL corrector_KSKLKL;
+
+Corrector_KSKLKL::Corrector_KSKLKL() :
+    N_EPSILON(0.01)
+{
+    FILE* fp;
+
+    // read KSKLKL weights
+    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/KSKLKL/KSKLKL_weight.txt", "r");
+    fscanf(fp, "smax: %d %lf %lf\n", &smax_NBin, &smax_min, &smax_max);
+    fscanf(fp, "smin: %d %lf %lf\n", &smin_NBin, &smin_min, &smin_max);
+    weights_KSKLKL = new TH2D("KSKLKL_weights", ";;", smax_NBin, smax_min, smax_max, smin_NBin, smin_min, smin_max);
+    for (int i = 0; i < smax_NBin; i++) {
+        for (int j = 0; j < smin_NBin; j++) {
+            double smax;
+            double smin;
+            double weight;
+            fscanf(fp, "%lf %lf %lf\n", &smax, &smin, &weight);
+            weights_KSKLKL->Fill(smax, smin, weight);
+        }
+    }
+    fclose(fp);
+
+}
+
+double Corrector_KSKLKL::GetCorrectionFactorAtGeneric(double smax, double smin, double nB2KSKLKL_all, double nB2KSKLKL_NR) {
+
+    if (nB2KSKLKL_all < N_EPSILON) return 1.0; // no correction needed
+    if (nB2KSKLKL_all - nB2KSKLKL_NR > N_EPSILON) return 0.0; // remove B+ --> K+ [X --> KL0 KL0]
+    if (nB2KSKLKL_all < 0 || nB2KSKLKL_NR < 0) {
+        printf("[Corrector_KSKLKL] number of decay is smaller than 0!\n");
+        exit(1);
+    }
+
+    // check smax and smin
+    double smax_ = std::max(smax, smin);
+    double smin_ = std::min(smax, smin);
+
+    double Correction = 1;
+
+    int GLobalBin_weight = weights_KSKLKL->FindBin(smax_, smin_);
+    Correction = weights_KSKLKL->GetBinContent(GLobalBin_weight);
+
+    return Correction;
+}
+
+class Corrector_BtoDtoXKL {
+private:
+
+    const double Nominal_correction;
+    const double relative_uncertainty_correction; // relative uncertainty
+
+    const double N_EPSILON;
+
+public:
+    Corrector_BtoDtoXKL();
+    double GetCorrectionFactorAtGeneric(double nBtoDtoXKL);
+    double GetRelativeUncertainty(double nBtoDtoXKL);
+};
+
+Corrector_BtoDtoXKL corrector_BtoDtoXKL;
+
+Corrector_BtoDtoXKL::Corrector_BtoDtoXKL() :
+    N_EPSILON(0.01),
+    Nominal_correction(1.3),
+    relative_uncertainty_correction(0.1 / 1.3)
+{
+
+}
+
+double Corrector_BtoDtoXKL::GetCorrectionFactorAtGeneric(double nBtoDtoXKL) {
+    if (nBtoDtoXKL < N_EPSILON) return 1.0; // no correction needed
+    if (nBtoDtoXKL < 0) {
+        printf("[Corrector_BtoDtoXKL] number of decay is smaller than 0!\n");
+        exit(1);
+    }
+
+    double Correction = std::pow(Nominal_correction, nBtoDtoXKL);
+
+    return Correction;
+}
+
+double Corrector_BtoDtoXKL::GetRelativeUncertainty(double nBtoDtoXKL) {
+    if (nBtoDtoXKL < N_EPSILON) return 0.0; // no uncertainty needed
+    if (nBtoDtoXKL < 0) {
+        printf("[Corrector_BtoDtoXKL] number of decay is smaller than 0!\n");
+        exit(1);
+    }
+
+    double RelativeUncertainty = nBtoDtoXKL * relative_uncertainty_correction;
+
+    return RelativeUncertainty;
+}
+
 /* ====================================== */
 
 void ReadPIDFile() {
@@ -918,10 +1098,6 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
     UUBAR
     DDBAR
     SSBAR
-    Knn
-    Kstarnn
-    K0nn
-    K0starnn
     */
     /*
     option 0: select all Btag
@@ -966,6 +1142,20 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
     double N_K0nn = 0;
     double N_K0starnn = 0;
 
+    double s13_KpKLKL = -1;
+    double s23_KpKLKL = -1;
+    double nB2KpKLKL_all_KpKLKL = -1;
+    double nB2KpKLKL_NR_KpKLKL = -1;
+
+    double s13_KSKLKL = -1;
+    double s23_KSKLKL = -1;
+    double s12_KSKLKL = -1;
+    double nB2KSKLKL_all_KSKLKL = -1;
+    double nB2KSKLKL_NR_KSKLKL = -1;
+
+    double nDptoXKL = -1;
+    double nD0toXKL = -1;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -1002,16 +1192,28 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((SampleName == "CHG") || (SampleName == "MIX")) {
-            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
-            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
-            tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
-            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
-            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
-            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
-            tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
-            tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
-        }
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+
+        tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
+        tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_all__bc", &nB2KpKLKL_all_KpKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_NR__bc", &nB2KpKLKL_NR_KpKLKL);
+
+        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s13_KSKLKL);
+        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &s23_KSKLKL);
+        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s12_KSKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_all__bc", &nB2KSKLKL_all_KSKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_NR__bc", &nB2KSKLKL_NR_KSKLKL);
+
+        tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &nDptoXKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &nD0toXKL);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -1092,9 +1294,19 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
             double Correction_multiplicity = 1.0;
             if (IsMultiplicityCorrectionApplied) Correction_multiplicity = corrector_Multiplicity->GetCorrectionFactor(Ngamma_v200);
 
+            // B+ --> K+ KL0 KL0 correction factor
+            double Correction_KpKLKL = corrector_KpKLKL.GetCorrectionFactorAtGeneric(s13_KpKLKL, s23_KpKLKL, nB2KpKLKL_all_KpKLKL, nB2KpKLKL_NR_KpKLKL);
+
+            // B0 --> KS0 KL0 KL0 correction factor
+            double Correction_KSKLKL = corrector_KSKLKL.GetCorrectionFactorAtGeneric(std::max(std::max(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), std::min(std::min(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), nB2KSKLKL_all_KSKLKL, nB2KSKLKL_NR_KSKLKL);
+
+            // B-> [D -> KL0 X] anything correction factor
+            double Correction_BtoDtoXKL = 1.0;
+            if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
+
             double weight = 1.0;
-            if (IsMultiplicityCorrectionApplied) weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity;
-            else weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn;
+            if (IsMultiplicityCorrectionApplied) weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL;
+            else weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL;
 
             hist_Ngamma->Fill(var, weight);
 
