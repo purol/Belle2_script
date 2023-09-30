@@ -562,7 +562,7 @@ private:
 
 public:
     Corrector_KpKLKL();
-    double GetCorrectionFactorAtGeneric(double s13, double s23);
+    double GetCorrectionFactorAtGeneric(double s13, double s23, double nB2KpKLKL_all, double nB2KpKLKL_NR);
 };
 
 Corrector_KpKLKL corrector_KpKLKL;
@@ -594,6 +594,10 @@ double Corrector_KpKLKL::GetCorrectionFactorAtGeneric(double s13, double s23, do
 
     if (nB2KpKLKL_all < N_EPSILON) return 1.0; // no correction needed
     if (nB2KpKLKL_all - nB2KpKLKL_NR > N_EPSILON) return 0.0; // remove B+ --> K+ [X --> KL0 KL0]
+    if (nB2KpKLKL_all < 0 || nB2KpKLKL_NR < 0) {
+        printf("[Corrector_KpKLKL] number of decay is smaller than 0!\n");
+        exit(1);
+    }
 
     // check s13 and s23
     double s13_ = std::min(s13, s23);
@@ -624,7 +628,7 @@ private:
 
 public:
     Corrector_KSKLKL();
-    double GetCorrectionFactorAtGeneric(double smax, double smin);
+    double GetCorrectionFactorAtGeneric(double smax, double smin, double nB2KSKLKL_all, double nB2KSKLKL_NR);
 };
 
 Corrector_KSKLKL corrector_KSKLKL;
@@ -656,6 +660,10 @@ double Corrector_KSKLKL::GetCorrectionFactorAtGeneric(double smax, double smin, 
 
     if (nB2KSKLKL_all < N_EPSILON) return 1.0; // no correction needed
     if (nB2KSKLKL_all - nB2KSKLKL_NR > N_EPSILON) return 0.0; // remove B+ --> K+ [X --> KL0 KL0]
+    if (nB2KSKLKL_all < 0 || nB2KSKLKL_NR < 0) {
+        printf("[Corrector_KSKLKL] number of decay is smaller than 0!\n");
+        exit(1);
+    }
 
     // check smax and smin
     double smax_ = std::max(smax, smin);
@@ -675,6 +683,8 @@ private:
     const double Nominal_correction;
     const double relative_uncertainty_correction; // relative uncertainty
 
+    const double N_EPSILON;
+
 public:
     Corrector_BtoDtoXKL();
     double GetCorrectionFactorAtGeneric(double nBtoDtoXKL);
@@ -684,6 +694,7 @@ public:
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
 
 Corrector_BtoDtoXKL::Corrector_BtoDtoXKL() :
+    N_EPSILON(0.01),
     Nominal_correction(1.3),
     relative_uncertainty_correction(0.1 / 1.3)
 {
@@ -691,6 +702,11 @@ Corrector_BtoDtoXKL::Corrector_BtoDtoXKL() :
 }
 
 double Corrector_BtoDtoXKL::GetCorrectionFactorAtGeneric(double nBtoDtoXKL) {
+    if (nBtoDtoXKL < N_EPSILON) return 1.0; // no correction needed
+    if (nBtoDtoXKL < 0) {
+        printf("[Corrector_BtoDtoXKL] number of decay is smaller than 0!\n");
+        exit(1);
+    }
 
     double Correction = std::pow(Nominal_correction, nBtoDtoXKL);
 
@@ -698,11 +714,18 @@ double Corrector_BtoDtoXKL::GetCorrectionFactorAtGeneric(double nBtoDtoXKL) {
 }
 
 double Corrector_BtoDtoXKL::GetRelativeUncertainty(double nBtoDtoXKL) {
+    if (nBtoDtoXKL < N_EPSILON) return 0.0; // no uncertainty needed
+    if (nBtoDtoXKL < 0) {
+        printf("[Corrector_BtoDtoXKL] number of decay is smaller than 0!\n");
+        exit(1);
+    }
 
     double RelativeUncertainty = nBtoDtoXKL * relative_uncertainty_correction;
 
     return RelativeUncertainty;
 }
+
+/* ====================================== */
 
 void load_files(const char *dirname, std::vector<std::string>* names){
    TSystemDirectory dir(dirname, dirname);
