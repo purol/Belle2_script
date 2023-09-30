@@ -1722,7 +1722,7 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
 
             // B-> [D -> KL0 X] anything correction factor
             double Correction_BtoDtoXKL = 1.0;
-            if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
+            if ((strcmp(sample, "CHG") == 0) || (strcmp(sample, "MIX") == 0) || (strcmp(sample, "SIGNAL") == 0)) Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
             double Correction_BR = GetBRRelativeUncertainty(__experiment__, __run__, __event__, __candidate__, __ncandidates__);
 
