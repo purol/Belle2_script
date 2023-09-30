@@ -677,8 +677,8 @@ private:
 
 public:
     Corrector_BtoDtoXKL();
-    double GetCorrectionFactorAtGeneric(int nBtoDtoXKL);
-    double GetRelativeUncertainty(int nBtoDtoXKL);
+    double GetCorrectionFactorAtGeneric(double nBtoDtoXKL);
+    double GetRelativeUncertainty(double nBtoDtoXKL);
 };
 
 Corrector_BtoDtoXKL Corrector_BtoDtoXKL;
@@ -690,14 +690,14 @@ Corrector_BtoDtoXKL::Corrector_BtoDtoXKL() :
 
 }
 
-double Corrector_BtoDtoXKL::GetCorrectionFactorAtGeneric(int nBtoDtoXKL) {
+double Corrector_BtoDtoXKL::GetCorrectionFactorAtGeneric(double nBtoDtoXKL) {
 
     double Correction = std::pow(Nominal_correction, nBtoDtoXKL);
 
     return Correction;
 }
 
-double Corrector_BtoDtoXKL::GetRelativeUncertainty(int nBtoDtoXKL) {
+double Corrector_BtoDtoXKL::GetRelativeUncertainty(double nBtoDtoXKL) {
 
     double RelativeUncertainty = nBtoDtoXKL * relative_uncertainty_correction;
 
