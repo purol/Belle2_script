@@ -662,6 +662,9 @@ private:
     TH2D* weights_KpKLKL;
 
     const double N_EPSILON;
+    const double BR_KpKLKL_all_PDG;
+    const double BR_KpKLKL_NR_evtpdl;
+    const double BR_RelativeUncertainty_KpKLKL_all_PDG;
 
 public:
     Corrector_KpKLKL();
@@ -671,7 +674,10 @@ public:
 Corrector_KpKLKL corrector_KpKLKL;
 
 Corrector_KpKLKL::Corrector_KpKLKL() :
-    N_EPSILON(0.01)
+    N_EPSILON(0.01),
+    BR_KpKLKL_all_PDG(0.0000105), // from KpKSKS
+    BR_KpKLKL_NR_evtpdl(0.0000115),
+    BR_RelativeUncertainty_KpKLKL_all_PDG(0.04 / 1.05)
 {
     FILE* fp;
 
@@ -709,7 +715,7 @@ double Corrector_KpKLKL::GetCorrectionFactorAtGeneric(double s13, double s23, do
     double Correction = 1;
 
     int GLobalBin_weight = weights_KpKLKL->FindBin(s13_, s23_);
-    Correction = weights_KpKLKL->GetBinContent(GLobalBin_weight);
+    Correction = weights_KpKLKL->GetBinContent(GLobalBin_weight) * (BR_KpKLKL_all_PDG / BR_KpKLKL_NR_evtpdl);
 
     return Correction;
 }
@@ -728,6 +734,9 @@ private:
     TH2D* weights_KSKLKL;
 
     const double N_EPSILON;
+    const double BR_KSKLKL_all_PDG;
+    const double BR_KSKLKL_NR_evtpdl;
+    const double BR_RelativeUncertainty_KSKLKL_all_PDG;
 
 public:
     Corrector_KSKLKL();
@@ -737,7 +746,10 @@ public:
 Corrector_KSKLKL corrector_KSKLKL;
 
 Corrector_KSKLKL::Corrector_KSKLKL() :
-    N_EPSILON(0.01)
+    N_EPSILON(0.01),
+    BR_KSKLKL_all_PDG(0.000018),
+    BR_KSKLKL_NR_evtpdl(0.000018),
+    BR_RelativeUncertainty_KSKLKL_all_PDG(0.5 / 6.0)
 {
     FILE* fp;
 
@@ -775,7 +787,7 @@ double Corrector_KSKLKL::GetCorrectionFactorAtGeneric(double smax, double smin, 
     double Correction = 1;
 
     int GLobalBin_weight = weights_KSKLKL->FindBin(smax_, smin_);
-    Correction = weights_KSKLKL->GetBinContent(GLobalBin_weight);
+    Correction = weights_KSKLKL->GetBinContent(GLobalBin_weight) * (BR_KSKLKL_all_PDG / BR_KSKLKL_NR_evtpdl);
 
     return Correction;
 }
