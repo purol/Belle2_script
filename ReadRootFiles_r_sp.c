@@ -681,7 +681,7 @@ public:
     double GetRelativeUncertainty(double nBtoDtoXKL);
 };
 
-Corrector_BtoDtoXKL Corrector_BtoDtoXKL;
+Corrector_BtoDtoXKL corrector_BtoDtoXKL;
 
 Corrector_BtoDtoXKL::Corrector_BtoDtoXKL() :
     Nominal_correction(1.3),
