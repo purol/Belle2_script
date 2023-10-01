@@ -5291,7 +5291,7 @@ void Loader::BeamEnergyCorrectionFromDeltaE(int index_pBcms, int index_EBcms, in
     TotalData.swap(temp_queue);
 }
 
-int Analysis_main(int argc, char* argv[]) {
+int main(int argc, char* argv[]) {
     /*
     * argv[1]: dirname
     * argv[2]: outputname
