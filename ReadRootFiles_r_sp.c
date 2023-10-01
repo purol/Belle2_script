@@ -1687,7 +1687,7 @@ bool Loader::event_info_is_valid() {
     return true;
 }
 
-void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear) {
+void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr) {
     if (TH1Fs.size() == current_TH1F) { // allocate new hist
         TH1F* hist = new TH1F(name, title, nbins, x_low, x_high);
         TH1Fs.push_back(hist);
@@ -1730,7 +1730,7 @@ void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_l
     current_TH1F++;
 }
 
-void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::Qualifier qualifier, Loader::DecayMode decaymode, Loader::ValueOption dr = Loader::Linear) {
+void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::Qualifier qualifier, Loader::DecayMode decaymode, Loader::ValueOption dr) {
     if (TH1Fs.size() == current_TH1F) { // allocate new hist
         TH1F* hist = new TH1F(name, title, nbins, x_low, x_high);
         TH1Fs.push_back(hist);
@@ -1943,7 +1943,7 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
     current_TH2F++;
 }
 
-void Loader::DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear) {
+void Loader::DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption) {
     if (THStacks.size() == current_THStack) { // allocate new thstacks
         THStack* stack = new THStack(name, title);
         THStacks.push_back(stack);
@@ -3866,7 +3866,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
 
 }
 
-void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) {
+void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
 
     TFile* temp_file = new TFile(output_name.c_str(), "recreate");
     temp_file->cd();

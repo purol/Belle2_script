@@ -10,8 +10,21 @@
 #include <time.h>
 #include <random>
 #include <sstream>
+#include <queue>
 
-
+#include "TH1.h"
+#include "TH2.h"
+#include "TSystemDirectory.h"
+#include "TSystemFile.h"
+#include "TCollection.h"
+#include "TPad.h"
+#include "TStyle.h"
+#include "TCanvas.h"
+#include "THStack.h"
+#include "TFile.h"
+#include "TTree.h"
+#include "TKey.h"
+#include "TMath.h"
 
 /*
 when you add new variables:
@@ -1699,7 +1712,7 @@ bool Loader::event_info_is_valid() {
     return true;
 }
 
-void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear) {
+void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr) {
     if (TH1Fs.size() == current_TH1F) { // allocate new hist
         TH1F* hist = new TH1F(name, title, nbins, x_low, x_high);
         TH1Fs.push_back(hist);
@@ -1742,7 +1755,7 @@ void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_l
     current_TH1F++;
 }
 
-void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::Qualifier qualifier, Loader::DecayMode decaymode, Loader::ValueOption dr = Loader::Linear) {
+void Loader::DrawTH1F(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::Qualifier qualifier, Loader::DecayMode decaymode, Loader::ValueOption dr) {
     if (TH1Fs.size() == current_TH1F) { // allocate new hist
         TH1F* hist = new TH1F(name, title, nbins, x_low, x_high);
         TH1Fs.push_back(hist);
@@ -1955,7 +1968,7 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
     current_TH2F++;
 }
 
-void Loader::DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear) {
+void Loader::DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr) {
     if (THStacks.size() == current_THStack) { // allocate new thstacks
         THStack* stack = new THStack(name, title);
         THStacks.push_back(stack);
@@ -3918,7 +3931,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
 
 }
 
-void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag = 0) {
+void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
 
     TFile* temp_file = new TFile(output_name.c_str(), "recreate");
     temp_file->cd();
@@ -5308,51 +5321,51 @@ int Analysis_main(int argc, char* argv[]) {
         loader.Cut(Loader::Upsilon, 5, Loader::smaller_than, 0.5); // N KS0
         loader.Cut(Loader::Bsig, 64, Loader::larger_than, -0.5); // Bsig vertex fit
         loader.Cut(Loader::Btag, 6, Loader::larger_than, -0.5); // Btag vertex fit
-        loader.PrintInformation(std::string("========== inital =========="), names.at(i), true);
+        loader.PrintInformation(std::string("========== inital =========="), names.at(i), argv[4], true);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Mbc_cut.root"));
         loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
-        loader.PrintInformation(std::string("========== Mbc > 5.27 =========="), names.at(i), true);
+        loader.PrintInformation(std::string("========== Mbc > 5.27 =========="), names.at(i), argv[4], true);
         //loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_delE_cut.root"));
         loader.Cut(Loader::Btag, 2, Loader::larger_than, -0.2);
         loader.Cut(Loader::Btag, 2, Loader::smaller_than, 0.2);
-        loader.PrintInformation(std::string("========== abs(deltaE) < 0.2 =========="), names.at(i), true);
+        loader.PrintInformation(std::string("========== abs(deltaE) < 0.2 =========="), names.at(i), argv[4], true);
         //loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_SignalProbability_cut.root"));
         loader.Cut(Loader::Btag, 5, Loader::larger_than, 0.001);
-        loader.PrintInformation(std::string("========== Btag_SignalProbability > 0.001 =========="), names.at(i), true);
+        loader.PrintInformation(std::string("========== Btag_SignalProbability > 0.001 =========="), names.at(i), argv[4], true);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Eecl_cut.root"));
         //loader.DrawTH1F("missing_momentum_theta_after_npi0_cut", "#theta_{missing};#theta_{missing} [rad];evt", 100, 0, 3.2, Loader::Upsilon, 7);
         loader.Cut(Loader::Upsilon, 69, Loader::smaller_than, 1.3);
-        loader.PrintInformation(std::string("========== Eecl_v200 < 1.3 =========="), names.at(i), true);
+        loader.PrintInformation(std::string("========== Eecl_v200 < 1.3 =========="), names.at(i), argv[4], true);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_missing_momentum_theta_cut.root"));
         //loader.DrawTH1F("missing_momentum_theta_after_npi0_cut", "#theta_{missing};#theta_{missing} [rad];evt", 100, 0, 3.2, Loader::Upsilon, 7);
         loader.Cut(Loader::Upsilon, 7, Loader::smaller_than, 2.618);
         loader.Cut(Loader::Upsilon, 7, Loader::larger_than, 0.297);
-        loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="), names.at(i), true);
+        loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="), names.at(i), argv[4], true);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_psig_cut.root"));
         //loader.DrawTH1F("momentum_Bsig_after_missing_theta_cut", "momentum of B_{sig} at CMS;momentum [GeV];evt", 100, 0, 3.2, Loader::Bsig, 4);
         loader.Cut(Loader::Bsig, 4, Loader::smaller_than, 2.96);
         loader.Cut(Loader::Bsig, 4, Loader::larger_than, 0.5);
-        loader.PrintInformation(std::string("========== 0.5 < momentum of signal side < 2.96 =========="), names.at(i), true);
+        loader.PrintInformation(std::string("========== 0.5 < momentum of signal side < 2.96 =========="), names.at(i), argv[4], true);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Dveto_cut.root"));
         //loader.DrawTH1F("Bsig_M_Xs", "mass of X_{s};M_{Xs} [GeV];evt", 100, 0, 3.5, Loader::Bsig, 6);
         loader.DvetoFor(Loader::Bsig, 6, 1.84, 1.89);
-        loader.PrintInformation(std::string("========== D veto =========="), names.at(i), true);
+        loader.PrintInformation(std::string("========== D veto =========="), names.at(i), argv[4], true);
 
         loader.BCS(Loader::Btag, 5, Loader::Highest);
         if (loader.IsBCSValid() == false) {
             printf("ERROR! it is not valid\n");
             exit(1);
         }
-        loader.PrintInformation(std::string("========== BCS =========="), names.at(i), true);
+        loader.PrintInformation(std::string("========== BCS =========="), names.at(i), argv[4], true);
 
         loader.PrintSeparateRootFile(std::string(argv[3]) + file_without_extension + std::string("_") + std::string(argv[2]));
     }
