@@ -2073,18 +2073,18 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
             if (smartmode == false) N_events.at(current_N_event) = N_events.at(current_N_event) + 1;
             else {
                 if (strcmp(type, "SIGNAL") == 0) {
-                    if (filename.find("B2Knunu") != string::npos) {
+                    if (filename.find("B2Knunu") != std::string::npos) {
                         double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
                         N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplus_test * correction_weight;
                     }
-                    else if (filename.find("B2Kstarnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplusstar_test;
-                    else if (filename.find("B2Xsnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsu_nonresonant_test;
-                    else if (filename.find("B02K0nunu") != string::npos) {
+                    else if (filename.find("B2Kstarnunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplusstar_test;
+                    else if (filename.find("B2Xsnunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsu_nonresonant_test;
+                    else if (filename.find("B02K0nunu") != std::string::npos) {
                         double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
                         N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0_test * correction_weight;
                     }
-                    else if (filename.find("B02Kstar0nunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0star_test;
-                    else if (filename.find("B02Xsnunu") != string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsd_nonresonant_test;
+                    else if (filename.find("B02Kstar0nunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0star_test;
+                    else if (filename.find("B02Xsnunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsd_nonresonant_test;
                     else { N_events.at(current_N_event) = N_events.at(current_N_event) + 1; }
                 }
                 else if (strcmp(type, "CHG") == 0) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_CHG_test;
@@ -2172,29 +2172,29 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
         }
         else {
             if (strcmp(type, "SIGNAL") == 0) {
-                if (filename.find("B2Knunu") != string::npos) {
+                if (filename.find("B2Knunu") != std::string::npos) {
                     double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplus_test * correction_weight;
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_Kplus_test * correction_weight;
                 }
-                else if (filename.find("B2Kstarnunu") != string::npos) {
+                else if (filename.find("B2Kstarnunu") != std::string::npos) {
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplusstar_test;
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_Kplusstar_test;
                 }
-                else if (filename.find("B2Xsnunu") != string::npos) {
+                else if (filename.find("B2Xsnunu") != std::string::npos) {
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsu_nonresonant_test;
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_Xsu_nonresonant_test;
                 }
-                else if (filename.find("B02K0nunu") != string::npos) {
+                else if (filename.find("B02K0nunu") != std::string::npos) {
                     double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0_test * correction_weight;
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_K0_test * correction_weight;
                 }
-                else if (filename.find("B02Kstar0nunu") != string::npos) {
+                else if (filename.find("B02Kstar0nunu") != std::string::npos) {
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0star_test;
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_K0star_test;
                 }
-                else if (filename.find("B02Xsnunu") != string::npos) {
+                else if (filename.find("B02Xsnunu") != std::string::npos) {
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsd_nonresonant_test;
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_Xsd_nonresonant_test;
                 }
@@ -4747,18 +4747,18 @@ void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
 
         if (smartmode == false) Confusion[decaymodeid][decaymodeid_MC]++;
         else {
-            if (filename.find("B2Knunu") != string::npos) {
+            if (filename.find("B2Knunu") != std::string::npos) {
                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
                 Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Kplus_test * correction_weight;
             }
-            else if (filename.find("B2Kstarnunu") != string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Kplusstar_test;
-            else if (filename.find("B2Xsnunu") != string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Xsu_nonresonant_test;
-            else if (filename.find("B02K0nunu") != string::npos) {
+            else if (filename.find("B2Kstarnunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Kplusstar_test;
+            else if (filename.find("B2Xsnunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Xsu_nonresonant_test;
+            else if (filename.find("B02K0nunu") != std::string::npos) {
                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
                 Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_K0_test * correction_weight;
             }
-            else if (filename.find("B02Kstar0nunu") != string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_K0star_test;
-            else if (filename.find("B02Xsnunu") != string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Xsd_nonresonant_test;
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_K0star_test;
+            else if (filename.find("B02Xsnunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Xsd_nonresonant_test;
             else { printf("ERROR 142\n"); exit(1); }
         }
 
@@ -4800,18 +4800,18 @@ void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
         else if (decaymodeid_MC == 34)decaymodeid_MC_for_square = 30;
         if(smartmode == false) Confusion_square[decaymodeid][decaymodeid_MC_for_square]++;
         else {
-            if (filename.find("B2Knunu") != string::npos) {
+            if (filename.find("B2Knunu") != std::string::npos) {
                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
                 Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplus_test * correction_weight;
             }
-            else if (filename.find("B2Kstarnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplusstar_test;
-            else if (filename.find("B2Xsnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsu_nonresonant_test;
-            else if (filename.find("B02K0nunu") != string::npos) {
+            else if (filename.find("B2Kstarnunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplusstar_test;
+            else if (filename.find("B2Xsnunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsu_nonresonant_test;
+            else if (filename.find("B02K0nunu") != std::string::npos) {
                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
                 Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0_test * correction_weight;
             }
-            else if (filename.find("B02Kstar0nunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0star_test;
-            else if (filename.find("B02Xsnunu") != string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsd_nonresonant_test;
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0star_test;
+            else if (filename.find("B02Xsnunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsd_nonresonant_test;
             else { printf("ERROR 142\n"); exit(1); }
         }
 
@@ -5019,18 +5019,18 @@ void Loader::PrintFOM(std::string filename, Loader::ScaleFactor scaleFactor_, bo
                     if (overlap == false) {
                         if (smartmode == false) EVT_num = EVT_num + 1.0;
                         else {
-                            if (filename.find("B2Knunu") != string::npos) {
+                            if (filename.find("B2Knunu") != std::string::npos) {
                                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
                                 EVT_num = EVT_num + correction_weight;
                             }
-                            else if (filename.find("B2Kstarnunu") != string::npos) EVT_num = EVT_num + 1.0;
-                            else if (filename.find("B2Xsnunu") != string::npos) EVT_num = EVT_num + 1.0;
-                            else if (filename.find("B02K0nunu") != string::npos) {
+                            else if (filename.find("B2Kstarnunu") != std::string::npos) EVT_num = EVT_num + 1.0;
+                            else if (filename.find("B2Xsnunu") != std::string::npos) EVT_num = EVT_num + 1.0;
+                            else if (filename.find("B02K0nunu") != std::string::npos) {
                                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
                                 EVT_num = EVT_num + correction_weight;
                             }
-                            else if (filename.find("B02Kstar0nunu") != string::npos) EVT_num = EVT_num + 1.0;
-                            else if (filename.find("B02Xsnunu") != string::npos) EVT_num = EVT_num + 1.0;
+                            else if (filename.find("B02Kstar0nunu") != std::string::npos) EVT_num = EVT_num + 1.0;
+                            else if (filename.find("B02Xsnunu") != std::string::npos) EVT_num = EVT_num + 1.0;
                             else { printf("ERROR 142\n"); exit(1); }
                         }
                         Labels temp_Labels;
@@ -5093,18 +5093,18 @@ void Loader::PrintFOM1D(std::string filename, Loader::ScaleFactor scaleFactor_, 
                 if (overlap == false) {
                     if (smartmode == false) EVT_num = EVT_num + 1.0;
                     else {
-                        if (filename.find("B2Knunu") != string::npos) {
+                        if (filename.find("B2Knunu") != std::string::npos) {
                             double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
                             EVT_num = EVT_num + correction_weight;
                         }
-                        else if (filename.find("B2Kstarnunu") != string::npos) EVT_num = EVT_num + 1.0;
-                        else if (filename.find("B2Xsnunu") != string::npos) EVT_num = EVT_num + 1.0;
-                        else if (filename.find("B02K0nunu") != string::npos) {
+                        else if (filename.find("B2Kstarnunu") != std::string::npos) EVT_num = EVT_num + 1.0;
+                        else if (filename.find("B2Xsnunu") != std::string::npos) EVT_num = EVT_num + 1.0;
+                        else if (filename.find("B02K0nunu") != std::string::npos) {
                             double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
                             EVT_num = EVT_num + correction_weight;
                         }
-                        else if (filename.find("B02Kstar0nunu") != string::npos) EVT_num = EVT_num + 1.0;
-                        else if (filename.find("B02Xsnunu") != string::npos) EVT_num = EVT_num + 1.0;
+                        else if (filename.find("B02Kstar0nunu") != std::string::npos) EVT_num = EVT_num + 1.0;
+                        else if (filename.find("B02Xsnunu") != std::string::npos) EVT_num = EVT_num + 1.0;
                         else EVT_num = EVT_num + 1.0;
                     }
                     Labels temp_Labels;
@@ -5208,18 +5208,18 @@ void Loader::CountMCEvent(std::string filename, bool smartmode) {
 
             if (smartmode == false) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + 1;
             else {
-                if (filename.find("B2Knunu") != string::npos) {
+                if (filename.find("B2Knunu") != std::string::npos) {
                     double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
                     MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplus_test * correction_weight;
                 }
-                else if (filename.find("B2Kstarnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplusstar_test;
-                else if (filename.find("B2Xsnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsu_nonresonant_test;
-                else if (filename.find("B02K0nunu") != string::npos) {
+                else if (filename.find("B2Kstarnunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplusstar_test;
+                else if (filename.find("B2Xsnunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsu_nonresonant_test;
+                else if (filename.find("B02K0nunu") != std::string::npos) {
                     double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
                     MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0_test * correction_weight;
                 }
-                else if (filename.find("B02Kstar0nunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0star_test;
-                else if (filename.find("B02Xsnunu") != string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsd_nonresonant_test;
+                else if (filename.find("B02Kstar0nunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0star_test;
+                else if (filename.find("B02Xsnunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsd_nonresonant_test;
                 else { printf("ERROR 142\n"); exit(1); }
             }
         }
@@ -5286,7 +5286,7 @@ int Analysis_main(int argc, char* argv[]) {
     * argv[4]: sample type: {SIGNAL|CHG|MIX|UUBAR|DDBAR|SSBAR|CHARM}
     */
 
-    std::vector<string> names;
+    std::vector<std::string> names;
 
     load_files(argv[1], &names);
 
