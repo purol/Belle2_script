@@ -5367,7 +5367,7 @@ int main(int argc, char* argv[]) {
         }
         loader.PrintInformation(std::string("========== BCS =========="), names.at(i), argv[4], true);
 
-        loader.PrintSeparateRootFile(std::string(argv[3]) + file_without_extension + std::string("_") + std::string(argv[2]));
+        loader.PrintSeparateRootFile(std::string(argv[3]) + "/final_output/" + file_without_extension + std::string("_") + std::string(argv[2]));
     }
     loader.End();
 
