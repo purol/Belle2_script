@@ -5265,7 +5265,7 @@ double ObtainWeight(const char* type, const char* MC_version, const char* catego
         else { printf("[ObtainWeight] undefined type for MC15ri validation\n"); exit(1); }
     }
 
-    printf("[ObtainWeight] no matched case!\n")
+    printf("[ObtainWeight] no matched case!\n");
     exit(1);
     return 1.0;
 }
@@ -5315,10 +5315,6 @@ int main(int argc, char* argv[]) {
         loader.PrintInformation(std::string("========== abs(deltaE) < 0.2 =========="), names.at(i), argv[4], argv[5], argv[6], true);
         //loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
-        //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_SignalProbability_cut.root"));
-        loader.Cut(Loader::Btag, 5, Loader::larger_than, 0.001);
-        loader.PrintInformation(std::string("========== Btag_SignalProbability > 0.001 =========="), names.at(i), argv[4], argv[5], argv[6], true);
-
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Eecl_cut.root"));
         //loader.DrawTH1F("missing_momentum_theta_after_npi0_cut", "#theta_{missing};#theta_{missing} [rad];evt", 100, 0, 3.2, Loader::Upsilon, 7);
         loader.Cut(Loader::Upsilon, 69, Loader::smaller_than, 1.3);
@@ -5348,7 +5344,8 @@ int main(int argc, char* argv[]) {
         }
         loader.PrintInformation(std::string("========== BCS =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
-        loader.PrintSeparateRootFile(std::string(argv[3]) + "/final_output/" + file_without_extension + std::string("_") + std::string(argv[2]));
+        loader.PrintSeparateRootFile(std::string(argv[3]) + "/final_output/" + file_without_extension + std::string("_") + std::string(argv[2]) + ".root");
+        loader.ConvertIntoSeparateDataFile(std::string(argv[3]) + "/final_output_data/" + file_without_extension + std::string("_") + std::string(argv[2]) + "_data.root");
     }
     loader.End();
 
