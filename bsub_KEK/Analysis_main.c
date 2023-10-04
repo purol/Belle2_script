@@ -138,6 +138,14 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
 # define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_CHG_validation ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab))
+# define Scale_MIX_validation ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab))
+# define Scale_UUBAR_validation (0.361673)
+# define Scale_DDBAR_validation (0.361673)
+# define Scale_SSBAR_validation (0.361673)
+# define Scale_CHARM_validation (0.361673)
+
+double ObtainWeight(const char* type, const char* MC_version, const char* category, std::string filename);
 
 class Corrector {
 private:
@@ -1018,21 +1026,6 @@ public:
         SmallMass = 0,
         LargeMass
     };
-    enum ScaleFactor {
-        None = 0,
-        Kplus,
-        Kplusstar,
-        Xsu_nonresonant,
-        K0,
-        K0star,
-        Xsd_nonresonant,
-        CHG,
-        MIX,
-        UUBAR,
-        DDBAR,
-        SSBAR,
-        CHARM
-    };
 
 private:
     std::queue<Data> TotalData;
@@ -1079,7 +1072,6 @@ private:
     int current_FOM;
     double FOM_Matrix[Nstep][Nstep];
     bool FOMIsOn;
-    Loader::ScaleFactor scaleFactor;
 
     int current_MCcount;
     double MCcount[Loader::MAX_NUM_DECAYMODE_MC];
@@ -1133,7 +1125,7 @@ public:
     void DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j);
     void DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear);
-    void PrintInformation(std::string title, std::string filename, const char* type, bool smartmode = true);
+    void PrintInformation(std::string title, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value);
     void Cut(Loader::Variable variable_1, int i_1, Loader::Arithmetic ari, Loader::Variable variable_2, int i_2, Loader::Inequality inq, double value);
     void Cut(const char* bracket_1, double const_1, Loader::Arithmetic ari_1, Loader::Variable variable_1, int i_1, const char* bracket_2, Loader::Arithmetic ari, const char* bracket_3, double const_2, Loader::Arithmetic ari_2, Loader::Variable variable_2, int i_2, const char* bracket_4, Loader::Inequality inq, double value);
@@ -1146,15 +1138,15 @@ public:
     void PrintSeparateRootFile(std::string output_name);
     void ConvertIntoSeparateDataFile(std::string output_name, int flag = 0);
     void PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequality inq, double value);
-    void PrintConfusionMatrix(std::string filename, bool smartmode = true);
+    void PrintConfusionMatrix(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
     void DvetoFor(Loader::Variable variable, int i, double min, double max);
     void BsigFitConvergeFor(Loader::Variable variable, int i);
     void OnlySelectDvetoTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type);
     void DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedvetomassindex, int DchargedvetodmIDindex, int Dneutralvetomassindex, int DneutralvetodmIDindex, Loader::Dvetotype type, double minM, double maxM);
-    void PrintFOM(std::string filename, Loader::ScaleFactor scaleFactor_ = Loader::None, bool smartmode = true);
-    void PrintFOM1D(std::string filename, Loader::ScaleFactor scaleFactor_ = Loader::None, bool smartmode = true);
+    void PrintFOM(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
+    void PrintFOM1D(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
     void MVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
-    void CountMCEvent(std::string filename, bool smartmode = true);
+    void CountMCEvent(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
     void SelectDecayModeOf(Loader::DecayMode decaymode);
     void RejectDecayModeOf(Loader::DecayMode decaymode);
     void BeamEnergyCorrectionFromDeltaE(int index_pBcms, int index_EBcms, int index_Mbc, int index_deltaE, double targetEbeamstar, bool IsItBtag);
@@ -1192,7 +1184,6 @@ Loader::Loader() {
     current_FOM = 0;
     for (int i = 0; i < Nstep; i++) for (int j = 0; j < Nstep; j++) FOM_Matrix[i][j] = 0.0; // initialization
     FOMIsOn = false;
-    scaleFactor = Loader::None;
     current_MCcount = 0;
     for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) MCcount[i] = 0;
     MCcountOn = false;
@@ -1216,7 +1207,6 @@ void Loader::initialize() {
     Confusion_matrixIsOn = false;
     current_FOM = 0;
     FOMIsOn = false;
-    scaleFactor = Loader::None;
     current_MCcount = 0;
     MCcountOn = false;
 }
@@ -2032,7 +2022,7 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
     current_THStack++;
 }
 
-void Loader::PrintInformation(std::string title, std::string filename, const char* type, bool smartmode) {
+void Loader::PrintInformation(std::string title, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode) {
     typedef struct labels {
         int __experiment__;
         int __run__;
@@ -2088,25 +2078,19 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
                 if (strcmp(type, "SIGNAL") == 0) {
                     if (filename.find("B2Knunu") != std::string::npos) {
                         double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
-                        N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplus_test * correction_weight;
+                        N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                     }
-                    else if (filename.find("B2Kstarnunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Kplusstar_test;
-                    else if (filename.find("B2Xsnunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsu_nonresonant_test;
+                    else if (filename.find("B2Kstarnunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename);
+                    else if (filename.find("B2Xsnunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename);
                     else if (filename.find("B02K0nunu") != std::string::npos) {
                         double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
-                        N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0_test * correction_weight;
+                        N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                     }
-                    else if (filename.find("B02Kstar0nunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_K0star_test;
-                    else if (filename.find("B02Xsnunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_Xsd_nonresonant_test;
-                    else { N_events.at(current_N_event) = N_events.at(current_N_event) + 1; }
+                    else if (filename.find("B02Kstar0nunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename);
+                    else if (filename.find("B02Xsnunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename);
+                    else { N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename); }
                 }
-                else if (strcmp(type, "CHG") == 0) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_CHG_test;
-                else if (strcmp(type, "MIX") == 0) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_MIX_test;
-                else if (strcmp(type, "UUBAR") == 0) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_UUBAR_test;
-                else if (strcmp(type, "DDBAR") == 0) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_DDBAR_test;
-                else if (strcmp(type, "SSBAR") == 0) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_SSBAR_test;
-                else if (strcmp(type, "CHARM") == 0) N_events.at(current_N_event) = N_events.at(current_N_event) + Scale_CHARM_test;
-                else N_events.at(current_N_event) = N_events.at(current_N_event) + 1;
+                else N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename);
             }
             Labels temp_Labels;
             temp_Labels.__experiment__ = temp.__experiment__;
@@ -2148,16 +2132,16 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
                 double temp_N = -1;
                 if (decaymodeid_MC == Loader::Xsu2Kc_MC) {
                     double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
-                    temp_N = Scale_Kplus_test * correction_weight;
+                    temp_N = ObtainWeight(type, MC_version, category, "B2Knunu") * correction_weight;
                 }
-                else if (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC) temp_N = Scale_Kplusstar_test;
-                else if (static_cast<int>(Xsu2KcPi0_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(Xsu2KcKcKcPi0_MC)) temp_N = Scale_Xsu_nonresonant_test;
+                else if (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC) temp_N = ObtainWeight(type, MC_version, category, "B2Kstarnunu");
+                else if (static_cast<int>(Xsu2KcPi0_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(Xsu2KcKcKcPi0_MC)) temp_N = ObtainWeight(type, MC_version, category, "B2Xsnunu");
                 else if (decaymodeid_MC == Loader::Xsd2K0_MC) {
                     double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
-                    temp_N = Scale_K0_test * correction_weight;
+                    temp_N = ObtainWeight(type, MC_version, category, "B02K0nunu") * correction_weight;
                 }
-                else if (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC) temp_N = Scale_K0star_test;
-                else if (static_cast<int>(Xsd2KcPic_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(other)) temp_N = Scale_Xsd_nonresonant_test;
+                else if (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC) temp_N = ObtainWeight(type, MC_version, category, "B02Kstar0nunu");
+                else if (static_cast<int>(Xsd2KcPic_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(other)) temp_N = ObtainWeight(type, MC_version, category, "B02Xsnunu");
                 else {
                     printf("ERROR 265\n");
                     exit(1);
@@ -2187,62 +2171,38 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
             if (strcmp(type, "SIGNAL") == 0) {
                 if (filename.find("B2Knunu") != std::string::npos) {
                     double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
-                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplus_test * correction_weight;
-                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_Kplus_test * correction_weight;
+                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
+                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                 }
                 else if (filename.find("B2Kstarnunu") != std::string::npos) {
-                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Kplusstar_test;
-                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_Kplusstar_test;
+                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
+                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
                 }
                 else if (filename.find("B2Xsnunu") != std::string::npos) {
-                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsu_nonresonant_test;
-                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_Xsu_nonresonant_test;
+                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
+                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
                 }
                 else if (filename.find("B02K0nunu") != std::string::npos) {
                     double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
-                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0_test * correction_weight;
-                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_K0_test * correction_weight;
+                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
+                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                 }
                 else if (filename.find("B02Kstar0nunu") != std::string::npos) {
-                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_K0star_test;
-                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_K0star_test;
+                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
+                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
                 }
                 else if (filename.find("B02Xsnunu") != std::string::npos) {
-                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_Xsd_nonresonant_test;
-                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_Xsd_nonresonant_test;
+                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
+                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
                 }
                 else {
-                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0;
-                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + 1.0;
+                    N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
+                    N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
                 }
             }
-            else if (strcmp(type, "CHG") == 0) {
-                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_CHG_test;
-                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_CHG_test;
-            }
-            else if (strcmp(type, "MIX") == 0) {
-                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_MIX_test;
-                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_MIX_test;
-            }
-            else if (strcmp(type, "UUBAR") == 0) {
-                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_UUBAR_test;
-                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_UUBAR_test;
-            }
-            else if (strcmp(type, "DDBAR") == 0) {
-                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_DDBAR_test;
-                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_DDBAR_test;
-            }
-            else if (strcmp(type, "SSBAR") == 0) {
-                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_SSBAR_test;
-                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_SSBAR_test;
-            }
-            else if (strcmp(type, "CHARM") == 0) {
-                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + Scale_CHARM_test;
-                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + Scale_CHARM_test;
-            }
             else {
-                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0;
-                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + 1.0;
+                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
+                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
             }
 
         }
@@ -2787,48 +2747,15 @@ void Loader::End() {
     }
 
     if (FOMIsOn == true) {
-        double SF = -1;
-        if (scaleFactor == Loader::None) SF = 1.0;
-        else if(scaleFactor == Loader::Kplus) SF = Scale_Kplus_test;
-        else if (scaleFactor == Loader::Kplusstar) SF = Scale_Kplusstar_test;
-        else if (scaleFactor == Loader::Xsu_nonresonant) SF = Scale_Xsu_nonresonant_test;
-        else if (scaleFactor == Loader::K0) SF = Scale_K0_test;
-        else if (scaleFactor == Loader::K0star) SF = Scale_K0star_test;
-        else if (scaleFactor == Loader::Xsd_nonresonant) SF = Scale_Xsd_nonresonant_test;
-        else if (scaleFactor == Loader::CHG) SF = Scale_CHG_test;
-        else if (scaleFactor == Loader::MIX) SF = Scale_MIX_test;
-        else if (scaleFactor == Loader::UUBAR) SF = Scale_UUBAR_test;
-        else if (scaleFactor == Loader::DDBAR) SF = Scale_DDBAR_test;
-        else if (scaleFactor == Loader::SSBAR) SF = Scale_SSBAR_test;
-        else if (scaleFactor == Loader::CHARM) SF = Scale_CHARM_test;
-        else {
-            printf("ERROR 526!\n");
-            exit(1);
-        }
-
         printf("--------------- number of event to get FOM ---------------\n");
         printf("--------------- Oqq -> ---------------\n");
         printf("\n");
         for (int i = 0; i < Nstep; i++) {
             for (int j = 0; j < Nstep; j++) {
-                printf("%lf ", SF * FOM_Matrix[i][j]);
+                printf("%lf ", FOM_Matrix[i][j]);
             }
             printf("\n");
         }
-        if (scaleFactor == Loader::None) printf("no specified decay mode\n");
-        else if (scaleFactor == Loader::Kplus) printf("B+ -> K+ nu nubar decay (test) is specified\n");
-        else if (scaleFactor == Loader::Kplusstar) printf("B+ -> K*+ nu nubar decay (test) is specified\n");
-        else if (scaleFactor == Loader::Xsu_nonresonant) printf("B+ -> Xsu nu nubar decay (non-resonant) (test) is specified\n");
-        else if (scaleFactor == Loader::K0) printf("B0 -> K0 nu nubar decay (test) is specified\n");
-        else if (scaleFactor == Loader::K0star) printf("B0 -> K*0 nu nubar decay (test) is specified\n");
-        else if (scaleFactor == Loader::Xsd_nonresonant) printf("B+ -> Xsd nu nubar decay (non-resonant) (test) is specified\n");
-        else if (scaleFactor == Loader::CHG) printf("CHG background (test) is specified\n");
-        else if (scaleFactor == Loader::MIX) printf("MIX background (test) is specified\n");
-        else if (scaleFactor == Loader::UUBAR) printf("UUBAR background (test) is specified\n");
-        else if (scaleFactor == Loader::DDBAR) printf("DDBAR background (test) is specified\n");
-        else if (scaleFactor == Loader::SSBAR) printf("SSBAR background (test) is specified\n");
-        else if (scaleFactor == Loader::CHARM) printf("CHARM background (test) is specified\n");
-        printf("Scale factor: %lf\n", SF);
         printf("--------------- number of event to get FOM ---------------\n");
     }
 
@@ -4716,7 +4643,7 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
 }
 
 
-void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
+void Loader::PrintConfusionMatrix(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode) {
     if (current_Confusion_matrix > 0) { // allocate new int
         printf("The number of PrintConfusionMatrix should not be larger than 1\n");
         printf("Only first PrintConfusionMatrix is accepted\n");
@@ -4762,16 +4689,16 @@ void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
         else {
             if (filename.find("B2Knunu") != std::string::npos) {
                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
-                Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Kplus_test * correction_weight;
+                Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename) * correction_weight;
             }
-            else if (filename.find("B2Kstarnunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Kplusstar_test;
-            else if (filename.find("B2Xsnunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Xsu_nonresonant_test;
+            else if (filename.find("B2Kstarnunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
+            else if (filename.find("B2Xsnunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
             else if (filename.find("B02K0nunu") != std::string::npos) {
                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
-                Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_K0_test * correction_weight;
+                Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename) * correction_weight;
             }
-            else if (filename.find("B02Kstar0nunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_K0star_test;
-            else if (filename.find("B02Xsnunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + Scale_Xsd_nonresonant_test;
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
+            else if (filename.find("B02Xsnunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
             else { printf("ERROR 142\n"); exit(1); }
         }
 
@@ -4815,16 +4742,16 @@ void Loader::PrintConfusionMatrix(std::string filename, bool smartmode) {
         else {
             if (filename.find("B2Knunu") != std::string::npos) {
                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
-                Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplus_test * correction_weight;
+                Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + ObtainWeight(type, MC_version, category, filename) * correction_weight;
             }
-            else if (filename.find("B2Kstarnunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Kplusstar_test;
-            else if (filename.find("B2Xsnunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsu_nonresonant_test;
+            else if (filename.find("B2Kstarnunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + ObtainWeight(type, MC_version, category, filename);
+            else if (filename.find("B2Xsnunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + ObtainWeight(type, MC_version, category, filename);
             else if (filename.find("B02K0nunu") != std::string::npos) {
                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
-                Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0_test * correction_weight;
+                Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + ObtainWeight(type, MC_version, category, filename) * correction_weight;
             }
-            else if (filename.find("B02Kstar0nunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_K0star_test;
-            else if (filename.find("B02Xsnunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + Scale_Xsd_nonresonant_test;
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + ObtainWeight(type, MC_version, category, filename);
+            else if (filename.find("B02Xsnunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + ObtainWeight(type, MC_version, category, filename);
             else { printf("ERROR 142\n"); exit(1); }
         }
 
@@ -4990,7 +4917,7 @@ void Loader::DvetoAboutSpecificTypeFor(Loader::Variable variable, int Dchargedve
     TotalData.swap(temp_queue);
 }
 
-void Loader::PrintFOM(std::string filename, Loader::ScaleFactor scaleFactor_, bool smartmode) {
+void Loader::PrintFOM(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode) {
     if (current_FOM > 0) { // allocate new int
         printf("The number of PrintFOM should not be larger than 1\n");
         printf("Only first PrintFOM is accepted\n");
@@ -5034,17 +4961,17 @@ void Loader::PrintFOM(std::string filename, Loader::ScaleFactor scaleFactor_, bo
                         else {
                             if (filename.find("B2Knunu") != std::string::npos) {
                                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
-                                EVT_num = EVT_num + correction_weight;
+                                EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                             }
-                            else if (filename.find("B2Kstarnunu") != std::string::npos) EVT_num = EVT_num + 1.0;
-                            else if (filename.find("B2Xsnunu") != std::string::npos) EVT_num = EVT_num + 1.0;
+                            else if (filename.find("B2Kstarnunu") != std::string::npos) EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
+                            else if (filename.find("B2Xsnunu") != std::string::npos) EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
                             else if (filename.find("B02K0nunu") != std::string::npos) {
                                 double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
-                                EVT_num = EVT_num + correction_weight;
+                                EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                             }
-                            else if (filename.find("B02Kstar0nunu") != std::string::npos) EVT_num = EVT_num + 1.0;
-                            else if (filename.find("B02Xsnunu") != std::string::npos) EVT_num = EVT_num + 1.0;
-                            else { printf("ERROR 142\n"); exit(1); }
+                            else if (filename.find("B02Kstar0nunu") != std::string::npos) EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
+                            else if (filename.find("B02Xsnunu") != std::string::npos) EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
+                            else { EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename); }
                         }
                         Labels temp_Labels;
                         temp_Labels.__experiment__ = temp.__experiment__;
@@ -5061,12 +4988,11 @@ void Loader::PrintFOM(std::string filename, Loader::ScaleFactor scaleFactor_, bo
         }
     }
 
-    scaleFactor = scaleFactor_;
     FOMIsOn = true;
     current_FOM++;
 }
 
-void Loader::PrintFOM1D(std::string filename, Loader::ScaleFactor scaleFactor_, bool smartmode) {
+void Loader::PrintFOM1D(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode) {
     if (current_FOM > 0) { // allocate new int
         printf("The number of PrintFOM should not be larger than 1\n");
         printf("Only first PrintFOM is accepted\n");
@@ -5108,17 +5034,17 @@ void Loader::PrintFOM1D(std::string filename, Loader::ScaleFactor scaleFactor_, 
                     else {
                         if (filename.find("B2Knunu") != std::string::npos) {
                             double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
-                            EVT_num = EVT_num + correction_weight;
+                            EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                         }
-                        else if (filename.find("B2Kstarnunu") != std::string::npos) EVT_num = EVT_num + 1.0;
-                        else if (filename.find("B2Xsnunu") != std::string::npos) EVT_num = EVT_num + 1.0;
+                        else if (filename.find("B2Kstarnunu") != std::string::npos) EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
+                        else if (filename.find("B2Xsnunu") != std::string::npos) EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
                         else if (filename.find("B02K0nunu") != std::string::npos) {
                             double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
-                            EVT_num = EVT_num + correction_weight;
+                            EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                         }
-                        else if (filename.find("B02Kstar0nunu") != std::string::npos) EVT_num = EVT_num + 1.0;
-                        else if (filename.find("B02Xsnunu") != std::string::npos) EVT_num = EVT_num + 1.0;
-                        else EVT_num = EVT_num + 1.0;
+                        else if (filename.find("B02Kstar0nunu") != std::string::npos) EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
+                        else if (filename.find("B02Xsnunu") != std::string::npos) EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
+                        else EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
                     }
                     Labels temp_Labels;
                     temp_Labels.__experiment__ = temp.__experiment__;
@@ -5134,7 +5060,6 @@ void Loader::PrintFOM1D(std::string filename, Loader::ScaleFactor scaleFactor_, 
         FOM_Matrix[0][j] = FOM_Matrix[0][j] + EVT_num;
     }
 
-    scaleFactor = scaleFactor_;
     FOMIsOn = true;
     current_FOM++;
 }
@@ -5167,7 +5092,7 @@ void Loader::MVACut(double OBB, double Oqq, Loader::MassRegion massRegion) {
     TotalData.swap(temp_queue);
 }
 
-void Loader::CountMCEvent(std::string filename, bool smartmode) {
+void Loader::CountMCEvent(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode) {
     if (current_MCcount > 0) { // allocate new int
         printf("The number of CountMCEvent should not be larger than 1\n");
         printf("Only first CountMCEvent is accepted\n");
@@ -5223,16 +5148,16 @@ void Loader::CountMCEvent(std::string filename, bool smartmode) {
             else {
                 if (filename.find("B2Knunu") != std::string::npos) {
                     double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
-                    MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplus_test * correction_weight;
+                    MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                 }
-                else if (filename.find("B2Kstarnunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Kplusstar_test;
-                else if (filename.find("B2Xsnunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsu_nonresonant_test;
+                else if (filename.find("B2Kstarnunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
+                else if (filename.find("B2Xsnunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
                 else if (filename.find("B02K0nunu") != std::string::npos) {
                     double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
-                    MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0_test * correction_weight;
+                    MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                 }
-                else if (filename.find("B02Kstar0nunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_K0star_test;
-                else if (filename.find("B02Xsnunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + Scale_Xsd_nonresonant_test;
+                else if (filename.find("B02Kstar0nunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
+                else if (filename.find("B02Xsnunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
                 else { printf("ERROR 142\n"); exit(1); }
             }
         }
@@ -5291,12 +5216,68 @@ void Loader::BeamEnergyCorrectionFromDeltaE(int index_pBcms, int index_EBcms, in
     TotalData.swap(temp_queue);
 }
 
+double ObtainWeight(const char* type, const char* MC_version, const char* category, std::string filename) {
+    if (strcmp(MC_version, "data") == 0) return 1.0; // no weight if it is data no matter what other values are
+    else if ( (strcmp(MC_version, "MC15ri") == 0) && (strcmp(category, "test") == 0)) { // MC15ri test
+        if ((strcmp(type, "SIGNAL") == 0)) {
+            if (filename.find("B2Knunu") != std::string::npos) return Scale_Kplus_test;
+            else if (filename.find("B2Kstarnunu") != std::string::npos) return Scale_Kplusstar_test;
+            else if (filename.find("B2Xsnunu") != std::string::npos) return Scale_Xsu_nonresonant_test;
+            else if (filename.find("B02K0nunu") != std::string::npos) return Scale_Xsu_nonresonant_test;
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) return Scale_K0star_test;
+            else if (filename.find("B02Xsnunu") != std::string::npos) return Scale_Xsd_nonresonant_test;
+            else { printf("[ObtainWeight] undefined type for SIGNAL\n"); exit(1); }
+        }
+        else if ((strcmp(type, "CHG") == 0)) return Scale_CHG_test;
+        else if ((strcmp(type, "MIX") == 0)) return Scale_MIX_test;
+        else if ((strcmp(type, "UUBAR") == 0)) return Scale_UUBAR_test;
+        else if ((strcmp(type, "DDBAR") == 0)) return Scale_DDBAR_test;
+        else if ((strcmp(type, "SSBAR") == 0)) return Scale_SSBAR_test;
+        else if ((strcmp(type, "CHARM") == 0)) return Scale_CHARM_test;
+        else { printf("[ObtainWeight] undefined type for MC15ri test\n"); exit(1); }
+    }
+    else if ((strcmp(MC_version, "MC15ri") == 0) && (strcmp(category, "train") == 0)) { // MC15ri train
+        if ((strcmp(type, "SIGNAL") == 0)) {
+            if (filename.find("B2Knunu") != std::string::npos) return Scale_Kplus_train;
+            else if (filename.find("B2Kstarnunu") != std::string::npos) return Scale_Kplusstar_train;
+            else if (filename.find("B2Xsnunu") != std::string::npos) return Scale_Xsu_nonresonant_train;
+            else if (filename.find("B02K0nunu") != std::string::npos) return Scale_Xsu_nonresonant_train;
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) return Scale_K0star_train;
+            else if (filename.find("B02Xsnunu") != std::string::npos) return Scale_Xsd_nonresonant_train;
+            else { printf("[ObtainWeight] undefined type for SIGNAL\n"); exit(1); }
+        }
+        else if ((strcmp(type, "CHG") == 0)) return Scale_CHG_train;
+        else if ((strcmp(type, "MIX") == 0)) return Scale_MIX_train;
+        else if ((strcmp(type, "UUBAR") == 0)) return Scale_UUBAR_train;
+        else if ((strcmp(type, "DDBAR") == 0)) return Scale_DDBAR_train;
+        else if ((strcmp(type, "SSBAR") == 0)) return Scale_SSBAR_train;
+        else if ((strcmp(type, "CHARM") == 0)) return Scale_CHARM_train;
+        else { printf("[ObtainWeight] undefined type for MC15ri train\n"); exit(1); }
+    }
+    else if ((strcmp(MC_version, "MC15ri") == 0) && (strcmp(category, "validation") == 0)) { // MC15ri validation
+        if ((strcmp(type, "SIGNAL") == 0)) return 1.0;
+        else if ((strcmp(type, "CHG") == 0)) return Scale_CHG_validation;
+        else if ((strcmp(type, "MIX") == 0)) return Scale_MIX_validation;
+        else if ((strcmp(type, "UUBAR") == 0)) return Scale_UUBAR_validation;
+        else if ((strcmp(type, "DDBAR") == 0)) return Scale_DDBAR_validation;
+        else if ((strcmp(type, "SSBAR") == 0)) return Scale_SSBAR_validation;
+        else if ((strcmp(type, "CHARM") == 0)) return Scale_CHARM_validation;
+        else { printf("[ObtainWeight] undefined type for MC15ri validation\n"); exit(1); }
+    }
+
+    printf("[ObtainWeight] no matched case!\n")
+    exit(1);
+    return 1.0;
+}
+
 int main(int argc, char* argv[]) {
     /*
     * argv[1]: dirname
     * argv[2]: outputname
     * argv[3]: output path
     * argv[4]: sample type: {SIGNAL|CHG|MIX|UUBAR|DDBAR|SSBAR|CHARM}
+    * argv[5]: MC version: {data|MC15ri|MC15rd}
+    * argv[6]: sample category: {test|train|validation}
     */
 
     std::vector<std::string> names;
@@ -5321,51 +5302,51 @@ int main(int argc, char* argv[]) {
         loader.Cut(Loader::Upsilon, 5, Loader::smaller_than, 0.5); // N KS0
         loader.Cut(Loader::Bsig, 64, Loader::larger_than, -0.5); // Bsig vertex fit
         loader.Cut(Loader::Btag, 6, Loader::larger_than, -0.5); // Btag vertex fit
-        loader.PrintInformation(std::string("========== inital =========="), names.at(i), argv[4], true);
+        loader.PrintInformation(std::string("========== inital =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Mbc_cut.root"));
         loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
-        loader.PrintInformation(std::string("========== Mbc > 5.27 =========="), names.at(i), argv[4], true);
+        loader.PrintInformation(std::string("========== Mbc > 5.27 =========="), names.at(i), argv[4], argv[5], argv[6], true);
         //loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_delE_cut.root"));
         loader.Cut(Loader::Btag, 2, Loader::larger_than, -0.2);
         loader.Cut(Loader::Btag, 2, Loader::smaller_than, 0.2);
-        loader.PrintInformation(std::string("========== abs(deltaE) < 0.2 =========="), names.at(i), argv[4], true);
+        loader.PrintInformation(std::string("========== abs(deltaE) < 0.2 =========="), names.at(i), argv[4], argv[5], argv[6], true);
         //loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_SignalProbability_cut.root"));
         loader.Cut(Loader::Btag, 5, Loader::larger_than, 0.001);
-        loader.PrintInformation(std::string("========== Btag_SignalProbability > 0.001 =========="), names.at(i), argv[4], true);
+        loader.PrintInformation(std::string("========== Btag_SignalProbability > 0.001 =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Eecl_cut.root"));
         //loader.DrawTH1F("missing_momentum_theta_after_npi0_cut", "#theta_{missing};#theta_{missing} [rad];evt", 100, 0, 3.2, Loader::Upsilon, 7);
         loader.Cut(Loader::Upsilon, 69, Loader::smaller_than, 1.3);
-        loader.PrintInformation(std::string("========== Eecl_v200 < 1.3 =========="), names.at(i), argv[4], true);
+        loader.PrintInformation(std::string("========== Eecl_v200 < 1.3 =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_missing_momentum_theta_cut.root"));
         //loader.DrawTH1F("missing_momentum_theta_after_npi0_cut", "#theta_{missing};#theta_{missing} [rad];evt", 100, 0, 3.2, Loader::Upsilon, 7);
         loader.Cut(Loader::Upsilon, 7, Loader::smaller_than, 2.618);
         loader.Cut(Loader::Upsilon, 7, Loader::larger_than, 0.297);
-        loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="), names.at(i), argv[4], true);
+        loader.PrintInformation(std::string("========== 0.297 < missing momentum theta < 2.618 =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_psig_cut.root"));
         //loader.DrawTH1F("momentum_Bsig_after_missing_theta_cut", "momentum of B_{sig} at CMS;momentum [GeV];evt", 100, 0, 3.2, Loader::Bsig, 4);
         loader.Cut(Loader::Bsig, 4, Loader::smaller_than, 2.96);
         loader.Cut(Loader::Bsig, 4, Loader::larger_than, 0.5);
-        loader.PrintInformation(std::string("========== 0.5 < momentum of signal side < 2.96 =========="), names.at(i), argv[4], true);
+        loader.PrintInformation(std::string("========== 0.5 < momentum of signal side < 2.96 =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
         //loader.PrintSeparateRootFile(file_without_extension + std::string("_before_Dveto_cut.root"));
         //loader.DrawTH1F("Bsig_M_Xs", "mass of X_{s};M_{Xs} [GeV];evt", 100, 0, 3.5, Loader::Bsig, 6);
         loader.DvetoFor(Loader::Bsig, 6, 1.84, 1.89);
-        loader.PrintInformation(std::string("========== D veto =========="), names.at(i), argv[4], true);
+        loader.PrintInformation(std::string("========== D veto =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
         loader.BCS(Loader::Btag, 5, Loader::Highest);
         if (loader.IsBCSValid() == false) {
             printf("ERROR! it is not valid\n");
             exit(1);
         }
-        loader.PrintInformation(std::string("========== BCS =========="), names.at(i), argv[4], true);
+        loader.PrintInformation(std::string("========== BCS =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
         loader.PrintSeparateRootFile(std::string(argv[3]) + "/final_output/" + file_without_extension + std::string("_") + std::string(argv[2]));
     }
