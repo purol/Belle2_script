@@ -608,8 +608,8 @@ double ObtainWeight(const char* type, const char* MC_version, const char* catego
         else { printf("[ObtainWeight] undefined type for MC15ri validation\n"); exit(1); }
     }
 
-    printf("[ObtainWeight] no matched case!\n")
-        exit(1);
+    printf("[ObtainWeight] no matched case!\n");
+    exit(1);
     return 1.0;
 }
 
@@ -628,7 +628,9 @@ int main(int argc, char* argv[])
     * argv[3]: shrinkage path
     * argv[4]: subsample type
     * argv[5]: binning
-    * argv[6]: MC version: {MC15ri|MC15rd}
+    * argv[6]: version name (ex. Aqua, Kokoro, Satori, ...)
+    * argb[7]: dirname (ex. v000, v001, ...)
+    * argv[8]: MC version: {MC15ri|MC15rd}
     */
 
     unsigned int nTrees = (unsigned int)atoi(argv[1]);
@@ -648,21 +650,21 @@ int main(int argc, char* argv[])
 
 
     // input file
-    const char* SIGNAL_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/SIGNAL_analysis/train_v000/final_output/DataFile";
-    const char* CHG_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/CHG_analysis/train_v000/final_output/DataFile";
-    const char* MIX_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/MIX_analysis/train_v000/final_output/DataFile";
-    const char* UUBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/UUBAR_analysis/train_v000/final_output/DataFile";
-    const char* DDBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/DDBAR_analysis/train_v000/final_output/DataFile";
-    const char* SSBAR_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/SSBAR_analysis/train_v000/final_output/DataFile";
-    const char* CHARM_input_train = "/home/belle2/junewoo/storage_b1/GridSearch/CHARM_analysis/train_v000/final_output/DataFile";
+    const char* SIGNAL_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/SIGNAL_analysis/train_" + std::string(argv[7]) + "/final_output_data";
+    const char* CHG_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/CHG_analysis/train_" + std::string(argv[7]) + "/final_output_data";
+    const char* MIX_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/MIX_analysis/train_" + std::string(argv[7]) + "/final_output_data";
+    const char* UUBAR_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/UUBAR_analysis/train_" + std::string(argv[7]) + "/final_output_data";
+    const char* DDBAR_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/DDBAR_analysis/train_" + std::string(argv[7]) + "/final_output_data";
+    const char* SSBAR_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/SSBAR_analysis/train_" + std::string(argv[7]) + "/final_output_data";
+    const char* CHARM_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/CHARM_analysis/train_" + std::string(argv[7]) + "/final_output_data";
 
-    const char* SIGNAL_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/SIGNAL_analysis/test_v000/final_output/DataFile";
-    const char* CHG_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/CHG_analysis/test_v000/final_output/DataFile";
-    const char* MIX_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/MIX_analysis/test_v000/final_output/DataFile";
-    const char* UUBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/UUBAR_analysis/test_v000/final_output/DataFile";
-    const char* DDBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/DDBAR_analysis/test_v000/final_output/DataFile";
-    const char* SSBAR_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/SSBAR_analysis/test_v000/final_output/DataFile";
-    const char* CHARM_input_test = "/home/belle2/junewoo/storage_b1/GridSearch/CHARM_analysis/test_v000/final_output/DataFile";
+    const char* SIGNAL_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/SIGNAL_analysis/test_" + std::string(argv[7]) + "/final_output_data";
+    const char* CHG_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/CHG_analysis/test_" + std::string(argv[7]) + "/final_output_data";
+    const char* MIX_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/MIX_analysis/test_" + std::string(argv[7]) + "/final_output_data";
+    const char* UUBAR_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/UUBAR_analysis/test_" + std::string(argv[7]) + "/final_output_data";
+    const char* DDBAR_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/DDBAR_analysis/test_" + std::string(argv[7]) + "/final_output_data";
+    const char* SSBAR_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/SSBAR_analysis/test_" + std::string(argv[7]) + "/final_output_data";
+    const char* CHARM_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/CHARM_analysis/test_" + std::string(argv[7]) + "/final_output_data";
 
 
 
@@ -720,42 +722,42 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(CHG_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("CHG", argv[6], "train", std::string("")));
+            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("CHG", argv[8], "train", std::string("")));
         }
     }
     {
         std::vector<string> names;
         load_files(MIX_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("MIX", argv[6], "train", std::string("")));
+            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("MIX", argv[8], "train", std::string("")));
         }
     }
     {
         std::vector<string> names;
         load_files(UUBAR_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("UUBAR", argv[6], "train", std::string("")));
+            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("UUBAR", argv[8], "train", std::string("")));
         }
     }
     {
         std::vector<string> names;
         load_files(DDBAR_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("DDBAR", argv[6], "train", std::string("")));
+            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("DDBAR", argv[8], "train", std::string("")));
         }
     }
     {
         std::vector<string> names;
         load_files(SSBAR_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("SSBAR", argv[6], "train", std::string("")));
+            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("SSBAR", argv[8], "train", std::string("")));
         }
     }
     {
         std::vector<string> names;
         load_files(CHARM_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("CHARM", argv[6], "train", std::string("")));
+            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("CHARM", argv[8], "train", std::string("")));
         }
     }
 
@@ -791,7 +793,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[6], "test", std::string("B2Knunu")));
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[8], "test", std::string("B2Knunu")));
         }
     }
     {
@@ -800,7 +802,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[6], "test", std::string("B2Kstarnunu")));
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[8], "test", std::string("B2Kstarnunu")));
         }
     }
     {
@@ -809,7 +811,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[6], "test", std::string("B2Xsnunu")));
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[8], "test", std::string("B2Xsnunu")));
         }
     }
     {
@@ -818,7 +820,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[6], "test", std::string("B02K0nunu")));
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[8], "test", std::string("B02K0nunu")));
         }
     }
     {
@@ -827,7 +829,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[6], "test", std::string("B02Kstar0nunu")));
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[8], "test", std::string("B02Kstar0nunu")));
         }
     }
     {
@@ -836,7 +838,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[6], "test", std::string("B02Xsnunu")));
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[8], "test", std::string("B02Xsnunu")));
         }
     }
     {
@@ -845,7 +847,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((CHG_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("CHG", argv[6], "test", std::string("")));
+            FillVariables((CHG_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("CHG", argv[8], "test", std::string("")));
         }
     }
     {
@@ -854,7 +856,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((MIX_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("MIX", argv[6], "test", std::string("")));
+            FillVariables((MIX_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("MIX", argv[8], "test", std::string("")));
         }
     }
     {
@@ -863,7 +865,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((UUBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("UUBAR", argv[6], "test", std::string("")));
+            FillVariables((UUBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("UUBAR", argv[8], "test", std::string("")));
         }
     }
     {
@@ -872,7 +874,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((DDBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("DDBAR", argv[6], "test", std::string("")));
+            FillVariables((DDBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("DDBAR", argv[8], "test", std::string("")));
         }
     }
     {
@@ -881,7 +883,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SSBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("SSBAR", argv[6], "test", std::string("")));
+            FillVariables((SSBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("SSBAR", argv[8], "test", std::string("")));
         }
     }
     {
@@ -890,7 +892,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((CHARM_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("CHARM", argv[6], "test", std::string("")));
+            FillVariables((CHARM_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("CHARM", argv[8], "test", std::string("")));
         }
     }
 
@@ -927,84 +929,84 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Knunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[6], "train", std::string("B2Knunu")));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[8], "train", std::string("B2Knunu")));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Kstarnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[6], "train", std::string("B2Kstarnunu")));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[8], "train", std::string("B2Kstarnunu")));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B2Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[6], "train", std::string("B2Xsnunu")));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[8], "train", std::string("B2Xsnunu")));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02K0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[6], "train", std::string("B02K0nunu")));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[8], "train", std::string("B02K0nunu")));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02Kstar0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[6], "train", std::string("B02Kstar0nunu")));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[8], "train", std::string("B02Kstar0nunu")));
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train, &names, "B02Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[6], "train", std::string("B02Xsnunu")));
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[8], "train", std::string("B02Xsnunu")));
         }
     }
     {
         std::vector<string> names;
         load_files(CHG_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("CHG", argv[6], "train", std::string("")));
+            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("CHG", argv[8], "train", std::string("")));
         }
     }
     {
         std::vector<string> names;
         load_files(MIX_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("MIX", argv[6], "train", std::string("")));
+            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("MIX", argv[8], "train", std::string("")));
         }
     }
     {
         std::vector<string> names;
         load_files(UUBAR_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("UUBAR", argv[6], "train", std::string("")));
+            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("UUBAR", argv[8], "train", std::string("")));
         }
     }
     {
         std::vector<string> names;
         load_files(DDBAR_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("DDBAR", argv[6], "train", std::string("")));
+            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("DDBAR", argv[8], "train", std::string("")));
         }
     }
     {
         std::vector<string> names;
         load_files(SSBAR_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("SSBAR", argv[6], "train", std::string("")));
+            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("SSBAR", argv[8], "train", std::string("")));
         }
     }
     {
         std::vector<string> names;
         load_files(CHARM_input_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("CHARM", argv[6], "train", std::string("")));
+            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("CHARM", argv[8], "train", std::string("")));
         }
     }
 
@@ -1033,14 +1035,14 @@ int main(int argc, char* argv[])
     printf("%u_%u_%lf_%lf_%u %lf %lf\n", nTrees, depth, shrinkage, subsample, binning_num, train_AUC, test_AUC);
 
     FILE* fp;
-    fp = fopen(("/home/belle2/junewoo/storage_b1/GridSearch/out/Result_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])).c_str(), "w");
+    fp = fopen(("/home/belle2/junewoo/storage_b1/bsub/Analysis/GridSearch/out/Result_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])).c_str(), "w");
     fprintf(fp, "%u_%u_%lf_%lf_%u %lf %lf\n", nTrees, depth, shrinkage, subsample, binning_num, train_AUC, test_AUC);
     fclose(fp);
 
 
 
     // save model
-    std::fstream out_stream(("/home/belle2/junewoo/storage_b1/GridSearch/out/classifier_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])+".weightfile").c_str(), std::ios_base::out | std::ios_base::trunc);
+    std::fstream out_stream(("/home/belle2/junewoo/storage_b1/bsub/Analysis/GridSearch/out/classifier_" + std::string(argv[1]) + "_" + std::string(argv[2]) + "_" + std::string(argv[3]) + "_" + std::string(argv[4]) + "_" + std::string(argv[5])+".weightfile").c_str(), std::ios_base::out | std::ios_base::trunc);
     out_stream << classifier << std::endl;
     out_stream.close();
 
