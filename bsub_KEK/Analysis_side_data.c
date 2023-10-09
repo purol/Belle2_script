@@ -2636,14 +2636,16 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
     }
 }
 
-bool Loader::IsBCSValid() {
+bool Loader::IsBCSValid() { // modified for makeshift!!
     bool IsItValid = true;
+    bool Eeclsame = false;
 
     typedef struct labels {
         int __experiment__;
         int __run__;
         unsigned int __event__;
         int __ncandidates__;
+        double Eecl; // Makeshift
     } Labels;
 
     std::vector<Labels> label_list;
@@ -2654,16 +2656,23 @@ bool Loader::IsBCSValid() {
         Data temp = TotalData_.front();
         TotalData_.pop();
         for (unsigned int i = 0; i < label_list.size(); i++) {
-            if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) IsItValid = false;
+            if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) {
+                IsItValid = false;
+                if (label_list.at(i).Eecl == temp.Upsilon_info[3]) Eeclsame = true; // makeshift
+            }
         }
         Labels temp_Labels;
         temp_Labels.__experiment__ = temp.__experiment__;
         temp_Labels.__run__ = temp.__run__;
         temp_Labels.__event__ = temp.__event__;
         temp_Labels.__ncandidates__ = temp.__ncandidates__;
+        temp_Labels.Eecl = temp.Upsilon_info[3];
         label_list.push_back(temp_Labels);
 
-        TotalData.push(temp);
+        if (IsItValid == true) TotalData.push(temp);
+        else if (IsItValid == false && Eeclsame == true) {
+            IsItValid = true; // makeshift
+        }
     }
     return IsItValid;
 }
@@ -5305,8 +5314,8 @@ int main(int argc, char* argv[]) {
         loader.PrintInformation(std::string("========== inital =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
         loader.PrintSeparateRootFile(std::string(argv[3]) + "/before_Mbc_cut/" + file_without_extension + std::string("_before_Mbc_cut.root"));
-        loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
-        loader.PrintInformation(std::string("========== Mbc > 5.27 =========="), names.at(i), argv[4], argv[5], argv[6], true);
+        loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.2);
+        loader.PrintInformation(std::string("========== Mbc > 5.2 =========="), names.at(i), argv[4], argv[5], argv[6], true);
         //loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         loader.PrintSeparateRootFile(std::string(argv[3]) + "/before_delE_cut/" + file_without_extension + std::string("_before_delE_cut.root"));

@@ -5304,6 +5304,9 @@ int main(int argc, char* argv[]) {
         loader.Cut(Loader::Btag, 6, Loader::larger_than, -0.5); // Btag vertex fit
         loader.PrintInformation(std::string("========== inital =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
+        loader.BeamEnergyCorrectionFromDeltaE(9, 4, 1, 2, 5.2897787094116, true);
+        loader.PrintInformation(std::string("========== Ebeam correction =========="));
+
         loader.PrintSeparateRootFile(std::string(argv[3]) + "/before_Mbc_cut/" + file_without_extension + std::string("_before_Mbc_cut.root"));
         loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
         loader.PrintInformation(std::string("========== Mbc > 5.27 =========="), names.at(i), argv[4], argv[5], argv[6], true);
