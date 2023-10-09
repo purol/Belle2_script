@@ -650,21 +650,21 @@ int main(int argc, char* argv[])
 
 
     // input file
-    const char* SIGNAL_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/SIGNAL_analysis/train_" + std::string(argv[7]) + "/final_output_data";
-    const char* CHG_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/CHG_analysis/train_" + std::string(argv[7]) + "/final_output_data";
-    const char* MIX_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/MIX_analysis/train_" + std::string(argv[7]) + "/final_output_data";
-    const char* UUBAR_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/UUBAR_analysis/train_" + std::string(argv[7]) + "/final_output_data";
-    const char* DDBAR_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/DDBAR_analysis/train_" + std::string(argv[7]) + "/final_output_data";
-    const char* SSBAR_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/SSBAR_analysis/train_" + std::string(argv[7]) + "/final_output_data";
-    const char* CHARM_input_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/CHARM_analysis/train_" + std::string(argv[7]) + "/final_output_data";
+    const char* SIGNAL_input_train = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/SIGNAL_analysis/train_" + std::string(argv[7]) + "/final_output_data").c_str();
+    const char* CHG_input_train = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/CHG_analysis/train_" + std::string(argv[7]) + "/final_output_data").c_str();
+    const char* MIX_input_train = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/MIX_analysis/train_" + std::string(argv[7]) + "/final_output_data").c_str();
+    const char* UUBAR_input_train = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/UUBAR_analysis/train_" + std::string(argv[7]) + "/final_output_data").c_str();
+    const char* DDBAR_input_train = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/DDBAR_analysis/train_" + std::string(argv[7]) + "/final_output_data").c_str();
+    const char* SSBAR_input_train = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/SSBAR_analysis/train_" + std::string(argv[7]) + "/final_output_data").c_str();
+    const char* CHARM_input_train = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/CHARM_analysis/train_" + std::string(argv[7]) + "/final_output_data").c_str();
 
-    const char* SIGNAL_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/SIGNAL_analysis/test_" + std::string(argv[7]) + "/final_output_data";
-    const char* CHG_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/CHG_analysis/test_" + std::string(argv[7]) + "/final_output_data";
-    const char* MIX_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/MIX_analysis/test_" + std::string(argv[7]) + "/final_output_data";
-    const char* UUBAR_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/UUBAR_analysis/test_" + std::string(argv[7]) + "/final_output_data";
-    const char* DDBAR_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/DDBAR_analysis/test_" + std::string(argv[7]) + "/final_output_data";
-    const char* SSBAR_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/SSBAR_analysis/test_" + std::string(argv[7]) + "/final_output_data";
-    const char* CHARM_input_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/CHARM_analysis/test_" + std::string(argv[7]) + "/final_output_data";
+    const char* SIGNAL_input_test = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/SIGNAL_analysis/test_" + std::string(argv[7]) + "/final_output_data").c_str();
+    const char* CHG_input_test = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/CHG_analysis/test_" + std::string(argv[7]) + "/final_output_data").c_str();
+    const char* MIX_input_test = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/MIX_analysis/test_" + std::string(argv[7]) + "/final_output_data").c_str();
+    const char* UUBAR_input_test = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/UUBAR_analysis/test_" + std::string(argv[7]) + "/final_output_data").c_str();
+    const char* DDBAR_input_test = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/DDBAR_analysis/test_" + std::string(argv[7]) + "/final_output_data").c_str();
+    const char* SSBAR_input_test = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/SSBAR_analysis/test_" + std::string(argv[7]) + "/final_output_data").c_str();
+    const char* CHARM_input_test = ("/home/belle2/junewoo/storage_b1/bsub/Analysis/" + std::string(argv[6]) + "/CHARM_analysis/test_" + std::string(argv[7]) + "/final_output_data").c_str();
 
 
 
