@@ -51,7 +51,7 @@ void load_files(const char* dirname, std::vector<std::string>* names) {
     }
 }
 
-void ApplicationEachFile(const char* filename, const char* dataset_path)
+void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, const char* Continuum_weightfile_path, const char* output_path)
 {
     std::string string_filename(filename);
     std::string OnlyFileName = string_filename.substr(string_filename.find_last_of("\\/") + 1, string_filename.size() - string_filename.find_last_of("\\/"));
@@ -77,10 +77,10 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    float Output_BB;
    float Output_Continuum;
 
-   std::fstream in_stream_BB((dataset_path + std::string("BB.weightfile")).c_str(), std::ios_base::in);
+   std::fstream in_stream_BB((BB_weightfile_path + std::string("/BB.weightfile")).c_str(), std::ios_base::in);
    FastBDT::Classifier classifier_BB(in_stream_BB);
 
-   std::fstream in_stream_Continuum((dataset_path + std::string("Continuum.weightfile")).c_str(), std::ios_base::in);
+   std::fstream in_stream_Continuum((Continuum_weightfile_path + std::string("/Continuum.weightfile")).c_str(), std::ios_base::in);
    FastBDT::Classifier classifier_Continuum(in_stream_Continuum);
 
    TFile *input(0);
@@ -479,7 +479,7 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
 
    std::cout << "--- Processing: " << theTree->GetEntries() << " events" << std::endl;
 
-   TFile* temp_file = new TFile( ("MVAoutput_"+ OnlyFileName).c_str(), "recreate");
+   TFile* temp_file = new TFile( (output_path + std::string("/") "MVAoutput_" + OnlyFileName).c_str(), "recreate");
    temp_file->cd();
    TTree* temp_tree = new TTree("data", "");
 
@@ -923,16 +923,26 @@ void ApplicationEachFile(const char* filename, const char* dataset_path)
    
 }
 
-int main(int argc, char* argv[]) { // const char* dirname, const char* dataset_path
+int main(int argc, char* argv[]) { 
+    /*
+    * argv[1]: dirname (ex. /home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHG_analysis/test_v000)
+    * argv[2]: version name (ex. Aqua, Kokoro, Satori, ...)
+    * argv[3]: dirname (ex. v000, v001, ...)
+    */
+
+    std::string file_path = std::string(argv[1]) + "/final_output_data";
+    std::string BB_weightfile_path = "/home/belle2/junewoo/storage_b1/bsub/Analysis/GridSearch/" + std::string(argv[2]) + "_" + std::string(argv[3]);
+    std::string Continuum_weightfile_path = "/home/belle2/junewoo/storage_b1/bsub/Analysis/GridSearch_BDTc/" + std::string(argv[2]) + "_" + std::string(argv[3]);
+    std::string output_path = std::string(argv[1]) + "/final_output_data_after_MVA_Application";
 
     std::vector<std::string> names;
-    load_files(argv[1], &names);
+    load_files(file_path.c_str(), &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
-        std::string string_filename = argv[1] + std::string("/") + names.at(i);
+        std::string string_filename = file_path + std::string("/") + names.at(i);
         const char* filename = string_filename.c_str();
 
-        ApplicationEachFile(filename, argv[2]);
+        ApplicationEachFile(filename, BB_weightfile_path.c_str(), Continuum_weightfile_path.c_str(), output_path.c_str());
     }
 
     return 0;
