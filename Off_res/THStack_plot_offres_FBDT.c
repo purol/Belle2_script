@@ -117,7 +117,7 @@ double FEI_cal_B0_modeID[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0
 
 # define Nvar_num 1
 
-# define CAL 1.3780
+# define CAL 1.0
 # define CAL_qq 1.0
 # define Stream 0.25
 
