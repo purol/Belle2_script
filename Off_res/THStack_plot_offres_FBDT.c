@@ -169,7 +169,7 @@ Corrector_Multiplicity::Corrector_Multiplicity() :
     FILE* fp;
 
     // read Knn weights
-    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/multiplicity/multiplicity_weight.txt", "r");
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/multiplicity/multiplicity_weight.txt", "r");
     fscanf(fp, "%d\n", &NgammaMAX);
     weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
     for (int i = 0; i < NgammaMAX + 1; i++) {
@@ -1392,11 +1392,11 @@ void THStack_plot_offres_FBDT() {
     Nevt nevt_SSBAR = { 0.0, 0.0 };
     Nevt nevt_CHARM = { 0.0, 0.0 };
 
-    const char* Offres_MC_UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_off/UUBAR_analysis/test_v000/final_output";
-    const char* Offres_MC_DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_off/DDBAR_analysis/test_v000/final_output";
-    const char* Offres_MC_SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_off/SSBAR_analysis/test_v000/final_output";
-    const char* Offres_MC_CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_MC_off/CHARM_analysis/test_v000/final_output";
-    const char* Offres_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Kokoro_LS_data_off/SIGNAL_analysis/validation_v000/final_output";
+    const char* Offres_MC_UUBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/UUBAR_analysis/test_v000/final_output";
+    const char* Offres_MC_DDBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/DDBAR_analysis/test_v000/final_output";
+    const char* Offres_MC_SSBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/SSBAR_analysis/test_v000/final_output";
+    const char* Offres_MC_CHARM_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/CHARM_analysis/test_v000/final_output";
+    const char* Offres_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_data_off/SIGNAL_analysis/validation_v000/final_output";
 
     NevtCount_ri(Offres_MC_UUBAR_dirname, "UUBAR", &nevt_UUBAR);
     NevtCount_ri(Offres_MC_DDBAR_dirname, "DDBAR", &nevt_DDBAR);
