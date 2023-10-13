@@ -96,12 +96,12 @@ typedef struct data {
 } Data;
 
 bool data_sorter(Data const& lhs, Data const& rhs) {
-    return lhs.test_AUC < rhs.test_AUC;
+    return lhs.test_AUC > rhs.test_AUC;
 }
 
 int ReadGridSearchFile()
 {
-    const char* fname = "";
+    const char* fname = "total";
     const int Nlist = 1500;
     std::vector<Data> Datas;
 
@@ -117,7 +117,7 @@ int ReadGridSearchFile()
         double train_AUC = 0;
         double test_AUC = 0;
 
-        fscanf(fp,"%u_%u_%lf_%lf_%u %lf %lf\n",nTrees, depth, shrinkage, subsample, binning, train_AUC, test_AUC);
+        fscanf(fp,"%u_%u_%lf_%lf_%u %lf %lf\n",&nTrees, &depth, &shrinkage, &subsample, &binning, &train_AUC, &test_AUC);
         Data temp_data = { nTrees, depth, shrinkage, subsample, binning, train_AUC, test_AUC };
         Datas.push_back(temp_data);
     }
@@ -144,7 +144,7 @@ int ReadGridSearchFile()
     gr_train->SetMarkerColor(kRed + 1);
     gr_test->SetMarkerColor(kBlue + 1);
 
-    gr_train->SetTitle(";AUC rank;AUC");
+    gr_train->SetTitle(";test AUC rank;AUC");
 
     TCanvas* c = new TCanvas("c1", "AUC", 200, 10, 600, 600);
 
@@ -152,7 +152,7 @@ int ReadGridSearchFile()
     gr_test->Draw("P");
 
     TLegend* legend = new TLegend(0.15, 0.8, 0.35, 0.9); legend->SetFillStyle(0); legend->SetLineWidth(0);
-    legend->AddEntry(gr_train, "train", "P"); legend->AddEntry(gr_test, "test", "P");
+    legend->AddEntry(gr_train,"train","P"); legend->AddEntry(gr_test,"test","P");
     legend->Draw();
     c->SaveAs("AUC.png");
 
