@@ -479,7 +479,7 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
 
    std::cout << "--- Processing: " << theTree->GetEntries() << " events" << std::endl;
 
-   TFile* temp_file = new TFile( (output_path + std::string("/") "MVAoutput_" + OnlyFileName).c_str(), "recreate");
+   TFile* temp_file = new TFile( (output_path + std::string("/") + "MVAoutput_" + OnlyFileName).c_str(), "recreate");
    temp_file->cd();
    TTree* temp_tree = new TTree("data", "");
 
@@ -869,20 +869,27 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
        theTree->GetEntry(ievt);
 
        std::vector<float> inputs;
-       inputs.push_back(temp_BsigDataToTree[25]); // Bsig_KSFWVariables_hso04
        inputs.push_back(temp_BsigDataToTree[17]); // Bsig_cosTBTO
+       inputs.push_back(temp_BsigDataToTree[22]); // Bsig_KSFWVariables_hso01
+       inputs.push_back(temp_BsigDataToTree[25]); // Bsig_KSFWVariables_hso04
+       inputs.push_back(temp_BsigDataToTree[15]); // Bsig_thrustBm
        inputs.push_back(temp_BsigDataToTree[4]); // Bsig_useCMSFrame_p
        inputs.push_back(temp_DataToTree[23]); // Btag_CleoConeCS_1
        inputs.push_back(temp_DataToTree[24]); // Btag_CleoConeCS_2
        inputs.push_back(temp_DataToTree[25]); // Btag_CleoConeCS_3
-       inputs.push_back(temp_DataToTree[20]); // Btag_KSFWVariables_hoo2
-       inputs.push_back(temp_DataToTree[22]); // Btag_KSFWVariables_hoo4
        inputs.push_back(temp_DataToTree[3]); // Btag_cosTBTO
-       inputs.push_back(temp_BtagDataToTree[5]); // Btag_extraInfo_SignalProbability
+       inputs.push_back(temp_DataToTree[19]); // Btag_KSFWVariables_hoo1
+       inputs.push_back(temp_DataToTree[20]); // Btag_KSFWVariables_hoo2
+       inputs.push_back(temp_DataToTree[21]); // Btag_KSFWVariables_hoo3
+       inputs.push_back(temp_DataToTree[22]); // Btag_KSFWVariables_hoo4
+       inputs.push_back(temp_DataToTree[9]); // Btag_KSFWVariables_hso02
+       inputs.push_back(temp_DataToTree[17]); // Btag_KSFWVariables_hso24
        inputs.push_back(temp_DataToTree[34]); // Btag_useCMSFrame_theta
-       inputs.push_back(temp_UpsilonDataToTree[63]); // extraInfo__boEeclv133__bc
-       inputs.push_back(temp_UpsilonDataToTree[62]); // extraInfo__boNgammav133__bc
+       inputs.push_back(temp_UpsilonDataToTree[69]); // extraInfo__boEeclv200__bc
+       inputs.push_back(temp_UpsilonDataToTree[66]); // extraInfo__boNgammav200__bc
        inputs.push_back(temp_UpsilonDataToTree[16]); // foxWolframR3
+       inputs.push_back(temp_UpsilonDataToTree[17]); // foxWolframR4
+       inputs.push_back(temp_UpsilonDataToTree[19]); // harmonicMomentThrust1
        inputs.push_back(temp_UpsilonDataToTree[20]); // harmonicMomentThrust2
        inputs.push_back(temp_UpsilonDataToTree[8]); // missingMomentumOfEvent
        inputs.push_back(temp_UpsilonDataToTree[7]); // missingMomentumOfEvent_theta
@@ -926,8 +933,8 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
 int main(int argc, char* argv[]) { 
     /*
     * argv[1]: dirname (ex. /home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHG_analysis/test_v000)
-    * argv[2]: version name (ex. Aqua, Kokoro, Satori, ...)
-    * argv[3]: dirname (ex. v000, v001, ...)
+    * argv[2]: weightfile version name (ex. Aqua, Kokoro, Satori, ...)
+    * argv[3]: simple dirname (ex. v000, v001, ...)
     */
 
     std::string file_path = std::string(argv[1]) + "/final_output_data";
