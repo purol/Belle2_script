@@ -73,6 +73,7 @@ void main(int argc, char* argv[]){
         * argv[1]: dirname
         * argv[2]: OBB
         * argv[3]: OContinuum
+        * argv[4]: output path
         */
 
         double OBB = std::stod(argv[2]);
@@ -518,7 +519,7 @@ void main(int argc, char* argv[]){
             /*================================================================*/
 
 
-            TFile* temp_file = new TFile((rawname + "_after_MVA.root").c_str(), "recreate");
+            TFile* temp_file = new TFile((argv[4] + std::string("/") + rawname + "_after_MVA.root").c_str(), "recreate");
             temp_file->cd();
             TTree* temp_tree_upsilon = new TTree("Upsilon", "");
             TTree* temp_tree_Bsig = new TTree("Bsig", "");
