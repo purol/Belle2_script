@@ -1776,8 +1776,8 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
 }
 
 void ReadFEIcalFile() {
-    const char* FEI_cal_Bp_file = "FEI_cal_Bp_eigen.txt";
-    const char* FEI_cal_B0_file = "FEI_cal_B0_eigen.txt";
+    const char* FEI_cal_Bp_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_Bp_eigen.txt";
+    const char* FEI_cal_B0_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_B0_eigen.txt";
 
     FILE* fp_FEI_cal_Bp = fopen(FEI_cal_Bp_file, "r");
     FILE* fp_FEI_cal_B0 = fopen(FEI_cal_B0_file, "r");
