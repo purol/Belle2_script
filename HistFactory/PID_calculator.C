@@ -908,7 +908,7 @@ enum DecayModeMC { // MC level
 
 # define N_decay 38 // five decay mode + others
 
-# define RarityBins 15
+# define RarityBins 6
 # define NToys 500
 
 /* ====================================== */
@@ -2445,7 +2445,7 @@ void PID_calculator()
 
     /* ====================================== */
     // define TH1D for temporary usage
-    TH1D* temp_hist = new TH1D("temp_hist", "temp_hist", RarityBins, 0.7, 1.0);
+    TH1D* temp_hist = new TH1D("temp_hist", "temp_hist", RarityBins, 0.96, 1.0);
     temp_hist->Reset();
     /* ====================================== */
 

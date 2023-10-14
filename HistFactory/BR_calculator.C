@@ -982,8 +982,8 @@ enum DecayModeMC { // MC level
 
 # define N_decay 38 // five decay mode + others
 
-# define RarityBins 8
-# define NToys 1000
+# define RarityBins 6
+# define NToys 500
 
 double GetBRRelativeUncertainty(int experiment, int run, unsigned int event, int candidate, int ncandidates);
 
