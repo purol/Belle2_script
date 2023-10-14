@@ -1240,7 +1240,7 @@ void Loader::GetData(TFile* input_file) {
 
     Data temp = { 0 };
 
-    int MakeShiftDoubleToInt[17] = { 0 }; // intermediate variable to convert from int to double
+    double MakeShiftDoubleToInt[17] = { 0 }; // intermediate variable to convert from int to double
 
     // get event_info
     tree_upsilon->SetBranchAddress("__experiment__", &temp.upsilon_experiment);
@@ -5273,11 +5273,10 @@ double ObtainWeight(const char* type, const char* MC_version, const char* catego
 int main(int argc, char* argv[]) {
     /*
     * argv[1]: dirname
-    * argv[2]: outputname
-    * argv[3]: output path
-    * argv[4]: sample type: {SIGNAL|CHG|MIX|UUBAR|DDBAR|SSBAR|CHARM}
-    * argv[5]: MC version: {data|MC15ri|MC15rd}
-    * argv[6]: sample category: {test|train|validation}
+    * argv[2]: output path
+    * argv[3]: sample type: {SIGNAL|CHG|MIX|UUBAR|DDBAR|SSBAR|CHARM}
+    * argv[4]: MC version: {data|MC15ri|MC15rd}
+    * argv[5]: sample category: {test|train|validation}
     */
 
     std::vector<std::string> names;
@@ -5297,12 +5296,12 @@ int main(int argc, char* argv[]) {
         std::string::size_type const p(names.at(i).find_last_of('.'));
         std::string file_without_extension = names.at(i).substr(0, p);
 
-        loader.PrintInformation(std::string("========== inital =========="), names.at(i), argv[4], argv[5], argv[6], true);
+        loader.PrintInformation(std::string("========== inital =========="), names.at(i), argv[3], argv[4], argv[5], true);
         loader.MVACut(0.96, -1.0, Loader::SmallMass);
         loader.MVACut(0.96, -1.0, Loader::LargeMass);
-        loader.PrintInformation(std::string("========== MVA CUT =========="), names.at(i), argv[4], argv[5], argv[6], true);
+        loader.PrintInformation(std::string("========== MVA CUT =========="), names.at(i), argv[3], argv[4], argv[5], true);
 
-        loader.PrintSeparateRootFile(std::string(argv[3]) + "/final_output_root_after_MVA_Application_after_cut/" + file_without_extension + std::string("_after_MVA_cut.root"));
+        loader.PrintSeparateRootFile(std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut/" + file_without_extension + std::string("_after_MVA_cut.root"));
     }
     loader.End();
 
