@@ -1257,6 +1257,22 @@ void load_files(const char* dirname, std::vector<string>* names) {
     }
 }
 
+void load_files(const char* dirname, std::vector<string>* names, const char* included_string) {
+    TSystemDirectory dir(dirname, dirname);
+    TList* files = dir.GetListOfFiles();
+    if (files) {
+        TSystemFile* file;
+        TString fname;
+        TIter next(files);
+        while ((file = (TSystemFile*)next())) {
+            fname = file->GetName();
+            if (!file->IsDirectory() && fname.EndsWith(".root") && fname.Contains(included_string)) {
+                names->push_back(fname.Data());
+            }
+        }
+    }
+}
+
 double GetNpi0(double Upsilon_ID, double Bsig_ID) {
 
     if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5 && Bsig_ID > -0.5 && Bsig_ID < 0.5) return 0.0; // B2Kc
@@ -1337,7 +1353,7 @@ double GetNtracks(double Upsilon_ID, double Bsig_ID) {
     return -1.0;
 }
 
-void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_nominal[RarityBins * 3], double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+void GetNominalNevt(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double Nevt_nominal[RarityBins * 3], double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -1398,7 +1414,7 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
     double nD0toXKL = -1;
 
     std::vector<string> names;
-    load_files(dirname, &names);
+    load_files(dirname, &names, included_string);
 
     double Nevt = 0;
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -1544,7 +1560,7 @@ void GetNominalNevt(const char* dirname, TH1D* hist, const char* type, const cha
     return;
 }
 
-void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 3], int ToyNum, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 3], int ToyNum, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -1611,7 +1627,7 @@ void GetFlucNevt(const char* dirname, TH1D* hist, const char* type, const char* 
     int __ncandidates__ = 0;
 
     std::vector<string> names;
-    load_files(dirname, &names);
+    load_files(dirname, &names, included_string);
 
     double Nevt = 0;
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -2310,16 +2326,6 @@ void BR_calculator()
     double Relative_Uncertainty[NToys][RarityBins * 3] = { 0.0 };
     double Covariance[RarityBins * 3][RarityBins * 3] = { 0.0 };
 
-    /* ====================================== */
-    // Seting CDF module
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Kasen_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu", Scale_Kplus_test);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Kasen_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu", Scale_Kplusstar_test);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Kasen_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu", Scale_Xsu_nonresonant_test);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Kasen_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu", Scale_K0_test);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Kasen_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu", Scale_K0star_test);
-    cdf.initbypath("/home/jwpark/storage/BKG_gbasf2/Kasen_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu", Scale_Xsd_nonresonant_test);
-    /* ====================================== */
-
 
 
     /* ====================================== */
@@ -2332,41 +2338,36 @@ void BR_calculator()
 
     /* ====================================== */
     // define path for Ntuple
-    const char* MC_dirname_Knunu = "/home/jwpark/storage/BKG_gbasf2/Kasen_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* MC_dirname_Kstarnunu = "/home/jwpark/storage/BKG_gbasf2/Kasen_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* MC_dirname_Xsununu = "/home/jwpark/storage/BKG_gbasf2/Kasen_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* MC_dirname_K0nunu = "/home/jwpark/storage/BKG_gbasf2/Kasen_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* MC_dirname_K0starnunu = "/home/jwpark/storage/BKG_gbasf2/Kasen_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* MC_dirname_Xsdnunu = "/home/jwpark/storage/BKG_gbasf2/Kasen_again/SIGNAL_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
+    const char* MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
 
-    const char* MC_dirname_CHG = "/home/jwpark/storage/BKG_gbasf2/Kasen_again/CHG_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_MIX = "/home/jwpark/storage/BKG_gbasf2/Kasen_again/MIX_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_UUBAR = "/home/jwpark/storage/BKG_gbasf2/Kasen_again/UUBAR_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_DDBAR = "/home/jwpark/storage/BKG_gbasf2/Kasen_again/DDBAR_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Kasen_again/SSBAR_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* MC_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Kasen_again/CHARM_analysis/test_v005/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* MC_dirname_CHG = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHG_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* MC_dirname_MIX = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/MIX_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* MC_dirname_UUBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/UUBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* MC_dirname_DDBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/DDBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* MC_dirname_SSBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
+    const char* MC_dirname_CHARM = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut";
     /* ====================================== */
 
 
 
     /* ====================================== */
     // get nominal Nevt
-    GetNominalNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Kplus_test, "B2Knunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B2Knunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Kplus_test, "B2Knunu");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Kplusstar_test, "otherwise");
+    GetNominalNevt(MC_dirname_SIGNAL, "B2Kstarnunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Kplusstar_test, "otherwise");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_Xsununu, temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Xsu_nonresonant_test, "otherwise");
+    GetNominalNevt(MC_dirname_SIGNAL, "B2Xsnunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, Scale_Xsu_nonresonant_test, "otherwise");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_K0nunu, temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_K0_test, "B02K0nunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B02K0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_K0_test, "B02K0nunu");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_K0starnunu, temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_K0star_test, "otherwise");
+    GetNominalNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_K0star_test, "otherwise");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_Xsd_nonresonant_test, "otherwise");
+    GetNominalNevt(MC_dirname_SIGNAL, "B02Xsnunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, Scale_Xsd_nonresonant_test, "otherwise");
     temp_hist->Reset();
 
-    GetNominalNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_nominal, Scale_CHG_test, "otherwise");
+    GetNominalNevt(MC_dirname_CHG, "root", temp_hist, "Bplus", "CHG", Nevt_nominal, Scale_CHG_test, "otherwise");
     temp_hist->Reset();
-    GetNominalNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_nominal, Scale_MIX_test, "otherwise");
+    GetNominalNevt(MC_dirname_MIX, "root", temp_hist, "Bzero", "MIX", Nevt_nominal, Scale_MIX_test, "otherwise");
     temp_hist->Reset();
     /* ====================================== */
 
@@ -2377,22 +2378,22 @@ void BR_calculator()
     for (int i = 0; i < NToys; i++) {
         FluctuateBBBR();
 
-        GetFlucNevt(MC_dirname_Knunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc, i, Scale_Kplus_test, "B2Knunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B2Knunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc, i, Scale_Kplus_test, "B2Knunu");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Kstarnunu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc, i, Scale_Kplusstar_test, "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL, "B2Kstarnunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc, i, Scale_Kplusstar_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Xsununu, temp_hist, "Bplus", "SIGNAL", Nevt_fluc, i, Scale_Xsu_nonresonant_test, "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL, "B2Xsnunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc, i, Scale_Xsu_nonresonant_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_K0nunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc, i, Scale_K0_test, "B02K0nunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B02K0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc, i, Scale_K0_test, "B02K0nunu");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_K0starnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc, i, Scale_K0star_test, "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc, i, Scale_K0star_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_Xsdnunu, temp_hist, "Bzero", "SIGNAL", Nevt_fluc, i, Scale_Xsd_nonresonant_test, "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL, "B02Xsnunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc, i, Scale_Xsd_nonresonant_test, "otherwise");
         temp_hist->Reset();
 
-        GetFlucNevt(MC_dirname_CHG, temp_hist, "Bplus", "CHG", Nevt_fluc, i, Scale_CHG_test, "otherwise");
+        GetFlucNevt(MC_dirname_CHG, "root", temp_hist, "Bplus", "CHG", Nevt_fluc, i, Scale_CHG_test, "otherwise");
         temp_hist->Reset();
-        GetFlucNevt(MC_dirname_MIX, temp_hist, "Bzero", "MIX", Nevt_fluc, i, Scale_MIX_test, "otherwise");
+        GetFlucNevt(MC_dirname_MIX, "root", temp_hist, "Bzero", "MIX", Nevt_fluc, i, Scale_MIX_test, "otherwise");
         temp_hist->Reset();
     }
     /* ====================================== */
