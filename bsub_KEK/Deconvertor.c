@@ -68,7 +68,7 @@ void load_files(const char* dirname, std::vector<std::string>* names) {
     }
 }
 
-void main(int argc, char* argv[]){
+int main(int argc, char* argv[]){
         /*
         * argv[1]: dirname
         * argv[2]: OBB

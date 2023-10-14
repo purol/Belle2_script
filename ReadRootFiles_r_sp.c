@@ -1943,7 +1943,7 @@ void Loader::DrawTH2F(const char* name, const char* title, int nbinsx, double xl
     current_TH2F++;
 }
 
-void Loader::DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption) {
+void Loader::DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr) {
     if (THStacks.size() == current_THStack) { // allocate new thstacks
         THStack* stack = new THStack(name, title);
         THStacks.push_back(stack);
