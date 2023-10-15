@@ -2228,7 +2228,7 @@ void FluctuateFEIcal() {
 
 }
 
-void FEI_calculator()
+void main(int argc, char* argv[])
 {
     ReadPIDFile();
     ReadFakePIDFile();

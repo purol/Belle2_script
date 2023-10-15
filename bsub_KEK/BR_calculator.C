@@ -2313,7 +2313,7 @@ void FluctuateBBBR() {
 
 }
 
-void BR_calculator()
+void main(int argc, char* argv[])
 {
     ReadPIDFile();
     ReadFakePIDFile();

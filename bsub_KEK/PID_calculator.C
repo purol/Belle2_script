@@ -2426,7 +2426,7 @@ void FluctuatePIDCorrection(bool IsItKID) {
 
 }
 
-void PID_calculator()
+void main(int argc, char* argv[])
 {
     ReadPIDFile();
     ReadFakePIDFile();

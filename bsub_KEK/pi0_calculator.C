@@ -2148,7 +2148,7 @@ void Fluctuatepi0Correction() {
 
 }
 
-void pi0_calculator()
+void main(int argc, char* argv[])
 {
     ReadPIDFile();
     ReadFakePIDFile();
