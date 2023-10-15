@@ -29,6 +29,8 @@
 #include <time.h>
 #include <random>
 #include <algorithm>
+#include "TH2.h"
+#include "RooRandom.h"
 using namespace RooFit;
 using std::string;
 using std::to_string;
@@ -959,7 +961,7 @@ enum DecayModeMC { // MC level
 
 /* ====================================== */
 // Rarity module
-bool sorting(pair<double, double> a, pair<double, double> b) {
+bool sorting(std::pair<double, double> a, std::pair<double, double> b) {
 
     return a.first < b.first;
 
@@ -2228,7 +2230,7 @@ void FluctuateFEIcal() {
 
 }
 
-void main(int argc, char* argv[])
+int main(int argc, char* argv[])
 {
     ReadPIDFile();
     ReadFakePIDFile();
