@@ -2269,7 +2269,7 @@ int main(int argc, char* argv[])
     // file output
     FILE* fp;
     
-    fp = fopen("pi0_toys.txt","w");
+    fp = fopen("pi0_toys_" + std::string(argv[1]) + ".txt","w");
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 7; j++) {
             fprintf(fp, "%lf ", Relative_Uncertainty_pi0[i][j]);

@@ -2431,6 +2431,10 @@ void FluctuatePIDCorrection(bool IsItKID) {
 
 int main(int argc, char* argv[])
 {
+    /*
+    * argv[1]: number (ex. 0, 1, 2, ...)
+    */
+
     ReadPIDFile();
     ReadFakePIDFile();
 
@@ -2590,7 +2594,7 @@ int main(int argc, char* argv[])
     // file output
     FILE* fp;
     
-    fp = fopen("KID_toys.txt","w");
+    fp = fopen("KID_toys_" + std::string(argv[1]) + ".txt", "w");
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 7; j++) {
             fprintf(fp, "%lf ", Relative_Uncertainty_KID[i][j]);
@@ -2599,7 +2603,7 @@ int main(int argc, char* argv[])
     }
     fclose(fp);
 
-    fp = fopen("PID_toys.txt", "w");
+    fp = fopen("PID_toys_" + std::string(argv[1]) + ".txt", "w");
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 7; j++) {
             fprintf(fp, "%lf ", Relative_Uncertainty_PID[i][j]);
