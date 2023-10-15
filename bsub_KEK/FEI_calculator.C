@@ -2333,7 +2333,7 @@ int main(int argc, char* argv[])
     // file output
     FILE* fp;
     
-    fp = fopen("FEI_toys_" + std::string(argv[1]) + ".txt","w");
+    fp = fopen(("FEI_toys_" + std::string(argv[1]) + ".txt").c_str(),"w");
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 3; j++) {
             fprintf(fp, "%lf ", Relative_Uncertainty[i][j]);
