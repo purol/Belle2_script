@@ -1532,8 +1532,8 @@ double GetNtracks(double Upsilon_ID, double Bsig_ID) {
 
 double BDTcToWeight(double BDTc) {
 
-    if (BDTc > (5.0 / 6.0)) return 5.0;
-    else return (BDTc / (1.0 - BDTc));
+    if (BDTc > (5.0 / 6.0)) return std::sqrt(5.0);
+    else return std::sqrt(BDTc / (1.0 - BDTc));
 
 }
 
@@ -1717,9 +1717,9 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
         }
         input_file->Close();
 
-        printf("%s has %lf events (with correction)\n", dirname, Nevt);
-
     }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
     return Nevt;
 }
 
@@ -1908,9 +1908,9 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
         }
         input_file->Close();
 
-        printf("%s has %lf events (with correction)\n", dirname, Nevt);
-
     }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
     return Nevt;
 }
 
@@ -2100,9 +2100,9 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
         }
         input_file->Close();
 
-        printf("%s has %lf events (with correction)\n", dirname, Nevt);
-
     }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
     return Nevt;
 }
 
@@ -3360,9 +3360,9 @@ double GetFragmentationPDFs(const char* dirname, const char* included_string, TH
         }
         input_file->Close();
 
-        printf("%s has %lf events (with correction)\n", dirname, Nevt);
-
     }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
     return Nevt;
 }
 
@@ -3677,9 +3677,9 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
             exit(1);
         }
 
-        printf("%s has %lf events (with correction)\n", dirname, Nevt_with_BDTc_with_norm);
-
     }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt_with_BDTc_with_norm);
+
     return Nevt;
 }
 
@@ -4293,9 +4293,9 @@ double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, c
         }
         input_file->Close();
 
-        printf("%s has %lf events (with correction)\n", dirname, Nevt);
-
     }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
     return Nevt;
 }
 
@@ -4489,9 +4489,9 @@ double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, c
         }
         input_file->Close();
 
-        printf("%s has %lf events (with correction)\n", dirname, Nevt);
-
     }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
     return Nevt;
 }
 
@@ -4683,9 +4683,9 @@ double GetKstardeltaPDFs(const char* dirname, const char* included_string, TH1D*
         }
         input_file->Close();
 
-        printf("%s has %lf events (with correction)\n", dirname, Nevt);
-
     }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
     return Nevt;
 }
 
@@ -5083,9 +5083,9 @@ double GetKnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist
         }
         input_file->Close();
 
-        printf("%s has %lf events (with correction)\n", dirname, Nevt);
-
     }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
     return Nevt;
 }
 
@@ -5273,9 +5273,9 @@ double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* 
         }
         input_file->Close();
 
-        printf("%s has %lf events (with correction)\n", dirname, Nevt);
-
     }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
     return Nevt;
 }
 
