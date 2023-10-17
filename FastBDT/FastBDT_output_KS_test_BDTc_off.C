@@ -176,7 +176,7 @@ double LetsFillwithCorrection(const char* filename, TH1F* FBDTc_hist, double wei
     for (unsigned int i = 0; i < tree_upsilon->GetEntries(); i++) {
         tree_upsilon->GetEntry(i);
 
-        FBDTc_hist->Fill(FBDT_var, BDTcToWeight(FBDT_var) * weight_var / NormFactor);
+        FBDTc_hist->Fill(FBDT_var, BDTcToWeight(FBDT_var) * weight_var * NormFactor);
 
     }
     input_file->Close();
