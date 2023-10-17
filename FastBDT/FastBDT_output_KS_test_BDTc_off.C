@@ -190,17 +190,17 @@ void FastBDT_output_KS_test_BDTc_off()
     Nevt data_all = { 0.0, 0.0, 0.0 };
 
     // dirnames
-    const char* side_data = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_data_off/temp_v000/SIGNAL";
+    const char* side_data = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_data_off/temp_v000/SIGNAL";
 
-    const char* side_MC_UUBAR_train = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/temp_v000_train/UUBAR";
-    const char* side_MC_DDBAR_train = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/temp_v000_train/DDBAR";
-    const char* side_MC_SSBAR_train = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/temp_v000_train/SSBAR";
-    const char* side_MC_CHARM_train = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/temp_v000_train/CHARM";
+    const char* side_MC_UUBAR_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000_train/UUBAR";
+    const char* side_MC_DDBAR_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000_train/DDBAR";
+    const char* side_MC_SSBAR_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000_train/SSBAR";
+    const char* side_MC_CHARM_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000_train/CHARM";
 
-    const char* side_MC_UUBAR_test = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/temp_v000/UUBAR";
-    const char* side_MC_DDBAR_test = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/temp_v000/DDBAR";
-    const char* side_MC_SSBAR_test = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/temp_v000/SSBAR";
-    const char* side_MC_CHARM_test = "/home/jwpark/storage/BKG_gbasf2/Kasen_LS_MC_off/temp_v000/CHARM";
+    const char* side_MC_UUBAR_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000/UUBAR";
+    const char* side_MC_DDBAR_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000/DDBAR";
+    const char* side_MC_SSBAR_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000/SSBAR";
+    const char* side_MC_CHARM_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000/CHARM";
 
 
     // train sample
