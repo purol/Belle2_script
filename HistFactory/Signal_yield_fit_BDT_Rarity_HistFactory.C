@@ -3366,7 +3366,7 @@ double GetFragmentationPDFs(const char* dirname, const char* included_string, TH
     return Nevt;
 }
 
-double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get BDTc PDF with appropriate correction
+double GetNevtWithBDTc(const char* dirname, const char* included_string, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get the number of event after BDTc correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -3422,8 +3422,6 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
     load_files(dirname, &names, included_string);
 
     double Nevt = 0;
-    double Nevt_with_BDTc = 0;
-    double Nevt_with_BDTc_with_norm = 0;
     for (unsigned int i = 0; i < names.size(); i++) {
 
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
@@ -3489,68 +3487,11 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc_var);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
-        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Count the number of event without BDTc correction
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-
-            double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
-
-            double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
-            else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
-            double Correction_KID = 1;
-            double Correction_PID = 1;
-            double Correction_pi0 = 1;
-            double Correction_fake = 1;
-            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-                Correction_KID = Correction_KID * std::pow(PID_correction[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
-                Correction_KID = Correction_KID * std::pow(PID_correction[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
-                Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
-                Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
-            }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
-            for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[0][i_fake], temp_N_bin_fakeE[0][i_fake]); // K- from e
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[1][i_fake], temp_N_bin_fakeE[1][i_fake]); // K+ from e
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[2][i_fake], temp_N_bin_fakeE[2][i_fake]); // pi- from e
-                Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[3][i_fake], temp_N_bin_fakeE[3][i_fake]); // pi+ from e
-            }
-            for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[0][i_fake], temp_N_bin_fakeMU[0][i_fake]); // K- from mu
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[1][i_fake], temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[2][i_fake], temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
-                Correction_fake = Correction_fake * std::pow(PID_fakeMU_correction[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
-            }
-
-            // Knn correction factor
-            double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-
-            // Multiplicity correction factor
-            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
-
-            // B+ --> K+ KL0 KL0 correction factor
-            double Correction_KpKLKL = corrector_KpKLKL.GetCorrectionFactorAtGeneric(s13_KpKLKL, s23_KpKLKL, nB2KpKLKL_all_KpKLKL, nB2KpKLKL_NR_KpKLKL);
-
-            // B0 --> KS0 KL0 KL0 correction factor
-            double Correction_KSKLKL = corrector_KSKLKL.GetCorrectionFactorAtGeneric(std::max(std::max(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), std::min(std::min(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), nB2KSKLKL_all_KSKLKL, nB2KSKLKL_NR_KSKLKL);
-
-            // B-> [D -> KL0 X] anything correction factor
-            double Correction_BtoDtoXKL = 1.0;
-            if ((strcmp(sample, "CHG") == 0) || (strcmp(sample, "MIX") == 0) || (strcmp(sample, "SIGNAL") == 0)) Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
-
-            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL;
-            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
-            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
-
-            Nevt = Nevt + total_weight;
-        }
-
-        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Count the number of event with BDTc correction
-            tree_upsilon->GetEntry(j);
-            tree_Bsig->GetEntry(j);
-            tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->GetEntry(j);
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -3604,9 +3545,138 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
 
-            Nevt_with_BDTc = Nevt_with_BDTc + total_weight;
-        }
+            Nevt = Nevt + total_weight;
 
+        }
+        input_file->Close();
+
+    }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
+    return Nevt;
+}
+
+double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get BDTc PDF with appropriate correction
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    otherwise
+    */
+    if (strcmp(type, "Bplus") == 0) {}
+    else if (strcmp(type, "Bzero") == 0) {}
+    else if (strcmp(type, "Continuum") == 0) {}
+    else {
+        printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    float MVA_var = 0;
+    float BDTc_var = 0;
+
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
+    double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+    double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    double invM = -1.0;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
+
+    double Ngamma_v200 = -1;
+
+    double s13_KpKLKL = -1;
+    double s23_KpKLKL = -1;
+    double nB2KpKLKL_all_KpKLKL = -1;
+    double nB2KpKLKL_NR_KpKLKL = -1;
+
+    double s13_KSKLKL = -1;
+    double s23_KSKLKL = -1;
+    double s12_KSKLKL = -1;
+    double nB2KSKLKL_all_KSKLKL = -1;
+    double nB2KSKLKL_NR_KSKLKL = -1;
+
+    double nDptoXKL = -1;
+    double nD0toXKL = -1;
+
+    std::vector<string> names;
+    load_files(dirname, &names, included_string);
+
+    double Nevt = 0;
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
+
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
+
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[2][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[3][i_fake]);
+        }
+        for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[0][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[1][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
+        }
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
+
+        tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
+        tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_all__bc", &nB2KpKLKL_all_KpKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_NR__bc", &nB2KpKLKL_NR_KpKLKL);
+
+        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s13_KSKLKL);
+        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &s23_KSKLKL);
+        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s12_KSKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_all__bc", &nB2KSKLKL_all_KSKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_NR__bc", &nB2KSKLKL_NR_KSKLKL);
+
+        tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &nDptoXKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &nD0toXKL);
+
+        tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc_var);
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // apply BDTc weight with appropritate norm factor
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
@@ -3659,26 +3729,20 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
             if ((strcmp(sample, "CHG") == 0) || (strcmp(sample, "MIX") == 0) || (strcmp(sample, "SIGNAL") == 0)) Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
             double BDTc_weight = BDTcToWeight(BDTc_var);
-            BDTc_weight = BDTc_weight * (Nevt / Nevt_with_BDTc);
 
             double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * BDTc_weight;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
 
-            Nevt_with_BDTc_with_norm = Nevt_with_BDTc_with_norm + total_weight;
+            Nevt = Nevt + total_weight;
 
             hist->Fill(MVA_var, total_weight);
         }
 
         input_file->Close();
 
-        if (std::abs(Nevt_with_BDTc_with_norm - Nevt) > 0.1) { // final check
-            printf("[ERROR] BDTc correction will make large discrepancy about the number of total event!\n");
-            exit(1);
-        }
-
     }
-    printf("%s has %lf events (with correction)\n", dirname, Nevt_with_BDTc_with_norm);
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
 
     return Nevt;
 }
@@ -5717,14 +5781,14 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     TH1D* Signal_mKstar_m = new TH1D("Signal_mKstar_m", "Signal_mKstar_m", RarityBins, BinMIN, BinMAX);
 
     // BDTc
-    TH1D* CHG_BDTc_p = new TH1D("CHG_BDTc_p", "CHG_BDTc_p", RarityBins, BinMIN, BinMAX);
-    TH1D* MIX_BDTc_p = new TH1D("MIX_BDTc_p", "MIX_BDTc_p", RarityBins, BinMIN, BinMAX);
+    //TH1D* CHG_BDTc_p = new TH1D("CHG_BDTc_p", "CHG_BDTc_p", RarityBins, BinMIN, BinMAX);
+    //TH1D* MIX_BDTc_p = new TH1D("MIX_BDTc_p", "MIX_BDTc_p", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_BDTc_p = new TH1D("UUBAR_BDTc_p", "UUBAR_BDTc_p", RarityBins, BinMIN, BinMAX);
     TH1D* DDBAR_BDTc_p = new TH1D("DDBAR_BDTc_p", "DDBAR_BDTc_p", RarityBins, BinMIN, BinMAX);
     TH1D* SSBAR_BDTc_p = new TH1D("SSBAR_BDTc_p", "SSBAR_BDTc_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_BDTc_p = new TH1D("CHARM_BDTc_p", "CHARM_BDTc_p", RarityBins, BinMIN, BinMAX);
-    TH1D* CHG_BDTc_m = new TH1D("CHG_BDTc_m", "CHG_BDTc_m", RarityBins, BinMIN, BinMAX);
-    TH1D* MIX_BDTc_m = new TH1D("MIX_BDTc_m", "MIX_BDTc_m", RarityBins, BinMIN, BinMAX);
+    //TH1D* CHG_BDTc_m = new TH1D("CHG_BDTc_m", "CHG_BDTc_m", RarityBins, BinMIN, BinMAX);
+    //TH1D* MIX_BDTc_m = new TH1D("MIX_BDTc_m", "MIX_BDTc_m", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_BDTc_m = new TH1D("UUBAR_BDTc_m", "UUBAR_BDTc_m", RarityBins, BinMIN, BinMAX);
     TH1D* DDBAR_BDTc_m = new TH1D("DDBAR_BDTc_m", "DDBAR_BDTc_m", RarityBins, BinMIN, BinMAX);
     TH1D* SSBAR_BDTc_m = new TH1D("SSBAR_BDTc_m", "SSBAR_BDTc_m", RarityBins, BinMIN, BinMAX);
@@ -5833,12 +5897,12 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_nominal, "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
     GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_nominal, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test, "otherwise");
 
-    GetNominalPDFs(MC_dirname_CHG, "root", CHG_nominal, "Bplus", "CHG", Scale_CHG_test, "otherwise");
-    GetNominalPDFs(MC_dirname_MIX, "root", MIX_nominal, "Bzero", "MIX", Scale_MIX_test, "otherwise");
-    GetNominalPDFs(MC_dirname_UUBAR, "root", UUBAR_nominal, "Continuum", "UUBAR", Scale_UUBAR_test, "otherwise");
-    GetNominalPDFs(MC_dirname_DDBAR, "root", DDBAR_nominal, "Continuum", "DDBAR", Scale_DDBAR_test, "otherwise");
-    GetNominalPDFs(MC_dirname_SSBAR, "root", SSBAR_nominal, "Continuum", "SSBAR", Scale_SSBAR_test, "otherwise");
-    GetNominalPDFs(MC_dirname_CHARM, "root", CHARM_nominal, "Continuum", "CHARM", Scale_CHARM_test, "otherwise");
+    double NevtCHGWithoutBDTc = GetNominalPDFs(MC_dirname_CHG, "root", CHG_nominal, "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    double NevtMIXWithoutBDTc = GetNominalPDFs(MC_dirname_MIX, "root", MIX_nominal, "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    double NevtUUBARWithoutBDTc = GetNominalPDFs(MC_dirname_UUBAR, "root", UUBAR_nominal, "Continuum", "UUBAR", Scale_UUBAR_test, "otherwise");
+    double NevtDDBARWithoutBDTc = GetNominalPDFs(MC_dirname_DDBAR, "root", DDBAR_nominal, "Continuum", "DDBAR", Scale_DDBAR_test, "otherwise");
+    double NevtSSBARWithoutBDTc = GetNominalPDFs(MC_dirname_SSBAR, "root", SSBAR_nominal, "Continuum", "SSBAR", Scale_SSBAR_test, "otherwise");
+    double NevtCHARMWithoutBDTc = GetNominalPDFs(MC_dirname_CHARM, "root", CHARM_nominal, "Continuum", "CHARM", Scale_CHARM_test, "otherwise");
 
     // get track uncertainty pdfs
     GetTrackPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_track_p, "Bplus", "SIGNAL", true, Scale_Kplus_test, "B2Knunu");
@@ -6103,12 +6167,21 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNegativeChangePDFs(Signal_nominal, Signal_mKstar_p, Signal_mKstar_m);
 
     // get BDTc uncertainty pdfs
-    GetBDTcPDFs(MC_dirname_CHG, "root", CHG_BDTc_p, "Bplus", "CHG", Scale_CHG_test, "otherwise");
-    GetBDTcPDFs(MC_dirname_MIX, "root", MIX_BDTc_p, "Bzero", "MIX", Scale_MIX_test, "otherwise");
-    GetBDTcPDFs(MC_dirname_UUBAR, "root", UUBAR_BDTc_p, "Continuum", "UUBAR", Scale_UUBAR_test, "otherwise");
-    GetBDTcPDFs(MC_dirname_DDBAR, "root", DDBAR_BDTc_p, "Continuum", "DDBAR", Scale_DDBAR_test, "otherwise");
-    GetBDTcPDFs(MC_dirname_SSBAR, "root", SSBAR_BDTc_p, "Continuum", "SSBAR", Scale_SSBAR_test, "otherwise");
-    GetBDTcPDFs(MC_dirname_CHARM, "root", CHARM_BDTc_p, "Continuum", "CHARM", Scale_CHARM_test, "otherwise");
+    //double NevtCHGWithBDTc = GetNevtWithBDTc(MC_dirname_CHG, "root", "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    //double NevtMIXWithBDTc = GetNevtWithBDTc(MC_dirname_MIX, "root", "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    double NevtUUBARWithBDTc = GetNevtWithBDTc(MC_dirname_UUBAR, "root", "Continuum", "UUBAR", Scale_UUBAR_test, "otherwise");
+    double NevtDDBARWithBDTc = GetNevtWithBDTc(MC_dirname_DDBAR, "root", "Continuum", "DDBAR", Scale_DDBAR_test, "otherwise");
+    double NevtSSBARWithBDTc = GetNevtWithBDTc(MC_dirname_SSBAR, "root", "Continuum", "SSBAR", Scale_SSBAR_test, "otherwise");
+    double NevtCHARMWithBDTc = GetNevtWithBDTc(MC_dirname_CHARM, "root", "Continuum", "CHARM", Scale_CHARM_test, "otherwise");
+
+    double NormFactor = (NevtUUBARWithoutBDTc + NevtDDBARWithoutBDTc + NevtSSBARWithoutBDTc + NevtCHARMWithoutBDTc) / (NevtUUBARWithBDTc + NevtDDBARWithBDTc + NevtSSBARWithBDTc + NevtCHARMWithBDTc);
+
+    //GetBDTcPDFs(MC_dirname_CHG, "root", CHG_BDTc_p, "Bplus", "CHG", Scale_CHG_test, "otherwise");
+    //GetBDTcPDFs(MC_dirname_MIX, "root", MIX_BDTc_p, "Bzero", "MIX", Scale_MIX_test, "otherwise");
+    double NevtUUBARWithBDTcWithNorm = GetBDTcPDFs(MC_dirname_UUBAR, "root", UUBAR_BDTc_p, "Continuum", "UUBAR", Scale_UUBAR_test * NormFactor, "otherwise");
+    double NevtDDBARWithBDTcWithNorm = GetBDTcPDFs(MC_dirname_DDBAR, "root", DDBAR_BDTc_p, "Continuum", "DDBAR", Scale_DDBAR_test * NormFactor, "otherwise");
+    double NevtSSBARWithBDTcWithNorm = GetBDTcPDFs(MC_dirname_SSBAR, "root", SSBAR_BDTc_p, "Continuum", "SSBAR", Scale_SSBAR_test * NormFactor, "otherwise");
+    double NevtCHARMWithBDTcWithNorm = GetBDTcPDFs(MC_dirname_CHARM, "root", CHARM_BDTc_p, "Continuum", "CHARM", Scale_CHARM_test * NormFactor, "otherwise");
 
     GetNegativeChangePDFs(CHG_nominal, CHG_BDTc_p, CHG_BDTc_m);
     GetNegativeChangePDFs(MIX_nominal, MIX_BDTc_p, MIX_BDTc_m);
@@ -6116,6 +6189,11 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNegativeChangePDFs(DDBAR_nominal, DDBAR_BDTc_p, DDBAR_BDTc_m);
     GetNegativeChangePDFs(SSBAR_nominal, SSBAR_BDTc_p, SSBAR_BDTc_m);
     GetNegativeChangePDFs(CHARM_nominal, CHARM_BDTc_p, CHARM_BDTc_m);
+
+    if (std::abs((NevtUUBARWithoutBDTc + NevtDDBARWithoutBDTc + NevtSSBARWithoutBDTc + NevtCHARMWithoutBDTc) - (NevtUUBARWithBDTcWithNorm + NevtDDBARWithBDTcWithNorm + NevtSSBARWithBDTcWithNorm + NevtCHARMWithBDTcWithNorm)) > 0.1) { // final check
+        printf("ERROR! before and after BDTc correction shows different number of event!\n");
+        exit(1);
+    }
 
     // B2Knn BR
     GetKnnBRPDFs(MC_dirname_CHG, "root", CHG_Knn_p, "Bplus", "CHG", 1, true, Scale_CHG_test, "otherwise");
@@ -6485,14 +6563,14 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     Signal_mKstar_m->Write();
 
     // BDTc uncertainty
-    CHG_BDTc_p->Write();
-    MIX_BDTc_p->Write();
+    //CHG_BDTc_p->Write();
+    //MIX_BDTc_p->Write();
     UUBAR_BDTc_p->Write();
     DDBAR_BDTc_p->Write();
     SSBAR_BDTc_p->Write();
     CHARM_BDTc_p->Write();
-    CHG_BDTc_m->Write();
-    MIX_BDTc_m->Write();
+    //CHG_BDTc_m->Write();
+    //MIX_BDTc_m->Write();
     UUBAR_BDTc_m->Write();
     DDBAR_BDTc_m->Write();
     SSBAR_BDTc_m->Write();
