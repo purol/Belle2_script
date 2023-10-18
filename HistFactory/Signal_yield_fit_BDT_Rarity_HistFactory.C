@@ -133,11 +133,15 @@ using std::to_string;
 // # define pi0_correction 0.932
 // # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
-// https://indico.belle2.org/event/6872/contributions/37447/attachments/17127/25504/FEIperformance_B2GM.pdf
-# define FEI_cal_Bc 0.679
-# define FEI_cal_Bc_uncertainty (0.017/FEI_cal_Bc) // not percentage. relative uncertainty
-# define FEI_cal_B0 0.713
-# define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
+
+# define FEI_cal_Bc_num 12
+# define FEI_cal_B0_num 11
+double FEI_cal_Bc[FEI_cal_Bc_num] = { 1.04, 0.79, 0.69, 0.56, 0.97, 0.95, 0.74, 0.57, 0.91, 0.51, 0.34, 0.59 };
+double FEI_cal_Bc_uncertainty[FEI_cal_Bc_num] = { 0.03, 0.03, 0.05, 0.11, 0.03, 0.03, 0.02, 0.06, 0.1, 0.13, 0.07, 0.02 }; // not relative uncertainty. absolute uncertainty
+double FEI_cal_Bc_modeID[FEI_cal_Bc_num] = { 0.0, 1.0, 3.0, 4.0, 15.0, 16.0, 18.0, 19.0, 23.0, 24.0, 30.0, -1.0 };
+double FEI_cal_B0[FEI_cal_B0_num] = { 1.16, 0.95, 0.84, 0.78, 0.99, 1.01, 0.67, 0.65, 0.69, 0.58, 0.81 };
+double FEI_cal_B0_uncertainty[FEI_cal_B0_num] = { 0.04, 0.03, 0.02, 0.02, 0.03, 0.03, 0.02, 0.02, 0.02, 0.16, 0.13 }; // not relative uncertainty. absolute uncertainty
+double FEI_cal_B0_modeID[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0, 18.0, 19.0, 26.0, -1.0 };
 
 # define Xsu_frag_decay1 531.4
 # define Xsu_frag_decay2 1062.1
@@ -1537,6 +1541,462 @@ double BDTcToWeight(double BDTc) {
 
 }
 
+void ReadPIDFile() {
+    const char* KID_true_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/KaonEff.csv";
+    const char* KID_mis_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/Kaonmis.csv";
+    const char* PID_true_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/PionEff.csv";
+    const char* PID_mis_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/Pionmis.csv";
+
+    FILE* fp_KID_true = fopen(KID_true_file, "r");
+    FILE* fp_KID_mis = fopen(KID_mis_file, "r");
+    FILE* fp_PID_true = fopen(PID_true_file, "r");
+    FILE* fp_PID_mis = fopen(PID_mis_file, "r");
+
+    fscanf(fp_KID_true, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+    fscanf(fp_KID_mis, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+    fscanf(fp_PID_true, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+    fscanf(fp_PID_mis, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+
+    double temp_p_min;
+    double temp_p_max;
+    double temp_cosTheta_min;
+    double temp_cosTheta_max;
+    double temp_data_MC_ratio;
+    double temp_data_MC_uncertainty_stat_up;
+    double temp_data_MC_uncertainty_stat_dn;
+    double temp_data_MC_uncertainty_sys_up;
+    double temp_data_MC_uncertainty_sys_dn;
+    double temp_data_efficiency;
+    double temp_data_uncertainty_stat_up;
+    double temp_data_uncertainty_stat_dn;
+    double temp_data_uncertainty_sys_up;
+    double temp_data_uncertainty_sys_dn;
+    double temp_MC_efficiency;
+    double temp_MC_uncertainty_stat_up;
+    double temp_MC_uncertainty_stat_dn;
+    double temp_MC_uncertainty_sys_up;
+    double temp_MC_uncertainty_sys_dn;
+    double temp_threshold;
+
+    for (int i = 0; i < N_PID_syst - 1; i++) {
+        fscanf(fp_KID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,kaonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[0][i], &PID_correction_stat_uncer[0][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[0][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+        fscanf(fp_KID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,kaonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[1][i], &PID_correction_stat_uncer[1][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[1][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+        fscanf(fp_PID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[2][i], &PID_correction_stat_uncer[2][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[2][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+        fscanf(fp_PID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[3][i], &PID_correction_stat_uncer[3][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[3][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+
+        if ((std::abs(PID_correction[0][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[0][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[0][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction[0][i]) > 10000.0)) {
+            PID_correction[0][i] = 1.0;
+            PID_correction_stat_uncer[0][i] = 0.0;
+            PID_correction_sys_uncer[0][i] = 0.0;
+        }
+        if ((std::abs(PID_correction[1][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[1][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[1][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction[1][i]) > 10000.0)) {
+            PID_correction[1][i] = 1.0;
+            PID_correction_stat_uncer[1][i] = 0.0;
+            PID_correction_sys_uncer[1][i] = 0.0;
+        }
+        if ((std::abs(PID_correction[2][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[2][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[2][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction[2][i]) > 10000.0)) {
+            PID_correction[2][i] = 1.0;
+            PID_correction_stat_uncer[2][i] = 0.0;
+            PID_correction_sys_uncer[2][i] = 0.0;
+        }
+        if ((std::abs(PID_correction[3][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[3][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[3][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction[3][i]) > 10000.0)) {
+            PID_correction[3][i] = 1.0;
+            PID_correction_stat_uncer[3][i] = 0.0;
+            PID_correction_sys_uncer[3][i] = 0.0;
+        }
+
+        PID_correction_uncer[0][i] = std::sqrt(PID_correction_stat_uncer[0][i] * PID_correction_stat_uncer[0][i] + PID_correction_sys_uncer[0][i] * PID_correction_sys_uncer[0][i]);
+        PID_correction_uncer[1][i] = std::sqrt(PID_correction_stat_uncer[1][i] * PID_correction_stat_uncer[1][i] + PID_correction_sys_uncer[1][i] * PID_correction_sys_uncer[1][i]);
+        PID_correction_uncer[2][i] = std::sqrt(PID_correction_stat_uncer[2][i] * PID_correction_stat_uncer[2][i] + PID_correction_sys_uncer[2][i] * PID_correction_sys_uncer[2][i]);
+        PID_correction_uncer[3][i] = std::sqrt(PID_correction_stat_uncer[3][i] * PID_correction_stat_uncer[3][i] + PID_correction_sys_uncer[3][i] * PID_correction_sys_uncer[3][i]);
+    }
+
+    PID_correction[0][N_PID_syst - 1] = 1.0;
+    PID_correction_stat_uncer[0][N_PID_syst - 1] = 0.0;
+    PID_correction_sys_uncer[0][N_PID_syst - 1] = 0.0;
+    PID_correction_uncer[0][N_PID_syst - 1] = 0.0;
+
+    PID_correction[1][N_PID_syst - 1] = 1.0;
+    PID_correction_stat_uncer[1][N_PID_syst - 1] = 0.0;
+    PID_correction_sys_uncer[1][N_PID_syst - 1] = 0.0;
+    PID_correction_uncer[1][N_PID_syst - 1] = 0.0;
+
+    PID_correction[2][N_PID_syst - 1] = 1.0;
+    PID_correction_stat_uncer[2][N_PID_syst - 1] = 0.0;
+    PID_correction_sys_uncer[2][N_PID_syst - 1] = 0.0;
+    PID_correction_uncer[2][N_PID_syst - 1] = 0.0;
+
+    PID_correction[3][N_PID_syst - 1] = 1.0;
+    PID_correction_stat_uncer[3][N_PID_syst - 1] = 0.0;
+    PID_correction_sys_uncer[3][N_PID_syst - 1] = 0.0;
+    PID_correction_uncer[3][N_PID_syst - 1] = 0.0;
+
+    fclose(fp_KID_true);
+    fclose(fp_KID_mis);
+    fclose(fp_PID_true);
+    fclose(fp_PID_mis);
+}
+
+void ReadFakePIDFile() {
+    // initialization
+    for (int i = 0; i < N_fakeE_syst; i++) {
+        PID_fakeE_correction[0][i] = 1.0; //  K-, K+, pi-, pi+
+        PID_fakeE_correction[1][i] = 1.0;
+        PID_fakeE_correction[2][i] = 1.0;
+        PID_fakeE_correction[3][i] = 1.0;
+
+        PID_fakeE_uncer[0][i] = 0.0;
+        PID_fakeE_uncer[1][i] = 0.0;
+        PID_fakeE_uncer[2][i] = 0.0;
+        PID_fakeE_uncer[3][i] = 0.0;
+    }
+
+    for (int i = 0; i < N_fakeMU_syst; i++) {
+        PID_fakeMU_correction[0][i] = 1.0;
+        PID_fakeMU_correction[1][i] = 1.0;
+        PID_fakeMU_correction[2][i] = 1.0;
+        PID_fakeMU_correction[3][i] = 1.0;
+
+        PID_fakeMU_uncer[0][i] = 0.0;
+        PID_fakeMU_uncer[1][i] = 0.0;
+        PID_fakeMU_uncer[2][i] = 0.0;
+        PID_fakeMU_uncer[3][i] = 0.0;
+    }
+
+    const char* K_fromE_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/kaonID_efficiency_electron.csv";
+    const char* K_fromMU_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/kaonID_efficiency_muon.csv";
+    const char* pi_fromE_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/pionID_efficiency_electron.csv";
+    const char* pi_fromMU_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/pionID_efficiency_muon.csv";
+
+    FILE* fp_K_fromE = fopen(K_fromE_file, "r");
+    FILE* fp_K_fromMU = fopen(K_fromMU_file, "r");
+    FILE* fp_pi_fromE = fopen(pi_fromE_file, "r");
+    FILE* fp_pi_fromMU = fopen(pi_fromMU_file, "r");
+
+    fscanf(fp_K_fromE, "variable,charge,p_min,p_max,theta_min,theta_max,iso_score_min,iso_score_max,working_point,threshold,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn\n");
+    fscanf(fp_K_fromMU, "variable,charge,p_min,p_max,theta_min,theta_max,iso_score_min,iso_score_max,working_point,threshold,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn\n");
+    fscanf(fp_pi_fromE, "variable,charge,p_min,p_max,theta_min,theta_max,iso_score_min,iso_score_max,working_point,threshold,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn\n");
+    fscanf(fp_pi_fromMU, "variable,charge,p_min,p_max,theta_min,theta_max,iso_score_min,iso_score_max,working_point,threshold,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn\n");
+
+    char temp_charge;
+    double temp_p_min;
+    double temp_p_max;
+    double temp_theta_min;
+    double temp_theta_max;
+    double temp_data_MC_ratio;
+    double temp_data_MC_uncertainty_stat_up;
+    double temp_data_MC_uncertainty_stat_dn;
+    double temp_data_MC_uncertainty_sys_up;
+    double temp_data_MC_uncertainty_sys_dn;
+    double temp_data_efficiency;
+    double temp_data_uncertainty_stat_up;
+    double temp_data_uncertainty_stat_dn;
+    double temp_data_uncertainty_sys_up;
+    double temp_data_uncertainty_sys_dn;
+    double temp_MC_efficiency;
+    double temp_MC_uncertainty_stat_up;
+    double temp_MC_uncertainty_stat_dn;
+    double temp_MC_uncertainty_sys_up;
+    double temp_MC_uncertainty_sys_dn;
+    double temp_threshold;
+
+    // Kaon from fake electron
+    while (fscanf(fp_K_fromE, "kaonID,%c,%lf,%lf,%lf,%lf,0.0,1.0,FixedThresh06,0.6,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_data_MC_ratio, &temp_data_MC_uncertainty_stat_up, &temp_data_MC_uncertainty_stat_dn, &temp_data_MC_uncertainty_sys_up, &temp_data_MC_uncertainty_sys_dn) != EOF) {
+        int p_bin = -1;
+        int theta_bin = -1;
+
+        if (std::abs(temp_p_min - 0.4) < MyEPSILON && std::abs(temp_p_max - 0.5) < MyEPSILON) p_bin = 0;
+        else if (std::abs(temp_p_min - 0.5) < MyEPSILON && std::abs(temp_p_max - 1.0) < MyEPSILON) p_bin = 1;
+        else if (std::abs(temp_p_min - 1.0) < MyEPSILON && std::abs(temp_p_max - 1.5) < MyEPSILON) p_bin = 2;
+        else if (std::abs(temp_p_min - 1.5) < MyEPSILON && std::abs(temp_p_max - 2.0) < MyEPSILON) p_bin = 3;
+        else if (std::abs(temp_p_min - 2.0) < MyEPSILON && std::abs(temp_p_max - 2.5) < MyEPSILON) p_bin = 4;
+        else if (std::abs(temp_p_min - 2.5) < MyEPSILON && std::abs(temp_p_max - 3.0) < MyEPSILON) p_bin = 5;
+        else {
+            printf("[ERROR] unknown p bin!\n");
+            exit(1);
+        }
+
+        if (std::abs(temp_theta_min - 0.22) < MyEPSILON && std::abs(temp_theta_max - 0.56) < MyEPSILON) theta_bin = 0;
+        else if (std::abs(temp_theta_min - 0.56) < MyEPSILON && std::abs(temp_theta_max - 1.13) < MyEPSILON) theta_bin = 1;
+        else if (std::abs(temp_theta_min - 1.13) < MyEPSILON && std::abs(temp_theta_max - 1.57) < MyEPSILON) theta_bin = 2;
+        else if (std::abs(temp_theta_min - 1.57) < MyEPSILON && std::abs(temp_theta_max - 1.88) < MyEPSILON) theta_bin = 3;
+        else if (std::abs(temp_theta_min - 1.88) < MyEPSILON && std::abs(temp_theta_max - 2.23) < MyEPSILON) theta_bin = 4;
+        else if (std::abs(temp_theta_min - 2.23) < MyEPSILON && std::abs(temp_theta_max - 2.71) < MyEPSILON) theta_bin = 5;
+        else {
+            printf("[ERROR] unknown theta bin!\n");
+            exit(1);
+        }
+
+        int bin = theta_bin + 6 * p_bin;
+
+        if (temp_charge == '+') {
+            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
+            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
+
+            PID_fakeE_correction[1][bin] = temp_data_MC_ratio;
+            PID_fakeE_uncer[1][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeE_correction[1][bin]) < MyEPSILON) {
+                PID_fakeE_correction[1][bin] = 1.0;
+                PID_fakeE_uncer[1][bin] = 0.0;
+            }
+
+        }
+        else if (temp_charge == '-') {
+            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
+            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
+
+            PID_fakeE_correction[0][bin] = temp_data_MC_ratio;
+            PID_fakeE_uncer[0][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeE_correction[0][bin]) < MyEPSILON) {
+                PID_fakeE_correction[0][bin] = 1.0;
+                PID_fakeE_uncer[0][bin] = 0.0;
+            }
+
+        }
+        else {
+            printf("[ERROR] unknown charge!\n");
+            exit(1);
+        }
+    }
+    fclose(fp_K_fromE);
+
+    // Pion from fake electron
+    while (fscanf(fp_pi_fromE, "pionID,%c,%lf,%lf,%lf,%lf,0.0,1.0,FixedThresh06,0.6,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_data_MC_ratio, &temp_data_MC_uncertainty_stat_up, &temp_data_MC_uncertainty_stat_dn, &temp_data_MC_uncertainty_sys_up, &temp_data_MC_uncertainty_sys_dn) != EOF) {
+        int p_bin = -1;
+        int theta_bin = -1;
+
+        if (std::abs(temp_p_min - 0.4) < MyEPSILON && std::abs(temp_p_max - 0.5) < MyEPSILON) p_bin = 0;
+        else if (std::abs(temp_p_min - 0.5) < MyEPSILON && std::abs(temp_p_max - 1.0) < MyEPSILON) p_bin = 1;
+        else if (std::abs(temp_p_min - 1.0) < MyEPSILON && std::abs(temp_p_max - 1.5) < MyEPSILON) p_bin = 2;
+        else if (std::abs(temp_p_min - 1.5) < MyEPSILON && std::abs(temp_p_max - 2.0) < MyEPSILON) p_bin = 3;
+        else if (std::abs(temp_p_min - 2.0) < MyEPSILON && std::abs(temp_p_max - 2.5) < MyEPSILON) p_bin = 4;
+        else if (std::abs(temp_p_min - 2.5) < MyEPSILON && std::abs(temp_p_max - 3.0) < MyEPSILON) p_bin = 5;
+        else {
+            printf("[ERROR] unknown p bin!\n");
+            exit(1);
+        }
+
+        if (std::abs(temp_theta_min - 0.22) < MyEPSILON && std::abs(temp_theta_max - 0.56) < MyEPSILON) theta_bin = 0;
+        else if (std::abs(temp_theta_min - 0.56) < MyEPSILON && std::abs(temp_theta_max - 1.13) < MyEPSILON) theta_bin = 1;
+        else if (std::abs(temp_theta_min - 1.13) < MyEPSILON && std::abs(temp_theta_max - 1.57) < MyEPSILON) theta_bin = 2;
+        else if (std::abs(temp_theta_min - 1.57) < MyEPSILON && std::abs(temp_theta_max - 1.88) < MyEPSILON) theta_bin = 3;
+        else if (std::abs(temp_theta_min - 1.88) < MyEPSILON && std::abs(temp_theta_max - 2.23) < MyEPSILON) theta_bin = 4;
+        else if (std::abs(temp_theta_min - 2.23) < MyEPSILON && std::abs(temp_theta_max - 2.71) < MyEPSILON) theta_bin = 5;
+        else {
+            printf("[ERROR] unknown theta bin!\n");
+            exit(1);
+        }
+
+        int bin = theta_bin + 6 * p_bin;
+
+        if (temp_charge == '+') {
+            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
+            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
+
+            PID_fakeE_correction[3][bin] = temp_data_MC_ratio;
+            PID_fakeE_uncer[3][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeE_correction[3][bin]) < MyEPSILON) {
+                PID_fakeE_correction[3][bin] = 1.0;
+                PID_fakeE_uncer[3][bin] = 0.0;
+            }
+
+        }
+        else if (temp_charge == '-') {
+            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
+            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
+
+            PID_fakeE_correction[2][bin] = temp_data_MC_ratio;
+            PID_fakeE_uncer[2][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeE_correction[2][bin]) < MyEPSILON) {
+                PID_fakeE_correction[2][bin] = 1.0;
+                PID_fakeE_uncer[2][bin] = 0.0;
+            }
+
+        }
+        else {
+            printf("[ERROR] unknown charge!\n");
+            exit(1);
+        }
+    }
+    fclose(fp_pi_fromE);
+
+    // Kaon from fake muon
+    while (fscanf(fp_K_fromMU, "kaonID,%c,%lf,%lf,%lf,%lf,0.0,1.0,FixedThresh06,0.6,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_data_MC_ratio, &temp_data_MC_uncertainty_stat_up, &temp_data_MC_uncertainty_stat_dn, &temp_data_MC_uncertainty_sys_up, &temp_data_MC_uncertainty_sys_dn) != EOF) {
+        int p_bin = -1;
+        int theta_bin = -1;
+
+        if (std::abs(temp_p_min - 0.4) < MyEPSILON && std::abs(temp_p_max - 0.5) < MyEPSILON) p_bin = 0;
+        else if (std::abs(temp_p_min - 0.5) < MyEPSILON && std::abs(temp_p_max - 0.7) < MyEPSILON) p_bin = 1;
+        else if (std::abs(temp_p_min - 0.7) < MyEPSILON && std::abs(temp_p_max - 1.0) < MyEPSILON) p_bin = 2;
+        else if (std::abs(temp_p_min - 1.0) < MyEPSILON && std::abs(temp_p_max - 1.5) < MyEPSILON) p_bin = 3;
+        else if (std::abs(temp_p_min - 1.5) < MyEPSILON && std::abs(temp_p_max - 2.0) < MyEPSILON) p_bin = 4;
+        else if (std::abs(temp_p_min - 2.0) < MyEPSILON && std::abs(temp_p_max - 2.5) < MyEPSILON) p_bin = 5;
+        else {
+            printf("[ERROR] unknown p bin!\n");
+            exit(1);
+        }
+
+        if (std::abs(temp_theta_min - 0.4) < MyEPSILON && std::abs(temp_theta_max - 0.64) < MyEPSILON) theta_bin = 0;
+        else if (std::abs(temp_theta_min - 0.64) < MyEPSILON && std::abs(temp_theta_max - 0.82) < MyEPSILON) theta_bin = 1;
+        else if (std::abs(temp_theta_min - 0.82) < MyEPSILON && std::abs(temp_theta_max - 1.16) < MyEPSILON) theta_bin = 2;
+        else if (std::abs(temp_theta_min - 1.16) < MyEPSILON && std::abs(temp_theta_max - 1.46) < MyEPSILON) theta_bin = 3;
+        else if (std::abs(temp_theta_min - 1.46) < MyEPSILON && std::abs(temp_theta_max - 1.78) < MyEPSILON) theta_bin = 4;
+        else if (std::abs(temp_theta_min - 1.78) < MyEPSILON && std::abs(temp_theta_max - 2.13) < MyEPSILON) theta_bin = 5;
+        else if (std::abs(temp_theta_min - 2.13) < MyEPSILON && std::abs(temp_theta_max - 2.22) < MyEPSILON) theta_bin = 6;
+        else if (std::abs(temp_theta_min - 2.22) < MyEPSILON && std::abs(temp_theta_max - 2.6) < MyEPSILON) theta_bin = 7;
+        else {
+            printf("[ERROR] unknown theta bin!\n");
+            exit(1);
+        }
+
+        int bin = theta_bin + 8 * p_bin;
+
+        if (temp_charge == '+') {
+            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
+            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
+
+            PID_fakeMU_correction[1][bin] = temp_data_MC_ratio;
+            PID_fakeMU_uncer[1][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeMU_correction[1][bin]) < MyEPSILON) {
+                PID_fakeMU_correction[1][bin] = 1.0;
+                PID_fakeMU_uncer[1][bin] = 0.0;
+            }
+
+        }
+        else if (temp_charge == '-') {
+            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
+            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
+
+            PID_fakeMU_correction[0][bin] = temp_data_MC_ratio;
+            PID_fakeMU_uncer[0][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeMU_correction[0][bin]) < MyEPSILON) {
+                PID_fakeMU_correction[0][bin] = 1.0;
+                PID_fakeMU_uncer[0][bin] = 0.0;
+            }
+
+        }
+        else {
+            printf("[ERROR] unknown charge!\n");
+            exit(1);
+        }
+    }
+    fclose(fp_K_fromMU);
+
+    // Pion from fake muon
+    while (fscanf(fp_pi_fromMU, "pionID,%c,%lf,%lf,%lf,%lf,0.0,1.0,FixedThresh06,0.6,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_data_MC_ratio, &temp_data_MC_uncertainty_stat_up, &temp_data_MC_uncertainty_stat_dn, &temp_data_MC_uncertainty_sys_up, &temp_data_MC_uncertainty_sys_dn) != EOF) {
+        int p_bin = -1;
+        int theta_bin = -1;
+
+        if (std::abs(temp_p_min - 0.4) < MyEPSILON && std::abs(temp_p_max - 0.5) < MyEPSILON) p_bin = 0;
+        else if (std::abs(temp_p_min - 0.5) < MyEPSILON && std::abs(temp_p_max - 0.7) < MyEPSILON) p_bin = 1;
+        else if (std::abs(temp_p_min - 0.7) < MyEPSILON && std::abs(temp_p_max - 1.0) < MyEPSILON) p_bin = 2;
+        else if (std::abs(temp_p_min - 1.0) < MyEPSILON && std::abs(temp_p_max - 1.5) < MyEPSILON) p_bin = 3;
+        else if (std::abs(temp_p_min - 1.5) < MyEPSILON && std::abs(temp_p_max - 2.0) < MyEPSILON) p_bin = 4;
+        else if (std::abs(temp_p_min - 2.0) < MyEPSILON && std::abs(temp_p_max - 2.5) < MyEPSILON) p_bin = 5;
+        else {
+            printf("[ERROR] unknown p bin!\n");
+            exit(1);
+        }
+
+        if (std::abs(temp_theta_min - 0.4) < MyEPSILON && std::abs(temp_theta_max - 0.64) < MyEPSILON) theta_bin = 0;
+        else if (std::abs(temp_theta_min - 0.64) < MyEPSILON && std::abs(temp_theta_max - 0.82) < MyEPSILON) theta_bin = 1;
+        else if (std::abs(temp_theta_min - 0.82) < MyEPSILON && std::abs(temp_theta_max - 1.16) < MyEPSILON) theta_bin = 2;
+        else if (std::abs(temp_theta_min - 1.16) < MyEPSILON && std::abs(temp_theta_max - 1.46) < MyEPSILON) theta_bin = 3;
+        else if (std::abs(temp_theta_min - 1.46) < MyEPSILON && std::abs(temp_theta_max - 1.78) < MyEPSILON) theta_bin = 4;
+        else if (std::abs(temp_theta_min - 1.78) < MyEPSILON && std::abs(temp_theta_max - 2.13) < MyEPSILON) theta_bin = 5;
+        else if (std::abs(temp_theta_min - 2.13) < MyEPSILON && std::abs(temp_theta_max - 2.22) < MyEPSILON) theta_bin = 6;
+        else if (std::abs(temp_theta_min - 2.22) < MyEPSILON && std::abs(temp_theta_max - 2.6) < MyEPSILON) theta_bin = 7;
+        else {
+            printf("[ERROR] unknown theta bin!\n");
+            exit(1);
+        }
+
+        int bin = theta_bin + 8 * p_bin;
+
+        if (temp_charge == '+') {
+            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
+            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
+
+            PID_fakeMU_correction[3][bin] = temp_data_MC_ratio;
+            PID_fakeMU_uncer[3][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeMU_correction[3][bin]) < MyEPSILON) {
+                PID_fakeMU_correction[3][bin] = 1.0;
+                PID_fakeMU_uncer[3][bin] = 0.0;
+            }
+
+        }
+        else if (temp_charge == '-') {
+            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
+            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
+
+            PID_fakeMU_correction[2][bin] = temp_data_MC_ratio;
+            PID_fakeMU_uncer[2][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_fakeMU_correction[2][bin]) < MyEPSILON) {
+                PID_fakeMU_correction[2][bin] = 1.0;
+                PID_fakeMU_uncer[2][bin] = 0.0;
+            }
+
+        }
+        else {
+            printf("[ERROR] unknown charge!\n");
+            exit(1);
+        }
+    }
+    fclose(fp_pi_fromMU);
+}
+
+double GetFEICalFactor(double UpsilonID, double BtagID) {
+    // UpsilonID => charged: 0, mixed: 1
+
+    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+            if (BtagID > FEI_cal_Bc_modeID[i] - 0.5 && BtagID < FEI_cal_Bc_modeID[i] + 0.5) return FEI_cal_Bc[i];
+        }
+        return FEI_cal_Bc[FEI_cal_Bc_num - 1];
+    }
+    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+            if (BtagID > FEI_cal_B0_modeID[i] - 0.5 && BtagID < FEI_cal_B0_modeID[i] + 0.5) return FEI_cal_B0[i];
+        }
+        return FEI_cal_B0[FEI_cal_B0_num - 1];
+    }
+
+    printf("[GetFEICalFactor] error! unexpected decay ID\n");
+    exit(1);
+    return 0;
+
+}
+
+double GetFEICalFactorUncer(double UpsilonID, double BtagID) {
+    // UpsilonID => charged: 0, mixed: 1
+
+    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+            if (BtagID > FEI_cal_Bc_modeID[i] - 0.5 && BtagID < FEI_cal_Bc_modeID[i] + 0.5) return FEI_cal_Bc_uncertainty[i];
+        }
+        return FEI_cal_Bc_uncertainty[FEI_cal_Bc_num - 1];
+    }
+    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+            if (BtagID > FEI_cal_B0_modeID[i] - 0.5 && BtagID < FEI_cal_B0_modeID[i] + 0.5) return FEI_cal_B0[i];
+        }
+        return FEI_cal_B0_uncertainty[FEI_cal_B0_num - 1];
+    }
+
+    printf("[GetFEICalFactor] error! unexpected decay ID\n");
+    exit(1);
+    return 0;
+
+}
+
 double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
@@ -1556,6 +2016,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -1609,6 +2070,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -1664,8 +2126,8 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -1742,6 +2204,7 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -1795,6 +2258,7 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -1851,8 +2315,8 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
             double Ntrack = GetNtracks(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -1933,6 +2397,7 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -1987,6 +2452,7 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -2043,8 +2509,8 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -2531,6 +2997,7 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -2578,6 +3045,7 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -2644,8 +3112,8 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -2857,6 +3325,7 @@ void GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hist
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -2904,6 +3373,7 @@ void GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hist
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -2972,8 +3442,8 @@ void GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hist
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -3148,6 +3618,7 @@ double GetFragmentationPDFs(const char* dirname, const char* included_string, TH
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_KaonID_correction = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
@@ -3201,6 +3672,7 @@ double GetFragmentationPDFs(const char* dirname, const char* included_string, TH
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -3294,8 +3766,8 @@ double GetFragmentationPDFs(const char* dirname, const char* included_string, TH
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -3386,6 +3858,7 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -3439,6 +3912,7 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -3496,8 +3970,8 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -3576,6 +4050,7 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -3629,6 +4104,7 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -3685,8 +4161,8 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -3757,418 +4233,6 @@ void GetNegativeChangePDFs(TH1D* nominal_hist, TH1D* positive_hist, TH1D* negati
     }
 }
 
-void ReadPIDFile() {
-    const char* KID_true_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/KaonEff.csv";
-    const char* KID_mis_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/Kaonmis.csv";
-    const char* PID_true_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/PionEff.csv";
-    const char* PID_mis_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/Pionmis.csv";
-
-    FILE* fp_KID_true = fopen(KID_true_file, "r");
-    FILE* fp_KID_mis = fopen(KID_mis_file, "r");
-    FILE* fp_PID_true = fopen(PID_true_file, "r");
-    FILE* fp_PID_mis = fopen(PID_mis_file, "r");
-
-    fscanf(fp_KID_true, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
-    fscanf(fp_KID_mis, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
-    fscanf(fp_PID_true, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
-    fscanf(fp_PID_mis, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
-
-    double temp_p_min;
-    double temp_p_max;
-    double temp_cosTheta_min;
-    double temp_cosTheta_max;
-    double temp_data_MC_ratio;
-    double temp_data_MC_uncertainty_stat_up;
-    double temp_data_MC_uncertainty_stat_dn;
-    double temp_data_MC_uncertainty_sys_up;
-    double temp_data_MC_uncertainty_sys_dn;
-    double temp_data_efficiency;
-    double temp_data_uncertainty_stat_up;
-    double temp_data_uncertainty_stat_dn;
-    double temp_data_uncertainty_sys_up;
-    double temp_data_uncertainty_sys_dn;
-    double temp_MC_efficiency;
-    double temp_MC_uncertainty_stat_up;
-    double temp_MC_uncertainty_stat_dn;
-    double temp_MC_uncertainty_sys_up;
-    double temp_MC_uncertainty_sys_dn;
-    double temp_threshold;
-
-    for (int i = 0; i < N_PID_syst - 1; i++) {
-        fscanf(fp_KID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,kaonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[0][i], &PID_correction_stat_uncer[0][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[0][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
-        fscanf(fp_KID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,kaonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[1][i], &PID_correction_stat_uncer[1][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[1][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
-        fscanf(fp_PID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[2][i], &PID_correction_stat_uncer[2][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[2][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
-        fscanf(fp_PID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction[3][i], &PID_correction_stat_uncer[3][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer[3][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
- 
-        if ( (std::abs(PID_correction[0][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[0][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[0][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction[0][i]) > 10000.0) ) {
-            PID_correction[0][i] = 1.0;
-            PID_correction_stat_uncer[0][i] = 0.0;
-            PID_correction_sys_uncer[0][i] = 0.0;
-        }
-        if ( (std::abs(PID_correction[1][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[1][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[1][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction[1][i]) > 10000.0) ) {
-            PID_correction[1][i] = 1.0;
-            PID_correction_stat_uncer[1][i] = 0.0;
-            PID_correction_sys_uncer[1][i] = 0.0;
-        }
-        if ( (std::abs(PID_correction[2][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[2][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[2][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction[2][i]) > 10000.0)) {
-            PID_correction[2][i] = 1.0;
-            PID_correction_stat_uncer[2][i] = 0.0;
-            PID_correction_sys_uncer[2][i] = 0.0;
-        }
-        if ( (std::abs(PID_correction[3][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer[3][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer[3][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction[3][i]) > 10000.0)) {
-            PID_correction[3][i] = 1.0;
-            PID_correction_stat_uncer[3][i] = 0.0;
-            PID_correction_sys_uncer[3][i] = 0.0;
-        }
-
-        PID_correction_uncer[0][i] = std::sqrt(PID_correction_stat_uncer[0][i] * PID_correction_stat_uncer[0][i] + PID_correction_sys_uncer[0][i] * PID_correction_sys_uncer[0][i]);
-        PID_correction_uncer[1][i] = std::sqrt(PID_correction_stat_uncer[1][i] * PID_correction_stat_uncer[1][i] + PID_correction_sys_uncer[1][i] * PID_correction_sys_uncer[1][i]);
-        PID_correction_uncer[2][i] = std::sqrt(PID_correction_stat_uncer[2][i] * PID_correction_stat_uncer[2][i] + PID_correction_sys_uncer[2][i] * PID_correction_sys_uncer[2][i]);
-        PID_correction_uncer[3][i] = std::sqrt(PID_correction_stat_uncer[3][i] * PID_correction_stat_uncer[3][i] + PID_correction_sys_uncer[3][i] * PID_correction_sys_uncer[3][i]);
-    }
-
-    PID_correction[0][N_PID_syst - 1] = 1.0;
-    PID_correction_stat_uncer[0][N_PID_syst - 1] = 0.0;
-    PID_correction_sys_uncer[0][N_PID_syst - 1] = 0.0;
-    PID_correction_uncer[0][N_PID_syst - 1] = 0.0;
-
-    PID_correction[1][N_PID_syst - 1] = 1.0;
-    PID_correction_stat_uncer[1][N_PID_syst - 1] = 0.0;
-    PID_correction_sys_uncer[1][N_PID_syst - 1] = 0.0;
-    PID_correction_uncer[1][N_PID_syst - 1] = 0.0;
-
-    PID_correction[2][N_PID_syst - 1] = 1.0;
-    PID_correction_stat_uncer[2][N_PID_syst - 1] = 0.0;
-    PID_correction_sys_uncer[2][N_PID_syst - 1] = 0.0;
-    PID_correction_uncer[2][N_PID_syst - 1] = 0.0;
-
-    PID_correction[3][N_PID_syst - 1] = 1.0;
-    PID_correction_stat_uncer[3][N_PID_syst - 1] = 0.0;
-    PID_correction_sys_uncer[3][N_PID_syst - 1] = 0.0;
-    PID_correction_uncer[3][N_PID_syst - 1] = 0.0;
-
-    fclose(fp_KID_true);
-    fclose(fp_KID_mis);
-    fclose(fp_PID_true);
-    fclose(fp_PID_mis);
-}
-
-void ReadFakePIDFile() {
-    // initialization
-    for (int i = 0; i < N_fakeE_syst; i++) {
-        PID_fakeE_correction[0][i] = 1.0; //  K-, K+, pi-, pi+
-        PID_fakeE_correction[1][i] = 1.0;
-        PID_fakeE_correction[2][i] = 1.0;
-        PID_fakeE_correction[3][i] = 1.0;
-
-        PID_fakeE_uncer[0][i] = 0.0;
-        PID_fakeE_uncer[1][i] = 0.0;
-        PID_fakeE_uncer[2][i] = 0.0;
-        PID_fakeE_uncer[3][i] = 0.0;
-    }
-
-    for (int i = 0; i < N_fakeMU_syst; i++) {
-        PID_fakeMU_correction[0][i] = 1.0;
-        PID_fakeMU_correction[1][i] = 1.0;
-        PID_fakeMU_correction[2][i] = 1.0;
-        PID_fakeMU_correction[3][i] = 1.0;
-
-        PID_fakeMU_uncer[0][i] = 0.0;
-        PID_fakeMU_uncer[1][i] = 0.0;
-        PID_fakeMU_uncer[2][i] = 0.0;
-        PID_fakeMU_uncer[3][i] = 0.0;
-    }
-
-    const char* K_fromE_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/kaonID_efficiency_electron.csv";
-    const char* K_fromMU_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/kaonID_efficiency_muon.csv";
-    const char* pi_fromE_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/pionID_efficiency_electron.csv";
-    const char* pi_fromMU_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/pionID_efficiency_muon.csv";
-
-    FILE* fp_K_fromE = fopen(K_fromE_file, "r");
-    FILE* fp_K_fromMU = fopen(K_fromMU_file, "r");
-    FILE* fp_pi_fromE = fopen(pi_fromE_file, "r");
-    FILE* fp_pi_fromMU = fopen(pi_fromMU_file, "r");
-
-    fscanf(fp_K_fromE, "variable,charge,p_min,p_max,theta_min,theta_max,iso_score_min,iso_score_max,working_point,threshold,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn\n");
-    fscanf(fp_K_fromMU, "variable,charge,p_min,p_max,theta_min,theta_max,iso_score_min,iso_score_max,working_point,threshold,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn\n");
-    fscanf(fp_pi_fromE, "variable,charge,p_min,p_max,theta_min,theta_max,iso_score_min,iso_score_max,working_point,threshold,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn\n");
-    fscanf(fp_pi_fromMU, "variable,charge,p_min,p_max,theta_min,theta_max,iso_score_min,iso_score_max,working_point,threshold,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn\n");
-
-    char temp_charge;
-    double temp_p_min;
-    double temp_p_max;
-    double temp_theta_min;
-    double temp_theta_max;
-    double temp_data_MC_ratio;
-    double temp_data_MC_uncertainty_stat_up;
-    double temp_data_MC_uncertainty_stat_dn;
-    double temp_data_MC_uncertainty_sys_up;
-    double temp_data_MC_uncertainty_sys_dn;
-    double temp_data_efficiency;
-    double temp_data_uncertainty_stat_up;
-    double temp_data_uncertainty_stat_dn;
-    double temp_data_uncertainty_sys_up;
-    double temp_data_uncertainty_sys_dn;
-    double temp_MC_efficiency;
-    double temp_MC_uncertainty_stat_up;
-    double temp_MC_uncertainty_stat_dn;
-    double temp_MC_uncertainty_sys_up;
-    double temp_MC_uncertainty_sys_dn;
-    double temp_threshold;
-
-    // Kaon from fake electron
-    while (fscanf(fp_K_fromE, "kaonID,%c,%lf,%lf,%lf,%lf,0.0,1.0,FixedThresh06,0.6,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_data_MC_ratio, &temp_data_MC_uncertainty_stat_up, &temp_data_MC_uncertainty_stat_dn, &temp_data_MC_uncertainty_sys_up, &temp_data_MC_uncertainty_sys_dn) != EOF) {
-        int p_bin = -1;
-        int theta_bin = -1;
-
-        if (std::abs(temp_p_min - 0.4) < MyEPSILON && std::abs(temp_p_max - 0.5) < MyEPSILON) p_bin = 0;
-        else if (std::abs(temp_p_min - 0.5) < MyEPSILON && std::abs(temp_p_max - 1.0) < MyEPSILON) p_bin = 1;
-        else if (std::abs(temp_p_min - 1.0) < MyEPSILON && std::abs(temp_p_max - 1.5) < MyEPSILON) p_bin = 2;
-        else if (std::abs(temp_p_min - 1.5) < MyEPSILON && std::abs(temp_p_max - 2.0) < MyEPSILON) p_bin = 3;
-        else if (std::abs(temp_p_min - 2.0) < MyEPSILON && std::abs(temp_p_max - 2.5) < MyEPSILON) p_bin = 4;
-        else if (std::abs(temp_p_min - 2.5) < MyEPSILON && std::abs(temp_p_max - 3.0) < MyEPSILON) p_bin = 5;
-        else {
-            printf("[ERROR] unknown p bin!\n");
-            exit(1);
-        }
-
-        if (std::abs(temp_theta_min - 0.22) < MyEPSILON && std::abs(temp_theta_max - 0.56) < MyEPSILON) theta_bin = 0;
-        else if (std::abs(temp_theta_min - 0.56) < MyEPSILON && std::abs(temp_theta_max - 1.13) < MyEPSILON) theta_bin = 1;
-        else if (std::abs(temp_theta_min - 1.13) < MyEPSILON && std::abs(temp_theta_max - 1.57) < MyEPSILON) theta_bin = 2;
-        else if (std::abs(temp_theta_min - 1.57) < MyEPSILON && std::abs(temp_theta_max - 1.88) < MyEPSILON) theta_bin = 3;
-        else if (std::abs(temp_theta_min - 1.88) < MyEPSILON && std::abs(temp_theta_max - 2.23) < MyEPSILON) theta_bin = 4;
-        else if (std::abs(temp_theta_min - 2.23) < MyEPSILON && std::abs(temp_theta_max - 2.71) < MyEPSILON) theta_bin = 5;
-        else {
-            printf("[ERROR] unknown theta bin!\n");
-            exit(1);
-        }
-
-        int bin = theta_bin + 6 * p_bin;
-
-        if (temp_charge == '+') {
-            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
-            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
-
-            PID_fakeE_correction[1][bin] = temp_data_MC_ratio;
-            PID_fakeE_uncer[1][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
-
-            if (std::abs(PID_fakeE_correction[1][bin]) < MyEPSILON) {
-                PID_fakeE_correction[1][bin] = 1.0;
-                PID_fakeE_uncer[1][bin] = 0.0;
-            }
-
-        }
-        else if (temp_charge == '-') {
-            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
-            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
-
-            PID_fakeE_correction[0][bin] = temp_data_MC_ratio;
-            PID_fakeE_uncer[0][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
-
-            if (std::abs(PID_fakeE_correction[0][bin]) < MyEPSILON) {
-                PID_fakeE_correction[0][bin] = 1.0;
-                PID_fakeE_uncer[0][bin] = 0.0;
-            }
-
-        }
-        else {
-            printf("[ERROR] unknown charge!\n");
-            exit(1);
-        }
-    }
-    fclose(fp_K_fromE);
-
-    // Pion from fake electron
-    while (fscanf(fp_pi_fromE, "pionID,%c,%lf,%lf,%lf,%lf,0.0,1.0,FixedThresh06,0.6,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_data_MC_ratio, &temp_data_MC_uncertainty_stat_up, &temp_data_MC_uncertainty_stat_dn, &temp_data_MC_uncertainty_sys_up, &temp_data_MC_uncertainty_sys_dn) != EOF) {
-        int p_bin = -1;
-        int theta_bin = -1;
-
-        if (std::abs(temp_p_min - 0.4) < MyEPSILON && std::abs(temp_p_max - 0.5) < MyEPSILON) p_bin = 0;
-        else if (std::abs(temp_p_min - 0.5) < MyEPSILON && std::abs(temp_p_max - 1.0) < MyEPSILON) p_bin = 1;
-        else if (std::abs(temp_p_min - 1.0) < MyEPSILON && std::abs(temp_p_max - 1.5) < MyEPSILON) p_bin = 2;
-        else if (std::abs(temp_p_min - 1.5) < MyEPSILON && std::abs(temp_p_max - 2.0) < MyEPSILON) p_bin = 3;
-        else if (std::abs(temp_p_min - 2.0) < MyEPSILON && std::abs(temp_p_max - 2.5) < MyEPSILON) p_bin = 4;
-        else if (std::abs(temp_p_min - 2.5) < MyEPSILON && std::abs(temp_p_max - 3.0) < MyEPSILON) p_bin = 5;
-        else {
-            printf("[ERROR] unknown p bin!\n");
-            exit(1);
-        }
-
-        if (std::abs(temp_theta_min - 0.22) < MyEPSILON && std::abs(temp_theta_max - 0.56) < MyEPSILON) theta_bin = 0;
-        else if (std::abs(temp_theta_min - 0.56) < MyEPSILON && std::abs(temp_theta_max - 1.13) < MyEPSILON) theta_bin = 1;
-        else if (std::abs(temp_theta_min - 1.13) < MyEPSILON && std::abs(temp_theta_max - 1.57) < MyEPSILON) theta_bin = 2;
-        else if (std::abs(temp_theta_min - 1.57) < MyEPSILON && std::abs(temp_theta_max - 1.88) < MyEPSILON) theta_bin = 3;
-        else if (std::abs(temp_theta_min - 1.88) < MyEPSILON && std::abs(temp_theta_max - 2.23) < MyEPSILON) theta_bin = 4;
-        else if (std::abs(temp_theta_min - 2.23) < MyEPSILON && std::abs(temp_theta_max - 2.71) < MyEPSILON) theta_bin = 5;
-        else {
-            printf("[ERROR] unknown theta bin!\n");
-            exit(1);
-        }
-
-        int bin = theta_bin + 6 * p_bin;
-
-        if (temp_charge == '+') {
-            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
-            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
-
-            PID_fakeE_correction[3][bin] = temp_data_MC_ratio;
-            PID_fakeE_uncer[3][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
-
-            if (std::abs(PID_fakeE_correction[3][bin]) < MyEPSILON) {
-                PID_fakeE_correction[3][bin] = 1.0;
-                PID_fakeE_uncer[3][bin] = 0.0;
-            }
-
-        }
-        else if (temp_charge == '-') {
-            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
-            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
-
-            PID_fakeE_correction[2][bin] = temp_data_MC_ratio;
-            PID_fakeE_uncer[2][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
-
-            if (std::abs(PID_fakeE_correction[2][bin]) < MyEPSILON) {
-                PID_fakeE_correction[2][bin] = 1.0;
-                PID_fakeE_uncer[2][bin] = 0.0;
-            }
-
-        }
-        else {
-            printf("[ERROR] unknown charge!\n");
-            exit(1);
-        }
-    }
-    fclose(fp_pi_fromE);
-
-    // Kaon from fake muon
-    while (fscanf(fp_K_fromMU, "kaonID,%c,%lf,%lf,%lf,%lf,0.0,1.0,FixedThresh06,0.6,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_data_MC_ratio, &temp_data_MC_uncertainty_stat_up, &temp_data_MC_uncertainty_stat_dn, &temp_data_MC_uncertainty_sys_up, &temp_data_MC_uncertainty_sys_dn) != EOF) {
-        int p_bin = -1;
-        int theta_bin = -1;
-
-        if (std::abs(temp_p_min - 0.4) < MyEPSILON && std::abs(temp_p_max - 0.5) < MyEPSILON) p_bin = 0;
-        else if (std::abs(temp_p_min - 0.5) < MyEPSILON && std::abs(temp_p_max - 0.7) < MyEPSILON) p_bin = 1;
-        else if (std::abs(temp_p_min - 0.7) < MyEPSILON && std::abs(temp_p_max - 1.0) < MyEPSILON) p_bin = 2;
-        else if (std::abs(temp_p_min - 1.0) < MyEPSILON && std::abs(temp_p_max - 1.5) < MyEPSILON) p_bin = 3;
-        else if (std::abs(temp_p_min - 1.5) < MyEPSILON && std::abs(temp_p_max - 2.0) < MyEPSILON) p_bin = 4;
-        else if (std::abs(temp_p_min - 2.0) < MyEPSILON && std::abs(temp_p_max - 2.5) < MyEPSILON) p_bin = 5;
-        else {
-            printf("[ERROR] unknown p bin!\n");
-            exit(1);
-        }
-
-        if (std::abs(temp_theta_min - 0.4) < MyEPSILON && std::abs(temp_theta_max - 0.64) < MyEPSILON) theta_bin = 0;
-        else if (std::abs(temp_theta_min - 0.64) < MyEPSILON && std::abs(temp_theta_max - 0.82) < MyEPSILON) theta_bin = 1;
-        else if (std::abs(temp_theta_min - 0.82) < MyEPSILON && std::abs(temp_theta_max - 1.16) < MyEPSILON) theta_bin = 2;
-        else if (std::abs(temp_theta_min - 1.16) < MyEPSILON && std::abs(temp_theta_max - 1.46) < MyEPSILON) theta_bin = 3;
-        else if (std::abs(temp_theta_min - 1.46) < MyEPSILON && std::abs(temp_theta_max - 1.78) < MyEPSILON) theta_bin = 4;
-        else if (std::abs(temp_theta_min - 1.78) < MyEPSILON && std::abs(temp_theta_max - 2.13) < MyEPSILON) theta_bin = 5;
-        else if (std::abs(temp_theta_min - 2.13) < MyEPSILON && std::abs(temp_theta_max - 2.22) < MyEPSILON) theta_bin = 6;
-        else if (std::abs(temp_theta_min - 2.22) < MyEPSILON && std::abs(temp_theta_max - 2.6) < MyEPSILON) theta_bin = 7;
-        else {
-            printf("[ERROR] unknown theta bin!\n");
-            exit(1);
-        }
-
-        int bin = theta_bin + 8 * p_bin;
-
-        if (temp_charge == '+') {
-            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
-            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
-
-            PID_fakeMU_correction[1][bin] = temp_data_MC_ratio;
-            PID_fakeMU_uncer[1][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
-
-            if (std::abs(PID_fakeMU_correction[1][bin]) < MyEPSILON) {
-                PID_fakeMU_correction[1][bin] = 1.0;
-                PID_fakeMU_uncer[1][bin] = 0.0;
-            }
-
-        }
-        else if (temp_charge == '-') {
-            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
-            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
-
-            PID_fakeMU_correction[0][bin] = temp_data_MC_ratio;
-            PID_fakeMU_uncer[0][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
-
-            if (std::abs(PID_fakeMU_correction[0][bin]) < MyEPSILON) {
-                PID_fakeMU_correction[0][bin] = 1.0;
-                PID_fakeMU_uncer[0][bin] = 0.0;
-            }
-
-        }
-        else {
-            printf("[ERROR] unknown charge!\n");
-            exit(1);
-        }
-    }
-    fclose(fp_K_fromMU);
-
-    // Pion from fake muon
-    while (fscanf(fp_pi_fromMU, "pionID,%c,%lf,%lf,%lf,%lf,0.0,1.0,FixedThresh06,0.6,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_data_MC_ratio, &temp_data_MC_uncertainty_stat_up, &temp_data_MC_uncertainty_stat_dn, &temp_data_MC_uncertainty_sys_up, &temp_data_MC_uncertainty_sys_dn) != EOF) {
-        int p_bin = -1;
-        int theta_bin = -1;
-
-        if (std::abs(temp_p_min - 0.4) < MyEPSILON && std::abs(temp_p_max - 0.5) < MyEPSILON) p_bin = 0;
-        else if (std::abs(temp_p_min - 0.5) < MyEPSILON && std::abs(temp_p_max - 0.7) < MyEPSILON) p_bin = 1;
-        else if (std::abs(temp_p_min - 0.7) < MyEPSILON && std::abs(temp_p_max - 1.0) < MyEPSILON) p_bin = 2;
-        else if (std::abs(temp_p_min - 1.0) < MyEPSILON && std::abs(temp_p_max - 1.5) < MyEPSILON) p_bin = 3;
-        else if (std::abs(temp_p_min - 1.5) < MyEPSILON && std::abs(temp_p_max - 2.0) < MyEPSILON) p_bin = 4;
-        else if (std::abs(temp_p_min - 2.0) < MyEPSILON && std::abs(temp_p_max - 2.5) < MyEPSILON) p_bin = 5;
-        else {
-            printf("[ERROR] unknown p bin!\n");
-            exit(1);
-        }
-
-        if (std::abs(temp_theta_min - 0.4) < MyEPSILON && std::abs(temp_theta_max - 0.64) < MyEPSILON) theta_bin = 0;
-        else if (std::abs(temp_theta_min - 0.64) < MyEPSILON && std::abs(temp_theta_max - 0.82) < MyEPSILON) theta_bin = 1;
-        else if (std::abs(temp_theta_min - 0.82) < MyEPSILON && std::abs(temp_theta_max - 1.16) < MyEPSILON) theta_bin = 2;
-        else if (std::abs(temp_theta_min - 1.16) < MyEPSILON && std::abs(temp_theta_max - 1.46) < MyEPSILON) theta_bin = 3;
-        else if (std::abs(temp_theta_min - 1.46) < MyEPSILON && std::abs(temp_theta_max - 1.78) < MyEPSILON) theta_bin = 4;
-        else if (std::abs(temp_theta_min - 1.78) < MyEPSILON && std::abs(temp_theta_max - 2.13) < MyEPSILON) theta_bin = 5;
-        else if (std::abs(temp_theta_min - 2.13) < MyEPSILON && std::abs(temp_theta_max - 2.22) < MyEPSILON) theta_bin = 6;
-        else if (std::abs(temp_theta_min - 2.22) < MyEPSILON && std::abs(temp_theta_max - 2.6) < MyEPSILON) theta_bin = 7;
-        else {
-            printf("[ERROR] unknown theta bin!\n");
-            exit(1);
-        }
-
-        int bin = theta_bin + 8 * p_bin;
-
-        if (temp_charge == '+') {
-            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
-            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
-
-            PID_fakeMU_correction[3][bin] = temp_data_MC_ratio;
-            PID_fakeMU_uncer[3][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
-
-            if (std::abs(PID_fakeMU_correction[3][bin]) < MyEPSILON) {
-                PID_fakeMU_correction[3][bin] = 1.0;
-                PID_fakeMU_uncer[3][bin] = 0.0;
-            }
-
-        }
-        else if (temp_charge == '-') {
-            double temp_data_MC_uncertainty_up = std::sqrt(temp_data_MC_uncertainty_stat_up * temp_data_MC_uncertainty_stat_up + temp_data_MC_uncertainty_sys_up * temp_data_MC_uncertainty_sys_up);
-            double temp_data_MC_uncertainty_dn = std::sqrt(temp_data_MC_uncertainty_stat_dn * temp_data_MC_uncertainty_stat_dn + temp_data_MC_uncertainty_sys_dn * temp_data_MC_uncertainty_sys_dn);
-
-            PID_fakeMU_correction[2][bin] = temp_data_MC_ratio;
-            PID_fakeMU_uncer[2][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
-
-            if (std::abs(PID_fakeMU_correction[2][bin]) < MyEPSILON) {
-                PID_fakeMU_correction[2][bin] = 1.0;
-                PID_fakeMU_uncer[2][bin] = 0.0;
-            }
-
-        }
-        else {
-            printf("[ERROR] unknown charge!\n");
-            exit(1);
-        }
-    }
-    fclose(fp_pi_fromMU);
-}
-
 double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsIthigh, bool IsItXsu, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // apply correction for mb weight files
     /*
     CorrectionType for new form factors
@@ -4192,6 +4256,7 @@ double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, c
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -4242,6 +4307,7 @@ double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, c
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -4299,8 +4365,8 @@ double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, c
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -4386,6 +4452,7 @@ double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, c
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -4437,6 +4504,7 @@ double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, c
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -4495,8 +4563,8 @@ double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, c
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -4582,6 +4650,7 @@ double GetKstardeltaPDFs(const char* dirname, const char* included_string, TH1D*
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -4633,6 +4702,7 @@ double GetKstardeltaPDFs(const char* dirname, const char* included_string, TH1D*
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -4691,8 +4761,8 @@ double GetKstardeltaPDFs(const char* dirname, const char* included_string, TH1D*
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -4772,6 +4842,7 @@ void GetMultiplicityPDFs(const char* dirname, const char* included_string, TH1D*
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -4829,6 +4900,7 @@ void GetMultiplicityPDFs(const char* dirname, const char* included_string, TH1D*
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -4884,8 +4956,8 @@ void GetMultiplicityPDFs(const char* dirname, const char* included_string, TH1D*
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -4970,6 +5042,7 @@ double GetKnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -5023,6 +5096,7 @@ double GetKnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -5078,8 +5152,8 @@ double GetKnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -5172,6 +5246,7 @@ double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* 
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -5225,6 +5300,7 @@ double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* 
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -5280,8 +5356,8 @@ double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = FEI_cal_Bc;
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = FEI_cal_B0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor(Upsilon_ID, Btag_ID);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
