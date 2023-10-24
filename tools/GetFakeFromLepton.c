@@ -105,11 +105,15 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 // # define pi0_correction 0.932
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
-// https://indico.belle2.org/event/6872/contributions/37447/attachments/17127/25504/FEIperformance_B2GM.pdf
-# define FEI_cal_Bc 0.679
-# define FEI_cal_Bc_uncertainty (0.017/FEI_cal_Bc) // not percentage. relative uncertainty
-# define FEI_cal_B0 0.713
-# define FEI_cal_B0_uncertainty (0.019/FEI_cal_B0) // not percentage. relative uncertainty
+
+# define FEI_cal_Bc_num 12
+# define FEI_cal_B0_num 11
+double FEI_cal_Bc[FEI_cal_Bc_num] = { 1.04, 0.79, 0.69, 0.56, 0.97, 0.95, 0.74, 0.57, 0.91, 0.51, 0.34, 0.59 };
+double FEI_cal_Bc_uncertainty[FEI_cal_Bc_num] = { 0.03, 0.03, 0.05, 0.11, 0.03, 0.03, 0.02, 0.06, 0.1, 0.13, 0.07, 0.02 }; // not relative uncertainty. absolute uncertainty
+double FEI_cal_Bc_modeID[FEI_cal_Bc_num] = { 0.0, 1.0, 3.0, 4.0, 15.0, 16.0, 18.0, 19.0, 23.0, 24.0, 30.0, -1.0 };
+double FEI_cal_B0[FEI_cal_B0_num] = { 1.16, 0.94, 0.81, 0.79, 0.99, 1.03, 0.67, 0.66, 0.69, 0.49, 0.79 };
+double FEI_cal_B0_uncertainty[FEI_cal_B0_num] = { 0.04, 0.05, 0.06, 0.02, 0.03, 0.06, 0.02, 0.03, 0.02, 0.02, 0.12 }; // not relative uncertainty. absolute uncertainty
+double FEI_cal_B0_modeID[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0, 18.0, 19.0, 26.0, -1.0 };
 
 # define Nvar_num 116
 
@@ -235,6 +239,50 @@ void ReadPIDFile() {
     fclose(fp_PID_mis);
 }
 
+double GetFEICalFactor(double UpsilonID, double BtagID) {
+    // UpsilonID => charged: 0, mixed: 1
+
+    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+            if (BtagID > FEI_cal_Bc_modeID[i] - 0.5 && BtagID < FEI_cal_Bc_modeID[i] + 0.5) return FEI_cal_Bc[i];
+        }
+        return FEI_cal_Bc[FEI_cal_Bc_num - 1];
+    }
+    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+            if (BtagID > FEI_cal_B0_modeID[i] - 0.5 && BtagID < FEI_cal_B0_modeID[i] + 0.5) return FEI_cal_B0[i];
+        }
+        return FEI_cal_B0[FEI_cal_B0_num - 1];
+    }
+
+    printf("[GetFEICalFactor] error! unexpected decay ID\n");
+    exit(1);
+    return 0;
+
+}
+
+double GetFEICalFactorUncer(double UpsilonID, double BtagID) {
+    // UpsilonID => charged: 0, mixed: 1
+
+    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+            if (BtagID > FEI_cal_Bc_modeID[i] - 0.5 && BtagID < FEI_cal_Bc_modeID[i] + 0.5) return FEI_cal_Bc_uncertainty[i];
+        }
+        return FEI_cal_Bc_uncertainty[FEI_cal_Bc_num - 1];
+    }
+    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+            if (BtagID > FEI_cal_B0_modeID[i] - 0.5 && BtagID < FEI_cal_B0_modeID[i] + 0.5) return FEI_cal_B0[i];
+        }
+        return FEI_cal_B0_uncertainty[FEI_cal_B0_num - 1];
+    }
+
+    printf("[GetFEICalFactor] error! unexpected decay ID\n");
+    exit(1);
+    return 0;
+
+}
+
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
         return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
@@ -283,6 +331,7 @@ double LetsCount_ri(const char* dirname, std::string SampleName, double* Ncounts
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
 
@@ -308,6 +357,7 @@ double LetsCount_ri(const char* dirname, std::string SampleName, double* Ncounts
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -330,11 +380,11 @@ double LetsCount_ri(const char* dirname, std::string SampleName, double* Ncounts
             // get weight from luminosity and FEI
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_CHG_test;
             }
             else if (SampleName == "MIX") {
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_MIX_test;
             }
             else if (SampleName == "UUBAR") {
@@ -354,27 +404,27 @@ double LetsCount_ri(const char* dirname, std::string SampleName, double* Ncounts
                 weight_ri = Scale_CHARM_test; // total 1.0/ab for qq
             }
             else if (SampleName == "B2Knunu") {
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_Kplus_test;
             }
             else if (SampleName == "B2Kstarnunu") {
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_Kplusstar_test;
             }
             else if (SampleName == "B2Xsnunu") {
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_Xsu_nonresonant_test;
             }
             else if (SampleName == "B02K0nunu") {
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_K0_test;
             }
             else if (SampleName == "B02Kstar0nunu") {
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_K0star_test;
             }
             else if (SampleName == "B02Xsnunu") {
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_Xsd_nonresonant_test;
             }
             else {
@@ -425,6 +475,7 @@ double LetsCount_ri(const char* dirname, std::string SampleName, const char* inc
 
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
 
@@ -449,6 +500,7 @@ double LetsCount_ri(const char* dirname, std::string SampleName, const char* inc
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -470,11 +522,11 @@ double LetsCount_ri(const char* dirname, std::string SampleName, const char* inc
             // get weight from luminosity and FEI
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_CHG_test;
             }
             else if (SampleName == "MIX") {
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_MIX_test;
             }
             else if (SampleName == "UUBAR") {
@@ -494,27 +546,27 @@ double LetsCount_ri(const char* dirname, std::string SampleName, const char* inc
                 weight_ri = Scale_CHARM_test; // total 1.0/ab for qq
             }
             else if (SampleName == "B2Knunu") {
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_Kplus_test;
             }
             else if (SampleName == "B2Kstarnunu") {
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_Kplusstar_test;
             }
             else if (SampleName == "B2Xsnunu") {
-                FEI_calibration_factor = FEI_cal_Bc;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_Xsu_nonresonant_test;
             }
             else if (SampleName == "B02K0nunu") {
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_K0_test;
             }
             else if (SampleName == "B02Kstar0nunu") {
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_K0star_test;
             }
             else if (SampleName == "B02Xsnunu") {
-                FEI_calibration_factor = FEI_cal_B0;
+                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                 weight_ri = Scale_Xsd_nonresonant_test;
             }
             else {
