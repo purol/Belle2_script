@@ -2673,6 +2673,10 @@ bool Loader::IsBCSValid() { // modified for makeshift!!
         else if (IsItValid == false && Eeclsame == true) {
             IsItValid = true; // makeshift
         }
+        else if (IsItValid == false && Eeclsame == false) {
+            IsItValid = true; // makeshift
+            TotalData.push(temp);
+        }
     }
     return IsItValid;
 }
