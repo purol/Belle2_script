@@ -169,7 +169,7 @@ Corrector_Multiplicity::Corrector_Multiplicity() :
     FILE* fp;
 
     // read Knn weights
-    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/multiplicity/multiplicity_weight.txt", "r");
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/multiplicity/multiplicity_weight.txt", "r");
     fscanf(fp, "%d\n", &NgammaMAX);
     weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
     for (int i = 0; i < NgammaMAX + 1; i++) {
@@ -198,10 +198,10 @@ double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma) {
 /* ====================================== */
 
 void ReadPIDFile() {
-    const char* KID_true_file = "KaonEff.csv";
-    const char* KID_mis_file = "Kaonmis.csv";
-    const char* PID_true_file = "PionEff.csv";
-    const char* PID_mis_file = "Pionmis.csv";
+    const char* KID_true_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/KaonEff.csv";
+    const char* KID_mis_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/Kaonmis.csv";
+    const char* PID_true_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/PionEff.csv";
+    const char* PID_mis_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/Pionmis.csv";
 
     FILE* fp_KID_true = fopen(KID_true_file, "r");
     FILE* fp_KID_mis = fopen(KID_mis_file, "r");
@@ -319,10 +319,10 @@ void ReadFakePIDFile() {
         PID_fakeMU_uncer[3][i] = 0.0;
     }
 
-    const char* K_fromE_file = "kaonID_efficiency_electron.csv";
-    const char* K_fromMU_file = "kaonID_efficiency_muon.csv";
-    const char* pi_fromE_file = "pionID_efficiency_electron.csv";
-    const char* pi_fromMU_file = "pionID_efficiency_muon.csv";
+    const char* K_fromE_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/kaonID_efficiency_electron.csv";
+    const char* K_fromMU_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/kaonID_efficiency_muon.csv";
+    const char* pi_fromE_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/pionID_efficiency_electron.csv";
+    const char* pi_fromMU_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_PID/pionID_efficiency_muon.csv";
 
     FILE* fp_K_fromE = fopen(K_fromE_file, "r");
     FILE* fp_K_fromMU = fopen(K_fromMU_file, "r");
@@ -1601,11 +1601,11 @@ void THStack_plot_embedded() {
     // ReadPIDFile();
 
     // dirnames
-    const char* Embedded_MC_CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_embedded_fixed/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/CHG";
-    const char* Embedded_MC_MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_embedded_fixed/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/MIX";
-    const char* Embedded_MC_UDSCHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_embedded_fixed/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/UDSCHARM";
+    const char* Embedded_MC_CHG_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/CHG";
+    const char* Embedded_MC_MIX_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/MIX";
+    const char* Embedded_MC_UDSCHARM_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/UDSCHARM";
 
-    const char* Embedded_data_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/data";
+    const char* Embedded_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/data";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;

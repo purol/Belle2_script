@@ -222,18 +222,18 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
 void THStack_plot() {
 
-    const char* Knunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v009/final_output";
-    const char* Kstarnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v009/final_output";
-    const char* Xsununu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v009/final_output";
-    const char* K0nunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v009/final_output";
-    const char* K0starnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v009/final_output";
-    const char* Xsdnunu_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SIGNAL_analysis/train_v009/final_output";
-    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/CHG_analysis/train_v009/final_output";
-    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/MIX_analysis/train_v009/final_output";
-    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/UUBAR_analysis/train_v009/final_output";
-    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/DDBAR_analysis/train_v009/final_output";
-    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/SSBAR_analysis/train_v009/final_output";
-    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin/CHARM_analysis/train_v009/final_output";
+    const char* Knunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SIGNAL_analysis/train_v000/final_output";
+    const char* Kstarnunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SIGNAL_analysis/train_v000/final_output";
+    const char* Xsununu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SIGNAL_analysis/train_v000/final_output";
+    const char* K0nunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SIGNAL_analysis/train_v000/final_output";
+    const char* K0starnunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SIGNAL_analysis/train_v000/final_output";
+    const char* Xsdnunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SIGNAL_analysis/train_v000/final_output";
+    const char* CHG_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHG_analysis/train_v000/final_output";
+    const char* MIX_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/MIX_analysis/train_v000/final_output";
+    const char* UUBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/UUBAR_analysis/train_v000/final_output";
+    const char* DDBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/DDBAR_analysis/train_v000/final_output";
+    const char* SSBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SSBAR_analysis/train_v000/final_output";
+    const char* CHARM_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHARM_analysis/train_v000/final_output";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
