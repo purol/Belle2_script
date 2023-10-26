@@ -2328,7 +2328,7 @@ void ReadXsTransitionPDF()
     FILE* fp;
     fp = fopen("Transition_syst.txt", "w");
 
-    fprintf("%d\n", RarityBins);
+    fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsu up
         double correction_factor = Xsu_transition_p->GetBinContent(i + 1) / Xsu_nominal->GetBinContent(i + 1);
         fprintf(fp, "%lf\n", correction_factor);
