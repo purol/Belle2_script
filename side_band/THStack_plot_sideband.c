@@ -15,6 +15,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # include <float.h>
 
 # define MyEPSILON 0.000001
+# define MCTYPE "MC15ri"
 
 // arXiv:1409.4557v2, PhysRevD.107.014511
 # define TB0 1.5195 // (Table. 1)
@@ -102,8 +103,6 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define KS0_rel_uncertainty 0.6 // %/cm
 # define track_rel_uncertainty 0.69 // %
-// # define pi0_correction 0.932
-# define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
 
 # define FEI_cal_Bc_num 12
@@ -136,18 +135,55 @@ double PID_fakeMU_correction[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 double PID_fakeMU_uncer[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
 # define N_pi0_syst 8
-const double pi0_correction[N_pi0_syst] = {
-    0.917, 0.965, 0.988, 1.013, 1.042, 1.044, 1.011, 1.0
+class Corrector_pi0 {
+private:
+    static constexpr double pi0_correction_MC15ri[N_pi0_syst] = { 0.917, 0.965, 0.988, 1.013, 1.042, 1.044, 1.011, 1.0 };
+    static constexpr double pi0_stat_uncer_MC15ri[N_pi0_syst] = { 0.004, 0.004, 0.004, 0.005, 0.004, 0.005, 0.005, 0.0 };
+    static constexpr double pi0_sys_uncer1_MC15ri[N_pi0_syst] = { 0.049, 0.036, 0.079, 0.058, 0.045, 0.041, 0.040, 0.0 };
+    static constexpr double pi0_sys_uncer2_MC15ri[N_pi0_syst] = { 0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0 };
+public:
+    Corrector_pi0();
+    double GetCorrectionFactor(int bin_pi0, std::string type);
+    double GetStatUncertainty(int bin_pi0, std::string type);
+    double GetSystUncertainty1(int bin_pi0, std::string type);
+    double GetSystUncertainty2(int bin_pi0, std::string type);
 };
-const double pi0_stat_uncer[N_pi0_syst] = {
-    0.004, 0.004, 0.004, 0.005, 0.004, 0.005, 0.005, 0.0
-};
-const double pi0_sys_uncer1[N_pi0_syst] = {
-    0.049, 0.036, 0.079, 0.058, 0.045, 0.041, 0.040, 0.0
-};
-const double pi0_sys_uncer2[N_pi0_syst] = {
-    0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0
-};
+
+Corrector_pi0 corrector_pi0;
+
+Corrector_pi0::Corrector_pi0() {}
+
+double Corrector_pi0::GetCorrectionFactor(int bin_pi0, std::string type) {
+    if (type == "MC15ri") return pi0_correction_MC15ri[bin_pi0];
+    else {
+        printf("[Corrector_pi0] Invalid type!\n");
+        exit(1);
+    }
+}
+
+double Corrector_pi0::GetStatUncertainty(int bin_pi0, std::string type) {
+    if (type == "MC15ri") return pi0_stat_uncer_MC15ri[bin_pi0];
+    else {
+        printf("[Corrector_pi0] Invalid type!\n");
+        exit(1);
+    }
+}
+
+double Corrector_pi0::GetSystUncertainty1(int bin_pi0, std::string type) {
+    if (type == "MC15ri") return pi0_sys_uncer1_MC15ri[bin_pi0];
+    else {
+        printf("[Corrector_pi0] Invalid type!\n");
+        exit(1);
+    }
+}
+
+double Corrector_pi0::GetSystUncertainty2(int bin_pi0, std::string type) {
+    if (type == "MC15ri") return pi0_sys_uncer2_MC15ri[bin_pi0];
+    else {
+        printf("[Corrector_pi0] Invalid type!\n");
+        exit(1);
+    }
+}
 
 class Corrector_Knn {
 private:
@@ -1243,7 +1279,7 @@ void LetsFillSideBand(const char* dirname, std::vector<std::string> variable_nam
                 Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
             }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
+            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
                 Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[0][i_fake], temp_N_bin_fakeE[0][i_fake]); // K- from e
                 Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[1][i_fake], temp_N_bin_fakeE[1][i_fake]); // K+ from e
@@ -1460,7 +1496,7 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
                 Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
             }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
+            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
                 Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[0][i_fake], temp_N_bin_fakeE[0][i_fake]); // K- from e
                 Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[1][i_fake], temp_N_bin_fakeE[1][i_fake]); // K+ from e
@@ -1783,7 +1819,7 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
                 Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
             }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
+            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
                 Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[0][i_fake], temp_N_bin_fakeE[0][i_fake]); // K- from e
                 Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[1][i_fake], temp_N_bin_fakeE[1][i_fake]); // K+ from e
@@ -2013,7 +2049,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
                 Correction_PID = Correction_PID * std::pow(PID_correction[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(PID_correction[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
             }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(pi0_correction[i_pi0], temp_N_bin_pi0[i_pi0]);
+            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
                 Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[0][i_fake], temp_N_bin_fakeE[0][i_fake]); // K- from e
                 Correction_fake = Correction_fake * std::pow(PID_fakeE_correction[1][i_fake], temp_N_bin_fakeE[1][i_fake]); // K+ from e
