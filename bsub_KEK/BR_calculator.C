@@ -185,10 +185,10 @@ std::default_random_engine generator(rd());
 # define N_PID_syst 73
 class Corrector_PID {
 private:
-    double PID_correction_MC15ri[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
-    double PID_correction_stat_uncer_MC15ri[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
-    double PID_correction_sys_uncer_MC15ri[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
-    double PID_correction_uncer_MC15ri[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double PID_correction_MC15ri[4][N_PID_syst]; // K-true, K-mis, pi-true, pi-miss
+    double PID_correction_stat_uncer_MC15ri[4][N_PID_syst]; // K-true, K-mis, pi-true, pi-miss
+    double PID_correction_sys_uncer_MC15ri[4][N_PID_syst]; // K-true, K-mis, pi-true, pi-miss
+    double PID_correction_uncer_MC15ri[4][N_PID_syst]; // K-true, K-mis, pi-true, pi-miss
     void ReadPIDFile_MC15ri();
 public:
     Corrector_PID();
@@ -199,6 +199,14 @@ public:
 Corrector_PID corrector_PID;
 
 Corrector_PID::Corrector_PID() {
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < N_PID_syst; j++) {
+            PID_correction_MC15ri[i][j] = 0.0;
+            PID_correction_stat_uncer_MC15ri[i][j] = 0.0;
+            PID_correction_sys_uncer_MC15ri[i][j] = 0.0;
+            PID_correction_uncer_MC15ri[i][j] = 0.0;
+        }
+    }
     ReadPIDFile_MC15ri();
 }
 
