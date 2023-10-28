@@ -107,12 +107,105 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define FEI_cal_Bc_num 12
 # define FEI_cal_B0_num 11
-double FEI_cal_Bc[FEI_cal_Bc_num] = { 1.04, 0.79, 0.69, 0.56, 0.97, 0.95, 0.74, 0.57, 0.91, 0.51, 0.34, 0.59 };
-double FEI_cal_Bc_uncertainty[FEI_cal_Bc_num] = { 0.03, 0.03, 0.05, 0.11, 0.03, 0.03, 0.02, 0.06, 0.1, 0.13, 0.07, 0.02 }; // not relative uncertainty. absolute uncertainty
-double FEI_cal_Bc_modeID[FEI_cal_Bc_num] = { 0.0, 1.0, 3.0, 4.0, 15.0, 16.0, 18.0, 19.0, 23.0, 24.0, 30.0, -1.0 };
-double FEI_cal_B0[FEI_cal_B0_num] = { 1.16, 0.94, 0.81, 0.79, 0.99, 1.03, 0.67, 0.66, 0.69, 0.49, 0.79 };
-double FEI_cal_B0_uncertainty[FEI_cal_B0_num] = { 0.04, 0.05, 0.06, 0.02, 0.03, 0.06, 0.02, 0.03, 0.02, 0.02, 0.12 }; // not relative uncertainty. absolute uncertainty
-double FEI_cal_B0_modeID[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0, 18.0, 19.0, 26.0, -1.0 };
+class Corrector_FEI {
+private:
+    static constexpr double FEI_cal_Bc_MC15ri[FEI_cal_Bc_num] = { 1.04, 0.79, 0.69, 0.56, 0.97, 0.95, 0.74, 0.57, 0.91, 0.51, 0.34, 0.59 };
+    static constexpr double FEI_cal_Bc_uncertainty_MC15ri[FEI_cal_Bc_num] = { 0.03, 0.03, 0.05, 0.11, 0.03, 0.03, 0.02, 0.06, 0.1, 0.13, 0.07, 0.02 }; // not relative uncertainty. absolute uncertainty
+    static constexpr double FEI_cal_Bc_modeID_MC15ri[FEI_cal_Bc_num] = { 0.0, 1.0, 3.0, 4.0, 15.0, 16.0, 18.0, 19.0, 23.0, 24.0, 30.0, -1.0 };
+    static constexpr double FEI_cal_B0_MC15ri[FEI_cal_B0_num] = { 1.16, 0.94, 0.81, 0.79, 0.99, 1.03, 0.67, 0.66, 0.69, 0.49, 0.79 };
+    static constexpr double FEI_cal_B0_uncertainty_MC15ri[FEI_cal_B0_num] = { 0.04, 0.05, 0.06, 0.02, 0.03, 0.06, 0.02, 0.03, 0.02, 0.02, 0.12 }; // not relative uncertainty. absolute uncertainty
+    static constexpr double FEI_cal_B0_modeID_MC15ri[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0, 18.0, 19.0, 26.0, -1.0 };
+public:
+    Corrector_FEI();
+    double GetFEICalFactor(double UpsilonID, double BtagID, std::string type);
+    double GetFEICalFactor(int index, bool IsItCharged, std::string type);
+    double GetFEICalFactorUncer(double UpsilonID, double BtagID, std::string type);
+    double GetmodeID(int index, bool IsItCharged, std::string type);
+};
+
+Corrector_FEI corrector_FEI;
+
+Corrector_FEI::Corrector_FEI() {}
+
+double Corrector_FEI::GetFEICalFactor(double UpsilonID, double BtagID, std::string type) {
+    // UpsilonID => charged: 0, mixed: 1
+
+    if (type == "MC15ri") {
+        if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+            for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+                if (BtagID > FEI_cal_Bc_modeID_MC15ri[i] - 0.5 && BtagID < FEI_cal_Bc_modeID_MC15ri[i] + 0.5) return FEI_cal_Bc_MC15ri[i];
+            }
+            return FEI_cal_Bc_MC15ri[FEI_cal_Bc_num - 1];
+        }
+        else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+            for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+                if (BtagID > FEI_cal_B0_modeID_MC15ri[i] - 0.5 && BtagID < FEI_cal_B0_modeID_MC15ri[i] + 0.5) return FEI_cal_B0_MC15ri[i];
+            }
+            return FEI_cal_B0_MC15ri[FEI_cal_B0_num - 1];
+        }
+    }
+    else {
+        printf("[Corrector_FEI] Invalid type!\n");
+        exit(1);
+    }
+
+    printf("[Corrector_FEI] error! unexpected decay ID\n");
+    exit(1);
+    return 0;
+
+}
+
+double Corrector_FEI::GetFEICalFactor(int index, bool IsItCharged, std::string type) {
+    if (type == "MC15ri") {
+        if (IsItCharged) return FEI_cal_Bc_MC15ri[index];
+        else FEI_cal_B0_MC15ri[index];
+    }
+    else {
+        printf("[Corrector_FEI] Invalid type!\n");
+        exit(1);
+        return 0;
+    }
+}
+
+double Corrector_FEI::GetFEICalFactorUncer(double UpsilonID, double BtagID, std::string type) {
+    // UpsilonID => charged: 0, mixed: 1
+
+    if (type == "MC15ri") {
+        if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+            for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+                if (BtagID > FEI_cal_Bc_modeID_MC15ri[i] - 0.5 && BtagID < FEI_cal_Bc_modeID_MC15ri[i] + 0.5) return FEI_cal_Bc_uncertainty_MC15ri[i];
+            }
+            return FEI_cal_Bc_uncertainty_MC15ri[FEI_cal_Bc_num - 1];
+        }
+        else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+            for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+                if (BtagID > FEI_cal_B0_modeID_MC15ri[i] - 0.5 && BtagID < FEI_cal_B0_modeID_MC15ri[i] + 0.5) return FEI_cal_B0_uncertainty_MC15ri[i];
+            }
+            return FEI_cal_B0_uncertainty_MC15ri[FEI_cal_B0_num - 1];
+        }
+    }
+    else {
+        printf("[Corrector_FEI] Invalid type!\n");
+        exit(1);
+    }
+
+    printf("[Corrector_FEI] error! unexpected decay ID\n");
+    exit(1);
+    return 0;
+
+}
+
+double Corrector_FEI::GetmodeID(int index, bool IsItCharged, std::string type) {
+    if (type == "MC15ri") {
+        if (IsItCharged) return FEI_cal_Bc_modeID_MC15ri[index];
+        else FEI_cal_B0_modeID_MC15ri[index];
+    }
+    else {
+        printf("[Corrector_FEI] Invalid type!\n");
+        exit(1);
+        return 0;
+    }
+}
 
 # define Nvar_num 128
 
@@ -742,50 +835,6 @@ double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma) {
 
 /* ====================================== */
 
-double GetFEICalFactor(double UpsilonID, double BtagID) {
-    // UpsilonID => charged: 0, mixed: 1
-
-    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
-        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
-            if (BtagID > FEI_cal_Bc_modeID[i] - 0.5 && BtagID < FEI_cal_Bc_modeID[i] + 0.5) return FEI_cal_Bc[i];
-        }
-        return FEI_cal_Bc[FEI_cal_Bc_num - 1];
-    }
-    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
-        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
-            if (BtagID > FEI_cal_B0_modeID[i] - 0.5 && BtagID < FEI_cal_B0_modeID[i] + 0.5) return FEI_cal_B0[i];
-        }
-        return FEI_cal_B0[FEI_cal_B0_num - 1];
-    }
-
-    printf("[GetFEICalFactor] error! unexpected decay ID\n");
-    exit(1);
-    return 0;
-
-}
-
-double GetFEICalFactorUncer(double UpsilonID, double BtagID) {
-    // UpsilonID => charged: 0, mixed: 1
-
-    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
-        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
-            if (BtagID > FEI_cal_Bc_modeID[i] - 0.5 && BtagID < FEI_cal_Bc_modeID[i] + 0.5) return FEI_cal_Bc_uncertainty[i];
-        }
-        return FEI_cal_Bc_uncertainty[FEI_cal_Bc_num - 1];
-    }
-    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
-        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
-            if (BtagID > FEI_cal_B0_modeID[i] - 0.5 && BtagID < FEI_cal_B0_modeID[i] + 0.5) return FEI_cal_B0[i];
-        }
-        return FEI_cal_B0_uncertainty[FEI_cal_B0_num - 1];
-    }
-
-    printf("[GetFEICalFactor] error! unexpected decay ID\n");
-    exit(1);
-    return 0;
-
-}
-
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
         return (0 == fullString.compare(fullString.length() - ending.length(), ending.length(), ending));
@@ -914,11 +963,11 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
             int job_id = stoi(names.at(i).substr(16, 9));
             if (job_id >= 265736574 && job_id <= 265736629) {
                 numberings->push_back(0);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             }
             else if (job_id >= 265736630 && job_id <= 265736675) {
                 numberings->push_back(1);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             }
             else if (job_id >= 265736722 && job_id <= 265736767) {
                 numberings->push_back(2);
@@ -1030,7 +1079,7 @@ void LetsFillJpsi(const char* dirname, std::vector<std::string> variable_names, 
 
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
 
-            FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+            FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             Ngamma_v200 = var[Ngamma_v200_index];
@@ -1144,12 +1193,12 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
                 numberings->push_back(0);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                 weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "MIX") {
                 numberings->push_back(1);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                 weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
@@ -1182,19 +1231,19 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
                 numberings->push_back(14);
                 FEI_calibration_factor = CAL_qq;
                 if (nXsu > 0) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (nXsd > 0) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else {
@@ -1432,12 +1481,12 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
                 numberings->push_back(0);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                 weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "MIX") {
                 numberings->push_back(1);
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                 weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
@@ -1470,19 +1519,19 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
                 numberings->push_back(14);
                 FEI_calibration_factor = CAL_qq;
                 if (nXsu > 0) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (nXsd > 0) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else {
@@ -1633,11 +1682,11 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             // Fill numberings
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                 weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "MIX") {
-                FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                 weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab)); // total 0.8/ab for BB
             }
             else if (SampleName == "UUBAR") {
@@ -1665,19 +1714,19 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             else if (SampleName == "SIGNAL") {
                 FEI_calibration_factor = CAL_qq;
                 if (nXsu > 0) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (nXsd > 0) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else if (Upsilon_ID > -0.5 && Upsilon_ID < 0.5) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (1.8 * N_BpBp_1invab)); // total 1.8/ab
                 }
                 else if (Upsilon_ID > 0.5 && Upsilon_ID < 1.5) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (1.8 * N_B0B0_1invab)); // total 1.8/ab
                 }
                 else {
