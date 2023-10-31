@@ -1799,7 +1799,7 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
 }
 
-void THStack_plot_charge_sideband() {
+void THStack_plot_charge_sideband_FBDT() {
 
     const char* ChargeSideband_MC_CHG_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/CHG_analysis/train_v000/final_output";
     const char* ChargeSideband_MC_MIX_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/MIX_analysis/train_v000/final_output";
