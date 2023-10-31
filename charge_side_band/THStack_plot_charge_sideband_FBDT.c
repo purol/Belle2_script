@@ -1956,6 +1956,10 @@ void THStack_plot_charge_sideband_FBDT() {
     TH1D* data_hist[Nvar_num];
     TH1D* Ratio_hist[Nvar_num];
 
+    TH1D* MC_one_bin[Nvar_num];
+    TH1D* data_one_bin[Nvar_num];
+    TH1D* Ratio_one_bin[Nvar_num];
+
     for (int k = 0; k < (int)variable_names.size(); k++) { // malloc TH1D
         std::vector<double> temp_v;
         temp_v.insert(temp_v.end(), charged_values[k].begin(), charged_values[k].end());
@@ -2052,25 +2056,11 @@ void THStack_plot_charge_sideband_FBDT() {
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;data/MC", bins, min, max);
-    }
 
-    int index = std::find(variable_names.begin(), variable_names.end(), std::string("log_{10}SignalProbability")) - variable_names.begin();
-    for (int i = 0; i < (int)charged_values[index].size(); i++) charged_values[index].at(i) = log10l(charged_values[index].at(i));
-    for (int i = 0; i < (int)mixed_values[index].size(); i++) mixed_values[index].at(i) = log10l(mixed_values[index].at(i));
-    for (int i = 0; i < (int)uubar_values[index].size(); i++) uubar_values[index].at(i) = log10l(uubar_values[index].at(i));
-    for (int i = 0; i < (int)ddbar_values[index].size(); i++) ddbar_values[index].at(i) = log10l(ddbar_values[index].at(i));
-    for (int i = 0; i < (int)ssbar_values[index].size(); i++) ssbar_values[index].at(i) = log10l(ssbar_values[index].at(i));
-    for (int i = 0; i < (int)ccbar_values[index].size(); i++) ccbar_values[index].at(i) = log10l(ccbar_values[index].at(i));
-    for (int i = 0; i < (int)taupair_values[index].size(); i++) taupair_values[index].at(i) = log10l(taupair_values[index].at(i));
-    for (int i = 0; i < (int)mumu_values[index].size(); i++) mumu_values[index].at(i) = log10l(mumu_values[index].at(i));
-    for (int i = 0; i < (int)gg_values[index].size(); i++) gg_values[index].at(i) = log10l(gg_values[index].at(i));
-    for (int i = 0; i < (int)ee_values[index].size(); i++) ee_values[index].at(i) = log10l(ee_values[index].at(i));
-    for (int i = 0; i < (int)eeee_values[index].size(); i++) eeee_values[index].at(i) = log10l(eeee_values[index].at(i));
-    for (int i = 0; i < (int)eemumu_values[index].size(); i++) eemumu_values[index].at(i) = log10l(eemumu_values[index].at(i));
-    for (int i = 0; i < (int)llXX_values[index].size(); i++) llXX_values[index].at(i) = log10l(llXX_values[index].at(i));
-    for (int i = 0; i < (int)hhISR_values[index].size(); i++) hhISR_values[index].at(i) = log10l(hhISR_values[index].at(i));
-    for (int i = 0; i < (int)Sideband_MC_values[index].size(); i++) Sideband_MC_values[index].at(i) = log10l(Sideband_MC_values[index].at(i));
-    for (int i = 0; i < (int)Sideband_data_values[index].size(); i++) Sideband_data_values[index].at(i) = log10l(Sideband_data_values[index].at(i));
+        MC_one_bin[k] = new TH1D((variable_names.at(k) + "_MC_one_bin").c_str(), ";number of candidates", 1, min, max);
+        data_one_bin[k] = new TH1D((variable_names.at(k) + "_data_one_bin").c_str(), ";number of candidates", 1, min, max);
+        Ratio_one_bin[k] = new TH1D((variable_names.at(k) + "_ratio_one_bin").c_str(), ";number of candidates", 1, min, max);
+    }
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
         for (int i = 0; i < (int)charged_values[k].size(); i++) charged_hist[k]->Fill(charged_values[k].at(i), charged_weights.at(i));
@@ -2089,6 +2079,9 @@ void THStack_plot_charge_sideband_FBDT() {
         for (int i = 0; i < (int)hhISR_values[k].size(); i++) hhISR_hist[k]->Fill(hhISR_values[k].at(i), hhISR_weights.at(i));
         for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Sideband_MC_values[k].at(i), weights.at(i));
         for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_hist[k]->Fill(Sideband_data_values[k].at(i));
+
+        for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) MC_one_bin[k]->Fill(Sideband_MC_values[k].at(i), weights.at(i));
+        for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_one_bin[k]->Fill(Sideband_data_values[k].at(i));
     }
 
     printf("charged: %d\n", (int)charged_values[0].size());
@@ -2125,6 +2118,8 @@ void THStack_plot_charge_sideband_FBDT() {
 
         Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
         Ratio_hist[k]->Divide(data_hist[k], stat_error_hist[k]);
+
+        Ratio_one_bin[k]->Divide(data_one_bin[k], MC_one_bin[k]);
 
         TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
@@ -2171,4 +2166,7 @@ void THStack_plot_charge_sideband_FBDT() {
     for (int i = 0; i < (int)Sideband_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
     printf("data num: %ld\n", Sideband_data_values[0].size());
     printf("MC num with calibration: %lf\n", MC_sum);
+    printf("MC with calibration: %lf +- %lf\n", MC_one_bin[0]->GetBinContent(1), MC_one_bin[0]->GetBinError(1));
+    printf("data with calibration: %lf +- %lf\n", data_one_bin[0]->GetBinContent(1), data_one_bin[0]->GetBinError(1));
+    printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent(1), Ratio_one_bin[0]->GetBinError(1));
 }
