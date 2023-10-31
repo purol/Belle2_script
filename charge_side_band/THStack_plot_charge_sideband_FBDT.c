@@ -1313,7 +1313,7 @@ void LetsFillSideBand(const char* dirname, std::vector<std::string> variable_nam
     13: hhISR
     */
 
-    float var[Nvar_num] = { 0.0 };
+    double var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double Btag_ID = -1;
@@ -1439,7 +1439,7 @@ void LetsFillSideBand(const char* dirname, std::vector<std::string> variable_nam
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
 
-            weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_pi0 * Correction_KID * Correction_PID* Correction_fake);
+            weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake);
 
         }
         input_file->Close();
@@ -1448,7 +1448,7 @@ void LetsFillSideBand(const char* dirname, std::vector<std::string> variable_nam
 
 }
 
-void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName) {
+void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName, int option) {
     /*
     SampleName for Knn
     CHG
@@ -1456,6 +1456,11 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
     UUBAR
     DDBAR
     SSBAR
+    */
+    /*
+    option 0: select all Btag
+    option 1: select Btag+
+    option 2: select Btag0
     */
     /*
     0: charged
@@ -1474,7 +1479,7 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
     13: hhISR
     */
 
-    float var[Nvar_num] = { 0.0 };
+    double var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double Btag_ID = -1;
@@ -1494,6 +1499,7 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
     double N_K0nn = 0;
     double N_K0starnn = 0;
 
+    int Ngamma_v200_index = -1;
     double Ngamma_v200 = -1;
 
     double s13_KpKLKL = -1;
@@ -1563,7 +1569,7 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
 
-        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
+        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
 
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
@@ -1584,6 +1590,9 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+
+            if (option == 1 && Upsilon_ID != 0) continue;
+            else if (option == 2 && Upsilon_ID != 1) continue;
 
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
 
@@ -1659,6 +1668,7 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
+            Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
             // B+ --> K+ KL0 KL0 correction factor
@@ -1671,7 +1681,7 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID* Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL);
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL);
 
 
         }
@@ -1681,8 +1691,17 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
 
 }
 
-void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num]) {
-    float var[Nvar_num] = { 0.0 };
+void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], int option) {
+    /*
+    option 0: select all Btag
+    option 1: select Btag+
+    option 2: select Btag0
+    */
+
+    double var[Nvar_num] = { 0.0 };
+
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -1706,11 +1725,17 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
             }
         }
 
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+
+            if (option == 1 && Upsilon_ID != 0) continue;
+            else if (option == 2 && Upsilon_ID != 1) continue;
 
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
         }
@@ -1720,8 +1745,17 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
 }
 
-void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], const char* included_string) {
-    float var[Nvar_num] = { 0.0 };
+void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], const char* included_string, int option) {
+    /*
+    option 0: select all Btag
+    option 1: select Btag+
+    option 2: select Btag0
+    */
+
+    double var[Nvar_num] = { 0.0 };
+
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
 
     std::vector<string> names;
     load_files(dirname, &names, included_string);
@@ -1745,11 +1779,17 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
             }
         }
 
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+
+            if (option == 1 && Upsilon_ID != 0) continue;
+            else if (option == 2 && Upsilon_ID != 1) continue;
 
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
         }
@@ -1759,525 +1799,23 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
 }
 
-void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName, double NormFactor = 1.0) {
-    /*
-    SampleName for Knn
-    CHG
-    MIX
-    UUBAR
-    DDBAR
-    SSBAR
-    */
-    /*
-    0: charged
-    1: mixed
-    2: uubar
-    3: ddbar
-    4: ssbar
-    5: ccbar
-    6: tautau
-    7: mumu
-    8: gg
-    9: ee
-    10: eeee
-    11: eemumu
-    12: llXX
-    13: hhISR
-    */
-
-    float var[Nvar_num] = { 0.0 };
-    double Upsilon_ID = -1;
-    double Bsig_ID = -1;
-    double Btag_ID = -1;
-    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
-    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
-    double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-    double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-
-    double FEI_calibration_factor = -1;
-
-    double invM_Knn = 0;
-    double invM_Kstarnn = 0;
-    double invM_K0nn = 0;
-    double invM_K0starnn = 0;
-    double N_Knn = 0;
-    double N_Kstarnn = 0;
-    double N_K0nn = 0;
-    double N_K0starnn = 0;
-
-    double Ngamma_v200 = -1;
-
-    double s13_KpKLKL = -1;
-    double s23_KpKLKL = -1;
-    double nB2KpKLKL_all_KpKLKL = -1;
-    double nB2KpKLKL_NR_KpKLKL = -1;
-
-    double s13_KSKLKL = -1;
-    double s23_KSKLKL = -1;
-    double s12_KSKLKL = -1;
-    double nB2KSKLKL_all_KSKLKL = -1;
-    double nB2KSKLKL_NR_KSKLKL = -1;
-
-    double nDptoXKL = -1;
-    double nD0toXKL = -1;
-
-    float BDTc = -1;
-    double BDTc_correction = -1;
-
-    std::vector<string> names;
-    load_files(dirname, &names);
-
-    for (unsigned int i = 0; i < names.size(); i++) {
-
-        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
-        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
-
-        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
-        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
-        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
-
-        for (int k = 0; k < (int)variable_names.size(); k++) {
-            if (branch_names.at(k) == std::string("Upsilon")) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
-            else if (branch_names.at(k) == std::string("Bsig")) tree_Bsig->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
-            else if (branch_names.at(k) == std::string("Btag")) tree_Btag->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
-            else {
-                printf("ERROR! \n");
-                exit(1);
-            }
-        }
-
-        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
-        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
-        }
-        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
-        for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[2][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[3][i_fake]);
-        }
-        for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[0][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[1][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
-        }
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
-        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
-        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
-        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
-        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
-
-        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
-
-        tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
-        tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_all__bc", &nB2KpKLKL_all_KpKLKL);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_NR__bc", &nB2KpKLKL_NR_KpKLKL);
-
-        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s13_KSKLKL);
-        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &s23_KSKLKL);
-        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s12_KSKLKL);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_all__bc", &nB2KSKLKL_all_KSKLKL);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_NR__bc", &nB2KSKLKL_NR_KSKLKL);
-
-        tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &nDptoXKL);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &nD0toXKL);
-
-        tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
-
-        printf("%lld entries...\n", tree_upsilon->GetEntries());
-        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
-            tree_upsilon->GetEntry(j);
-            tree_Bsig->GetEntry(j);
-            tree_Btag->GetEntry(j);
-
-            // BDTc correction factor
-            if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
-            else BDTc_correction = (BDTc / (1.0 - BDTc));
-            BDTc_correction = BDTc_correction * NormFactor;
-
-            for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
-
-            // Fill numberings
-            double weight_ri = 0.0;
-            if (SampleName == "CHG") {
-                numberings->push_back(0);
-                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 2.8/ab for BB
-            }
-            else if (SampleName == "MIX") {
-                numberings->push_back(1);
-                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 2.8/ab for BB
-            }
-            else if (SampleName == "UUBAR") {
-                numberings->push_back(2);
-                FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
-            }
-            else if (SampleName == "DDBAR") {
-                numberings->push_back(3);
-                FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
-            }
-            else if (SampleName == "SSBAR") {
-                numberings->push_back(4);
-                FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
-            }
-            else if (SampleName == "CHARM") {
-                numberings->push_back(5);
-                FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
-            }
-            //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
-            //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
-            //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
-            //else if (job_id >= 256848292 && job_id <= 256848743) numberings->push_back(9);
-            //else if (job_id >= 256848744 && job_id <= 256849128) numberings->push_back(10);
-            //else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
-            else {
-                printf("undefined job id!\n");
-                exit(1);
-            }
-
-            // Fill calibration factors
-            double Correction_KID = 1;
-            double Correction_PID = 1;
-            double Correction_pi0 = 1;
-            double Correction_fake = 1;
-            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-                Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
-                Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
-                Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
-                Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
-            }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
-            for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE), temp_N_bin_fakeE[2][i_fake]); // pi- from e
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE), temp_N_bin_fakeE[3][i_fake]); // pi+ from e
-            }
-            for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE), temp_N_bin_fakeMU[0][i_fake]); // K- from mu
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE), temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
-            }
-
-            // Knn correction factor
-            double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-
-            // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
-            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
-
-            // B+ --> K+ KL0 KL0 correction factor
-            double Correction_KpKLKL = corrector_KpKLKL.GetCorrectionFactorAtGeneric(s13_KpKLKL, s23_KpKLKL, nB2KpKLKL_all_KpKLKL, nB2KpKLKL_NR_KpKLKL);
-
-            // B0 --> KS0 KL0 KL0 correction factor
-            double Correction_KSKLKL = corrector_KSKLKL.GetCorrectionFactorAtGeneric(std::max(std::max(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), std::min(std::min(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), nB2KSKLKL_all_KSKLKL, nB2KSKLKL_NR_KSKLKL);
-
-            // B-> [D -> KL0 X] anything correction factor
-            double Correction_BtoDtoXKL = 1.0;
-            if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
-
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID* Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * BDTc_correction);
-
-
-        }
-        input_file->Close();
-
-    }
-
-}
-
-typedef struct _Nevt {
-    double NevtwithoutCorrection;
-    double NevtwithCorrection;
-} Nevt;
-
-void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
-    /*
-    SampleName for Knn
-    CHG
-    MIX
-    UUBAR
-    DDBAR
-    SSBAR
-    */
-    /*
-    0: charged
-    1: mixed
-    2: uubar
-    3: ddbar
-    4: ssbar
-    5: ccbar
-    6: tautau
-    7: mumu
-    8: gg
-    9: ee
-    10: eeee
-    11: eemumu
-    12: llXX
-    13: hhISR
-    */
-
-    float var[Nvar_num] = { 0.0 };
-    double Upsilon_ID = -1;
-    double Bsig_ID = -1;
-    double Btag_ID = -1;
-    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
-    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
-    double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-    double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-
-    double FEI_calibration_factor = -1;
-
-    double invM_Knn = 0;
-    double invM_Kstarnn = 0;
-    double invM_K0nn = 0;
-    double invM_K0starnn = 0;
-    double N_Knn = 0;
-    double N_Kstarnn = 0;
-    double N_K0nn = 0;
-    double N_K0starnn = 0;
-
-    double Ngamma_v200 = -1;
-
-    double s13_KpKLKL = -1;
-    double s23_KpKLKL = -1;
-    double nB2KpKLKL_all_KpKLKL = -1;
-    double nB2KpKLKL_NR_KpKLKL = -1;
-
-    double s13_KSKLKL = -1;
-    double s23_KSKLKL = -1;
-    double s12_KSKLKL = -1;
-    double nB2KSKLKL_all_KSKLKL = -1;
-    double nB2KSKLKL_NR_KSKLKL = -1;
-
-    double nDptoXKL = -1;
-    double nD0toXKL = -1;
-
-    float BDTc = -1;
-    double BDTc_correction = -1;
-
-    std::vector<string> names;
-    load_files(dirname, &names);
-
-    for (unsigned int i = 0; i < names.size(); i++) {
-
-        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
-        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
-
-        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
-        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
-        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
-
-        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
-        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
-        }
-        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
-        for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[2][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[3][i_fake]);
-        }
-        for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[0][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[1][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
-        }
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
-        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
-        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
-        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
-        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
-
-        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
-
-        tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
-        tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_all__bc", &nB2KpKLKL_all_KpKLKL);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_NR__bc", &nB2KpKLKL_NR_KpKLKL);
-
-        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s13_KSKLKL);
-        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &s23_KSKLKL);
-        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s12_KSKLKL);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_all__bc", &nB2KSKLKL_all_KSKLKL);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_NR__bc", &nB2KSKLKL_NR_KSKLKL);
-
-        tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &nDptoXKL);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &nD0toXKL);
-
-        tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
-
-        printf("%lld entries...\n", tree_upsilon->GetEntries());
-        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
-            tree_upsilon->GetEntry(j);
-            tree_Bsig->GetEntry(j);
-            tree_Btag->GetEntry(j);
-
-            // BDTc correction factor
-            if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
-            else BDTc_correction = (BDTc / (1.0 - BDTc));
-
-            // Fill numberings
-            double weight_ri = 0.0;
-            if (SampleName == "CHG") {
-                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 0.8/ab for BB
-            }
-            else if (SampleName == "MIX") {
-                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 0.8/ab for BB
-            }
-            else if (SampleName == "UUBAR") {
-                FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
-            }
-            else if (SampleName == "DDBAR") {
-                FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
-            }
-            else if (SampleName == "SSBAR") {
-                FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
-            }
-            else if (SampleName == "CHARM") {
-                FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
-            }
-            //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
-            //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
-            //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
-            //else if (job_id >= 256848292 && job_id <= 256848743) numberings->push_back(9);
-            //else if (job_id >= 256848744 && job_id <= 256849128) numberings->push_back(10);
-            //else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
-            else {
-                printf("undefined job id!\n");
-                exit(1);
-            }
-
-            // Fill calibration factors
-            double Correction_KID = 1;
-            double Correction_PID = 1;
-            double Correction_pi0 = 1;
-            double Correction_fake = 1;
-            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-                Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
-                Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
-                Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
-                Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
-            }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
-            for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE), temp_N_bin_fakeE[2][i_fake]); // pi- from e
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE), temp_N_bin_fakeE[3][i_fake]); // pi+ from e
-            }
-            for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE), temp_N_bin_fakeMU[0][i_fake]); // K- from mu
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE), temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
-            }
-
-            // Knn correction factor
-            double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
-
-            // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
-            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
-
-            // B+ --> K+ KL0 KL0 correction factor
-            double Correction_KpKLKL = corrector_KpKLKL.GetCorrectionFactorAtGeneric(s13_KpKLKL, s23_KpKLKL, nB2KpKLKL_all_KpKLKL, nB2KpKLKL_NR_KpKLKL);
-
-            // B0 --> KS0 KL0 KL0 correction factor
-            double Correction_KSKLKL = corrector_KSKLKL.GetCorrectionFactorAtGeneric(std::max(std::max(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), std::min(std::min(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), nB2KSKLKL_all_KSKLKL, nB2KSKLKL_NR_KSKLKL);
-
-            // B-> [D -> KL0 X] anything correction factor
-            double Correction_BtoDtoXKL = 1.0;
-            if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
-
-            nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL;
-            nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * BDTc_correction;
-
-
-        }
-        input_file->Close();
-
-    }
-
-}
-
-void THStack_plot_sideband_FBDT() {
-
-
-    Nevt nevt_CHG = { 0.0, 0.0 };
-    Nevt nevt_MIX = { 0.0, 0.0 };
-    Nevt nevt_UUBAR = { 0.0, 0.0 };
-    Nevt nevt_DDBAR = { 0.0, 0.0 };
-    Nevt nevt_SSBAR = { 0.0, 0.0 };
-    Nevt nevt_CHARM = { 0.0, 0.0 };
-
-    const char* Sideband_MC_CHG_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHG_analysis/train_v000/final_output";
-    const char* Sideband_MC_MIX_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/MIX_analysis/train_v000/final_output";
-    const char* Sideband_MC_UUBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/UUBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_DDBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/DDBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_SSBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/SSBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_CHARM_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHARM_analysis/train_v000/final_output";
-
-    const char* Sideband_MC_CHG_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHG_analysis/test_v000/final_output";
-    const char* Sideband_MC_MIX_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/MIX_analysis/test_v000/final_output";
-    const char* Sideband_MC_UUBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/UUBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_DDBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/DDBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_SSBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/SSBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_CHARM_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHARM_analysis/test_v000/final_output";
-
-    const char* Sideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_data_side/SIGNAL_analysis/validation_v000/final_output";
-
-    NevtCount_ri(Sideband_MC_CHG_train_dirname, "CHG", &nevt_CHG);
-    NevtCount_ri(Sideband_MC_MIX_train_dirname, "MIX", &nevt_MIX);
-    NevtCount_ri(Sideband_MC_UUBAR_train_dirname, "UUBAR", &nevt_UUBAR);
-    NevtCount_ri(Sideband_MC_DDBAR_train_dirname, "DDBAR", &nevt_DDBAR);
-    NevtCount_ri(Sideband_MC_SSBAR_train_dirname, "SSBAR", &nevt_SSBAR);
-    NevtCount_ri(Sideband_MC_CHARM_train_dirname, "CHARM", &nevt_CHARM);
-
-    NevtCount_ri(Sideband_MC_CHG_test_dirname, "CHG", &nevt_CHG);
-    NevtCount_ri(Sideband_MC_MIX_test_dirname, "MIX", &nevt_MIX);
-    NevtCount_ri(Sideband_MC_UUBAR_test_dirname, "UUBAR", &nevt_UUBAR);
-    NevtCount_ri(Sideband_MC_DDBAR_test_dirname, "DDBAR", &nevt_DDBAR);
-    NevtCount_ri(Sideband_MC_SSBAR_test_dirname, "SSBAR", &nevt_SSBAR);
-    NevtCount_ri(Sideband_MC_CHARM_test_dirname, "CHARM", &nevt_CHARM);
-
-    double NormFactor_CHG = nevt_CHG.NevtwithoutCorrection / nevt_CHG.NevtwithCorrection;
-    double NormFactor_MIX = nevt_MIX.NevtwithoutCorrection / nevt_MIX.NevtwithCorrection;
-    double NormFactor_UUBAR = nevt_UUBAR.NevtwithoutCorrection / nevt_UUBAR.NevtwithCorrection;
-    double NormFactor_DDBAR = nevt_DDBAR.NevtwithoutCorrection / nevt_DDBAR.NevtwithCorrection;
-    double NormFactor_SSBAR = nevt_SSBAR.NevtwithoutCorrection / nevt_SSBAR.NevtwithCorrection;
-    double NormFactor_CHARM = nevt_CHARM.NevtwithoutCorrection / nevt_CHARM.NevtwithCorrection;
+void THStack_plot_charge_sideband() {
+
+    const char* ChargeSideband_MC_CHG_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/CHG_analysis/train_v000/final_output";
+    const char* ChargeSideband_MC_MIX_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/MIX_analysis/train_v000/final_output";
+    const char* ChargeSideband_MC_UUBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/UUBAR_analysis/train_v000/final_output";
+    const char* ChargeSideband_MC_DDBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/DDBAR_analysis/train_v000/final_output";
+    const char* ChargeSideband_MC_SSBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/SSBAR_analysis/train_v000/final_output";
+    const char* ChargeSideband_MC_CHARM_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/CHARM_analysis/train_v000/final_output";
+
+    const char* ChargeSideband_MC_CHG_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/CHG_analysis/test_v000/final_output";
+    const char* ChargeSideband_MC_MIX_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/MIX_analysis/test_v000/final_output";
+    const char* ChargeSideband_MC_UUBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/UUBAR_analysis/test_v000/final_output";
+    const char* ChargeSideband_MC_DDBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/DDBAR_analysis/test_v000/final_output";
+    const char* ChargeSideband_MC_SSBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/SSBAR_analysis/test_v000/final_output";
+    const char* ChargeSideband_MC_CHARM_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/CHARM_analysis/test_v000/final_output";
+
+    const char* ChargeSideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_data_cside/SIGNAL_analysis/validation_v000/final_output";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
@@ -2320,33 +1858,20 @@ void THStack_plot_sideband_FBDT() {
     std::vector<double> llXX_weights;
     std::vector<double> hhISR_weights;
 
-    LetsFillSideBand_ri(Sideband_MC_CHG_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
-    LetsFillSideBand_ri(Sideband_MC_MIX_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
-    LetsFillSideBand_ri_correction(Sideband_MC_UUBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR);
-    LetsFillSideBand_ri_correction(Sideband_MC_DDBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR);
-    LetsFillSideBand_ri_correction(Sideband_MC_SSBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR);
-    LetsFillSideBand_ri_correction(Sideband_MC_CHARM_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM", NormFactor_CHARM);
-    LetsFillSideBand_ri(Sideband_MC_CHG_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
-    LetsFillSideBand_ri(Sideband_MC_MIX_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
-    LetsFillSideBand_ri_correction(Sideband_MC_UUBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR);
-    LetsFillSideBand_ri_correction(Sideband_MC_DDBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR);
-    LetsFillSideBand_ri_correction(Sideband_MC_SSBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR);
-    LetsFillSideBand_ri_correction(Sideband_MC_CHARM_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM", NormFactor_CHARM);
-    /*
-    LetsFillSideBand_ri(Sideband_MC_CHG_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
-    LetsFillSideBand_ri(Sideband_MC_MIX_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
-    LetsFillSideBand_ri(Sideband_MC_UUBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR");
-    LetsFillSideBand_ri(Sideband_MC_DDBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR");
-    LetsFillSideBand_ri(Sideband_MC_SSBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR");
-    LetsFillSideBand_ri(Sideband_MC_CHARM_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM");
-    LetsFillSideBand_ri(Sideband_MC_CHG_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
-    LetsFillSideBand_ri(Sideband_MC_MIX_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
-    LetsFillSideBand_ri(Sideband_MC_UUBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR");
-    LetsFillSideBand_ri(Sideband_MC_DDBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR");
-    LetsFillSideBand_ri(Sideband_MC_SSBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR");
-    LetsFillSideBand_ri(Sideband_MC_CHARM_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM");
-    */
-    LetsFill(Sideband_data_dirname, variable_names, branch_names, Sideband_data_values);
+    LetsFillSideBand_ri(ChargeSideband_MC_CHG_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG", 1);
+    LetsFillSideBand_ri(ChargeSideband_MC_MIX_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX", 1);
+    LetsFillSideBand_ri(ChargeSideband_MC_UUBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR", 1);
+    LetsFillSideBand_ri(ChargeSideband_MC_DDBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR", 1);
+    LetsFillSideBand_ri(ChargeSideband_MC_SSBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR", 1);
+    LetsFillSideBand_ri(ChargeSideband_MC_CHARM_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM", 1);
+    LetsFillSideBand_ri(ChargeSideband_MC_CHG_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG", 1);
+    LetsFillSideBand_ri(ChargeSideband_MC_MIX_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX", 1);
+    LetsFillSideBand_ri(ChargeSideband_MC_UUBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR", 1);
+    LetsFillSideBand_ri(ChargeSideband_MC_DDBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR", 1);
+    LetsFillSideBand_ri(ChargeSideband_MC_SSBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR", 1);
+    LetsFillSideBand_ri(ChargeSideband_MC_CHARM_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM", 1);
+
+    LetsFill(ChargeSideband_data_dirname, variable_names, branch_names, Sideband_data_values, 1);
 
     // sort variables
     for (int k = 0; k < (int)Sideband_MC_numbering.size(); k++) {
@@ -2431,10 +1956,6 @@ void THStack_plot_sideband_FBDT() {
     TH1D* data_hist[Nvar_num];
     TH1D* Ratio_hist[Nvar_num];
 
-    TH1D* MC_one_bin[Nvar_num];
-    TH1D* data_one_bin[Nvar_num];
-    TH1D* Ratio_one_bin[Nvar_num];
-
     for (int k = 0; k < (int)variable_names.size(); k++) { // malloc TH1D
         std::vector<double> temp_v;
         temp_v.insert(temp_v.end(), charged_values[k].begin(), charged_values[k].end());
@@ -2457,6 +1978,8 @@ void THStack_plot_sideband_FBDT() {
         double min = *min_element(temp_v.begin(), temp_v.end());
         double max = *max_element(temp_v.begin(), temp_v.end());
         int bins = 100;
+        max = 1.0;
+        min = 0.0;
 
         if (hasEnding(variable_names.at(k), std::string("dr"))) { // exceptions
             max = 0.2;
@@ -2529,11 +2052,25 @@ void THStack_plot_sideband_FBDT() {
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;data/MC", bins, min, max);
-
-        MC_one_bin[k] = new TH1D((variable_names.at(k) + "_MC_one_bin").c_str(), ";number of candidates", 1, min, max);
-        data_one_bin[k] = new TH1D((variable_names.at(k) + "_data_one_bin").c_str(), ";number of candidates", 1, min, max);
-        Ratio_one_bin[k] = new TH1D((variable_names.at(k) + "_ratio_one_bin").c_str(), ";number of candidates", 1, min, max);
     }
+
+    int index = std::find(variable_names.begin(), variable_names.end(), std::string("log_{10}SignalProbability")) - variable_names.begin();
+    for (int i = 0; i < (int)charged_values[index].size(); i++) charged_values[index].at(i) = log10l(charged_values[index].at(i));
+    for (int i = 0; i < (int)mixed_values[index].size(); i++) mixed_values[index].at(i) = log10l(mixed_values[index].at(i));
+    for (int i = 0; i < (int)uubar_values[index].size(); i++) uubar_values[index].at(i) = log10l(uubar_values[index].at(i));
+    for (int i = 0; i < (int)ddbar_values[index].size(); i++) ddbar_values[index].at(i) = log10l(ddbar_values[index].at(i));
+    for (int i = 0; i < (int)ssbar_values[index].size(); i++) ssbar_values[index].at(i) = log10l(ssbar_values[index].at(i));
+    for (int i = 0; i < (int)ccbar_values[index].size(); i++) ccbar_values[index].at(i) = log10l(ccbar_values[index].at(i));
+    for (int i = 0; i < (int)taupair_values[index].size(); i++) taupair_values[index].at(i) = log10l(taupair_values[index].at(i));
+    for (int i = 0; i < (int)mumu_values[index].size(); i++) mumu_values[index].at(i) = log10l(mumu_values[index].at(i));
+    for (int i = 0; i < (int)gg_values[index].size(); i++) gg_values[index].at(i) = log10l(gg_values[index].at(i));
+    for (int i = 0; i < (int)ee_values[index].size(); i++) ee_values[index].at(i) = log10l(ee_values[index].at(i));
+    for (int i = 0; i < (int)eeee_values[index].size(); i++) eeee_values[index].at(i) = log10l(eeee_values[index].at(i));
+    for (int i = 0; i < (int)eemumu_values[index].size(); i++) eemumu_values[index].at(i) = log10l(eemumu_values[index].at(i));
+    for (int i = 0; i < (int)llXX_values[index].size(); i++) llXX_values[index].at(i) = log10l(llXX_values[index].at(i));
+    for (int i = 0; i < (int)hhISR_values[index].size(); i++) hhISR_values[index].at(i) = log10l(hhISR_values[index].at(i));
+    for (int i = 0; i < (int)Sideband_MC_values[index].size(); i++) Sideband_MC_values[index].at(i) = log10l(Sideband_MC_values[index].at(i));
+    for (int i = 0; i < (int)Sideband_data_values[index].size(); i++) Sideband_data_values[index].at(i) = log10l(Sideband_data_values[index].at(i));
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
         for (int i = 0; i < (int)charged_values[k].size(); i++) charged_hist[k]->Fill(charged_values[k].at(i), charged_weights.at(i));
@@ -2552,9 +2089,6 @@ void THStack_plot_sideband_FBDT() {
         for (int i = 0; i < (int)hhISR_values[k].size(); i++) hhISR_hist[k]->Fill(hhISR_values[k].at(i), hhISR_weights.at(i));
         for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Sideband_MC_values[k].at(i), weights.at(i));
         for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_hist[k]->Fill(Sideband_data_values[k].at(i));
-
-        for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) MC_one_bin[k]->Fill(Sideband_MC_values[k].at(i), weights.at(i));
-        for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_one_bin[k]->Fill(Sideband_data_values[k].at(i));
     }
 
     printf("charged: %d\n", (int)charged_values[0].size());
@@ -2591,8 +2125,6 @@ void THStack_plot_sideband_FBDT() {
 
         Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
         Ratio_hist[k]->Divide(data_hist[k], stat_error_hist[k]);
-
-        Ratio_one_bin[k]->Divide(data_one_bin[k], MC_one_bin[k]);
 
         TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
@@ -2639,7 +2171,4 @@ void THStack_plot_sideband_FBDT() {
     for (int i = 0; i < (int)Sideband_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
     printf("data num: %ld\n", Sideband_data_values[0].size());
     printf("MC num with calibration: %lf\n", MC_sum);
-    printf("MC with calibration: %lf +- %lf\n", MC_one_bin[0]->GetBinContent(1), MC_one_bin[0]->GetBinError(1));
-    printf("data with calibration: %lf +- %lf\n", data_one_bin[0]->GetBinContent(1), data_one_bin[0]->GetBinError(1));
-    printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin[0]->GetBinContent(1), Ratio_one_bin[0]->GetBinError(1));
 }
