@@ -873,7 +873,7 @@ Corrector_Fragmentation::Corrector_Fragmentation() {
 }
 
 int Corrector_Fragmentation::Classify(int Decay[N_decay], Sample sample) {
-    if (sample == gamma) {
+    if (sample == Corrector_Fragmentation::Sample::gamma) {
         /*
             0: Xs2Kpi_wopi0_MC // Xs -> K pi w/o pi0
             1: Xs2Kpi_wpi0_MC, // Xs -> K pi w/ 1pi0
@@ -905,9 +905,9 @@ int Corrector_Fragmentation::Classify(int Decay[N_decay], Sample sample) {
 }
 
 int Corrector_Fragmentation::GetMxBin(double MXs, Sample sample) {
-    if (sample == gamma) { // [-inf, 1.15, 1.5, 2.0, 2.4, inf]
+    if (sample == Corrector_Fragmentation::Sample::gamma) { // [-inf, 1.15, 1.5, 2.0, 2.4, inf]
         for (int i = 0; i < N_Bin_gamma - 1; i++) {
-            if (Mxs < Bins_gamma[i]) return i;
+            if (MXs < Bins_gamma[i]) return i;
         }
         return N_Bin_gamma - 1;
     }
@@ -927,31 +927,31 @@ double Corrector_Fragmentation::GetCorrectionFactor(int Decay[N_decay], double M
     if ((MxsBin == 0) || (MxsBin == N_Bin_gamma - 1)) return 1.0; // no correction if Mxs bin is out of range
 
     if (type == "MC15ri") {
-        if (systtype == Nominal) {
+        if (systtype == Corrector_Fragmentation::SystType::Nominal) {
             if (Nevt_Nominal_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
             return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Nominal_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Nominal_before_Xsgamma_MC15[MxsBin]);
         }
-        else if (systtype == Hmb) {
+        else if (systtype == Corrector_Fragmentation::SystType::Hmb) {
             if (Nevt_Hmb_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
             return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Hmb_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Hmb_before_Xsgamma_MC15[MxsBin]);
         }
-        else if (systtype == Hpf) {
+        else if (systtype == Corrector_Fragmentation::SystType::Hpf) {
             if (Nevt_Hpf_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
             return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Hpf_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Hpf_before_Xsgamma_MC15[MxsBin]);
         }
-        else if (systtype == Htransition) {
+        else if (systtype == Corrector_Fragmentation::SystType::Htransition) {
             if (Nevt_Htransition_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
             return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Htransition_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Htransition_before_Xsgamma_MC15[MxsBin]);
         }
-        else if (systtype == Lmb) {
+        else if (systtype == Corrector_Fragmentation::SystType::Lmb) {
             if (Nevt_Lmb_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
             return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Lmb_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Lmb_before_Xsgamma_MC15[MxsBin]);
         }
-        else if (systtype == Lpf) {
+        else if (systtype == Corrector_Fragmentation::SystType::Lpf) {
             if (Nevt_Lpf_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
             return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Lpf_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Lpf_before_Xsgamma_MC15[MxsBin]);
         }
-        else if (systtype == Ltransition) {
+        else if (systtype == Corrector_Fragmentation::SystType::Ltransition) {
             if (Nevt_Ltransition_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
             return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Ltransition_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Ltransition_before_Xsgamma_MC15[MxsBin]);
         }
