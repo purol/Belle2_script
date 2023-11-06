@@ -682,7 +682,7 @@ Corrector_Multiplicity::Corrector_Multiplicity() :
     FILE* fp;
 
     // read Knn weights
-    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/multiplicity/multiplicity_weight.txt", "r");
+    fp = fopen("./multiplicity_weight.txt", "r");
     fscanf(fp, "%d\n", &NgammaMAX);
     weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
     for (int i = 0; i < NgammaMAX + 1; i++) {
