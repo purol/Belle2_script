@@ -5476,7 +5476,7 @@ void Loader::CountMCEvent(std::string filename, const char* type, const char* MC
                 else if (filename.find("B02Kstar0nunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
                 else if (filename.find("B02Xsnunu") != std::string::npos) {
                     double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
-                    MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
+                    MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                 }
                 else { printf("ERROR 142\n"); exit(1); }
             }
