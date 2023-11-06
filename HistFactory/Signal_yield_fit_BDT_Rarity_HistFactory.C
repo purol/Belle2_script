@@ -4243,15 +4243,19 @@ void GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hist
     return Nevt;
 }
 
-double GetFragmentationPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, DecayModeMC SelectedDecayMode, bool IsItUp, double weight_var = 1.0) { // get fragmentation uncertainty PDF with appropriate correction
+double GetFragmentationPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, int TargetMxsBin, int TargetCategory, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get fragmentation PDF with with appropriate correction
     // Be careful! You should combine this function with `GetNominalPDFs` function!
-    if (strcmp(type, "Bplus") == 0 && ( (SelectedDecayMode >= Xsu2KcPi0_MC && SelectedDecayMode <= Xsu2KcKcKcPi0_MC) || (SelectedDecayMode == other) ) ) {}
-    else if (strcmp(type, "Bzero") == 0 && (SelectedDecayMode >= Xsd2KcPic_MC && SelectedDecayMode <= other) ) {}
-    else if (strcmp(type, "Continuum") == 0) {
-        printf("[ERROR] unexpected type name\n");
-        printf("[ERROR] Continuum type cannot be selected for fragmentation pdf\n");
-        exit(1);
-    }
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    B2Xsnunu
+    B02Xsnunu
+    otherwise
+    */
+    if (strcmp(type, "Bplus") == 0) {}
+    else if (strcmp(type, "Bzero") == 0) {}
+    else if (strcmp(type, "Continuum") == 0) {}
     else {
         printf("[ERROR] unexpected type name\n");
         exit(1);
@@ -4262,11 +4266,16 @@ double GetFragmentationPDFs(const char* dirname, const char* included_string, TH
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double Btag_ID = -1;
-    double temp_KaonID_correction = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    int Decay[N_decay] = -1;
+    double Mxs_Bc_MC = -1;
+    double Mxs_B0_MC = -1;
+
+    double invM = -1.0;
 
     double invM_Knn = 0;
     double invM_Kstarnn = 0;
@@ -4293,10 +4302,6 @@ double GetFragmentationPDFs(const char* dirname, const char* included_string, TH
     double nDptoXKL = -1;
     double nD0toXKL = -1;
 
-    int Decay[N_decay] = { 0 };
-
-    double weight_not_Selected = GetFragmentationWeight(type, SelectedDecayMode, IsItUp);
-
     std::vector<string> names;
     load_files(dirname, &names, included_string);
 
@@ -4309,7 +4314,10 @@ double GetFragmentationPDFs(const char* dirname, const char* included_string, TH
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
-        TTree* tree_Xs = (TTree*)input_file->Get("Xs");
+
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
 
@@ -4334,6 +4342,51 @@ double GetFragmentationPDFs(const char* dirname, const char* included_string, TH
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[1][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
+        }
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &Decay[3]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch1__bc", &Decay[4]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch2__bc", &Decay[5]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch3__bc", &Decay[6]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch4__bc", &Decay[7]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch5__bc", &Decay[8]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch6__bc", &Decay[9]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch7__bc", &Decay[10]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch8__bc", &Decay[11]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch9__bc", &Decay[12]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch10__bc", &Decay[13]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch11__bc", &Decay[14]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch12__bc", &Decay[15]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch13__bc", &Decay[16]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch14__bc", &Decay[17]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch15__bc", &Decay[18]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &Decay[19]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &Decay[20]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay[21]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &Decay[22]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch16__bc", &Decay[23]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch17__bc", &Decay[24]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch18__bc", &Decay[25]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch19__bc", &Decay[26]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch20__bc", &Decay[27]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch21__bc", &Decay[28]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch22__bc", &Decay[29]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch23__bc", &Decay[30]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch24__bc", &Decay[31]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch25__bc", &Decay[32]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch26__bc", &Decay[33]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch27__bc", &Decay[34]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &Decay[35]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &Decay[36]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &Decay[37]);
+
+            tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+
+            tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_Bc_MC);
+            tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_B0_MC);
         }
         tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
@@ -4360,51 +4413,12 @@ double GetFragmentationPDFs(const char* dirname, const char* included_string, TH
         tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &nDptoXKL);
         tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &nD0toXKL);
 
-        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &Decay[3]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch1__bc", &Decay[4]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch2__bc", &Decay[5]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch3__bc", &Decay[6]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch4__bc", &Decay[7]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch5__bc", &Decay[8]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch6__bc", &Decay[9]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch7__bc", &Decay[10]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch8__bc", &Decay[11]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch9__bc", &Decay[12]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch10__bc", &Decay[13]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch11__bc", &Decay[14]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch12__bc", &Decay[15]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch13__bc", &Decay[16]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch14__bc", &Decay[17]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch15__bc", &Decay[18]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &Decay[19]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &Decay[20]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay[21]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &Decay[22]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch16__bc", &Decay[23]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch17__bc", &Decay[24]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch18__bc", &Decay[25]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch19__bc", &Decay[26]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch20__bc", &Decay[27]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch21__bc", &Decay[28]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch22__bc", &Decay[29]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch23__bc", &Decay[30]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch24__bc", &Decay[31]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch25__bc", &Decay[32]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch26__bc", &Decay[33]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch27__bc", &Decay[34]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &Decay[35]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &Decay[36]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &Decay[37]);
-
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            tree_Xs->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
 
             double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
 
@@ -4450,24 +4464,13 @@ double GetFragmentationPDFs(const char* dirname, const char* included_string, TH
 
             // B-> [D -> KL0 X] anything correction factor
             double Correction_BtoDtoXKL = 1.0;
-            Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
+            if ((strcmp(sample, "CHG") == 0) || (strcmp(sample, "MIX") == 0) || (strcmp(sample, "SIGNAL") == 0)) Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            double output_Decay[MAX_NUM_DECAYMODE_MC] = { 0.0 };
-            DecayArrayToXsOutputDecay(Decay, output_Decay);
-            double fragmentation_weight = 1.0;
-            for (int k = 0; k < MAX_NUM_DECAYMODE_MC; k++) {
-                if (output_Decay[k] > 0.5) {
-                    if (k == static_cast<int>(SelectedDecayMode)) {
-                        if (IsItUp) fragmentation_weight = fragmentation_weight * std::pow(1.5, output_Decay[k]);
-                        else fragmentation_weight = fragmentation_weight * std::pow(0.5, output_Decay[k]);
-                    }
-                    else {
-                        fragmentation_weight = fragmentation_weight * std::pow(weight_not_Selected, output_Decay[k]);
-                    }
-                }
-            }
-
-            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * fragmentation_weight;
+            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
+            else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE) * corrector_Fragmentation.FluctuateCorrection(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, TargetMxsBin, TargetCategory, IsItUp, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+            else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE) * corrector_Fragmentation.FluctuateCorrection(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, TargetMxsBin, TargetCategory, IsItUp, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
             Nevt = Nevt + total_weight;
 
@@ -7127,28 +7130,17 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     TH1D* Signal_Kstarfrac_m = new TH1D("Signal_Kstarfrac_m", "Signal_Kstarfrac_m", RarityBins, BinMIN, BinMAX);
 
     // fragmentation
-    std::vector<std::string> name_Signal_Fragmentation = {
-        "Signal_Xsu_frag_decay1_p", "Signal_Xsu_frag_decay2_p", "Signal_Xsu_frag_decay3_p",
-        "Signal_Xsu_frag_decay4_p", "Signal_Xsu_frag_decay5_p", "Signal_Xsu_frag_decay6_p",
-        "Signal_Xsu_frag_decay7_p", "Signal_Xsu_frag_decay8_p", "Signal_Xsu_frag_decay9_p",
-        "Signal_Xsu_frag_decay10_p", "Signal_Xsu_frag_decay11_p", "Signal_Xsu_frag_decay12_p",
-        "Signal_Xsu_frag_decay13_p", "Signal_Xsu_frag_decay14_p", "Signal_Xsu_frag_decay30_p",
-        "Signal_Xsd_frag_decay16_p", "Signal_Xsd_frag_decay17_p", "Signal_Xsd_frag_decay18_p",
-        "Signal_Xsd_frag_decay19_p", "Signal_Xsd_frag_decay20_p", "Signal_Xsd_frag_decay21_p",
-        "Signal_Xsd_frag_decay22_p", "Signal_Xsd_frag_decay23_p", "Signal_Xsd_frag_decay24_p",
-        "Signal_Xsd_frag_decay25_p", "Signal_Xsd_frag_decay26_p", "Signal_Xsd_frag_decay27_p",
-        "Signal_Xsd_frag_decay28_p", "Signal_Xsd_frag_decay29_p", "Signal_Xsd_frag_decay30_p",
-        "Signal_Xsu_frag_decay1_m", "Signal_Xsu_frag_decay2_m", "Signal_Xsu_frag_decay3_m",
-        "Signal_Xsu_frag_decay4_m", "Signal_Xsu_frag_decay5_m", "Signal_Xsu_frag_decay6_m",
-        "Signal_Xsu_frag_decay7_m", "Signal_Xsu_frag_decay8_m", "Signal_Xsu_frag_decay9_m",
-        "Signal_Xsu_frag_decay10_m", "Signal_Xsu_frag_decay11_m", "Signal_Xsu_frag_decay12_m",
-        "Signal_Xsu_frag_decay13_m", "Signal_Xsu_frag_decay14_m", "Signal_Xsu_frag_decay30_m",
-        "Signal_Xsd_frag_decay16_m", "Signal_Xsd_frag_decay17_m", "Signal_Xsd_frag_decay18_m",
-        "Signal_Xsd_frag_decay19_m", "Signal_Xsd_frag_decay20_m", "Signal_Xsd_frag_decay21_m",
-        "Signal_Xsd_frag_decay22_m", "Signal_Xsd_frag_decay23_m", "Signal_Xsd_frag_decay24_m",
-        "Signal_Xsd_frag_decay25_m", "Signal_Xsd_frag_decay26_m", "Signal_Xsd_frag_decay27_m",
-        "Signal_Xsd_frag_decay28_m", "Signal_Xsd_frag_decay29_m", "Signal_Xsd_frag_decay30_m",
-    };
+    std::vector<std::string> name_Signal_Fragmentation;
+    for (int MxsBin = 0; MxsBin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); MxsBin++) {
+        for (int Category = 0; Category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); Category++) {
+            name_Signal_Fragmentation.push_back(std::string("Signal_Xs_frag_decay_") + std::to_string(MxsBin) + std::string("_") + std::to_string(Category) + std::string("_p"));
+        }
+    }
+    for (int MxsBin = 0; MxsBin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); MxsBin++) {
+        for (int Category = 0; Category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); Category++) {
+            name_Signal_Fragmentation.push_back(std::string("Signal_Xs_frag_decay_") + std::to_string(MxsBin) + std::string("_") + std::to_string(Category) + std::string("_m"));
+        }
+    }
     std::vector<TH1D*> Signal_Fragmentaions;
     for (unsigned int i = 0; i < name_Signal_Fragmentation.size(); i++) {
         TH1D* temp = new TH1D(name_Signal_Fragmentation.at(i).c_str(), name_Signal_Fragmentation.at(i).c_str(), RarityBins, BinMIN, BinMAX);
@@ -7456,51 +7448,27 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Kstarfrac_m, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu");
 
     // get fragmentation uncertainty pdfs
-    DecayModeMC Fragmentation_types[2 * (MAX_NUM_DECAYMODE_MC - 6 + 1)] = {
-        Xsu2KcPi0_MC, Xsu2K0Pic_MC, Xsu2KcPicPic_MC, Xsu2K0PicPi0_MC,
-        Xsu2KcPicPicPi0_MC, Xsu2K0PicPicPic_MC, Xsu2KcPicPicPicPic_MC, Xsu2K0PicPicPicPi0_MC,
-        Xsu2KcPi0Pi0_MC, Xsu2K0PicPi0Pi0_MC, Xsu2KcPicPicPi0Pi0_MC, Xsu2KcKcKc_MC,
-        Xsu2KcKcK0Pic_MC, Xsu2KcKcKcPi0_MC, other,
-        Xsd2KcPic_MC, Xsd2K0Pi0_MC, Xsd2KcPicPi0_MC, Xsd2K0PicPic_MC,
-        Xsd2KcPicPicPic_MC, Xsd2K0PicPicPi0_MC, Xsd2KcPicPicPicPi0_MC, Xsd2K0PicPicPicPic_MC,
-        Xsd2K0Pi0Pi0_MC, Xsd2KcPicPi0Pi0_MC, Xsd2K0PicPicPi0Pi0_MC, Xsd2KcKcK0_MC,
-        Xsd2KcKcKcPic_MC, Xsd2KcKcK0Pi0_MC, other,
-        Xsu2KcPi0_MC, Xsu2K0Pic_MC, Xsu2KcPicPic_MC, Xsu2K0PicPi0_MC,
-        Xsu2KcPicPicPi0_MC, Xsu2K0PicPicPic_MC, Xsu2KcPicPicPicPic_MC, Xsu2K0PicPicPicPi0_MC,
-        Xsu2KcPi0Pi0_MC, Xsu2K0PicPi0Pi0_MC, Xsu2KcPicPicPi0Pi0_MC, Xsu2KcKcKc_MC,
-        Xsu2KcKcK0Pic_MC, Xsu2KcKcKcPi0_MC, other,
-        Xsd2KcPic_MC, Xsd2K0Pi0_MC, Xsd2KcPicPi0_MC, Xsd2K0PicPic_MC,
-        Xsd2KcPicPicPic_MC, Xsd2K0PicPicPi0_MC, Xsd2KcPicPicPicPi0_MC, Xsd2K0PicPicPicPic_MC,
-        Xsd2K0Pi0Pi0_MC, Xsd2KcPicPi0Pi0_MC, Xsd2K0PicPicPi0Pi0_MC, Xsd2KcKcK0_MC,
-        Xsd2KcKcKcPic_MC, Xsd2KcKcK0Pi0_MC, other
-    };
-    for (unsigned int i = 0; i < name_Signal_Fragmentation.size(); i++) {
-        bool IsItUp = true;
-        if(name_Signal_Fragmentation.at(i).find("_p") != string::npos) IsItUp = true;
-        else if(name_Signal_Fragmentation.at(i).find("_m") != string::npos) IsItUp = false;
-        else {
-            printf("[ERROR] unexpected error!\n");
-            exit(1);
-        }
+    for (int MxsBin = 0; MxsBin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); MxsBin++) {
+        for (int Category = 0; Category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); Category++) {
+            int temp_index = MxsBin * corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma) + Category;
+            bool IsItUp = true;
+            if (name_Signal_Fragmentation.at(temp_index).find("_p") != string::npos) IsItUp = true;
+            else if (name_Signal_Fragmentation.at(temp_index).find("_m") != string::npos) IsItUp = false;
+            else {
+                printf("[ERROR] unexpected error!\n");
+                exit(1);
+            }
 
-        GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Fragmentaions.at(i), "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
-        GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Fragmentaions.at(i), "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
-        if(name_Signal_Fragmentation.at(i).find("Xsu") != string::npos) {
-            GetFragmentationPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Fragmentaions.at(i), "Bplus", Fragmentation_types[i], IsItUp, Scale_Xsu_nonresonant_test);
-        }
-        else {
-            GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Fragmentaions.at(i), "Bplus", "SIGNAL", Scale_Xsu_nonresonant_test, "otherwise");
-        }
-        GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Fragmentaions.at(i), "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
-        GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Fragmentaions.at(i), "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
-        if (name_Signal_Fragmentation.at(i).find("Xsd") != string::npos) {
-            GetFragmentationPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Fragmentaions.at(i), "Bzero", Fragmentation_types[i], IsItUp, Scale_Xsd_nonresonant_test);
-        }
-        else {
-            GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Fragmentaions.at(i), "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test, "otherwise");
-        }
+            GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Fragmentaions.at(temp_index), "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+            GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Fragmentaions.at(temp_index), "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+            GetFragmentationPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Fragmentaions.at(temp_index), "Bplus", MxsBin, Category, IsItUp, Scale_Xsu_nonresonant_test, "B2Xsnunu");
+            GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Fragmentaions.at(temp_index), "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+            GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Fragmentaions.at(temp_index), "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+            GetFragmentationPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Fragmentaions.at(temp_index), "Bzero", MxsBin, Category, IsItUp, Scale_Xsd_nonresonant_test, "B02Xsnunu");
 
+        }
     }
+
 
     // get pf uncertainty pdfs
     GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_pf_p, "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
