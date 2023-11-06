@@ -1,6 +1,8 @@
 // last update: 2021-10-13
 // for Belle2 data
 
+# define N_decay 38 // five decay mode + others
+
 # define Nentry 200
 # define MIN_Q2 0.0
 # define MAX_Q2 17.64
