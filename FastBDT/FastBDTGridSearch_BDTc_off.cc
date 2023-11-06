@@ -471,83 +471,102 @@ double Corrector_Fragmentation::GetCorrectionFactor(int Decay[N_decay], double M
     int Category = Classify(Decay, sample);
     int MxsBin = GetMxBin(MXs, sample);
 
-    if (Category == N_Category_gamma) return 1.0; // no correction if it is missing mode
+    if (sample == Corrector_Fragmentation::Sample::gamma) {
 
-    if ((MxsBin == 0) || (MxsBin == N_Bin_gamma - 1)) return 1.0; // no correction if Mxs bin is out of range
+        if (Category == N_Category_gamma) return 1.0; // no correction if it is missing mode
 
-    if (type == "MC15ri") {
-        if (systtype == Corrector_Fragmentation::SystType::Nominal) {
-            if (Nevt_Nominal_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
-            return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Nominal_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Nominal_before_Xsgamma_MC15[MxsBin]);
+        if ((MxsBin == 0) || (MxsBin == N_Bin_gamma - 1)) return 1.0; // no correction if Mxs bin is out of range
+
+        if (type == "MC15ri") {
+            if (systtype == Corrector_Fragmentation::SystType::Nominal) {
+                if (Nevt_Nominal_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
+                return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Nominal_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Nominal_before_Xsgamma_MC15[MxsBin]);
+            }
+            else if (systtype == Corrector_Fragmentation::SystType::Hmb) {
+                if (Nevt_Hmb_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
+                return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Hmb_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Hmb_before_Xsgamma_MC15[MxsBin]);
+            }
+            else if (systtype == Corrector_Fragmentation::SystType::Hpf) {
+                if (Nevt_Hpf_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
+                return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Hpf_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Hpf_before_Xsgamma_MC15[MxsBin]);
+            }
+            else if (systtype == Corrector_Fragmentation::SystType::Htransition) {
+                if (Nevt_Htransition_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
+                return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Htransition_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Htransition_before_Xsgamma_MC15[MxsBin]);
+            }
+            else if (systtype == Corrector_Fragmentation::SystType::Lmb) {
+                if (Nevt_Lmb_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
+                return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Lmb_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Lmb_before_Xsgamma_MC15[MxsBin]);
+            }
+            else if (systtype == Corrector_Fragmentation::SystType::Lpf) {
+                if (Nevt_Lpf_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
+                return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Lpf_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Lpf_before_Xsgamma_MC15[MxsBin]);
+            }
+            else if (systtype == Corrector_Fragmentation::SystType::Ltransition) {
+                if (Nevt_Ltransition_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
+                return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Ltransition_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Ltransition_before_Xsgamma_MC15[MxsBin]);
+            }
         }
-        else if (systtype == Corrector_Fragmentation::SystType::Hmb) {
-            if (Nevt_Hmb_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
-            return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Hmb_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Hmb_before_Xsgamma_MC15[MxsBin]);
-        }
-        else if (systtype == Corrector_Fragmentation::SystType::Hpf) {
-            if (Nevt_Hpf_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
-            return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Hpf_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Hpf_before_Xsgamma_MC15[MxsBin]);
-        }
-        else if (systtype == Corrector_Fragmentation::SystType::Htransition) {
-            if (Nevt_Htransition_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
-            return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Htransition_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Htransition_before_Xsgamma_MC15[MxsBin]);
-        }
-        else if (systtype == Corrector_Fragmentation::SystType::Lmb) {
-            if (Nevt_Lmb_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
-            return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Lmb_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Lmb_before_Xsgamma_MC15[MxsBin]);
-        }
-        else if (systtype == Corrector_Fragmentation::SystType::Lpf) {
-            if (Nevt_Lpf_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
-            return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Lpf_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Lpf_before_Xsgamma_MC15[MxsBin]);
-        }
-        else if (systtype == Corrector_Fragmentation::SystType::Ltransition) {
-            if (Nevt_Ltransition_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
-            return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Ltransition_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Ltransition_before_Xsgamma_MC15[MxsBin]);
+        else {
+            printf("[Corrector_Fragmentation::GetCorrectionFactor] Invalid type!\n");
+            exit(1);
+            return 0;
         }
     }
     else {
-        printf("[Corrector_Fragmentation::GetCorrectionFactor] Invalid type!\n");
+        printf("[Corrector_Fragmentation::GetCorrectionFactor] cannot find sample");
         exit(1);
-        return 0;
+        return 1;
     }
 }
 
-double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double MXs, SystType systtype, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type) {
+double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double MXs, SystType systtype, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type) {
     /*
-    Nevt of TargetCategory is fluctuated.
+    Nevt of TargetCategory in TargetMxsBin is fluctuated.
     we calculate the change of Decay[N_decay] (Category)
     */
     int Category = Classify(Decay, sample);
     int MxsBin = GetMxBin(MXs, sample);
 
-    const double RelativeUncertainty = 1.0;
-    double TotalNevtAtMxsBinWithMissing = Total_Nevt_Nominal_before_Xsgamma_MC15[MxsBin] + Nevt_Nominal_missing_before_Xsgamma_MC15[MxsBin];
-    double TargetNevtAtMxsBin;
-    if (TargetCategory == N_Category_gamma) TargetNevtAtMxsBin = Nevt_Nominal_missing_before_Xsgamma_MC15[MxsBin]; // if it is missing mode
-    else TargetNevtAtMxsBin = Total_Nevt_Nominal_before_Xsgamma_MC15[MxsBin] * Fragmentation_Xsgamma[MxsBin][TargetCategory];
-    double TotalNevtAtMxsBinWithMissingWithoutTargetCategory = TotalNevtAtMxsBinWithMissing - TargetNevtAtMxsBin;
+    if (TargetMxsBin != MxsBin) return 1.0; // no fluctuation if it is not in target MXs region
 
-    if (Category == TargetCategory) {
-        if (IsTargetCategoryUp) return (1.0 + RelativeUncertainty);
-        else return (1.0 - RelativeUncertainty);
-    }
-    else {
-        if (IsTargetCategoryUp) {
-            double output = (TotalNevtAtMxsBinWithMissingWithoutTargetCategory - TargetNevtAtMxsBin * RelativeUncertainty) / TotalNevtAtMxsBinWithMissingWithoutTargetCategory;
-            if (output < 0) {
-                printf("[Corrector_Fragmentation::FluctuateCorrection] minus Nevt!\n");
-                exit(1);
-            }
-            return output;
+    const double RelativeUncertainty = 1.0;
+
+    if (sample == Corrector_Fragmentation::Sample::gamma) {
+
+        double TotalNevtAtMxsBinWithMissing = Total_Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin] + Nevt_Nominal_missing_before_Xsgamma_MC15[TargetMxsBin];
+        double TargetNevtAtMxsBin;
+        if (TargetCategory == N_Category_gamma) TargetNevtAtMxsBin = Nevt_Nominal_missing_before_Xsgamma_MC15[TargetMxsBin]; // if it is missing mode
+        else TargetNevtAtMxsBin = Total_Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin] * Fragmentation_Xsgamma[TargetMxsBin][TargetCategory];
+        double TotalNevtAtMxsBinWithMissingWithoutTargetCategory = TotalNevtAtMxsBinWithMissing - TargetNevtAtMxsBin;
+
+        if (Category == TargetCategory) {
+            if (IsTargetCategoryUp) return (1.0 + RelativeUncertainty);
+            else return (1.0 - RelativeUncertainty);
         }
         else {
-            double output = (TotalNevtAtMxsBinWithMissingWithoutTargetCategory + TargetNevtAtMxsBin * RelativeUncertainty) / TotalNevtAtMxsBinWithMissingWithoutTargetCategory;
-            if (output < 0) {
-                printf("[Corrector_Fragmentation::FluctuateCorrection] minus Nevt!\n");
-                exit(1);
+            if (IsTargetCategoryUp) {
+                double output = (TotalNevtAtMxsBinWithMissingWithoutTargetCategory - TargetNevtAtMxsBin * RelativeUncertainty) / TotalNevtAtMxsBinWithMissingWithoutTargetCategory;
+                if (output < 0) {
+                    printf("[Corrector_Fragmentation::FluctuateCorrection] minus Nevt!\n");
+                    exit(1);
+                }
+                return output;
             }
-            return output;
+            else {
+                double output = (TotalNevtAtMxsBinWithMissingWithoutTargetCategory + TargetNevtAtMxsBin * RelativeUncertainty) / TotalNevtAtMxsBinWithMissingWithoutTargetCategory;
+                if (output < 0) {
+                    printf("[Corrector_Fragmentation::FluctuateCorrection] minus Nevt!\n");
+                    exit(1);
+                }
+                return output;
+            }
         }
+    }
+    else {
+        printf("[Corrector_Fragmentation::GetCorrectionFactor] cannot find sample");
+        exit(1);
+        return 1;
     }
 }
 
