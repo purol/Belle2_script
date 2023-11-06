@@ -332,7 +332,7 @@ void load_files(const char *dirname, std::vector<string>* names){
 
 void LetsFillq2(const char* dirname, TH1D* hist_q2, Corrector_Fragmentation::SystType systtype) {
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 

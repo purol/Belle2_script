@@ -655,7 +655,7 @@ void FillVariables(const char * filename, std::vector<float> input_vars[Nvar], s
     double D0_dz;
     double D0_M;
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 

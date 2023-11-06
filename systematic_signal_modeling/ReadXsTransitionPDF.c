@@ -2507,7 +2507,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 

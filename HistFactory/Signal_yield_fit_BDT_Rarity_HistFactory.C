@@ -2511,7 +2511,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 
@@ -2751,7 +2751,7 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 
@@ -2997,7 +2997,7 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_KS0_3D_distance = -1;
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 
@@ -4271,7 +4271,7 @@ double GetFragmentationPDFs(const char* dirname, const char* included_string, TH
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 
@@ -4512,7 +4512,7 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 
@@ -4756,7 +4756,7 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 
@@ -5015,7 +5015,7 @@ double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, c
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 
@@ -5266,7 +5266,7 @@ double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, c
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 
@@ -5512,7 +5512,7 @@ double GetTransitionPDFs(const char* dirname, const char* included_string, TH1D*
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 
@@ -5953,7 +5953,7 @@ void GetMultiplicityPDFs(const char* dirname, const char* included_string, TH1D*
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 
@@ -6205,7 +6205,7 @@ double GetKnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 
@@ -6461,7 +6461,7 @@ double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* 
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
-    int Decay[N_decay] = -1;
+    int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
     double Mxs_B0_MC = -1;
 
