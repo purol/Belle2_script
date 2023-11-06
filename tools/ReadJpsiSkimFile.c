@@ -379,7 +379,9 @@ public:
     int Classify(int Decay[N_decay], Sample sample);
     int GetMxBin(double MXs, Sample sample);
     double GetCorrectionFactor(int Decay[N_decay], double MXs, SystType systtype, Sample sample, std::string type);
-    double FluctuateCorrection(int Decay[N_decay], double MXs, SystType systtype, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type);
+    double FluctuateCorrection(int Decay[N_decay], double MXs, SystType systtype, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type);
+    int GetNMxsBin(Sample sample);
+    int GetNCategory(Sample sample);
 };
 
 Corrector_Fragmentation corrector_Fragmentation;
@@ -552,6 +554,24 @@ double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double M
     }
     else {
         printf("[Corrector_Fragmentation::GetCorrectionFactor] cannot find sample");
+        exit(1);
+        return 1;
+    }
+}
+
+int Corrector_Fragmentation::GetNMxsBin(Sample sample) {
+    if (sample == Corrector_Fragmentation::Sample::gamma) return N_Bin_gamma;
+    else {
+        printf("[Corrector_Fragmentation::GetMxBin] cannot find sample");
+        exit(1);
+        return 1;
+    }
+}
+
+int Corrector_Fragmentation::GetNCategory(Sample sample) {
+    if (sample == Corrector_Fragmentation::Sample::gamma) return (N_Category_gamma + 1); // visible + missing
+    else {
+        printf("[Corrector_Fragmentation::GetMxBin] cannot find sample");
         exit(1);
         return 1;
     }
