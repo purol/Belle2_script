@@ -1,5 +1,8 @@
 # define N_decay 38 // five decay mode + others
 
+# define MyEPSILON 0.000001
+# define MCTYPE "MC15ri"
+
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
@@ -140,10 +143,10 @@ public:
     };
 
     Corrector_Fragmentation();
-    int Classify(int Decay[N_decay], Sample sample);
+    int Classify(double Decay[N_decay], Sample sample);
     int GetMxBin(double MXs, Sample sample);
-    double GetCorrectionFactor(int Decay[N_decay], double MXs, SystType systtype, Sample sample, std::string type);
-    double FluctuateCorrection(int Decay[N_decay], double MXs, SystType systtype, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type);
+    double GetCorrectionFactor(double Decay[N_decay], double MXs, SystType systtype, Sample sample, std::string type);
+    double FluctuateCorrection(double Decay[N_decay], double MXs, SystType systtype, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type);
     int GetNMxsBin(Sample sample);
     int GetNCategory(Sample sample);
 };
@@ -174,7 +177,7 @@ Corrector_Fragmentation::Corrector_Fragmentation() {
     }
 }
 
-int Corrector_Fragmentation::Classify(int Decay[N_decay], Sample sample) {
+int Corrector_Fragmentation::Classify(double Decay[N_decay], Sample sample) {
     if (sample == Corrector_Fragmentation::Sample::gamma) {
         /*
             0: Xs2Kpi_wopi0_MC // Xs -> K pi w/o pi0
@@ -220,7 +223,7 @@ int Corrector_Fragmentation::GetMxBin(double MXs, Sample sample) {
     }
 }
 
-double Corrector_Fragmentation::GetCorrectionFactor(int Decay[N_decay], double MXs, SystType systtype, Sample sample, std::string type) {
+double Corrector_Fragmentation::GetCorrectionFactor(double Decay[N_decay], double MXs, SystType systtype, Sample sample, std::string type) {
     int Category = Classify(Decay, sample);
     int MxsBin = GetMxBin(MXs, sample);
 
@@ -273,7 +276,7 @@ double Corrector_Fragmentation::GetCorrectionFactor(int Decay[N_decay], double M
     }
 }
 
-double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double MXs, SystType systtype, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type) {
+double Corrector_Fragmentation::FluctuateCorrection(double Decay[N_decay], double MXs, SystType systtype, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type) {
     /*
     Nevt of TargetCategory in TargetMxsBin is fluctuated.
     we calculate the change of Decay[N_decay] (Category)
