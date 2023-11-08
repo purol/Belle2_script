@@ -57,6 +57,9 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define start 0.8
 # define end 1.0
 
+# define MyEPSILON 0.000001
+# define MCTYPE "MC15ri"
+
 // arXiv:1409.4557v2, PhysRevD.107.014511
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
