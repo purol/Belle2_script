@@ -1115,18 +1115,18 @@ double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double M
         else TargetNevtAtMxsBin = Total_Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin] * (Fragmentation_Xsgamma[TargetMxsBin][TargetCategory] * 0.01);
         double TotalNevtAtMxsBinWithMissingWithoutTargetCategory = TotalNevtAtMxsBinWithMissing - TargetNevtAtMxsBin;
 
-        if (Category == TargetCategory) {
-            if (IsTargetCategoryUp) return (1.0 + RelativeUncertainty);
+        if (Category == TargetCategory) { // it is target category
+            if (IsTargetCategoryUp) {
+                if ((TotalNevtAtMxsBinWithMissingWithoutTargetCategory - TargetNevtAtMxsBin * RelativeUncertainty) > 0) return (1.0 + RelativeUncertainty); // the number of event in target category is not large
+                else return (1.0 + (TotalNevtAtMxsBinWithMissingWithoutTargetCategory / TargetNevtAtMxsBin)); // the number of event in target category is large
+            }
             else return (1.0 - RelativeUncertainty);
         }
         else {
             if (IsTargetCategoryUp) {
                 double output = (TotalNevtAtMxsBinWithMissingWithoutTargetCategory - TargetNevtAtMxsBin * RelativeUncertainty) / TotalNevtAtMxsBinWithMissingWithoutTargetCategory;
-                if (output < 0) {
-                    printf("[Corrector_Fragmentation::FluctuateCorrection] minus Nevt!\n");
-                    exit(1);
-                }
-                return output;
+                if (output < 0) return 0.0; // the number of event in target category is large
+                else return output; // the number of event in target category is not large
             }
             else {
                 double output = (TotalNevtAtMxsBinWithMissingWithoutTargetCategory + TargetNevtAtMxsBin * RelativeUncertainty) / TotalNevtAtMxsBinWithMissingWithoutTargetCategory;
@@ -1134,7 +1134,7 @@ double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double M
                     printf("[Corrector_Fragmentation::FluctuateCorrection] minus Nevt!\n");
                     exit(1);
                 }
-                return output;
+                else return output;
             }
         }
     }
