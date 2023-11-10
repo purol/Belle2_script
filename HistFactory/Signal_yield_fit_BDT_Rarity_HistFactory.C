@@ -7449,24 +7449,26 @@ void Signal_yield_fit_BDT_Rarity_HistFactory()
     GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Kstarfrac_m, "Bzero", "SIGNAL", Scale_Xsd_nonresonant_test * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu");
 
     // get fragmentation uncertainty pdfs
-    for (int MxsBin = 0; MxsBin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); MxsBin++) {
-        for (int Category = 0; Category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); Category++) {
-            int temp_index = MxsBin * corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma) + Category;
-            bool IsItUp = true;
-            if (name_Signal_Fragmentation.at(temp_index).find("_p") != string::npos) IsItUp = true;
-            else if (name_Signal_Fragmentation.at(temp_index).find("_m") != string::npos) IsItUp = false;
-            else {
-                printf("[ERROR] unexpected error!\n");
-                exit(1);
+    for (int sign = 0; sign < 2; sign++) {
+        for (int MxsBin = 0; MxsBin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); MxsBin++) {
+            for (int Category = 0; Category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); Category++) {
+                int temp_index = MxsBin * corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma) + Category + sign * corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma) * corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma);
+                bool IsItUp = true;
+                if (name_Signal_Fragmentation.at(temp_index).find("_p") != string::npos) IsItUp = true;
+                else if (name_Signal_Fragmentation.at(temp_index).find("_m") != string::npos) IsItUp = false;
+                else {
+                    printf("[ERROR] unexpected error!\n");
+                    exit(1);
+                }
+
+                GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Fragmentaions.at(temp_index), "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
+                GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Fragmentaions.at(temp_index), "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
+                GetFragmentationPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Fragmentaions.at(temp_index), "Bplus", "SIGNAL", MxsBin, Category, IsItUp, Scale_Xsu_nonresonant_test, "B2Xsnunu");
+                GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Fragmentaions.at(temp_index), "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
+                GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Fragmentaions.at(temp_index), "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
+                GetFragmentationPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Fragmentaions.at(temp_index), "Bzero", "SIGNAL", MxsBin, Category, IsItUp, Scale_Xsd_nonresonant_test, "B02Xsnunu");
+
             }
-
-            GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Fragmentaions.at(temp_index), "Bplus", "SIGNAL", Scale_Kplus_test, "B2Knunu");
-            GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Fragmentaions.at(temp_index), "Bplus", "SIGNAL", Scale_Kplusstar_test, "otherwise");
-            GetFragmentationPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Fragmentaions.at(temp_index), "Bplus", "SIGNAL", MxsBin, Category, IsItUp, Scale_Xsu_nonresonant_test, "B2Xsnunu");
-            GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Fragmentaions.at(temp_index), "Bzero", "SIGNAL", Scale_K0_test, "B02K0nunu");
-            GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Fragmentaions.at(temp_index), "Bzero", "SIGNAL", Scale_K0star_test, "otherwise");
-            GetFragmentationPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Fragmentaions.at(temp_index), "Bzero", "SIGNAL", MxsBin, Category, IsItUp, Scale_Xsd_nonresonant_test, "B02Xsnunu");
-
         }
     }
 
