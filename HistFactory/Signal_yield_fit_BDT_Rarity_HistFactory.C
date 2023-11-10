@@ -4163,6 +4163,7 @@ void GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hist
 
                 value[k] = (3.0 / 4.0) * (Amp_vertical * Amp_vertical + Amp_parallel * Amp_parallel) * (1 - costheta * costheta) + (3.0 / 2.0) * Amp_0 * Amp_0 * costheta * costheta;
                 double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * (value[k] / value[0]);
+                if (q2 < MyEPSILON) total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL; // Makeshift
                 hist[k]->Fill(MVA_var, total_weight);
                 Nevts[k] = Nevts[k] + total_weight;
             }
