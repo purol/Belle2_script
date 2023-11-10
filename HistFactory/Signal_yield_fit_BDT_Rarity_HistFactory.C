@@ -6738,7 +6738,7 @@ void ReadSignalModelingFile() {
 
     // Xsu_Htransition_weight
     fp = fopen("Xsu_Htransition_weight.txt", "r");
-    fscanf("%d\n", &Nentry);
+    fscanf(fp, "%d\n", &Nentry);
     if (Nentry != RarityBins) {
         printf("[ReadSignalModelingFile] Nentry and RarityBins are not the same!\n");
         exit(1);
@@ -6753,7 +6753,7 @@ void ReadSignalModelingFile() {
 
     // Xsu_Ltransition_weight
     fp = fopen("Xsu_Ltransition_weight.txt", "r");
-    fscanf("%d\n", &Nentry);
+    fscanf(fp, "%d\n", &Nentry);
     if (Nentry != RarityBins) {
         printf("[ReadSignalModelingFile] Nentry and RarityBins are not the same!\n");
         exit(1);
@@ -6812,7 +6812,7 @@ void ReadSignalModelingFile() {
 
     // Xsd_Htransition_weight
     fp = fopen("Xsd_Htransition_weight.txt", "r");
-    fscanf("%d\n", &Nentry);
+    fscanf(fp, "%d\n", &Nentry);
     if (Nentry != RarityBins) {
         printf("[ReadSignalModelingFile] Nentry and RarityBins are not the same!\n");
         exit(1);
@@ -6827,7 +6827,7 @@ void ReadSignalModelingFile() {
 
     // Xsd_Ltransition_weight
     fp = fopen("Xsd_Ltransition_weight.txt", "r");
-    fscanf("%d\n", &Nentry);
+    fscanf(fp, "%d\n", &Nentry);
     if (Nentry != RarityBins) {
         printf("[ReadSignalModelingFile] Nentry and RarityBins are not the same!\n");
         exit(1);
