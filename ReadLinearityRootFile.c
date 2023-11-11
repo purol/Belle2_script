@@ -78,7 +78,7 @@ void ReadLinearityRootFile(){
         RooRealVar gausmean("gausmean", "", injected_mu, injected_mu - 5.0, injected_mu + 5.0);
         RooRealVar gauswidth("gauswidth", "", 2.0, 0, 10.0);
         RooGaussian gauss("gauss", "gauss", mu_roorealvar, gausmean, gauswidth);
-        RooRealVar nentry("nentry", "number of entries", 5000, 4500, 5500);
+        RooRealVar nentry("nentry", "number of entries", 10000, 9500, 10500);
         RooExtendPdf egauss("egauss", "extended gauss", gauss, nentry);
         RooFitResult* result_LT = egauss.fitTo(mu_RooDataSet, RooFit::Save());
 
