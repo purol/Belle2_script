@@ -174,12 +174,12 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_SSBAR_validation_MC15rd 526874294.0 // 1458.959/fb
 # define N_CHARM_validation_MC15rd 1889822323.0 // 1458.959/fb
 
-# define Scale_CHG_validation_MC15rd (0.361673/0.1458959)
-# define Scale_MIX_validation_MC15rd (0.361673/0.1458959)
-# define Scale_UUBAR_validation_MC15rd (0.361673/0.1458959)
-# define Scale_DDBAR_validation_MC15rd (0.361673/0.1458959)
-# define Scale_SSBAR_validation_MC15rd (0.361673/0.1458959)
-# define Scale_CHARM_validation_MC15rd (0.361673/0.1458959)
+# define Scale_CHG_validation_MC15rd (0.361673/1.458959)
+# define Scale_MIX_validation_MC15rd (0.361673/1.458959)
+# define Scale_UUBAR_validation_MC15rd (0.361673/1.458959)
+# define Scale_DDBAR_validation_MC15rd (0.361673/1.458959)
+# define Scale_SSBAR_validation_MC15rd (0.361673/1.458959)
+# define Scale_CHARM_validation_MC15rd (0.361673/1.458959)
 
 double ObtainWeight(const char* type, const char* MC_version, const char* category, std::string filename);
 
