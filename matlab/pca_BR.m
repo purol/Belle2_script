@@ -2,7 +2,7 @@ clear all
 format long
 
 N_total_bins = 18;
-N_selected_vectors = 7;
+N_selected_vectors = 5;
 
 % BR
 BRfileID = fopen('BR_toys.txt','r');

@@ -2,7 +2,7 @@ clear all
 format long
 
 N_total_bins = 18;
-N_selected_vectors = 5;
+N_selected_vectors = 3;
 
 % FEI
 FEIfileID = fopen('FEI_toys.txt','r');
