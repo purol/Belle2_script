@@ -150,6 +150,14 @@ private:
     static constexpr double FEI_cal_B0_MC15ri[FEI_cal_B0_num] = { 1.16, 0.94, 0.81, 0.79, 0.99, 1.03, 0.67, 0.66, 0.69, 0.49, 0.79 };
     static constexpr double FEI_cal_B0_uncertainty_MC15ri[FEI_cal_B0_num] = { 0.04, 0.05, 0.06, 0.02, 0.03, 0.06, 0.02, 0.03, 0.02, 0.02, 0.12 }; // not relative uncertainty. absolute uncertainty
     static constexpr double FEI_cal_B0_modeID_MC15ri[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0, 18.0, 19.0, 26.0, -1.0 };
+
+    // it is MC15ri correction factor. It should be fixed
+    static constexpr double FEI_cal_Bc_MC15rd[FEI_cal_Bc_num] = { 1.04, 0.79, 0.69, 0.56, 0.97, 0.95, 0.74, 0.57, 0.91, 0.51, 0.34, 0.59 };
+    static constexpr double FEI_cal_Bc_uncertainty_MC15rd[FEI_cal_Bc_num] = { 0.03, 0.03, 0.05, 0.11, 0.03, 0.03, 0.02, 0.06, 0.1, 0.13, 0.07, 0.02 }; // not relative uncertainty. absolute uncertainty
+    static constexpr double FEI_cal_Bc_modeID_MC15rd[FEI_cal_Bc_num] = { 0.0, 1.0, 3.0, 4.0, 15.0, 16.0, 18.0, 19.0, 23.0, 24.0, 30.0, -1.0 };
+    static constexpr double FEI_cal_B0_MC15rd[FEI_cal_B0_num] = { 1.16, 0.94, 0.81, 0.79, 0.99, 1.03, 0.67, 0.66, 0.69, 0.49, 0.79 };
+    static constexpr double FEI_cal_B0_uncertainty_MC15rd[FEI_cal_B0_num] = { 0.04, 0.05, 0.06, 0.02, 0.03, 0.06, 0.02, 0.03, 0.02, 0.02, 0.12 }; // not relative uncertainty. absolute uncertainty
+    static constexpr double FEI_cal_B0_modeID_MC15rd[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0, 18.0, 19.0, 26.0, -1.0 };
 public:
     Corrector_FEI();
     double GetFEICalFactor(double UpsilonID, double BtagID, std::string type);
@@ -179,6 +187,20 @@ double Corrector_FEI::GetFEICalFactor(double UpsilonID, double BtagID, std::stri
             return FEI_cal_B0_MC15ri[FEI_cal_B0_num - 1];
         }
     }
+    else if (type == "MC15rd") {
+        if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+            for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+                if (BtagID > FEI_cal_Bc_modeID_MC15rd[i] - 0.5 && BtagID < FEI_cal_Bc_modeID_MC15rd[i] + 0.5) return FEI_cal_Bc_MC15rd[i];
+            }
+            return FEI_cal_Bc_MC15rd[FEI_cal_Bc_num - 1];
+        }
+        else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+            for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+                if (BtagID > FEI_cal_B0_modeID_MC15rd[i] - 0.5 && BtagID < FEI_cal_B0_modeID_MC15rd[i] + 0.5) return FEI_cal_B0_MC15rd[i];
+            }
+            return FEI_cal_B0_MC15rd[FEI_cal_B0_num - 1];
+        }
+    }
     else {
         printf("[Corrector_FEI] Invalid type!\n");
         exit(1);
@@ -194,6 +216,10 @@ double Corrector_FEI::GetFEICalFactor(int index, bool IsItCharged, std::string t
     if (type == "MC15ri") {
         if (IsItCharged) return FEI_cal_Bc_MC15ri[index];
         else FEI_cal_B0_MC15ri[index];
+    }
+    else if (type == "MC15rd") {
+        if (IsItCharged) return FEI_cal_Bc_MC15rd[index];
+        else FEI_cal_B0_MC15rd[index];
     }
     else {
         printf("[Corrector_FEI] Invalid type!\n");
@@ -219,6 +245,20 @@ double Corrector_FEI::GetFEICalFactorUncer(double UpsilonID, double BtagID, std:
             return FEI_cal_B0_uncertainty_MC15ri[FEI_cal_B0_num - 1];
         }
     }
+    else if (type == "MC15rd") {
+        if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
+            for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
+                if (BtagID > FEI_cal_Bc_modeID_MC15rd[i] - 0.5 && BtagID < FEI_cal_Bc_modeID_MC15rd[i] + 0.5) return FEI_cal_Bc_uncertainty_MC15rd[i];
+            }
+            return FEI_cal_Bc_uncertainty_MC15rd[FEI_cal_Bc_num - 1];
+        }
+        else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
+            for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
+                if (BtagID > FEI_cal_B0_modeID_MC15rd[i] - 0.5 && BtagID < FEI_cal_B0_modeID_MC15rd[i] + 0.5) return FEI_cal_B0_uncertainty_MC15rd[i];
+            }
+            return FEI_cal_B0_uncertainty_MC15rd[FEI_cal_B0_num - 1];
+        }
+    }
     else {
         printf("[Corrector_FEI] Invalid type!\n");
         exit(1);
@@ -234,6 +274,10 @@ double Corrector_FEI::GetmodeID(int index, bool IsItCharged, std::string type) {
     if (type == "MC15ri") {
         if (IsItCharged) return FEI_cal_Bc_modeID_MC15ri[index];
         else FEI_cal_B0_modeID_MC15ri[index];
+    }
+    else if (type == "MC15rd") {
+        if (IsItCharged) return FEI_cal_Bc_modeID_MC15rd[index];
+        else FEI_cal_B0_modeID_MC15rd[index];
     }
     else {
         printf("[Corrector_FEI] Invalid type!\n");
