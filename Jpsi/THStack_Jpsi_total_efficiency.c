@@ -1106,6 +1106,12 @@ private:
     static constexpr double pi0_stat_uncer_MC15ri[N_pi0_syst] = { 0.004, 0.004, 0.004, 0.005, 0.004, 0.005, 0.005, 0.0 };
     static constexpr double pi0_sys_uncer1_MC15ri[N_pi0_syst] = { 0.049, 0.036, 0.079, 0.058, 0.045, 0.041, 0.040, 0.0 };
     static constexpr double pi0_sys_uncer2_MC15ri[N_pi0_syst] = { 0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0 };
+
+    // it is MC15ri correction factor. It should be fixed
+    static constexpr double pi0_correction_MC15rd[N_pi0_syst] = { 0.917, 0.965, 0.988, 1.013, 1.042, 1.044, 1.011, 1.0 };
+    static constexpr double pi0_stat_uncer_MC15rd[N_pi0_syst] = { 0.004, 0.004, 0.004, 0.005, 0.004, 0.005, 0.005, 0.0 };
+    static constexpr double pi0_sys_uncer1_MC15rd[N_pi0_syst] = { 0.049, 0.036, 0.079, 0.058, 0.045, 0.041, 0.040, 0.0 };
+    static constexpr double pi0_sys_uncer2_MC15rd[N_pi0_syst] = { 0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0 };
 public:
     Corrector_pi0();
     double GetCorrectionFactor(int bin_pi0, std::string type);
@@ -1120,6 +1126,7 @@ Corrector_pi0::Corrector_pi0() {}
 
 double Corrector_pi0::GetCorrectionFactor(int bin_pi0, std::string type) {
     if (type == "MC15ri") return pi0_correction_MC15ri[bin_pi0];
+    else if (type == "MC15rd") return pi0_correction_MC15rd[bin_pi0];
     else {
         printf("[Corrector_pi0] Invalid type!\n");
         exit(1);
@@ -1128,6 +1135,7 @@ double Corrector_pi0::GetCorrectionFactor(int bin_pi0, std::string type) {
 
 double Corrector_pi0::GetStatUncertainty(int bin_pi0, std::string type) {
     if (type == "MC15ri") return pi0_stat_uncer_MC15ri[bin_pi0];
+    else if (type == "MC15rd") return pi0_stat_uncer_MC15rd[bin_pi0];
     else {
         printf("[Corrector_pi0] Invalid type!\n");
         exit(1);
@@ -1136,6 +1144,7 @@ double Corrector_pi0::GetStatUncertainty(int bin_pi0, std::string type) {
 
 double Corrector_pi0::GetSystUncertainty1(int bin_pi0, std::string type) {
     if (type == "MC15ri") return pi0_sys_uncer1_MC15ri[bin_pi0];
+    else if (type == "MC15rd") return pi0_sys_uncer1_MC15rd[bin_pi0];
     else {
         printf("[Corrector_pi0] Invalid type!\n");
         exit(1);
@@ -1144,6 +1153,7 @@ double Corrector_pi0::GetSystUncertainty1(int bin_pi0, std::string type) {
 
 double Corrector_pi0::GetSystUncertainty2(int bin_pi0, std::string type) {
     if (type == "MC15ri") return pi0_sys_uncer2_MC15ri[bin_pi0];
+    else if (type == "MC15rd") return pi0_sys_uncer2_MC15rd[bin_pi0];
     else {
         printf("[Corrector_pi0] Invalid type!\n");
         exit(1);

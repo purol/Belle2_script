@@ -17,7 +17,7 @@ def plot_and_save_data(x, y1, yerr1, y2, yerr2, filename, y1_label, y2_label, ti
 
     # Add a title and labels for the axes
     ax.set_xlabel('Decay Mode')
-    ax.set_ylabel('Fraction [%]')
+    ax.set_ylabel('Fraction at 9 decays[%]')
 
     ax.legend(loc='best')
 
