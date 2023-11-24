@@ -2090,7 +2090,7 @@ public:
     int Classify(int Decay[N_decay], Sample sample);
     int GetMxBin(double MXs, Sample sample);
     double GetCorrectionFactor(int Decay[N_decay], double MXs, SystType systtype, Sample sample, std::string type);
-    double FluctuateCorrection(int Decay[N_decay], double MXs, SystType systtype, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type);
+    double FluctuateCorrection(int Decay[N_decay], double MXs, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type);
     int GetNMxsBin(Sample sample);
     int GetNCategory(Sample sample);
 };
@@ -2177,7 +2177,7 @@ double Corrector_Fragmentation::GetCorrectionFactor(int Decay[N_decay], double M
 
         if ((MxsBin == 0) || (MxsBin == N_Bin_gamma - 1)) return 1.0; // no correction if Mxs bin is out of range
 
-        if (type == "MC15ri") {
+        if ((type == "MC15ri") || (type == "MC15rd")) {
             if (systtype == Corrector_Fragmentation::SystType::Nominal) {
                 if (Nevt_Nominal_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
                 return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Nominal_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Nominal_before_Xsgamma_MC15[MxsBin]);
@@ -2220,7 +2220,7 @@ double Corrector_Fragmentation::GetCorrectionFactor(int Decay[N_decay], double M
     }
 }
 
-double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double MXs, SystType systtype, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type) {
+double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double MXs, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type) {
     /*
     Nevt of TargetCategory in TargetMxsBin is fluctuated.
     we calculate the change of Decay[N_decay] (Category)
