@@ -3086,6 +3086,26 @@ void THStack_plot_Jpsi() {
     for (int i = 0; i < (int)Jpsi_MC_values[index].size(); i++) Jpsi_MC_values[index].at(i) = log10l(Jpsi_MC_values[index].at(i));
     for (int i = 0; i < (int)Jpsi_data_values[index].size(); i++) Jpsi_data_values[index].at(i) = log10l(Jpsi_data_values[index].at(i));
 
+    // nRemainingtracksinevent should be subtracted by 2 for Jpsi without signal embedding
+    index = std::find(variable_names.begin(), variable_names.end(), std::string("nRemainingTracksInEvent")) - variable_names.begin();
+    for (int i = 0; i < (int)charged_values[index].size(); i++) charged_values[index].at(i) = charged_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)mixed_values[index].size(); i++) mixed_values[index].at(i) = mixed_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)uubar_values[index].size(); i++) uubar_values[index].at(i) = uubar_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)ddbar_values[index].size(); i++) ddbar_values[index].at(i) = ddbar_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)ssbar_values[index].size(); i++) ssbar_values[index].at(i) = ssbar_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)ccbar_values[index].size(); i++) ccbar_values[index].at(i) = ccbar_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)taupair_values[index].size(); i++) taupair_values[index].at(i) = taupair_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)mumu_values[index].size(); i++) mumu_values[index].at(i) = mumu_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)gg_values[index].size(); i++) gg_values[index].at(i) = gg_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)ee_values[index].size(); i++) ee_values[index].at(i) = ee_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)eeee_values[index].size(); i++) eeee_values[index].at(i) = eeee_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)eemumu_values[index].size(); i++) eemumu_values[index].at(i) = eemumu_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)llXX_values[index].size(); i++) llXX_values[index].at(i) = llXX_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)hhISR_values[index].size(); i++) hhISR_values[index].at(i) = hhISR_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)signal_values[index].size(); i++) signal_values[index].at(i) = signal_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)Jpsi_MC_values[index].size(); i++) Jpsi_MC_values[index].at(i) = Jpsi_MC_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)Jpsi_data_values[index].size(); i++) Jpsi_data_values[index].at(i) = Jpsi_data_values[index].at(i) - 2.0;
+
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
         for (int i = 0; i < (int)charged_values[k].size(); i++) charged_hist[k]->Fill(charged_values[k].at(i), charged_weights.at(i));
         for (int i = 0; i < (int)mixed_values[k].size(); i++) mixed_hist[k]->Fill(mixed_values[k].at(i), mixed_weights.at(i));
