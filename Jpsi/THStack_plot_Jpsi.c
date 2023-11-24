@@ -3045,6 +3045,9 @@ void THStack_plot_Jpsi() {
         else if (hasEnding(variable_names.at(k), std::string("foxWolframR3"))) {
             max = 0.4;
         }
+        else if (hasEnding(variable_names.at(k), std::string("nRemainingTracksInEvent"))) {
+            min = 0.0;
+        }
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";" + variable_names.at(k) + ";number of candidates").c_str());
         charged_hist[k] = new TH1D("charged", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
