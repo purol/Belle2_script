@@ -45,7 +45,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_K0star_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0star_nunubar)
 # define N_Xsd_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_Xsd_nonresonant_nunubar)
 
-// SIGNAL MC sample number befor skimming
+// SIGNAL MC sample number before skimming
 # define N_Kplus_train 7039000.0
 # define N_K0_train 7166624.0
 # define N_Kplusstar_train 7039000.0
@@ -58,6 +58,14 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_K0star_test 2833376.0
 # define N_Xsu_nonresonant_test 14805000.0
 # define N_Xsd_nonresonant_test 15059570.0
+
+// SIGNAL MC sample number before skimming for MC15rd
+# define N_Kplus_validation_MC15rd 3962022.0
+# define N_K0_validation_MC15rd 3962022.0
+# define N_Kplusstar_validation_MC15rd 3962022.0
+# define N_K0star_validation_MC15rd 3962022.0
+# define N_Xsu_nonresonant_validation_MC15rd 15846594.0
+# define N_Xsd_nonresonant_validation_MC15rd 15846594.0
 
 // scale factor for SIGNAL MC sample until LS1
 # define Scale_Kplus_train (N_Kplus_nunubar_LS1/N_Kplus_train)
@@ -72,6 +80,14 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define Scale_K0_test (N_K0_nunubar_LS1/N_K0_test)
 # define Scale_K0star_test (N_K0star_nunubar_LS1/N_K0star_test)
 # define Scale_Xsd_nonresonant_test (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_test)
+
+// scale factor for SIGNAL MC sample until LS1 for MC15rd
+# define Scale_Kplus_validation_MC15rd (N_Kplus_nunubar_LS1/N_Kplus_validation_MC15rd)
+# define Scale_Kplusstar_validation_MC15rd (N_Kplusstar_nunubar_LS1/N_Kplusstar_validation_MC15rd)
+# define Scale_Xsu_nonresonant_validation_MC15rd (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_validation_MC15rd)
+# define Scale_K0_validation_MC15rd (N_K0_nunubar_LS1/N_K0_validation_MC15rd)
+# define Scale_K0star_validation_MC15rd (N_K0star_nunubar_LS1/N_K0star_validation_MC15rd)
+# define Scale_Xsd_nonresonant_validation_MC15rd (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_validation_MC15rd)
 
 // BKG MC sample number (2.8/ab for BB, 1.0/ab for qq)
 # define N_CHG_test 139768443.0
@@ -100,6 +116,29 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
 # define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_CHG_validation ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab))
+# define Scale_MIX_validation ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab))
+# define Scale_UUBAR_validation (0.361673)
+# define Scale_DDBAR_validation (0.361673)
+# define Scale_SSBAR_validation (0.361673)
+# define Scale_CHARM_validation (0.361673)
+
+// BKG MC sample number for MC15rd
+# define N_CHG_validation_MC15rd 785108449.0 // 1458.959/fb
+# define N_MIX_validation_MC15rd 741492304.0 // 1458.959/fb
+# define N_UUBAR_validation_MC15rd 2306265848.0 // 1458.959/fb
+# define N_DDBAR_validation_MC15rd 576209482.0 // 1458.959/fb
+# define N_SSBAR_validation_MC15rd 526874294.0 // 1458.959/fb
+# define N_CHARM_validation_MC15rd 1889822323.0 // 1458.959/fb
+
+# define Scale_CHG_validation_MC15rd (0.361673/1.458959)
+# define Scale_MIX_validation_MC15rd (0.361673/1.458959)
+# define Scale_UUBAR_validation_MC15rd (0.361673/1.458959)
+# define Scale_DDBAR_validation_MC15rd (0.361673/1.458959)
+# define Scale_SSBAR_validation_MC15rd (0.361673/1.458959)
+# define Scale_CHARM_validation_MC15rd (0.361673/1.458959)
+
+double ObtainWeight(const char* type, const char* MC_version, const char* category, std::string filename);
 
 # define KS0_rel_uncertainty 0.6 // %/cm
 # define track_rel_uncertainty 0.69 // %
@@ -1805,159 +1844,6 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-void LetsFillSideBand(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], std::vector<int>* numberings, std::vector<double>* weights) {
-    /*
-    0: charged
-    1: mixed
-    2: uubar
-    3: ddbar
-    4: ssbar
-    5: ccbar
-    6: tautau
-    7: mumu
-    8: gg
-    9: ee
-    10: eeee
-    11: eemumu
-    12: llXX
-    13: hhISR
-    */
-
-    float var[Nvar_num] = { 0.0 };
-    double Upsilon_ID = -1;
-    double Bsig_ID = -1;
-    double Btag_ID = -1;
-    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
-    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
-    double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-    double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-
-    double FEI_calibration_factor = -1;
-
-    std::vector<string> names;
-    load_files(dirname, &names);
-
-    for (unsigned int i = 0; i < names.size(); i++) {
-
-        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
-        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
-
-        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
-        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
-        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
-
-        for (int k = 0; k < (int)variable_names.size(); k++) {
-            if (branch_names.at(k) == std::string("Upsilon")) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
-            else if (branch_names.at(k) == std::string("Bsig")) tree_Bsig->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
-            else if (branch_names.at(k) == std::string("Btag")) tree_Btag->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
-            else {
-                printf("ERROR! \n");
-                exit(1);
-            }
-        }
-
-        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
-        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
-        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
-        }
-        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
-        for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[2][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[3][i_fake]);
-        }
-        for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[0][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[1][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
-            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
-        }
-
-        printf("%lld entries...\n", tree_upsilon->GetEntries());
-        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
-            tree_upsilon->GetEntry(j);
-            tree_Bsig->GetEntry(j);
-            tree_Btag->GetEntry(j);
-
-            for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
-
-            // Fill numberings
-            int job_id = stoi(names.at(i).substr(16, 9));
-            if (job_id >= 265736574 && job_id <= 265736629) {
-                numberings->push_back(0);
-                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-            }
-            else if (job_id >= 265736630 && job_id <= 265736675) {
-                numberings->push_back(1);
-                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-            }
-            else if (job_id >= 265736722 && job_id <= 265736767) {
-                numberings->push_back(2);
-                FEI_calibration_factor = CAL_qq;
-            }
-            else if (job_id >= 265736676 && job_id <= 265736721) {
-                numberings->push_back(3);
-                FEI_calibration_factor = CAL_qq;
-            }
-            else if (job_id >= 256846090 && job_id <= 256846478) {
-                numberings->push_back(4);
-                FEI_calibration_factor = CAL_qq;
-            }
-            else if (job_id >= 256846479 && job_id <= 256846857) {
-                numberings->push_back(5);
-                FEI_calibration_factor = CAL_qq;
-            }
-            //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
-            //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
-            //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
-            //else if (job_id >= 256848292 && job_id <= 256848743) numberings->push_back(9);
-            //else if (job_id >= 256848744 && job_id <= 256849128) numberings->push_back(10);
-            //else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
-            else {
-                printf("undefined job id!\n");
-                exit(1);
-            }
-
-            // Fill calibration factors
-            double Correction_KID = 1;
-            double Correction_PID = 1;
-            double Correction_pi0 = 1;
-            double Correction_fake = 1;
-            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-                Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
-                Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
-                Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
-                Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
-            }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
-            for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE), temp_N_bin_fakeE[2][i_fake]); // pi- from e
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE), temp_N_bin_fakeE[3][i_fake]); // pi+ from e
-            }
-            for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE), temp_N_bin_fakeMU[0][i_fake]); // K- from mu
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE), temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
-                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
-            }
-
-            weights->push_back(FEI_calibration_factor * CAL * Stream * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake);
-
-        }
-        input_file->Close();
-
-    }
-
-}
-
 void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName, int option) {
     /*
     SampleName for Knn
@@ -2110,32 +1996,32 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
             if (SampleName == "CHG") {
                 numberings->push_back(0);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 2.8/ab for BB
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "MIX") {
                 numberings->push_back(1);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 2.8/ab for BB
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "UUBAR") {
                 numberings->push_back(2);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "DDBAR") {
                 numberings->push_back(3);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "SSBAR") {
                 numberings->push_back(4);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "CHARM") {
                 numberings->push_back(5);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
@@ -2305,6 +2191,84 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
     }
 
+}
+
+double ObtainWeight(const char* type, const char* MC_version, const char* category, std::string filename) {
+    if (strcmp(MC_version, "data") == 0) return 1.0; // no weight if it is data no matter what other values are
+    else if ((strcmp(MC_version, "MC15ri") == 0) && (strcmp(category, "test") == 0)) { // MC15ri test
+        if ((strcmp(type, "SIGNAL") == 0)) {
+            if (filename.find("B2Knunu") != std::string::npos) return Scale_Kplus_test;
+            else if (filename.find("B2Kstarnunu") != std::string::npos) return Scale_Kplusstar_test;
+            else if (filename.find("B2Xsnunu") != std::string::npos) return Scale_Xsu_nonresonant_test;
+            else if (filename.find("B02K0nunu") != std::string::npos) return Scale_K0_test;
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) return Scale_K0star_test;
+            else if (filename.find("B02Xsnunu") != std::string::npos) return Scale_Xsd_nonresonant_test;
+            else { printf("[ObtainWeight] undefined type for SIGNAL\n"); exit(1); }
+        }
+        else if ((strcmp(type, "CHG") == 0)) return Scale_CHG_test;
+        else if ((strcmp(type, "MIX") == 0)) return Scale_MIX_test;
+        else if ((strcmp(type, "UUBAR") == 0)) return Scale_UUBAR_test;
+        else if ((strcmp(type, "DDBAR") == 0)) return Scale_DDBAR_test;
+        else if ((strcmp(type, "SSBAR") == 0)) return Scale_SSBAR_test;
+        else if ((strcmp(type, "CHARM") == 0)) return Scale_CHARM_test;
+        else { printf("[ObtainWeight] undefined type for MC15ri test\n"); exit(1); }
+    }
+    else if ((strcmp(MC_version, "MC15ri") == 0) && (strcmp(category, "train") == 0)) { // MC15ri train
+        if ((strcmp(type, "SIGNAL") == 0)) {
+            if (filename.find("B2Knunu") != std::string::npos) return Scale_Kplus_train;
+            else if (filename.find("B2Kstarnunu") != std::string::npos) return Scale_Kplusstar_train;
+            else if (filename.find("B2Xsnunu") != std::string::npos) return Scale_Xsu_nonresonant_train;
+            else if (filename.find("B02K0nunu") != std::string::npos) return Scale_K0_train;
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) return Scale_K0star_train;
+            else if (filename.find("B02Xsnunu") != std::string::npos) return Scale_Xsd_nonresonant_train;
+            else { printf("[ObtainWeight] undefined type for SIGNAL\n"); exit(1); }
+        }
+        else if ((strcmp(type, "CHG") == 0)) return Scale_CHG_train;
+        else if ((strcmp(type, "MIX") == 0)) return Scale_MIX_train;
+        else if ((strcmp(type, "UUBAR") == 0)) return Scale_UUBAR_train;
+        else if ((strcmp(type, "DDBAR") == 0)) return Scale_DDBAR_train;
+        else if ((strcmp(type, "SSBAR") == 0)) return Scale_SSBAR_train;
+        else if ((strcmp(type, "CHARM") == 0)) return Scale_CHARM_train;
+        else { printf("[ObtainWeight] undefined type for MC15ri train\n"); exit(1); }
+    }
+    else if ((strcmp(MC_version, "MC15ri") == 0) && (strcmp(category, "validation") == 0)) { // MC15ri validation
+        if ((strcmp(type, "SIGNAL") == 0)) {
+            if (filename.find("CHG") != std::string::npos) return Scale_CHG_validation; // it is Jpsi signal analysis with generic CHG sample
+            else if (filename.find("MIX") != std::string::npos) return Scale_MIX_validation; // it is Jpsi signal analysis with generic CHG sample
+            return 1.0;
+        }
+        else if ((strcmp(type, "CHG") == 0)) return Scale_CHG_validation;
+        else if ((strcmp(type, "MIX") == 0)) return Scale_MIX_validation;
+        else if ((strcmp(type, "UUBAR") == 0)) return Scale_UUBAR_validation;
+        else if ((strcmp(type, "DDBAR") == 0)) return Scale_DDBAR_validation;
+        else if ((strcmp(type, "SSBAR") == 0)) return Scale_SSBAR_validation;
+        else if ((strcmp(type, "CHARM") == 0)) return Scale_CHARM_validation;
+        else { printf("[ObtainWeight] undefined type for MC15ri validation\n"); exit(1); }
+    }
+    else if ((strcmp(MC_version, "MC15rd") == 0) && (strcmp(category, "validation") == 0)) { // MC15rd validation
+        if ((strcmp(type, "SIGNAL") == 0)) {
+            if (filename.find("B2Knunu") != std::string::npos) return Scale_Kplus_validation_MC15rd;
+            else if (filename.find("B2Kstarnunu") != std::string::npos) return Scale_Kplusstar_validation_MC15rd;
+            else if (filename.find("B2Xsnunu") != std::string::npos) return Scale_Xsu_nonresonant_validation_MC15rd;
+            else if (filename.find("B02K0nunu") != std::string::npos) return Scale_K0_validation_MC15rd;
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) return Scale_K0star_validation_MC15rd;
+            else if (filename.find("B02Xsnunu") != std::string::npos) return Scale_Xsd_nonresonant_validation_MC15rd;
+            else if (filename.find("CHG") != std::string::npos) return Scale_CHG_validation_MC15rd; // it is Jpsi signal analysis with generic CHG sample
+            else if (filename.find("MIX") != std::string::npos) return Scale_MIX_validation_MC15rd; // it is Jpsi signal analysis with generic CHG sample
+            return 1.0; // just data
+        }
+        else if ((strcmp(type, "CHG") == 0)) return Scale_CHG_validation_MC15rd;
+        else if ((strcmp(type, "MIX") == 0)) return Scale_MIX_validation_MC15rd;
+        else if ((strcmp(type, "UUBAR") == 0)) return Scale_UUBAR_validation_MC15rd;
+        else if ((strcmp(type, "DDBAR") == 0)) return Scale_DDBAR_validation_MC15rd;
+        else if ((strcmp(type, "SSBAR") == 0)) return Scale_SSBAR_validation_MC15rd;
+        else if ((strcmp(type, "CHARM") == 0)) return Scale_CHARM_validation_MC15rd;
+        else { printf("[ObtainWeight] undefined type for MC15ri validation\n"); exit(1); }
+    }
+
+    printf("[ObtainWeight] no matched case!\n");
+    exit(1);
+    return 1.0;
 }
 
 void THStack_plot_charge_sideband_FBDT() {
