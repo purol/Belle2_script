@@ -872,7 +872,6 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
        inputs.push_back(temp_BsigDataToTree[17]); // Bsig_cosTBTO
        inputs.push_back(temp_BsigDataToTree[22]); // Bsig_KSFWVariables_hso01
        inputs.push_back(temp_BsigDataToTree[25]); // Bsig_KSFWVariables_hso04
-       inputs.push_back(temp_BsigDataToTree[31]); // Bsig_KSFWVariables_hso24
        inputs.push_back(temp_BsigDataToTree[15]); // Bsig_thrustBm
        inputs.push_back(temp_BsigDataToTree[4]); // Bsig_useCMSFrame_p
        inputs.push_back(temp_DataToTree[23]); // Btag_CleoConeCS_1
@@ -888,12 +887,10 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
        inputs.push_back(temp_DataToTree[34]); // Btag_useCMSFrame_theta
        inputs.push_back(temp_UpsilonDataToTree[69]); // extraInfo__boEeclv200__bc
        inputs.push_back(temp_UpsilonDataToTree[66]); // extraInfo__boNgammav200__bc
-       inputs.push_back(temp_UpsilonDataToTree[14]); // foxWolframR1
        inputs.push_back(temp_UpsilonDataToTree[16]); // foxWolframR3
        inputs.push_back(temp_UpsilonDataToTree[17]); // foxWolframR4
        inputs.push_back(temp_UpsilonDataToTree[19]); // harmonicMomentThrust1
        inputs.push_back(temp_UpsilonDataToTree[20]); // harmonicMomentThrust2
-       inputs.push_back(temp_UpsilonDataToTree[9]); // missingEnergyOfEventCMS
        inputs.push_back(temp_UpsilonDataToTree[8]); // missingMomentumOfEvent
        inputs.push_back(temp_UpsilonDataToTree[7]); // missingMomentumOfEvent_theta
        inputs.push_back(temp_UpsilonDataToTree[10]); // nRemainingTracksInEvent
