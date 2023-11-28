@@ -2511,11 +2511,11 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt) {
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
                 FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (0.8 * N_BpBp_1invab)); // total 0.8/ab for BB
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "MIX") {
                 FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
-                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (0.8 * N_B0B0_1invab)); // total 0.8/ab for BB
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "UUBAR") {
                 FEI_calibration_factor = CAL_qq;

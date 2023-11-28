@@ -34,7 +34,7 @@
 # define N_K0star_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0star_nunubar)
 # define N_Xsd_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_Xsd_nonresonant_nunubar)
 
-// SIGNAL MC sample number befor skimming
+// SIGNAL MC sample number before skimming
 # define N_Kplus_train 7039000.0
 # define N_K0_train 7166624.0
 # define N_Kplusstar_train 7039000.0
@@ -47,6 +47,14 @@
 # define N_K0star_test 2833376.0
 # define N_Xsu_nonresonant_test 14805000.0
 # define N_Xsd_nonresonant_test 15059570.0
+
+// SIGNAL MC sample number before skimming for MC15rd
+# define N_Kplus_validation_MC15rd 3962022.0
+# define N_K0_validation_MC15rd 3962022.0
+# define N_Kplusstar_validation_MC15rd 3962022.0
+# define N_K0star_validation_MC15rd 3962022.0
+# define N_Xsu_nonresonant_validation_MC15rd 15846594.0
+# define N_Xsd_nonresonant_validation_MC15rd 15846594.0
 
 // scale factor for SIGNAL MC sample until LS1
 # define Scale_Kplus_train (N_Kplus_nunubar_LS1/N_Kplus_train)
@@ -61,6 +69,14 @@
 # define Scale_K0_test (N_K0_nunubar_LS1/N_K0_test)
 # define Scale_K0star_test (N_K0star_nunubar_LS1/N_K0star_test)
 # define Scale_Xsd_nonresonant_test (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_test)
+
+// scale factor for SIGNAL MC sample until LS1 for MC15rd
+# define Scale_Kplus_validation_MC15rd (N_Kplus_nunubar_LS1/N_Kplus_validation_MC15rd)
+# define Scale_Kplusstar_validation_MC15rd (N_Kplusstar_nunubar_LS1/N_Kplusstar_validation_MC15rd)
+# define Scale_Xsu_nonresonant_validation_MC15rd (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_validation_MC15rd)
+# define Scale_K0_validation_MC15rd (N_K0_nunubar_LS1/N_K0_validation_MC15rd)
+# define Scale_K0star_validation_MC15rd (N_K0star_nunubar_LS1/N_K0star_validation_MC15rd)
+# define Scale_Xsd_nonresonant_validation_MC15rd (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_validation_MC15rd)
 
 // BKG MC sample number (2.8/ab for BB, 1.0/ab for qq)
 # define N_CHG_test 139768443.0
@@ -89,6 +105,29 @@
 # define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
 # define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_CHG_validation ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab))
+# define Scale_MIX_validation ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab))
+# define Scale_UUBAR_validation (0.361673)
+# define Scale_DDBAR_validation (0.361673)
+# define Scale_SSBAR_validation (0.361673)
+# define Scale_CHARM_validation (0.361673)
+
+// BKG MC sample number for MC15rd
+# define N_CHG_validation_MC15rd 785108449.0 // 1458.959/fb
+# define N_MIX_validation_MC15rd 741492304.0 // 1458.959/fb
+# define N_UUBAR_validation_MC15rd 2306265848.0 // 1458.959/fb
+# define N_DDBAR_validation_MC15rd 576209482.0 // 1458.959/fb
+# define N_SSBAR_validation_MC15rd 526874294.0 // 1458.959/fb
+# define N_CHARM_validation_MC15rd 1889822323.0 // 1458.959/fb
+
+# define Scale_CHG_validation_MC15rd (0.361673/1.458959)
+# define Scale_MIX_validation_MC15rd (0.361673/1.458959)
+# define Scale_UUBAR_validation_MC15rd (0.361673/1.458959)
+# define Scale_DDBAR_validation_MC15rd (0.361673/1.458959)
+# define Scale_SSBAR_validation_MC15rd (0.361673/1.458959)
+# define Scale_CHARM_validation_MC15rd (0.361673/1.458959)
+
+double ObtainWeight(const char* type, const char* MC_version, const char* category, std::string filename);
 
 # define KS0_rel_uncertainty 0.6 // %/cm
 # define track_rel_uncertainty 0.69 // %
@@ -1932,27 +1971,27 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)); // total 2.8/ab for BB
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "MIX") {
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)); // total 2.8/ab for BB
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "UUBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "DDBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "SSBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "CHARM") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ((0.364436 - 0.002763) / 1.0); // total 1.0/ab for qq
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
@@ -2083,6 +2122,84 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, int option) {
 
     }
 
+}
+
+double ObtainWeight(const char* type, const char* MC_version, const char* category, std::string filename) {
+    if (strcmp(MC_version, "data") == 0) return 1.0; // no weight if it is data no matter what other values are
+    else if ((strcmp(MC_version, "MC15ri") == 0) && (strcmp(category, "test") == 0)) { // MC15ri test
+        if ((strcmp(type, "SIGNAL") == 0)) {
+            if (filename.find("B2Knunu") != std::string::npos) return Scale_Kplus_test;
+            else if (filename.find("B2Kstarnunu") != std::string::npos) return Scale_Kplusstar_test;
+            else if (filename.find("B2Xsnunu") != std::string::npos) return Scale_Xsu_nonresonant_test;
+            else if (filename.find("B02K0nunu") != std::string::npos) return Scale_K0_test;
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) return Scale_K0star_test;
+            else if (filename.find("B02Xsnunu") != std::string::npos) return Scale_Xsd_nonresonant_test;
+            else { printf("[ObtainWeight] undefined type for SIGNAL\n"); exit(1); }
+        }
+        else if ((strcmp(type, "CHG") == 0)) return Scale_CHG_test;
+        else if ((strcmp(type, "MIX") == 0)) return Scale_MIX_test;
+        else if ((strcmp(type, "UUBAR") == 0)) return Scale_UUBAR_test;
+        else if ((strcmp(type, "DDBAR") == 0)) return Scale_DDBAR_test;
+        else if ((strcmp(type, "SSBAR") == 0)) return Scale_SSBAR_test;
+        else if ((strcmp(type, "CHARM") == 0)) return Scale_CHARM_test;
+        else { printf("[ObtainWeight] undefined type for MC15ri test\n"); exit(1); }
+    }
+    else if ((strcmp(MC_version, "MC15ri") == 0) && (strcmp(category, "train") == 0)) { // MC15ri train
+        if ((strcmp(type, "SIGNAL") == 0)) {
+            if (filename.find("B2Knunu") != std::string::npos) return Scale_Kplus_train;
+            else if (filename.find("B2Kstarnunu") != std::string::npos) return Scale_Kplusstar_train;
+            else if (filename.find("B2Xsnunu") != std::string::npos) return Scale_Xsu_nonresonant_train;
+            else if (filename.find("B02K0nunu") != std::string::npos) return Scale_K0_train;
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) return Scale_K0star_train;
+            else if (filename.find("B02Xsnunu") != std::string::npos) return Scale_Xsd_nonresonant_train;
+            else { printf("[ObtainWeight] undefined type for SIGNAL\n"); exit(1); }
+        }
+        else if ((strcmp(type, "CHG") == 0)) return Scale_CHG_train;
+        else if ((strcmp(type, "MIX") == 0)) return Scale_MIX_train;
+        else if ((strcmp(type, "UUBAR") == 0)) return Scale_UUBAR_train;
+        else if ((strcmp(type, "DDBAR") == 0)) return Scale_DDBAR_train;
+        else if ((strcmp(type, "SSBAR") == 0)) return Scale_SSBAR_train;
+        else if ((strcmp(type, "CHARM") == 0)) return Scale_CHARM_train;
+        else { printf("[ObtainWeight] undefined type for MC15ri train\n"); exit(1); }
+    }
+    else if ((strcmp(MC_version, "MC15ri") == 0) && (strcmp(category, "validation") == 0)) { // MC15ri validation
+        if ((strcmp(type, "SIGNAL") == 0)) {
+            if (filename.find("CHG") != std::string::npos) return Scale_CHG_validation; // it is Jpsi signal analysis with generic CHG sample
+            else if (filename.find("MIX") != std::string::npos) return Scale_MIX_validation; // it is Jpsi signal analysis with generic CHG sample
+            return 1.0;
+        }
+        else if ((strcmp(type, "CHG") == 0)) return Scale_CHG_validation;
+        else if ((strcmp(type, "MIX") == 0)) return Scale_MIX_validation;
+        else if ((strcmp(type, "UUBAR") == 0)) return Scale_UUBAR_validation;
+        else if ((strcmp(type, "DDBAR") == 0)) return Scale_DDBAR_validation;
+        else if ((strcmp(type, "SSBAR") == 0)) return Scale_SSBAR_validation;
+        else if ((strcmp(type, "CHARM") == 0)) return Scale_CHARM_validation;
+        else { printf("[ObtainWeight] undefined type for MC15ri validation\n"); exit(1); }
+    }
+    else if ((strcmp(MC_version, "MC15rd") == 0) && (strcmp(category, "validation") == 0)) { // MC15rd validation
+        if ((strcmp(type, "SIGNAL") == 0)) {
+            if (filename.find("B2Knunu") != std::string::npos) return Scale_Kplus_validation_MC15rd;
+            else if (filename.find("B2Kstarnunu") != std::string::npos) return Scale_Kplusstar_validation_MC15rd;
+            else if (filename.find("B2Xsnunu") != std::string::npos) return Scale_Xsu_nonresonant_validation_MC15rd;
+            else if (filename.find("B02K0nunu") != std::string::npos) return Scale_K0_validation_MC15rd;
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) return Scale_K0star_validation_MC15rd;
+            else if (filename.find("B02Xsnunu") != std::string::npos) return Scale_Xsd_nonresonant_validation_MC15rd;
+            else if (filename.find("CHG") != std::string::npos) return Scale_CHG_validation_MC15rd; // it is Jpsi signal analysis with generic CHG sample
+            else if (filename.find("MIX") != std::string::npos) return Scale_MIX_validation_MC15rd; // it is Jpsi signal analysis with generic CHG sample
+            return 1.0; // just data
+        }
+        else if ((strcmp(type, "CHG") == 0)) return Scale_CHG_validation_MC15rd;
+        else if ((strcmp(type, "MIX") == 0)) return Scale_MIX_validation_MC15rd;
+        else if ((strcmp(type, "UUBAR") == 0)) return Scale_UUBAR_validation_MC15rd;
+        else if ((strcmp(type, "DDBAR") == 0)) return Scale_DDBAR_validation_MC15rd;
+        else if ((strcmp(type, "SSBAR") == 0)) return Scale_SSBAR_validation_MC15rd;
+        else if ((strcmp(type, "CHARM") == 0)) return Scale_CHARM_validation_MC15rd;
+        else { printf("[ObtainWeight] undefined type for MC15ri validation\n"); exit(1); }
+    }
+
+    printf("[ObtainWeight] no matched case!\n");
+    exit(1);
+    return 1.0;
 }
 
 void MultiplicityCalculator(){
