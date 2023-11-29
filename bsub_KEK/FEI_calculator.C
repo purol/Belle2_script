@@ -3372,18 +3372,18 @@ void FluctuateFEIcal() {
 
     std::normal_distribution<double> FEI_cal_distribution(0.0, 1.0);
 
+    // set nominal value
+    for (int i = 0; i < FEI_cal_Bc_num; i++) FEI_cal_Bc_fluctuated[i] = corrector_FEI.GetFEICalFactor(i, true, MCTYPE);
+    for (int i = 0; i < FEI_cal_B0_num; i++) FEI_cal_B0_fluctuated[i] = corrector_FEI.GetFEICalFactor(i, false, MCTYPE);
+
+    // fluctuate!
     for (int i = 0; i < FEI_cal_Bc_num; i++) {
         double temp_normal = FEI_cal_distribution(generator);
-
-        FEI_cal_Bc_fluctuated[i] = corrector_FEI.GetFEICalFactor(i, true, MCTYPE);
-        for (int j = 0; j < FEI_cal_Bc_num; j++) FEI_cal_Bc_fluctuated[i] = FEI_cal_Bc_fluctuated[i] + FEI_cal_Bc_eigenvalue[j] * FEI_cal_Bc_eigenvector[j][i] * temp_normal;
+        for (int j = 0; j < FEI_cal_Bc_num; j++) FEI_cal_Bc_fluctuated[j] = FEI_cal_Bc_fluctuated[j] + FEI_cal_Bc_eigenvalue[i] * FEI_cal_Bc_eigenvector[i][j] * temp_normal;
     }
-
     for (int i = 0; i < FEI_cal_B0_num; i++) {
         double temp_normal = FEI_cal_distribution(generator);
-
-        FEI_cal_B0_fluctuated[i] = corrector_FEI.GetFEICalFactor(i, false, MCTYPE);
-        for (int j = 0; j < FEI_cal_B0_num; j++) FEI_cal_B0_fluctuated[i] = FEI_cal_B0_fluctuated[i] + FEI_cal_B0_eigenvalue[j] * FEI_cal_B0_eigenvector[j][i] * temp_normal;
+        for (int j = 0; j < FEI_cal_B0_num; j++) FEI_cal_B0_fluctuated[j] = FEI_cal_B0_fluctuated[j] + FEI_cal_B0_eigenvalue[i] * FEI_cal_B0_eigenvector[i][j] * temp_normal;
     }
 
 }
