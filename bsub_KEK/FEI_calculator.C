@@ -312,11 +312,11 @@ double Corrector_FEI::GetFEICalFactorUncer(double UpsilonID, double BtagID, std:
 double Corrector_FEI::GetmodeID(int index, bool IsItCharged, std::string type) {
     if (type == "MC15ri") {
         if (IsItCharged) return FEI_cal_Bc_modeID_MC15ri[index];
-        else FEI_cal_B0_modeID_MC15ri[index];
+        else return FEI_cal_B0_modeID_MC15ri[index];
     }
     else if (type == "MC15rd") {
         if (IsItCharged) return FEI_cal_Bc_modeID_MC15rd[index];
-        else FEI_cal_B0_modeID_MC15rd[index];
+        else return FEI_cal_B0_modeID_MC15rd[index];
     }
     else {
         printf("[Corrector_FEI] Invalid type!\n");
