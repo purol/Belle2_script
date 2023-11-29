@@ -3326,24 +3326,46 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
 }
 
 void ReadFEIcalFile() {
-    const char* FEI_cal_Bp_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_Bp_eigen.txt";
-    const char* FEI_cal_B0_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_B0_eigen.txt";
+    if (std::string(MCTYPE) == std::string("MC15ri")) {
+        const char* FEI_cal_Bp_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_Bp_eigen.txt";
+        const char* FEI_cal_B0_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_B0_eigen.txt";
 
-    FILE* fp_FEI_cal_Bp = fopen(FEI_cal_Bp_file, "r");
-    FILE* fp_FEI_cal_B0 = fopen(FEI_cal_B0_file, "r");
+        FILE* fp_FEI_cal_Bp = fopen(FEI_cal_Bp_file, "r");
+        FILE* fp_FEI_cal_B0 = fopen(FEI_cal_B0_file, "r");
 
-    for (int i = 0; i < FEI_cal_Bc_num; i++) {
-        fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvalue[i]);
-        for (int j = 0; j < FEI_cal_Bc_num; j++) fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvector[i][j]);
+        for (int i = 0; i < FEI_cal_Bc_num; i++) {
+            fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvalue[i]);
+            for (int j = 0; j < FEI_cal_Bc_num; j++) fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvector[i][j]);
+        }
+
+        for (int i = 0; i < FEI_cal_B0_num; i++) {
+            fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvalue[i]);
+            for (int j = 0; j < FEI_cal_B0_num; j++) fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvector[i][j]);
+        }
+
+        fclose(fp_FEI_cal_Bp);
+        fclose(fp_FEI_cal_B0);
     }
+    else if (std::string(MCTYPE) == std::string("MC15rd")) {
+        const char* FEI_cal_Bp_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15rd_FEI/FEI_cal_Bp_eigen.txt";
+        const char* FEI_cal_B0_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15rd_FEI/FEI_cal_B0_eigen.txt";
 
-    for (int i = 0; i < FEI_cal_B0_num; i++) {
-        fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvalue[i]);
-        for (int j = 0; j < FEI_cal_B0_num; j++) fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvector[i][j]);
+        FILE* fp_FEI_cal_Bp = fopen(FEI_cal_Bp_file, "r");
+        FILE* fp_FEI_cal_B0 = fopen(FEI_cal_B0_file, "r");
+
+        for (int i = 0; i < FEI_cal_Bc_num; i++) {
+            fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvalue[i]);
+            for (int j = 0; j < FEI_cal_Bc_num; j++) fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvector[i][j]);
+        }
+
+        for (int i = 0; i < FEI_cal_B0_num; i++) {
+            fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvalue[i]);
+            for (int j = 0; j < FEI_cal_B0_num; j++) fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvector[i][j]);
+        }
+
+        fclose(fp_FEI_cal_Bp);
+        fclose(fp_FEI_cal_B0);
     }
-
-    fclose(fp_FEI_cal_Bp);
-    fclose(fp_FEI_cal_B0);
 }
 
 void FluctuateFEIcal() {
