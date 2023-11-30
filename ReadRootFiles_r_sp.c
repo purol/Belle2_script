@@ -961,6 +961,11 @@ double Corrector_Fragmentation::GetCorrectionFactor(int Decay[N_decay], double M
                 if (Nevt_Ltransition_before_Xsgamma_MC15[MxsBin][Category] < MyEPSILON) return 1.0; // no correction if Nevt is 0 at MC
                 return (0.01 * Fragmentation_Xsgamma[MxsBin][Category]) / (Nevt_Ltransition_before_Xsgamma_MC15[MxsBin][Category] / Total_Nevt_Ltransition_before_Xsgamma_MC15[MxsBin]);
             }
+            else {
+                printf("[Corrector_Fragmentation::GetCorrectionFactor] unexpected syst type!\n");
+                exit(1);
+                return 1;
+            }
         }
         else {
             printf("[Corrector_Fragmentation::GetCorrectionFactor] Invalid type!\n");
