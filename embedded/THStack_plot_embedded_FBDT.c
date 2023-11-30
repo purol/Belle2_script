@@ -2250,7 +2250,10 @@ void THStack_plot_embedded_FBDT() {
     // dirnames
     const char* Embedded_MC_CHG_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/CHG";
     const char* Embedded_MC_MIX_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/MIX";
-    const char* Embedded_MC_UDSCHARM_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/UDSCHARM";
+    const char* Embedded_MC_UUBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/UUBAR";
+    const char* Embedded_MC_DDBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/DDBAR";
+    const char* Embedded_MC_SSBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/SSBAR";
+    const char* Embedded_MC_CHARM_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/CHARM";
 
     const char* Embedded_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/data";
 
@@ -2265,9 +2268,12 @@ void THStack_plot_embedded_FBDT() {
 
     std::vector<double> weights;
 
-    LetsFillJpsi(Embedded_MC_CHG_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, CAL * ((N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab)) );
-    LetsFillJpsi(Embedded_MC_MIX_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, CAL * ((N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab)) );
-    LetsFillJpsi(Embedded_MC_UDSCHARM_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, CAL * 0.361673 / 1.0);
+    LetsFillJpsi(Embedded_MC_CHG_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, CAL * Scale_CHG_validation_MC15rd);
+    LetsFillJpsi(Embedded_MC_MIX_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, CAL * Scale_MIX_validation_MC15rd);
+    LetsFillJpsi(Embedded_MC_UUBAR_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, CAL * Scale_UUBAR_validation_MC15rd);
+    LetsFillJpsi(Embedded_MC_DDBAR_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, CAL * Scale_DDBAR_validation_MC15rd);
+    LetsFillJpsi(Embedded_MC_SSBAR_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, CAL * Scale_SSBAR_validation_MC15rd);
+    LetsFillJpsi(Embedded_MC_CHARM_dirname, variable_names, branch_names, Jpsi_MC_values, &weights, CAL * Scale_CHARM_validation_MC15rd);
     LetsFill(Embedded_data_dirname, variable_names, branch_names, Jpsi_data_values);
 
     TH1D* MC_hist[Nvar_num];
