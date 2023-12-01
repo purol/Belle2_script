@@ -4428,7 +4428,7 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
     return;
 }
 
-void GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hist[19], double Correction_factor_BR[19], const char* type, int charge, double weight_var = 1.0) { // get Kstarff uncertainty PDF with appropriate correction
+double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hist[19], double Correction_factor_BR[19], const char* type, int charge, double weight_var = 1.0) { // get Kstarff uncertainty PDF with appropriate correction
     // Be careful! You should combine this function with `GetNominalPDFs` function!
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
@@ -7490,7 +7490,7 @@ void AllocateMultiplicityPDFs(TH1D*** hist, const char* prefix, bool IsItPositiv
         else (*hist)[i] = new TH1D((std::string(prefix) + "_multiplicity" + std::to_string(i) + "_m").c_str(), (std::string(prefix) + "_multiplicity" + std::to_string(i) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
-    return N_hist;
+    return;
 }
 
 int PrintInfoMultiplicity() {
