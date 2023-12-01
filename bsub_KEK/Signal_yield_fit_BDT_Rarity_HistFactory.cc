@@ -2038,7 +2038,7 @@ double GetFragmentationWeight(const char* type, DecayModeMC SelectedDecayMode, b
 
 /* ====================================== */
 // Rarity module
-bool sorting(pair<double, double> a, pair<double, double> b) {
+bool sorting(std::pair<double, double> a, std::pair<double, double> b) {
 
     return a.first < b.first;
 
