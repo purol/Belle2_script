@@ -11,6 +11,7 @@
 #include <float.h>
 #include <string>
 #include <string.h>
+#include <numeric>
 #include "TFile.h"
 #include "TTree.h"
 #include "TSystemDirectory.h"
@@ -24,6 +25,7 @@
 #include "RooFitResult.h"
 #include "RooExtendPdf.h"
 #include "TH1.h"
+#include "TH2.h"
 #include "TF1.h"
 #include "RooDataHist.h"
 using namespace RooFit;
