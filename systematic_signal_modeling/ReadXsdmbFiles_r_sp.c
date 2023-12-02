@@ -116,7 +116,7 @@ public:
     int Classify(int Decay[N_decay], Sample sample);
     int GetMxBin(double MXs, Sample sample);
     double GetCorrectionFactor(int Decay[N_decay], double MXs, SystType systtype, Sample sample, std::string type);
-    double FluctuateCorrection(int Decay[N_decay], double MXs, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type);
+    double FluctuateCorrection(int Decay[N_decay], double MXs, SystType systtype, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type);
     int GetNMxsBin(Sample sample);
     int GetNCategory(Sample sample);
 };
@@ -251,7 +251,7 @@ double Corrector_Fragmentation::GetCorrectionFactor(int Decay[N_decay], double M
     }
 }
 
-double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double MXs, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type) {
+double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double MXs, SystType systtype, int TargetMxsBin, int TargetCategory, bool IsTargetCategoryUp, Sample sample, std::string type) {
     /*
     Nevt of TargetCategory in TargetMxsBin is fluctuated.
     we calculate the change of Decay[N_decay] (Category)
@@ -268,21 +268,21 @@ double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double M
         double TotalNevtAtMxsBinWithMissing = Total_Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin] + Nevt_Nominal_missing_before_Xsgamma_MC15[TargetMxsBin];
         double TargetNevtAtMxsBin;
         if (TargetCategory == N_Category_gamma) TargetNevtAtMxsBin = Nevt_Nominal_missing_before_Xsgamma_MC15[TargetMxsBin]; // if it is missing mode
-        else TargetNevtAtMxsBin = Total_Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin] * Fragmentation_Xsgamma[TargetMxsBin][TargetCategory];
+        else TargetNevtAtMxsBin = Total_Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin] * (Fragmentation_Xsgamma[TargetMxsBin][TargetCategory] * 0.01);
         double TotalNevtAtMxsBinWithMissingWithoutTargetCategory = TotalNevtAtMxsBinWithMissing - TargetNevtAtMxsBin;
 
-        if (Category == TargetCategory) {
-            if (IsTargetCategoryUp) return (1.0 + RelativeUncertainty);
+        if (Category == TargetCategory) { // it is target category
+            if (IsTargetCategoryUp) {
+                if ((TotalNevtAtMxsBinWithMissingWithoutTargetCategory - TargetNevtAtMxsBin * RelativeUncertainty) > 0) return (1.0 + RelativeUncertainty); // the number of event in target category is not large
+                else return (1.0 + (TotalNevtAtMxsBinWithMissingWithoutTargetCategory / TargetNevtAtMxsBin)); // the number of event in target category is large
+            }
             else return (1.0 - RelativeUncertainty);
         }
         else {
             if (IsTargetCategoryUp) {
                 double output = (TotalNevtAtMxsBinWithMissingWithoutTargetCategory - TargetNevtAtMxsBin * RelativeUncertainty) / TotalNevtAtMxsBinWithMissingWithoutTargetCategory;
-                if (output < 0) {
-                    printf("[Corrector_Fragmentation::FluctuateCorrection] minus Nevt!\n");
-                    exit(1);
-                }
-                return output;
+                if (output < 0) return 0.0; // the number of event in target category is large
+                else return output; // the number of event in target category is not large
             }
             else {
                 double output = (TotalNevtAtMxsBinWithMissingWithoutTargetCategory + TargetNevtAtMxsBin * RelativeUncertainty) / TotalNevtAtMxsBinWithMissingWithoutTargetCategory;
@@ -290,7 +290,7 @@ double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double M
                     printf("[Corrector_Fragmentation::FluctuateCorrection] minus Nevt!\n");
                     exit(1);
                 }
-                return output;
+                else return output;
             }
         }
     }
