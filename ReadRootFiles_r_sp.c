@@ -360,7 +360,7 @@ Corrector_Knn::Corrector_Knn() :
     FILE* fp;
 
     // read Knn weights
-    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/Knn_weight/Knn_weight.txt", "r");
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/Knn_weight/Knn_weight.txt", "r");
     fscanf(fp,"%d %lf %lf\n", &STEP_Knn, &mininvM_Knn, &maxinvM_Knn);
     weights_Knn = new TH1D("Knn_weights", ";;", STEP_Knn, mininvM_Knn, maxinvM_Knn);
     for (int i = 0; i < STEP_Knn; i++) {
@@ -372,7 +372,7 @@ Corrector_Knn::Corrector_Knn() :
     fclose(fp);
 
     // read Kstarnn weights
-    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/Knn_weight/Kstarnn_weight.txt", "r");
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/Knn_weight/Kstarnn_weight.txt", "r");
     fscanf(fp,"%d %lf %lf\n", &STEP_Kstarnn, &mininvM_Kstarnn, &maxinvM_Kstarnn);
     weights_Kstarnn = new TH1D("Kstarnn_weights", ";;", STEP_Kstarnn, mininvM_Kstarnn, maxinvM_Kstarnn);
     for (int i = 0; i < STEP_Kstarnn; i++) {
@@ -384,7 +384,7 @@ Corrector_Knn::Corrector_Knn() :
     fclose(fp);
 
     // read K0nn weights
-    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/Knn_weight/K0nn_weight.txt", "r");
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/Knn_weight/K0nn_weight.txt", "r");
     fscanf(fp,"%d %lf %lf\n", &STEP_K0nn, &mininvM_K0nn, &maxinvM_K0nn);
     weights_K0nn = new TH1D("K0nn_weights", ";;", STEP_K0nn, mininvM_K0nn, maxinvM_K0nn);
     for (int i = 0; i < STEP_K0nn; i++) {
@@ -396,7 +396,7 @@ Corrector_Knn::Corrector_Knn() :
     fclose(fp);
 
     // read K0starnn weights
-    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/Knn_weight/K0starnn_weight.txt", "r");
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/Knn_weight/K0starnn_weight.txt", "r");
     fscanf(fp,"%d %lf %lf\n", &STEP_K0starnn, &mininvM_K0starnn, &maxinvM_K0starnn);
     weights_K0starnn = new TH1D("K0starnn_weights", ";;", STEP_K0starnn, mininvM_K0starnn, maxinvM_K0starnn);
     for (int i = 0; i < STEP_K0starnn; i++) {
@@ -584,7 +584,7 @@ Corrector_KpKLKL::Corrector_KpKLKL() :
     FILE* fp;
 
     // read KpKLKL weights
-    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/KpKLKL/KpKLKL_weight.txt", "r");
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/KpKLKL/KpKLKL_weight.txt", "r");
     fscanf(fp, "s13: %d %lf %lf\n", &s13_NBin, &s13_min, &s13_max);
     fscanf(fp, "s23: %d %lf %lf\n", &s23_NBin, &s23_min, &s23_max);
     weights_KpKLKL = new TH2D("KpKLKL_weights", ";;", s13_NBin, s13_min, s13_max, s23_NBin, s23_min, s23_max);
@@ -656,7 +656,7 @@ Corrector_KSKLKL::Corrector_KSKLKL() :
     FILE* fp;
 
     // read KSKLKL weights
-    fp = fopen("/home/jwpark/storage/BKG_gbasf2/systematic/KSKLKL/KSKLKL_weight.txt", "r");
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/KSKLKL/KSKLKL_weight.txt", "r");
     fscanf(fp, "smax: %d %lf %lf\n", &smax_NBin, &smax_min, &smax_max);
     fscanf(fp, "smin: %d %lf %lf\n", &smin_NBin, &smin_min, &smin_max);
     weights_KSKLKL = new TH2D("KSKLKL_weights", ";;", smax_NBin, smax_min, smax_max, smin_NBin, smin_min, smin_max);
