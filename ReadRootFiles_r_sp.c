@@ -77,6 +77,14 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define N_Xsu_nonresonant_test 14805000.0
 # define N_Xsd_nonresonant_test 15059570.0
 
+// SIGNAL MC sample number before skimming for MC15rd
+# define N_Kplus_validation_MC15rd 3962022.0
+# define N_K0_validation_MC15rd 3962022.0
+# define N_Kplusstar_validation_MC15rd 3962022.0
+# define N_K0star_validation_MC15rd 3962022.0
+# define N_Xsu_nonresonant_validation_MC15rd 15846594.0
+# define N_Xsd_nonresonant_validation_MC15rd 15846594.0
+
 // scale factor for SIGNAL MC sample until LS1
 # define Scale_Kplus_train (N_Kplus_nunubar_LS1/N_Kplus_train)
 # define Scale_Kplusstar_train (N_Kplusstar_nunubar_LS1/N_Kplusstar_train)
@@ -90,6 +98,14 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define Scale_K0_test (N_K0_nunubar_LS1/N_K0_test)
 # define Scale_K0star_test (N_K0star_nunubar_LS1/N_K0star_test)
 # define Scale_Xsd_nonresonant_test (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_test)
+
+// scale factor for SIGNAL MC sample until LS1 for MC15rd
+# define Scale_Kplus_validation_MC15rd (N_Kplus_nunubar_LS1/N_Kplus_validation_MC15rd)
+# define Scale_Kplusstar_validation_MC15rd (N_Kplusstar_nunubar_LS1/N_Kplusstar_validation_MC15rd)
+# define Scale_Xsu_nonresonant_validation_MC15rd (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_validation_MC15rd)
+# define Scale_K0_validation_MC15rd (N_K0_nunubar_LS1/N_K0_validation_MC15rd)
+# define Scale_K0star_validation_MC15rd (N_K0star_nunubar_LS1/N_K0star_validation_MC15rd)
+# define Scale_Xsd_nonresonant_validation_MC15rd (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_validation_MC15rd)
 
 // BKG MC sample number (2.8/ab for BB, 1.0/ab for qq)
 # define N_CHG_test 139768443.0
@@ -118,6 +134,27 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
 # define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_CHG_validation ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab))
+# define Scale_MIX_validation ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab))
+# define Scale_UUBAR_validation (0.361673)
+# define Scale_DDBAR_validation (0.361673)
+# define Scale_SSBAR_validation (0.361673)
+# define Scale_CHARM_validation (0.361673)
+
+// BKG MC sample number for MC15rd
+# define N_CHG_validation_MC15rd 785108449.0 // 1458.959/fb
+# define N_MIX_validation_MC15rd 741492304.0 // 1458.959/fb
+# define N_UUBAR_validation_MC15rd 2306265848.0 // 1458.959/fb
+# define N_DDBAR_validation_MC15rd 576209482.0 // 1458.959/fb
+# define N_SSBAR_validation_MC15rd 526874294.0 // 1458.959/fb
+# define N_CHARM_validation_MC15rd 1889822323.0 // 1458.959/fb
+
+# define Scale_CHG_validation_MC15rd (0.361673/1.458959)
+# define Scale_MIX_validation_MC15rd (0.361673/1.458959)
+# define Scale_UUBAR_validation_MC15rd (0.361673/1.458959)
+# define Scale_DDBAR_validation_MC15rd (0.361673/1.458959)
+# define Scale_SSBAR_validation_MC15rd (0.361673/1.458959)
+# define Scale_CHARM_validation_MC15rd (0.361673/1.458959)
 
 class Corrector {
 private:
