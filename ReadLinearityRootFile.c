@@ -99,7 +99,7 @@ void ReadLinearityRootFile(){
         RooPlot* muframe = mu_roorealvar.frame(RooFit::Bins(400), RooFit::Title(" "));
         mu_RooDataSet.plotOn(muframe);
         egauss.plotOn(muframe, RooFit::LineColor(kBlue));
-        egauss.paramOn(muframe);
+        egauss.paramOn(muframe, RooFit::Layout(0.4, 0.9, 0.9));
         TCanvas* c = new TCanvas("mu_gauss_fit", "mu_gauss_fit", 600, 600);
         gPad->SetLeftMargin(0.15); muframe->GetYaxis()->SetTitleOffset(1.4); muframe->Draw(); c->SaveAs(("mu_" + to_string(injected_mu) + "_distribution.png").c_str());
 
