@@ -65,6 +65,22 @@ using std::to_string;
 using std::cout;
 using std::endl;
 
+# define N_Needed_info 37
+//# define N_event_info 15
+# define N_Upsilon_info 164
+# define N_Bsig_info 738
+# define N_Btag_info 11
+# define N_decay 38 // five decay mode + others
+# define N_decay_nparticles 5 // # of nu_e, B->Xs nu_e nu_e_bar, B0->Xs nu_e nu_e_bar, B+-, B0
+# define N_decay_syst_ff 7 // helicity angle + q2
+# define N_PID_syst 73
+# define N_fakeE_syst 37
+# define N_fakeMU_syst 49
+# define N_pi0_syst 8
+# define index_q2 0
+# define index_MXs_Bc 3
+# define index_MXs_B0 4
+
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
