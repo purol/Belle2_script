@@ -553,7 +553,7 @@ void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
-    w->loadSnapshot("NominalParamValues");
+    w->loadSnapshot("ParamValues");
 
     RooAbsData* data = (RooAbsData*)w->data("asimovData");
     RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
@@ -567,7 +567,7 @@ void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
         names->push_back(name);
     }
 
-    w->loadSnapshot("NominalParamValues");
+    w->loadSnapshot("ParamValues");
 }
 
 class FileSaver {
@@ -688,7 +688,7 @@ FileSaver filesaver;
 
 RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, double tolerance = -1.0) { // this function follows the procedure in ProfileLikelihoodTestStat.cxx
     // what we have done
-    w->loadSnapshot("NominalParamValues");
+    w->loadSnapshot("ParamValues");
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
@@ -768,7 +768,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
 
     double Nevt = 0.0;
 
-    w->loadSnapshot("NominalParamValues");
+    w->loadSnapshot("ParamValues");
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
     RooArgSet* obs = (RooArgSet*)mc->GetObservables();
@@ -867,7 +867,7 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
 
             RooDataSet* genData = model->generate(RooArgSet(*x,model->indexCat()), Nevt_total, false, true, "", false, true);
 
-            w->loadSnapshot("NominalParamValues");
+            w->loadSnapshot("ParamValues");
             //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
             RooAbsReal* nll;
             RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
@@ -896,7 +896,7 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         filesaver.GetTrueValues(w, names);
 
         RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, true, "", false, true);
-        w->loadSnapshot("NominalParamValues");
+        w->loadSnapshot("ParamValues");
 
         //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
         RooAbsReal* nll;
@@ -1004,7 +1004,7 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
 
 void FitToData(RooWorkspace* w, double eps) {
 
-    w->loadSnapshot("NominalParamValues");
+    w->loadSnapshot("ParamValues");
 
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
@@ -1072,7 +1072,7 @@ void FitToData(RooWorkspace* w, double eps) {
 
     }
 
-    w->loadSnapshot("NominalParamValues");
+    w->loadSnapshot("ParamValues");
 
     delete canvas;
     delete fitres;
@@ -1101,13 +1101,13 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
     
     for (int i = 0; i < Toy_iter_num; i++) { // Do Toy MC study
 
-        w->loadSnapshot("NominalParamValues");
+        w->loadSnapshot("ParamValues");
 
         filesaver.GetTrueValues(w, names);
 
         RooDataSet* genData = dataPDF.generate(RooArgSet(*x, model->indexCat()), Nevt_data_int, false, true, "", false, true);
 
-        w->loadSnapshot("NominalParamValues");
+        w->loadSnapshot("ParamValues");
         RooAbsReal* nll;
         RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
 
@@ -1306,6 +1306,14 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
 
 void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    w->loadSnapshot("ParamValues");
+
+    RooRealVar* x_val = w->var("obs_x_channel");
+    std::unique_ptr<RooArgSet> params{model->getParameters(*x_val)};
+
     // track
     w->var("alpha_track_eff_uncer")->setConstant(!options_->track);
 
@@ -1411,6 +1419,9 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
         w->var(("gamma_SSBAR_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(!options_->uncorrelated);
         w->var(("gamma_CHARM_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(!options_->uncorrelated);
     }
+
+    // save snapshot
+    w->saveSnapshot("ParamValues", *params, true);
 }
 
 int main(int argc, char* argv[]) {
@@ -1486,7 +1497,31 @@ int main(int argc, char* argv[]) {
 
     RooWorkspace* w = (RooWorkspace*)f->Get("combined");
 
-    if (std::string(argv[1]) == std::string("nuisance")) {
+    if (std::string(argv[1]) == std::string("ToyMC")) {
+        ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+        RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+        w->loadSnapshot("ParamValues");
+
+        RooRealVar* x_val = w->var("obs_x_channel");
+        std::unique_ptr<RooArgSet> params{model->getParameters(*x_val)};
+
+        // save snapshot
+        w->saveSnapshot("ParamValues", *params, true);
+    }
+    else if (std::string(argv[1]) == std::string("LinearityTest")) {
+        ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+        RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+        w->loadSnapshot("ParamValues");
+
+        RooRealVar* x_val = w->var("obs_x_channel");
+        std::unique_ptr<RooArgSet> params{model->getParameters(*x_val)};
+
+        // save snapshot
+        w->saveSnapshot("ParamValues", *params, true);
+    }
+    else if (std::string(argv[1]) == std::string("nuisance")) {
         OPTIONS* options = (OPTIONS*)malloc(sizeof(OPTIONS));
         Initialize_options(options, free_param.c_str());
         FixParameters(w, options);
