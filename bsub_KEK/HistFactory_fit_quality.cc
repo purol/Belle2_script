@@ -81,6 +81,8 @@ using std::endl;
 # define index_MXs_Bc 3
 # define index_MXs_B0 4
 
+# define MyEPSILON 0.000001
+
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
@@ -1308,22 +1310,22 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     w->var("alpha_track_eff_uncer")->setConstant(!options_->track);
 
     // PID
-    for (int i = 0; i < NEntryPID; i++) w->var(("alpha_PID" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->PID);
+    for (int i = 0; i < options_->NEntryPID; i++) w->var(("alpha_PID" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->PID);
 
     // KID
-    for (int i = 0; i < NEntryKID; i++) w->var(("alpha_KID" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->KID);
+    for (int i = 0; i < options_->NEntryKID; i++) w->var(("alpha_KID" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->KID);
 
     // KS0
     w->var("alpha_KS0_reco_uncer")->setConstant(!options_->KS0);
 
     // pi0
-    for (int i = 0; i < NEntrypi0; i++) w->var(("alpha_pi0" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->pi0);
+    for (int i = 0; i < options_->NEntrypi0; i++) w->var(("alpha_pi0" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->pi0);
 
     // FBDT efficiency
     w->var("alpha_FBDT_efficiency_uncer")->setConstant(!options_->FBDT);
 
     // FEI
-    for (int i = 0; i < NEntryFEI; i++) w->var(("alpha_FEI" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->FEI);
+    for (int i = 0; i < options_->NEntryFEI; i++) w->var(("alpha_FEI" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->FEI);
 
     // qqbar normalization
     w->var("alpha_qq_CAL_UUBAR_uncer")->setConstant(!options_->qqbar);
@@ -1332,7 +1334,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     w->var("alpha_qq_CAL_CHARM_uncer")->setConstant(!options_->qqbar);
 
     // photon multiplicity correction
-    for (int i = 0; i < NEntryMultiplicity; i++) w->var(("alpha_multiplicity" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->multiplicity);
+    for (int i = 0; i < options_->NEntryMultiplicity; i++) w->var(("alpha_multiplicity" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->multiplicity);
 
     // B->K form factor
     w->var("alpha_Kff1_uncer")->setConstant(!options_->Kff);
@@ -1392,7 +1394,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     w->var("alpha_BB_counting_uncer")->setConstant(!options_->BBcounting);
 
     // BB BR
-    for (int i = 0; i < NEntryBR; i++) w->var(("alpha_BBBR" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->BBBR);
+    for (int i = 0; i < options_->NEntryBR; i++) w->var(("alpha_BBBR" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->BBBR);
 
     // B->Knn BR
     w->var("alpha_Knn_BR_uncer")->setConstant(!options_->BRKnn);
