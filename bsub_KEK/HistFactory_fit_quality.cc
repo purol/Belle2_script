@@ -1406,12 +1406,16 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // B->Knn BR
     w->var("alpha_Knn_BR_uncer")->setConstant(!options_->BRKnn);
+    w->var("alpha_Kstarnn_BR_uncer")->setConstant(!options_->BRKnn);
+    w->var("alpha_K0nn_BR_uncer")->setConstant(!options_->BRKnn);
+    w->var("alpha_K0starnn_BR_uncer")->setConstant(!options_->BRKnn);
 
     // B->(D->X KL0) + anything
     w->var("alpha_BtoDtoXKL_uncer")->setConstant(!options_->BRDKL0);
 
     // uncorrelated
     for (int i = 0; i < RarityBins; i++) {
+        w->var(("gamma_Signal_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(!options_->uncorrelated);
         w->var(("gamma_CHG_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(!options_->uncorrelated);
         w->var(("gamma_MIX_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(!options_->uncorrelated);
         w->var(("gamma_UUBAR_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(!options_->uncorrelated);
