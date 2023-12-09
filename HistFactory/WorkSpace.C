@@ -239,7 +239,7 @@ int ReadMultiplicityInfo(const char* dirname) {
 
 	FILE* fp;
 	fp = fopen(dirname, "r");
-	fprintf(fp, "%d", N_hist);
+    fscanf(fp, "%d", &N_hist);
 	fclose(fp);
 
 	return N_hist;
