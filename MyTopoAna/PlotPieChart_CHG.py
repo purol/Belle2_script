@@ -10,21 +10,23 @@ def autopct_format(values):
         return '{v:d}'.format(v=val)
     return my_format
 
-Category = [r"$B^{+}\rightarrow \rho(770)^{+} \bar{D}^{0}$", # 521=>213|-421 11
-r"$B^{+}\rightarrow \bar{D}^{*}(2007)^{0} \pi^{+}$",         # 521=>-423|211 6
-r"$B^{+}\rightarrow D^{*}(2010)^{-} \pi^{0} \pi^{+} \pi^{+}$", # 521=>-413|111|211|211 6
-r"$B^{+}\rightarrow \bar{D}^{*}(2007)^{0} a_{1}(1260)^{+}$", # 521=>-423|20213 6
-r"$B^{+}\rightarrow \bar{D}^{*}(2007)^{0} \pi^{-} \pi^{+} \pi^{+} \pi^{0}$", # 521=>-423|-211|211|211|111 4
-r"$B^{+}\rightarrow \bar{D}^{0} \pi^{+}$",                      # 521=>-421|211 4
-r"$B^{+}\rightarrow \bar{D}^{*}(2007)^{0} \rho(770)^{+}$",      # 521=>-423|213 3
-r"$B^{+}\rightarrow D^{*}(2010)^{-} \rho(770)^{+} \pi^{+} $",   # 521=>-413|213|211 2
-r"$B^{+}\rightarrow \bar{D}^{0} \rho(770)^{0} \pi^{+} \pi^{0}$",   # 521=>-421|113|211|111 2
-r"$B^{+}\rightarrow \bar{D}^{0} \rho(770)^{0} \pi^{+}$",   # 521=>-421|113|211 2
-r"$B^{+}\rightarrow D^{*}(2010)^{-} \pi^{+} \pi^{+}$",   # 521=>-413|211|211 2
+Category = [
+r"$B^{+}\rightarrow \bar{D}^{*}(2007)^{0} \mu^{+} \nu_{\mu}$", # 521=>-423|-13|14| 391
+r"$B^{+}\rightarrow \bar{D}^{0} \mu^{+} \nu_{\mu}$",         # 521=>-421|-13|14| 357
+r"$B^{+}\rightarrow \bar{D}^{*}(2007)^{0} e^{+} \nu_{e}$", # 521=>-423|-11|12| 282
+r"$B^{+}\rightarrow \bar{D}^{0} e^{+} \nu_{e}$", # 521=>-421|-11|12| 273
+r"$B^{+}\rightarrow \rho(770)^{+} \bar{D}^{0}$", # 521=>213|-421| 198
+r"$B^{+}\rightarrow \bar{D}^{0} \pi^{+}$",                      # 521=>-421|211| 128
+r"$B^{+}\rightarrow \bar{D}^{*}(2007)^{0} a_{1}(1260)^{+}$",      # 521=>-423|20213| 127
+r"$B^{+}\rightarrow \bar{D}^{*}(2007)^{0} \pi^{+}$",   # 521=>-423|211| 120
+r"$B^{+}\rightarrow D^{*}(2010)^{-} \pi^{0} \pi^{+} \pi^{+}$",   # 521=>-413|111|211|211| 113
+r"$B^{+}\rightarrow \bar{D}^{0} \tau^{+} \nu_{\tau}$",   # 521=>-421|-15|16| 92
+r"$B^{+}\rightarrow \bar{D}^{0} \pi^{-} \pi^{+} \pi^{+}$",   # 521=>-421|-211|211|211| 77
+r"$B^{+}\rightarrow \bar{D}^{0} \rho(770)^{0} \pi^{+}$",   # 521=>-421|113|211| 57
 "others"]
 
-TotalN = 73
-values = [11, 6, 6, 6, 4, 4, 3, 2, 2, 2, 2]
+TotalN = 3712
+values = [391, 357, 282, 273, 198, 128, 127, 120, 113, 92, 77, 57]
 values.append(TotalN - sum(values))
 
 plt.rcParams['figure.figsize'] = [10,10]
