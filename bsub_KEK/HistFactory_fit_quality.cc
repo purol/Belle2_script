@@ -700,7 +700,7 @@ RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, do
     Bool_t fLOffset = RooStats::IsNLLOffset();
     nll = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
 
-    // get default values
+    // get default values. follow ProfileLikelihoodTestStat.h
     TString fMinimizer = ::ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str();
     Int_t fStrategy = ::ROOT::Math::MinimizerOptions::DefaultStrategy();
     // avoid default tolerance to be too small (1. is default in RooMinimizer)
@@ -1309,7 +1309,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
-    w->loadSnapshot("ParamValues");
+    w->loadSnapshot("NominalParamValues");
 
     RooRealVar* x_val = w->var("obs_x_channel");
     std::unique_ptr<RooArgSet> params{model->getParameters(*x_val)};
@@ -1505,7 +1505,7 @@ int main(int argc, char* argv[]) {
         ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
         RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
-        w->loadSnapshot("ParamValues");
+        w->loadSnapshot("NominalParamValues");
 
         RooRealVar* x_val = w->var("obs_x_channel");
         std::unique_ptr<RooArgSet> params{model->getParameters(*x_val)};
@@ -1517,7 +1517,7 @@ int main(int argc, char* argv[]) {
         ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
         RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
-        w->loadSnapshot("ParamValues");
+        w->loadSnapshot("NominalParamValues");
 
         RooRealVar* x_val = w->var("obs_x_channel");
         std::unique_ptr<RooArgSet> params{model->getParameters(*x_val)};
