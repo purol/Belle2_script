@@ -65,6 +65,8 @@ using std::to_string;
 using std::cout;
 using std::endl;
 
+# define MyDEBUG true
+
 # define N_Needed_info 37
 //# define N_event_info 15
 # define N_Upsilon_info 164
@@ -872,6 +874,8 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
             RooAbsReal* nll;
             RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
 
+            if(MyDEBUG) Debug(w, fitres, genData);
+
             filesaver.GetFittingValues(fitres, names);
             filesaver.GetFittingStatus(fitres);
             filesaver.WriteIntoBranch();
@@ -1426,6 +1430,68 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // save snapshot
     w->saveSnapshot("ParamValues", *params, true);
+}
+
+void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
+
+    RooArgSet fitargs = fitres->floatParsFinal();
+    TIterator* iter(fitargs.createIterator());
+
+    for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        double val = rrv->getVal();
+        double err = rrv->getError();
+
+        if (name == "mu") {
+            if (err < 1.5) {
+
+                // get Category and data
+                RooCategory* idx = (RooCategory*)obs->find("channelCat");
+
+                // get expected num of evts for PDFs
+                double Signal_Nevts = GetNumEvts(w, "Signal");
+                double CHG_Nevts = GetNumEvts(w, "CHG");
+                double MIX_Nevts = GetNumEvts(w, "MIX");
+                double UUBAR_Nevts = GetNumEvts(w, "UUBAR");
+                double DDBAR_Nevts = GetNumEvts(w, "DDBAR");
+                double SSBAR_Nevts = GetNumEvts(w, "SSBAR");
+                double CHARM_Nevts = GetNumEvts(w, "CHARM");
+
+                // draw
+                RooPlot* x_frame = x_val->frame(Title("FBDT"));
+                data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), DrawOption("ZP"), Name("data"));
+                //data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"), Normalization(1, RooAbsReal::ScaleType::NumEvent));
+                model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed - 6), LineWidth(0), Components("L_x_*Signal*_ShapeSys,L_x_*CHG*_ShapeSys,L_x_*MIX*_ShapeSys,L_x_*UUBAR*_ShapeSys,L_x_*DDBAR*_ShapeSys,L_x_*SSBAR*_ShapeSys,L_x_*CHARM*_ShapeSys"), Normalization(Signal_Nevts + CHG_Nevts + MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("signal"));
+                model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kBlue - 6), LineWidth(0), Components("L_x_*CHG*_ShapeSys,L_x_*MIX*_ShapeSys,L_x_*UUBAR*_ShapeSys,L_x_*DDBAR*_ShapeSys,L_x_*SSBAR*_ShapeSys,L_x_*CHARM*_ShapeSys"), Normalization(CHG_Nevts + MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("Charged B"));
+                model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kCyan - 6), LineWidth(0), Components("L_x_*MIX*_ShapeSys,L_x_*UUBAR*_ShapeSys,L_x_*DDBAR*_ShapeSys,L_x_*SSBAR*_ShapeSys,L_x_*CHARM*_ShapeSys"), Normalization(MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("Neutral B"));
+                model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kOrange - 6), LineWidth(0), Components("L_x_*UUBAR*_ShapeSys,L_x_*DDBAR*_ShapeSys,L_x_*SSBAR*_ShapeSys,L_x_*CHARM*_ShapeSys"), Normalization(UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("Continuum"));
+                data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), DrawOption("ZP"), Name("data"));
+
+                TCanvas* canvas = new TCanvas("sPlot", "sPlot demo", 700, 700);
+
+                // draw PDFs
+                x_frame->Draw();
+
+                // draw legend
+                TLegend* leg = new TLegend(0.9, 0.9, 0.7, 0.7);
+                leg->SetFillStyle(0);
+                leg->SetLineWidth(0);
+                leg->AddEntry("data", "Data");
+                leg->AddEntry("signal", "B #rightarrow X_{s} #nu #bar{#nu}");
+                leg->AddEntry("Charged B", "Charged B");
+                leg->AddEntry("Neutral B", "Neutral B");
+                leg->AddEntry("Continuum", "q#bar{q}");
+                leg->Draw();
+
+                canvas->SaveAs( ("fit_plot_" + "mu:" + std::to_string(val) + "_" + "err:" + std::to_string(err) + ".png").c_str() );
+
+                delete canvas;
+
+            }
+        }
+
+    }
 }
 
 int main(int argc, char* argv[]) {
