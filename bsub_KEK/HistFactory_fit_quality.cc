@@ -1490,7 +1490,7 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
                 leg->AddEntry("Continuum", "q#bar{q}");
                 leg->Draw();
 
-                canvas->SaveAs( (std::string("fit_plot_") + "mu:" + std::to_string(val) + "_" + "err:" + std::to_string(err) + ".png").c_str() );
+                canvas->SaveAs( (std::string("fit_plot_") + "mu-" + std::to_string(val) + "_" + "err-" + std::to_string(err) + ".png").c_str() );
 
                 delete canvas;
 
