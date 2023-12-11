@@ -752,20 +752,36 @@ RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, do
     }
 
     if (MyDEBUG) {
-        RooRealVar* poi = (RooRealVar*)mc->GetParametersOfInterest()->first();
-        RooPlot* x_frame = poi->frame(Title("profile LL"));
-        //nll->plotOn(x_frame);
-        RooAbsReal* pll = nll->createProfile(poi);
-        pll->plotOn(x_frame);
 
-        TCanvas* canvas = new TCanvas("sPlot", "sPlot demo", 700, 700);
+        RooArgSet fitargs = minim.save()->floatParsFinal();
+        TIterator* iter(fitargs.createIterator());
 
-        // draw PDFs
-        x_frame->Draw();
+        for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
+            RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+            std::string name = rrv->GetName();
+            double val = rrv->getVal();
+            double err = rrv->getError();
 
-        canvas->SaveAs((std::string("pll_plot_") + "mu-" + std::to_string(val) + "_" + "err-" + std::to_string(err) + ".png").c_str());
+            if (name == "mu") {
+                if (err < 1.5) {
+                    RooRealVar* poi = (RooRealVar*)mc->GetParametersOfInterest()->first();
+                    RooPlot* x_frame = poi->frame(Title("profile LL"));
+                    //nll->plotOn(x_frame);
+                    RooAbsReal* pll = nll->createProfile(*poi);
+                    pll->plotOn(x_frame);
 
-        delete canvas;
+                    TCanvas* canvas = new TCanvas("sPlot", "sPlot demo", 700, 700);
+
+                    // draw PDFs
+                    x_frame->Draw();
+
+                    canvas->SaveAs((std::string("pll_plot_") + "mu-" + std::to_string(val) + "_" + "err-" + std::to_string(err) + ".png").c_str());
+
+                    delete canvas;
+                }
+
+            }
+        }
     }
 
     return minim.save();
