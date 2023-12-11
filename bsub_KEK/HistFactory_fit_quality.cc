@@ -751,6 +751,23 @@ RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, do
         }
     }
 
+    if (MyDEBUG) {
+        RooRealVar* poi = (RooRealVar*)mc->GetParametersOfInterest()->first();
+        RooPlot* x_frame = poi->frame(Title("profile LL"));
+        //nll->plotOn(x_frame);
+        RooAbsReal* pll = nll->createProfile(poi);
+        pll->plotOn(x_frame);
+
+        TCanvas* canvas = new TCanvas("sPlot", "sPlot demo", 700, 700);
+
+        // draw PDFs
+        x_frame->Draw();
+
+        canvas->SaveAs((std::string("pll_plot_") + "mu-" + std::to_string(val) + "_" + "err-" + std::to_string(err) + ".png").c_str());
+
+        delete canvas;
+    }
+
     return minim.save();
 }
 
