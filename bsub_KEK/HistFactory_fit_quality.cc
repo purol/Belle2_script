@@ -66,6 +66,7 @@ using std::cout;
 using std::endl;
 
 # define MyDEBUG true
+void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data);
 
 # define N_Needed_info 37
 //# define N_event_info 15
@@ -1446,6 +1447,11 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
         if (name == "mu") {
             if (err < 1.5) {
 
+                ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+                RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+                RooArgSet* obs = (RooArgSet*)mc->GetObservables();
+                RooRealVar* x_val = w->var("obs_x_channel");
+
                 // get Category and data
                 RooCategory* idx = (RooCategory*)obs->find("channelCat");
 
@@ -1484,7 +1490,7 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
                 leg->AddEntry("Continuum", "q#bar{q}");
                 leg->Draw();
 
-                canvas->SaveAs( ("fit_plot_" + "mu:" + std::to_string(val) + "_" + "err:" + std::to_string(err) + ".png").c_str() );
+                canvas->SaveAs( (std::string("fit_plot_") + "mu:" + std::to_string(val) + "_" + "err:" + std::to_string(err) + ".png").c_str() );
 
                 delete canvas;
 
