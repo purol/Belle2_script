@@ -750,7 +750,7 @@ RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, do
             }
         }
     }
-
+    /*
     if (MyDEBUG) {
 
         RooArgSet fitargs = minim.save()->floatParsFinal();
@@ -783,7 +783,7 @@ RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, do
             }
         }
     }
-
+    */
     return minim.save();
 }
 
