@@ -578,6 +578,8 @@ private:
     double* m_true_param;
     double* m_fitting_param;
     double* m_fitting_param_error;
+    double* m_fitting_param_HIerror;
+    double* m_fitting_param_LOerror;
     int m_covQual;
     int m_status;
     double m_edm;
@@ -596,9 +598,11 @@ public:
 };
 
 FileSaver::FileSaver() {
-    double* m_true_param = nullptr;
-    double* m_fitting_param = nullptr;
-    double* m_fitting_param_error = nullptr;
+    m_true_param = nullptr;
+    m_fitting_param = nullptr;
+    m_fitting_param_error = nullptr;
+    m_fitting_param_HIerror = nullptr;
+    m_fitting_param_LOerror = nullptr;
     m_covQual = -1;
     m_status = -1;
     m_edm = -1;
@@ -612,6 +616,8 @@ void FileSaver::OpenFile(bool IsItToy, std::vector<std::string>* names, double m
     m_true_param = (double*)malloc(sizeof(double) * names->size());
     m_fitting_param = (double*)malloc(sizeof(double) * names->size());
     m_fitting_param_error = (double*)malloc(sizeof(double) * names->size());
+    m_fitting_param_HIerror = (double*)malloc(sizeof(double) * names->size());
+    m_fitting_param_LOerror = (double*)malloc(sizeof(double) * names->size());
 
     // open file
     if (IsItToy) {
@@ -630,6 +636,8 @@ void FileSaver::OpenFile(bool IsItToy, std::vector<std::string>* names, double m
         m_tree->Branch((names->at(i) + "_true").c_str(), &m_true_param[i]);
         m_tree->Branch((names->at(i) + "_value").c_str(), &m_fitting_param[i]);
         m_tree->Branch((names->at(i) + "_error").c_str(), &m_fitting_param_error[i]);
+        m_tree->Branch((names->at(i) + "_HIerror").c_str(), &m_fitting_param_HIerror[i]);
+        m_tree->Branch((names->at(i) + "_LOerror").c_str(), &m_fitting_param_LOerror[i]);
     }
     m_tree->Branch("covQual", &m_covQual);
     m_tree->Branch("status", &m_status);
@@ -661,11 +669,15 @@ void FileSaver::GetFittingValues(RooFitResult* fitres, std::vector<std::string>*
         std::string name = rrv->GetName();
         double val = rrv->getVal();
         double err = rrv->getError();
+        double HIerr = rrv->getAsymErrorHi();
+        double LOerr = rrv->getAsymErrorLo();
 
         for (unsigned int i = 0; i < names->size(); i++) {
             if (name == names->at(i)) {
                 m_fitting_param[i] = val;
                 m_fitting_param_error[i] = err;
+                m_fitting_param_HIerror[i] = HIerr;
+                m_fitting_param_LOerror[i] = LOerr;
             }
         }
 
@@ -691,6 +703,7 @@ FileSaver filesaver;
 
 RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, double tolerance = -1.0) { // this function follows the procedure in ProfileLikelihoodTestStat.cxx
     // what we have done
+    // deprecated
     w->loadSnapshot("ParamValues");
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
@@ -904,9 +917,9 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
             RooDataSet* genData = model->generate(RooArgSet(*x,model->indexCat()), Nevt_total, false, true, "", false, true);
 
             w->loadSnapshot("ParamValues");
-            //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
-            RooAbsReal* nll;
-            RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
+            RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+            //RooAbsReal* nll;
+            //RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
 
             if(MyDEBUG) Debug(w, fitres, genData);
 
@@ -936,9 +949,9 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, true, "", false, true);
         w->loadSnapshot("ParamValues");
 
-        //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(true), RooFit::SumW2Error(false), PrintLevel(-1), Save());
-        RooAbsReal* nll;
-        RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
+        RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+        //RooAbsReal* nll;
+        //RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
 
         filesaver.GetFittingValues(fitres, names);
         filesaver.GetFittingStatus(fitres);
@@ -1054,8 +1067,9 @@ void FitToData(RooWorkspace* w, double eps) {
     RooDataSet* data = (RooDataSet*)w->data("asimovData");
 
     // fit
-    RooAbsReal* nll;
-    RooFitResult* fitres = MinimizeNLL(w, data, nll, eps);
+    RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+    //RooAbsReal* nll;
+    //RooFitResult* fitres = MinimizeNLL(w, data, nll, eps);
 
     // get expected num of evts for PDFs
     double Signal_Nevts = GetNumEvts(w, "Signal");
@@ -1146,8 +1160,9 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
         RooDataSet* genData = dataPDF.generate(RooArgSet(*x, model->indexCat()), Nevt_data_int, false, true, "", false, true);
 
         w->loadSnapshot("ParamValues");
-        RooAbsReal* nll;
-        RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
+        RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+        //RooAbsReal* nll;
+        //RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
 
         filesaver.GetFittingValues(fitres, names);
         filesaver.GetFittingStatus(fitres);
@@ -1557,6 +1572,8 @@ int main(int argc, char* argv[]) {
     std::string free_param;
 
     std::vector<std::string> param_names;
+
+    printf("[INFO] Currently, eps value is deprecated! It does not change the result.\n");
     
     if (std::string(argv[1]) == std::string("ToyMC")) {  // main ToyMC
         if (argc == 5) {
