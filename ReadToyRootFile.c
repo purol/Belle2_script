@@ -34,6 +34,8 @@ void ReadToyRootFile(){
 
     TH1F* ToyMCmu = new TH1F("ToyMCmu", ";#mu;Toys", 40, -10, 15);
     TH1F* ToyMCmuerror = new TH1F("ToyMCmuerror", ";error of #mu;Toys", 50, 1, 7);
+    TH1F* ToyMCmuHIerror = new TH1F("ToyMCmuHIerror", ";error of #mu;Toys", 50, 1, 7);
+    TH1F* ToyMCmuLOerror = new TH1F("ToyMCmuLOerror", ";error of #mu;Toys", 50, -7, -1);
     TH1F* ToyMCmupull = new TH1F("ToyMCmupull", ";pull of #mu;Toys", 40, -4, 4);
 
     ToyMCmu->SetMarkerStyle(kFullCircle);
@@ -43,6 +45,14 @@ void ReadToyRootFile(){
     ToyMCmuerror->SetMarkerStyle(kFullCircle);
     ToyMCmuerror->SetLineColor(kBlack);
     ToyMCmuerror->SetMarkerColor(kBlack);
+
+    ToyMCmuHIerror->SetMarkerStyle(kFullCircle);
+    ToyMCmuHIerror->SetLineColor(kBlack);
+    ToyMCmuHIerror->SetMarkerColor(kBlack);
+
+    ToyMCmuLOerror->SetMarkerStyle(kFullCircle);
+    ToyMCmuLOerror->SetLineColor(kBlack);
+    ToyMCmuLOerror->SetMarkerColor(kBlack);
 
     ToyMCmupull->SetMarkerStyle(kFullCircle);
     ToyMCmupull->SetLineColor(kBlack);
@@ -59,6 +69,8 @@ void ReadToyRootFile(){
         double temp_mu_true = -1;
         double temp_mu_fitting = -1;
         double temp_mu_error = -1;
+        double temp_mu_HIerror = -1;
+        double temp_mu_LOerror = -1;
 
         int temp_covQual = -1;
         int temp_status = -1;
@@ -67,6 +79,8 @@ void ReadToyRootFile(){
         temp_tree->SetBranchAddress("mu_true", &temp_mu_true);
         temp_tree->SetBranchAddress("mu_value", &temp_mu_fitting);
         temp_tree->SetBranchAddress("mu_error", &temp_mu_error);
+        temp_tree->SetBranchAddress("mu_HIerror", &temp_mu_HIerror);
+        temp_tree->SetBranchAddress("mu_LOerror", &temp_mu_LOerror);
 
         temp_tree->SetBranchAddress("covQual", &temp_covQual);
         temp_tree->SetBranchAddress("status", &temp_status);
@@ -76,7 +90,10 @@ void ReadToyRootFile(){
             temp_tree->GetEntry(j);
             ToyMCmu->Fill(temp_mu_fitting);
             ToyMCmuerror->Fill(temp_mu_error);
-            ToyMCmupull->Fill( (temp_mu_fitting - temp_mu_true)/ temp_mu_error);
+            ToyMCmuHIerror->Fill(temp_mu_HIerror);
+            ToyMCmuLOerror->Fill(temp_mu_LOerror);
+            if (temp_mu_true >= temp_mu_fitting) ToyMCmupull->Fill((temp_mu_true - temp_mu_fitting) / temp_mu_HIerror);
+            else ToyMCmupull->Fill((temp_mu_fitting - temp_mu_true) / temp_mu_LOerror);
         }
         input_file->Close();
     }
@@ -94,6 +111,16 @@ void ReadToyRootFile(){
     delete c;
 
     c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
+    ToyMCmuHIerror->Draw("PE1");
+    c->SaveAs("TOYMC_muHIerror.png");
+    delete c;
+
+    c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
+    ToyMCmuLOerror->Draw("PE1");
+    c->SaveAs("TOYMC_muLOerror.png");
+    delete c;
+
+    c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
     ToyMCmupull->Fit("gaus");
     ToyMCmupull->Draw("PE1");
     c->SaveAs("TOYMC_mupull.png");
@@ -106,6 +133,8 @@ void ReadToyRootFile(){
 
     delete ToyMCmu;
     delete ToyMCmuerror;
+    delete ToyMCmuHIerror;
+    delete ToyMCmuLOerror;
     delete ToyMCmupull;
 
 }
