@@ -701,6 +701,55 @@ void FileSaver::WriteIntoBranch() {
 
 FileSaver filesaver;
 
+RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, double tolerance = -1.0) {
+    // what we have done
+    w->loadSnapshot("ParamValues");
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    // get nll
+    RooArgSet* allParams = model->getParameters(*data);
+    RooStats::RemoveConstantParameters(allParams);
+    RooArgSet fGlobalObs = *mc->GetGlobalObservables();
+    RooArgSet fConditionalObs;
+    Bool_t fLOffset = RooStats::IsNLLOffset();
+    nll = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
+
+    // minimizer option
+    TString fMinimizer = ::ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str();
+    TString minimizer = fMinimizer;
+
+    TString algorithm = ::ROOT::Math::MinimizerOptions::DefaultMinimizerAlgo();
+
+    Int_t fStrategy = ::ROOT::Math::MinimizerOptions::DefaultStrategy();
+
+    Double_t fTolerance;
+    if (tolerance < 0) fTolerance = TMath::Max(1., ::ROOT::Math::MinimizerOptions::DefaultTolerance());
+    else fTolerance = tolerance;
+
+    Int_t fPrintLevel = ::ROOT::Math::MinimizerOptions::DefaultPrintLevel();
+    //LM: RooMinimizer.setPrintLevel has +1 offset - so subtract  here -1 + an extra -1
+    int level = (fPrintLevel == 0) ? -1 : fPrintLevel - 2;
+
+
+    // follow what ProfileLikelihoodTestStat.cxx does
+    const auto& config = RooStats::GetGlobalRooStatsConfig();
+    RooMinimizer minim(*nll);
+    minim.setStrategy(fStrategy);
+    minim.setEvalErrorWall(config.useEvalErrorWall);
+    minim.setEps(fTolerance);
+    minim.setPrintLevel(level);
+    // this causes a memory leak
+    minim.optimizeConst(2);
+    minim.minos(RooArgSet(*w->var("mu")));
+
+    // fit!
+    int status;
+    status = minim.minimize(minimizer, algorithm);
+
+    return minim.save();
+}
+
 RooFitResult* MinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, double tolerance = -1.0) { // this function follows the procedure in ProfileLikelihoodTestStat.cxx
     // what we have done
     // deprecated
@@ -917,9 +966,9 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
             RooDataSet* genData = model->generate(RooArgSet(*x,model->indexCat()), Nevt_total, false, true, "", false, true);
 
             w->loadSnapshot("ParamValues");
-            RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), PrintLevel(-1), Save());
-            //RooAbsReal* nll;
-            //RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
+            //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+            RooAbsReal* nll;
+            RooFitResult* fitres = MyMinimizeNLL(w, genData, nll, eps);
 
             if(MyDEBUG) Debug(w, fitres, genData);
 
@@ -949,9 +998,9 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, true, "", false, true);
         w->loadSnapshot("ParamValues");
 
-        RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), PrintLevel(-1), Save());
-        //RooAbsReal* nll;
-        //RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
+        //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+        RooAbsReal* nll;
+        RooFitResult* fitres = MyMinimizeNLL(w, genData, nll, eps);
 
         filesaver.GetFittingValues(fitres, names);
         filesaver.GetFittingStatus(fitres);
@@ -1067,9 +1116,9 @@ void FitToData(RooWorkspace* w, double eps) {
     RooDataSet* data = (RooDataSet*)w->data("asimovData");
 
     // fit
-    RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), PrintLevel(-1), Save());
-    //RooAbsReal* nll;
-    //RooFitResult* fitres = MinimizeNLL(w, data, nll, eps);
+    //RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+    RooAbsReal* nll;
+    RooFitResult* fitres = MyMinimizeNLL(w, data, nll, eps);
 
     // get expected num of evts for PDFs
     double Signal_Nevts = GetNumEvts(w, "Signal");
@@ -1160,9 +1209,9 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
         RooDataSet* genData = dataPDF.generate(RooArgSet(*x, model->indexCat()), Nevt_data_int, false, true, "", false, true);
 
         w->loadSnapshot("ParamValues");
-        RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), PrintLevel(-1), Save());
-        //RooAbsReal* nll;
-        //RooFitResult* fitres = MinimizeNLL(w, genData, nll, eps);
+        //RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+        RooAbsReal* nll;
+        RooFitResult* fitres = MyMinimizeNLL(w, genData, nll, eps);
 
         filesaver.GetFittingValues(fitres, names);
         filesaver.GetFittingStatus(fitres);
@@ -1550,6 +1599,9 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
 
 int main(int argc, char* argv[]) {
 
+    ::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit"); // default: Minuit Migrad
+    ::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
+
     RooMsgService::instance().setStreamStatus(1, false);
     RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
 
@@ -1572,8 +1624,6 @@ int main(int argc, char* argv[]) {
     std::string free_param;
 
     std::vector<std::string> param_names;
-
-    printf("[INFO] Currently, eps value is deprecated! It does not change the result.\n");
     
     if (std::string(argv[1]) == std::string("ToyMC")) {  // main ToyMC
         if (argc == 5) {

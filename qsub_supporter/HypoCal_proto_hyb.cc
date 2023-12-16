@@ -318,8 +318,9 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: eps
 	RooStats::HybridCalculator HybCalc(*data, *bModel, *sbModel);
 	RooStats::ProfileLikelihoodTestStat* plr = new RooStats::ProfileLikelihoodTestStat(*sbModel->GetPdf());
 	plr->SetOneSided(true);
-	printf("[INFO] Currently, eps value is deprecated! It does not change the result.\n");
-	//plr->SetTolerance(std::atof(argv[2]));
+	plr->SetMinimizer("Minuit");
+	plr->SetStrategy(1);
+	plr->SetTolerance(std::atof(argv[2]));
 
 	RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)HybCalc.GetTestStatSampler();
 	toymcs->SetTestStatistic(plr);
