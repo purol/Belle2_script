@@ -741,6 +741,7 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, 
     minim.setPrintLevel(level);
     // this causes a memory leak
     minim.optimizeConst(2);
+    minim.migrad();
     minim.minos(RooArgSet(*w->var("mu")));
 
     // fit!
