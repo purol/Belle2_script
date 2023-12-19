@@ -1418,113 +1418,113 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     std::unique_ptr<RooArgSet> params{model->getParameters(*x_val)};
 
     // track
-    w->var("alpha_track_eff_uncer")->setConstant(!options_->track);
+    w->var("alpha_track_eff_uncer")->setConstant(options_->track);
 
     // PID
-    for (int i = 0; i < options_->NEntryPID; i++) w->var(("alpha_PID" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->PID);
+    for (int i = 0; i < options_->NEntryPID; i++) w->var(("alpha_PID" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->PID);
 
     // KID
-    for (int i = 0; i < options_->NEntryKID; i++) w->var(("alpha_KID" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->KID);
+    for (int i = 0; i < options_->NEntryKID; i++) w->var(("alpha_KID" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->KID);
 
     // KS0
-    w->var("alpha_KS0_reco_uncer")->setConstant(!options_->KS0);
+    w->var("alpha_KS0_reco_uncer")->setConstant(options_->KS0);
 
     // pi0
-    for (int i = 0; i < options_->NEntrypi0; i++) w->var(("alpha_pi0" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->pi0);
+    for (int i = 0; i < options_->NEntrypi0; i++) w->var(("alpha_pi0" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->pi0);
 
     // FBDT efficiency
-    w->var("alpha_FBDT_efficiency_uncer")->setConstant(!options_->FBDT);
+    w->var("alpha_FBDT_efficiency_uncer")->setConstant(options_->FBDT);
 
     // FEI
-    for (int i = 0; i < options_->NEntryFEI; i++) w->var(("alpha_FEI" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->FEI);
+    for (int i = 0; i < options_->NEntryFEI; i++) w->var(("alpha_FEI" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->FEI);
 
     // qqbar normalization
-    w->var("alpha_qq_CAL_UUBAR_uncer")->setConstant(!options_->qqbar);
-    w->var("alpha_qq_CAL_DDBAR_uncer")->setConstant(!options_->qqbar);
-    w->var("alpha_qq_CAL_SSBAR_uncer")->setConstant(!options_->qqbar);
-    w->var("alpha_qq_CAL_CHARM_uncer")->setConstant(!options_->qqbar);
+    w->var("alpha_qq_CAL_UUBAR_uncer")->setConstant(options_->qqbar);
+    w->var("alpha_qq_CAL_DDBAR_uncer")->setConstant(options_->qqbar);
+    w->var("alpha_qq_CAL_SSBAR_uncer")->setConstant(options_->qqbar);
+    w->var("alpha_qq_CAL_CHARM_uncer")->setConstant(options_->qqbar);
 
     // photon multiplicity correction
-    for (int i = 0; i < options_->NEntryMultiplicity; i++) w->var(("alpha_multiplicity" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->multiplicity);
+    for (int i = 0; i < options_->NEntryMultiplicity; i++) w->var(("alpha_multiplicity" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->multiplicity);
 
     // B->K form factor
-    w->var("alpha_Kff1_uncer")->setConstant(!options_->Kff);
-    w->var("alpha_Kff2_uncer")->setConstant(!options_->Kff);
-    w->var("alpha_Kff3_uncer")->setConstant(!options_->Kff);
+    w->var("alpha_Kff1_uncer")->setConstant(options_->Kff);
+    w->var("alpha_Kff2_uncer")->setConstant(options_->Kff);
+    w->var("alpha_Kff3_uncer")->setConstant(options_->Kff);
 
     // B->Kstar form factor
-    w->var("alpha_Kstarff1_uncer")->setConstant(!options_->Kstarff);
-    w->var("alpha_Kstarff2_uncer")->setConstant(!options_->Kstarff);
-    w->var("alpha_Kstarff3_uncer")->setConstant(!options_->Kstarff);
-    w->var("alpha_Kstarff4_uncer")->setConstant(!options_->Kstarff);
-    w->var("alpha_Kstarff5_uncer")->setConstant(!options_->Kstarff);
-    w->var("alpha_Kstarff6_uncer")->setConstant(!options_->Kstarff);
-    w->var("alpha_Kstarff7_uncer")->setConstant(!options_->Kstarff);
-    w->var("alpha_Kstarff8_uncer")->setConstant(!options_->Kstarff);
-    w->var("alpha_Kstarff9_uncer")->setConstant(!options_->Kstarff);
+    w->var("alpha_Kstarff1_uncer")->setConstant(options_->Kstarff);
+    w->var("alpha_Kstarff2_uncer")->setConstant(options_->Kstarff);
+    w->var("alpha_Kstarff3_uncer")->setConstant(options_->Kstarff);
+    w->var("alpha_Kstarff4_uncer")->setConstant(options_->Kstarff);
+    w->var("alpha_Kstarff5_uncer")->setConstant(options_->Kstarff);
+    w->var("alpha_Kstarff6_uncer")->setConstant(options_->Kstarff);
+    w->var("alpha_Kstarff7_uncer")->setConstant(options_->Kstarff);
+    w->var("alpha_Kstarff8_uncer")->setConstant(options_->Kstarff);
+    w->var("alpha_Kstarff9_uncer")->setConstant(options_->Kstarff);
 
     // fermi motion moment
-    w->var("alpha_pf_uncer")->setConstant(!options_->pf);
+    w->var("alpha_pf_uncer")->setConstant(options_->pf);
 
     // K*-Xs transition point
-    w->var("alpha_transition_uncer")->setConstant(!options_->Transition);
+    w->var("alpha_transition_uncer")->setConstant(options_->Transition);
 
     // b-quark mass
-    w->var("alpha_mb_uncer")->setConstant(!options_->mb);
+    w->var("alpha_mb_uncer")->setConstant(options_->mb);
 
     // relative fraction
-    w->var("alpha_Kfrac_uncer")->setConstant(!options_->fraction);
-    w->var("alpha_Kstarfrac_uncer")->setConstant(!options_->fraction);
+    w->var("alpha_Kfrac_uncer")->setConstant(options_->fraction);
+    w->var("alpha_Kstarfrac_uncer")->setConstant(options_->fraction);
 
     // MC statistics
-    for (int i = 0; i < RarityBins; i++) w->var(("gamma_stat_channel_bin_" + std::to_string(i)).c_str())->setConstant(!options_->MCstat);
+    for (int i = 0; i < RarityBins; i++) w->var(("gamma_stat_channel_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
 
     // Fragmentation
     for (int MxsBin = 0; MxsBin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); MxsBin++) {
         for (int Category = 0; Category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); Category++) {
             int temp_index = MxsBin * corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma) + Category;
-            w->var(("alpha_Xs_fragmentation" + std::to_string(temp_index) + "_uncer").c_str())->setConstant(!options_->Fragmentation);
+            w->var(("alpha_Xs_fragmentation" + std::to_string(temp_index) + "_uncer").c_str())->setConstant(options_->Fragmentation);
         }
     }
 
     // mKstar
-    w->var("alpha_mKstar_uncer")->setConstant(!options_->mKstar);
+    w->var("alpha_mKstar_uncer")->setConstant(options_->mKstar);
 
     // background normalization
-    w->var("alpha_mu_CHG")->setConstant(!options_->BKGNorm);
-    w->var("alpha_mu_MIX")->setConstant(!options_->BKGNorm);
-    w->var("alpha_mu_UUBAR")->setConstant(!options_->BKGNorm);
-    w->var("alpha_mu_DDBAR")->setConstant(!options_->BKGNorm);
-    w->var("alpha_mu_SSBAR")->setConstant(!options_->BKGNorm);
-    w->var("alpha_mu_CHARM")->setConstant(!options_->BKGNorm);
+    w->var("alpha_mu_CHG")->setConstant(options_->BKGNorm);
+    w->var("alpha_mu_MIX")->setConstant(options_->BKGNorm);
+    w->var("alpha_mu_UUBAR")->setConstant(options_->BKGNorm);
+    w->var("alpha_mu_DDBAR")->setConstant(options_->BKGNorm);
+    w->var("alpha_mu_SSBAR")->setConstant(options_->BKGNorm);
+    w->var("alpha_mu_CHARM")->setConstant(options_->BKGNorm);
 
     // BDTc
-    w->var("alpha_BDTc_shape_qq")->setConstant(!options_->BDTc);
+    w->var("alpha_BDTc_shape_qq")->setConstant(options_->BDTc);
 
     // BB counting
-    w->var("alpha_BB_counting_uncer")->setConstant(!options_->BBcounting);
+    w->var("alpha_BB_counting_uncer")->setConstant(options_->BBcounting);
 
     // BB BR
-    for (int i = 0; i < options_->NEntryBR; i++) w->var(("alpha_BBBR" + std::to_string(i) + "_uncer").c_str())->setConstant(!options_->BBBR);
+    for (int i = 0; i < options_->NEntryBR; i++) w->var(("alpha_BBBR" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->BBBR);
 
     // B->Knn BR
-    w->var("alpha_Knn_BR_uncer")->setConstant(!options_->BRKnn);
-    w->var("alpha_Kstarnn_BR_uncer")->setConstant(!options_->BRKnn);
-    w->var("alpha_K0nn_BR_uncer")->setConstant(!options_->BRKnn);
-    w->var("alpha_K0starnn_BR_uncer")->setConstant(!options_->BRKnn);
+    w->var("alpha_Knn_BR_uncer")->setConstant(options_->BRKnn);
+    w->var("alpha_Kstarnn_BR_uncer")->setConstant(options_->BRKnn);
+    w->var("alpha_K0nn_BR_uncer")->setConstant(options_->BRKnn);
+    w->var("alpha_K0starnn_BR_uncer")->setConstant(options_->BRKnn);
 
     // B->(D->X KL0) + anything
-    w->var("alpha_BtoDtoXKL_uncer")->setConstant(!options_->BRDKL0);
+    w->var("alpha_BtoDtoXKL_uncer")->setConstant(options_->BRDKL0);
 
     // uncorrelated
     for (int i = 0; i < RarityBins; i++) {
-        w->var(("gamma_Signal_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(!options_->uncorrelated);
-        w->var(("gamma_CHG_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(!options_->uncorrelated);
-        w->var(("gamma_MIX_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(!options_->uncorrelated);
-        w->var(("gamma_UUBAR_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(!options_->uncorrelated);
-        w->var(("gamma_DDBAR_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(!options_->uncorrelated);
-        w->var(("gamma_SSBAR_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(!options_->uncorrelated);
-        w->var(("gamma_CHARM_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(!options_->uncorrelated);
+        w->var(("gamma_Signal_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
+        w->var(("gamma_CHG_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
+        w->var(("gamma_MIX_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
+        w->var(("gamma_UUBAR_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
+        w->var(("gamma_DDBAR_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
+        w->var(("gamma_SSBAR_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
+        w->var(("gamma_CHARM_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
     }
 
     // save snapshot
@@ -1618,11 +1618,11 @@ int main(int argc, char* argv[]) {
     // argv[3]: eps for minimizer
     // argv[4]: indicator
     // argv[5]: Num of sample
-    // argv[6]: free nuisance parameter
+    // argv[6]: fixed nuisance parameter
     double injected_mu = -1;
     double eps = -1.0;
     int indicator = 0;
-    std::string free_param;
+    std::string fixed_param;
 
     std::vector<std::string> param_names;
     
@@ -1656,7 +1656,7 @@ int main(int argc, char* argv[]) {
             eps = std::atof(argv[2]);
             indicator = std::atoi(argv[3]);
             Toy_iter_num = std::atoi(argv[4]);
-            free_param = std::string(argv[5]);
+            fixed_param = std::string(argv[5]);
         }
         else {
             printf("Toy MC requires 4 arguments {eps} {indicator} {Num of sample}\n");
@@ -1700,7 +1700,7 @@ int main(int argc, char* argv[]) {
     }
     else if (std::string(argv[1]) == std::string("nuisance")) {
         OPTIONS* options = (OPTIONS*)malloc(sizeof(OPTIONS));
-        Initialize_options(options, free_param.c_str());
+        Initialize_options(options, fixed_param.c_str());
         FixParameters(w, options);
     }
 
