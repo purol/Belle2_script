@@ -342,7 +342,7 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
     line->SetLineColor(kBlack);
     line->SetLineStyle(2); line->SetLineWidth(1);
 
-    TCanvas* cpull = new TCanvas("pull_Plot", "pull Plot", 1400, 800); cpull->SetBottomMargin(0.3);
+    TCanvas* cpull = new TCanvas("pull_Plot", "pull Plot", 1800, 800); cpull->SetBottomMargin(0.3);
     pull_two_sigma->Draw("E2");
     pull_one_sigma->Draw("E2 same");
     pull_ht->Draw("e1 same");
@@ -490,7 +490,7 @@ int Check_param() {
     Drawpull(w, iter);
 
     // define frame
-    RooPlot* x_frame = x->frame(Title("Tramsformed FBDT_{1}"));
+    RooPlot* x_frame = x->frame(Title(""));
 
     // get expected num of evts for PDFs
     double Signal_Nevts = GetNumEvts(w, "Signal");
@@ -509,7 +509,7 @@ int Check_param() {
     model->plotOn(x_frame, Name("DDBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kViolet - 6), LineWidth(0), Components("L_x_*DDBAR*_ShapeSys,L_x_*SSBAR*_ShapeSys,L_x_*CHARM*_ShapeSys"), Normalization(DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
     model->plotOn(x_frame, Name("SSBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kGreen - 6), LineWidth(0), Components("L_x_*SSBAR*_ShapeSys,L_x_*CHARM*_ShapeSys"), Normalization(SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
     model->plotOn(x_frame, Name("CHARM_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kYellow - 6), LineWidth(0), Components("L_x_*CHARM*_ShapeSys"), Normalization(CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
-    data->plotOn(x_frame, Name("data_name"), DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
+    data->plotOn(x_frame, Name("data_name"), DataError(RooAbsData::Poisson), Cut("channelCat==0"), RooFit::MarkerSize(1.0), RooFit::LineWidth(1.0), DrawOption("ZP"));
     //model->paramOn(x_frame);
     TCanvas* cdata = new TCanvas("sPlot", "sPlot demo", 700, 700);
     x_frame->Draw();
