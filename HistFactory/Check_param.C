@@ -152,6 +152,19 @@ double weight_BRsys[RarityBins * 3] = { 0.0 };
 double weight_pi0sys[RarityBins * 7] = { 0.0 };
 double weight_FEIsys[RarityBins * 3] = { 0.0 };
 
+std::vector<std::string> split(std::string str, char Delimiter) {
+    std::istringstream iss(str);
+    std::string buffer;
+
+    std::vector<std::string> result;
+
+    while (getline(iss, buffer, Delimiter)) {
+        result.push_back(buffer);
+    }
+
+    return result;
+}
+
 RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, double tolerance = -1.0) {
     // what we have done
     w->loadSnapshot("ParamValues");
@@ -244,7 +257,7 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
             else if (name.find("CHARM") != std::string::npos) sample_index = 5;
             else if (name.find("Signal") != std::string::npos) sample_index = 6;
 
-            std::vector<std::string> temp_strings = std::split(name, '_');
+            std::vector<std::string> temp_strings = split(name, '_');
             bin_index = stoi(temp_strings.back()); // from 0
 
             if (name.find("all") != std::string::npos) {
@@ -404,7 +417,7 @@ int Check_param() {
     // get Category and data
     RooCategory* idx = (RooCategory*)obs->find("channelCat");
     //RooAbsData* data = (RooAbsData*)w->data("obsData");
-    RooDataSet* data = (RooAbsData*)w->data("asimovData");
+    RooDataSet* data = (RooDataSet*)w->data("asimovData");
 
     // fit
     double eps = 0.001;
