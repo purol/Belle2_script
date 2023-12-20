@@ -113,6 +113,16 @@ double FEI_cal_B0[FEI_cal_B0_num] = { 1.16, 0.94, 0.81, 0.79, 0.99, 1.03, 0.67, 
 double FEI_cal_B0_uncertainty[FEI_cal_B0_num] = { 0.04, 0.05, 0.06, 0.02, 0.03, 0.06, 0.02, 0.03, 0.02, 0.02, 0.12 }; // not relative uncertainty. absolute uncertainty
 double FEI_cal_B0_modeID[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0, 18.0, 19.0, 26.0, -1.0 };
 
+std::vector<std::string> Sample_names = {
+    "L_x_Signal_nominal_channel_overallSyst_x_StatUncert_x_channel_Signal_all_uncorr_uncer_ShapeSys",
+    "L_x_CHG_nominal_channel_overallSyst_x_StatUncert_x_channel_CHG_all_uncorr_uncer_ShapeSys",
+    "L_x_MIX_nominal_channel_overallSyst_x_StatUncert_x_channel_MIX_all_uncorr_uncer_ShapeSys",
+    "L_x_UUBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_UUBAR_all_uncorr_uncer_ShapeSys",
+    "L_x_DDBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_DDBAR_all_uncorr_uncer_ShapeSys",
+    "L_x_SSBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_SSBAR_all_uncorr_uncer_ShapeSys",
+    "L_x_CHARM_nominal_channel_overallSyst_x_StatUncert_x_channel_CHARM_all_uncorr_uncer_ShapeSys"
+};
+
 //# define Htransition_Xsu_change (-0.142)
 //# define Htransition_Xsd_change (-0.099)
 //# define Ltransition_Xsu_change (-0.002)
@@ -332,11 +342,13 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
     line->SetLineColor(kBlack);
     line->SetLineStyle(2); line->SetLineWidth(1);
 
-    TCanvas* cpull = new TCanvas("pull_Plot", "pull Plot", 700, 800); cpull->SetBottomMargin(0.3);
+    TCanvas* cpull = new TCanvas("pull_Plot", "pull Plot", 1400, 800); cpull->SetBottomMargin(0.3);
     pull_two_sigma->Draw("E2");
     pull_one_sigma->Draw("E2 same");
     pull_ht->Draw("e1 same");
     line->Draw();
+
+    cpull->SaveAs("param_pull.png");
 }
 
 void ReadPIDuncorrsysFile(const char* dirname_KID, const char* dirname_PID) {
@@ -380,6 +392,53 @@ void ReadFEIuncorrsysFile(const char* dirname_FEI) {
     for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_FEIsys[i]);
     fclose(fp);
     for (int i = 0; i < RarityBins * 3; i++) weight_FEIsys[i] = std::sqrt(weight_FEIsys[i]);
+
+}
+
+double GetNumEvts(RooWorkspace* w, const char* sample_type) {
+
+    double Nevt = 0.0;
+
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
+    RooRealVar* x_val = w->var("obs_x_channel");
+
+    int index = -1;
+    if (strcmp(sample_type, "Signal") == 0) index = 0;
+    else if (strcmp(sample_type, "CHG") == 0) index = 1;
+    else if (strcmp(sample_type, "MIX") == 0) index = 2;
+    else if (strcmp(sample_type, "UUBAR") == 0) index = 3;
+    else if (strcmp(sample_type, "DDBAR") == 0) index = 4;
+    else if (strcmp(sample_type, "SSBAR") == 0) index = 5;
+    else if (strcmp(sample_type, "CHARM") == 0) index = 6;
+    else {
+        printf("[ERROR] unexpected sample type!\n");
+        exit(1);
+    }
+
+    /* ================================ cal Nexpected ================================*/
+    RooAbsBinning const& binning = x_val->getBinning();
+    const double oldVal = x_val->getVal();
+
+    for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+        double binCenter = binning.binCenter(iBin);
+        double binWidth = binning.binWidth(iBin);
+
+        *x_val = binCenter; // set x value
+
+        RooAbsReal* temp_func = w->function(Sample_names.at(index).c_str());
+        Nevt = Nevt + temp_func->getValV();
+        if (temp_func->getValV() < 0) {
+            printf("[ERROR] negative count!\n");
+            exit(1);
+        }
+
+    }
+
+    *x_val = oldVal;
+
+    return Nevt;
 
 }
 
@@ -433,16 +492,24 @@ int Check_param() {
     // define frame
     RooPlot* x_frame = x->frame(Title("Tramsformed FBDT_{1}"));
 
+    // get expected num of evts for PDFs
+    double Signal_Nevts = GetNumEvts(w, "Signal");
+    double CHG_Nevts = GetNumEvts(w, "CHG");
+    double MIX_Nevts = GetNumEvts(w, "MIX");
+    double UUBAR_Nevts = GetNumEvts(w, "UUBAR");
+    double DDBAR_Nevts = GetNumEvts(w, "DDBAR");
+    double SSBAR_Nevts = GetNumEvts(w, "SSBAR");
+    double CHARM_Nevts = GetNumEvts(w, "CHARM");
+
     // draw
-    data->plotOn(x_frame, Name("data_name"), DataError(RooAbsData::SumW2), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
-    model->plotOn(x_frame, Name("CHG_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed + 1), LineWidth(0));
-    model->plotOn(x_frame, Name("MIX_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kViolet + 1), LineWidth(0), Components("*MIX*, *UUBAR*, *DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
-    model->plotOn(x_frame, Name("UUBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kBlue + 1), LineWidth(0), Components("*UUBAR*, *DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
-    model->plotOn(x_frame, Name("DDBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kOrange + 1), LineWidth(0), Components("*DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
-    model->plotOn(x_frame, Name("SSBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kGreen + 1), LineWidth(0), Components("*SSBAR*, *CHARM*, *Signal*"));
-    model->plotOn(x_frame, Name("CHARM_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kYellow + 1), LineWidth(0), Components("*CHARM*, *Signal*"));
-    model->plotOn(x_frame, Name("signal_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kPink + 1), LineWidth(0), Components("*Signal*"));
-    data->plotOn(x_frame, DataError(RooAbsData::SumW2), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
+    model->plotOn(x_frame, Name("signal_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed - 6), LineWidth(0), Components("L_x_*Signal*_ShapeSys,L_x_*CHG*_ShapeSys,L_x_*MIX*_ShapeSys,L_x_*UUBAR*_ShapeSys,L_x_*DDBAR*_ShapeSys,L_x_*SSBAR*_ShapeSys,L_x_*CHARM*_ShapeSys"), Normalization(Signal_Nevts + CHG_Nevts + MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
+    model->plotOn(x_frame, Name("CHG_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kBlue - 6), LineWidth(0), Components("L_x_*CHG*_ShapeSys,L_x_*MIX*_ShapeSys,L_x_*UUBAR*_ShapeSys,L_x_*DDBAR*_ShapeSys,L_x_*SSBAR*_ShapeSys,L_x_*CHARM*_ShapeSys"), Normalization(CHG_Nevts + MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
+    model->plotOn(x_frame, Name("MIX_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kCyan - 6), LineWidth(0), Components("L_x_*MIX*_ShapeSys,L_x_*UUBAR*_ShapeSys,L_x_*DDBAR*_ShapeSys,L_x_*SSBAR*_ShapeSys,L_x_*CHARM*_ShapeSys"), Normalization(MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
+    model->plotOn(x_frame, Name("UUBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kOrange - 6), LineWidth(0), Components("L_x_*UUBAR*_ShapeSys,L_x_*DDBAR*_ShapeSys,L_x_*SSBAR*_ShapeSys,L_x_*CHARM*_ShapeSys"), Normalization(UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
+    model->plotOn(x_frame, Name("DDBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kViolet - 6), LineWidth(0), Components("L_x_*DDBAR*_ShapeSys,L_x_*SSBAR*_ShapeSys,L_x_*CHARM*_ShapeSys"), Normalization(DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
+    model->plotOn(x_frame, Name("SSBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kGreen - 6), LineWidth(0), Components("L_x_*SSBAR*_ShapeSys,L_x_*CHARM*_ShapeSys"), Normalization(SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
+    model->plotOn(x_frame, Name("CHARM_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kYellow - 6), LineWidth(0), Components("L_x_*CHARM*_ShapeSys"), Normalization(CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
+    data->plotOn(x_frame, Name("data_name"), DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
     //model->paramOn(x_frame);
     TCanvas* cdata = new TCanvas("sPlot", "sPlot demo", 700, 700);
     x_frame->Draw();
