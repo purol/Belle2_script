@@ -202,7 +202,7 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, 
     return minim.save();
 }
 
-void Drawpull(TIterator* iter) {
+void Drawpull(RooWorkspace* w, TIterator* iter) {
     std::vector<double> pulls;
     std::vector<double> pull_errors;
     std::vector<std::string> names;
@@ -244,7 +244,7 @@ void Drawpull(TIterator* iter) {
             else if (name.find("CHARM") != std::string::npos) sample_index = 5;
             else if (name.find("Signal") != std::string::npos) sample_index = 6;
 
-            std::vector<std::string> temp_strings = split(name, '_');
+            std::vector<std::string> temp_strings = std::split(name, '_');
             bin_index = stoi(temp_strings.back()); // from 0
 
             if (name.find("all") != std::string::npos) {
@@ -404,7 +404,7 @@ int Check_param() {
     // get Category and data
     RooCategory* idx = (RooCategory*)obs->find("channelCat");
     //RooAbsData* data = (RooAbsData*)w->data("obsData");
-    RooAbsData* data = (RooAbsData*)w->data("asimovData");
+    RooDataSet* data = (RooAbsData*)w->data("asimovData");
 
     // fit
     double eps = 0.001;
@@ -415,7 +415,7 @@ int Check_param() {
     TIterator* iter(fitargs.createIterator());
 
     // draw pull
-    Drawpull(iter);
+    Drawpull(w, iter);
 
     // define frame
     RooPlot* x_frame = x->frame(Title("Tramsformed FBDT_{1}"));
