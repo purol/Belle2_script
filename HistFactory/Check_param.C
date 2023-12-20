@@ -175,7 +175,7 @@ std::vector<std::string> split(std::string str, char Delimiter) {
     return result;
 }
 
-RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, double tolerance = -1.0) {
+RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0) {
     // what we have done
     w->loadSnapshot("ParamValues");
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
@@ -187,7 +187,7 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, 
     RooArgSet fGlobalObs = *mc->GetGlobalObservables();
     RooArgSet fConditionalObs;
     Bool_t fLOffset = RooStats::IsNLLOffset();
-    nll = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
+    (*nll) = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
 
     // minimizer option
     TString fMinimizer = ::ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str();
@@ -208,7 +208,7 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, 
 
     // follow what ProfileLikelihoodTestStat.cxx does
     const auto& config = RooStats::GetGlobalRooStatsConfig();
-    RooMinimizer minim(*nll);
+    RooMinimizer minim(*(*nll));
     minim.setStrategy(fStrategy);
     minim.setEvalErrorWall(config.useEvalErrorWall);
     minim.setEps(fTolerance);
@@ -483,7 +483,7 @@ int Check_param() {
     // fit
     double eps = 0.001;
     RooAbsReal* nll;
-    RooFitResult* fitres = MyMinimizeNLL(w, data, nll, eps);
+    RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps);
 
     RooArgSet fitargs = fitres->floatParsFinal();
     TIterator* iter(fitargs.createIterator());
@@ -534,8 +534,9 @@ int Check_param() {
 
     // draw profile likelihood
     RooRealVar* mu = w->var("mu");
+    mu->setRange(-12, 12);
     RooPlot* mu_frame = mu->frame();
-    RooAbsReal* pll = nll->createProfile(RooArgSet(*mu));
+    RooAbsReal* pll = nll->createProfile(*mu);
     pll->plotOn(mu_frame);
 
     TCanvas* cmu = new TCanvas("pllPlot", "pllPlot", 700, 700);
