@@ -144,160 +144,311 @@ double FEI_cal_B0_modeID[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0
 //# define Lpf_Xsu_change 0.0
 //# define Lpf_Xsd_change 0.0
 
-# define RarityBins 20
+# define RarityBins 6
+
+double weight_KIDsys[RarityBins * 7] = { 0.0 };
+double weight_PIDsys[RarityBins * 7] = { 0.0 };
+double weight_BRsys[RarityBins * 3] = { 0.0 };
+double weight_pi0sys[RarityBins * 7] = { 0.0 };
+double weight_FEIsys[RarityBins * 3] = { 0.0 };
+
+RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, double tolerance = -1.0) {
+    // what we have done
+    w->loadSnapshot("ParamValues");
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    // get nll
+    RooArgSet* allParams = model->getParameters(*data);
+    RooStats::RemoveConstantParameters(allParams);
+    RooArgSet fGlobalObs = *mc->GetGlobalObservables();
+    RooArgSet fConditionalObs;
+    Bool_t fLOffset = RooStats::IsNLLOffset();
+    nll = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
+
+    // minimizer option
+    TString fMinimizer = ::ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str();
+    TString minimizer = fMinimizer;
+
+    TString algorithm = ::ROOT::Math::MinimizerOptions::DefaultMinimizerAlgo();
+
+    Int_t fStrategy = ::ROOT::Math::MinimizerOptions::DefaultStrategy();
+
+    Double_t fTolerance;
+    if (tolerance < 0) fTolerance = TMath::Max(1., ::ROOT::Math::MinimizerOptions::DefaultTolerance());
+    else fTolerance = tolerance;
+
+    Int_t fPrintLevel = ::ROOT::Math::MinimizerOptions::DefaultPrintLevel();
+    //LM: RooMinimizer.setPrintLevel has +1 offset - so subtract  here -1 + an extra -1
+    int level = (fPrintLevel == 0) ? -1 : fPrintLevel - 2;
+
+
+    // follow what ProfileLikelihoodTestStat.cxx does
+    const auto& config = RooStats::GetGlobalRooStatsConfig();
+    RooMinimizer minim(*nll);
+    minim.setStrategy(fStrategy);
+    minim.setEvalErrorWall(config.useEvalErrorWall);
+    minim.setEps(fTolerance);
+    minim.setPrintLevel(level);
+    // this causes a memory leak
+    minim.optimizeConst(2);
+    minim.migrad();
+    minim.minos(RooArgSet(*w->var("mu")));
+
+    // fit!
+    int status;
+    status = minim.minimize(minimizer, algorithm);
+
+    return minim.save();
+}
+
+void Drawpull(TIterator* iter) {
+    std::vector<double> pulls;
+    std::vector<double> pull_errors;
+    std::vector<std::string> names;
+
+    for (TObject* Tobj = iter->Next(); Tobj != 0; Tobj = iter->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(Tobj);
+        std::string name = rrv->GetName();
+        double val = rrv->getVal();
+        double err = rrv->getError();
+
+        std::cout.width(25);
+        std::cout << name;
+        std::cout.width(15);
+        std::cout << val;
+        std::cout.width(5);
+        std::cout << "+-" << err << std::endl;
+
+        if (name.find("alpha") != std::string::npos) {
+            pulls.push_back((val - 0.0) / 1.0);
+            pull_errors.push_back(err / 1.0);
+            names.push_back(name);
+        }
+        else if (name.find("gamma_stat") != std::string::npos) {
+            RooRealVar* norm = w->var(("nom_" + name).c_str());
+            double width = std::pow(norm->getValV(), -0.5);
+            pulls.push_back((val - 1.0) / width);
+            pull_errors.push_back(err / width);
+            names.push_back(name);
+        }
+        else if ((name.find("gamma") != std::string::npos) && (name.find("uncorr") != std::string::npos)) {
+            int sample_index = -1;
+            int bin_index = -1;
+
+            if (name.find("CHG") != std::string::npos) sample_index = 0;
+            else if (name.find("MIX") != std::string::npos) sample_index = 1;
+            else if (name.find("UUBAR") != std::string::npos) sample_index = 2;
+            else if (name.find("DDBAR") != std::string::npos) sample_index = 3;
+            else if (name.find("SSBAR") != std::string::npos) sample_index = 4;
+            else if (name.find("CHARM") != std::string::npos) sample_index = 5;
+            else if (name.find("Signal") != std::string::npos) sample_index = 6;
+
+            std::vector<std::string> temp_strings = split(name, '_');
+            bin_index = stoi(temp_strings.back()); // from 0
+
+            if (name.find("all") != std::string::npos) {
+                double KID_uncertainty = weight_KIDsys[RarityBins * sample_index + bin_index];
+                double PID_uncertainty = weight_PIDsys[RarityBins * sample_index + bin_index];
+                double BR_uncertainty = 0.0;
+                double pi0_uncertainty = weight_pi0sys[RarityBins * sample_index + bin_index];
+                double FEI_uncertainty = 0.0;
+                if ((name.find("CHG") != std::string::npos) || (name.find("MIX") != std::string::npos)) {
+                    BR_uncertainty = weight_BRsys[RarityBins * sample_index + bin_index];
+                    FEI_uncertainty = weight_FEIsys[RarityBins * sample_index + bin_index];
+                }
+                else if (name.find("Signal") != std::string::npos) {
+                    BR_uncertainty = weight_BRsys[RarityBins * 2 + bin_index]; // exception for signal BB BR uncorrelated uncertainty!
+                    FEI_uncertainty = weight_FEIsys[RarityBins * 2 + bin_index]; // exception for signal FEI uncorrelated uncertainty!
+                }
+
+                double total_uncertainty = std::sqrt(KID_uncertainty * KID_uncertainty + PID_uncertainty * PID_uncertainty + BR_uncertainty * BR_uncertainty + pi0_uncertainty * pi0_uncertainty + FEI_uncertainty * FEI_uncertainty);
+                pulls.push_back((val - 1.0) / total_uncertainty);
+                pull_errors.push_back(err / total_uncertainty);
+                names.push_back(name);
+            }
+        }
+    }
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+        std::cout << names.at(i) << " " << pulls.at(i) << "+-" << pull_errors.at(i) << std::endl;
+    }
+
+    // draw pull
+    int size_pull = pulls.size();
+
+    TH1D* pull_ht = new TH1D("pull data hist", "pull of parameters;;", size_pull, 0, size_pull);
+    for (int i = 0; i < size_pull; i++) {
+        pull_ht->SetBinContent(i + 1, pulls.at(i));
+        pull_ht->SetBinError(i + 1, pull_errors.at(i));
+    }
+    pull_ht->SetLineWidth(2.0);
+    pull_ht->SetMarkerColor(1);
+    pull_ht->SetMarkerStyle(21);
+    pull_ht->SetLineColor(1);
+    char** label_name = (char**)malloc(sizeof(char*) * size_pull);
+    for (int i = 0; i < size_pull; i++) {
+        label_name[i] = (char*)malloc(sizeof(char) * names.at(i).size() + 1);
+        memcpy(label_name[i], names.at(i).c_str(), names.at(i).size() + 1);
+    }
+
+    TH1D* pull_one_sigma = new TH1D("1sig hist", "1sig;;", size_pull, 0.0, size_pull);
+    for (int i = 0; i < size_pull; i++) {
+        pull_one_sigma->SetBinContent(i + 1, 0.0);
+        pull_one_sigma->SetBinError(i + 1, 1.0);
+    }
+    pull_one_sigma->SetFillColor(kGreen);
+    pull_one_sigma->SetFillStyle(1001);
+
+    TH1D* pull_two_sigma = new TH1D("2sig hist", "2sig;;", size_pull, 0.0, size_pull);
+    for (int i = 0; i < size_pull; i++) {
+        pull_two_sigma->SetBinContent(i + 1, 0.0);
+        pull_two_sigma->SetBinError(i + 1, 2.0);
+    }
+    pull_two_sigma->SetFillColor(kYellow);
+    pull_two_sigma->SetFillStyle(1001);
+    for (int i = 0; i < size_pull; i++) {
+        pull_two_sigma->GetXaxis()->SetBinLabel(i + 1, names.at(i).c_str());
+    }
+    pull_two_sigma->SetStats(false);
+    pull_two_sigma->GetYaxis()->SetTitle("(#hat{#theta}-#theta)/#Delta#theta");
+    pull_two_sigma->GetYaxis()->SetTitleOffset(1.4);
+    pull_two_sigma->GetXaxis()->LabelsOption("v");
+
+    TLine* line = new TLine(0.0, 0.0, size_pull, 0.0);
+    line->SetLineColor(kBlack);
+    line->SetLineStyle(2); line->SetLineWidth(1);
+
+    TCanvas* cpull = new TCanvas("pull_Plot", "pull Plot", 700, 800); cpull->SetBottomMargin(0.3);
+    pull_two_sigma->Draw("E2");
+    pull_one_sigma->Draw("E2 same");
+    pull_ht->Draw("e1 same");
+    line->Draw();
+}
+
+void ReadPIDuncorrsysFile(const char* dirname_KID, const char* dirname_PID) {
+    FILE* fp;
+
+    fp = fopen(dirname_KID, "r");
+    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_KIDsys[i]);
+    fclose(fp);
+    for (int i = 0; i < RarityBins * 7; i++) weight_KIDsys[i] = std::sqrt(weight_KIDsys[i]);
+
+    fp = fopen(dirname_PID, "r");
+    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_PIDsys[i]);
+    fclose(fp);
+    for (int i = 0; i < RarityBins * 7; i++) weight_PIDsys[i] = std::sqrt(weight_PIDsys[i]);
+}
+
+void ReadBRuncorrsysFile(const char* dirname_BR) {
+    FILE* fp;
+
+    fp = fopen(dirname_BR, "r");
+    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_BRsys[i]);
+    fclose(fp);
+    for (int i = 0; i < RarityBins * 3; i++) weight_BRsys[i] = std::sqrt(weight_BRsys[i]);
+
+}
+
+void Readpi0uncorrsysFile(const char* dirname_pi0) {
+    FILE* fp;
+
+    fp = fopen(dirname_pi0, "r");
+    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_pi0sys[i]);
+    fclose(fp);
+    for (int i = 0; i < RarityBins * 7; i++) weight_pi0sys[i] = std::sqrt(weight_pi0sys[i]);
+
+}
+
+void ReadFEIuncorrsysFile(const char* dirname_FEI) {
+    FILE* fp;
+
+    fp = fopen(dirname_FEI, "r");
+    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_FEIsys[i]);
+    fclose(fp);
+    for (int i = 0; i < RarityBins * 3; i++) weight_FEIsys[i] = std::sqrt(weight_FEIsys[i]);
+
+}
 
 int Check_param() {
 
-	const char* fname = "/home/jwpark/storage/BKG_gbasf2/Nitori_ad/HistFactory/10/mu/PDFandDATA_workspace_10_mu.root";
+    ::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit"); // default: Minuit Migrad
+    ::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
 
-	TFile* f = TFile::Open(fname);
+    ReadPIDuncorrsysFile("./KID_cov_remain_truncated.txt", "./PID_cov_remain_truncated.txt");
+    ReadBRuncorrsysFile("./BR_cov_remain_truncated.txt");
+    Readpi0uncorrsysFile("./pi0_cov_remain_truncated.txt");
+    ReadFEIuncorrsysFile("./FEI_cov_remain_truncated.txt");
 
-	RooWorkspace* w = (RooWorkspace*)f->Get("combined");
+    const char* fname = "./PDFandDATA_workspace.root";
 
-	w->Print();
-	ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
-	RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+    TFile* f = TFile::Open(fname);
 
+    RooWorkspace* w = (RooWorkspace*)f->Get("combined");
 
-        // test
-        RooRealVar *alpha = w->var("nom_gamma_stat_channel_bin_0");
-        printf("%lf", alpha->getValV());
-
-	// Lets tell roofit the right names for our histogram variables //
-	RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-	RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
-	x->SetTitle("Tramsformed FBDT_{1}");
-	x->setUnit("");
-
-	// get Category and data
-	RooCategory* idx = (RooCategory*)obs->find("channelCat");
-	RooAbsData* data = (RooAbsData*)w->data("obsData");
-
-	// fit
-	RooFitResult* fitres = model->fitTo(*data, Save());
-
-        RooArgSet fitargs = fitres->floatParsFinal();
-        TIterator* iter(fitargs.createIterator());
+    w->Print();
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
 
-        std::vector<double> pulls;
-        std::vector<double> pull_errors;
-        std::vector<std::string> names;
+    // test
+    //RooRealVar* alpha = w->var("nom_gamma_stat_channel_bin_0");
+    //printf("%lf", alpha->getValV());
 
-        for (TObject* Tobj = iter->Next(); Tobj != 0; Tobj = iter->Next()) {
-            RooRealVar* rrv = dynamic_cast<RooRealVar*>(Tobj);
-            std::string name = rrv->GetName();
-            double val = rrv->getVal();
-            double err = rrv->getError();
+    // Lets tell roofit the right names for our histogram variables //
+    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
+    RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
+    x->SetTitle("FBDT output");
+    x->setUnit("");
 
-            std::cout.width(25);
-            std::cout << name;
-            std::cout.width(15);
-            std::cout << val;
-            std::cout.width(5);
-            std::cout << "+-" << err << std::endl;
+    // get Category and data
+    RooCategory* idx = (RooCategory*)obs->find("channelCat");
+    //RooAbsData* data = (RooAbsData*)w->data("obsData");
+    RooAbsData* data = (RooAbsData*)w->data("asimovData");
 
-            if (name.find("alpha") != std::string::npos) {
-                pulls.push_back((val - 0.0)/1.0);
-                pull_errors.push_back(err/1.0);
-                names.push_back(name);
-            }
-            else if(name.find("gamma") != std::string::npos){
-                RooRealVar *norm = w->var(("nom_"+name).c_str());
-                double width = std::pow(norm->getValV(), -0.5);
-                pulls.push_back((val - 1.0)/width);
-                pull_errors.push_back(err/width);
-                names.push_back(name);
-            }
-        }
+    // fit
+    double eps = 0.001;
+    RooAbsReal* nll;
+    RooFitResult* fitres = MyMinimizeNLL(w, data, nll, eps);
 
-        for(unsigned int i=0; i < names.size(); i++){
-            std::cout << names.at(i) << " " << pulls.at(i) << "+-" << pull_errors.at(i) << std::endl;
-        }
+    RooArgSet fitargs = fitres->floatParsFinal();
+    TIterator* iter(fitargs.createIterator());
 
-        // draw pull
-        int size_pull = pulls.size();
+    // draw pull
+    Drawpull(iter);
 
-        TH1D* pull_ht = new TH1D("pull data hist", "pull of parameters;;", size_pull,0,size_pull);
-        for(int i=0;i<size_pull;i++) {
-            pull_ht->SetBinContent(i+1,pulls.at(i));
-            pull_ht->SetBinError(i+1, pull_errors.at(i));
-        }
-        pull_ht->SetLineWidth(2.0);
-        pull_ht->SetMarkerColor(1);
-        pull_ht->SetMarkerStyle(21);
-        pull_ht->SetLineColor(1);
-        char ** label_name = (char **) malloc(sizeof(char *) * size_pull);
-        for(int i=0;i<size_pull;i++) {
-            label_name[i] = (char*) malloc(sizeof(char) * names.at(i).size() + 1);
-            memcpy(label_name[i], names.at(i).c_str(), names.at(i).size() + 1);
-        }
+    // define frame
+    RooPlot* x_frame = x->frame(Title("Tramsformed FBDT_{1}"));
 
-        TH1D* pull_one_sigma = new TH1D("1sig hist", "1sig;;", size_pull,0.0,size_pull);
-        for(int i=0;i<size_pull;i++) {
-            pull_one_sigma->SetBinContent(i+1, 0.0);
-            pull_one_sigma->SetBinError(i+1, 1.0);
-        }
-        pull_one_sigma->SetFillColor(kGreen);
-        pull_one_sigma->SetFillStyle(1001);
+    // draw
+    data->plotOn(x_frame, Name("data_name"), DataError(RooAbsData::SumW2), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
+    model->plotOn(x_frame, Name("CHG_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed + 1), LineWidth(0));
+    model->plotOn(x_frame, Name("MIX_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kViolet + 1), LineWidth(0), Components("*MIX*, *UUBAR*, *DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
+    model->plotOn(x_frame, Name("UUBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kBlue + 1), LineWidth(0), Components("*UUBAR*, *DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
+    model->plotOn(x_frame, Name("DDBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kOrange + 1), LineWidth(0), Components("*DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
+    model->plotOn(x_frame, Name("SSBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kGreen + 1), LineWidth(0), Components("*SSBAR*, *CHARM*, *Signal*"));
+    model->plotOn(x_frame, Name("CHARM_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kYellow + 1), LineWidth(0), Components("*CHARM*, *Signal*"));
+    model->plotOn(x_frame, Name("signal_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kPink + 1), LineWidth(0), Components("*Signal*"));
+    data->plotOn(x_frame, DataError(RooAbsData::SumW2), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
+    //model->paramOn(x_frame);
+    TCanvas* cdata = new TCanvas("sPlot", "sPlot demo", 700, 700);
+    x_frame->Draw();
 
-        TH1D* pull_two_sigma = new TH1D("2sig hist", "2sig;;", size_pull,0.0,size_pull);
-        for(int i=0;i<size_pull;i++) {
-            pull_two_sigma->SetBinContent(i+1, 0.0);
-            pull_two_sigma->SetBinError(i+1, 2.0);
-        }
-        pull_two_sigma->SetFillColor(kYellow);
-        pull_two_sigma->SetFillStyle(1001);
-        for (int i=0;i<size_pull;i++) {
-             pull_two_sigma->GetXaxis()->SetBinLabel(i+1,names.at(i).c_str());
-        }
-        pull_two_sigma->SetStats(false);
-        pull_two_sigma->GetYaxis()->SetTitle("(#hat{#theta}-#theta)/#Delta#theta");
-        pull_two_sigma->GetYaxis()->SetTitleOffset(1.4);
-        pull_two_sigma->GetXaxis()->LabelsOption("v");
+    TLegend* leg = new TLegend(0.7, 0.6, 0.9, 0.9);
+    leg->SetFillStyle(0);
+    leg->SetLineWidth(0);
+    leg->AddEntry("data_name", "Data", "LP");
+    leg->AddEntry("CHG_name", "charged", "F");
+    leg->AddEntry("MIX_name", "mixed", "F");
+    leg->AddEntry("UUBAR_name", "u#bar{u}", "F");
+    leg->AddEntry("DDBAR_name", "d#bar{d}", "F");
+    leg->AddEntry("SSBAR_name", "s#bar{s}", "F");
+    leg->AddEntry("CHARM_name", "c#bar{c}", "F");
+    leg->AddEntry("signal_name", "signal", "F");
+    leg->Draw();
 
-        TLine* line = new TLine(0.0, 0.0, size_pull, 0.0);
-        line->SetLineColor(kBlack);
-        line->SetLineStyle(2); line->SetLineWidth(1);
+    cdata->SaveAs("FitResult.png");
+    /* ======================== CLS ======================== */
 
-        TCanvas* cpull = new TCanvas("pull_Plot", "pull Plot", 700, 800); cpull->SetBottomMargin(0.3);
-        pull_two_sigma->Draw("E2");
-        pull_one_sigma->Draw("E2 same");
-        pull_ht->Draw("e1 same");
-        line->Draw();
-
-	// define frame
-	RooPlot* x_frame = x->frame(Title("Tramsformed FBDT_{1}"));
-
-	// draw
-	data->plotOn(x_frame, Name("data_name"), DataError(RooAbsData::SumW2), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
-	model->plotOn(x_frame, Name("CHG_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed + 1), LineWidth(0));
-	model->plotOn(x_frame, Name("MIX_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kViolet + 1), LineWidth(0), Components("*MIX*, *UUBAR*, *DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
-	model->plotOn(x_frame, Name("UUBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kBlue + 1), LineWidth(0), Components("*UUBAR*, *DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
-	model->plotOn(x_frame, Name("DDBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kOrange + 1), LineWidth(0), Components("*DDBAR*, *SSBAR*, *CHARM*, *Signal*"));
-	model->plotOn(x_frame, Name("SSBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kGreen + 1), LineWidth(0), Components("*SSBAR*, *CHARM*, *Signal*"));
-	model->plotOn(x_frame, Name("CHARM_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kYellow + 1), LineWidth(0), Components("*CHARM*, *Signal*"));
-	model->plotOn(x_frame, Name("signal_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kPink + 1), LineWidth(0), Components("*Signal*"));
-	data->plotOn(x_frame, DataError(RooAbsData::SumW2), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"));
-        //model->paramOn(x_frame);
-	TCanvas* cdata = new TCanvas("sPlot", "sPlot demo", 700, 700);
-	x_frame->Draw();
-
-	TLegend* leg = new TLegend(0.7, 0.6, 0.9, 0.9);
-	leg->SetFillStyle(0);
-	leg->SetLineWidth(0);
-	leg->AddEntry("data_name", "Data", "LP");
-	leg->AddEntry("CHG_name", "charged", "F");
-	leg->AddEntry("MIX_name", "mixed", "F");
-	leg->AddEntry("UUBAR_name", "u#bar{u}", "F");
-	leg->AddEntry("DDBAR_name", "d#bar{d}", "F");
-	leg->AddEntry("SSBAR_name", "s#bar{s}", "F");
-	leg->AddEntry("CHARM_name", "c#bar{c}", "F");
-	leg->AddEntry("signal_name", "signal", "F");
-	leg->Draw();
-
-	cdata->SaveAs("FitResult.png");
-	/* ======================== CLS ======================== */
-
-	return 0;
+    return 0;
 }
