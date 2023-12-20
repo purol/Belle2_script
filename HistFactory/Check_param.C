@@ -490,7 +490,7 @@ int Check_param() {
     Drawpull(w, iter);
 
     // define frame
-    RooPlot* x_frame = x->frame(Title(""));
+    RooPlot* x_frame = x->frame(Title("fit result"));
 
     // get expected num of evts for PDFs
     double Signal_Nevts = GetNumEvts(w, "Signal");
