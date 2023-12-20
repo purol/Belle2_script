@@ -349,6 +349,8 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
     line->Draw();
 
     cpull->SaveAs("param_pull.png");
+
+    delete cpull;
 }
 
 void ReadPIDuncorrsysFile(const char* dirname_KID, const char* dirname_PID) {
@@ -528,7 +530,18 @@ int Check_param() {
     leg->Draw();
 
     cdata->SaveAs("FitResult.png");
-    /* ======================== CLS ======================== */
+    delete cdata;
+
+    // draw profile likelihood
+    RooRealVar* mu = w->var("mu");
+    RooPlot* mu_frame = mu->frame();
+    RooAbsReal* pll = nll->createProfile(RooArgSet(*mu));
+    pll->plotOn(mu_frame);
+
+    TCanvas* cmu = new TCanvas("pllPlot", "pllPlot", 700, 700);
+    mu_frame->Draw();
+    cmu->SaveAs("profile_likelihood_mu.png");
+    delete cmu;
 
     return 0;
 }
