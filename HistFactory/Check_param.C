@@ -534,7 +534,7 @@ int Check_param() {
 
     // draw profile likelihood
     RooRealVar* mu = w->var("mu");
-    mu->setRange(-12, 12);
+    mu->setRange(-3, 5);
     RooPlot* mu_frame = mu->frame();
     RooAbsReal* pll = nll->createProfile(*mu);
     pll->plotOn(mu_frame);
