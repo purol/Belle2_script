@@ -488,6 +488,23 @@ int Check_param() {
     RooArgSet fitargs = fitres->floatParsFinal();
     TIterator* iter(fitargs.createIterator());
 
+    for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        double val = rrv->getVal();
+        double err = rrv->getError();
+        double HIerr = rrv->getAsymErrorHi();
+        double LOerr = rrv->getAsymErrorLo();
+
+        for (unsigned int i = 0; i < names->size(); i++) {
+            if (name == "mu") {
+                printf("fit result mu = %lf +- %lf\n", val, err);
+                printf("MINOS error: %lf %lf\n", HIerr, LOerr);
+            }
+        }
+
+    }
+
     // draw pull
     Drawpull(w, iter);
 
