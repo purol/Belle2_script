@@ -2801,7 +2801,7 @@ double ObtainWeight(const char* type, const char* MC_version, const char* catego
     return 1.0;
 }
 
-void THStack_plot_sideband() {
+void THStack_plot_comparison() {
 
     const char* MC15ri_CHG_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHG_analysis/test_v004/final_output";
     const char* MC15ri_MIX_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/MIX_analysis/test_v004/final_output";
