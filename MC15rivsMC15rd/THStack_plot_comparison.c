@@ -3001,7 +3001,7 @@ void THStack_plot_comparison() {
     std::vector<double> MC15ri_weights;
     std::vector<double> MC15rd_weights;
 
-    double CAL_MC15ri = 1.0;
+    double CAL_MC15ri = 1.0234;
     double CAL_MC15rd = 1.0;
 
     LetsFill_ri(MC15ri_CHG_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHG", "MC15ri", "test", CAL_MC15ri, 1.0);
@@ -3339,6 +3339,9 @@ void THStack_plot_comparison() {
         else real_max = ymax_2;
 
         MC15rd_hist[k]->SetMaximum(real_max * 1.1);
+
+        MC15ri_hist[k]->SetStats(0);
+        MC15rd_hist[k]->SetStats(0);
 
         MC15rd_hist[k]->SetFillColor(4); MC15rd_hist[k]->SetLineColor(4); MC15rd_hist[k]->SetLineWidth(1); MC15rd_hist[k]->SetFillStyle(3002); MC15rd_hist[k]->Draw("e2 Hist");
         MC15ri_hist[k]->SetFillColor(2); MC15ri_hist[k]->SetLineColor(2); MC15ri_hist[k]->SetLineWidth(1); MC15ri_hist[k]->SetFillStyle(3003); MC15ri_hist[k]->Draw("e2 Hist SAME");
