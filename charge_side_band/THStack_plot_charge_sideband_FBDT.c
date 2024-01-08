@@ -1571,6 +1571,7 @@ private:
 
 public:
     Corrector_Multiplicity();
+    Corrector_Multiplicity(const char* filename);
     double GetCorrectionFactor(double Ngamma);
 };
 
@@ -1581,10 +1582,31 @@ Corrector_Multiplicity::Corrector_Multiplicity() :
 {
     FILE* fp;
 
-    // read Knn weights
+    // read multiplicity weights
     fp = fopen("./multiplicity_weight.txt", "r");
     fscanf(fp, "%d\n", &NgammaMAX);
     weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    for (int i = 0; i < NgammaMAX + 1; i++) {
+        double temp1;
+        double temp2;
+        double temp3;
+        fscanf(fp, "%lf %lf %lf\n", &temp1, &temp2, &temp3);
+        if (temp3 < CUTOFF) weights_Ngamma->SetBinContent(i + 1, temp3);
+        else weights_Ngamma->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+}
+
+Corrector_Multiplicity::Corrector_Multiplicity(const char* filename) :
+    CUTOFF(50.0)
+{
+    FILE* fp;
+
+    // read multiplicity weights
+    fp = fopen(filename, "r");
+    fscanf(fp, "%d\n", &NgammaMAX);
+    weights_Ngamma = new TH1D(("weights_Ngamma_" + std::string(filename)).c_str(), ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
     for (int i = 0; i < NgammaMAX + 1; i++) {
         double temp1;
         double temp2;

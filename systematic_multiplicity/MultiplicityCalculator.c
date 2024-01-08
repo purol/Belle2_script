@@ -1554,27 +1554,49 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
 class Corrector_Multiplicity {
 private:
 
-    int NgammaMAX_;
+    int NgammaMAX;
     TH1D* weights_Ngamma;
     const double CUTOFF;
 
 public:
     Corrector_Multiplicity();
+    Corrector_Multiplicity(const char* filename);
     double GetCorrectionFactor(double Ngamma);
 };
 
-Corrector_Multiplicity *corrector_Multiplicity;
+Corrector_Multiplicity corrector_Multiplicity;
 
 Corrector_Multiplicity::Corrector_Multiplicity() :
     CUTOFF(50.0)
 {
     FILE* fp;
 
-    // read Knn weights
+    // read multiplicity weights
     fp = fopen("./multiplicity_weight.txt", "r");
-    fscanf(fp, "%d\n", &NgammaMAX_);
-    weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX_ + 1, -0.5, NgammaMAX_ + 0.5);
-    for (int i = 0; i < NgammaMAX_ + 1; i++) {
+    fscanf(fp, "%d\n", &NgammaMAX);
+    weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    for (int i = 0; i < NgammaMAX + 1; i++) {
+        double temp1;
+        double temp2;
+        double temp3;
+        fscanf(fp, "%lf %lf %lf\n", &temp1, &temp2, &temp3);
+        if (temp3 < CUTOFF) weights_Ngamma->SetBinContent(i + 1, temp3);
+        else weights_Ngamma->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+}
+
+Corrector_Multiplicity::Corrector_Multiplicity(const char* filename) :
+    CUTOFF(50.0)
+{
+    FILE* fp;
+
+    // read multiplicity weights
+    fp = fopen(filename, "r");
+    fscanf(fp, "%d\n", &NgammaMAX);
+    weights_Ngamma = new TH1D(("weights_Ngamma_" + std::string(filename)).c_str(), ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    for (int i = 0; i < NgammaMAX + 1; i++) {
         double temp1;
         double temp2;
         double temp3;
@@ -1592,7 +1614,7 @@ double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma) {
         printf("[ERROR] Ngamma is smaller than 0!\n");
         exit(1);
     }
-    else if (Bin > NgammaMAX_ + 1) return 1.0;
+    else if (Bin > NgammaMAX + 1) return 1.0;
 
     return weights_Ngamma->GetBinContent(Bin);
 }
