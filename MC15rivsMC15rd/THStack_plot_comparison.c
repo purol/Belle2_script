@@ -2014,62 +2014,62 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
             if (SampleName == "CHG" && MCTYPE == "MC15ri") {
                 numberings->push_back(0);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "MIX" && MCTYPE == "MC15ri") {
                 numberings->push_back(1);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "UUBAR" && MCTYPE == "MC15ri") {
                 numberings->push_back(2);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "DDBAR" && MCTYPE == "MC15ri") {
                 numberings->push_back(3);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "SSBAR" && MCTYPE == "MC15ri") {
                 numberings->push_back(4);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "CHARM" && MCTYPE == "MC15ri") {
                 numberings->push_back(5);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "CHG" && MCTYPE == "MC15rd") {
                 numberings->push_back(0 + IndexShift);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "MIX" && MCTYPE == "MC15rd") {
                 numberings->push_back(1 + IndexShift);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "UUBAR" && MCTYPE == "MC15rd") {
                 numberings->push_back(2 + IndexShift);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "DDBAR" && MCTYPE == "MC15rd") {
                 numberings->push_back(3 + IndexShift);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "SSBAR" && MCTYPE == "MC15rd") {
                 numberings->push_back(4 + IndexShift);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "CHARM" && MCTYPE == "MC15rd") {
                 numberings->push_back(5 + IndexShift);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
@@ -2369,62 +2369,62 @@ void LetsFill_ri_correction(const char* dirname, std::vector<std::string> variab
             if (SampleName == "CHG" && MCTYPE == "MC15ri") {
                 numberings->push_back(0);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "MIX" && MCTYPE == "MC15ri") {
                 numberings->push_back(1);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "UUBAR" && MCTYPE == "MC15ri") {
                 numberings->push_back(2);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "DDBAR" && MCTYPE == "MC15ri") {
                 numberings->push_back(3);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "SSBAR" && MCTYPE == "MC15ri") {
                 numberings->push_back(4);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "CHARM" && MCTYPE == "MC15ri") {
                 numberings->push_back(5);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "CHG" && MCTYPE == "MC15rd") {
                 numberings->push_back(0 + IndexShift);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "MIX" && MCTYPE == "MC15rd") {
                 numberings->push_back(1 + IndexShift);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "UUBAR" && MCTYPE == "MC15rd") {
                 numberings->push_back(2 + IndexShift);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "DDBAR" && MCTYPE == "MC15rd") {
                 numberings->push_back(3 + IndexShift);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "SSBAR" && MCTYPE == "MC15rd") {
                 numberings->push_back(4 + IndexShift);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "CHARM" && MCTYPE == "MC15rd") {
                 numberings->push_back(5 + IndexShift);
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
@@ -2636,27 +2636,27 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, std::
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "MIX") {
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "UUBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "DDBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "SSBAR") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             else if (SampleName == "CHARM") {
                 FEI_calibration_factor = CAL_qq;
-                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, sample_type, names.at(i));
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
