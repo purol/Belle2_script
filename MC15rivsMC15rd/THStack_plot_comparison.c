@@ -3306,12 +3306,12 @@ void THStack_plot_sideband() {
     }
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
-        Stack[k]->Add(charged_hist[k]);
-        Stack[k]->Add(mixed_hist[k]);
-        Stack[k]->Add(uubar_hist[k]);
-        Stack[k]->Add(ddbar_hist[k]);
-        Stack[k]->Add(ssbar_hist[k]);
-        Stack[k]->Add(ccbar_hist[k]);
+        //Stack[k]->Add(charged_hist[k]);
+        //Stack[k]->Add(mixed_hist[k]);
+        //Stack[k]->Add(uubar_hist[k]);
+        //Stack[k]->Add(ddbar_hist[k]);
+        //Stack[k]->Add(ssbar_hist[k]);
+        //Stack[k]->Add(ccbar_hist[k]);
         //Stack[k]->Add(taupair_hist[k]);
         //Stack[k]->Add(mumu_hist[k]);
         //Stack[k]->Add(gg_hist[k]);
