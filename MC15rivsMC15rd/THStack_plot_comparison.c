@@ -1573,20 +1573,43 @@ private:
 
 public:
     Corrector_Multiplicity();
+    Corrector_Multiplicity(const char* filename);
     double GetCorrectionFactor(double Ngamma);
 };
 
-Corrector_Multiplicity corrector_Multiplicity;
+Corrector_Multiplicity corrector_Multiplicity_MC15ri("./multiplicity_weight_MC15ri.txt");
+Corrector_Multiplicity corrector_Multiplicity_MC15rd("./multiplicity_weight_MC15rd.txt");
 
 Corrector_Multiplicity::Corrector_Multiplicity() :
     CUTOFF(50.0)
 {
     FILE* fp;
 
-    // read Knn weights
+    // read multiplicity weights
     fp = fopen("./multiplicity_weight.txt", "r");
     fscanf(fp, "%d\n", &NgammaMAX);
     weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    for (int i = 0; i < NgammaMAX + 1; i++) {
+        double temp1;
+        double temp2;
+        double temp3;
+        fscanf(fp, "%lf %lf %lf\n", &temp1, &temp2, &temp3);
+        if (temp3 < CUTOFF) weights_Ngamma->SetBinContent(i + 1, temp3);
+        else weights_Ngamma->SetBinContent(i + 1, CUTOFF);
+    }
+    fclose(fp);
+
+}
+
+Corrector_Multiplicity::Corrector_Multiplicity(const char* filename) :
+    CUTOFF(50.0)
+{
+    FILE* fp;
+
+    // read multiplicity weights
+    fp = fopen(filename, "r");
+    fscanf(fp, "%d\n", &NgammaMAX);
+    weights_Ngamma = new TH1D(("weights_Ngamma_" + std::string(filename)).c_str(), ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
     for (int i = 0; i < NgammaMAX + 1; i++) {
         double temp1;
         double temp2;
@@ -2089,7 +2112,9 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             Ngamma_v200 = var[Ngamma_v200_index];
-            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+            double Correction_multiplicity = 1.0;
+            if (MCTYPE == "MC15ri") Correction_multiplicity = corrector_Multiplicity_MC15ri.GetCorrectionFactor(Ngamma_v200);
+            else if (MCTYPE == "MC15rd") Correction_multiplicity = corrector_Multiplicity_MC15rd.GetCorrectionFactor(Ngamma_v200);
 
             // B+ --> K+ KL0 KL0 correction factor
             double Correction_KpKLKL = corrector_KpKLKL.GetCorrectionFactorAtGeneric(s13_KpKLKL, s23_KpKLKL, nB2KpKLKL_all_KpKLKL, nB2KpKLKL_NR_KpKLKL);
@@ -2442,7 +2467,9 @@ void LetsFill_ri_correction(const char* dirname, std::vector<std::string> variab
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             Ngamma_v200 = var[Ngamma_v200_index];
-            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+            double Correction_multiplicity = 1.0;
+            if (MCTYPE == "MC15ri") Correction_multiplicity = corrector_Multiplicity_MC15ri.GetCorrectionFactor(Ngamma_v200);
+            else if (MCTYPE == "MC15rd") Correction_multiplicity = corrector_Multiplicity_MC15rd.GetCorrectionFactor(Ngamma_v200);
 
             // B+ --> K+ KL0 KL0 correction factor
             double Correction_KpKLKL = corrector_KpKLKL.GetCorrectionFactorAtGeneric(s13_KpKLKL, s23_KpKLKL, nB2KpKLKL_all_KpKLKL, nB2KpKLKL_NR_KpKLKL);
@@ -2671,7 +2698,9 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, std::
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
-            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+            double Correction_multiplicity = 1.0;
+            if (MCTYPE == "MC15ri") Correction_multiplicity = corrector_Multiplicity_MC15ri.GetCorrectionFactor(Ngamma_v200);
+            else if (MCTYPE == "MC15rd") Correction_multiplicity = corrector_Multiplicity_MC15rd.GetCorrectionFactor(Ngamma_v200);
 
             // B+ --> K+ KL0 KL0 correction factor
             double Correction_KpKLKL = corrector_KpKLKL.GetCorrectionFactorAtGeneric(s13_KpKLKL, s23_KpKLKL, nB2KpKLKL_all_KpKLKL, nB2KpKLKL_NR_KpKLKL);
