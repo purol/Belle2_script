@@ -3097,8 +3097,8 @@ void THStack_plot_comparison_signal() {
         MC15ri_hist[k]->SetStats(0);
         MC15rd_hist[k]->SetStats(0);
 
-        MC15rd_hist[k]->SetFillColor(4); MC15rd_hist[k]->SetLineColor(4); MC15rd_hist[k]->SetLineWidth(1); MC15rd_hist[k]->SetFillStyle(3002); MC15rd_hist[k]->Draw("e2 Hist");
-        MC15ri_hist[k]->SetFillColor(2); MC15ri_hist[k]->SetLineColor(2); MC15ri_hist[k]->SetLineWidth(1); MC15ri_hist[k]->SetFillStyle(3003); MC15ri_hist[k]->Draw("e2 Hist SAME");
+        MC15rd_hist[k]->SetFillColor(4); MC15rd_hist[k]->SetLineColor(4); MC15rd_hist[k]->SetLineWidth(1); MC15rd_hist[k]->SetFillStyle(3002); MC15rd_hist[k]->Draw("e1 Hist");
+        MC15ri_hist[k]->SetFillColor(2); MC15ri_hist[k]->SetLineColor(2); MC15ri_hist[k]->SetLineWidth(1); MC15ri_hist[k]->SetFillStyle(3003); MC15ri_hist[k]->Draw("e1 Hist SAME");
         TLegend* legend = pad1->BuildLegend(0.9, 0.9, 0.7, 0.7);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
         TPaveText* pt = new TPaveText(0.135, 0.88, 0.6, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC15ri scaled to MC15rd, MC15rd/MC15ri= " + std::to_string(CAL_MC15ri/ CAL_MC15rd)).c_str()); pt->Draw();
