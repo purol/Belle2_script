@@ -11,8 +11,36 @@ revise void Loader::PrintSeparateRootFile(std::string output_name)
 revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double flag = 0)
 */
 
-# include <algorithm>
-# include <float.h>
+#include "RooRealVar.h"
+#include "RooDataSet.h"
+#include "RooGaussian.h"
+#include "RooConstVar.h"
+#include "RooPolynomial.h"
+#include "RooHistPdf.h"
+#include "TCanvas.h"
+#include "TAxis.h"
+#include "RooPlot.h"
+#include <cmath>
+#include <float.h>
+#include <string>
+#include <string.h>
+#include <numeric>
+#include "TFile.h"
+#include "TTree.h"
+#include "TSystemDirectory.h"
+#include "TSystemFile.h"
+#include "RooGenericPdf.h"
+#include "RooCBShape.h"
+#include "RooAddPdf.h"
+#include "TStyle.h"
+#include "TGraphErrors.h"
+#include "TLine.h"
+#include "RooFitResult.h"
+#include "RooExtendPdf.h"
+#include "TH1.h"
+#include "TH2.h"
+#include "TF1.h"
+#include "RooDataHist.h"
 
 # define N_decay 38 // five decay mode + others
 
