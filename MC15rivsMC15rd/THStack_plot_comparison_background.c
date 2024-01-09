@@ -3249,7 +3249,7 @@ void THStack_plot_comparison_background() {
         MC15rd_hist[k] = new TH1D("MC15rd background", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;data/MC", bins, min, max);
+        Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;MC15rd/MC15ri", bins, min, max);
     }
 
     int index = std::find(variable_names.begin(), variable_names.end(), std::string("log_{10}SignalProbability")) - variable_names.begin();
