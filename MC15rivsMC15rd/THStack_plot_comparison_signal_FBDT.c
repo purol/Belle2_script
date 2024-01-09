@@ -2070,7 +2070,10 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
-            else if (SampleName == "SIGNAL") {}
+            else if (SampleName == "SIGNAL") {
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
+            }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
             //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
@@ -2424,7 +2427,10 @@ void LetsFill_ri_correction(const char* dirname, std::vector<std::string> variab
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
-            else if (SampleName == "SIGNAL") {}
+            else if (SampleName == "SIGNAL") {
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
+            }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
             //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
@@ -2656,7 +2662,10 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, std::
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
-            else if (SampleName == "SIGNAL") {}
+            else if (SampleName == "SIGNAL") {
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
+            }
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
             //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
