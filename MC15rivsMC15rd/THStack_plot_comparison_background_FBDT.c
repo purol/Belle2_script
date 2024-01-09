@@ -292,7 +292,7 @@ double Corrector_FEI::GetmodeID(int index, bool IsItCharged, std::string type) {
     }
 }
 
-# define Nvar_num 128
+# define Nvar_num 1
 
 //# define CAL 1.1728
 //# define CAL_qq 1.0
@@ -2801,7 +2801,7 @@ double ObtainWeight(const char* type, const char* MC_version, const char* catego
     return 1.0;
 }
 
-void THStack_plot_comparison() {
+void THStack_plot_comparison_background_FBDT() {
 
     const char* MC15ri_CHG_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHG_analysis/test_v004/final_output";
     const char* MC15ri_MIX_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/MIX_analysis/test_v004/final_output";
@@ -2819,134 +2819,7 @@ void THStack_plot_comparison() {
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
-    variable_names.push_back("nRemainingTracksInEvent"); branch_names.push_back("Upsilon");
-    variable_names.push_back("Btag_chiProb"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_extraInfo_SignalProbability"); branch_names.push_back("Btag");
-    variable_names.push_back("thrustAxisCosTheta"); branch_names.push_back("Upsilon");
-    variable_names.push_back("missingMomentumOfEvent_theta"); branch_names.push_back("Upsilon");
-    variable_names.push_back("missingEnergyOfEventCMS"); branch_names.push_back("Upsilon");
-    variable_names.push_back("missingMomentumOfEvent"); branch_names.push_back("Upsilon");
-    variable_names.push_back("Btag_deltaE"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_Mbc"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_useCMSFrame_theta"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_R2"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_cosTBTO"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_et"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_mm2"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hso00"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hso01"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hso02"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hso03"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hso04"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hso10"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hso12"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hso14"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hso20"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hso22"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hso24"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hoo0"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hoo1"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hoo2"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hoo3"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_KSFWVariables_hoo4"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_dr"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_dz"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_useCMSFrame_p"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_useCMSFrame_phi"); branch_names.push_back("Btag");
-    variable_names.push_back("roeEextra__bocleanMask__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("extraInfo__boEeclv133__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("extraInfo__boNgammav133__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("extraInfo__boEeclv200__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("extraInfo__boNgammav200__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("Btag_thrustOm"); branch_names.push_back("Btag");
-    variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT_loose__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT_tight__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("Bsig_M"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_useCMSFrame_p"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_Dc_pValue_med"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_Dc_pValue_std"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_M"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_D0_pValue_med"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_D0_pValue_std"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dr"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dz"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_M"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_thrustBm"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_thrustOm"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_cosTBTO"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_cosTBz"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_et"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_mm2"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso00"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso01"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso02"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso03"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso04"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso10"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso12"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso14"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso20"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso22"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hso24"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hoo0"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hoo1"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hoo2"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hoo3"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_KSFWVariables_hoo4"); branch_names.push_back("Bsig");
-    variable_names.push_back("foxWolframR1"); branch_names.push_back("Upsilon");
-    variable_names.push_back("foxWolframR2"); branch_names.push_back("Upsilon");
-    variable_names.push_back("foxWolframR3"); branch_names.push_back("Upsilon");
-    variable_names.push_back("foxWolframR4"); branch_names.push_back("Upsilon");
-    variable_names.push_back("cleoConeThrust0"); branch_names.push_back("Upsilon");
-    variable_names.push_back("cleoConeThrust1"); branch_names.push_back("Upsilon");
-    variable_names.push_back("cleoConeThrust2"); branch_names.push_back("Upsilon");
-    variable_names.push_back("cleoConeThrust3"); branch_names.push_back("Upsilon");
-    variable_names.push_back("cleoConeThrust4"); branch_names.push_back("Upsilon");
-    variable_names.push_back("cleoConeThrust5"); branch_names.push_back("Upsilon");
-    variable_names.push_back("cleoConeThrust6"); branch_names.push_back("Upsilon");
-    variable_names.push_back("cleoConeThrust7"); branch_names.push_back("Upsilon");
-    variable_names.push_back("cleoConeThrust8"); branch_names.push_back("Upsilon");
-    variable_names.push_back("harmonicMomentThrust0"); branch_names.push_back("Upsilon");
-    variable_names.push_back("harmonicMomentThrust1"); branch_names.push_back("Upsilon");
-    variable_names.push_back("harmonicMomentThrust2"); branch_names.push_back("Upsilon");
-    variable_names.push_back("harmonicMomentThrust3"); branch_names.push_back("Upsilon");
-    variable_names.push_back("harmonicMomentThrust4"); branch_names.push_back("Upsilon");
-    variable_names.push_back("sphericity"); branch_names.push_back("Upsilon");
-    variable_names.push_back("aplanarity"); branch_names.push_back("Upsilon");
-    variable_names.push_back("Btag_thrustBm"); branch_names.push_back("Btag");
-    variable_names.push_back("roePTheta__bocleanMask__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("Btag_cosTBz"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_CleoConeCS_1"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_CleoConeCS_2"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_CleoConeCS_3"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_CleoConeCS_4"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_CleoConeCS_5"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_CleoConeCS_6"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_CleoConeCS_7"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_CleoConeCS_8"); branch_names.push_back("Btag");
-    variable_names.push_back("Btag_CleoConeCS_9"); branch_names.push_back("Btag");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_mychiProb"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_mydr"); branch_names.push_back("Bsig");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_mydz"); branch_names.push_back("Bsig");
-    variable_names.push_back("nROE_KLMClusters"); branch_names.push_back("Upsilon");
-    variable_names.push_back("nROE_ECLClusters__bocleanMask__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("nROE_ParticlesInList__bopi0__clmyneutralPion__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("nROE_ParticlesInList__bogamma__clmygamma__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("missingMass2OfEvent"); branch_names.push_back("Upsilon");
-    variable_names.push_back("visibleEnergyOfEventCMS"); branch_names.push_back("Upsilon");
-    variable_names.push_back("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("chiProb"); branch_names.push_back("Upsilon");
-    variable_names.push_back("dr"); branch_names.push_back("Upsilon");
-    variable_names.push_back("dz"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MVA_BB"); branch_names.push_back("Upsilon");
 
     int Nvar = static_cast<int>(variable_names.size());
     if (Nvar != Nvar_num) exit(1);
@@ -3252,32 +3125,6 @@ void THStack_plot_comparison() {
         Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;data/MC", bins, min, max);
     }
 
-    int index = std::find(variable_names.begin(), variable_names.end(), std::string("log_{10}SignalProbability")) - variable_names.begin();
-    for (int i = 0; i < (int)charged_MC15ri_values[index].size(); i++) charged_MC15ri_values[index].at(i) = log10l(charged_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)mixed_MC15ri_values[index].size(); i++) mixed_MC15ri_values[index].at(i) = log10l(mixed_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)uubar_MC15ri_values[index].size(); i++) uubar_MC15ri_values[index].at(i) = log10l(uubar_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)ddbar_MC15ri_values[index].size(); i++) ddbar_MC15ri_values[index].at(i) = log10l(ddbar_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)ssbar_MC15ri_values[index].size(); i++) ssbar_MC15ri_values[index].at(i) = log10l(ssbar_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)ccbar_MC15ri_values[index].size(); i++) ccbar_MC15ri_values[index].at(i) = log10l(ccbar_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)taupair_MC15ri_values[index].size(); i++) taupair_MC15ri_values[index].at(i) = log10l(taupair_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)mumu_MC15ri_values[index].size(); i++) mumu_MC15ri_values[index].at(i) = log10l(mumu_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)gg_MC15ri_values[index].size(); i++) gg_MC15ri_values[index].at(i) = log10l(gg_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)ee_MC15ri_values[index].size(); i++) ee_MC15ri_values[index].at(i) = log10l(ee_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)eeee_MC15ri_values[index].size(); i++) eeee_MC15ri_values[index].at(i) = log10l(eeee_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)eemumu_MC15ri_values[index].size(); i++) eemumu_MC15ri_values[index].at(i) = log10l(eemumu_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)llXX_MC15ri_values[index].size(); i++) llXX_MC15ri_values[index].at(i) = log10l(llXX_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)hhISR_MC15ri_values[index].size(); i++) hhISR_MC15ri_values[index].at(i) = log10l(hhISR_MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)charged_MC15rd_values[index].size(); i++) charged_MC15rd_values[index].at(i) = log10l(charged_MC15rd_values[index].at(i));
-    for (int i = 0; i < (int)mixed_MC15rd_values[index].size(); i++) mixed_MC15rd_values[index].at(i) = log10l(mixed_MC15rd_values[index].at(i));
-    for (int i = 0; i < (int)uubar_MC15rd_values[index].size(); i++) uubar_MC15rd_values[index].at(i) = log10l(uubar_MC15rd_values[index].at(i));
-    for (int i = 0; i < (int)ddbar_MC15rd_values[index].size(); i++) ddbar_MC15rd_values[index].at(i) = log10l(ddbar_MC15rd_values[index].at(i));
-    for (int i = 0; i < (int)ssbar_MC15rd_values[index].size(); i++) ssbar_MC15rd_values[index].at(i) = log10l(ssbar_MC15rd_values[index].at(i));
-    for (int i = 0; i < (int)ccbar_MC15rd_values[index].size(); i++) ccbar_MC15rd_values[index].at(i) = log10l(ccbar_MC15rd_values[index].at(i));
-    for (int i = 0; i < (int)MC15ri_values[index].size(); i++) MC15ri_values[index].at(i) = log10l(MC15ri_values[index].at(i));
-    for (int i = 0; i < (int)MC15rd_values[index].size(); i++) MC15rd_values[index].at(i) = log10l(MC15rd_values[index].at(i));
-    for (int i = 0; i < (int)MC_values[index].size(); i++) MC_values[index].at(i) = log10l(MC_values[index].at(i));
-    for (int i = 0; i < (int)data_values[index].size(); i++) data_values[index].at(i) = log10l(data_values[index].at(i));
-
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
         for (int i = 0; i < (int)charged_MC15ri_values[k].size(); i++) charged_MC15ri_hist[k]->Fill(charged_MC15ri_values[k].at(i), charged_MC15ri_weights.at(i));
         for (int i = 0; i < (int)mixed_MC15ri_values[k].size(); i++) mixed_MC15ri_hist[k]->Fill(mixed_MC15ri_values[k].at(i), mixed_MC15ri_weights.at(i));
@@ -3347,7 +3194,7 @@ void THStack_plot_comparison() {
         MC15ri_hist[k]->SetFillColor(2); MC15ri_hist[k]->SetLineColor(2); MC15ri_hist[k]->SetLineWidth(1); MC15ri_hist[k]->SetFillStyle(3003); MC15ri_hist[k]->Draw("e2 Hist SAME");
         TLegend* legend = pad1->BuildLegend(0.9, 0.9, 0.7, 0.7);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
-        TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC15ri scaled to MC15rd, MC15rd/MC15ri= " + std::to_string(CAL_MC15ri/ CAL_MC15rd)).c_str()); pt->Draw();
+        TPaveText* pt = new TPaveText(0.135, 0.88, 0.6, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC15ri scaled to MC15rd, MC15rd/MC15ri= " + std::to_string(CAL_MC15ri/ CAL_MC15rd)).c_str()); pt->Draw();
 
         c_temp->cd();
         TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
