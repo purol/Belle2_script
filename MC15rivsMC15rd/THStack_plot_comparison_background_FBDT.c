@@ -1915,7 +1915,6 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
     double N_K0nn = 0;
     double N_K0starnn = 0;
 
-    int Ngamma_v200_index = -1;
     double Ngamma_v200 = -1;
 
     double s13_KpKLKL = -1;
@@ -1985,7 +1984,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
 
-        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
 
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
@@ -2111,7 +2110,6 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
-            Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = 1.0;
             if (MCTYPE == "MC15ri") Correction_multiplicity = corrector_Multiplicity_MC15ri.GetCorrectionFactor(Ngamma_v200);
             else if (MCTYPE == "MC15rd") Correction_multiplicity = corrector_Multiplicity_MC15rd.GetCorrectionFactor(Ngamma_v200);
@@ -2260,7 +2258,6 @@ void LetsFill_ri_correction(const char* dirname, std::vector<std::string> variab
     double N_K0nn = 0;
     double N_K0starnn = 0;
 
-    int Ngamma_v200_index = -1;
     double Ngamma_v200 = -1;
 
     double s13_KpKLKL = -1;
@@ -2333,7 +2330,7 @@ void LetsFill_ri_correction(const char* dirname, std::vector<std::string> variab
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
 
-        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
 
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
@@ -2466,7 +2463,6 @@ void LetsFill_ri_correction(const char* dirname, std::vector<std::string> variab
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
-            Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = 1.0;
             if (MCTYPE == "MC15ri") Correction_multiplicity = corrector_Multiplicity_MC15ri.GetCorrectionFactor(Ngamma_v200);
             else if (MCTYPE == "MC15rd") Correction_multiplicity = corrector_Multiplicity_MC15rd.GetCorrectionFactor(Ngamma_v200);
