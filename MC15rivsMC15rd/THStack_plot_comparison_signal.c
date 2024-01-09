@@ -2817,7 +2817,7 @@ void THStack_plot_comparison_signal() {
 
     const char* MC15ri_signal_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SIGNAL_analysis/test_v004/final_output";
 
-    const char* MC15rd_signal_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHG_analysis/validation_v004/final_output";
+    const char* MC15rd_signal_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/final_output";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;

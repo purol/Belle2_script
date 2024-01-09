@@ -2811,9 +2811,9 @@ double ObtainWeight(const char* type, const char* MC_version, const char* catego
 
 void THStack_plot_comparison_signal_FBDT() {
 
-    const char* MC15ri_signal_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SIGNAL_analysis/test_v004/final_output";
+    const char* MC15ri_signal_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SIGNAL_analysis/test_v004/final_output_root_after_MVA_Application_after_cut";
 
-    const char* MC15rd_signal_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHG_analysis/validation_v004/final_output";
+    const char* MC15rd_signal_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
