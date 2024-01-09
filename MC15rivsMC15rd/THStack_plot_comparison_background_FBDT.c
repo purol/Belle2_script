@@ -1895,7 +1895,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
     13: hhISR
     */
 
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double Btag_ID = -1;
@@ -2137,7 +2137,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
 }
 
 void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num]) {
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -2176,7 +2176,7 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 }
 
 void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], const char* included_string) {
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
 
     std::vector<string> names;
     load_files(dirname, &names, included_string);
@@ -2240,7 +2240,7 @@ void LetsFill_ri_correction(const char* dirname, std::vector<std::string> variab
     13: hhISR
     */
 
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double Btag_ID = -1;
@@ -2522,7 +2522,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, std::
     13: hhISR
     */
 
-    double var[Nvar_num] = { 0.0 };
+    float var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double Btag_ID = -1;
@@ -3040,8 +3040,8 @@ void THStack_plot_comparison_background_FBDT() {
         temp_v.insert(temp_v.end(), data_values[k].begin(), data_values[k].end());
 
 
-        double min = *min_element(temp_v.begin(), temp_v.end());
-        double max = *max_element(temp_v.begin(), temp_v.end());
+        double min = 0;
+        double max = 1.0;
         int bins = 100;
 
         if (hasEnding(variable_names.at(k), std::string("dr"))) { // exceptions
