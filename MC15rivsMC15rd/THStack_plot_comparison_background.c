@@ -3361,7 +3361,7 @@ void THStack_plot_comparison_background() {
         line->Draw();
 
         c_temp->SetBottomMargin(0.0);
-        c_temp->SaveAs((variable_names.at(k) + "_MC15ri_vs_MC15rd.png").c_str());
+        c_temp->SaveAs((variable_names.at(k) + "_MC15ri_vs_MC15rd_background.png").c_str());
 
         delete c_temp;
     }

@@ -292,7 +292,7 @@ double Corrector_FEI::GetmodeID(int index, bool IsItCharged, std::string type) {
     }
 }
 
-# define Nvar_num 1
+# define Nvar_num 128
 
 //# define CAL 1.1728
 //# define CAL_qq 1.0
@@ -1869,7 +1869,7 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName, std::string MCTYPE, std::string sample_type, double CAL, double CAL_qq) {
+void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName, std::string MCTYPE, std::string sample_type, double CAL, double CAL_qq, const char* included_string) {
     /*
     SampleName for Knn
     CHG
@@ -1895,7 +1895,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
     13: hhISR
     */
 
-    float var[Nvar_num] = { 0.0 };
+    double var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double Btag_ID = -1;
@@ -1915,6 +1915,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
     double N_K0nn = 0;
     double N_K0starnn = 0;
 
+    int Ngamma_v200_index = -1;
     double Ngamma_v200 = -1;
 
     double s13_KpKLKL = -1;
@@ -1932,7 +1933,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
     double nD0toXKL = -1;
 
     std::vector<string> names;
-    load_files(dirname, &names);
+    load_files(dirname, &names, included_string);
 
     for (unsigned int i = 0; i < names.size(); i++) {
 
@@ -1984,7 +1985,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
 
-        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
+        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
 
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
@@ -2070,6 +2071,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
+            else if (SampleName == "SIGNAL") {}
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
             //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
@@ -2110,6 +2112,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
+            Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = 1.0;
             if (MCTYPE == "MC15ri") Correction_multiplicity = corrector_Multiplicity_MC15ri.GetCorrectionFactor(Ngamma_v200);
             else if (MCTYPE == "MC15rd") Correction_multiplicity = corrector_Multiplicity_MC15rd.GetCorrectionFactor(Ngamma_v200);
@@ -2135,7 +2138,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
 }
 
 void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num]) {
-    float var[Nvar_num] = { 0.0 };
+    double var[Nvar_num] = { 0.0 };
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -2174,7 +2177,7 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 }
 
 void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], const char* included_string) {
-    float var[Nvar_num] = { 0.0 };
+    double var[Nvar_num] = { 0.0 };
 
     std::vector<string> names;
     load_files(dirname, &names, included_string);
@@ -2238,7 +2241,7 @@ void LetsFill_ri_correction(const char* dirname, std::vector<std::string> variab
     13: hhISR
     */
 
-    float var[Nvar_num] = { 0.0 };
+    double var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double Btag_ID = -1;
@@ -2258,6 +2261,7 @@ void LetsFill_ri_correction(const char* dirname, std::vector<std::string> variab
     double N_K0nn = 0;
     double N_K0starnn = 0;
 
+    int Ngamma_v200_index = -1;
     double Ngamma_v200 = -1;
 
     double s13_KpKLKL = -1;
@@ -2330,7 +2334,7 @@ void LetsFill_ri_correction(const char* dirname, std::vector<std::string> variab
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
 
-        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
+        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
 
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
@@ -2423,6 +2427,7 @@ void LetsFill_ri_correction(const char* dirname, std::vector<std::string> variab
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
+            else if (SampleName == "SIGNAL") {}
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
             //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
@@ -2463,6 +2468,7 @@ void LetsFill_ri_correction(const char* dirname, std::vector<std::string> variab
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
+            Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = 1.0;
             if (MCTYPE == "MC15ri") Correction_multiplicity = corrector_Multiplicity_MC15ri.GetCorrectionFactor(Ngamma_v200);
             else if (MCTYPE == "MC15rd") Correction_multiplicity = corrector_Multiplicity_MC15rd.GetCorrectionFactor(Ngamma_v200);
@@ -2518,7 +2524,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, std::
     13: hhISR
     */
 
-    float var[Nvar_num] = { 0.0 };
+    double var[Nvar_num] = { 0.0 };
     double Upsilon_ID = -1;
     double Bsig_ID = -1;
     double Btag_ID = -1;
@@ -2654,6 +2660,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, std::
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE.c_str(), sample_type.c_str(), names.at(i));
             }
+            else if (SampleName == "SIGNAL") {}
             //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
             //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
             //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
@@ -2797,49 +2804,145 @@ double ObtainWeight(const char* type, const char* MC_version, const char* catego
     return 1.0;
 }
 
-void THStack_plot_comparison_background_FBDT() {
+void THStack_plot_comparison_signal() {
 
-    const char* MC15ri_CHG_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHG_analysis/test_v004/final_output_root_after_MVA_Application";
-    const char* MC15ri_MIX_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/MIX_analysis/test_v004/final_output_root_after_MVA_Application";
-    const char* MC15ri_UUBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/UUBAR_analysis/test_v004/final_output_root_after_MVA_Application";
-    const char* MC15ri_DDBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/DDBAR_analysis/test_v004/final_output_root_after_MVA_Application";
-    const char* MC15ri_SSBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SSBAR_analysis/test_v004/final_output_root_after_MVA_Application";
-    const char* MC15ri_CHARM_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHARM_analysis/test_v004/final_output_root_after_MVA_Application";
+    const char* MC15ri_signal_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SIGNAL_analysis/test_v004/final_output";
 
-    const char* MC15rd_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHG_analysis/validation_v004/final_output_root_after_MVA_Application";
-    const char* MC15rd_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/MIX_analysis/validation_v004/final_output_root_after_MVA_Application";
-    const char* MC15rd_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/UUBAR_analysis/validation_v004/final_output_root_after_MVA_Application";
-    const char* MC15rd_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/DDBAR_analysis/validation_v004/final_output_root_after_MVA_Application";
-    const char* MC15rd_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SSBAR_analysis/validation_v004/final_output_root_after_MVA_Application";
-    const char* MC15rd_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHARM_analysis/validation_v004/final_output_root_after_MVA_Application";
+    const char* MC15rd_signal_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHG_analysis/validation_v004/final_output";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
-    variable_names.push_back("MVA_BB"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nRemainingTracksInEvent"); branch_names.push_back("Upsilon");
+    variable_names.push_back("Btag_chiProb"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_extraInfo_SignalProbability"); branch_names.push_back("Btag");
+    variable_names.push_back("thrustAxisCosTheta"); branch_names.push_back("Upsilon");
+    variable_names.push_back("missingMomentumOfEvent_theta"); branch_names.push_back("Upsilon");
+    variable_names.push_back("missingEnergyOfEventCMS"); branch_names.push_back("Upsilon");
+    variable_names.push_back("missingMomentumOfEvent"); branch_names.push_back("Upsilon");
+    variable_names.push_back("Btag_deltaE"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_Mbc"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_useCMSFrame_theta"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_R2"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_cosTBTO"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_et"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_mm2"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso00"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso01"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso02"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso03"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso04"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso10"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso12"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso14"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso20"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso22"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hso24"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hoo0"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hoo1"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hoo2"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hoo3"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_KSFWVariables_hoo4"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_dr"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_dz"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_useCMSFrame_p"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_useCMSFrame_phi"); branch_names.push_back("Btag");
+    variable_names.push_back("roeEextra__bocleanMask__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("extraInfo__boEeclv133__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("extraInfo__boNgammav133__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("extraInfo__boEeclv200__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("extraInfo__boNgammav200__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("Btag_thrustOm"); branch_names.push_back("Btag");
+    variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT_loose__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT_tight__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("Bsig_M"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_useCMSFrame_p"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_Dc_pValue_med"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_Dc_pValue_std"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_Dcsimpleveto_M"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_D0_pValue_med"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_D0_pValue_std"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dr"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_dz"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_D0simpleveto_M"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_thrustBm"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_thrustOm"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_cosTBTO"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_cosTBz"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_et"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_mm2"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso00"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso01"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso02"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso03"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso04"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso10"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso12"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso14"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso20"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso22"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hso24"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo0"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo1"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo2"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo3"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_KSFWVariables_hoo4"); branch_names.push_back("Bsig");
+    variable_names.push_back("foxWolframR1"); branch_names.push_back("Upsilon");
+    variable_names.push_back("foxWolframR2"); branch_names.push_back("Upsilon");
+    variable_names.push_back("foxWolframR3"); branch_names.push_back("Upsilon");
+    variable_names.push_back("foxWolframR4"); branch_names.push_back("Upsilon");
+    variable_names.push_back("cleoConeThrust0"); branch_names.push_back("Upsilon");
+    variable_names.push_back("cleoConeThrust1"); branch_names.push_back("Upsilon");
+    variable_names.push_back("cleoConeThrust2"); branch_names.push_back("Upsilon");
+    variable_names.push_back("cleoConeThrust3"); branch_names.push_back("Upsilon");
+    variable_names.push_back("cleoConeThrust4"); branch_names.push_back("Upsilon");
+    variable_names.push_back("cleoConeThrust5"); branch_names.push_back("Upsilon");
+    variable_names.push_back("cleoConeThrust6"); branch_names.push_back("Upsilon");
+    variable_names.push_back("cleoConeThrust7"); branch_names.push_back("Upsilon");
+    variable_names.push_back("cleoConeThrust8"); branch_names.push_back("Upsilon");
+    variable_names.push_back("harmonicMomentThrust0"); branch_names.push_back("Upsilon");
+    variable_names.push_back("harmonicMomentThrust1"); branch_names.push_back("Upsilon");
+    variable_names.push_back("harmonicMomentThrust2"); branch_names.push_back("Upsilon");
+    variable_names.push_back("harmonicMomentThrust3"); branch_names.push_back("Upsilon");
+    variable_names.push_back("harmonicMomentThrust4"); branch_names.push_back("Upsilon");
+    variable_names.push_back("sphericity"); branch_names.push_back("Upsilon");
+    variable_names.push_back("aplanarity"); branch_names.push_back("Upsilon");
+    variable_names.push_back("Btag_thrustBm"); branch_names.push_back("Btag");
+    variable_names.push_back("roePTheta__bocleanMask__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("Btag_cosTBz"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_CleoConeCS_1"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_CleoConeCS_2"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_CleoConeCS_3"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_CleoConeCS_4"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_CleoConeCS_5"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_CleoConeCS_6"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_CleoConeCS_7"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_CleoConeCS_8"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_CleoConeCS_9"); branch_names.push_back("Btag");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_mychiProb"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_mydr"); branch_names.push_back("Bsig");
+    variable_names.push_back("Bsig_daughter_0_extraInfo_mydz"); branch_names.push_back("Bsig");
+    variable_names.push_back("nROE_KLMClusters"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nROE_ECLClusters__bocleanMask__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nROE_ParticlesInList__bopi0__clmyneutralPion__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("nROE_ParticlesInList__bogamma__clmygamma__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("missingMass2OfEvent"); branch_names.push_back("Upsilon");
+    variable_names.push_back("visibleEnergyOfEventCMS"); branch_names.push_back("Upsilon");
+    variable_names.push_back("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("chiProb"); branch_names.push_back("Upsilon");
+    variable_names.push_back("dr"); branch_names.push_back("Upsilon");
+    variable_names.push_back("dz"); branch_names.push_back("Upsilon");
 
     int Nvar = static_cast<int>(variable_names.size());
     if (Nvar != Nvar_num) exit(1);
-    std::vector<double> MC_values[Nvar_num];
-    std::vector<double> charged_MC15ri_values[Nvar_num];
-    std::vector<double> mixed_MC15ri_values[Nvar_num];
-    std::vector<double> uubar_MC15ri_values[Nvar_num];
-    std::vector<double> ddbar_MC15ri_values[Nvar_num];
-    std::vector<double> ssbar_MC15ri_values[Nvar_num];
-    std::vector<double> ccbar_MC15ri_values[Nvar_num];
-    std::vector<double> taupair_MC15ri_values[Nvar_num];
-    std::vector<double> mumu_MC15ri_values[Nvar_num];
-    std::vector<double> gg_MC15ri_values[Nvar_num];
-    std::vector<double> ee_MC15ri_values[Nvar_num];
-    std::vector<double> eeee_MC15ri_values[Nvar_num];
-    std::vector<double> eemumu_MC15ri_values[Nvar_num];
-    std::vector<double> llXX_MC15ri_values[Nvar_num];
-    std::vector<double> hhISR_MC15ri_values[Nvar_num];
-    std::vector<double> charged_MC15rd_values[Nvar_num];
-    std::vector<double> mixed_MC15rd_values[Nvar_num];
-    std::vector<double> uubar_MC15rd_values[Nvar_num];
-    std::vector<double> ddbar_MC15rd_values[Nvar_num];
-    std::vector<double> ssbar_MC15rd_values[Nvar_num];
-    std::vector<double> ccbar_MC15rd_values[Nvar_num];
     std::vector<double> MC15ri_values[Nvar_num];
     std::vector<double> MC15rd_values[Nvar_num];
     std::vector<int> MC_numbering;
@@ -2847,164 +2950,26 @@ void THStack_plot_comparison_background_FBDT() {
     std::vector<double> data_values[Nvar_num];
 
     std::vector<double> weights;
-    std::vector<double> charged_MC15ri_weights;
-    std::vector<double> mixed_MC15ri_weights;
-    std::vector<double> uubar_MC15ri_weights;
-    std::vector<double> ddbar_MC15ri_weights;
-    std::vector<double> ssbar_MC15ri_weights;
-    std::vector<double> ccbar_MC15ri_weights;
-    std::vector<double> taupair_MC15ri_weights;
-    std::vector<double> mumu_MC15ri_weights;
-    std::vector<double> gg_MC15ri_weights;
-    std::vector<double> ee_MC15ri_weights;
-    std::vector<double> eeee_MC15ri_weights;
-    std::vector<double> eemumu_MC15ri_weights;
-    std::vector<double> llXX_MC15ri_weights;
-    std::vector<double> hhISR_MC15ri_weights;
-    std::vector<double> charged_MC15rd_weights;
-    std::vector<double> mixed_MC15rd_weights;
-    std::vector<double> uubar_MC15rd_weights;
-    std::vector<double> ddbar_MC15rd_weights;
-    std::vector<double> ssbar_MC15rd_weights;
-    std::vector<double> ccbar_MC15rd_weights;
     std::vector<double> MC15ri_weights;
     std::vector<double> MC15rd_weights;
 
-    double CAL_MC15ri = 1.0234;
+    double CAL_MC15ri = 1.0;
     double CAL_MC15rd = 1.0;
 
-    LetsFill_ri(MC15ri_CHG_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHG", "MC15ri", "test", CAL_MC15ri, 1.0);
-    LetsFill_ri(MC15ri_MIX_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "MIX", "MC15ri", "test", CAL_MC15ri, 1.0);
-    LetsFill_ri(MC15ri_UUBAR_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "UUBAR", "MC15ri", "test", CAL_MC15ri, 1.0);
-    LetsFill_ri(MC15ri_DDBAR_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "DDBAR", "MC15ri", "test", CAL_MC15ri, 1.0);
-    LetsFill_ri(MC15ri_SSBAR_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "SSBAR", "MC15ri", "test", CAL_MC15ri, 1.0);
-    LetsFill_ri(MC15ri_CHARM_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHARM", "MC15ri", "test", CAL_MC15ri, 1.0);
-    LetsFill_ri(MC15rd_CHG_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHG", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_MIX_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "MIX", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_UUBAR_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "UUBAR", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_DDBAR_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "DDBAR", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_SSBAR_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "SSBAR", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_CHARM_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHARM", "MC15rd", "validation", CAL_MC15rd, 1.0);
-
-    // sort variables
-    for (int k = 0; k < (int)MC_numbering.size(); k++) {
-        if (MC_numbering.at(k) == 0) {
-            for (int l = 0; l < (int)variable_names.size(); l++) charged_MC15ri_values[l].push_back(MC_values[l].at(k));
-            charged_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == 1) {
-            for (int l = 0; l < (int)variable_names.size(); l++) mixed_MC15ri_values[l].push_back(MC_values[l].at(k));
-            mixed_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == 2) {
-            for (int l = 0; l < (int)variable_names.size(); l++) uubar_MC15ri_values[l].push_back(MC_values[l].at(k));
-            uubar_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == 3) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ddbar_MC15ri_values[l].push_back(MC_values[l].at(k));
-            ddbar_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == 4) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ssbar_MC15ri_values[l].push_back(MC_values[l].at(k));
-            ssbar_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == 5) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ccbar_MC15ri_values[l].push_back(MC_values[l].at(k));
-            ccbar_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == 6) {
-            for (int l = 0; l < (int)variable_names.size(); l++) taupair_MC15ri_values[l].push_back(MC_values[l].at(k));
-            taupair_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == 7) {
-            for (int l = 0; l < (int)variable_names.size(); l++) mumu_MC15ri_values[l].push_back(MC_values[l].at(k));
-            mumu_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == 8) {
-            for (int l = 0; l < (int)variable_names.size(); l++) gg_MC15ri_values[l].push_back(MC_values[l].at(k));
-            gg_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == 9) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ee_MC15ri_values[l].push_back(MC_values[l].at(k));
-            ee_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == 10) {
-            for (int l = 0; l < (int)variable_names.size(); l++) eeee_MC15ri_values[l].push_back(MC_values[l].at(k));
-            eeee_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == 11) {
-            for (int l = 0; l < (int)variable_names.size(); l++) eemumu_MC15ri_values[l].push_back(MC_values[l].at(k));
-            eemumu_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == 12) {
-            for (int l = 0; l < (int)variable_names.size(); l++) llXX_MC15ri_values[l].push_back(MC_values[l].at(k));
-            llXX_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == 13) {
-            for (int l = 0; l < (int)variable_names.size(); l++) hhISR_MC15ri_values[l].push_back(MC_values[l].at(k));
-            hhISR_MC15ri_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == (0 + IndexShift)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) charged_MC15rd_values[l].push_back(MC_values[l].at(k));
-            charged_MC15rd_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == (1 + IndexShift)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) mixed_MC15rd_values[l].push_back(MC_values[l].at(k));
-            mixed_MC15rd_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == (2 + IndexShift)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) uubar_MC15rd_values[l].push_back(MC_values[l].at(k));
-            uubar_MC15rd_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == (3 + IndexShift)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ddbar_MC15rd_values[l].push_back(MC_values[l].at(k));
-            ddbar_MC15rd_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == (4 + IndexShift)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ssbar_MC15rd_values[l].push_back(MC_values[l].at(k));
-            ssbar_MC15rd_weights.push_back(weights.at(k));
-        }
-        else if (MC_numbering.at(k) == (5 + IndexShift)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ccbar_MC15rd_values[l].push_back(MC_values[l].at(k));
-            ccbar_MC15rd_weights.push_back(weights.at(k));
-        }
-        else {
-            printf("undefined numbering!\n");
-            exit(1);
-        }
-
-        // for MC15ri vs MC15rd
-        if (MC_numbering.at(k) < IndexShift) { // MC15ri
-            for (int l = 0; l < (int)variable_names.size(); l++) MC15ri_values[l].push_back(MC_values[l].at(k));
-            MC15ri_weights.push_back(weights.at(k));
-        }
-        else { // MC15rd
-            for (int l = 0; l < (int)variable_names.size(); l++) MC15rd_values[l].push_back(MC_values[l].at(k));
-            MC15rd_weights.push_back(weights.at(k));
-        }
-    }
+    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, "B2Knunu");
+    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, "B2Kstarnunu");
+    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, "B2Xsnunu");
+    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, "B02K0nunu");
+    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, "B02Kstar0nunu");
+    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, "B02Xsnunu");
+    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, "B2Knunu");
+    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, "B2Kstarnunu");
+    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, "B2Xsnunu");
+    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, "B02K0nunu");
+    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, "B02Kstar0nunu");
+    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, "B02Xsnunu");
 
     THStack* Stack[Nvar_num];
-    TH1D* charged_MC15ri_hist[Nvar_num];
-    TH1D* mixed_MC15ri_hist[Nvar_num];
-    TH1D* uubar_MC15ri_hist[Nvar_num];
-    TH1D* ddbar_MC15ri_hist[Nvar_num];
-    TH1D* ssbar_MC15ri_hist[Nvar_num];
-    TH1D* ccbar_MC15ri_hist[Nvar_num];
-    TH1D* taupair_MC15ri_hist[Nvar_num];
-    TH1D* mumu_MC15ri_hist[Nvar_num];
-    TH1D* gg_MC15ri_hist[Nvar_num];
-    TH1D* ee_MC15ri_hist[Nvar_num];
-    TH1D* eeee_MC15ri_hist[Nvar_num];
-    TH1D* eemumu_MC15ri_hist[Nvar_num];
-    TH1D* llXX_MC15ri_hist[Nvar_num];
-    TH1D* hhISR_MC15ri_hist[Nvar_num];
-    TH1D* charged_MC15rd_hist[Nvar_num];
-    TH1D* mixed_MC15rd_hist[Nvar_num];
-    TH1D* uubar_MC15rd_hist[Nvar_num];
-    TH1D* ddbar_MC15rd_hist[Nvar_num];
-    TH1D* ssbar_MC15rd_hist[Nvar_num];
-    TH1D* ccbar_MC15rd_hist[Nvar_num];
     TH1D* MC15ri_hist[Nvar_num];
     TH1D* MC15rd_hist[Nvar_num];
     TH1D* stat_error_hist[Nvar_num];
@@ -3013,31 +2978,13 @@ void THStack_plot_comparison_background_FBDT() {
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // malloc TH1D
         std::vector<double> temp_v;
-        temp_v.insert(temp_v.end(), charged_MC15ri_values[k].begin(), charged_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), mixed_MC15ri_values[k].begin(), mixed_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), uubar_MC15ri_values[k].begin(), uubar_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), ddbar_MC15ri_values[k].begin(), ddbar_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), ssbar_MC15ri_values[k].begin(), ssbar_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), ccbar_MC15ri_values[k].begin(), ccbar_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), taupair_MC15ri_values[k].begin(), taupair_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), mumu_MC15ri_values[k].begin(), mumu_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), gg_MC15ri_values[k].begin(), gg_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), ee_MC15ri_values[k].begin(), ee_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), eeee_MC15ri_values[k].begin(), eeee_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), eemumu_MC15ri_values[k].begin(), eemumu_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), llXX_MC15ri_values[k].begin(), llXX_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), hhISR_MC15ri_values[k].begin(), hhISR_MC15ri_values[k].end());
-        temp_v.insert(temp_v.end(), charged_MC15rd_values[k].begin(), charged_MC15rd_values[k].end());
-        temp_v.insert(temp_v.end(), mixed_MC15rd_values[k].begin(), mixed_MC15rd_values[k].end());
-        temp_v.insert(temp_v.end(), uubar_MC15rd_values[k].begin(), uubar_MC15rd_values[k].end());
-        temp_v.insert(temp_v.end(), ddbar_MC15rd_values[k].begin(), ddbar_MC15rd_values[k].end());
-        temp_v.insert(temp_v.end(), ssbar_MC15rd_values[k].begin(), ssbar_MC15rd_values[k].end());
-        temp_v.insert(temp_v.end(), ccbar_MC15rd_values[k].begin(), ccbar_MC15rd_values[k].end());
+        temp_v.insert(temp_v.end(), MC15ri_values[k].begin(), MC15ri_values[k].end());
+        temp_v.insert(temp_v.end(), MC15rd_values[k].begin(), MC15rd_values[k].end());
         temp_v.insert(temp_v.end(), data_values[k].begin(), data_values[k].end());
 
 
-        double min = 0;
-        double max = 1.0;
+        double min = *min_element(temp_v.begin(), temp_v.end());
+        double max = *max_element(temp_v.begin(), temp_v.end());
         int bins = 100;
 
         if (hasEnding(variable_names.at(k), std::string("dr"))) { // exceptions
@@ -3094,57 +3041,21 @@ void THStack_plot_comparison_background_FBDT() {
         }
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";" + variable_names.at(k) + ";number of candidates").c_str());
-        charged_MC15ri_hist[k] = new TH1D("charged MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        mixed_MC15ri_hist[k] = new TH1D("mixed MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        uubar_MC15ri_hist[k] = new TH1D("u#bar{u} MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        ddbar_MC15ri_hist[k] = new TH1D("d#bar{d} MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        ssbar_MC15ri_hist[k] = new TH1D("s#bar{s} MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        ccbar_MC15ri_hist[k] = new TH1D("c#bar{c} MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        taupair_MC15ri_hist[k] = new TH1D("#tau#bar{#tau} MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        mumu_MC15ri_hist[k] = new TH1D("#mu#bar{#mu} MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        gg_MC15ri_hist[k] = new TH1D("gg MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        ee_MC15ri_hist[k] = new TH1D("e#bar{e} MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        eeee_MC15ri_hist[k] = new TH1D("ee#bar{e}#bar{e} MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        eemumu_MC15ri_hist[k] = new TH1D("e#bar{e}#mu#bar{#mu} MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        llXX_MC15ri_hist[k] = new TH1D("\ell#bar{\ell}XX MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        hhISR_MC15ri_hist[k] = new TH1D("hhISR MC15ri", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        charged_MC15rd_hist[k] = new TH1D("charged MC15rd", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        mixed_MC15rd_hist[k] = new TH1D("mixed MC15rd", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        uubar_MC15rd_hist[k] = new TH1D("u#bar{u} MC15rd", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        ddbar_MC15rd_hist[k] = new TH1D("d#bar{d} MC15rd", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        ssbar_MC15rd_hist[k] = new TH1D("s#bar{s} MC15rd", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        ccbar_MC15rd_hist[k] = new TH1D("c#bar{c} MC15rd", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        MC15ri_hist[k] = new TH1D("MC15ri background", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        MC15rd_hist[k] = new TH1D("MC15rd background", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        MC15ri_hist[k] = new TH1D("MC15ri signal", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        MC15rd_hist[k] = new TH1D("MC15rd signal", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;MC15rd/MC15ri", bins, min, max);
     }
 
+    int index = std::find(variable_names.begin(), variable_names.end(), std::string("log_{10}SignalProbability")) - variable_names.begin();
+    for (int i = 0; i < (int)MC15ri_values[index].size(); i++) MC15ri_values[index].at(i) = log10l(MC15ri_values[index].at(i));
+    for (int i = 0; i < (int)MC15rd_values[index].size(); i++) MC15rd_values[index].at(i) = log10l(MC15rd_values[index].at(i));
+    for (int i = 0; i < (int)data_values[index].size(); i++) data_values[index].at(i) = log10l(data_values[index].at(i));
+
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
-        for (int i = 0; i < (int)charged_MC15ri_values[k].size(); i++) charged_MC15ri_hist[k]->Fill(charged_MC15ri_values[k].at(i), charged_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)mixed_MC15ri_values[k].size(); i++) mixed_MC15ri_hist[k]->Fill(mixed_MC15ri_values[k].at(i), mixed_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)uubar_MC15ri_values[k].size(); i++) uubar_MC15ri_hist[k]->Fill(uubar_MC15ri_values[k].at(i), uubar_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)ddbar_MC15ri_values[k].size(); i++) ddbar_MC15ri_hist[k]->Fill(ddbar_MC15ri_values[k].at(i), ddbar_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)ssbar_MC15ri_values[k].size(); i++) ssbar_MC15ri_hist[k]->Fill(ssbar_MC15ri_values[k].at(i), ssbar_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)ccbar_MC15ri_values[k].size(); i++) ccbar_MC15ri_hist[k]->Fill(ccbar_MC15ri_values[k].at(i), ccbar_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)taupair_MC15ri_values[k].size(); i++) taupair_MC15ri_hist[k]->Fill(taupair_MC15ri_values[k].at(i), taupair_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)mumu_MC15ri_values[k].size(); i++) mumu_MC15ri_hist[k]->Fill(mumu_MC15ri_values[k].at(i), mumu_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)gg_MC15ri_values[k].size(); i++) gg_MC15ri_hist[k]->Fill(gg_MC15ri_values[k].at(i), gg_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)ee_MC15ri_values[k].size(); i++) ee_MC15ri_hist[k]->Fill(ee_MC15ri_values[k].at(i), ee_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)eeee_MC15ri_values[k].size(); i++) eeee_MC15ri_hist[k]->Fill(eeee_MC15ri_values[k].at(i), eeee_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)eemumu_MC15ri_values[k].size(); i++) eemumu_MC15ri_hist[k]->Fill(eemumu_MC15ri_values[k].at(i), eemumu_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)llXX_MC15ri_values[k].size(); i++) llXX_MC15ri_hist[k]->Fill(llXX_MC15ri_values[k].at(i), llXX_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)hhISR_MC15ri_values[k].size(); i++) hhISR_MC15ri_hist[k]->Fill(hhISR_MC15ri_values[k].at(i), hhISR_MC15ri_weights.at(i));
-        for (int i = 0; i < (int)charged_MC15rd_values[k].size(); i++) charged_MC15rd_hist[k]->Fill(charged_MC15rd_values[k].at(i), charged_MC15rd_weights.at(i));
-        for (int i = 0; i < (int)mixed_MC15rd_values[k].size(); i++) mixed_MC15rd_hist[k]->Fill(mixed_MC15rd_values[k].at(i), mixed_MC15rd_weights.at(i));
-        for (int i = 0; i < (int)uubar_MC15rd_values[k].size(); i++) uubar_MC15rd_hist[k]->Fill(uubar_MC15rd_values[k].at(i), uubar_MC15rd_weights.at(i));
-        for (int i = 0; i < (int)ddbar_MC15rd_values[k].size(); i++) ddbar_MC15rd_hist[k]->Fill(ddbar_MC15rd_values[k].at(i), ddbar_MC15rd_weights.at(i));
-        for (int i = 0; i < (int)ssbar_MC15rd_values[k].size(); i++) ssbar_MC15rd_hist[k]->Fill(ssbar_MC15rd_values[k].at(i), ssbar_MC15rd_weights.at(i));
-        for (int i = 0; i < (int)ccbar_MC15rd_values[k].size(); i++) ccbar_MC15rd_hist[k]->Fill(ccbar_MC15rd_values[k].at(i), ccbar_MC15rd_weights.at(i));
         for (int i = 0; i < (int)MC15ri_values[k].size(); i++) MC15ri_hist[k]->Fill(MC15ri_values[k].at(i), MC15ri_weights.at(i));
         for (int i = 0; i < (int)MC15rd_values[k].size(); i++) MC15rd_hist[k]->Fill(MC15rd_values[k].at(i), MC15rd_weights.at(i));
-        for (int i = 0; i < (int)MC_values[k].size(); i++) stat_error_hist[k]->Fill(MC_values[k].at(i), weights.at(i));
         for (int i = 0; i < (int)data_values[k].size(); i++) data_hist[k]->Fill(data_values[k].at(i));
     }
 
@@ -3204,7 +3115,7 @@ void THStack_plot_comparison_background_FBDT() {
         line->Draw();
 
         c_temp->SetBottomMargin(0.0);
-        c_temp->SaveAs((variable_names.at(k) + "_MC15ri_vs_MC15rd_background.png").c_str());
+        c_temp->SaveAs((variable_names.at(k) + "_MC15ri_vs_MC15rd_signal.png").c_str());
 
         delete c_temp;
     }
