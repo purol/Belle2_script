@@ -11,19 +11,25 @@ def autopct_format(values):
     return my_format
 
 Category = [
-r"$\pi$ from $e$", 
-r"$\pi$ from $\mu$",
-"others"]
+r"$K$ from $K$",
+r"$K$ from $\pi$",
+r"$K$ from $e$", 
+r"$K$ from $\mu$"]
 
-TotalN = 6.1654
-values = [0.000510, 0.005503]
-values.append(TotalN - sum(values))
+TotalN = 238.166698
+values = [238.166698, 29.878096, 0.163917, 0.0]
+#values.append(TotalN - sum(values))
 
 plt.rcParams['figure.figsize'] = [10,10]
 plt.rcParams["font.size"] = 12.0
 
+#cmap = plt.get_cmap('Spectral')
+#colors = ['lightblue', 'deepskyblue', 'turquoise', 'cornsilk', 'tan']
+#plt.pie(values, labels=Category, explode = [0.0, 0.2, 0.35, 0.48, 0.59], colors = colors, autopct='%.1f%%', radius = 0.8, startangle = 30)
+
 cmap = plt.get_cmap('Spectral')
-colors = ['#ff9999', '#ffc000', '#8fd9b6', '#d395d0']
-plt.pie(values, labels=Category, colors = colors, autopct='%.1f%%', radius = 0.8)
+colors = ['lightblue', 'deepskyblue', 'turquoise', 'cornsilk']
+plt.pie(values, labels=Category, explode = [0.0, 0.2, 0.35, 0.48], colors = colors, autopct='%.1f%%', radius = 0.8, startangle = 30)
+
 
 plt.savefig("fake_PIE.png")
