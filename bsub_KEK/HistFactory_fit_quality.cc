@@ -527,6 +527,7 @@ typedef struct Options
     bool multiplicity;
     bool Kff;
     bool Kstarff;
+    bool OLD_Kff;
     bool pf;
     bool Transition;
     bool mb;
@@ -538,6 +539,7 @@ typedef struct Options
     bool BDTc;
     bool BBcounting;
     bool BBBR;
+    bool BRBtoKKLKL;
     bool BRKnn;
     bool BRDKL0;
     bool uncorrelated;
@@ -1325,6 +1327,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     options_->multiplicity = false;
     options_->Kff = false;
     options_->Kstarff = false;
+    options_->OLD_Kff = false;
     options_->pf = false;
     options_->Transition = false;
     options_->mb = false;
@@ -1336,6 +1339,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     options_->BDTc = false;
     options_->BBcounting = false;
     options_->BBBR = false;
+    options_->BRBtoKKLKL = false;
     options_->BRKnn = false;
     options_->BRDKL0 = false;
     options_->uncorrelated = false;
@@ -1352,6 +1356,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
         options_->multiplicity = true;
         options_->Kff = true;
         options_->Kstarff = true;
+        options_->OLD_Kff = true;
         options_->pf = true;
         options_->Transition = true;
         options_->mb = true;
@@ -1363,6 +1368,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
         options_->BDTc = true;
         options_->BBcounting = true;
         options_->BBBR = true;
+        options_->BRBtoKKLKL = true;
         options_->BRKnn = true;
         options_->BRDKL0 = true;
         options_->uncorrelated = true;
@@ -1379,6 +1385,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     else if (std::string(tested_param) == std::string("photon_multiplicity")) options_->multiplicity = true;
     else if (std::string(tested_param) == std::string("Kff")) options_->Kff = true;
     else if (std::string(tested_param) == std::string("Kstarff")) options_->Kstarff = true;
+    else if (std::string(tested_param) == std::string("OLDKff")) options_->OLD_Kff = true;
     else if (std::string(tested_param) == std::string("pf")) options_->pf = true;
     else if (std::string(tested_param) == std::string("Transition")) options_->Transition = true;
     else if (std::string(tested_param) == std::string("mb")) options_->mb = true;
@@ -1390,6 +1397,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     else if (std::string(tested_param) == std::string("BDTc")) options_->BDTc = true;
     else if (std::string(tested_param) == std::string("BBcounting")) options_->BBcounting = true;
     else if (std::string(tested_param) == std::string("BBBR")) options_->BBBR = true;
+    else if (std::string(tested_param) == std::string("BRBtoKKLKL")) options_->BRBtoKKLKL = true;
     else if (std::string(tested_param) == std::string("BRKnn")) options_->BRKnn = true;
     else if (std::string(tested_param) == std::string("BtoDtoXKL")) options_->BRDKL0 = true;
     else if (std::string(tested_param) == std::string("uncorrelated")) options_->uncorrelated = true;
@@ -1463,6 +1471,9 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     w->var("alpha_Kstarff8_uncer")->setConstant(options_->Kstarff);
     w->var("alpha_Kstarff9_uncer")->setConstant(options_->Kstarff);
 
+    // new B->K form factor
+    options_->OLD_Kff
+
     // fermi motion moment
     w->var("alpha_pf_uncer")->setConstant(options_->pf);
 
@@ -1506,6 +1517,9 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // BB BR
     for (int i = 0; i < options_->NEntryBR; i++) w->var(("alpha_BBBR" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->BBBR);
+
+    // B->K KL KL BR
+    options_->BRBtoKKLKL = true;
 
     // B->Knn BR
     w->var("alpha_Knn_BR_uncer")->setConstant(options_->BRKnn);
@@ -1659,7 +1673,7 @@ int main(int argc, char* argv[]) {
             fixed_param = std::string(argv[5]);
         }
         else {
-            printf("Toy MC requires 4 arguments {eps} {indicator} {Num of sample}\n");
+            printf("nuisance Toy MC requires 5 arguments {eps} {indicator} {Num of sample} {fixed param}\n");
             exit(1);
         }
     }
