@@ -1472,7 +1472,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     w->var("alpha_Kstarff9_uncer")->setConstant(options_->Kstarff);
 
     // new B->K form factor
-    options_->OLD_Kff
+    w->var("alpha_Kff_OLD_uncer")->setConstant(options_->OLD_Kff);
 
     // fermi motion moment
     w->var("alpha_pf_uncer")->setConstant(options_->pf);
@@ -1519,7 +1519,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     for (int i = 0; i < options_->NEntryBR; i++) w->var(("alpha_BBBR" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->BBBR);
 
     // B->K KL KL BR
-    options_->BRBtoKKLKL = true;
+    w->var("alpha_BRBtoKKLKL_uncer")->setConstant(options_->BRBtoKKLKL);
 
     // B->Knn BR
     w->var("alpha_Knn_BR_uncer")->setConstant(options_->BRKnn);
