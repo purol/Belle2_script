@@ -48,6 +48,12 @@ using std::to_string;
 # define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
 # define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
 
+// arXiv:1409.4557v2
+# define BR_Kplus_nunubar_OLD 0.00000398
+# define BR_K0_nunubar_OLD (BR_Kplus_nunubar_OLD*TB0/TBp)
+# define BR_Xsu_nonresonant_nunubar_OLD (BR_Xs_nunubar - BR_Kplus_nunubar_OLD - BR_Kplusstar_nunubar)
+# define BR_Xsd_nonresonant_nunubar_OLD (BR_Xs_nunubar - BR_K0_nunubar_OLD - BR_K0star_nunubar)
+
 // according to DIRAC
 # define N_BpBp_1invab 540000000.0
 # define N_B0B0_1invab 510000000.0
@@ -173,8 +179,11 @@ double ObtainWeight(const char* type, const char* MC_version, const char* catego
 # define Scale_Xsd_nonresonant_syst (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar_syst)
 
 # define KS0_rel_uncertainty 0.6 // %/cm
-# define track_rel_uncertainty 0.69 // %
+# define track_rel_uncertainty 0.24 // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
+
+# define BR_KpKLKL_uncertainty (0.04/1.05) // not percentage. relative uncertainty
+# define BR_KSKLKL_uncertainty (0.5/6.0) // not percentage. relative uncertainty
 
 # define FEI_cal_Bc_num 12
 # define FEI_cal_B0_num 11
@@ -4822,6 +4831,246 @@ double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hi
     return Nevt;
 }
 
+double GetOLDKffPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get PDF with old Kff from NominalPDF
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    B2Xsnunu
+    B02Xsnunu
+    otherwise
+    */
+    if (strcmp(type, "Bplus") == 0) {}
+    else if (strcmp(type, "Bzero") == 0) {}
+    else if (strcmp(type, "Continuum") == 0) {}
+    else {
+        printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    float MVA_var = 0;
+
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double Btag_ID = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
+    double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+    double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    int Decay[N_decay] = { 0 };
+    double Mxs_Bc_MC = -1;
+    double Mxs_B0_MC = -1;
+
+    double invM = -1.0;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
+
+    double Ngamma_v200 = -1;
+
+    double s13_KpKLKL = -1;
+    double s23_KpKLKL = -1;
+    double nB2KpKLKL_all_KpKLKL = -1;
+    double nB2KpKLKL_NR_KpKLKL = -1;
+
+    double s13_KSKLKL = -1;
+    double s23_KSKLKL = -1;
+    double s12_KSKLKL = -1;
+    double nB2KSKLKL_all_KSKLKL = -1;
+    double nB2KSKLKL_NR_KSKLKL = -1;
+
+    double nDptoXKL = -1;
+    double nD0toXKL = -1;
+
+    std::vector<string> names;
+    load_files(dirname, &names, included_string);
+
+    double Nevt = 0;
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
+
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
+
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[2][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[3][i_fake]);
+        }
+        for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[0][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[1][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
+        }
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &Decay[3]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch1__bc", &Decay[4]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch2__bc", &Decay[5]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch3__bc", &Decay[6]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch4__bc", &Decay[7]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch5__bc", &Decay[8]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch6__bc", &Decay[9]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch7__bc", &Decay[10]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch8__bc", &Decay[11]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch9__bc", &Decay[12]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch10__bc", &Decay[13]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch11__bc", &Decay[14]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch12__bc", &Decay[15]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch13__bc", &Decay[16]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch14__bc", &Decay[17]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch15__bc", &Decay[18]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &Decay[19]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &Decay[20]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay[21]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &Decay[22]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch16__bc", &Decay[23]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch17__bc", &Decay[24]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch18__bc", &Decay[25]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch19__bc", &Decay[26]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch20__bc", &Decay[27]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch21__bc", &Decay[28]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch22__bc", &Decay[29]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch23__bc", &Decay[30]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch24__bc", &Decay[31]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch25__bc", &Decay[32]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch26__bc", &Decay[33]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch27__bc", &Decay[34]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &Decay[35]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &Decay[36]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &Decay[37]);
+
+            tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+
+            tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_Bc_MC);
+            tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_B0_MC);
+        }
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
+
+        tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
+        tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_all__bc", &nB2KpKLKL_all_KpKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_NR__bc", &nB2KpKLKL_NR_KpKLKL);
+
+        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s13_KSKLKL);
+        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &s23_KSKLKL);
+        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s12_KSKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_all__bc", &nB2KSKLKL_all_KSKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_NR__bc", &nB2KSKLKL_NR_KSKLKL);
+
+        tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &nDptoXKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &nD0toXKL);
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+            tree_upsilon->GetEntry(j);
+            tree_Bsig->GetEntry(j);
+            tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+
+            double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
+
+            double Correction_FEI = 1.0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+            else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            double Correction_pi0 = 1;
+            double Correction_fake = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
+            }
+            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE), temp_N_bin_fakeE[2][i_fake]); // pi- from e
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE), temp_N_bin_fakeE[3][i_fake]); // pi+ from e
+            }
+            for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE), temp_N_bin_fakeMU[0][i_fake]); // K- from mu
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE), temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
+            }
+
+            // Knn correction factor
+            double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
+            // B+ --> K+ KL0 KL0 correction factor
+            double Correction_KpKLKL = corrector_KpKLKL.GetCorrectionFactorAtGeneric(s13_KpKLKL, s23_KpKLKL, nB2KpKLKL_all_KpKLKL, nB2KpKLKL_NR_KpKLKL);
+
+            // B0 --> KS0 KL0 KL0 correction factor
+            double Correction_KSKLKL = corrector_KSKLKL.GetCorrectionFactorAtGeneric(std::max(std::max(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), std::min(std::min(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), nB2KSKLKL_all_KSKLKL, nB2KSKLKL_NR_KSKLKL);
+
+            // B-> [D -> KL0 X] anything correction factor
+            double Correction_BtoDtoXKL = 1.0;
+            if ((strcmp(sample, "CHG") == 0) || (strcmp(sample, "MIX") == 0) || (strcmp(sample, "SIGNAL") == 0)) Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
+
+            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * (BR_Kplus_nunubar_OLD / BR_Kplus_nunubar);
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * (BR_K0_nunubar_OLD / BR_K0_nunubar);
+            else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE) * (BR_Xsu_nonresonant_nunubar_OLD / BR_Xsu_nonresonant_nunubar);
+            else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE) * (BR_Xsd_nonresonant_nunubar_OLD / BR_Xsd_nonresonant_nunubar);
+
+            Nevt = Nevt + total_weight;
+
+            hist->Fill(MVA_var, total_weight);
+        }
+        input_file->Close();
+
+    }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
+    return Nevt;
+}
+
 double GetFragmentationPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, int TargetMxsBin, int TargetCategory, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get fragmentation PDF with with appropriate correction
     // Be careful! You should combine this function with `GetNominalPDFs` function!
     /*
@@ -7257,6 +7506,250 @@ double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* 
     return Nevt;
 }
 
+double GetBRKKLKLPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with uncertainties on BR(B->K KL KL) decay
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    B2Xsnunu
+    B02Xsnunu
+    otherwise
+    */
+    if (strcmp(type, "Bplus") == 0) {}
+    else if (strcmp(type, "Bzero") == 0) {}
+    else if (strcmp(type, "Continuum") == 0) {}
+    else {
+        printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    float MVA_var = 0;
+
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double Btag_ID = -1;
+    double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
+    double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
+    double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+    double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    int Decay[N_decay] = { 0 };
+    double Mxs_Bc_MC = -1;
+    double Mxs_B0_MC = -1;
+
+    double invM = -1.0;
+
+    double invM_Knn = 0;
+    double invM_Kstarnn = 0;
+    double invM_K0nn = 0;
+    double invM_K0starnn = 0;
+    double N_Knn = 0;
+    double N_Kstarnn = 0;
+    double N_K0nn = 0;
+    double N_K0starnn = 0;
+
+    double Ngamma_v200 = -1;
+
+    double s13_KpKLKL = -1;
+    double s23_KpKLKL = -1;
+    double nB2KpKLKL_all_KpKLKL = -1;
+    double nB2KpKLKL_NR_KpKLKL = -1;
+
+    double s13_KSKLKL = -1;
+    double s23_KSKLKL = -1;
+    double s12_KSKLKL = -1;
+    double nB2KSKLKL_all_KSKLKL = -1;
+    double nB2KSKLKL_NR_KSKLKL = -1;
+
+    double nDptoXKL = -1;
+    double nD0toXKL = -1;
+
+    std::vector<string> names;
+    load_files(dirname, &names, included_string);
+
+    double Nevt = 0;
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
+
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
+
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
+        for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npitruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[2][i_PID]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
+        }
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[2][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[3][i_fake]);
+        }
+        for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[0][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[1][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
+            tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
+        }
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &Decay[3]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch1__bc", &Decay[4]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch2__bc", &Decay[5]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch3__bc", &Decay[6]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch4__bc", &Decay[7]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch5__bc", &Decay[8]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch6__bc", &Decay[9]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch7__bc", &Decay[10]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch8__bc", &Decay[11]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch9__bc", &Decay[12]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch10__bc", &Decay[13]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch11__bc", &Decay[14]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch12__bc", &Decay[15]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch13__bc", &Decay[16]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch14__bc", &Decay[17]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch15__bc", &Decay[18]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &Decay[19]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &Decay[20]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay[21]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &Decay[22]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch16__bc", &Decay[23]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch17__bc", &Decay[24]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch18__bc", &Decay[25]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch19__bc", &Decay[26]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch20__bc", &Decay[27]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch21__bc", &Decay[28]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch22__bc", &Decay[29]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch23__bc", &Decay[30]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch24__bc", &Decay[31]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch25__bc", &Decay[32]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch26__bc", &Decay[33]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch27__bc", &Decay[34]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &Decay[35]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &Decay[36]);
+            tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &Decay[37]);
+
+            tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+
+            tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_Bc_MC);
+            tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_B0_MC);
+        }
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &invM_Kstarnn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &N_K0nn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
+
+        tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
+        tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_all__bc", &nB2KpKLKL_all_KpKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_NR__bc", &nB2KpKLKL_NR_KpKLKL);
+
+        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s13_KSKLKL);
+        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &s23_KSKLKL);
+        tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s12_KSKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_all__bc", &nB2KSKLKL_all_KSKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_NR__bc", &nB2KSKLKL_NR_KSKLKL);
+
+        tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &nDptoXKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &nD0toXKL);
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+            tree_upsilon->GetEntry(j);
+            tree_Bsig->GetEntry(j);
+            tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+
+            double Npi0 = GetNpi0(Upsilon_ID, Bsig_ID);
+
+            double Correction_FEI = 1.0;
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+            else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
+            double Correction_KID = 1;
+            double Correction_PID = 1;
+            double Correction_pi0 = 1;
+            double Correction_fake = 1;
+            for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+                Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
+            }
+            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE), temp_N_bin_fakeE[2][i_fake]); // pi- from e
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE), temp_N_bin_fakeE[3][i_fake]); // pi+ from e
+            }
+            for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE), temp_N_bin_fakeMU[0][i_fake]); // K- from mu
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE), temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
+            }
+
+            // Knn correction factor
+            double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+
+            // Multiplicity correction factor
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
+            // B+ --> K+ KL0 KL0 correction factor
+            double Correction_KpKLKL = corrector_KpKLKL.GetCorrectionFactorAtGeneric(s13_KpKLKL, s23_KpKLKL, nB2KpKLKL_all_KpKLKL, nB2KpKLKL_NR_KpKLKL);
+            if (IsItUp) Correction_KpKLKL = Correction_KpKLKL * std::pow(1 + BR_KpKLKL_uncertainty, nB2KpKLKL_NR_KpKLKL);
+            else Correction_KpKLKL = Correction_KpKLKL * std::pow(1 - BR_KpKLKL_uncertainty, nB2KpKLKL_NR_KpKLKL);
+
+            // B0 --> KS0 KL0 KL0 correction factor
+            double Correction_KSKLKL = corrector_KSKLKL.GetCorrectionFactorAtGeneric(std::max(std::max(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), std::min(std::min(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), nB2KSKLKL_all_KSKLKL, nB2KSKLKL_NR_KSKLKL);
+            if (IsItUp) Correction_KSKLKL = Correction_KSKLKL * std::pow(1 + BR_KSKLKL_uncertainty, nB2KSKLKL_NR_KSKLKL);
+            else Correction_KSKLKL = Correction_KSKLKL * std::pow(1 - BR_KSKLKL_uncertainty, nB2KSKLKL_NR_KSKLKL);
+
+            // B-> [D -> KL0 X] anything correction factor
+            double Correction_BtoDtoXKL = 1.0;
+            if ((strcmp(sample, "CHG") == 0) || (strcmp(sample, "MIX") == 0) || (strcmp(sample, "SIGNAL") == 0)) Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
+
+            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL;
+            if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
+            else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
+            else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+            else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+
+            Nevt = Nevt + total_weight;
+
+            hist->Fill(MVA_var, total_weight);
+        }
+        input_file->Close();
+
+    }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
+    return Nevt;
+}
+
 double ReadWeightHist(TH1D* hist, double value) {
     int Bin = hist->FindBin(value);
     if (Bin < 1) Bin = 1;
@@ -7780,6 +8273,10 @@ int main()
     TH1D* Signal_Kstarff9_p = new TH1D("Signal_Kstarff9_p", "Signal_Kstarff9_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kstarff9_m = new TH1D("Signal_Kstarff9_m", "Signal_Kstarff9_m", RarityBins, BinMIN, BinMAX);
 
+    // K nu nubar OLD form factor
+    TH1D* Signal_Kff_OLD_p = new TH1D("Signal_Kff_OLD_p", "Signal_Kff_OLD_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_Kff_OLD_m = new TH1D("Signal_Kff_OLD_m", "Signal_Kff_OLD_m", RarityBins, BinMIN, BinMAX);
+
     // faction
     TH1D* Signal_Kfrac_p = new TH1D("Signal_Kfrac_p", "Signal_Kfrac_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kfrac_m = new TH1D("Signal_Kfrac_m", "Signal_Kfrac_m", RarityBins, BinMIN, BinMAX);
@@ -7878,6 +8375,14 @@ int main()
     TH1D* Signal_BtoDtoXKL_m = new TH1D("Signal_BtoDtoXKL_m", "Signal_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_BtoDtoXKL_m = new TH1D("CHG_BtoDtoXKL_m", "CHG_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BtoDtoXKL_m = new TH1D("MIX_BtoDtoXKL_m", "MIX_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
+
+    // BR(B -> K KL KL)
+    TH1D* Signal_BRBtoKKLKL_p = new TH1D("Signal_BRBtoKKLKL_p", "Signal_BRBtoKKLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_BRBtoKKLKL_p = new TH1D("CHG_BRBtoKKLKL_p", "CHG_BRBtoKKLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_BRBtoKKLKL_p = new TH1D("MIX_BRBtoKKLKL_p", "MIX_BRBtoKKLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_BRBtoKKLKL_m = new TH1D("Signal_BRBtoKKLKL_m", "Signal_BRBtoKKLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_BRBtoKKLKL_m = new TH1D("CHG_BRBtoKKLKL_m", "CHG_BRBtoKKLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_BRBtoKKLKL_m = new TH1D("MIX_BRBtoKKLKL_m", "MIX_BRBtoKKLKL_m", RarityBins, BinMIN, BinMAX);
 
     // all of uncorrelated uncertainties
     TH1D* Signal_all_uncorrelated = new TH1D("Signal_all_uncorrelated", "Signal_all_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -8073,6 +8578,17 @@ int main()
         GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Kstarff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * non_res_Xsd_correction_factor, "B02Xsnunu");
     }
 
+    // get OLD Kff uncertainty PDFs
+    GetOLDKffPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Kff_OLD_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+    GetOLDKffPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Kff_OLD_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+    GetOLDKffPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Kff_OLD_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+    GetOLDKffPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Kff_OLD_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+    GetOLDKffPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Kff_OLD_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+    GetOLDKffPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Kff_OLD_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+
+    GetNegativeChangePDFs(Signal_nominal, Signal_Kff_OLD_p, Signal_Kff_OLD_m);
+
+    // get fraction uncertainty PDFs
     GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar + Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu");
     GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
     GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu");
@@ -8313,6 +8829,27 @@ int main()
     GetBtoDtoXKLPDFs(MC_dirname_CHG, "root", CHG_BtoDtoXKL_m, "Bplus", "CHG", false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
     GetBtoDtoXKLPDFs(MC_dirname_MIX, "root", MIX_BtoDtoXKL_m, "Bzero", "MIX", false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
 
+    // BR(B -> K KL KL)
+    GetBRKKLKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_BRBtoKKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+    GetBRKKLKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_BRBtoKKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+    GetBRKKLKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_BRBtoKKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+    GetBRKKLKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_BRBtoKKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+    GetBRKKLKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_BRBtoKKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+    GetBRKKLKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_BRBtoKKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+
+    GetBRKKLKLPDFs(MC_dirname_CHG, "root", CHG_BRBtoKKLKL_p, "Bplus", "CHG", true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+    GetBRKKLKLPDFs(MC_dirname_MIX, "root", MIX_BRBtoKKLKL_p, "Bzero", "MIX", true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+
+    GetBRKKLKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_BRBtoKKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+    GetBRKKLKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_BRBtoKKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+    GetBRKKLKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_BRBtoKKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+    GetBRKKLKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_BRBtoKKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+    GetBRKKLKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_BRBtoKKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+    GetBRKKLKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_BRBtoKKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+
+    GetBRKKLKLPDFs(MC_dirname_CHG, "root", CHG_BRBtoKKLKL_m, "Bplus", "CHG", false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+    GetBRKKLKLPDFs(MC_dirname_MIX, "root", MIX_BRBtoKKLKL_m, "Bzero", "MIX", false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+
     // calculate all uncorrelated pdfs
     ClearHist(Signal_all_uncorrelated, CHG_all_uncorrelated, MIX_all_uncorrelated, UUBAR_all_uncorrelated, DDBAR_all_uncorrelated, SSBAR_all_uncorrelated, CHARM_all_uncorrelated);
 
@@ -8552,6 +9089,10 @@ int main()
     Signal_Kstarff9_p->Write();
     Signal_Kstarff9_m->Write();
 
+    // K nu nubar OLD form factor
+    Signal_Kff_OLD_p->Write();
+    Signal_Kff_OLD_m->Write();
+
     // faction
     Signal_Kfrac_p->Write();
     Signal_Kfrac_m->Write();
@@ -8634,6 +9175,14 @@ int main()
     Signal_BtoDtoXKL_m->Write();
     CHG_BtoDtoXKL_m->Write();
     MIX_BtoDtoXKL_m->Write();
+
+    // BR(B -> K KL KL)
+    Signal_BRBtoKKLKL_p->Write();
+    CHG_BRBtoKKLKL_p->Write();
+    MIX_BRBtoKKLKL_p->Write();
+    Signal_BRBtoKKLKL_m->Write();
+    CHG_BRBtoKKLKL_m->Write();
+    MIX_BRBtoKKLKL_m->Write();
 
     // all uncorrelated uncertainties
     Signal_all_uncorrelated->Write();
