@@ -65,7 +65,7 @@ using std::to_string;
 using std::cout;
 using std::endl;
 
-# define MyDEBUG true
+# define MyDEBUG false
 void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data);
 
 # define N_Needed_info 37
