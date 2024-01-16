@@ -2447,7 +2447,7 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
                     }
                     else if (filename.find("B2Kstarnunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename);
                     else if (filename.find("B2Xsnunu") != std::string::npos) {
-                        double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                        double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                         N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                     }
                     else if (filename.find("B02K0nunu") != std::string::npos) {
@@ -2456,7 +2456,7 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
                     }
                     else if (filename.find("B02Kstar0nunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename);
                     else if (filename.find("B02Xsnunu") != std::string::npos) {
-                        double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                        double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                         N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                     }
                     else { N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename); }
@@ -2507,7 +2507,7 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
                 }
                 else if (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC) temp_N = ObtainWeight(type, MC_version, category, "B2Kstarnunu");
                 else if (static_cast<int>(Xsu2KcPi0_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(Xsu2KcKcKcPi0_MC)) {
-                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                     temp_N = ObtainWeight(type, MC_version, category, "B2Xsnunu") * correction_fragmentation;
                 }
                 else if (decaymodeid_MC == Loader::Xsd2K0_MC) {
@@ -2516,7 +2516,7 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
                 }
                 else if (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC) temp_N = ObtainWeight(type, MC_version, category, "B02Kstar0nunu");
                 else if (static_cast<int>(Xsd2KcPic_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(other)) {
-                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                     temp_N = ObtainWeight(type, MC_version, category, "B02Xsnunu") * correction_fragmentation;
                 }
                 else {
@@ -2556,7 +2556,7 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
                 }
                 else if (filename.find("B2Xsnunu") != std::string::npos) {
-                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                 }
@@ -2570,7 +2570,7 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
                 }
                 else if (filename.find("B02Xsnunu") != std::string::npos) {
-                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                 }
@@ -5072,7 +5072,7 @@ void Loader::PrintConfusionMatrix(std::string filename, const char* type, const 
             }
             else if (filename.find("B2Kstarnunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
             else if (filename.find("B2Xsnunu") != std::string::npos) {
-                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                 Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
             }
             else if (filename.find("B02K0nunu") != std::string::npos) {
@@ -5081,7 +5081,7 @@ void Loader::PrintConfusionMatrix(std::string filename, const char* type, const 
             }
             else if (filename.find("B02Kstar0nunu") != std::string::npos) Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
             else if (filename.find("B02Xsnunu") != std::string::npos) {
-                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                 Confusion[decaymodeid][decaymodeid_MC] = Confusion[decaymodeid][decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
             }
             else { printf("ERROR 142\n"); exit(1); }
@@ -5131,7 +5131,7 @@ void Loader::PrintConfusionMatrix(std::string filename, const char* type, const 
             }
             else if (filename.find("B2Kstarnunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + ObtainWeight(type, MC_version, category, filename);
             else if (filename.find("B2Xsnunu") != std::string::npos) {
-                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                 Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
             }
             else if (filename.find("B02K0nunu") != std::string::npos) {
@@ -5140,7 +5140,7 @@ void Loader::PrintConfusionMatrix(std::string filename, const char* type, const 
             }
             else if (filename.find("B02Kstar0nunu") != std::string::npos) Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + ObtainWeight(type, MC_version, category, filename);
             else if (filename.find("B02Xsnunu") != std::string::npos) {
-                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                 Confusion_square[decaymodeid][decaymodeid_MC_for_square] = Confusion_square[decaymodeid][decaymodeid_MC_for_square] + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
             }
             else { printf("ERROR 142\n"); exit(1); }
@@ -5356,7 +5356,7 @@ void Loader::PrintFOM(std::string filename, const char* type, const char* MC_ver
                             }
                             else if (filename.find("B2Kstarnunu") != std::string::npos) EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
                             else if (filename.find("B2Xsnunu") != std::string::npos) {
-                                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                                 EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                             }
                             else if (filename.find("B02K0nunu") != std::string::npos) {
@@ -5365,7 +5365,7 @@ void Loader::PrintFOM(std::string filename, const char* type, const char* MC_ver
                             }
                             else if (filename.find("B02Kstar0nunu") != std::string::npos) EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
                             else if (filename.find("B02Xsnunu") != std::string::npos) {
-                                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                                 EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                             }
                             else { EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename); }
@@ -5435,7 +5435,7 @@ void Loader::PrintFOM1D(std::string filename, const char* type, const char* MC_v
                         }
                         else if (filename.find("B2Kstarnunu") != std::string::npos) EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
                         else if (filename.find("B2Xsnunu") != std::string::npos) {
-                            double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                            double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                             EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                         }
                         else if (filename.find("B02K0nunu") != std::string::npos) {
@@ -5444,7 +5444,7 @@ void Loader::PrintFOM1D(std::string filename, const char* type, const char* MC_v
                         }
                         else if (filename.find("B02Kstar0nunu") != std::string::npos) EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
                         else if (filename.find("B02Xsnunu") != std::string::npos) {
-                            double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                            double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                             EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                         }
                         else EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
@@ -5555,7 +5555,7 @@ void Loader::CountMCEvent(std::string filename, const char* type, const char* MC
                 }
                 else if (filename.find("B2Kstarnunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
                 else if (filename.find("B2Xsnunu") != std::string::npos) {
-                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                     MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                 }
                 else if (filename.find("B02K0nunu") != std::string::npos) {
@@ -5564,7 +5564,7 @@ void Loader::CountMCEvent(std::string filename, const char* type, const char* MC
                 }
                 else if (filename.find("B02Kstar0nunu") != std::string::npos) MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename);
                 else if (filename.find("B02Xsnunu") != std::string::npos) {
-                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                     MCcount[decaymodeid_MC] = MCcount[decaymodeid_MC] + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                 }
                 else { printf("ERROR 142\n"); exit(1); }
