@@ -117,7 +117,7 @@ using std::to_string;
 # define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
 
 # define KS0_rel_uncertainty 0.6 // %/cm
-# define track_rel_uncertainty 0.69 // %
+# define track_rel_uncertainty 0.24 // %
 # define pi0_correction 0.932
 # define pi0_rel_uncertainty ((0.0369 / 0.932) * 100.0) // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty

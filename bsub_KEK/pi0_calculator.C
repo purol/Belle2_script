@@ -176,7 +176,7 @@ double ObtainWeight(const char* type, const char* MC_version, const char* catego
 # define Scale_Xsd_nonresonant_syst (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar_syst)
 
 # define KS0_rel_uncertainty 0.6 // %/cm
-# define track_rel_uncertainty 0.69 // %
+# define track_rel_uncertainty 0.24 // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
 
 # define FEI_cal_Bc_num 12
