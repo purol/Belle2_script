@@ -352,6 +352,30 @@ void THStack_multiplicity() {
 
     TGaxis::SetMaxDigits(3);
 
+    CHG_hist->SetLineWidth(3);
+    CHG_hist->SetLineColor(6);
+    CHG_hist->SetFillStyle(0);
+
+    MIX_hist->SetLineWidth(3);
+    MIX_hist->SetLineColor(3);
+    MIX_hist->SetFillStyle(0);
+
+    UUBAR_hist->SetLineWidth(3);
+    UUBAR_hist->SetLineColor(4);
+    UUBAR_hist->SetFillStyle(0);
+
+    DDBAR_hist->SetLineWidth(3);
+    DDBAR_hist->SetLineColor(2);
+    DDBAR_hist->SetFillStyle(0);
+
+    SSBAR_hist->SetLineWidth(3);
+    SSBAR_hist->SetLineColor(7);
+    SSBAR_hist->SetFillStyle(0);
+
+    CHARM_hist->SetLineWidth(3);
+    CHARM_hist->SetLineColor(8);
+    CHARM_hist->SetFillStyle(0);
+
     SIGNAL_hist->SetLineWidth(3);
     SIGNAL_hist->SetLineColor(2);
     SIGNAL_hist->SetFillStyle(0);
