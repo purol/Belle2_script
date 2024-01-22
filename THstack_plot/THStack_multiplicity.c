@@ -384,6 +384,20 @@ void THStack_multiplicity() {
 
     gStyle->SetPalette(kGistEarth);
 
+    CHG_hist->SetStats(false);
+    MIX_hist->SetStats(false);
+    UUBAR_hist->SetStats(false);
+    DDBAR_hist->SetStats(false);
+    SSBAR_hist->SetStats(false);
+    CHARM_hist->SetStats(false);
+    SIGNAL_hist->SetStats(false);
+
+    CHG_hist->Draw("Hist");
+    MIX_hist->Draw("HistSAME");
+    UUBAR_hist->Draw("HistSAME");
+    DDBAR_hist->Draw("HistSAME");
+    SSBAR_hist->Draw("HistSAME");
+    CHARM_hist->Draw("HistSAME");
     SIGNAL_hist->Draw("HistSAME");
 
     TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.7, 0.7);
