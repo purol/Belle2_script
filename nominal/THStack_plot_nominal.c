@@ -146,7 +146,7 @@ double ObtainWeight(const char* type, const char* MC_version, const char* catego
 # define track_rel_uncertainty 0.24 // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
 
-# define Nvar_num 1
+# define Nvar_num 128
 
 # define CAL 1.0
 # define CAL_qq 1.0
