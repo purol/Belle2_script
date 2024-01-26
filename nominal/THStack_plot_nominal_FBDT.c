@@ -14,6 +14,8 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # include <algorithm>
 # include <float.h>
 
+# define N_decay 38 // five decay mode + others
+
 # define MyEPSILON 0.000001
 # define MCTYPE "MC15ri"
 
@@ -1954,6 +1956,10 @@ void LetsFillNominal_ri(const char* dirname, std::vector<std::string> variable_n
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
+
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (branch_names.at(k) == std::string("Upsilon")) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
             else if (branch_names.at(k) == std::string("Bsig")) tree_Bsig->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -2289,6 +2295,10 @@ void LetsFillNominal_ri_correction(const char* dirname, std::vector<std::string>
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
+
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (branch_names.at(k) == std::string("Upsilon")) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
             else if (branch_names.at(k) == std::string("Bsig")) tree_Bsig->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -2596,6 +2606,10 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, const
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        TTree* tree_Xs;
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
