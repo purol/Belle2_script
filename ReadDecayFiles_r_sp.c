@@ -6,9 +6,9 @@
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
-# define BR_Kplus_nunubar 0.00000398 // (eq. 10)
+# define BR_Kplus_nunubar 0.000005044 // Table VI = (5.044 +- 0.402) * 10^{-6}
 # define BR_K0star_nunubar 0.00000919 // (eq. 11)
-# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15)
+# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15). In Table VI = (4.6669 +- 0.3707) * 10^{-6}
 # define BR_Kplusstar_nunubar (BR_K0star_nunubar*TBp/TB0) // under (eq. 15)
 # define BR_Xs_nunubar 0.000029 // (eq. 23)
 # define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
