@@ -3124,6 +3124,7 @@ void LetsFillNominal_ri(const char* dirname, std::vector<std::string> variable_n
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
 
             for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
 
@@ -3467,6 +3468,7 @@ void LetsFillNominal_ri_correction(const char* dirname, std::vector<std::string>
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
 
             // BDTc correction factor
             if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
@@ -3770,6 +3772,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, const
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
 
             // BDTc correction factor
             if (BDTc > (5.0 / 6.0)) BDTc_correction = 5.0;
