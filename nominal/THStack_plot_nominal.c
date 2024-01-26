@@ -4144,14 +4144,14 @@ void THStack_plot_nominal() {
     LetsFillNominal_ri(Nominal_MC_DDBAR_validation_dirname, variable_names, branch_names, Nominal_MC_values, "root", &Nominal_MC_numbering, &weights, "DDBAR", "Continuum", "otherwise");
     LetsFillNominal_ri(Nominal_MC_SSBAR_validation_dirname, variable_names, branch_names, Nominal_MC_values, "root", &Nominal_MC_numbering, &weights, "SSBAR", "Continuum", "otherwise");
     LetsFillNominal_ri(Nominal_MC_CHARM_validation_dirname, variable_names, branch_names, Nominal_MC_values, "root", &Nominal_MC_numbering, &weights, "CHARM", "Continuum", "otherwise");
-    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B2Knunu", &ominal_MC_numbering, &weights, "SIGNAL", "Bplus", "B2Knunu");
-    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B2Kstarnunu", &ominal_MC_numbering, &weights, "SIGNAL", "Bplus", "otherwise");
-    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B2Xsnunu", &ominal_MC_numbering, &weights, "SIGNAL", "Bplus", "B2Xsnunu");
-    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B02K0nunu", &ominal_MC_numbering, &weights, "SIGNAL", "Bzero", "B02K0nunu");
-    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B02Kstar0nunu", &ominal_MC_numbering, &weights, "SIGNAL", "Bzero", "otherwise");
-    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B02Xsnunu", &ominal_MC_numbering, &weights, "SIGNAL", "Bzero", "B02Xsnunu");
+    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B2Knunu", &Nominal_MC_numbering, &weights, "SIGNAL", "Bplus", "B2Knunu");
+    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B2Kstarnunu", &Nominal_MC_numbering, &weights, "SIGNAL", "Bplus", "otherwise");
+    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B2Xsnunu", &Nominal_MC_numbering, &weights, "SIGNAL", "Bplus", "B2Xsnunu");
+    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B02K0nunu", &Nominal_MC_numbering, &weights, "SIGNAL", "Bzero", "B02K0nunu");
+    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B02Kstar0nunu", &Nominal_MC_numbering, &weights, "SIGNAL", "Bzero", "otherwise");
+    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B02Xsnunu", &Nominal_MC_numbering, &weights, "SIGNAL", "Bzero", "B02Xsnunu");
     
-    LetsFill(Nominal_data_dirname, variable_names, branch_names, Nominal_data_values);
+    LetsFill(Nominal_data_dirname, variable_names, branch_names, Nominal_data_values, "root");
 
     // sort variables
     for (int k = 0; k < (int)Nominal_MC_numbering.size(); k++) {
@@ -4354,7 +4354,7 @@ void THStack_plot_nominal() {
     for (int i = 0; i < (int)eemumu_values[index].size(); i++) eemumu_values[index].at(i) = log10l(eemumu_values[index].at(i));
     for (int i = 0; i < (int)llXX_values[index].size(); i++) llXX_values[index].at(i) = log10l(llXX_values[index].at(i));
     for (int i = 0; i < (int)hhISR_values[index].size(); i++) hhISR_values[index].at(i) = log10l(hhISR_values[index].at(i));
-    for (int i = 0; i < (int)SIGNAL_values[k].size(); i++) SIGNAL_hist[k]->Fill(SIGNAL_values[k].at(i), SIGNAL_weights.at(i));
+    for (int i = 0; i < (int)SIGNAL_values[index].size(); i++) SIGNAL_values[index].at(i) = log10l(SIGNAL_values[index].at(i));
     for (int i = 0; i < (int)Nominal_MC_values[index].size(); i++) Nominal_MC_values[index].at(i) = log10l(Nominal_MC_values[index].at(i));
     for (int i = 0; i < (int)Nominal_data_values[index].size(); i++) Nominal_data_values[index].at(i) = log10l(Nominal_data_values[index].at(i));
 
@@ -4373,6 +4373,7 @@ void THStack_plot_nominal() {
         for (int i = 0; i < (int)eemumu_values[k].size(); i++) eemumu_hist[k]->Fill(eemumu_values[k].at(i), eemumu_weights.at(i));
         for (int i = 0; i < (int)llXX_values[k].size(); i++) llXX_hist[k]->Fill(llXX_values[k].at(i), llXX_weights.at(i));
         for (int i = 0; i < (int)hhISR_values[k].size(); i++) hhISR_hist[k]->Fill(hhISR_values[k].at(i), hhISR_weights.at(i));
+        for (int i = 0; i < (int)SIGNAL_values[k].size(); i++) SIGNAL_hist[k]->Fill(SIGNAL_values[k].at(i), SIGNAL_weights.at(i));
         for (int i = 0; i < (int)Nominal_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Nominal_MC_values[k].at(i), weights.at(i));
         for (int i = 0; i < (int)Nominal_data_values[k].size(); i++) data_hist[k]->Fill(Nominal_data_values[k].at(i));
     }

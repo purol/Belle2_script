@@ -2957,12 +2957,12 @@ void THStack_plot_nominal_FBDT() {
     LetsFillNominal_ri(Nominal_MC_DDBAR_validation_dirname, variable_names, branch_names, Nominal_MC_values, "root",  &Nominal_MC_numbering, &weights, "DDBAR", "Continuum", "otherwise");
     LetsFillNominal_ri(Nominal_MC_SSBAR_validation_dirname, variable_names, branch_names, Nominal_MC_values, "root",  &Nominal_MC_numbering, &weights, "SSBAR", "Continuum", "otherwise");
     LetsFillNominal_ri(Nominal_MC_CHARM_validation_dirname, variable_names, branch_names, Nominal_MC_values, "root",  &Nominal_MC_numbering, &weights, "CHARM", "Continuum", "otherwise");
-    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B2Knunu",  &ominal_MC_numbering, &weights, "SIGNAL", "Bplus", "B2Knunu");
-    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B2Kstarnunu", &ominal_MC_numbering, &weights, "SIGNAL", "Bplus", "otherwise");
-    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B2Xsnunu", &ominal_MC_numbering, &weights, "SIGNAL", "Bplus", "B2Xsnunu");
-    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B02K0nunu", &ominal_MC_numbering, &weights, "SIGNAL", "Bzero", "B02K0nunu");
-    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B02Kstar0nunu", &ominal_MC_numbering, &weights, "SIGNAL", "Bzero", "otherwise");
-    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B02Xsnunu", &ominal_MC_numbering, &weights, "SIGNAL", "Bzero", "B02Xsnunu");
+    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B2Knunu",  &Nominal_MC_numbering, &weights, "SIGNAL", "Bplus", "B2Knunu");
+    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B2Kstarnunu", &Nominal_MC_numbering, &weights, "SIGNAL", "Bplus", "otherwise");
+    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B2Xsnunu", &Nominal_MC_numbering, &weights, "SIGNAL", "Bplus", "B2Xsnunu");
+    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B02K0nunu", &Nominal_MC_numbering, &weights, "SIGNAL", "Bzero", "B02K0nunu");
+    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B02Kstar0nunu", &Nominal_MC_numbering, &weights, "SIGNAL", "Bzero", "otherwise");
+    LetsFillNominal_ri(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, "B02Xsnunu", &Nominal_MC_numbering, &weights, "SIGNAL", "Bzero", "B02Xsnunu");
     
     LetsFill(Nominal_data_dirname, variable_names, branch_names, Nominal_data_values, "root");
 
