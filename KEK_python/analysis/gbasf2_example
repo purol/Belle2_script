@@ -1,0 +1,7 @@
+gbasf2 ./gbasf2_Inaba.py -p CHG_Inaba_MC14ria --input_dslist ./CHG_FEISKIM_MC14ria -s light-2110-tartarus --basf2opt="-- --inputsample=default" --dryrun
+
+
+project naming rule example:
+p12c1_D_ON_S_Houraisan - pro12 chunk1 data on-resonance skimmed Houraisan code
+p12c2_M14d_f_OF_R_Nitori - proc12 chunk2 MC14rd_f off-resonance raw Nitori code
+p12c2_M14i_a_ON_R_Aqua - proc12 chunk2 MC14ri_a on-resonance raw Aqua code
