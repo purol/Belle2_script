@@ -365,7 +365,7 @@ void THStack_multiplicity() {
     UUBAR_hist->SetFillStyle(0);
 
     DDBAR_hist->SetLineWidth(3);
-    DDBAR_hist->SetLineColor(2);
+    DDBAR_hist->SetLineColor(0);
     DDBAR_hist->SetFillStyle(0);
 
     SSBAR_hist->SetLineWidth(3);
