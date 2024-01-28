@@ -1,8 +1,5 @@
 # define N_decay 38 // five decay mode + others
 
-# define MyEPSILON 0.000001
-# define MCTYPE "MC15ri"
-
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
@@ -14,32 +11,34 @@
 # define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
 # define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
 
-// https://confluence.desy.de/pages/viewpage.action?pageId=107054222
-# define N_BpBp_1invab 565400000.0
-# define N_B0B0_1invab 534600000.0
+# define BR_BpBp 0.514
+# define BR_B0B0 0.486
 
-# define N_Kplus_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplus_nunubar)
-# define N_Kplusstar_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplusstar_nunubar)
-# define N_Xsu_nonresonant_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Xsu_nonresonant_nunubar)
-# define N_K0_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0_nunubar)
-# define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
-# define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
+# define N_BpBp_LS1 (387100000.0 * (BR_BpBp/(BR_BpBp+BR_B0B0)))
+# define N_B0B0_LS1 (387100000.0 * (BR_B0B0/(BR_BpBp+BR_B0B0)))
+
+# define N_Kplus_nunubar_LS1 (2.0 * N_BpBp_LS1 * BR_Kplus_nunubar)
+# define N_Kplusstar_nunubar_LS1 (2.0 * N_BpBp_LS1 * BR_Kplusstar_nunubar)
+# define N_Xsu_nonresonant_nunubar_LS1 (2.0 * N_BpBp_LS1 * BR_Xsu_nonresonant_nunubar)
+# define N_K0_nunubar_LS1 (2.0 * N_B0B0_LS1 * BR_K0_nunubar)
+# define N_K0star_nunubar_LS1 (2.0 * N_B0B0_LS1 * BR_K0star_nunubar)
+# define N_Xsd_nunubar_LS1 (2.0 * N_B0B0_LS1 * BR_Xsd_nonresonant_nunubar)
 
 // my MC sample number
-# define N_Kplus_nunubar 10000000.0
-# define N_K0_nunubar 10000000.0
-# define N_Kplusstar_nunubar 10000000.0
-# define N_K0star_nunubar 10000000.0
-# define N_Xsu_nonresonant_nunubar 50000000.0
-# define N_Xsd_nonresonant_nunubar 50000000.0
+# define N_Kplus_nunubar 1000000.0
+# define N_K0_nunubar 1000000.0
+# define N_Kplusstar_nunubar 1000000.0
+# define N_K0star_nunubar 1000000.0
+# define N_Xsu_nonresonant_nunubar 5000000.0
+# define N_Xsd_nonresonant_nunubar 5000000.0
 
-// scale factor for each MC sample
-# define Scale_Kplus (N_Kplus_nunubar_1invab/N_Kplus_nunubar)
-# define Scale_Kplusstar (N_Kplusstar_nunubar_1invab/N_Kplusstar_nunubar)
-# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar)
-# define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
-# define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
-# define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
+// scale factor for each MC sample for 361.673/fb
+# define Scale_Kplus (N_Kplus_nunubar_LS1/N_Kplus_nunubar)
+# define Scale_Kplusstar (N_Kplusstar_nunubar_LS1/N_Kplusstar_nunubar)
+# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_nunubar)
+# define Scale_K0 (N_K0_nunubar_LS1/N_K0_nunubar)
+# define Scale_K0star (N_K0star_nunubar_LS1/N_K0star_nunubar)
+# define Scale_Xsd_nonresonant (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar)
 
 /* ==========================================================================================*/
 
