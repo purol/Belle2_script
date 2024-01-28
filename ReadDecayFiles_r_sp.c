@@ -385,12 +385,12 @@ void load_files(const char *dirname, std::vector<string>* names){
 typedef struct data{
     int __experiment__;
     int __run__;
-    int __event__;
+    unsigned int __event__;
     int __candidate__;
     int __ncandidates__;
 
     double Tree[12];
-    double Decay[N_decay];
+    int Decay[N_decay];
 
 } Data; 
 
@@ -603,7 +603,7 @@ void Loader::PrintInformation(std::string title) {
     typedef struct labels {
         int __experiment__;
         int __run__;
-        int __event__;
+        unsigned int __event__;
         int __ncandidates__;
     } Labels;
     std::vector<Labels> label_list;
