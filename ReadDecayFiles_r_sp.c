@@ -1,5 +1,8 @@
 # define N_decay 38 // five decay mode + others
 
+# define MyEPSILON 0.000001
+# define MCTYPE "MC15ri"
+
 // arXiv:1409.4557v2
 # define TB0 1.5195 // (Table. 1)
 # define TBp 1.6384 // (Table. 1)
