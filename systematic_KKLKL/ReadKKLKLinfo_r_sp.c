@@ -547,7 +547,7 @@ void GetProbabilityHist() {
 
             if (DalitzValue < 0 && s23 >= s13) {
                 if (isnan(Probability_value)) continue;
-                Prob_1D_s23->Fill(m23, Probability_value);
+                Prob_1D_s23->Fill(m23, 4 * m13 * m23 * Probability_value); // multiply Jacobian
             }
 
         }
@@ -588,8 +588,8 @@ void GetProbabilityHist() {
 
             if (DalitzValue < 0 && s23 >= s13) {
                 if (isnan(Probability_value)) continue;
-                Prob_1D_s12->Fill(m12, Probability_value);
-                Prob_1D_s13->Fill(m13, Probability_value);
+                Prob_1D_s12->Fill(m12, 4 * m13 * m12 * Probability_value); // multiply Jacobian
+                Prob_1D_s13->Fill(m13, 4 * m13 * m12 * Probability_value); // multiply Jacobian
             }
 
         }

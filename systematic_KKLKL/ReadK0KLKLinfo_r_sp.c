@@ -471,8 +471,8 @@ void GetProbabilityHist() {
 
             if (DalitzValue < 0 && smax > smin && smax > smed && smin < smed) {
                 if (isnan(Probability_value)) continue;
-                Prob_1D_sqrt_smin->Fill(mmin, Probability_value);
-                Prob_1D_sqrt_smax->Fill(mmax, Probability_value);
+                Prob_1D_sqrt_smin->Fill(mmin, 4 * mmax * mmin * Probability_value); // multiply Jacobian
+                Prob_1D_sqrt_smax->Fill(mmax, 4 * mmax * mmin * Probability_value); // multiply Jacobian
             }
 
         }

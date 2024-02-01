@@ -1027,7 +1027,7 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
     line->SetLineColor(kBlack);
     line->SetLineStyle(2); line->SetLineWidth(1);
 
-    TCanvas* cpull = new TCanvas("pull_Plot", "pull Plot", 1800, 800); cpull->SetBottomMargin(0.3);
+    TCanvas* cpull = new TCanvas("pull_Plot", "pull Plot", 2200, 800); cpull->SetBottomMargin(0.3);
     pull_two_sigma->Draw("E2");
     pull_one_sigma->Draw("E2 same");
     pull_ht->Draw("e1 same");
@@ -1192,6 +1192,7 @@ int Check_param() {
     }
 
     // draw pull
+    iter->Reset();
     Drawpull(w, iter);
 
     // define frame
