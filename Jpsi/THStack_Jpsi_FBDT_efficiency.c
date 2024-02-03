@@ -2718,7 +2718,7 @@ void THStack_Jpsi_FBDT_efficiency() {
     const char* Jpsi_MC_DDBAR_before_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_Jpsi/DDBAR_analysis/validation_v000/final_output_root_after_MVA_Application";
     const char* Jpsi_MC_SSBAR_before_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_Jpsi/SSBAR_analysis/validation_v000/final_output_root_after_MVA_Application";
     const char* Jpsi_MC_CHARM_before_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_Jpsi/CHARM_analysis/validation_v000/final_output_root_after_MVA_Application";
-    const char* Jpsi_data_before_before_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_data_Jpsi/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application";
+    const char* Jpsi_data_before_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_data_Jpsi/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application";
 
     const char* Jpsi_MC_SIGNAL_after_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_Jpsi/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut";
     const char* Jpsi_MC_CHG_after_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_Jpsi/CHG_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut";
