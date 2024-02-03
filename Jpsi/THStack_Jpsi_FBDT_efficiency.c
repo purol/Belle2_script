@@ -1964,11 +1964,11 @@ void LetsFillJpsi_ri(const char* dirname, std::vector<std::string> variable_name
             else if (SampleName == "SIGNAL") {
                 numberings->push_back(14);
                 if (nBp > 0) {
-                    FEI_calibration_factor = FEI_cal_Bc;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
                 }
                 else if (nB0 > 0) {
-                    FEI_calibration_factor = FEI_cal_B0;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
                 }
                 else {
@@ -2308,11 +2308,11 @@ void LetsFillJpsi_ri_correction(const char* dirname, std::vector<std::string> va
             else if (SampleName == "SIGNAL") {
                 numberings->push_back(14);
                 if (nBp > 0) {
-                    FEI_calibration_factor = FEI_cal_Bc;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
                 }
                 else if (nB0 > 0) {
-                    FEI_calibration_factor = FEI_cal_B0;
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
                     weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
                 }
                 else {
