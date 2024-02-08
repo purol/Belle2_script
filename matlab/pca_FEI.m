@@ -1,7 +1,7 @@
 clear all
 format long
 
-N_total_bins = 18;
+N_total_bins = 112;
 N_selected_vectors = 3;
 
 % FEI
