@@ -2994,18 +2994,18 @@ void THStack_plot_comparison_background() {
     std::vector<double> signal_weights;
     std::vector<double> sideband_weight;
 
-    LetsFill_ri(MC15rd_CHG_signal_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHG", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_MIX_signal_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "MIX", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_UUBAR_signal_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "UUBAR", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_DDBAR_signal_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "DDBAR", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_SSBAR_signal_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "SSBAR", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_CHARM_signal_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHARM", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_CHG_sideband_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHG", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_MIX_sideband_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "MIX", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_UUBAR_sideband_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "UUBAR", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_DDBAR_sideband_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "DDBAR", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_SSBAR_sideband_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "SSBAR", "MC15rd", "validation", CAL_MC15rd, 1.0);
-    LetsFill_ri(MC15rd_CHARM_sideband_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHARM", "MC15rd", "validation", CAL_MC15rd, 1.0);
+    LetsFill_ri(MC15rd_CHG_signal_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHG", "signal", "validation", 1.0, 1.0);
+    LetsFill_ri(MC15rd_MIX_signal_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "MIX", "signal", "validation", 1.0, 1.0);
+    LetsFill_ri(MC15rd_UUBAR_signal_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "UUBAR", "signal", "validation", 1.0, 1.0);
+    LetsFill_ri(MC15rd_DDBAR_signal_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "DDBAR", "signal", "validation", 1.0, 1.0);
+    LetsFill_ri(MC15rd_SSBAR_signal_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "SSBAR", "signal", "validation", 1.0, 1.0);
+    LetsFill_ri(MC15rd_CHARM_signal_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHARM", "signal", "validation", 1.0, 1.0);
+    LetsFill_ri(MC15rd_CHG_sideband_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHG", "sideband", "validation", 1.0, 1.0);
+    LetsFill_ri(MC15rd_MIX_sideband_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "MIX", "sideband", "validation", 1.0, 1.0);
+    LetsFill_ri(MC15rd_UUBAR_sideband_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "UUBAR", "sideband", "validation", 1.0, 1.0);
+    LetsFill_ri(MC15rd_DDBAR_sideband_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "DDBAR", "sideband", "validation", 1.0, 1.0);
+    LetsFill_ri(MC15rd_SSBAR_sideband_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "SSBAR", "sideband", "validation", 1.0, 1.0);
+    LetsFill_ri(MC15rd_CHARM_sideband_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHARM", "sideband", "validation", 1.0, 1.0);
 
     // sort variables
     for (int k = 0; k < (int)MC_numbering.size(); k++) {
@@ -3311,8 +3311,8 @@ void THStack_plot_comparison_background() {
         //Stack[k]->Add(llXX_hist[k]);
         //Stack[k]->Add(hhISR_hist[k]);
 
-        signal_hist->Scale(1.0 / signal_hist->Integral(), "width");
-        sideband_hist->Scale(1.0 / sideband_hist->Integral(), "width");
+        signal_hist[k]->Scale(1.0 / signal_hist[k]->Integral(), "width");
+        sideband_hist[k]->Scale(1.0 / sideband_hist[k]->Integral(), "width");
 
         Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
         Ratio_hist[k]->Divide(sideband_hist[k], signal_hist[k]);
@@ -3343,7 +3343,7 @@ void THStack_plot_comparison_background() {
         TPaveText* pt = new TPaveText(0.135, 0.88, 0.6, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("Both histograms are normalized"); pt->Draw();
 
         c_temp->cd();
-        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); signal_valuespad2->cd();
+        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
         Ratio_hist[k]->SetMinimum(0.5); Ratio_hist[k]->SetMaximum(1.5); Ratio_hist[k]->SetLineWidth(2);
         Ratio_hist[k]->GetYaxis()->SetTitleSize(0.08); Ratio_hist[k]->GetYaxis()->SetTitleOffset(0.5);
         Ratio_hist[k]->GetXaxis()->SetLabelSize(0.08); Ratio_hist[k]->GetYaxis()->SetLabelSize(0.08);
