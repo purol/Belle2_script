@@ -887,14 +887,17 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
        inputs.push_back(temp_DataToTree[34]); // Btag_useCMSFrame_theta
        inputs.push_back(temp_UpsilonDataToTree[69]); // extraInfo__boEeclv200__bc
        inputs.push_back(temp_UpsilonDataToTree[66]); // extraInfo__boNgammav200__bc
+       inputs.push_back(temp_UpsilonDataToTree[14]); // foxWolframR1
        inputs.push_back(temp_UpsilonDataToTree[16]); // foxWolframR3
        inputs.push_back(temp_UpsilonDataToTree[17]); // foxWolframR4
        inputs.push_back(temp_UpsilonDataToTree[19]); // harmonicMomentThrust1
        inputs.push_back(temp_UpsilonDataToTree[20]); // harmonicMomentThrust2
+       inputs.push_back(temp_UpsilonDataToTree[9]); // missingEnergyOfEventCMS
        inputs.push_back(temp_UpsilonDataToTree[8]); // missingMomentumOfEvent
        inputs.push_back(temp_UpsilonDataToTree[7]); // missingMomentumOfEvent_theta
        inputs.push_back(temp_UpsilonDataToTree[10] - 2.0); // nRemainingTracksInEvent
        inputs.push_back(temp_UpsilonDataToTree[44]); // roePTheta__bocleanMask__bc
+       inputs.push_back(temp_BsigDataToTree[5]); // useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc
 
        if (temp_BsigDataToTree[53] > -0.5) {
            inputs.push_back(temp_BsigDataToTree[52]); // Bsig_daughter_0_extraInfo_Dc_pValue_std

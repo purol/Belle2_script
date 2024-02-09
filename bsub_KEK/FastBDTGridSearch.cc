@@ -45,7 +45,7 @@
 # define N_pi0_syst 8
 # define index_q2 0
 
-# define Nvar 30
+# define Nvar 33
 # define DvetoNvar 4
 
 # define MyEPSILON 0.000001
@@ -729,14 +729,17 @@ void FillVariables(const char* filename, std::vector<float> input_vars[Nvar], st
     tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[15]);
     tree_data->SetBranchAddress("extraInfo__boEeclv200__bc", &Vars[16]);
     tree_data->SetBranchAddress("extraInfo__boNgammav200__bc", &Vars[17]);
-    tree_data->SetBranchAddress("foxWolframR3", &Vars[18]);
-    tree_data->SetBranchAddress("foxWolframR4", &Vars[19]);
-    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[20]);
-    tree_data->SetBranchAddress("harmonicMomentThrust2", &Vars[21]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[22]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[23]);
-    tree_data->SetBranchAddress("nRemainingTracksInEvent", &Vars[24]);
-    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[25]);
+    tree_data->SetBranchAddress("foxWolframR1", &Vars[18]);
+    tree_data->SetBranchAddress("foxWolframR3", &Vars[19]);
+    tree_data->SetBranchAddress("foxWolframR4", &Vars[20]);
+    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[21]);
+    tree_data->SetBranchAddress("harmonicMomentThrust2", &Vars[22]);
+    tree_data->SetBranchAddress("missingEnergyOfEventCMS", &Vars[23]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[24]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[25]);
+    tree_data->SetBranchAddress("nRemainingTracksInEvent", &Vars[26]);
+    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[27]);
+    tree_data->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &Vars[28]);
 
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &Dc_pvalue_med);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
