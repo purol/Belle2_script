@@ -2941,6 +2941,46 @@ void THStack_plot_Jpsi_FBDT() {
         else if (hasEnding(variable_names.at(k), std::string("foxWolframR3"))) {
             max = 0.4;
         }
+        else if (hasEnding(variable_names.at(k), std::string("missingMass2OfEvent"))) {
+            min = -20.0;
+            max = 40.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("visibleEnergyOfEventCMS"))) {
+            max = 15.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Btag_KSFWVariables_hoo4"))) {
+            max = 0.08;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Bsig_KSFWVariables_et"))) {
+            max = 10;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Bsig_KSFWVariables_hso24"))) {
+            max = 0.2;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op0"))) {
+            min = 20.0;
+            max = 30.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op1"))) {
+            min = 20.0;
+            max = 40.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op2"))) {
+            min = -0.6;
+            max = 0.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op3"))) {
+            min = -0.4;
+            max = 0.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op4"))) {
+            min = -0.6;
+            max = 0.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op7"))) {
+            min = 2.0;
+            max = 10.0;
+        }
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";" + variable_names.at(k) + ";number of candidates").c_str());
         charged_hist[k] = new TH1D("charged", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);

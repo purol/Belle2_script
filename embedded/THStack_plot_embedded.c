@@ -290,7 +290,7 @@ double Corrector_FEI::GetmodeID(int index, bool IsItCharged, std::string type) {
     }
 }
 
-# define Nvar_num 128
+# define Nvar_num 134
 
 # define CAL 0.8394
 # define CAL_qq 1.0
@@ -2415,6 +2415,12 @@ void THStack_plot_embedded() {
     variable_names.push_back("chiProb"); branch_names.push_back("Upsilon");
     variable_names.push_back("dr"); branch_names.push_back("Upsilon");
     variable_names.push_back("dz"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op0"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op1"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op2"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op3"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op4"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op7"); branch_names.push_back("Upsilon");
 
     int Nvar = static_cast<int>(variable_names.size());
     if (Nvar != Nvar_num) exit(1);
@@ -2497,6 +2503,46 @@ void THStack_plot_embedded() {
         }
         else if (hasEnding(variable_names.at(k), std::string("foxWolframR3"))) {
             max = 0.4;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("missingMass2OfEvent"))) {
+            min = -20.0;
+            max = 40.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("visibleEnergyOfEventCMS"))) {
+            max = 15.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Btag_KSFWVariables_hoo4"))) {
+            max = 0.08;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Bsig_KSFWVariables_et"))) {
+            max = 10;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Bsig_KSFWVariables_hso24"))) {
+            max = 0.2;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op0"))) {
+            min = 20.0;
+            max = 30.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op1"))) {
+            min = 20.0;
+            max = 40.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op2"))) {
+            min = -0.6;
+            max = 0.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op3"))) {
+            min = -0.4;
+            max = 0.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op4"))) {
+            min = -0.6;
+            max = 0.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op7"))) {
+            min = 2.0;
+            max = 10.0;
         }
 
         MC_hist[k] = new TH1D("embedded MC", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);

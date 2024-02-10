@@ -153,7 +153,7 @@ double FEI_cal_B0[FEI_cal_B0_num] = { 1.16, 0.94, 0.81, 0.79, 0.99, 1.03, 0.67, 
 double FEI_cal_B0_uncertainty[FEI_cal_B0_num] = { 0.04, 0.05, 0.06, 0.02, 0.03, 0.06, 0.02, 0.03, 0.02, 0.02, 0.12 }; // not relative uncertainty. absolute uncertainty
 double FEI_cal_B0_modeID[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0, 18.0, 19.0, 26.0, -1.0 };
 
-# define Nvar_num 128
+# define Nvar_num 134
 
 # define CAL 1.0
 # define CAL_qq 1.0
@@ -2136,6 +2136,12 @@ void THStack_plot_offres() {
     variable_names.push_back("chiProb"); branch_names.push_back("Upsilon");
     variable_names.push_back("dr"); branch_names.push_back("Upsilon");
     variable_names.push_back("dz"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op0"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op1"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op2"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op3"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op4"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op7"); branch_names.push_back("Upsilon");
 
     int Nvar = static_cast<int>(variable_names.size());
     if (Nvar != Nvar_num) exit(1);
@@ -2276,7 +2282,7 @@ void THStack_plot_offres() {
         double max = *max_element(temp_v.begin(), temp_v.end());
         int bins = 100;
 
-        if (hasEnding(variable_names.at(k),std::string("dr"))) { // exceptions
+        if (hasEnding(variable_names.at(k), std::string("dr"))) { // exceptions
             max = 0.2;
             min = 0.0;
         }
@@ -2292,35 +2298,81 @@ void THStack_plot_offres() {
             max = 1.0;
             min = 0.0;
         }
-        else if(hasEnding(variable_names.at(k), std::string("harmonicMomentThrust1"))){
-            max = 1.0;
-            min = -1.0;
+        else if (hasEnding(variable_names.at(k), std::string("harmonicMomentThrust1"))) {
+            max = 0.6;
+            min = -0.6;
         }
-        else if(hasEnding(variable_names.at(k), std::string("harmonicMomentThrust2"))){
+        else if (hasEnding(variable_names.at(k), std::string("harmonicMomentThrust2"))) {
             max = 1.0;
             min = 0.0;
         }
-        else if(hasEnding(variable_names.at(k), std::string("harmonicMomentThrust3"))){
+        else if (hasEnding(variable_names.at(k), std::string("harmonicMomentThrust3"))) {
             max = 1.0;
             min = -1.0;
         }
-        else if(hasEnding(variable_names.at(k), std::string("harmonicMomentThrust4"))){
+        else if (hasEnding(variable_names.at(k), std::string("harmonicMomentThrust4"))) {
             max = 1.0;
             min = -0.5;
         }
-        else if(hasEnding(variable_names.at(k), std::string("missingMomentumOfEvent"))){
+        else if (hasEnding(variable_names.at(k), std::string("missingMomentumOfEvent"))) {
             max = 5.0;
         }
-        else if(hasEnding(variable_names.at(k), std::string("missingEnergyOfEventCMS"))){
+        else if (hasEnding(variable_names.at(k), std::string("missingEnergyOfEventCMS"))) {
             min = -1.5;
         }
-        else if(hasEnding(variable_names.at(k), std::string("Btag_extraInfo_SignalProbability"))){
+        else if (hasEnding(variable_names.at(k), std::string("Btag_extraInfo_SignalProbability"))) {
             max = 0;
             min = -3;
             variable_names.at(k) = std::string("log_{10}SignalProbability");
         }
-        else if(hasEnding(variable_names.at(k), std::string("Btag_thrustOm"))){
+        else if (hasEnding(variable_names.at(k), std::string("Btag_thrustOm"))) {
             min = 0.5;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("foxWolframR1"))) {
+            max = 0.25;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("foxWolframR3"))) {
+            max = 0.4;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("missingMass2OfEvent"))) {
+            min = -20.0;
+            max = 40.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("visibleEnergyOfEventCMS"))) {
+            max = 15.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Btag_KSFWVariables_hoo4"))) {
+            max = 0.08;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Bsig_KSFWVariables_et"))) {
+            max = 10;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Bsig_KSFWVariables_hso24"))) {
+            max = 0.2;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op0"))) {
+            min = 20.0;
+            max = 30.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op1"))) {
+            min = 20.0;
+            max = 40.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op2"))) {
+            min = -0.6;
+            max = 0.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op3"))) {
+            min = -0.4;
+            max = 0.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op4"))) {
+            min = -0.6;
+            max = 0.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op7"))) {
+            min = 2.0;
+            max = 10.0;
         }
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";"+ variable_names.at(k) + ";number of candidates").c_str());

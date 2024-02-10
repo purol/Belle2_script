@@ -135,7 +135,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define Scale_SSBAR_validation_MC15rd (0.361673/1.458959)
 # define Scale_CHARM_validation_MC15rd (0.361673/1.458959)
 
-# define Nvar_num 116
+# define Nvar_num 134
 
 bool hasEnding(std::string const& fullString, std::string const& ending) {
     if (fullString.length() >= ending.length()) {
@@ -304,10 +304,15 @@ void THStack_plot() {
     variable_names.push_back("Btag_KSFWVariables_hoo2"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo3"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_KSFWVariables_hoo4"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_dr"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_dz"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_useCMSFrame_p"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_useCMSFrame_phi"); branch_names.push_back("Btag");
     variable_names.push_back("roeEextra__bocleanMask__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("extraInfo__boEeclv133__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("extraInfo__boNgammav133__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("extraInfo__boEeclv200__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("extraInfo__boNgammav200__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("Btag_thrustOm"); branch_names.push_back("Btag");
     variable_names.push_back("nParticlesInList__boe__pl__clElectronFBDT__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("nParticlesInList__bomu__pl__clMuonFBDT__bc"); branch_names.push_back("Upsilon");
@@ -390,6 +395,19 @@ void THStack_plot() {
     variable_names.push_back("nROE_ECLClusters__bocleanMask__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("nROE_ParticlesInList__bopi0__clmyneutralPion__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("nROE_ParticlesInList__bogamma__clmygamma__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("missingMass2OfEvent"); branch_names.push_back("Upsilon");
+    variable_names.push_back("visibleEnergyOfEventCMS"); branch_names.push_back("Upsilon");
+    variable_names.push_back("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("chiProb"); branch_names.push_back("Upsilon");
+    variable_names.push_back("dr"); branch_names.push_back("Upsilon");
+    variable_names.push_back("dz"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op0"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op1"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op2"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op3"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op4"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MsquaredBsig_op7"); branch_names.push_back("Upsilon");
 
     int Nvar = static_cast<int>(variable_names.size());
     if (Nvar != Nvar_num) exit(1);
@@ -478,6 +496,66 @@ void THStack_plot() {
         else if(hasEnding(variable_names.at(k), std::string("harmonicMomentThrust4"))){
             max = 1.0;
             min = -0.5;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("missingMomentumOfEvent"))) {
+            max = 5.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("missingEnergyOfEventCMS"))) {
+            min = -1.5;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Btag_extraInfo_SignalProbability"))) {
+            max = 0;
+            min = -3;
+            variable_names.at(k) = std::string("log_{10}SignalProbability");
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Btag_thrustOm"))) {
+            min = 0.5;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("foxWolframR1"))) {
+            max = 0.25;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("foxWolframR3"))) {
+            max = 0.4;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("missingMass2OfEvent"))) {
+            min = -20.0;
+            max = 40.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("visibleEnergyOfEventCMS"))) {
+            max = 15.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Btag_KSFWVariables_hoo4"))) {
+            max = 0.08;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Bsig_KSFWVariables_et"))) {
+            max = 10;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("Bsig_KSFWVariables_hso24"))) {
+            max = 0.2;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op0"))) {
+            min = 20.0;
+            max = 30.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op1"))) {
+            min = 20.0;
+            max = 40.0;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op2"))) {
+            min = -0.6;
+            max = 0.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op3"))) {
+            min = -0.4;
+            max = 0.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op4"))) {
+            min = -0.6;
+            max = 0.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op7"))) {
+            min = 2.0;
+            max = 10.0;
         }
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";"+ variable_names.at(k) + ";arbitrary unit").c_str());
