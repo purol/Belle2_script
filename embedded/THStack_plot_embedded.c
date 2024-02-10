@@ -2521,15 +2521,15 @@ void THStack_plot_embedded() {
             max = 0.2;
         }
         else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op0"))) {
-            min = 20.0;
-            max = 30.0;
+            min = 7.0;
+            max = 33.0;
         }
         else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op1"))) {
-            min = 20.0;
+            min = 0.0;
             max = 40.0;
         }
         else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op2"))) {
-            min = -0.6;
+            min = -1.5;
             max = 0.1;
         }
         else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op3"))) {
@@ -2541,8 +2541,8 @@ void THStack_plot_embedded() {
             max = 0.1;
         }
         else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op7"))) {
-            min = 2.0;
-            max = 10.0;
+            min = 0.0;
+            max = 15.0;
         }
 
         MC_hist[k] = new TH1D("embedded MC", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
