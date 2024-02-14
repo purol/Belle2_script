@@ -3016,7 +3016,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, TH1D* hist
     else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
     else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 6;
 
-    for (int i = 0; i < RarityBins * 3; i++) {
+    for (int i = 0; i < RarityBins; i++) {
         Nevt_nominal[ArrayBinID * RarityBins * 3 + i] = Nevt_nominal[ArrayBinID * RarityBins * 3 + i] + histMX1->GetBinContent(i + 1);
         Nevt_nominal[ArrayBinID * RarityBins * 3 + i + RarityBins] = Nevt_nominal[ArrayBinID * RarityBins * 3 + i + RarityBins] + histMX2->GetBinContent(i + 1);
         Nevt_nominal[ArrayBinID * RarityBins * 3 + i + RarityBins * 2] = Nevt_nominal[ArrayBinID * RarityBins * 3 + i + RarityBins * 2] + histMX3->GetBinContent(i + 1);
@@ -3300,7 +3300,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* histMX1
     else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
     else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 6;
 
-    for (int i = 0; i < RarityBins * 3; i++) {
+    for (int i = 0; i < RarityBins; i++) {
         Nevt_fluc[ToyNum][ArrayBinID * RarityBins * 3 + i] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins * 3 + i] + histMX1->GetBinContent(i + 1);
         Nevt_fluc[ToyNum][ArrayBinID * RarityBins * 3 + i + RarityBins] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins * 3 + i + RarityBins] + histMX2->GetBinContent(i + 1);
         Nevt_fluc[ToyNum][ArrayBinID * RarityBins * 3 + i + RarityBins * 2] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins * 3 + i + RarityBins * 2] + histMX3->GetBinContent(i + 1);
@@ -3576,7 +3576,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* histMX1
     else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
     else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 6;
 
-    for (int i = 0; i < RarityBins * 3; i++) {
+    for (int i = 0; i < RarityBins; i++) {
         Nevt_fluc[ToyNum][ArrayBinID * RarityBins * 3 + i] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins * 3 + i] + histMX1->GetBinContent(i + 1);
         Nevt_fluc[ToyNum][ArrayBinID * RarityBins * 3 + i + RarityBins] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins * 3 + i + RarityBins] + histMX2->GetBinContent(i + 1);
         Nevt_fluc[ToyNum][ArrayBinID * RarityBins * 3 + i + RarityBins * 2] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins * 3 + i + RarityBins * 2] + histMX3->GetBinContent(i + 1);

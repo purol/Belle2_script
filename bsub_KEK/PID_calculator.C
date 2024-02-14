@@ -3575,8 +3575,10 @@ void FluctuatePIDCorrection(bool IsItKID) {
 
         if (IsItKID) {
             if (std::abs(corrector_PID.GetUncertainty(0, i_PID, MCTYPE) / corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[0][i_PID] = 1.0; // true KID
+            else if (std::abs(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[0][i_PID] = 1.0;
             else PID_correction_fluctuated[0][i_PID] = KID_true_distribution(generator);
             if (std::abs(corrector_PID.GetUncertainty(1, i_PID, MCTYPE) / corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[1][i_PID] = 1.0; // mis KID
+            else if (std::abs(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[1][i_PID] = 1.0;
             else PID_correction_fluctuated[1][i_PID] = KID_mis_distribution(generator);
             PID_correction_fluctuated[2][i_PID] = 1.0;
             PID_correction_fluctuated[3][i_PID] = 1.0;
@@ -3585,8 +3587,10 @@ void FluctuatePIDCorrection(bool IsItKID) {
             PID_correction_fluctuated[0][i_PID] = 1.0;
             PID_correction_fluctuated[1][i_PID] = 1.0;
             if (std::abs(corrector_PID.GetUncertainty(2, i_PID, MCTYPE) / corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[2][i_PID] = 1.0; // true PID
+            else if (std::abs(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[2][i_PID] = 1.0;
             else PID_correction_fluctuated[2][i_PID] = PID_true_distribution(generator);
             if (std::abs(corrector_PID.GetUncertainty(3, i_PID, MCTYPE) / corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[3][i_PID] = 1.0; // mis PID
+            else if (std::abs(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[3][i_PID] = 1.0;
             else PID_correction_fluctuated[3][i_PID] = PID_mis_distribution(generator);
         }
 
@@ -3601,8 +3605,10 @@ void FluctuatePIDCorrection(bool IsItKID) {
 
         if (IsItKID) {
             if (std::abs(corrector_FakePID.GetUncertaintyfakeE(1, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[1][i_fake] = 1.0;
+            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[1][i_fake] = 1.0;
             else PID_fakeE_correction_fluctuated[1][i_fake] = Kp_fakeE_distribution(generator);
             if (std::abs(corrector_FakePID.GetUncertaintyfakeE(0, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[0][i_fake] = 1.0;
+            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[0][i_fake] = 1.0;
             else PID_fakeE_correction_fluctuated[0][i_fake] = Kn_fakeE_distribution(generator);
             PID_fakeE_correction_fluctuated[3][i_fake] = 1.0;
             PID_fakeE_correction_fluctuated[2][i_fake] = 1.0;
@@ -3611,8 +3617,10 @@ void FluctuatePIDCorrection(bool IsItKID) {
             PID_fakeE_correction_fluctuated[1][i_fake] = 1.0;
             PID_fakeE_correction_fluctuated[0][i_fake] = 1.0;
             if (std::abs(corrector_FakePID.GetUncertaintyfakeE(3, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[3][i_fake] = 1.0;
+            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[3][i_fake] = 1.0;
             else PID_fakeE_correction_fluctuated[3][i_fake] = pip_fakeE_distribution(generator);
             if (std::abs(corrector_FakePID.GetUncertaintyfakeE(2, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[2][i_fake] = 1.0;
+            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[2][i_fake] = 1.0;
             else PID_fakeE_correction_fluctuated[2][i_fake] = pin_fakeE_distribution(generator);
         }
     }
@@ -3626,8 +3634,10 @@ void FluctuatePIDCorrection(bool IsItKID) {
 
         if (IsItKID) {
             if (std::abs(corrector_FakePID.GetUncertaintyfakeMU(1, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[1][i_fake] = 1.0;
+            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[1][i_fake] = 1.0;
             else PID_fakeMU_correction_fluctuated[1][i_fake] = Kp_fakeMU_distribution(generator);
             if (std::abs(corrector_FakePID.GetUncertaintyfakeMU(0, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[0][i_fake] = 1.0;
+            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[0][i_fake] = 1.0;
             else PID_fakeMU_correction_fluctuated[0][i_fake] = Kn_fakeMU_distribution(generator);
             PID_fakeMU_correction_fluctuated[3][i_fake] = 1.0;
             PID_fakeMU_correction_fluctuated[2][i_fake] = 1.0;
@@ -3636,8 +3646,10 @@ void FluctuatePIDCorrection(bool IsItKID) {
             PID_fakeMU_correction_fluctuated[1][i_fake] = 1.0;
             PID_fakeMU_correction_fluctuated[0][i_fake] = 1.0;
             if (std::abs(corrector_FakePID.GetUncertaintyfakeMU(3, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[3][i_fake] = 1.0;
+            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[3][i_fake] = 1.0;
             else PID_fakeMU_correction_fluctuated[3][i_fake] = pip_fakeMU_distribution(generator);
             if (std::abs(corrector_FakePID.GetUncertaintyfakeMU(2, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[2][i_fake] = 1.0;
+            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[2][i_fake] = 1.0;
             else PID_fakeMU_correction_fluctuated[2][i_fake] = pin_fakeMU_distribution(generator);
         }
     }
