@@ -456,22 +456,22 @@ void Corrector_PID::ReadPIDFile_MC15ri() {
         fscanf(fp_PID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction_MC15ri[2][i], &PID_correction_stat_uncer_MC15ri[2][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer_MC15ri[2][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
         fscanf(fp_PID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction_MC15ri[3][i], &PID_correction_stat_uncer_MC15ri[3][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer_MC15ri[3][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
 
-        if ((std::abs(PID_correction_MC15ri[0][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15ri[0][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15ri[0][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15ri[0][i]) > 10000.0)) {
+        if (((std::abs(PID_correction_MC15ri[0][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15ri[0][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15ri[0][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15ri[0][i]) > 10000.0)) {
             PID_correction_MC15ri[0][i] = 1.0;
             PID_correction_stat_uncer_MC15ri[0][i] = 0.0;
             PID_correction_sys_uncer_MC15ri[0][i] = 0.0;
         }
-        if ((std::abs(PID_correction_MC15ri[1][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15ri[1][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15ri[1][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15ri[1][i]) > 10000.0)) {
+        if (((std::abs(PID_correction_MC15ri[1][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15ri[1][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15ri[1][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15ri[1][i]) > 10000.0)) {
             PID_correction_MC15ri[1][i] = 1.0;
             PID_correction_stat_uncer_MC15ri[1][i] = 0.0;
             PID_correction_sys_uncer_MC15ri[1][i] = 0.0;
         }
-        if ((std::abs(PID_correction_MC15ri[2][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15ri[2][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15ri[2][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15ri[2][i]) > 10000.0)) {
+        if (((std::abs(PID_correction_MC15ri[2][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15ri[2][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15ri[2][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15ri[2][i]) > 10000.0)) {
             PID_correction_MC15ri[2][i] = 1.0;
             PID_correction_stat_uncer_MC15ri[2][i] = 0.0;
             PID_correction_sys_uncer_MC15ri[2][i] = 0.0;
         }
-        if ((std::abs(PID_correction_MC15ri[3][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15ri[3][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15ri[3][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15ri[3][i]) > 10000.0)) {
+        if (((std::abs(PID_correction_MC15ri[3][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15ri[3][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15ri[3][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15ri[3][i]) > 10000.0)) {
             PID_correction_MC15ri[3][i] = 1.0;
             PID_correction_stat_uncer_MC15ri[3][i] = 0.0;
             PID_correction_sys_uncer_MC15ri[3][i] = 0.0;
@@ -552,22 +552,22 @@ void Corrector_PID::ReadPIDFile_MC15rd() {
         fscanf(fp_PID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction_MC15rd[2][i], &PID_correction_stat_uncer_MC15rd[2][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer_MC15rd[2][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
         fscanf(fp_PID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction_MC15rd[3][i], &PID_correction_stat_uncer_MC15rd[3][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer_MC15rd[3][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
 
-        if ((std::abs(PID_correction_MC15rd[0][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15rd[0][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15rd[0][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15rd[0][i]) > 10000.0)) {
+        if (((std::abs(PID_correction_MC15rd[0][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15rd[0][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15rd[0][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15rd[0][i]) > 10000.0)) {
             PID_correction_MC15rd[0][i] = 1.0;
             PID_correction_stat_uncer_MC15rd[0][i] = 0.0;
             PID_correction_sys_uncer_MC15rd[0][i] = 0.0;
         }
-        if ((std::abs(PID_correction_MC15rd[1][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15rd[1][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15rd[1][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15rd[1][i]) > 10000.0)) {
+        if (((std::abs(PID_correction_MC15rd[1][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15rd[1][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15rd[1][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15rd[1][i]) > 10000.0)) {
             PID_correction_MC15rd[1][i] = 1.0;
             PID_correction_stat_uncer_MC15rd[1][i] = 0.0;
             PID_correction_sys_uncer_MC15rd[1][i] = 0.0;
         }
-        if ((std::abs(PID_correction_MC15rd[2][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15rd[2][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15rd[2][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15rd[2][i]) > 10000.0)) {
+        if (((std::abs(PID_correction_MC15rd[2][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15rd[2][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15rd[2][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15rd[2][i]) > 10000.0)) {
             PID_correction_MC15rd[2][i] = 1.0;
             PID_correction_stat_uncer_MC15rd[2][i] = 0.0;
             PID_correction_sys_uncer_MC15rd[2][i] = 0.0;
         }
-        if ((std::abs(PID_correction_MC15rd[3][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15rd[3][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15rd[3][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15rd[3][i]) > 10000.0)) {
+        if (((std::abs(PID_correction_MC15rd[3][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15rd[3][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15rd[3][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15rd[3][i]) > 10000.0)) {
             PID_correction_MC15rd[3][i] = 1.0;
             PID_correction_stat_uncer_MC15rd[3][i] = 0.0;
             PID_correction_sys_uncer_MC15rd[3][i] = 0.0;
