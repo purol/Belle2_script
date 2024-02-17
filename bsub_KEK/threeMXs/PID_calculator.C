@@ -4000,5 +4000,7 @@ int main(int argc, char* argv[])
     fclose(fp);
     /* ====================================== */
 
-    delete temp_hist;
+    delete temp_hist_MX1;
+    delete temp_hist_MX2;
+    delete temp_hist_MX3;
 }
