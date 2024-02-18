@@ -561,7 +561,7 @@ int WorkSpace() {
 	int NEntryMultiplicity = ReadMultiplicityInfo("./Multiplicity_info.txt");
 
 	const double expmu = 1.0;
-    const char* fname = "PDFandDATA.root";
+    const char* fname = "PDFandDATA_nominal.root";
 	const char* fname_MXs1 = "PDFandDATA_MXs1.root";
     const char* fname_MXs2 = "PDFandDATA_MXs2.root";
     const char* fname_MXs3 = "PDFandDATA_MXs3.root";
