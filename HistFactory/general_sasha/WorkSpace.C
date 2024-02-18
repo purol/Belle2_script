@@ -584,7 +584,7 @@ int WorkSpace() {
 
 	// read signal template
     /* ================================ SIGNAL MX1 ================================ */
-	RooStats::HistFactory::Sample sig_temp_MXs1("Signal_nominal", "Signal_nominal", fname_MXs1);
+	RooStats::HistFactory::Sample sig_temp_MXs1("Signal_nominal_MXs1", "Signal_nominal", fname_MXs1);
 	sig_temp_MXs1.AddHistoSys("track_eff_uncer", "Signal_track_m", fname_MXs1, "", "Signal_track_p", fname_MXs1, "");
 	sig_temp_MXs1.AddHistoSys("KS0_reco_uncer", "Signal_KS0_m", fname_MXs1, "", "Signal_KS0_p", fname_MXs1, "");
 	sig_temp_MXs1.AddHistoSys("BtoDtoXKL_uncer", "Signal_BtoDtoXKL_m", fname_MXs1, "", "Signal_BtoDtoXKL_p", fname_MXs1, "");
@@ -636,7 +636,7 @@ int WorkSpace() {
 	channel.AddSample(sig_temp_MXs1);
 
 	/* ================================ SIGNAL MX2 ================================ */
-	RooStats::HistFactory::Sample sig_temp_MXs2("Signal_nominal", "Signal_nominal", fname_MXs2);
+	RooStats::HistFactory::Sample sig_temp_MXs2("Signal_nominal_MXs2", "Signal_nominal", fname_MXs2);
 	sig_temp_MXs2.AddHistoSys("track_eff_uncer", "Signal_track_m", fname_MXs2, "", "Signal_track_p", fname_MXs2, "");
 	sig_temp_MXs2.AddHistoSys("KS0_reco_uncer", "Signal_KS0_m", fname_MXs2, "", "Signal_KS0_p", fname_MXs2, "");
 	sig_temp_MXs2.AddHistoSys("BtoDtoXKL_uncer", "Signal_BtoDtoXKL_m", fname_MXs2, "", "Signal_BtoDtoXKL_p", fname_MXs2, "");
@@ -688,7 +688,7 @@ int WorkSpace() {
 	channel.AddSample(sig_temp_MXs2);
 
 	/* ================================ SIGNAL MX3 ================================ */
-	RooStats::HistFactory::Sample sig_temp_MXs3("Signal_nominal", "Signal_nominal", fname_MXs3);
+	RooStats::HistFactory::Sample sig_temp_MXs3("Signal_nominal_MXs3", "Signal_nominal", fname_MXs3);
 	sig_temp_MXs3.AddHistoSys("track_eff_uncer", "Signal_track_m", fname_MXs3, "", "Signal_track_p", fname_MXs3, "");
 	sig_temp_MXs3.AddHistoSys("KS0_reco_uncer", "Signal_KS0_m", fname_MXs3, "", "Signal_KS0_p", fname_MXs3, "");
 	sig_temp_MXs3.AddHistoSys("BtoDtoXKL_uncer", "Signal_BtoDtoXKL_m", fname_MXs3, "", "Signal_BtoDtoXKL_p", fname_MXs3, "");
