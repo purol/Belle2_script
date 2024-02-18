@@ -595,7 +595,7 @@ int WorkSpace() {
 	for (int i = 0; i < NEntryPID; i++) sig_temp_MXs1.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("Signal_PID_correlated" + std::to_string(i) + "_m").c_str(), fname_MXs1, "", ("Signal_PID_correlated" + std::to_string(i) + "_p").c_str(), fname_MXs1, "");
 	for (int i = 0; i < NEntryBR; i++) sig_temp_MXs1.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_BR_correlated" + std::to_string(i) + "_m").c_str(), fname_MXs1, "", ("Signal_BR_correlated" + std::to_string(i) + "_p").c_str(), fname_MXs1, "");
 	for (int i = 0; i < NEntrypi0; i++) sig_temp_MXs1.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("Signal_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname_MXs1, "", ("Signal_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname_MXs1, "");
-	sig_temp_MXs1.AddShapeSys("Signal_all_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_all_uncorrelated", fname_MXs1, "");
+	sig_temp_MXs1.AddShapeSys("Signal_MXs1_all_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_all_uncorrelated", fname_MXs1, "");
 	sig_temp_MXs1.AddHistoSys("Kff1_uncer", "Signal_Kff1_m", fname_MXs1, "", "Signal_Kff1_p", fname_MXs1, "");
 	sig_temp_MXs1.AddHistoSys("Kff2_uncer", "Signal_Kff2_m", fname_MXs1, "", "Signal_Kff2_p", fname_MXs1, "");
 	sig_temp_MXs1.AddHistoSys("Kff3_uncer", "Signal_Kff3_m", fname_MXs1, "", "Signal_Kff3_p", fname_MXs1, "");
@@ -647,7 +647,7 @@ int WorkSpace() {
 	for (int i = 0; i < NEntryPID; i++) sig_temp_MXs2.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("Signal_PID_correlated" + std::to_string(i) + "_m").c_str(), fname_MXs2, "", ("Signal_PID_correlated" + std::to_string(i) + "_p").c_str(), fname_MXs2, "");
 	for (int i = 0; i < NEntryBR; i++) sig_temp_MXs2.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_BR_correlated" + std::to_string(i) + "_m").c_str(), fname_MXs2, "", ("Signal_BR_correlated" + std::to_string(i) + "_p").c_str(), fname_MXs2, "");
 	for (int i = 0; i < NEntrypi0; i++) sig_temp_MXs2.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("Signal_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname_MXs2, "", ("Signal_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname_MXs2, "");
-	sig_temp_MXs2.AddShapeSys("Signal_all_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_all_uncorrelated", fname_MXs2, "");
+	sig_temp_MXs2.AddShapeSys("Signal_MXs2_all_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_all_uncorrelated", fname_MXs2, "");
 	sig_temp_MXs2.AddHistoSys("Kff1_uncer", "Signal_Kff1_m", fname_MXs2, "", "Signal_Kff1_p", fname_MXs2, "");
 	sig_temp_MXs2.AddHistoSys("Kff2_uncer", "Signal_Kff2_m", fname_MXs2, "", "Signal_Kff2_p", fname_MXs2, "");
 	sig_temp_MXs2.AddHistoSys("Kff3_uncer", "Signal_Kff3_m", fname_MXs2, "", "Signal_Kff3_p", fname_MXs2, "");
@@ -699,7 +699,7 @@ int WorkSpace() {
 	for (int i = 0; i < NEntryPID; i++) sig_temp_MXs3.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("Signal_PID_correlated" + std::to_string(i) + "_m").c_str(), fname_MXs3, "", ("Signal_PID_correlated" + std::to_string(i) + "_p").c_str(), fname_MXs3, "");
 	for (int i = 0; i < NEntryBR; i++) sig_temp_MXs3.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_BR_correlated" + std::to_string(i) + "_m").c_str(), fname_MXs3, "", ("Signal_BR_correlated" + std::to_string(i) + "_p").c_str(), fname_MXs3, "");
 	for (int i = 0; i < NEntrypi0; i++) sig_temp_MXs3.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("Signal_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname_MXs3, "", ("Signal_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname_MXs3, "");
-	sig_temp_MXs3.AddShapeSys("Signal_all_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_all_uncorrelated", fname_MXs3, "");
+	sig_temp_MXs3.AddShapeSys("Signal_MXs3_all_uncorr_uncer", RooStats::HistFactory::Constraint::Type::Gaussian, "Signal_all_uncorrelated", fname_MXs3, "");
 	sig_temp_MXs3.AddHistoSys("Kff1_uncer", "Signal_Kff1_m", fname_MXs3, "", "Signal_Kff1_p", fname_MXs3, "");
 	sig_temp_MXs3.AddHistoSys("Kff2_uncer", "Signal_Kff2_m", fname_MXs3, "", "Signal_Kff2_p", fname_MXs3, "");
 	sig_temp_MXs3.AddHistoSys("Kff3_uncer", "Signal_Kff3_m", fname_MXs3, "", "Signal_Kff3_p", fname_MXs3, "");
