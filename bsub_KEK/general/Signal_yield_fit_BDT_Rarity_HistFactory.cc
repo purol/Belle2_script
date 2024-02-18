@@ -8170,14 +8170,26 @@ double ObtainWeight(const char* type, const char* MC_version, const char* catego
 
 void SaveSpecificMXsBin(TH1D* hist, int MXsBin) {
     if (MXsBin == 1) {
-        for (int i = RarityBins_MX1; i < RarityBins; i++) hist->SetBinContent(i + 1, 0);
+        for (int i = RarityBins_MX1; i < RarityBins; i++) {
+            hist->SetBinError(i + 1, 0);
+            hist->SetBinContent(i + 1, 0);
+        }
     }
     else if (MXsBin == 2) {
-        for (int i = 0; i < RarityBins_MX1; i++) hist->SetBinContent(i + 1, 0);
-        for (int i = RarityBins_MX1 + RarityBins_MX2; i < RarityBins; i++) hist->SetBinContent(i + 1, 0);
+        for (int i = 0; i < RarityBins_MX1; i++) {
+            hist->SetBinError(i + 1, 0);
+            hist->SetBinContent(i + 1, 0);
+        }
+        for (int i = RarityBins_MX1 + RarityBins_MX2; i < RarityBins; i++) {
+            hist->SetBinError(i + 1, 0);
+            hist->SetBinContent(i + 1, 0);
+        }
     }
     else if (MXsBin == 3) {
-        for (int i = 0; i < RarityBins_MX1 + RarityBins_MX2; i++) hist->SetBinContent(i + 1, 0);
+        for (int i = 0; i < RarityBins_MX1 + RarityBins_MX2; i++) {
+            hist->SetBinError(i + 1, 0);
+            hist->SetBinContent(i + 1, 0);
+        }
     }
     else if (MXsBin == 0) {}
     else {
