@@ -21,7 +21,7 @@ ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-0.3, v
 ax.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
-ticks = [0, 16, 32, 48, 64, 80, 96, 112]
+ticks = [0, 18, 36, 54, 72, 90, 108, 126]
 ax.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
 ax.set_yticklabels(labels, rotation=90, va="center")
 ax.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
@@ -37,7 +37,7 @@ ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-0.
 ax_p.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
-ticks = [0, 16, 32, 48, 64, 80, 96, 112]
+ticks = [0, 18, 36, 54, 72, 90, 108, 126]
 ax_p.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
 ax_p.set_yticklabels(labels, rotation=90, va="center")
 ax_p.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
@@ -60,7 +60,7 @@ ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[],vmin=-0.5, vm
 ax.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
-ticks = [0, 16, 32, 48, 64, 80, 96, 112]
+ticks = [0, 18, 36, 54, 72, 90, 108, 126]
 ax.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
 ax.set_yticklabels(labels, rotation=90, va="center")
 ax.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
@@ -76,7 +76,7 @@ ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[],vmin=-0.5
 ax_p.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
-ticks = [0, 16, 32, 48, 64, 80, 96, 112]
+ticks = [0, 18, 36, 54, 72, 90, 108, 126]
 ax_p.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
 ax_p.set_yticklabels(labels, rotation=90, va="center")
 ax_p.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
