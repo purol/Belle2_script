@@ -1930,6 +1930,8 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
     double nDptoXKL = -1;
     double nD0toXKL = -1;
 
+    double Bsig_M = -1;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -1955,6 +1957,7 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
         tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
+        tree_Bsig->SetBranchAddress("Bsig_M", &Bsig_M);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -2005,7 +2008,7 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
+            for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(GetBinIndex(var[k], Bsig_M));
 
             // Fill numberings
             double weight_ri = 0.0;
@@ -2104,6 +2107,8 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
 void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num]) {
     float var[Nvar_num] = { 0.0 };
 
+    double Bsig_M = -1;
+
     std::vector<string> names;
     load_files(dirname, &names);
 
@@ -2125,6 +2130,7 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
                 exit(1);
             }
         }
+        tree_Bsig->SetBranchAddress("Bsig_M", &Bsig_M);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -2132,7 +2138,7 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
+            for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(GetBinIndex(var[k], Bsig_M));
         }
         input_file->Close();
 
@@ -2142,6 +2148,8 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
 void LetsFill(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[Nvar_num], const char* included_string) {
     float var[Nvar_num] = { 0.0 };
+
+    double Bsig_M = -1;
 
     std::vector<string> names;
     load_files(dirname, &names, included_string);
@@ -2164,6 +2172,7 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
                 exit(1);
             }
         }
+        tree_Bsig->SetBranchAddress("Bsig_M", &Bsig_M);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
@@ -2171,7 +2180,7 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
+            for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(GetBinIndex(var[k], Bsig_M));
         }
         input_file->Close();
 
@@ -2241,6 +2250,8 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
     double nDptoXKL = -1;
     double nD0toXKL = -1;
 
+    double Bsig_M = -1;
+
     float BDTc = -1;
     double BDTc_correction = -1;
 
@@ -2269,6 +2280,7 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
         tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
+        tree_Bsig->SetBranchAddress("Bsig_M", &Bsig_M);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
@@ -2326,7 +2338,7 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
             else BDTc_correction = (BDTc / (1.0 - BDTc));
             BDTc_correction = BDTc_correction * NormFactor;
 
-            for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(var[k]);
+            for (int k = 0; k < (int)variable_names.size(); k++) variable_values[k].push_back(GetBinIndex(var[k], Bsig_M));
 
             // Fill numberings
             double weight_ri = 0.0;
@@ -3074,25 +3086,25 @@ void THStack_plot_sideband_FBDT() {
     }
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
-        for (int i = 0; i < (int)charged_values[k].size(); i++) charged_hist[k]->Fill(GetBinIndex(charged_values[k].at(i)), charged_weights.at(i));
-        for (int i = 0; i < (int)mixed_values[k].size(); i++) mixed_hist[k]->Fill(GetBinIndex(mixed_values[k].at(i)), mixed_weights.at(i));
-        for (int i = 0; i < (int)uubar_values[k].size(); i++) uubar_hist[k]->Fill(GetBinIndex(uubar_values[k].at(i)), uubar_weights.at(i));
-        for (int i = 0; i < (int)ddbar_values[k].size(); i++) ddbar_hist[k]->Fill(GetBinIndex(ddbar_values[k].at(i)), ddbar_weights.at(i));
-        for (int i = 0; i < (int)ssbar_values[k].size(); i++) ssbar_hist[k]->Fill(GetBinIndex(ssbar_values[k].at(i)), ssbar_weights.at(i));
-        for (int i = 0; i < (int)ccbar_values[k].size(); i++) ccbar_hist[k]->Fill(GetBinIndex(ccbar_values[k].at(i)), ccbar_weights.at(i));
-        for (int i = 0; i < (int)taupair_values[k].size(); i++) taupair_hist[k]->Fill(GetBinIndex(taupair_values[k].at(i)), taupair_weights.at(i));
-        for (int i = 0; i < (int)mumu_values[k].size(); i++) mumu_hist[k]->Fill(GetBinIndex(mumu_values[k].at(i)), mumu_weights.at(i));
-        for (int i = 0; i < (int)gg_values[k].size(); i++) gg_hist[k]->Fill(GetBinIndex(gg_values[k].at(i)), gg_weights.at(i));
-        for (int i = 0; i < (int)ee_values[k].size(); i++) ee_hist[k]->Fill(GetBinIndex(ee_values[k].at(i)), ee_weights.at(i));
-        for (int i = 0; i < (int)eeee_values[k].size(); i++) eeee_hist[k]->Fill(GetBinIndex(eeee_values[k].at(i)), eeee_weights.at(i));
-        for (int i = 0; i < (int)eemumu_values[k].size(); i++) eemumu_hist[k]->Fill(GetBinIndex(eemumu_values[k].at(i)), eemumu_weights.at(i));
-        for (int i = 0; i < (int)llXX_values[k].size(); i++) llXX_hist[k]->Fill(GetBinIndex(llXX_values[k].at(i)), llXX_weights.at(i));
-        for (int i = 0; i < (int)hhISR_values[k].size(); i++) hhISR_hist[k]->Fill(GetBinIndex(hhISR_values[k].at(i)), hhISR_weights.at(i));
-        for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) stat_error_hist[k]->Fill(GetBinIndex(Sideband_MC_values[k].at(i)), weights.at(i));
-        for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_hist[k]->Fill(GetBinIndex(Sideband_data_values[k].at(i)));
+        for (int i = 0; i < (int)charged_values[k].size(); i++) charged_hist[k]->Fill(charged_values[k].at(i), charged_weights.at(i));
+        for (int i = 0; i < (int)mixed_values[k].size(); i++) mixed_hist[k]->Fill(mixed_values[k].at(i), mixed_weights.at(i));
+        for (int i = 0; i < (int)uubar_values[k].size(); i++) uubar_hist[k]->Fill(uubar_values[k].at(i), uubar_weights.at(i));
+        for (int i = 0; i < (int)ddbar_values[k].size(); i++) ddbar_hist[k]->Fill(ddbar_values[k].at(i), ddbar_weights.at(i));
+        for (int i = 0; i < (int)ssbar_values[k].size(); i++) ssbar_hist[k]->Fill(ssbar_values[k].at(i), ssbar_weights.at(i));
+        for (int i = 0; i < (int)ccbar_values[k].size(); i++) ccbar_hist[k]->Fill(ccbar_values[k].at(i), ccbar_weights.at(i));
+        for (int i = 0; i < (int)taupair_values[k].size(); i++) taupair_hist[k]->Fill(taupair_values[k].at(i), taupair_weights.at(i));
+        for (int i = 0; i < (int)mumu_values[k].size(); i++) mumu_hist[k]->Fill(mumu_values[k].at(i), mumu_weights.at(i));
+        for (int i = 0; i < (int)gg_values[k].size(); i++) gg_hist[k]->Fill(gg_values[k].at(i), gg_weights.at(i));
+        for (int i = 0; i < (int)ee_values[k].size(); i++) ee_hist[k]->Fill(ee_values[k].at(i), ee_weights.at(i));
+        for (int i = 0; i < (int)eeee_values[k].size(); i++) eeee_hist[k]->Fill(eeee_values[k].at(i), eeee_weights.at(i));
+        for (int i = 0; i < (int)eemumu_values[k].size(); i++) eemumu_hist[k]->Fill(eemumu_values[k].at(i), eemumu_weights.at(i));
+        for (int i = 0; i < (int)llXX_values[k].size(); i++) llXX_hist[k]->Fill(llXX_values[k].at(i), llXX_weights.at(i));
+        for (int i = 0; i < (int)hhISR_values[k].size(); i++) hhISR_hist[k]->Fill(hhISR_values[k].at(i), hhISR_weights.at(i));
+        for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Sideband_MC_values[k].at(i), weights.at(i));
+        for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_hist[k]->Fill(Sideband_data_values[k].at(i));
 
-        for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) MC_one_bin[k]->Fill(GetBinIndex(Sideband_MC_values[k].at(i)), weights.at(i));
-        for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_one_bin[k]->Fill(GetBinIndex(Sideband_data_values[k].at(i)));
+        for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) MC_one_bin[k]->Fill(Sideband_MC_values[k].at(i), weights.at(i));
+        for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_one_bin[k]->Fill(Sideband_data_values[k].at(i));
     }
 
     printf("charged: %d\n", (int)charged_values[0].size());

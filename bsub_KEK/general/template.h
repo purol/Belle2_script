@@ -25,7 +25,7 @@ const int BinMAX = RarityBins;
 
 // TH1D* hist = new TH1D("histogram", ";;", RarityBins, BinMIN, BinMAX);
 
-double GetBinIndex(double FBDToutput, double total_weight, double MXs) {
+double GetBinIndex(double FBDToutput, double MXs) {
 	if ((MXs > 0.0) && (MXs < 0.6)) { // MXs1
 		if ((FBDToutput >= BinMIN_MX1) && (FBDToutput <= BinMAX_MX1)) {
 			double binwidth = (BinMAX_MX1 - BinMIN_MX1) / RarityBins_MX1;
