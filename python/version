@@ -1,0 +1,76 @@
+MakeNtuple_single_after_SKIM_Total_gbasf2_Nitori_Jpsi_fixed.py
+-> (fix XsJpsi signal sample analysis) ->
+MakeNtuple_single_after_SKIM_Total_gbasf2_Nitori_Jpsi_fixed_fixed_fixed_fixed_fixed.py
+= gbasf2_Hinanai.py
+= gbasf2_Hinanawi.py
+-> (fix rd sample analysis) ->
+gbasf2_Fujiwara.py
+-> (add e mu loose tight FBDT info, Ntuple preselection) ->
+gbasf2_Houraiasan.py
+-> (add timing information on cluster) and (add Mxs var in preselection tree) and (add random selection in preselection Ntuple) and (set outputfile name and hashmap name)->
+gbasf2_Izayoi.py
+-> (remove distance from cluster to track cut in clean mask) and (preselection now include all events for run dependent)->
+gbasf2_Kazami.py
+-> (add distance from cluster to track cut in clean mask) and (add photon energy bias correction for proc12 data) ->
+gbasf2_Reiuji.py
+-> (add beam energy correction for proc12 chunk2 off-resonance data) ->
+gbasf2_Cirno.py
+-> (remove inappropriate decay modes for XsJ/psi) ->
+gbasf2_Lunasa.py
+-> (use tighter cluster cut for cleanMask) ->
+gbasf2_Seiran.py
+-> (add beamE vars in Ntuple & add loose track cut) ->
+gbasf2_Kasen.py (start to use light-2209-calico instead of tartarus)
+-> (add logic to analyze B->XsJpsi for data) ->
+gbasf2_Kasen_p1.py
+-> (loose mu selection for J/psi) ->
+gbasf2_Takane.py
+-> (change J/psi analysis algorithm, now it give resonable values for nParticlesInList__boB__pl__clMC_signal_total_e__bc in J/psi analysis) ->
+gbasf2_Parsee.py
+-> (J/psi selection do Upsilon reconstruction) ->
+gbasf2_Benben.py
+-> (change cluster cut criteria, MVA variables are used) ->
+gbasf2_Kochiya.py
+-> (MVA variable is not used in cleanMask, change method to estimate PID systematics, change preselection Ntuple (looseNtrak/npi0), preselection now use looseNtrack/npi0 and do not use Eecl/chiprob, Eecl is now calculated from gammas, save energy unmatched gamma/mathced gamma, remove unused Dveto, save photon number, remove Eecl source check, add Ecms) ->
+gbasf2_Nazrin.py
+-> (remove extraInfo Eecl source, Jpsi signal now use generic BKG) ->
+gbasf2_Utsuho.py
+-> (save pi0 momentum for pi0 systematics, B+-/0 MC save) ->
+gbasf2_Matara.py
+-> (bug fixed, now code save pi0 systematics in root file, save MC Bmeson) ->
+gbasf2_Ichirin.py
+|       +-> (remove pi0 preselection, preselection now use cleanMask instead of looseMask) ->
+|       |gbasf2_Doremy.py
+|       +-> (MC match for hadron to check fake from lepton, leptonID correction for XsJpsi analysis, use looseMask instead of cleanMask, use stdMu) ->
+|        gbasf2_Suwako.py
+|
++-> (proper event cut to get correction factor for XsJpsi analysis, MC match for hadron to check fake from lepton, add `m2RecoilSignalSide`, preselection now use cleanMask instead of looseMask) ->
+gbasf2_Kasodani.py
+-> (fix p&theta bin for lepton fake) ->
+gbasf2_Aunn.py
+-> (fix XsJ/psi MC decay mode reco bug) ->
+gbasf2_Konpaku.py
+-> (add num of MC D->KL0 X, add num of B->K(*)nnbar, add v200 cluster cut, add scale for v200)
+gbasf2_Kokoro.py
+-> (systematics are only executed for MC) ->
+gbasf2_Kokoro_f1.py
+-> (more fh for Eecl syst) ->
+gbasf2_Murasa.py
+-> (add B+ -> K+ KL0 KL0 systematic) ->
+gbasf2_Sagume.py
+-> (use cluster_selection_v200 instead of cluster_selection in cleanMask and looseMask, add sourceObjectIsInList(mu+:fromJpsimuchargedMuon)==0 for all cluster selections, use fakePhotonSuppression instead of hadronicSplitOffSuppression in v133, remove loadPhotonBeamBackgroundMVA and loadPhotonHadronicSplitOffMVA in fill particle, use stdPhotons for gamma:all, use light-2305-korat) ->
+gbasf2_Kogasa.py
+-> (fix B+ --> K+ KL0 KL0 systematics, add B0 --> KS0 KL0 KL0 systematics) ->
+gbasf2_Satori.py
+| |
+| +---> (remove lines after Least cut, add KS0 cut on Least cut, remove variables to Ntuple, add SKIM lines, change output_file) -> gbasf2_Satori_SKIM.py
+|
++-> (add PID sideband) ->
+gbasf2_Koishi.py --> (add ntrack(cleanMask) in preselection Ntuple, use flag for all sideband, add Ngamma_v200 from KL0, add mcvars) --> gbasf2_Hina.py --> (define gamma:all) --> gbasf2_Hina_patch.py
+-> (use flag for side bands, add SKIM flag, add fixJpsi flag) ->
+gbasf2_Ringo.py
+
+
+plan
+- Emiss + Pmiss
+- new version of basf2
