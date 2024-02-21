@@ -1420,7 +1420,7 @@ for analysistype in Options:
     elif(analysistype=="ppbar"):
         U_vars = U_vars + ["daughter(1, daughterInvariantMass(1, 2))"]
     elif(analysistype=="KSKS"):
-        U_vars = U_vars + ["daughter(1,extraInfo(N_KS_KSKS))", "daughter(1,extraInfo(avg_KS_KSKS_E))", "daughter(1,extraInfo(avg_KS_KSKS_px))", "daughter(1,extraInfo(avg_KS_KSKS_py))", "daughter(1,extraInfo(avg_KS_KSKS_pz))", "daughter(1,extraInfo(KS_KSKS_1st_E))", "daughter(1,extraInfo(KS_KSKS_1st_px))", "daughter(1,extraInfo(KS_KSKS_1st_py))", "daughter(1,extraInfo(KS_KSKS_1st_pz))", "daughter(1,extraInfo(KS_KSKS_wnd_E))", "daughter(1,extraInfo(KS_KSKS_2nd_px))", "daughter(1,extraInfo(KS_KSKS_2nd_py))", "daughter(1,extraInfo(KS_KSKS_2nd_pz))"]
+        U_vars = U_vars + ["daughter(1,extraInfo(N_KS_KSKS))", "daughter(1,extraInfo(avg_KS_KSKS_E))", "daughter(1,extraInfo(avg_KS_KSKS_px))", "daughter(1,extraInfo(avg_KS_KSKS_py))", "daughter(1,extraInfo(avg_KS_KSKS_pz))", "daughter(1,extraInfo(KS_KSKS_1st_E))", "daughter(1,extraInfo(KS_KSKS_1st_px))", "daughter(1,extraInfo(KS_KSKS_1st_py))", "daughter(1,extraInfo(KS_KSKS_1st_pz))", "daughter(1,extraInfo(KS_KSKS_2nd_E))", "daughter(1,extraInfo(KS_KSKS_2nd_px))", "daughter(1,extraInfo(KS_KSKS_2nd_py))", "daughter(1,extraInfo(KS_KSKS_2nd_pz))"]
 
 
     # Ntuple output
