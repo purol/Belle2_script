@@ -70,6 +70,10 @@ gbasf2_Koishi.py --> (add ntrack(cleanMask) in preselection Ntuple, use flag for
 -> (use flag for side bands, add SKIM flag, add fixJpsi flag) ->
 gbasf2_Ringo.py
 
+gbasf2_Hina_patch.py
+-> (add other D veto candidates, add B->Xs nnbar info, add B->Xs KLKL info, add B->Xs p pbar flag, add B->Xs KS0 KS0 flag) ->
+gbasf2_Tsukumo.py
+
 
 plan
 - Emiss + Pmiss
