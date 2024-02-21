@@ -574,7 +574,60 @@ for analysistype in Options:
     # Apply cut for D veto (save computer resource)
     ma.applyCuts("Xsu:comb", "isDescendantOfList(Upsilon(4S):withoutneutrino, 2) == 1", path=my_path)
     ma.applyCuts("Xsd:comb", "isDescendantOfList(Upsilon(4S):withoutneutrino, 2) == 1", path=my_path)
-    
+
+    # add variables for B->X KS0 KS0 analysis
+    if(analysistype=="KSKS"):
+        ma.applyCuts("B+:sig", "isDescendantOfList(Upsilon(4S):withoutneutrino, 1) == 1", path=my_path)
+        ma.applyCuts("B0:sig", "isDescendantOfList(Upsilon(4S):withoutneutrino, 1) == 1", path=my_path)
+
+        # for B+
+        KSKS_path_one = basf2.Path()
+        KSKS_deadEndPath_one = basf2.Path()
+        ma.signalSideParticleFilter('B+:sig', '', KSKS_path_one, KSKS_deadEndPath_one)
+        ma.fillSignalSideParticleList('B+:sig_KSKS', '^B+:sig', KSKS_path_one)
+        ma.cutAndCopyList("K_S0:sig_KSKS_p", "K_S0:myKaonshort", cut="isDescendantOfList(B+:sig_KSKS, -1) == 1", path=KSKS_path_one)
+        ma.rankByHighest(particleList="K_S0:sig_KSKS_p", variable="random",allowMultiRank=False,outputVariable="KS_KSKS_p_rank",path=KSKS_path_one)
+        ma.cutAndCopyList("K_S0:sig_KSKS_p_1st", "K_S0:sig_KSKS_p", "extraInfo(KS_KSKS_p_rank) == 1",path=KSKS_path_one)
+        ma.cutAndCopyList("K_S0:sig_KSKS_p_2nd", "K_S0:sig_KSKS_p", "extraInfo(KS_KSKS_p_rank) == 2",path=KSKS_path_one)
+        ma.variableToSignalSideExtraInfo('B+:sig_KSKS', {"nParticlesInList(K_S0:sig_KSKS_p)": "N_KS_KSKS"}, path=KSKS_path_one)
+        ma.variableToSignalSideExtraInfo('B+:sig_KSKS', {"averageValueInList(K_S0:sig_KSKS_p,E)": "avg_KS_KSKS_E"}, path=KSKS_path_one)
+        ma.variableToSignalSideExtraInfo('B+:sig_KSKS', {"averageValueInList(K_S0:sig_KSKS_p,px)": "avg_KS_KSKS_px"}, path=KSKS_path_one)
+        ma.variableToSignalSideExtraInfo('B+:sig_KSKS', {"averageValueInList(K_S0:sig_KSKS_p,py)": "avg_KS_KSKS_py"}, path=KSKS_path_one)
+        ma.variableToSignalSideExtraInfo('B+:sig_KSKS', {"averageValueInList(K_S0:sig_KSKS_p,pz)": "avg_KS_KSKS_pz"}, path=KSKS_path_one)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_p_1st', {"E": "KS_KSKS_1st_E"}, path=KSKS_path_one)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_p_1st', {"px": "KS_KSKS_1st_px"}, path=KSKS_path_one)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_p_1st', {"py": "KS_KSKS_1st_py"}, path=KSKS_path_one)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_p_1st', {"pz": "KS_KSKS_1st_pz"}, path=KSKS_path_one)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_p_2nd', {"E": "KS_KSKS_2nd_E"}, path=KSKS_path_one)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_p_2nd', {"px": "KS_KSKS_2nd_px"}, path=KSKS_path_one)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_p_2nd', {"py": "KS_KSKS_2nd_py"}, path=KSKS_path_one)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_p_2nd', {"pz": "KS_KSKS_2nd_pz"}, path=KSKS_path_one)
+        my_path.for_each('RestOfEvent', 'RestOfEvents', KSKS_path_one)
+
+        # for B0
+        KSKS_path_two = basf2.Path()
+        KSKS_deadEndPath_two = basf2.Path()
+        ma.signalSideParticleFilter('B0:sig', '', KSKS_path_two, KSKS_deadEndPath_two)
+        ma.fillSignalSideParticleList('B0:sig_KSKS', '^B0:sig', KSKS_path_two)
+        ma.cutAndCopyList("K_S0:sig_KSKS_n", "K_S0:myKaonshort", cut="isDescendantOfList(B0:sig_KSKS, -1) == 1", path=KSKS_path_two)
+        ma.rankByHighest(particleList="K_S0:sig_KSKS_n", variable="random",allowMultiRank=False,outputVariable="KS_KSKS_n_rank",path=KSKS_path_two)
+        ma.cutAndCopyList("K_S0:sig_KSKS_n_1st", "K_S0:sig_KSKS_n", "extraInfo(KS_KSKS_n_rank) == 1",path=KSKS_path_two)
+        ma.cutAndCopyList("K_S0:sig_KSKS_n_2nd", "K_S0:sig_KSKS_n", "extraInfo(KS_KSKS_n_rank) == 2",path=KSKS_path_two)
+        ma.variableToSignalSideExtraInfo('B0:sig_KSKS', {"nParticlesInList(K_S0:sig_KSKS_n)": "N_KS_KSKS"}, path=KSKS_path_two)
+        ma.variableToSignalSideExtraInfo('B0:sig_KSKS', {"averageValueInList(K_S0:sig_KSKS_n,E)": "avg_KS_KSKS_E"}, path=KSKS_path_two)
+        ma.variableToSignalSideExtraInfo('B0:sig_KSKS', {"averageValueInList(K_S0:sig_KSKS_n,px)": "avg_KS_KSKS_px"}, path=KSKS_path_two)
+        ma.variableToSignalSideExtraInfo('B0:sig_KSKS', {"averageValueInList(K_S0:sig_KSKS_n,py)": "avg_KS_KSKS_py"}, path=KSKS_path_two)
+        ma.variableToSignalSideExtraInfo('B0:sig_KSKS', {"averageValueInList(K_S0:sig_KSKS_n,pz)": "avg_KS_KSKS_pz"}, path=KSKS_path_two)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_n_1st', {"E": "KS_KSKS_1st_E"}, path=KSKS_path_two)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_n_1st', {"px": "KS_KSKS_1st_px"}, path=KSKS_path_two)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_n_1st', {"py": "KS_KSKS_1st_py"}, path=KSKS_path_two)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_n_1st', {"pz": "KS_KSKS_1st_pz"}, path=KSKS_path_two)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_n_2nd', {"E": "KS_KSKS_2nd_E"}, path=KSKS_path_two)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_n_2nd', {"px": "KS_KSKS_2nd_px"}, path=KSKS_path_two)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_n_2nd', {"py": "KS_KSKS_2nd_py"}, path=KSKS_path_two)
+        ma.variableToSignalSideExtraInfo('K_S0:sig_KSKS_n_2nd', {"pz": "KS_KSKS_2nd_pz"}, path=KSKS_path_two)
+        my_path.for_each('RestOfEvent', 'RestOfEvents', KSKS_path_two)
+
     # D veto
     ma.buildRestOfEvent("Xsu:comb", path=my_path)
     roe_path_one = basf2.Path()
@@ -1366,6 +1419,9 @@ for analysistype in Options:
         U_vars = U_vars + ["nParticlesInList(mu+:fromJpsimuchargedMuon)", "nParticlesInList(J/psi:temp_BCS)", "nParticlesInList(Upsilon(4S):temp_withoutneutrino)"]
     elif(analysistype=="ppbar"):
         U_vars = U_vars + ["daughter(1, daughterInvariantMass(1, 2))"]
+    elif(analysistype=="KSKS"):
+        U_vars = U_vars + ["daughter(1,extraInfo(N_KS_KSKS))", "daughter(1,extraInfo(avg_KS_KSKS_E))", "daughter(1,extraInfo(avg_KS_KSKS_px))", "daughter(1,extraInfo(avg_KS_KSKS_py))", "daughter(1,extraInfo(avg_KS_KSKS_pz))", "daughter(1,extraInfo(KS_KSKS_1st_E))", "daughter(1,extraInfo(KS_KSKS_1st_px))", "daughter(1,extraInfo(KS_KSKS_1st_py))", "daughter(1,extraInfo(KS_KSKS_1st_pz))", "daughter(1,extraInfo(KS_KSKS_wnd_E))", "daughter(1,extraInfo(KS_KSKS_2nd_px))", "daughter(1,extraInfo(KS_KSKS_2nd_py))", "daughter(1,extraInfo(KS_KSKS_2nd_pz))"]
+
 
     # Ntuple output
     ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Btag_vars,filename=output_file,treename="Btag",path=my_path)
