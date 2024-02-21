@@ -1251,7 +1251,14 @@ for analysistype in Options:
         KNN.append("invMassInLists__bon0__clK0nn__bc")
         KNN.append("nParticlesInList__boB0__clKstar0nn__bc")
         KNN.append("invMassInLists__bon0__clKstar0nn__bc")
-    
+
+        va.variables.addAlias("nParticlesInList__boB__pl__clXnn__bc", "constant(0)")
+        va.variables.addAlias("nParticlesInList__boB0__clXnn__bc", "constant(0)")
+        va.variables.addAlias("invMassInLists__bon0__clXnn__bc", "constant(0)")
+        XNN.append("nParticlesInList__boB__pl__clXnn__bc")
+        XNN.append("nParticlesInList__boB0__clXnn__bc")
+        XNN.append("invMassInLists__bon0__clXnn__bc")
+
         va.variables.addAlias("nParticlesInList__boB__pl__clKpKLKL_all__bc", "constant(0)")
         va.variables.addAlias("nParticlesInList__boB__pl__clKpKLKL_NR__bc", "constant(0)")
         va.variables.addAlias("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", "constant(0)")
@@ -1273,7 +1280,14 @@ for analysistype in Options:
         KKLKL.append("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc")
         KKLKL.append("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc")
         KKLKL.append("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc")
-    
+
+        va.variables.addAlias("nParticlesInList__boB__pl__clXKLKL__bc", "constant(0)")
+        va.variables.addAlias("nParticlesInList__boB0__clXKLKL__bc", "constant(0)")
+        va.variables.addAlias("invMassInLists__boK_L0__clXKLKL__bc", "constant(0)")
+        XKLKL.append("nParticlesInList__boB__pl__clXKLKL__bc")
+        XKLKL.append("nParticlesInList__boB0__clXKLKL__bc")
+        XKLKL.append("invMassInLists__boK_L0__clXKLKL__bc")
+
     Btag_vars = vu.create_aliases(list_of_variables = Kinematics + Btag_cut + Kinematics_CMS + othervar + mcvar + loosemcvar + continuumsup_vars + ["chiProb", "extraInfo(SignalProbability)", "dr", "dz"], wrapper = "daughter(0,{variable})",prefix="Btag")
     
     Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + simpleDvetovar + othervar + mcvar + loosemcvar + continuumsup_vars + vertexXs + [ "daughter(0, M)", "daughter(0, extraInfo(decayModeID))", "daughter(0, extraInfo(KS0_3D_distance))"] + PIDsyst + pi0syst + ["daughter(0, extraInfo(nKslow1))", "daughter(0, extraInfo(nKslow2))", "daughter(0, extraInfo(nKslow3))", "daughter(0, extraInfo(nPislow1))", "daughter(0, extraInfo(nPislow2))", "daughter(0, extraInfo(nPislow3))", "dr", "dz", "daughter(0, daughter(0, dr))", "daughter(0, daughter(0, dz))"], wrapper = "daughter(1,{variable})", prefix="Bsig")
