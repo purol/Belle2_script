@@ -60,7 +60,7 @@ if(args.Jpsi):
     Options.append("Jpsi")
 if(args.ppbar):
     Options.append("ppbar")
-if(args.ppbar):
+if(args.KSKS):
     Options.append("KSKS")
 
 basf2.conditions.prepend_globaltag(ma.getAnalysisGlobaltag())
