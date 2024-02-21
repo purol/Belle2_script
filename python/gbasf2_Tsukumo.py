@@ -1364,7 +1364,9 @@ for analysistype in Options:
     U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + EvtKinematics + decayhash + othervar + mcvar + loosemcvar + vc.event_shape + leptonInfo + ["extraInfo(Upsilon_rank)",  "nROE_ECLClusters(cleanMask)", "nROE_NeutralECLClusters(cleanMask)", "nROE_KLMClusters", "nROE_Tracks(cleanMask)", "roeEextra(cleanMask)", "roeNeextra(cleanMask)", "useCMSFrame(roeNeextra(cleanMask))", "nROE_ParticlesInList(K_S0:myKaonshort)", "nROE_ParticlesInList(pi0:myneutralPion)", "nROE_ParticlesInList(gamma:mygamma)", "nRemainingTracksInEvent", "MsquaredBsig_op0", "MsquaredBsig_op1", "MsquaredBsig_op2", "MsquaredBsig_op3", "MsquaredBsig_op4", "MsquaredBsig_op7", "roeP(cleanMask)", "roeM(cleanMask)", "roePTheta(cleanMask)", "qsquared", "extraInfo(chiSquared)", "extraInfo(ndf)", "chiProb", "dr", "dz", "beamE", "nROE_Tracks(looseMask)", "Ecms", "m2RecoilSignalSide"] + ROEECL + DTOKL0 + KNN + XNN + KKLKL + XKLKL
     if(analysistype=="Jpsi"):
         U_vars = U_vars + ["nParticlesInList(mu+:fromJpsimuchargedMuon)", "nParticlesInList(J/psi:temp_BCS)", "nParticlesInList(Upsilon(4S):temp_withoutneutrino)"]
-    
+    elif(analysistype=="ppbar"):
+        U_vars = U_vars + ["daughter(1, daughterInvariantMass(1, 2))"]
+
     # Ntuple output
     ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Btag_vars,filename=output_file,treename="Btag",path=my_path)
     ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=Bsig_vars,filename=output_file,treename="Bsig",path=my_path)
