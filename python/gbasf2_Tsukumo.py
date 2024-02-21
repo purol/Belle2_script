@@ -32,6 +32,8 @@ parser.add_argument("--chargeSide", action="store_true") # run wrong charge side
 parser.add_argument("--MuonSide", action="store_true") # run MuonID side band
 parser.add_argument("--ElectronSide", action="store_true") # run EID side band
 parser.add_argument("--Jpsi", action="store_true") # run J/psi analysis
+parser.add_argument("--ppbar", action="store_true") # run Xs p pbar analysis
+parser.add_argument("--KSKS", action="store_true") # run Xs KS0 KS0 analysis
 
 # data or MC
 parser.add_argument('--sampletype', required=True, type=str, help='sample type. list) data, MC_qq, MC_BB, MC_SIGNAL')
@@ -56,6 +58,10 @@ if(args.ElectronSide):
     Options.append("ElectronSide")
 if(args.Jpsi):
     Options.append("Jpsi")
+if(args.ppbar):
+    Options.append("ppbar")
+if(args.ppbar):
+    Options.append("KSKS")
 
 basf2.conditions.prepend_globaltag(ma.getAnalysisGlobaltag())
 
@@ -200,7 +206,10 @@ for analysistype in Options:
     
     stdPhotons.stdPhotons(listtype="pi0eff30_May2020", path=my_path)
     ma.cutAndCopyList("gamma:mygamma", "gamma:pi0eff30_May2020", cut="", path=my_path)
-    
+
+    if(analysistype=="ppbar"):
+         ma.fillParticleList(decayString="p+:mychargedProton", cut="protonID>0.6 and nCDCHits > 20 and dr < 0.5 and abs(dz) < 2 and nPXDHits > 0",path=my_path)
+
     # Xsu
     ma.reconstructDecay(decayString="@Xsu:ch0 -> K+:mychargedKaon", cut="M < 2.8", dmID=0, path=my_path)
     ma.reconstructDecay(decayString="@Xsu:ch1 -> K+:mychargedKaon pi0:myneutralPion", cut="M < 2.8", dmID=1, path=my_path)
@@ -426,11 +435,21 @@ for analysistype in Options:
     ma.buildContinuumSuppression(list_name="B0:feiHadronic",roe_mask = "cleanMask", path=my_path)
     
     # signal side
-    ma.reconstructDecay("B+:sig -> Xsu:comb ?nu", cut="", dmID=0, path = my_path)
+    if(analysistype=="ppbar"):
+        ma.reconstructDecay("B+:sig -> Xsu:comb p+:mychargedProton anti-p-:mychargedProton", cut="", dmID=0, path = my_path)
+    if(analysistype=="KSKS"):
+        ma.reconstructDecay("B+:sig -> Xsu:comb K_S0:myKaonshort K_S0:myKaonshort", cut="", dmID=0, path = my_path)
+    else:
+        ma.reconstructDecay("B+:sig -> Xsu:comb ?nu", cut="", dmID=0, path = my_path)
     ma.buildRestOfEvent("B+:sig",path=my_path)
     ma.appendROEMasks("B+:sig",[cleanMask],path=my_path)
     ma.buildContinuumSuppression(list_name="B+:sig",roe_mask = "cleanMask", path=my_path)
-    ma.reconstructDecay("B0:sig -> Xsd:comb ?nu", cut="", dmID=0, path = my_path)
+    if(analysistype=="ppbar"):
+        ma.reconstructDecay("B0:sig -> Xsd:comb p+:mychargedProton anti-p-:mychargedProton", cut="", dmID=0, path = my_path)
+    if(analysistype=="KSKS"):
+        ma.reconstructDecay("B0:sig -> Xsd:comb K_S0:myKaonshort K_S0:myKaonshort", cut="", dmID=0, path = my_path)
+    else:
+        ma.reconstructDecay("B0:sig -> Xsd:comb ?nu", cut="", dmID=0, path = my_path)
     ma.buildRestOfEvent("B0:sig",path=my_path)
     ma.appendROEMasks("B0:sig",[cleanMask],path=my_path)
     ma.buildContinuumSuppression(list_name="B0:sig",roe_mask = "cleanMask", path=my_path)
@@ -516,6 +535,7 @@ for analysistype in Options:
         ma.cutAndCopyList("n0:K0nn", "n0:B2Knnbar", cut="isDescendantOfList(B0:K0nn_BCS, 1)", path=my_path)
         ma.cutAndCopyList("n0:Kstar0nn", "n0:B2Knnbar", cut="isDescendantOfList(B0:Kstar0nn_BCS, 1)", path=my_path)
 
+        # systematic for B->X nnbar
         ma.findMCDecay("B+:Xnn", "B+ -> n0 anti-n0 ... ?gamma", appendAllDaughters=True, path=my_path)
         ma.findMCDecay("B0:Xnn", "B0 -> n0 anti-n0 ... ?gamma", appendAllDaughters=True, path=my_path)
         ma.fillParticleListFromMC("n0:Xnn", cut = "[isMCDescendantOfList(B+:Xnn, -1) == 1] or [isMCDescendantOfList(B0:Xnn, -1) == 1]", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
@@ -538,6 +558,10 @@ for analysistype in Options:
         ma.findMCDecay("B+:XKLKL", "B+ -> K_L0 K_L0 ... ?gamma", appendAllDaughters=True, path=my_path)
         ma.findMCDecay("B0:XKLKL", "B0 -> K_L0 K_L0 ... ?gamma", appendAllDaughters=True, path=my_path)
         ma.fillParticleListFromMC("K_L0:XKLKL", cut = "[isMCDescendantOfList(B+:XKLKL, -1) == 1] or [isMCDescendantOfList(B0:XKLKL, -1) == 1]", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+        ma.fillParticleListFromMC("K_S0:XKLKL", cut = "[isMCDescendantOfList(B+:XKLKL, -1) == 1] or [isMCDescendantOfList(B0:XKLKL, -1) == 1]", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+        ma.rankByHighest(particleList="K_L0:XKLKL", variable="random",allowMultiRank=False,outputVariable="KL_XKLKL_rank",path=my_path)
+        ma.cutAndCopyList("K_L0:XKLKL_1st", "K_L0:XKLKL", "extraInfo(KL_XKLKL_rank) == 1",path=my_path)
+        ma.cutAndCopyList("K_L0:XKLKL_2nd", "K_L0:XKLKL", "extraInfo(KL_XKLKL_rank) == 2",path=my_path)
 
     # lepton information
     ma.fillParticleList(decayString="e+:ElectronFBDT", cut=track_selection + " and electronID>0.6",path=my_path)
@@ -1225,9 +1249,24 @@ for analysistype in Options:
         KKLKL.append("averageValueInList(B0:KSKLKL_NR, daughterInvariantMass(0, 2))")
         KKLKL.append("averageValueInList(B0:KSKLKL_NR, daughterInvariantMass(1, 2))")
 
-        XKLKL.append("nParticlesInList(B+:XKLKL)")
-        XKLKL.append("nParticlesInList(B0:XKLKL)")
-        XKLKL.append("invMassInLists(K_L0:XKLKL)")
+        XKLKL.append("nParticlesInList(K_L0:XKLKL)")
+        XKLKL.append("averageValueInList(K_L0:XKLKL, E)")
+        XKLKL.append("averageValueInList(K_L0:XKLKL, px)")
+        XKLKL.append("averageValueInList(K_L0:XKLKL, py)")
+        XKLKL.append("averageValueInList(K_L0:XKLKL, pz)")
+        XKLKL.append("averageValueInList(K_L0:XKLKL_1st, E)")
+        XKLKL.append("averageValueInList(K_L0:XKLKL_1st, px)")
+        XKLKL.append("averageValueInList(K_L0:XKLKL_1st, py)")
+        XKLKL.append("averageValueInList(K_L0:XKLKL_1st, pz)")
+        XKLKL.append("averageValueInList(K_L0:XKLKL_2nd, E)")
+        XKLKL.append("averageValueInList(K_L0:XKLKL_2nd, px)")
+        XKLKL.append("averageValueInList(K_L0:XKLKL_2nd, py)")
+        XKLKL.append("averageValueInList(K_L0:XKLKL_2nd, pz)")
+        XKLKL.append("nParticlesInList(K_S0:XKLKL)")
+        XKLKL.append("averageValueInList(K_S0:XKLKL, E)")
+        XKLKL.append("averageValueInList(K_S0:XKLKL, px)")
+        XKLKL.append("averageValueInList(K_S0:XKLKL, py)")
+        XKLKL.append("averageValueInList(K_S0:XKLKL, pz)")
 
     else:
         va.variables.addAlias("nParticlesInList__boD__pl__clDecayIntoKL0__bc", "constant(0)")
@@ -1281,16 +1320,10 @@ for analysistype in Options:
         KKLKL.append("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc")
         KKLKL.append("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc")
 
-        va.variables.addAlias("nParticlesInList__boB__pl__clXKLKL__bc", "constant(0)")
-        va.variables.addAlias("nParticlesInList__boB0__clXKLKL__bc", "constant(0)")
-        va.variables.addAlias("invMassInLists__boK_L0__clXKLKL__bc", "constant(0)")
-        XKLKL.append("nParticlesInList__boB__pl__clXKLKL__bc")
-        XKLKL.append("nParticlesInList__boB0__clXKLKL__bc")
-        XKLKL.append("invMassInLists__boK_L0__clXKLKL__bc")
 
     Btag_vars = vu.create_aliases(list_of_variables = Kinematics + Btag_cut + Kinematics_CMS + othervar + mcvar + loosemcvar + continuumsup_vars + ["chiProb", "extraInfo(SignalProbability)", "dr", "dz"], wrapper = "daughter(0,{variable})",prefix="Btag")
     
-    Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Kinematics_CMS + simpleDvetovar + othervar + mcvar + loosemcvar + continuumsup_vars + vertexXs + [ "daughter(0, M)", "daughter(0, extraInfo(decayModeID))", "daughter(0, extraInfo(KS0_3D_distance))"] + PIDsyst + pi0syst + ["daughter(0, extraInfo(nKslow1))", "daughter(0, extraInfo(nKslow2))", "daughter(0, extraInfo(nKslow3))", "daughter(0, extraInfo(nPislow1))", "daughter(0, extraInfo(nPislow2))", "daughter(0, extraInfo(nPislow3))", "dr", "dz", "daughter(0, daughter(0, dr))", "daughter(0, daughter(0, dz))"], wrapper = "daughter(1,{variable})", prefix="Bsig")
+    Bsig_vars = vu.create_aliases(list_of_variables = Kinematics + Btag_cut + Kinematics_CMS + simpleDvetovar + othervar + mcvar + loosemcvar + continuumsup_vars + vertexXs + [ "daughter(0, M)", "daughter(0, extraInfo(decayModeID))", "daughter(0, extraInfo(KS0_3D_distance))"] + PIDsyst + pi0syst + ["daughter(0, extraInfo(nKslow1))", "daughter(0, extraInfo(nKslow2))", "daughter(0, extraInfo(nKslow3))", "daughter(0, extraInfo(nPislow1))", "daughter(0, extraInfo(nPislow2))", "daughter(0, extraInfo(nPislow3))", "dr", "dz", "daughter(0, daughter(0, dr))", "daughter(0, daughter(0, dz))"], wrapper = "daughter(1,{variable})", prefix="Bsig")
     
     U_vars = Kinematics + Kinematics_CMS + Kinematics_RecoilRestFrame + EvtKinematics + decayhash + othervar + mcvar + loosemcvar + vc.event_shape + leptonInfo + ["extraInfo(Upsilon_rank)",  "nROE_ECLClusters(cleanMask)", "nROE_NeutralECLClusters(cleanMask)", "nROE_KLMClusters", "nROE_Tracks(cleanMask)", "roeEextra(cleanMask)", "roeNeextra(cleanMask)", "useCMSFrame(roeNeextra(cleanMask))", "nROE_ParticlesInList(K_S0:myKaonshort)", "nROE_ParticlesInList(pi0:myneutralPion)", "nROE_ParticlesInList(gamma:mygamma)", "nRemainingTracksInEvent", "MsquaredBsig_op0", "MsquaredBsig_op1", "MsquaredBsig_op2", "MsquaredBsig_op3", "MsquaredBsig_op4", "MsquaredBsig_op7", "roeP(cleanMask)", "roeM(cleanMask)", "roePTheta(cleanMask)", "qsquared", "extraInfo(chiSquared)", "extraInfo(ndf)", "chiProb", "dr", "dz", "beamE", "nROE_Tracks(looseMask)", "Ecms", "m2RecoilSignalSide"] + ROEECL + DTOKL0 + KNN + XNN + KKLKL + XKLKL
     if(analysistype=="Jpsi"):
