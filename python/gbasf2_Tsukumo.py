@@ -437,7 +437,7 @@ for analysistype in Options:
     # signal side
     if(analysistype=="ppbar"):
         ma.reconstructDecay("B+:sig -> Xsu:comb p+:mychargedProton anti-p-:mychargedProton", cut="", dmID=0, path = my_path)
-    if(analysistype=="KSKS"):
+    elif(analysistype=="KSKS"):
         ma.reconstructDecay("B+:sig -> Xsu:comb K_S0:myKaonshort K_S0:myKaonshort", cut="", dmID=0, path = my_path)
     else:
         ma.reconstructDecay("B+:sig -> Xsu:comb ?nu", cut="", dmID=0, path = my_path)
@@ -446,7 +446,7 @@ for analysistype in Options:
     ma.buildContinuumSuppression(list_name="B+:sig",roe_mask = "cleanMask", path=my_path)
     if(analysistype=="ppbar"):
         ma.reconstructDecay("B0:sig -> Xsd:comb p+:mychargedProton anti-p-:mychargedProton", cut="", dmID=0, path = my_path)
-    if(analysistype=="KSKS"):
+    elif(analysistype=="KSKS"):
         ma.reconstructDecay("B0:sig -> Xsd:comb K_S0:myKaonshort K_S0:myKaonshort", cut="", dmID=0, path = my_path)
     else:
         ma.reconstructDecay("B0:sig -> Xsd:comb ?nu", cut="", dmID=0, path = my_path)
