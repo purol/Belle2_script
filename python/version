@@ -73,7 +73,8 @@ gbasf2_Ringo.py
 gbasf2_Hina_patch.py
 -> (add B->Xs nnbar info, add B->Xs KLKL info, add B->Xs p pbar flag, add B->Xs KS0 KS0 flag) ->
 gbasf2_Tsukumo.py
-
+-> (add new D candidates) ->
+gbasf2_Kumoi.py
 
 plan
 - Emiss + Pmiss
