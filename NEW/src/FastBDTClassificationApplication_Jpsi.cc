@@ -20,7 +20,7 @@
 
 #include "Classifier.h"
 
-#include "constant.h"
+#include "constants.h"
 
 void load_files(const char* dirname, std::vector<std::string>* names) {
     TSystemDirectory dir(dirname, dirname);
