@@ -26,6 +26,7 @@ Corrector_FakePID corrector_FakePID;
 Corrector_Knn corrector_Knn;
 Corrector_Multiplicity corrector_Multiplicity;
 Corrector_KpKLKL corrector_KpKLKL;
+Corrector_KSKLKL corrector_KSKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
 
 # define MCTYPE "MC15ri"
@@ -1400,8 +1401,8 @@ void THStack_plot_sideband() {
         for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_hist[k]->Fill(Sideband_data_values[k].at(i));
 
         if (variable_names.at(k) == "nROE_ParticlesInList__bopi0__clmyneutralPion__bc") {
-            MC_one_bin->Fill(Sideband_MC_values[k].at(i), weights.at(i));
-            data_one_bin->Fill(Sideband_data_values[k].at(i));
+            for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) MC_one_bin->Fill(Sideband_MC_values[k].at(i), weights.at(i));
+            for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_one_bin->Fill(Sideband_data_values[k].at(i));
         }
     }
     Ratio_one_bin->Divide(data_one_bin, MC_one_bin);
