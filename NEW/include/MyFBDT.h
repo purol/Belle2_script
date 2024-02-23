@@ -15,6 +15,8 @@
 # define Nvar 33
 # define DvetoNvar 4
 
+Corrector_Fragmentation corrector_Fragmentation;
+
 // ------------------------------------------------------------- for FBDT Application -------------------------------------------------------------
 void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, const char* Continuum_weightfile_path, const char* output_path)
 {

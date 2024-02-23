@@ -16,10 +16,14 @@
 #include "THStack.h"
 #include "TCanvas.h"
 #include "constants.h"
+#include "correctors.h"
 
 # define Nstep 20
 # define stepstart 0.8
 # define stepend 1.0
+
+Corrector corrector;
+Corrector_Fragmentation corrector_Fragmentation;
 
 typedef struct data {
     int __experiment__;

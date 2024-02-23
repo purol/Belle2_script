@@ -7,7 +7,6 @@
 
 #include "TFile.h"
 
-#include "correctors.h"
 #include "constants.h"
 #include "base.h"
 #include "ObtainWeight.h"
