@@ -27,6 +27,7 @@
 #include "TMath.h"
 
 #include "constant.h"
+#include "base.h"
 
 /*
 when you add new variables:
@@ -40,22 +41,6 @@ revise void Loader::ConvertIntoSeparateRootFile(std::string output_name, double 
 
 // small: temp_BB_output > 0.6 && temp_Continuum_output > 0.94
 // large: temp_BB_output > 0.6 && temp_Continuum_output > 0.84
-
-void load_files(const char* dirname, std::vector<std::string>* names) {
-    TSystemDirectory dir(dirname, dirname);
-    TList* files = dir.GetListOfFiles();
-    if (files) {
-        TSystemFile* file;
-        TString fname;
-        TIter next(files);
-        while ((file = (TSystemFile*)next())) {
-            fname = file->GetName();
-            if (!file->IsDirectory() && fname.EndsWith(".root")) {
-                names->push_back(fname.Data());
-            }
-        }
-    }
-}
 
 int main(int argc, char* argv[]){
         /*
