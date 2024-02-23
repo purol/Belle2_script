@@ -1552,7 +1552,7 @@ void THStack_plot_sideband() {
     free(data_hist);
     free(Ratio_hist);
 
-    free(MC_one_bin);
-    free(data_one_bin);
-    free(Ratio_one_bin);
+    delete MC_one_bin;
+    delete data_one_bin;
+    delete Ratio_one_bin;
 }
