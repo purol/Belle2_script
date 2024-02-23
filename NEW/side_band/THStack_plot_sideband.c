@@ -1494,23 +1494,23 @@ void THStack_plot_sideband() {
     printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin->GetBinContent(1), Ratio_one_bin->GetBinError(1));
 
     // free
-    delete Sideband_MC_values;
-    delete charged_values;
-    delete mixed_values;
-    delete uubar_values;
-    delete ddbar_values;
-    delete ssbar_values;
-    delete ccbar_values;
-    delete taupair_values;
-    delete mumu_values;
-    delete gg_values;
-    delete ee_values;
-    delete eeee_values;
-    delete eemumu_values;
-    delete llXX_values;
-    delete hhISR_values;
+    delete[] Sideband_MC_values;
+    delete[] charged_values;
+    delete[] mixed_values;
+    delete[]  uubar_values;
+    delete[]  ddbar_values;
+    delete[]  ssbar_values;
+    delete[]  ccbar_values;
+    delete[]  taupair_values;
+    delete[]  mumu_values;
+    delete[]  gg_values;
+    delete[]  ee_values;
+    delete[]  eeee_values;
+    delete[]  eemumu_values;
+    delete[]  llXX_values;
+    delete[]  hhISR_values;
 
-    delete Sideband_data_values;
+    delete[]  Sideband_data_values;
 
     for (int k = 0; k < Nvar_num; k++) {
         free(Stack[k]);
