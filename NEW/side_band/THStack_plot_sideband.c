@@ -1078,24 +1078,24 @@ void THStack_plot_sideband() {
 
     Nvar_num = static_cast<int>(variable_names.size());
 
-    std::vector<double>* Sideband_MC_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* charged_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* mixed_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* uubar_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* ddbar_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* ssbar_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* ccbar_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* taupair_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* mumu_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* gg_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* ee_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* eeee_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* eemumu_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* llXX_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
-    std::vector<double>* hhISR_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
+    std::vector<double>* Sideband_MC_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* charged_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* mixed_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* uubar_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* ddbar_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* ssbar_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* ccbar_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* taupair_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* mumu_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* gg_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* ee_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* eeee_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* eemumu_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* llXX_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* hhISR_values = new std::vector<double>[Nvar_num];
     std::vector<int> Sideband_MC_numbering;
 
-    std::vector<double>* Sideband_data_values = (std::vector<double>*) malloc(sizeof(std::vector<double>) * Nvar_num);
+    std::vector<double>* Sideband_data_values = new std::vector<double>[Nvar_num];
 
     std::vector<double> weights;
     std::vector<double> charged_weights;
@@ -1494,23 +1494,23 @@ void THStack_plot_sideband() {
     printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin->GetBinContent(1), Ratio_one_bin->GetBinError(1));
 
     // free
-    free(Sideband_MC_values);
-    free(charged_values);
-    free(mixed_values);
-    free(uubar_values);
-    free(ddbar_values);
-    free(ssbar_values);
-    free(ccbar_values);
-    free(taupair_values);
-    free(mumu_values);
-    free(gg_values);
-    free(ee_values);
-    free(eeee_values);
-    free(eemumu_values);
-    free(llXX_values);
-    free(hhISR_values);
+    delete Sideband_MC_values;
+    delete charged_values;
+    delete mixed_values;
+    delete uubar_values;
+    delete ddbar_values;
+    delete ssbar_values;
+    delete ccbar_values;
+    delete taupair_values;
+    delete mumu_values;
+    delete gg_values;
+    delete ee_values;
+    delete eeee_values;
+    delete eemumu_values;
+    delete llXX_values;
+    delete hhISR_values;
 
-    free(Sideband_data_values);
+    delete Sideband_data_values;
 
     for (int k = 0; k < Nvar_num; k++) {
         free(Stack[k]);
