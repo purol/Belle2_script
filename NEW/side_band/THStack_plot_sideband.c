@@ -189,7 +189,8 @@ void LetsFillSideBand_ri(const char* dirname, std::vector<std::string> variable_
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
-                else variable_values[k].push_back(GetBinIndex((double)var_float[k], Bsig_M));
+                else variable_values[k].push_back((double)var_float[k]);
+                //else variable_values[k].push_back(GetBinIndex((double)var_float[k], Bsig_M));
             }
 
             // Fill numberings
@@ -331,7 +332,8 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
-                else variable_values[k].push_back(GetBinIndex((double)var_float[k], Bsig_M));
+                else variable_values[k].push_back((double)var_float[k]);
+                //else variable_values[k].push_back(GetBinIndex((double)var_float[k], Bsig_M));
             }
         }
         input_file->Close();
@@ -384,7 +386,8 @@ void LetsFill(const char* dirname, std::vector<std::string> variable_names, std:
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
-                else variable_values[k].push_back(GetBinIndex((double)var_float[k], Bsig_M));
+                else variable_values[k].push_back((double)var_float[k]);
+                //else variable_values[k].push_back(GetBinIndex((double)var_float[k], Bsig_M));
             }
         }
         input_file->Close();
@@ -554,7 +557,8 @@ void LetsFillSideBand_ri_correction(const char* dirname, std::vector<std::string
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
-                else variable_values[k].push_back(GetBinIndex((double)var_float[k], Bsig_M));
+                else variable_values[k].push_back((double)var_float[k]);
+                //else variable_values[k].push_back(GetBinIndex((double)var_float[k], Bsig_M));
             }
 
             // Fill numberings
