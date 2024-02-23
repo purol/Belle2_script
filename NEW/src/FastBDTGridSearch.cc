@@ -178,7 +178,7 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(SSBAR_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, MCTYPE, ObtainWeight("SSBAR", MCTYPE, "train", std::string("")), "otherwise");
+            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, ObtainWeight("SSBAR", MCTYPE, "train", std::string("")), "otherwise");
         }
     }
     {
