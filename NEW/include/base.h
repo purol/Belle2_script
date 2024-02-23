@@ -1,7 +1,14 @@
 #ifndef BASE_H
 #define BASE_H
 
-void load_files(const char* dirname, std::vector<string>* names) {
+#include <string>
+#include "TSystemDirectory.h"
+#include "TList.h"
+#include "TSystemFile.h"
+#include "TString.h"
+#include "TIter.h"
+
+void load_files(const char* dirname, std::vector<std::string>* names) {
     TSystemDirectory dir(dirname, dirname);
     TList* files = dir.GetListOfFiles();
     if (files) {
@@ -17,7 +24,7 @@ void load_files(const char* dirname, std::vector<string>* names) {
     }
 }
 
-void load_files(const char* dirname, std::vector<string>* names, const char* included_string) {
+void load_files(const char* dirname, std::vector<std::string>* names, const char* included_string) {
     TSystemDirectory dir(dirname, dirname);
     TList* files = dir.GetListOfFiles();
     if (files) {
