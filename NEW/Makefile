@@ -7,12 +7,13 @@ INCDIR = ./include
 SRCDIR = ./src
 TMPDIR = ./tmp
 LIBDIR = ./lib
+BDTINC = ./include_FBDT
 
 CFLAGS = `root-config --cflags`
 LDFLAGS = `root-config --ldflags --glibs`
 LIBS = -lRooFit -lRooStats -lRooFitCore  -lMinuit -lFastBDT_static
 #LIBS += -lTMVA -lTMVAGui
-INCLUDES = -I$(INCDIR)
+INCLUDES = -I$(INCDIR) -I$(BDTINC)
 
 MAINS = $(wildcard *.cc)
 TARGETS = $(MAINS:%.cc=$(BINDIR)/%)
