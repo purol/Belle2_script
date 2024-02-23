@@ -39,7 +39,7 @@
 # define Nvar 33
 # define DvetoNvar 4
 
-# define MCTYPE "MC15ri"
+char* MCTYPE;
 
 using std::string;
 
@@ -350,6 +350,8 @@ int main(int argc, char* argv[])
     double subsample = atof(argv[4]);
     unsigned int binning_num = (unsigned int)atoi(argv[5]);
 
+    MCTYPE = argv[8];
+
     // set classifier option
     FastBDT::Classifier classifier;
     classifier.SetNTrees(nTrees);
@@ -433,42 +435,42 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(CHG_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("CHG", argv[8], "train", std::string("")), "otherwise");
+            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("CHG", MCTYPE, "train", std::string("")), "otherwise");
         }
     }
     {
         std::vector<string> names;
         load_files(MIX_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("MIX", argv[8], "train", std::string("")), "otherwise");
+            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("MIX", MCTYPE, "train", std::string("")), "otherwise");
         }
     }
     {
         std::vector<string> names;
         load_files(UUBAR_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("UUBAR", argv[8], "train", std::string("")), "otherwise");
+            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("UUBAR", MCTYPE, "train", std::string("")), "otherwise");
         }
     }
     {
         std::vector<string> names;
         load_files(DDBAR_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("DDBAR", argv[8], "train", std::string("")), "otherwise");
+            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("DDBAR", MCTYPE, "train", std::string("")), "otherwise");
         }
     }
     {
         std::vector<string> names;
         load_files(SSBAR_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("SSBAR", argv[8], "train", std::string("")), "otherwise");
+            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("SSBAR", MCTYPE, "train", std::string("")), "otherwise");
         }
     }
     {
         std::vector<string> names;
         load_files(CHARM_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("CHARM", argv[8], "train", std::string("")), "otherwise");
+            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, ObtainWeight("CHARM", MCTYPE, "train", std::string("")), "otherwise");
         }
     }
 
@@ -504,7 +506,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[8], "test", std::string("B2Knunu")), "B2Knunu");
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", MCTYPE, "test", std::string("B2Knunu")), "B2Knunu");
         }
     }
     {
@@ -513,7 +515,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[8], "test", std::string("B2Kstarnunu")), "otherwise");
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", MCTYPE, "test", std::string("B2Kstarnunu")), "otherwise");
         }
     }
     {
@@ -522,7 +524,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[8], "test", std::string("B2Xsnunu")), "B2Xsnunu");
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", MCTYPE, "test", std::string("B2Xsnunu")), "B2Xsnunu");
         }
     }
     {
@@ -531,7 +533,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[8], "test", std::string("B02K0nunu")), "B02K0nunu");
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", MCTYPE, "test", std::string("B02K0nunu")), "B02K0nunu");
         }
     }
     {
@@ -540,7 +542,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[8], "test", std::string("B02Kstar0nunu")), "otherwise");
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", MCTYPE, "test", std::string("B02Kstar0nunu")), "otherwise");
         }
     }
     {
@@ -549,7 +551,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", argv[8], "test", std::string("B02Xsnunu")), "B02Xsnunu");
+            FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, ObtainWeight("SIGNAL", MCTYPE, "test", std::string("B02Xsnunu")), "B02Xsnunu");
         }
     }
     {
@@ -558,7 +560,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((CHG_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("CHG", argv[8], "test", std::string("")), "otherwise");
+            FillVariables((CHG_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("CHG", MCTYPE, "test", std::string("")), "otherwise");
         }
     }
     {
@@ -567,7 +569,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((MIX_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("MIX", argv[8], "test", std::string("")), "otherwise");
+            FillVariables((MIX_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("MIX", MCTYPE, "test", std::string("")), "otherwise");
         }
     }
     {
@@ -576,7 +578,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((UUBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("UUBAR", argv[8], "test", std::string("")), "otherwise");
+            FillVariables((UUBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("UUBAR", MCTYPE, "test", std::string("")), "otherwise");
         }
     }
     {
@@ -585,7 +587,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((DDBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("DDBAR", argv[8], "test", std::string("")), "otherwise");
+            FillVariables((DDBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("DDBAR", MCTYPE, "test", std::string("")), "otherwise");
         }
     }
     {
@@ -594,7 +596,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((SSBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("SSBAR", argv[8], "test", std::string("")), "otherwise");
+            FillVariables((SSBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("SSBAR", MCTYPE, "test", std::string("")), "otherwise");
         }
     }
     {
@@ -603,7 +605,7 @@ int main(int argc, char* argv[])
         for (unsigned int i = 0; i < names.size(); ++i) {
             // take even only
             if (i % 2 == 1) continue;
-            FillVariables((CHARM_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("CHARM", argv[8], "test", std::string("")), "otherwise");
+            FillVariables((CHARM_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, ObtainWeight("CHARM", MCTYPE, "test", std::string("")), "otherwise");
         }
     }
 
@@ -640,84 +642,84 @@ int main(int argc, char* argv[])
         std::vector<string> names;
         load_files(SIGNAL_input_train.c_str(), &names, "B2Knunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[8], "train", std::string("B2Knunu")), "B2Knunu");
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", MCTYPE, "train", std::string("B2Knunu")), "B2Knunu");
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train.c_str(), &names, "B2Kstarnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[8], "train", std::string("B2Kstarnunu")), "otherwise");
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", MCTYPE, "train", std::string("B2Kstarnunu")), "otherwise");
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train.c_str(), &names, "B2Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[8], "train", std::string("B2Xsnunu")), "B2Xsnunu");
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", MCTYPE, "train", std::string("B2Xsnunu")), "B2Xsnunu");
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train.c_str(), &names, "B02K0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[8], "train", std::string("B02K0nunu")), "B02K0nunu");
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", MCTYPE, "train", std::string("B02K0nunu")), "B02K0nunu");
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train.c_str(), &names, "B02Kstar0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[8], "train", std::string("B02Kstar0nunu")), "otherwise");
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", MCTYPE, "train", std::string("B02Kstar0nunu")), "otherwise");
         }
     }
     {
         std::vector<string> names;
         load_files(SIGNAL_input_train.c_str(), &names, "B02Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", argv[8], "train", std::string("B02Xsnunu")), "B02Xsnunu");
+            FillVariables((SIGNAL_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, true, ObtainWeight("SIGNAL", MCTYPE, "train", std::string("B02Xsnunu")), "B02Xsnunu");
         }
     }
     {
         std::vector<string> names;
         load_files(CHG_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("CHG", argv[8], "train", std::string("")), "otherwise");
+            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("CHG", MCTYPE, "train", std::string("")), "otherwise");
         }
     }
     {
         std::vector<string> names;
         load_files(MIX_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("MIX", argv[8], "train", std::string("")), "otherwise");
+            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("MIX", MCTYPE, "train", std::string("")), "otherwise");
         }
     }
     {
         std::vector<string> names;
         load_files(UUBAR_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("UUBAR", argv[8], "train", std::string("")), "otherwise");
+            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("UUBAR", MCTYPE, "train", std::string("")), "otherwise");
         }
     }
     {
         std::vector<string> names;
         load_files(DDBAR_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("DDBAR", argv[8], "train", std::string("")), "otherwise");
+            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("DDBAR", MCTYPE, "train", std::string("")), "otherwise");
         }
     }
     {
         std::vector<string> names;
         load_files(SSBAR_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("SSBAR", argv[8], "train", std::string("")), "otherwise");
+            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("SSBAR", MCTYPE, "train", std::string("")), "otherwise");
         }
     }
     {
         std::vector<string> names;
         load_files(CHARM_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("CHARM", argv[8], "train", std::string("")), "otherwise");
+            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, ObtainWeight("CHARM", MCTYPE, "train", std::string("")), "otherwise");
         }
     }
 

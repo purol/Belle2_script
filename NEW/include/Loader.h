@@ -465,6 +465,7 @@ void Loader::GetData(TFile* input_file) {
     Data temp = { 0 };
 
     int MakeShiftDoubleToInt[17] = { 0 }; // intermediate variable to convert from int to double
+    const char* TypeName = tree_upsilon->FindLeaf("nRemainingTracksInEvent")->GetTypeName(); // to get type name. Check `nRemainingTracksInEvent` only
 
     // get event_info
     tree_upsilon->SetBranchAddress("__experiment__", &temp.upsilon_experiment);
@@ -498,7 +499,8 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("missingMomentumOfEvent_theta", &temp.Upsilon_info[7]);
     tree_upsilon->SetBranchAddress("missingMomentumOfEvent", &temp.Upsilon_info[8]);
     tree_upsilon->SetBranchAddress("missingEnergyOfEventCMS", &temp.Upsilon_info[9]);
-    tree_upsilon->SetBranchAddress("nRemainingTracksInEvent", &MakeShiftDoubleToInt[0]); // temp.Upsilon_info[10]
+    if (strcmp(TypeName, "Int_t") == 0) tree_upsilon->SetBranchAddress("nRemainingTracksInEvent", &MakeShiftDoubleToInt[0]); // temp.Upsilon_info[10]
+    else tree_upsilon->SetBranchAddress("nRemainingTracksInEvent", &temp.Upsilon_info[10]);
     tree_upsilon->SetBranchAddress("roeNeextra__bocleanMask__bc", &temp.Upsilon_info[11]);
     tree_upsilon->SetBranchAddress("useCMSFrame__boroeNeextra__bocleanMask__bc__bc", &temp.Upsilon_info[12]);
     tree_upsilon->SetBranchAddress("nROE_ParticlesInList__bogamma__clmygamma__bc", &temp.Upsilon_info[13]);
@@ -537,12 +539,22 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("chiProb", &temp.Upsilon_info[46]);
     tree_upsilon->SetBranchAddress("dr", &temp.Upsilon_info[47]);
     tree_upsilon->SetBranchAddress("dz", &temp.Upsilon_info[48]);
-    tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT__bc", &MakeShiftDoubleToInt[1]); // temp.Upsilon_info[49]
-    tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT__bc", &MakeShiftDoubleToInt[2]); // temp.Upsilon_info[50]
-    tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_loose__bc", &MakeShiftDoubleToInt[3]); // temp.Upsilon_info[51]
-    tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &MakeShiftDoubleToInt[4]); // temp.Upsilon_info[52]
-    tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &MakeShiftDoubleToInt[5]); // temp.Upsilon_info[53]
-    tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &MakeShiftDoubleToInt[6]); // temp.Upsilon_info[54]
+    if (strcmp(TypeName, "Int_t") == 0) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT__bc", &MakeShiftDoubleToInt[1]); // temp.Upsilon_info[49]
+        tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT__bc", &MakeShiftDoubleToInt[2]); // temp.Upsilon_info[50]
+        tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_loose__bc", &MakeShiftDoubleToInt[3]); // temp.Upsilon_info[51]
+        tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &MakeShiftDoubleToInt[4]); // temp.Upsilon_info[52]
+        tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &MakeShiftDoubleToInt[5]); // temp.Upsilon_info[53]
+        tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &MakeShiftDoubleToInt[6]); // temp.Upsilon_info[54]
+    }
+    else {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT__bc", &temp.Upsilon_info[49]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT__bc", &temp.Upsilon_info[50]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_loose__bc", &temp.Upsilon_info[51]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_loose__bc", &temp.Upsilon_info[52]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boe__pl__clElectronFBDT_tight__bc", &temp.Upsilon_info[53]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__bomu__pl__clMuonFBDT_tight__bc", &temp.Upsilon_info[54]);
+    }
     tree_upsilon->SetBranchAddress("beamE", &temp.Upsilon_info[55]);
     tree_upsilon->SetBranchAddress("nROE_Tracks__bolooseMask__bc", &temp.Upsilon_info[56]);
     tree_upsilon->SetBranchAddress("Ecms", &temp.Upsilon_info[57]);
@@ -632,23 +644,45 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("extraInfo__boEeclv200_100__bc", &temp.Upsilon_info[141]);
     tree_upsilon->SetBranchAddress("extraInfo__boEeclv200_100_matched__bc", &temp.Upsilon_info[142]);
     tree_upsilon->SetBranchAddress("extraInfo__boEeclv200_100_unmatched__bc", &temp.Upsilon_info[143]);
-    tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &MakeShiftDoubleToInt[7]); // temp.Upsilon_info[144]
-    tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &MakeShiftDoubleToInt[8]); // temp.Upsilon_info[145]
-    tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &MakeShiftDoubleToInt[9]); // temp.Upsilon_info[146]
+    if (strcmp(TypeName, "Int_t") == 0) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &MakeShiftDoubleToInt[7]); // temp.Upsilon_info[144]
+        tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &MakeShiftDoubleToInt[8]); // temp.Upsilon_info[145]
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &MakeShiftDoubleToInt[9]); // temp.Upsilon_info[146]
+    }
+    else {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &temp.Upsilon_info[144]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &temp.Upsilon_info[145]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &temp.Upsilon_info[146]);
+    }
     tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &temp.Upsilon_info[147]);
-    tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &MakeShiftDoubleToInt[10]); // temp.Upsilon_info[148]
+    if (strcmp(TypeName, "Int_t") == 0) tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &MakeShiftDoubleToInt[10]); // temp.Upsilon_info[148]
+    else tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &temp.Upsilon_info[148]);
     tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstarnn__bc", &temp.Upsilon_info[149]);
-    tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &MakeShiftDoubleToInt[11]); // temp.Upsilon_info[150]
+    if (strcmp(TypeName, "Int_t") == 0) tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &MakeShiftDoubleToInt[11]); // temp.Upsilon_info[150]
+    else tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clK0nn__bc", &temp.Upsilon_info[150]);
     tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &temp.Upsilon_info[151]);
-    tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &MakeShiftDoubleToInt[12]); // temp.Upsilon_info[152]
+    if (strcmp(TypeName, "Int_t") == 0) tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &MakeShiftDoubleToInt[12]); // temp.Upsilon_info[152]
+    else tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &temp.Upsilon_info[152]);
     tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &temp.Upsilon_info[153]);
-    tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_all__bc", &MakeShiftDoubleToInt[13]); // temp.Upsilon_info[154]
-    tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_NR__bc", &MakeShiftDoubleToInt[14]); // temp.Upsilon_info[155]
+    if (strcmp(TypeName, "Int_t") == 0) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_all__bc", &MakeShiftDoubleToInt[13]); // temp.Upsilon_info[154]
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_NR__bc", &MakeShiftDoubleToInt[14]); // temp.Upsilon_info[155]
+    }
+    else {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_all__bc", &temp.Upsilon_info[154]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKpKLKL_NR__bc", &temp.Upsilon_info[155]);
+    }
     tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp.Upsilon_info[156]);
     tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp.Upsilon_info[157]);
     tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp.Upsilon_info[158]);
-    tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_all__bc", &MakeShiftDoubleToInt[15]); // temp.Upsilon_info[159]
-    tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_NR__bc", &MakeShiftDoubleToInt[16]); // temp.Upsilon_info[160]
+    if (strcmp(TypeName, "Int_t") == 0) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_all__bc", &MakeShiftDoubleToInt[15]); // temp.Upsilon_info[159]
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_NR__bc", &MakeShiftDoubleToInt[16]); // temp.Upsilon_info[160]
+    }
+    else {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_all__bc", &temp.Upsilon_info[159]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_NR__bc", &temp.Upsilon_info[160]);
+    }
     tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp.Upsilon_info[161]);
     tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp.Upsilon_info[162]);
     tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp.Upsilon_info[163]);
@@ -881,24 +915,26 @@ void Loader::GetData(TFile* input_file) {
         tree_Btag->GetEntry(j);
         if (DoesItHaveXsBranch) tree_Xs->GetEntry(j);
 
-        // Just Makeshift!
-        temp.Upsilon_info[10] = static_cast<double>(MakeShiftDoubleToInt[0]);
-        temp.Upsilon_info[49] = static_cast<double>(MakeShiftDoubleToInt[1]);
-        temp.Upsilon_info[50] = static_cast<double>(MakeShiftDoubleToInt[2]);
-        temp.Upsilon_info[51] = static_cast<double>(MakeShiftDoubleToInt[3]);
-        temp.Upsilon_info[52] = static_cast<double>(MakeShiftDoubleToInt[4]);
-        temp.Upsilon_info[53] = static_cast<double>(MakeShiftDoubleToInt[5]);
-        temp.Upsilon_info[54] = static_cast<double>(MakeShiftDoubleToInt[6]);
-        temp.Upsilon_info[144] = static_cast<double>(MakeShiftDoubleToInt[7]);
-        temp.Upsilon_info[145] = static_cast<double>(MakeShiftDoubleToInt[8]);
-        temp.Upsilon_info[146] = static_cast<double>(MakeShiftDoubleToInt[9]);
-        temp.Upsilon_info[148] = static_cast<double>(MakeShiftDoubleToInt[10]);
-        temp.Upsilon_info[150] = static_cast<double>(MakeShiftDoubleToInt[11]);
-        temp.Upsilon_info[152] = static_cast<double>(MakeShiftDoubleToInt[12]);
-        temp.Upsilon_info[154] = static_cast<double>(MakeShiftDoubleToInt[13]);
-        temp.Upsilon_info[155] = static_cast<double>(MakeShiftDoubleToInt[14]);
-        temp.Upsilon_info[159] = static_cast<double>(MakeShiftDoubleToInt[15]);
-        temp.Upsilon_info[160] = static_cast<double>(MakeShiftDoubleToInt[16]);
+        // Type conversion if Int_t is used
+        if (strcmp(TypeName, "Int_t") == 0) {
+            temp.Upsilon_info[10] = static_cast<double>(MakeShiftDoubleToInt[0]);
+            temp.Upsilon_info[49] = static_cast<double>(MakeShiftDoubleToInt[1]);
+            temp.Upsilon_info[50] = static_cast<double>(MakeShiftDoubleToInt[2]);
+            temp.Upsilon_info[51] = static_cast<double>(MakeShiftDoubleToInt[3]);
+            temp.Upsilon_info[52] = static_cast<double>(MakeShiftDoubleToInt[4]);
+            temp.Upsilon_info[53] = static_cast<double>(MakeShiftDoubleToInt[5]);
+            temp.Upsilon_info[54] = static_cast<double>(MakeShiftDoubleToInt[6]);
+            temp.Upsilon_info[144] = static_cast<double>(MakeShiftDoubleToInt[7]);
+            temp.Upsilon_info[145] = static_cast<double>(MakeShiftDoubleToInt[8]);
+            temp.Upsilon_info[146] = static_cast<double>(MakeShiftDoubleToInt[9]);
+            temp.Upsilon_info[148] = static_cast<double>(MakeShiftDoubleToInt[10]);
+            temp.Upsilon_info[150] = static_cast<double>(MakeShiftDoubleToInt[11]);
+            temp.Upsilon_info[152] = static_cast<double>(MakeShiftDoubleToInt[12]);
+            temp.Upsilon_info[154] = static_cast<double>(MakeShiftDoubleToInt[13]);
+            temp.Upsilon_info[155] = static_cast<double>(MakeShiftDoubleToInt[14]);
+            temp.Upsilon_info[159] = static_cast<double>(MakeShiftDoubleToInt[15]);
+            temp.Upsilon_info[160] = static_cast<double>(MakeShiftDoubleToInt[16]);
+        }
 
         TotalData.push(temp);
     }

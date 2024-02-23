@@ -39,8 +39,6 @@
 # define Nvar 33
 # define DvetoNvar 4
 
-# define MCTYPE "MC15ri"
-
 using std::string;
 
 std::vector<std::string> var_names;

@@ -43,8 +43,6 @@ revise void Loader::PrintSeparateRootFile(std::string output_name)
 revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double flag = 0)
 */
 
-# define MCTYPE "MC15ri"
-
 /* ====================================== */
 
 int main(int argc, char* argv[]) {

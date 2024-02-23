@@ -11,7 +11,6 @@
 #include <random>
 #include <sstream>
 #include <queue>
-#include <cstring>
 
 #include "TH1.h"
 #include "TH2.h"
@@ -43,8 +42,6 @@ revise void Loader::PrintRootFile(std::string output_name)
 revise void Loader::PrintSeparateRootFile(std::string output_name)
 revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double flag = 0)
 */
-
-# define MCTYPE "MC15ri"
 
 /* ====================================== */
 
