@@ -37,9 +37,6 @@
 #include "ObtainWeight.h"
 #include "MyFBDT.h"
 
-# define Nvar 33
-# define DvetoNvar 4
-
 int main(int argc, char* argv[]) // offres total: 42.329/fb
 {
     // grid search

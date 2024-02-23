@@ -36,9 +36,6 @@
 #include "base.h"
 #include "MyFBDT.h"
 
-# define Nvar 33
-# define DvetoNvar 4
-
 int main(int argc, char* argv[]) // offres total: 42.329/fb, on-resonance total: 361.673/fb
 {
     // grid search

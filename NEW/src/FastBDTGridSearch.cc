@@ -37,9 +37,6 @@
 #include "ObtainWeight.h"
 #include "MyFBDT.h"
 
-# define Nvar 33
-# define DvetoNvar 4
-
 char* MCTYPE;
 
 int main(int argc, char* argv[])
