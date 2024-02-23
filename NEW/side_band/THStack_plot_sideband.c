@@ -1513,24 +1513,24 @@ void THStack_plot_sideband() {
     delete[]  Sideband_data_values;
 
     for (int k = 0; k < Nvar_num; k++) {
-        free(Stack[k]);
-        free(charged_hist[k]);
-        free(mixed_hist[k]);
-        free(uubar_hist[k]);
-        free(ddbar_hist[k]);
-        free(ssbar_hist[k]);
-        free(ccbar_hist[k]);
-        free(taupair_hist[k]);
-        free(mumu_hist[k]);
-        free(gg_hist[k]);
-        free(ee_hist[k]);
-        free(eeee_hist[k]);
-        free(eemumu_hist[k]);
-        free(llXX_hist[k]);
-        free(hhISR_hist[k]);
-        free(stat_error_hist[k]);
-        free(data_hist[k]);
-        free(Ratio_hist[k]);
+        delete Stack[k];
+        delete charged_hist[k];
+        delete mixed_hist[k];
+        delete uubar_hist[k];
+        delete ddbar_hist[k];
+        delete ssbar_hist[k];
+        delete ccbar_hist[k];
+        delete taupair_hist[k];
+        delete mumu_hist[k];
+        delete gg_hist[k];
+        delete ee_hist[k];
+        delete eeee_hist[k];
+        delete eemumu_hist[k];
+        delete llXX_hist[k];
+        delete hhISR_hist[k];
+        delete stat_error_hist[k];
+        delete data_hist[k];
+        delete Ratio_hist[k];
     }
 
     free(Stack);
