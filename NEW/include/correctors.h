@@ -3,6 +3,8 @@
 
 #include <cmath>
 #include <stdio.h>
+#include "TH1.h"
+#include "TH2.h"
 #include "constants.h"
 
 class Corrector {

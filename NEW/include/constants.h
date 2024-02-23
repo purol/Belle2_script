@@ -16,10 +16,6 @@
 # define index_MXs_Bc 3
 # define index_MXs_B0 4
 
-# define Nstep 20
-# define start 0.8
-# define end 1.0
-
 # define MyEPSILON 0.000001
 
 // arXiv:1409.4557v2, PhysRevD.107.014511

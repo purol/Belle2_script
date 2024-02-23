@@ -11,6 +11,11 @@
 #include "TTree.h"
 #include "THStack.h"
 #include "TCanvas.h"
+#include "constants.h"
+
+# define Nstep 20
+# define stepstart 0.8
+# define stepend 1.0
 
 typedef struct data {
     int __experiment__;
@@ -4238,8 +4243,8 @@ void Loader::PrintFOM(std::string filename, const char* type, const char* MC_ver
             std::queue<Data> temp_queue;
             temp_queue.swap(TotalData);
 
-            double BB_output = start + (end - start) * i / Nstep;
-            double Continuum_output = start + (end - start) * j / Nstep;
+            double BB_output = stepstart + (stepend - stepstart) * i / Nstep;
+            double Continuum_output = stepstart + (stepend - stepstart) * j / Nstep;
 
             std::vector<Labels> label_list;
             double EVT_num = 0.0;
@@ -4318,7 +4323,7 @@ void Loader::PrintFOM1D(std::string filename, const char* type, const char* MC_v
         std::queue<Data> temp_queue;
         temp_queue.swap(TotalData);
 
-        double BB_output = start + (end - start) * j / Nstep;
+        double BB_output = stepstart + (stepend - stepstart) * j / Nstep;
 
         std::vector<Labels> label_list;
         double EVT_num = 0.0;
