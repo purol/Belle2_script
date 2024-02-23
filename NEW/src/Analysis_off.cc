@@ -1,30 +1,11 @@
 // last update: 2023-07-14
 // for Belle2 data
 
-#include <iostream>
 #include <stdio.h>
 #include <string>
-#include <algorithm>
 #include <vector>
-#include <numeric>
-#include <time.h>
-#include <random>
-#include <sstream>
-#include <queue>
 
-#include "TH1.h"
-#include "TH2.h"
-#include "TSystemDirectory.h"
-#include "TSystemFile.h"
-#include "TCollection.h"
-#include "TPad.h"
-#include "TStyle.h"
-#include "TCanvas.h"
-#include "THStack.h"
 #include "TFile.h"
-#include "TTree.h"
-#include "TKey.h"
-#include "TMath.h"
 
 #include "correctors.h"
 #include "constants.h"
@@ -78,6 +59,9 @@ int main(int argc, char* argv[]) {
         loader.Cut(Loader::Bsig, 64, Loader::larger_than, -0.5); // Bsig vertex fit
         loader.Cut(Loader::Btag, 6, Loader::larger_than, -0.5); // Btag vertex fit
         loader.PrintInformation(std::string("========== inital =========="), names.at(i), argv[4], argv[5], argv[6], true);
+
+        loader.BeamEnergyCorrectionFromDeltaE(9, 4, 1, 2, 5.2897787094116, true);
+        loader.PrintInformation(std::string("========== Ebeam correction =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
         loader.PrintSeparateRootFile(std::string(argv[3]) + "/before_Mbc_cut/" + file_without_extension + std::string("_before_Mbc_cut.root"));
         loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.27);
