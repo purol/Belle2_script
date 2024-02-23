@@ -900,7 +900,7 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
 // ------------------------------------------------------------------------------------------------------------------------------------------------
 
 // ------------------------------------------------------------- for FBDT GridSearch --------------------------------------------------------------
-void FillVariables(const char* filename, std::vector<float> input_vars[Nvar], std::vector<bool>* IsSignal, std::vector<float>* weight, bool tempissignal, float weight_N = 1.0, std::string CorrectionType = "otherwise") {
+void FillVariables(const char* filename, std::vector<float> input_vars[Nvar], std::vector<bool>* IsSignal, std::vector<float>* weight, bool tempissignal, const char* MCTYPE, float weight_N = 1.0, std::string CorrectionType = "otherwise") {
     /*
     CorrectionType for new form factors
     B2Knunu
