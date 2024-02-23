@@ -15,6 +15,7 @@
 # define Nvar 33
 # define DvetoNvar 4
 
+Corrector corrector;
 Corrector_Fragmentation corrector_Fragmentation;
 
 // ------------------------------------------------------------- for FBDT Application -------------------------------------------------------------
