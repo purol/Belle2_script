@@ -10,6 +10,7 @@
 #include <fstream>
 
 #include "Classifier.h"
+#include "correctors.h"
 
 # define Nvar 33
 # define DvetoNvar 4
