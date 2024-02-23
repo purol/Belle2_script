@@ -6,7 +6,7 @@
 #include "TList.h"
 #include "TSystemFile.h"
 #include "TString.h"
-#include "TIter.h"
+#include "TCollection.h"
 
 void load_files(const char* dirname, std::vector<std::string>* names) {
     TSystemDirectory dir(dirname, dirname);
