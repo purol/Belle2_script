@@ -424,6 +424,124 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
 
 }
 
+void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[], std::vector<double>* weights, std::string SampleName, int option = 0, double additional_weight = 1.0) {
+    /*
+    option 0: select all Btag
+    option 1: select Btag+
+    option 2: select Btag0
+    */
+    double* var = (double*)malloc(sizeof(double) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var[i] = 0.0;
+    float* var_float = (float*)malloc(sizeof(float) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var_float[i] = 0.0;
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double Btag_ID = -1;
+
+    double FEI_calibration_factor = -1;
+
+    int Ngamma_v200_index = -1;
+    double Ngamma_v200 = -1;
+
+    double Bsig_M = -1;
+
+    std::vector<string> names;
+    load_files(dirname, &names, included_string);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        for (int k = 0; k < (int)variable_names.size(); k++) {
+            if (branch_names.at(k) == std::string("Upsilon")) {
+                if (variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
+                else tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var_float[k]);
+            }
+            else if (branch_names.at(k) == std::string("Bsig")) tree_Bsig->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
+            else if (branch_names.at(k) == std::string("Btag")) tree_Btag->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
+            else {
+                printf("ERROR! \n");
+                exit(1);
+            }
+        }
+
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
+        tree_Bsig->SetBranchAddress("Bsig_M", &Bsig_M);
+
+        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
+        if (Ngamma_v200_index == variable_names.size()) tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+            tree_upsilon->GetEntry(j);
+            tree_Bsig->GetEntry(j);
+            tree_Btag->GetEntry(j);
+
+            if (option == 1 && Upsilon_ID != 0) continue;
+            else if (option == 2 && Upsilon_ID != 1) continue;
+            else if (option == 0) {}
+            else if ((option != 0) && (option != 1) && (option != 2)) {
+                printf("improper option value!\n");
+                exit(1);
+            }
+
+            for (int k = 0; k < (int)variable_names.size(); k++) {
+                if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
+                else variable_values[k].push_back((double)var_float[k]);
+                //else variable_values[k].push_back(GetBinIndex((double)var_float[k], Bsig_M));
+            }
+
+            // Fill numberings
+            double weight_ri = 0.0;
+            if (SampleName == "CHG") {
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
+            }
+            else if (SampleName == "MIX") {
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
+            }
+            else if (SampleName == "UUBAR") {
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
+            }
+            else if (SampleName == "DDBAR") {
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
+            }
+            else if (SampleName == "SSBAR") {
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
+            }
+            else if (SampleName == "CHARM") {
+                FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+                weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
+            }
+            else {
+                printf("undefined job id!\n");
+                exit(1);
+            }
+
+            // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
+            if (Ngamma_v200_index != variable_names.size()) Ngamma_v200 = var[Ngamma_v200_index];
+            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_multiplicity * additional_weight);
+        }
+        input_file->Close();
+
+    }
+
+    free(var);
+    free(var_float);
+
+}
+
 void LetsFillMC_correction(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName, double NormFactor = 1.0, int option = 0, double additional_weight = 1.0) {
     /*
     SampleName for Knn
