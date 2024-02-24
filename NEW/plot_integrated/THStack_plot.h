@@ -138,6 +138,9 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
     double nDptoXKL = -1;
     double nD0toXKL = -1;
 
+    int nBp = -1;
+    int nB0 = -1;
+
     double Bsig_M = -1;
 
     std::vector<string> names;
@@ -151,6 +154,8 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+        TTree* tree_Xs;
+        if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (branch_names.at(k) == std::string("Upsilon")) {
@@ -176,6 +181,10 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        if (SampleName == "SIGNAL") {
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &nBp);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &nB0);
+        }
         for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
@@ -219,11 +228,12 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+            if (SampleName == "SIGNAL") tree_Xs->GetEntry(j);
 
             if (option == 1 && Upsilon_ID != 0) continue;
             else if (option == 2 && Upsilon_ID != 1) continue;
             else if (option == 0) {}
-            else {
+            else if ((option != 0) && (option != 1) && (option != 2)){
                 printf("improper option value!\n");
                 exit(1);
             }
@@ -266,12 +276,21 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
-            //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
-            //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
-            //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
-            //else if (job_id >= 256848292 && job_id <= 256848743) numberings->push_back(9);
-            //else if (job_id >= 256848744 && job_id <= 256849128) numberings->push_back(10);
-            //else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
+            else if (SampleName == "SIGNAL") {
+                numberings->push_back(14);
+                if (nBp > 0) {
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
+                }
+                else if (nB0 > 0) {
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
+                }
+                else {
+                    printf("ERROR 255");
+                    exit(1);
+                }
+            }
             else {
                 printf("undefined job id!\n");
                 exit(1);
@@ -340,6 +359,9 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
     */
     double* var = (double*)malloc(sizeof(double) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var[i] = 0.0;
     float* var_float = (float*)malloc(sizeof(float) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var_float[i] = 0.0;
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double Btag_ID = -1;
 
     double Bsig_M = -1;
 
@@ -368,6 +390,9 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
             }
         }
 
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         tree_Bsig->SetBranchAddress("Bsig_M", &Bsig_M);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -379,7 +404,7 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
             if (option == 1 && Upsilon_ID != 0) continue;
             else if (option == 2 && Upsilon_ID != 1) continue;
             else if (option == 0) {}
-            else {
+            else if ((option != 0) && (option != 1) && (option != 2)) {
                 printf("improper option value!\n");
                 exit(1);
             }
@@ -470,6 +495,9 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
     double nDptoXKL = -1;
     double nD0toXKL = -1;
 
+    int nBp = -1;
+    int nB0 = -1;
+
     double Bsig_M = -1;
 
     float BDTc = -1;
@@ -486,6 +514,8 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+        TTree* tree_Xs;
+        if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (branch_names.at(k) == std::string("Upsilon")) {
@@ -511,6 +541,10 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        if (SampleName == "SIGNAL") {
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &nBp);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &nB0);
+        }
         for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
@@ -560,7 +594,7 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
             if (option == 1 && Upsilon_ID != 0) continue;
             else if (option == 2 && Upsilon_ID != 1) continue;
             else if (option == 0) {}
-            else {
+            else if ((option != 0) && (option != 1) && (option != 2)) {
                 printf("improper option value!\n");
                 exit(1);
             }
@@ -606,12 +640,21 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
-            //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
-            //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
-            //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
-            //else if (job_id >= 256848292 && job_id <= 256848743) numberings->push_back(9);
-            //else if (job_id >= 256848744 && job_id <= 256849128) numberings->push_back(10);
-            //else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
+            else if (SampleName == "SIGNAL") {
+                numberings->push_back(14);
+                if (nBp > 0) {
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
+                }
+                else if (nB0 > 0) {
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
+                }
+                else {
+                    printf("ERROR 255");
+                    exit(1);
+                }
+            }
             else {
                 printf("undefined job id!\n");
                 exit(1);
@@ -738,6 +781,9 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
     double nDptoXKL = -1;
     double nD0toXKL = -1;
 
+    int nBp = -1;
+    int nB0 = -1;
+
     double Bsig_M = -1;
 
     float BDTc = -1;
@@ -754,6 +800,8 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+        TTree* tree_Xs;
+        if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
@@ -766,6 +814,10 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        if (SampleName == "SIGNAL") {
+            tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &nBp);
+            tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &nB0);
+        }
         for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
@@ -840,12 +892,20 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
-            //else if (job_id >= 256846858 && job_id <= 256847295) numberings->push_back(6);
-            //else if (job_id >= 256847296 && job_id <= 256847807) numberings->push_back(7);
-            //else if (job_id >= 256847808 && job_id <= 256848291) numberings->push_back(8);
-            //else if (job_id >= 256848292 && job_id <= 256848743) numberings->push_back(9);
-            //else if (job_id >= 256848744 && job_id <= 256849128) numberings->push_back(10);
-            //else if (job_id >= 256849129 && job_id <= 256849396) numberings->push_back(11);
+            else if (SampleName == "SIGNAL") {
+                if (nBp > 0) {
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
+                }
+                else if (nB0 > 0) {
+                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
+                }
+                else {
+                    printf("ERROR 255");
+                    exit(1);
+                }
+            }
             else {
                 printf("undefined job id!\n");
                 exit(1);
