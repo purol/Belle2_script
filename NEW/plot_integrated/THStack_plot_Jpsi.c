@@ -189,7 +189,7 @@ void THStack_plot_Jpsi() {
     std::vector<double>* signal_values = new std::vector<double>[Nvar_num];
     std::vector<int> Jpsi_MC_numbering;
 
-    std::vector<double>* Offres_data_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* Jpsi_data_values = new std::vector<double>[Nvar_num];
 
     std::vector<double> weights;
     std::vector<double> charged_weights;
@@ -219,63 +219,63 @@ void THStack_plot_Jpsi() {
 
     // sort variables
     for (int k = 0; k < (int)Jpsi_MC_numbering.size(); k++) {
-        if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::CHG)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) charged_values[l].push_back(Offres_MC_values[l].at(k));
+        if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::CHG)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) charged_values[l].push_back(Jpsi_MC_values[l].at(k));
             charged_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::MIX)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) mixed_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::MIX)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) mixed_values[l].push_back(Jpsi_MC_values[l].at(k));
             mixed_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::UUBAR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) uubar_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::UUBAR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) uubar_values[l].push_back(Jpsi_MC_values[l].at(k));
             uubar_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::DDBAR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ddbar_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::DDBAR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ddbar_values[l].push_back(Jpsi_MC_values[l].at(k));
             ddbar_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::SSBAR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ssbar_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::SSBAR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ssbar_values[l].push_back(Jpsi_MC_values[l].at(k));
             ssbar_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::CHARM)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ccbar_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::CHARM)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ccbar_values[l].push_back(Jpsi_MC_values[l].at(k));
             ccbar_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::TAU)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) taupair_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::TAU)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) taupair_values[l].push_back(Jpsi_MC_values[l].at(k));
             taupair_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::MUMU)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) mumu_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::MUMU)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) mumu_values[l].push_back(Jpsi_MC_values[l].at(k));
             mumu_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::GG)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) gg_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::GG)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) gg_values[l].push_back(Jpsi_MC_values[l].at(k));
             gg_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::EE)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ee_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::EE)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ee_values[l].push_back(Jpsi_MC_values[l].at(k));
             ee_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::EEEE)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) eeee_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::EEEE)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) eeee_values[l].push_back(Jpsi_MC_values[l].at(k));
             eeee_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::EEMUMU)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) eemumu_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::EEMUMU)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) eemumu_values[l].push_back(Jpsi_MC_values[l].at(k));
             eemumu_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::LLXX)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) llXX_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::LLXX)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) llXX_values[l].push_back(Jpsi_MC_values[l].at(k));
             llXX_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::HHISR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) hhISR_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::HHISR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) hhISR_values[l].push_back(Jpsi_MC_values[l].at(k));
             hhISR_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::SIGNAL)) {
+        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::SIGNAL)) {
             for (int l = 0; l < (int)variable_names.size(); l++) signal_values[l].push_back(Jpsi_MC_values[l].at(k));
             signal_weights.push_back(weights.at(k));
         }
@@ -507,8 +507,8 @@ void THStack_plot_Jpsi() {
         for (int i = 0; i < (int)Jpsi_data_values[k].size(); i++) data_hist[k]->Fill(Jpsi_data_values[k].at(i));
 
         if (variable_names.at(k) == "nROE_ParticlesInList__bopi0__clmyneutralPion__bc") {
-            for (int i = 0; i < (int)Offres_MC_values[k].size(); i++) MC_one_bin->Fill(Offres_MC_values[k].at(i), weights.at(i));
-            for (int i = 0; i < (int)Offres_data_values[k].size(); i++) data_one_bin->Fill(Offres_data_values[k].at(i));
+            for (int i = 0; i < (int)Jpsi_MC_values[k].size(); i++) MC_one_bin->Fill(Jpsi_MC_values[k].at(i), weights.at(i));
+            for (int i = 0; i < (int)Jpsi_data_values[k].size(); i++) data_one_bin->Fill(Jpsi_data_values[k].at(i));
         }
     }
     Ratio_one_bin->Divide(data_one_bin, MC_one_bin);
@@ -600,7 +600,7 @@ void THStack_plot_Jpsi() {
     printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin->GetBinContent(1), Ratio_one_bin->GetBinError(1));
 
     // free
-    delete[] Offres_MC_values;
+    delete[] Jpsi_MC_values;
     delete[] charged_values;
     delete[] mixed_values;
     delete[] uubar_values;
@@ -617,7 +617,7 @@ void THStack_plot_Jpsi() {
     delete[] hhISR_values;
     delete[] signal_values;
 
-    delete[] Offres_data_values;
+    delete[] Jpsi_data_values;
 
     for (int k = 0; k < Nvar_num; k++) {
         delete Stack[k];

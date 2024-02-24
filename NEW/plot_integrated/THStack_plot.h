@@ -279,11 +279,11 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
             else if (SampleName == "SIGNAL") {
                 numberings->push_back(14);
                 if (nBp > 0) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
                 }
                 else if (nB0 > 0) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
                 }
                 else {
@@ -643,11 +643,11 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
             else if (SampleName == "SIGNAL") {
                 numberings->push_back(14);
                 if (nBp > 0) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
                 }
                 else if (nB0 > 0) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
                 }
                 else {
@@ -894,11 +894,11 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
             }
             else if (SampleName == "SIGNAL") {
                 if (nBp > 0) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
                 }
                 else if (nB0 > 0) {
-                    FEI_calibration_factor = GetFEICalFactor(Upsilon_ID, Btag_ID);
+                    FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
                 }
                 else {
