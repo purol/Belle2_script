@@ -71,8 +71,8 @@ void THStack_Jpsi_FBDT_efficiency() {
     LetsFillMC(Jpsi_MC_DDBAR_after_dirname, variable_names, branch_names, Jpsi_MC_values_after, &Jpsi_MC_numbering_after, &weights_after, "DDBAR");
     LetsFillMC(Jpsi_MC_SSBAR_after_dirname, variable_names, branch_names, Jpsi_MC_values_after, &Jpsi_MC_numbering_after, &weights_after, "SSBAR");
     LetsFillMC(Jpsi_MC_CHARM_after_dirname, variable_names, branch_names, Jpsi_MC_values_after, &Jpsi_MC_numbering_after, &weights_after, "CHARM");
-    LetsFill(Jpsi_data_before_dirname, variable_names, branch_names, Jpsi_data_values_before);
-    LetsFill(Jpsi_data_after_dirname, variable_names, branch_names, Jpsi_data_values_after);
+    LetsFilldata(Jpsi_data_before_dirname, variable_names, branch_names, Jpsi_data_values_before);
+    LetsFilldata(Jpsi_data_after_dirname, variable_names, branch_names, Jpsi_data_values_after);
 
     TH1D* MC_SIGNAL_before_one_bin = new TH1D("MC_SIGNAL_before_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
     TH1D* MC_BKG_before_one_bin = new TH1D("MC_BKG_before_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
@@ -143,47 +143,24 @@ void THStack_Jpsi_FBDT_efficiency() {
 
     /* ============================== assume no correlation ============================== */
     /* calculate uncertainty of efficiency data*/
-    //double efficiency_data_uncer_Ndata_after = Ndata_after_uncer / (Ndata_after - NBKG_after);
-    //double efficiency_data_uncer_NBKG_after = NBKG_after_uncer / (Ndata_after - NBKG_after);
-    //double efficiency_data_uncer_Ndata_before = Ndata_before_uncer / (Ndata_before - NBKG_before);
-    //double efficiency_data_uncer_NBKG_before = NBKG_before_uncer / (Ndata_before - NBKG_before);
-    //double efficiency_data_uncer = std::sqrt(
-    //    efficiency_data_uncer_Ndata_after * efficiency_data_uncer_Ndata_after +
-    //    efficiency_data_uncer_NBKG_after * efficiency_data_uncer_NBKG_after +
-    //    efficiency_data_uncer_Ndata_before * efficiency_data_uncer_Ndata_before +
-    //    efficiency_data_uncer_NBKG_before * efficiency_data_uncer_NBKG_before
-    //); // it is relative uncertainty
-
-    /* calculate uncertainty of efficiency MC*/
-    //double efficiency_MC_uncer_Nsig_after = Nsig_after_uncer / Nsig_after;
-    //double efficiency_MC_uncer_Nsig_before = Nsig_before_uncer / Nsig_before;
-    //double efficiency_MC_uncer = std::sqrt(
-    //    efficiency_MC_uncer_Nsig_after * efficiency_MC_uncer_Nsig_after +
-    //    efficiency_MC_uncer_Nsig_before * efficiency_MC_uncer_Nsig_before
-    //); // it is relative uncertainty
-
-    /* calculate total uncertainty */
-    //double efficiency_ratio = efficiency_data / efficiency_MC;
-    //double efficiency_ratio_uncer = efficiency_ratio * std::sqrt(
-    //    efficiency_data_uncer * efficiency_data_uncer +
-    //    efficiency_MC_uncer * efficiency_MC_uncer
-    //); // it is relative uncertainty
-    /* ============================== assume no correlation ============================== */
-
-    /* ============================== assume 100% correlation ============================== */
-    /* calculate uncertainty of efficiency data*/
     double efficiency_data_uncer_Ndata_after = Ndata_after_uncer / (Ndata_after - NBKG_after);
     double efficiency_data_uncer_NBKG_after = NBKG_after_uncer / (Ndata_after - NBKG_after);
     double efficiency_data_uncer_Ndata_before = Ndata_before_uncer / (Ndata_before - NBKG_before);
     double efficiency_data_uncer_NBKG_before = NBKG_before_uncer / (Ndata_before - NBKG_before);
     double efficiency_data_uncer = std::sqrt(
-        (efficiency_data_uncer_Ndata_after - efficiency_data_uncer_Ndata_before) *
-        (efficiency_data_uncer_Ndata_after - efficiency_data_uncer_Ndata_before));
+        efficiency_data_uncer_Ndata_after * efficiency_data_uncer_Ndata_after +
+        efficiency_data_uncer_NBKG_after * efficiency_data_uncer_NBKG_after +
+        efficiency_data_uncer_Ndata_before * efficiency_data_uncer_Ndata_before +
+        efficiency_data_uncer_NBKG_before * efficiency_data_uncer_NBKG_before
+    ); // it is relative uncertainty
 
     /* calculate uncertainty of efficiency MC*/
+    double efficiency_MC_uncer_Nsig_after = Nsig_after_uncer / Nsig_after;
+    double efficiency_MC_uncer_Nsig_before = Nsig_before_uncer / Nsig_before;
     double efficiency_MC_uncer = std::sqrt(
-        (-efficiency_data_uncer_NBKG_after + efficiency_data_uncer_NBKG_before) *
-        (-efficiency_data_uncer_NBKG_after + efficiency_data_uncer_NBKG_before));
+        efficiency_MC_uncer_Nsig_after * efficiency_MC_uncer_Nsig_after +
+        efficiency_MC_uncer_Nsig_before * efficiency_MC_uncer_Nsig_before
+    ); // it is relative uncertainty
 
     /* calculate total uncertainty */
     double efficiency_ratio = efficiency_data / efficiency_MC;
@@ -191,6 +168,29 @@ void THStack_Jpsi_FBDT_efficiency() {
         efficiency_data_uncer * efficiency_data_uncer +
         efficiency_MC_uncer * efficiency_MC_uncer
     ); // it is relative uncertainty
+    /* ============================== assume no correlation ============================== */
+
+    /* ============================== assume 100% correlation ============================== */
+    /* calculate uncertainty of efficiency data*/
+    //double efficiency_data_uncer_Ndata_after = Ndata_after_uncer / (Ndata_after - NBKG_after);
+    //double efficiency_data_uncer_NBKG_after = NBKG_after_uncer / (Ndata_after - NBKG_after);
+    //double efficiency_data_uncer_Ndata_before = Ndata_before_uncer / (Ndata_before - NBKG_before);
+    //double efficiency_data_uncer_NBKG_before = NBKG_before_uncer / (Ndata_before - NBKG_before);
+    //double efficiency_data_uncer = std::sqrt(
+    //    (efficiency_data_uncer_Ndata_after - efficiency_data_uncer_Ndata_before) *
+    //    (efficiency_data_uncer_Ndata_after - efficiency_data_uncer_Ndata_before));
+
+    /* calculate uncertainty of efficiency MC*/
+    //double efficiency_MC_uncer = std::sqrt(
+    //    (-efficiency_data_uncer_NBKG_after + efficiency_data_uncer_NBKG_before) *
+    //    (-efficiency_data_uncer_NBKG_after + efficiency_data_uncer_NBKG_before));
+
+    /* calculate total uncertainty */
+    //double efficiency_ratio = efficiency_data / efficiency_MC;
+    //double efficiency_ratio_uncer = efficiency_ratio * std::sqrt(
+    //    efficiency_data_uncer * efficiency_data_uncer +
+    //    efficiency_MC_uncer * efficiency_MC_uncer
+    //); // it is relative uncertainty
     /* ============================== assume 100% correlation ============================== */
 
     /* ============================== Uncertainty for all cut ============================== */
