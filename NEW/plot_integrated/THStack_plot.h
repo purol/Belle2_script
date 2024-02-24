@@ -444,7 +444,7 @@ void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_n
     double Bsig_M = -1;
 
     std::vector<string> names;
-    load_files(dirname, &names, included_string);
+    load_files(dirname, &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
 
