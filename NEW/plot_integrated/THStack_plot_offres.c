@@ -18,47 +18,24 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "base.h"
 #include "THStack_plot.h"
 
-void THStack_plot_sideband() {
+void THStack_plot_offres() {
 
-    Nevt nevt_CHG = { 0.0, 0.0 };
-    Nevt nevt_MIX = { 0.0, 0.0 };
     Nevt nevt_UUBAR = { 0.0, 0.0 };
     Nevt nevt_DDBAR = { 0.0, 0.0 };
     Nevt nevt_SSBAR = { 0.0, 0.0 };
     Nevt nevt_CHARM = { 0.0, 0.0 };
 
-    const char* Sideband_MC_CHG_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHG_analysis/train_v000/final_output";
-    const char* Sideband_MC_MIX_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/MIX_analysis/train_v000/final_output";
-    const char* Sideband_MC_UUBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/UUBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_DDBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/DDBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_SSBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/SSBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_CHARM_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHARM_analysis/train_v000/final_output";
+    const char* Offres_MC_UUBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/UUBAR_analysis/test_v000/final_output";
+    const char* Offres_MC_DDBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/DDBAR_analysis/test_v000/final_output";
+    const char* Offres_MC_SSBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/SSBAR_analysis/test_v000/final_output";
+    const char* Offres_MC_CHARM_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/CHARM_analysis/test_v000/final_output";
+    const char* Offres_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_data_off/SIGNAL_analysis/validation_v000/final_output";
 
-    const char* Sideband_MC_CHG_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHG_analysis/test_v000/final_output";
-    const char* Sideband_MC_MIX_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/MIX_analysis/test_v000/final_output";
-    const char* Sideband_MC_UUBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/UUBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_DDBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/DDBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_SSBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/SSBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_CHARM_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHARM_analysis/test_v000/final_output";
+    NevtCount_ri(Offres_MC_UUBAR_dirname, "UUBAR", &nevt_UUBAR);
+    NevtCount_ri(Offres_MC_DDBAR_dirname, "DDBAR", &nevt_DDBAR);
+    NevtCount_ri(Offres_MC_SSBAR_dirname, "SSBAR", &nevt_SSBAR);
+    NevtCount_ri(Offres_MC_CHARM_dirname, "CHARM", &nevt_CHARM);
 
-    const char* Sideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_data_side/SIGNAL_analysis/validation_v000/final_output";
-
-    NevtCount_ri(Sideband_MC_CHG_train_dirname, "CHG", &nevt_CHG);
-    NevtCount_ri(Sideband_MC_MIX_train_dirname, "MIX", &nevt_MIX);
-    NevtCount_ri(Sideband_MC_UUBAR_train_dirname, "UUBAR", &nevt_UUBAR);
-    NevtCount_ri(Sideband_MC_DDBAR_train_dirname, "DDBAR", &nevt_DDBAR);
-    NevtCount_ri(Sideband_MC_SSBAR_train_dirname, "SSBAR", &nevt_SSBAR);
-    NevtCount_ri(Sideband_MC_CHARM_train_dirname, "CHARM", &nevt_CHARM);
-
-    NevtCount_ri(Sideband_MC_CHG_test_dirname, "CHG", &nevt_CHG);
-    NevtCount_ri(Sideband_MC_MIX_test_dirname, "MIX", &nevt_MIX);
-    NevtCount_ri(Sideband_MC_UUBAR_test_dirname, "UUBAR", &nevt_UUBAR);
-    NevtCount_ri(Sideband_MC_DDBAR_test_dirname, "DDBAR", &nevt_DDBAR);
-    NevtCount_ri(Sideband_MC_SSBAR_test_dirname, "SSBAR", &nevt_SSBAR);
-    NevtCount_ri(Sideband_MC_CHARM_test_dirname, "CHARM", &nevt_CHARM);
-
-    double NormFactor_CHG = nevt_CHG.NevtwithoutCorrection / nevt_CHG.NevtwithCorrection;
-    double NormFactor_MIX = nevt_MIX.NevtwithoutCorrection / nevt_MIX.NevtwithCorrection;
     double NormFactor_UUBAR = nevt_UUBAR.NevtwithoutCorrection / nevt_UUBAR.NevtwithCorrection;
     double NormFactor_DDBAR = nevt_DDBAR.NevtwithoutCorrection / nevt_DDBAR.NevtwithCorrection;
     double NormFactor_SSBAR = nevt_SSBAR.NevtwithoutCorrection / nevt_SSBAR.NevtwithCorrection;
@@ -204,7 +181,7 @@ void THStack_plot_sideband() {
 
     Nvar_num = static_cast<int>(variable_names.size());
 
-    std::vector<double>* Sideband_MC_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* Offres_MC_values = new std::vector<double>[Nvar_num];
     std::vector<double>* charged_values = new std::vector<double>[Nvar_num];
     std::vector<double>* mixed_values = new std::vector<double>[Nvar_num];
     std::vector<double>* uubar_values = new std::vector<double>[Nvar_num];
@@ -219,9 +196,9 @@ void THStack_plot_sideband() {
     std::vector<double>* eemumu_values = new std::vector<double>[Nvar_num];
     std::vector<double>* llXX_values = new std::vector<double>[Nvar_num];
     std::vector<double>* hhISR_values = new std::vector<double>[Nvar_num];
-    std::vector<int> Sideband_MC_numbering;
+    std::vector<int> Offres_MC_numbering;
 
-    std::vector<double>* Sideband_data_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* Offres_data_values = new std::vector<double>[Nvar_num];
 
     std::vector<double> weights;
     std::vector<double> charged_weights;
@@ -239,90 +216,74 @@ void THStack_plot_sideband() {
     std::vector<double> llXX_weights;
     std::vector<double> hhISR_weights;
 
-    LetsFillMC(Sideband_MC_CHG_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
-    LetsFillMC(Sideband_MC_MIX_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
-    LetsFillMC_correction(Sideband_MC_UUBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR);
-    LetsFillMC_correction(Sideband_MC_DDBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR);
-    LetsFillMC_correction(Sideband_MC_SSBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR);
-    LetsFillMC_correction(Sideband_MC_CHARM_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM", NormFactor_CHARM);
-    LetsFillMC(Sideband_MC_CHG_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
-    LetsFillMC(Sideband_MC_MIX_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
-    LetsFillMC_correction(Sideband_MC_UUBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR);
-    LetsFillMC_correction(Sideband_MC_DDBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR);
-    LetsFillMC_correction(Sideband_MC_SSBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR);
-    LetsFillMC_correction(Sideband_MC_CHARM_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM", NormFactor_CHARM);
     /*
-    LetsFillMC(Sideband_MC_CHG_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
-    LetsFillMC(Sideband_MC_MIX_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
-    LetsFillMC(Sideband_MC_UUBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR");
-    LetsFillMC(Sideband_MC_DDBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR");
-    LetsFillMC(Sideband_MC_SSBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR");
-    LetsFillMC(Sideband_MC_CHARM_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM");
-    LetsFillMC(Sideband_MC_CHG_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
-    LetsFillMC(Sideband_MC_MIX_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
-    LetsFillMC(Sideband_MC_UUBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR");
-    LetsFillMC(Sideband_MC_DDBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR");
-    LetsFillMC(Sideband_MC_SSBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR");
-    LetsFillMC(Sideband_MC_CHARM_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM");
+    LetsFillMC_correction(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR, (0.042329 / 0.361673));
+    LetsFillMC_correction(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR, (0.042329 / 0.361673));
+    LetsFillMC_correction(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR, (0.042329 / 0.361673));
+    LetsFillMC_correction(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM", NormFactor_CHARM, (0.042329 / 0.361673));
     */
-    LetsFilldata(Sideband_data_dirname, variable_names, branch_names, Sideband_data_values);
+    LetsFillMC_ri(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR", (0.042329 / 0.361673));
+    LetsFillMC_ri(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR", (0.042329 / 0.361673));
+    LetsFillMC_ri(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR", (0.042329 / 0.361673));
+    LetsFillMC_ri(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM", (0.042329 / 0.361673));
+    LetsFilldata(Offres_data_dirname, variable_names, branch_names, Offres_data_values);
 
     // sort variables
-    for (int k = 0; k < (int)Sideband_MC_numbering.size(); k++) {
-        if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::CHG)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) charged_values[l].push_back(Sideband_MC_values[l].at(k));
+    for (int k = 0; k < (int)Offres_MC_numbering.size(); k++) {
+        if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::CHG)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) charged_values[l].push_back(Offres_MC_values[l].at(k));
             charged_weights.push_back(weights.at(k));
         }
-        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::MIX)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) mixed_values[l].push_back(Sideband_MC_values[l].at(k));
+        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::MIX)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) mixed_values[l].push_back(Offres_MC_values[l].at(k));
             mixed_weights.push_back(weights.at(k));
         }
-        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::UUBAR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) uubar_values[l].push_back(Sideband_MC_values[l].at(k));
+        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::UUBAR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) uubar_values[l].push_back(Offres_MC_values[l].at(k));
             uubar_weights.push_back(weights.at(k));
         }
-        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::DDBAR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ddbar_values[l].push_back(Sideband_MC_values[l].at(k));
+        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::DDBAR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ddbar_values[l].push_back(Offres_MC_values[l].at(k));
             ddbar_weights.push_back(weights.at(k));
         }
-        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::SSBAR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ssbar_values[l].push_back(Sideband_MC_values[l].at(k));
+        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::SSBAR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ssbar_values[l].push_back(Offres_MC_values[l].at(k));
             ssbar_weights.push_back(weights.at(k));
         }
-        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::CHARM)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ccbar_values[l].push_back(Sideband_MC_values[l].at(k));
+        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::CHARM)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ccbar_values[l].push_back(Offres_MC_values[l].at(k));
             ccbar_weights.push_back(weights.at(k));
         }
-        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::TAU)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) taupair_values[l].push_back(Sideband_MC_values[l].at(k));
+        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::TAU)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) taupair_values[l].push_back(Offres_MC_values[l].at(k));
             taupair_weights.push_back(weights.at(k));
         }
-        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::MUMU)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) mumu_values[l].push_back(Sideband_MC_values[l].at(k));
+        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::MUMU)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) mumu_values[l].push_back(Offres_MC_values[l].at(k));
             mumu_weights.push_back(weights.at(k));
         }
-        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::GG)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) gg_values[l].push_back(Sideband_MC_values[l].at(k));
+        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::GG)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) gg_values[l].push_back(Offres_MC_values[l].at(k));
             gg_weights.push_back(weights.at(k));
         }
-        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::EE)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ee_values[l].push_back(Sideband_MC_values[l].at(k));
+        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::EE)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ee_values[l].push_back(Offres_MC_values[l].at(k));
             ee_weights.push_back(weights.at(k));
         }
-        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::EEEE)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) eeee_values[l].push_back(Sideband_MC_values[l].at(k));
+        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::EEEE)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) eeee_values[l].push_back(Offres_MC_values[l].at(k));
             eeee_weights.push_back(weights.at(k));
         }
-        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::EEMUMU)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) eemumu_values[l].push_back(Sideband_MC_values[l].at(k));
+        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::EEMUMU)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) eemumu_values[l].push_back(Offres_MC_values[l].at(k));
             eemumu_weights.push_back(weights.at(k));
         }
-        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::LLXX)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) llXX_values[l].push_back(Sideband_MC_values[l].at(k));
+        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::LLXX)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) llXX_values[l].push_back(Offres_MC_values[l].at(k));
             llXX_weights.push_back(weights.at(k));
         }
-        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::HHISR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) hhISR_values[l].push_back(Sideband_MC_values[l].at(k));
+        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::HHISR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) hhISR_values[l].push_back(Offres_MC_values[l].at(k));
             hhISR_weights.push_back(weights.at(k));
         }
         else {
@@ -370,7 +331,7 @@ void THStack_plot_sideband() {
         temp_v.insert(temp_v.end(), eemumu_values[k].begin(), eemumu_values[k].end());
         temp_v.insert(temp_v.end(), llXX_values[k].begin(), llXX_values[k].end());
         temp_v.insert(temp_v.end(), hhISR_values[k].begin(), hhISR_values[k].end());
-        temp_v.insert(temp_v.end(), Sideband_data_values[k].begin(), Sideband_data_values[k].end());
+        temp_v.insert(temp_v.end(), Offres_data_values[k].begin(), Offres_data_values[k].end());
 
 
         double min = *min_element(temp_v.begin(), temp_v.end());
@@ -505,8 +466,8 @@ void THStack_plot_sideband() {
     for (int i = 0; i < (int)eemumu_values[index].size(); i++) eemumu_values[index].at(i) = log10l(eemumu_values[index].at(i));
     for (int i = 0; i < (int)llXX_values[index].size(); i++) llXX_values[index].at(i) = log10l(llXX_values[index].at(i));
     for (int i = 0; i < (int)hhISR_values[index].size(); i++) hhISR_values[index].at(i) = log10l(hhISR_values[index].at(i));
-    for (int i = 0; i < (int)Sideband_MC_values[index].size(); i++) Sideband_MC_values[index].at(i) = log10l(Sideband_MC_values[index].at(i));
-    for (int i = 0; i < (int)Sideband_data_values[index].size(); i++) Sideband_data_values[index].at(i) = log10l(Sideband_data_values[index].at(i));
+    for (int i = 0; i < (int)Offres_MC_values[index].size(); i++) Offres_MC_values[index].at(i) = log10l(Offres_MC_values[index].at(i));
+    for (int i = 0; i < (int)Offres_data_values[index].size(); i++) Offres_data_values[index].at(i) = log10l(Offres_data_values[index].at(i));
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
         for (int i = 0; i < (int)charged_values[k].size(); i++) charged_hist[k]->Fill(charged_values[k].at(i), charged_weights.at(i));
@@ -523,12 +484,12 @@ void THStack_plot_sideband() {
         for (int i = 0; i < (int)eemumu_values[k].size(); i++) eemumu_hist[k]->Fill(eemumu_values[k].at(i), eemumu_weights.at(i));
         for (int i = 0; i < (int)llXX_values[k].size(); i++) llXX_hist[k]->Fill(llXX_values[k].at(i), llXX_weights.at(i));
         for (int i = 0; i < (int)hhISR_values[k].size(); i++) hhISR_hist[k]->Fill(hhISR_values[k].at(i), hhISR_weights.at(i));
-        for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Sideband_MC_values[k].at(i), weights.at(i));
-        for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_hist[k]->Fill(Sideband_data_values[k].at(i));
+        for (int i = 0; i < (int)Offres_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Offres_MC_values[k].at(i), weights.at(i));
+        for (int i = 0; i < (int)Offres_data_values[k].size(); i++) data_hist[k]->Fill(Offres_data_values[k].at(i));
 
         if (variable_names.at(k) == "nROE_ParticlesInList__bopi0__clmyneutralPion__bc") {
-            for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) MC_one_bin->Fill(Sideband_MC_values[k].at(i), weights.at(i));
-            for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_one_bin->Fill(Sideband_data_values[k].at(i));
+            for (int i = 0; i < (int)Offres_MC_values[k].size(); i++) MC_one_bin->Fill(Offres_MC_values[k].at(i), weights.at(i));
+            for (int i = 0; i < (int)Offres_data_values[k].size(); i++) data_one_bin->Fill(Offres_data_values[k].at(i));
         }
     }
     Ratio_one_bin->Divide(data_one_bin, MC_one_bin);
@@ -547,11 +508,11 @@ void THStack_plot_sideband() {
     printf("eemuu: %d\n", (int)eemumu_values[0].size());
     printf("llXX: %d\n", (int)llXX_values[0].size());
     printf("hhISR: %d\n", (int)hhISR_values[0].size());
-    printf("data: %d\n", (int)Sideband_data_values[0].size());
+    printf("data: %d\n", (int)Offres_data_values[0].size());
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
-        Stack[k]->Add(charged_hist[k]);
-        Stack[k]->Add(mixed_hist[k]);
+        //Stack[k]->Add(charged_hist[k]);
+        //Stack[k]->Add(mixed_hist[k]);
         Stack[k]->Add(uubar_hist[k]);
         Stack[k]->Add(ddbar_hist[k]);
         Stack[k]->Add(ssbar_hist[k]);
@@ -573,7 +534,7 @@ void THStack_plot_sideband() {
         TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
         pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
         pad1->SetGridx(); pad1->Draw(); pad1->cd();
-        if((variable_names.at(k).find("MVA") != std::string::npos) && (Sideband_MC_values[k].size() > 10000)) pad1->SetLogy(1);
+        if((variable_names.at(k).find("MVA") != std::string::npos) && (Offres_MC_values[k].size() > 10000)) pad1->SetLogy(1);
         else pad1->SetLogy(0);
 
         gStyle->SetPalette(kPastel);
@@ -612,15 +573,15 @@ void THStack_plot_sideband() {
 
     // Print data-MC discrepancy
     double MC_sum = 0;
-    for (int i = 0; i < (int)Sideband_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
-    printf("data num: %ld\n", Sideband_data_values[0].size());
+    for (int i = 0; i < (int)Offres_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
+    printf("data num: %ld\n", Offres_data_values[0].size());
     printf("MC num with calibration: %lf\n", MC_sum);
     printf("MC with calibration: %lf +- %lf\n", MC_one_bin->GetBinContent(1), MC_one_bin->GetBinError(1));
     printf("data with calibration: %lf +- %lf\n", data_one_bin->GetBinContent(1), data_one_bin->GetBinError(1));
     printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin->GetBinContent(1), Ratio_one_bin->GetBinError(1));
 
     // free
-    delete[] Sideband_MC_values;
+    delete[] Offres_MC_values;
     delete[] charged_values;
     delete[] mixed_values;
     delete[] uubar_values;
@@ -636,7 +597,7 @@ void THStack_plot_sideband() {
     delete[] llXX_values;
     delete[] hhISR_values;
 
-    delete[]  Sideband_data_values;
+    delete[] Offres_data_values;
 
     for (int k = 0; k < Nvar_num; k++) {
         delete Stack[k];

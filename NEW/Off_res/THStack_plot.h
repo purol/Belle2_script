@@ -42,24 +42,6 @@ int Nvar_num = -1;
 
 /* ====================================== */
 
-enum class MCsample {
-    CHG,
-    MIX,
-    UUBAR,
-    DDBAR,
-    SSBAR,
-    CHARM,
-    TAU,
-    MUMU,
-    GG,
-    EE,
-    EEEE,
-    EEMUMU,
-    LLXX,
-    HHISR,
-    SIGNAL
-};
-
 double BDTcToWeight(double BDTc) {
 
     if (BDTc > (5.0 / 6.0)) return 5.0;
@@ -75,8 +57,6 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
     UUBAR
     DDBAR
     SSBAR
-    CHARM
-    SIGNAL
     */
     /*
     0: charged
@@ -224,32 +204,32 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
             // Fill numberings
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
-                numberings->push_back(static_cast<int>(MCsample::CHG));
+                numberings->push_back(0);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "MIX") {
-                numberings->push_back(static_cast<int>(MCsample::MIX));
+                numberings->push_back(1);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "UUBAR") {
-                numberings->push_back(static_cast<int>(MCsample::UUBAR));
+                numberings->push_back(2);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "DDBAR") {
-                numberings->push_back(static_cast<int>(MCsample::DDBAR));
+                numberings->push_back(3);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "SSBAR") {
-                numberings->push_back(static_cast<int>(MCsample::SSBAR));
+                numberings->push_back(4);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "CHARM") {
-                numberings->push_back(static_cast<int>(MCsample::CHARM));
+                numberings->push_back(5);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
@@ -381,8 +361,6 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
     UUBAR
     DDBAR
     SSBAR
-    CHARM
-    SIGNAL
     */
     /*
     0: charged
@@ -538,32 +516,32 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
             // Fill numberings
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
-                numberings->push_back(static_cast<int>(MCsample::CHG));
+                numberings->push_back(0);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "MIX") {
-                numberings->push_back(static_cast<int>(MCsample::MIX));
+                numberings->push_back(1);
                 FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "UUBAR") {
-                numberings->push_back(static_cast<int>(MCsample::UUBAR));
+                numberings->push_back(2);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "DDBAR") {
-                numberings->push_back(static_cast<int>(MCsample::DDBAR));
+                numberings->push_back(3);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "SSBAR") {
-                numberings->push_back(static_cast<int>(MCsample::SSBAR));
+                numberings->push_back(4);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "CHARM") {
-                numberings->push_back(static_cast<int>(MCsample::CHARM));
+                numberings->push_back(5);
                 FEI_calibration_factor = CAL_qq;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
