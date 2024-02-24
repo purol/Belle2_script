@@ -217,15 +217,15 @@ void THStack_plot_offres() {
     std::vector<double> hhISR_weights;
 
     /*
-    LetsFillMC_correction(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR, (0.042329 / 0.361673));
-    LetsFillMC_correction(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR, (0.042329 / 0.361673));
-    LetsFillMC_correction(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR, (0.042329 / 0.361673));
-    LetsFillMC_correction(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM", NormFactor_CHARM, (0.042329 / 0.361673));
+    LetsFillMC_correction(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR, (0.25 / Scale_UUBAR_validation_MC15rd));
+    LetsFillMC_correction(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR, (0.25 / Scale_DDBAR_validation_MC15rd));
+    LetsFillMC_correction(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR, (0.25 / Scale_SSBAR_validation_MC15rd));
+    LetsFillMC_correction(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM", NormFactor_CHARM, (0.25 / Scale_CHARM_validation_MC15rd));
     */
-    LetsFillMC_ri(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR", (0.042329 / 0.361673));
-    LetsFillMC_ri(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR", (0.042329 / 0.361673));
-    LetsFillMC_ri(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR", (0.042329 / 0.361673));
-    LetsFillMC_ri(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM", (0.042329 / 0.361673));
+    LetsFillMC(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR", (0.25 / Scale_UUBAR_validation_MC15rd));
+    LetsFillMC(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR", (0.25 / Scale_DDBAR_validation_MC15rd));
+    LetsFillMC(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR", (0.25 / Scale_SSBAR_validation_MC15rd));
+    LetsFillMC(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM", (0.25 / Scale_CHARM_validation_MC15rd));
     LetsFilldata(Offres_data_dirname, variable_names, branch_names, Offres_data_values);
 
     // sort variables
