@@ -67,7 +67,7 @@ double BDTcToWeight(double BDTc) {
 
 }
 
-void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName, double additional_weight = 1.0) {
+void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName, int option = 0, double additional_weight = 1.0) {
     /*
     SampleName for Knn
     CHG
@@ -77,6 +77,11 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
     SSBAR
     CHARM
     SIGNAL
+    */
+    /*
+    option 0: select all Btag
+    option 1: select Btag+
+    option 2: select Btag0
     */
     /*
     0: charged
@@ -215,6 +220,14 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
+            if (option == 1 && Upsilon_ID != 0) continue;
+            else if (option == 2 && Upsilon_ID != 1) continue;
+            else if (option == 0) {}
+            else {
+                printf("improper option value!\n");
+                exit(1);
+            }
+
             for (int k = 0; k < (int)variable_names.size(); k++) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -319,7 +332,12 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
 
 }
 
-void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[], const char* included_string = "root") {
+void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[], const char* included_string = "root", int option = 0) {
+    /*
+    option 0: select all Btag
+    option 1: select Btag+
+    option 2: select Btag0
+    */
     double* var = (double*)malloc(sizeof(double) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var[i] = 0.0;
     float* var_float = (float*)malloc(sizeof(float) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var_float[i] = 0.0;
 
@@ -358,6 +376,14 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
+            if (option == 1 && Upsilon_ID != 0) continue;
+            else if (option == 2 && Upsilon_ID != 1) continue;
+            else if (option == 0) {}
+            else {
+                printf("improper option value!\n");
+                exit(1);
+            }
+
             for (int k = 0; k < (int)variable_names.size(); k++) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -373,7 +399,7 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
 
 }
 
-void LetsFillMC_correction(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName, double NormFactor = 1.0, double additional_weight = 1.0) {
+void LetsFillMC_correction(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName, double NormFactor = 1.0, int option = 0, double additional_weight = 1.0) {
     /*
     SampleName for Knn
     CHG
@@ -383,6 +409,11 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
     SSBAR
     CHARM
     SIGNAL
+    */
+    /*
+    option 0: select all Btag
+    option 1: select Btag+
+    option 2: select Btag0
     */
     /*
     0: charged
@@ -525,6 +556,14 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+
+            if (option == 1 && Upsilon_ID != 0) continue;
+            else if (option == 2 && Upsilon_ID != 1) continue;
+            else if (option == 0) {}
+            else {
+                printf("improper option value!\n");
+                exit(1);
+            }
 
             // BDTc correction factor
             BDTc_correction = BDTcToWeight(BDTc) * NormFactor;
