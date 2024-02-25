@@ -287,6 +287,13 @@ private:
     int current_N_experiment_index;
     bool DebugIsOn;
 
+    std::vector<TH1D*> Var_hists;
+    std::vector<int> Nbins;
+    std::vector<double> Var_hist_mins;
+    std::vector<double> Var_hist_maxs;
+    std::vector<std::string> Var_hist_titles;
+    int current_Var_hists;
+
     std::vector<TFile*> files;
     std::vector<TTree*> trees_upsilon;
     std::vector<TTree*> trees_Bsig;
@@ -398,6 +405,7 @@ Loader::Loader() {
     current_N_candidate = 0;
     current_file = 0;
     current_N_experiment_index = 0;
+    current_Var_hists = 0;
     DebugIsOn = false;
     current_THStack = 0;
     DoesItHaveXsBranch = false;
@@ -435,6 +443,7 @@ void Loader::initialize() {
     current_N_candidate = 0;
     current_file = 0;
     current_N_experiment_index = 0;
+    current_Var_hists = 0;
     DebugIsOn = false;
     current_THStack = 0;
     DoesItHaveXsBranch = false;
@@ -1501,6 +1510,72 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
     current_N_candidate++;
 }
 
+void Loader::PrintVariablebin(std::string title, Loader::Variable variable, int variable_index, int Nbin, double Var_hist_min, double Var_hist_max, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode) {
+
+    if (Var_hists.size() == current_Var_hists) { // allocate new int
+        TH1D* temp_hist = new TH1D(("MXs_" + std::to_string(current_Var_hists)).c_str(), ("MXs_" + std::to_string(current_Var_hists)).c_str(), Nbin, Var_hist_min, Var_hist_max);
+        Var_hists.push_back(temp_hist);
+        Nbins.push_back(Nbin);
+        Var_hist_mins.push_back(Var_hist_min);
+        Var_hist_maxs.push_back(Var_hist_max);
+        Var_hist_titles.push_back(title);
+    }
+    else if (Var_hists.size() > current_Var_hists) { // use what I have
+    }
+    else { // error
+        printf("ERROR! 226\n");
+        exit(1);
+    }
+
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
+    while (!temp_queue.empty()) {
+        Data temp = temp_queue.front();
+        temp_queue.pop();
+
+        // get variable value
+        double temp_value = -1;
+        if (variable == Loader::Upsilon) temp_value = temp.Upsilon_info[variable_index];
+        else if (variable == Loader::Bsig) temp_value = temp.Bsig_info[variable_index];
+        else if (variable == Loader::Btag) temp_value = temp.Btag_info[variable_index];
+        else {
+            printf("ERROR! 030\n");
+            exit(1);
+        }
+
+        // fill the number of candidate
+        if (smartmode == false) Var_hists.at(current_Var_hists)->Fill(temp_value);
+        else {
+            if (strcmp(type, "SIGNAL") == 0) {
+                if (filename.find("B2Knunu") != std::string::npos) {
+                    double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
+                    Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename) * correction_weight);
+                }
+                else if (filename.find("B2Kstarnunu") != std::string::npos) Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename));
+                else if (filename.find("B2Xsnunu") != std::string::npos) {
+                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
+                    Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename) * correction_fragmentation);
+                }
+                else if (filename.find("B02K0nunu") != std::string::npos) {
+                    double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
+                    Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename) * correction_weight);
+                }
+                else if (filename.find("B02Kstar0nunu") != std::string::npos) Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename));
+                else if (filename.find("B02Xsnunu") != std::string::npos) {
+                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
+                    Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename) * correction_fragmentation);
+                }
+                else { Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename)); }
+            }
+            else Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename));
+        }
+
+        TotalData.push(temp);
+    }
+
+    current_Var_hists++;
+}
+
 void Loader::Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value) {
     std::queue<Data> temp_queue;
     while (!TotalData.empty()) {
@@ -1977,6 +2052,17 @@ void Loader::End() {
         if (AllOfThemHaveXsBranch) for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i));
     }
 
+    for (int i = 0; i < Var_hists.size(); i++) {
+        printf("%s\n", Var_hist_titles.at(i).c_str());
+        printf("Hist info: range [%lf, %lf] with %d bins\n", Var_hist_mins.at(i), Var_hist_maxs.at(i), Nbins.at(i));
+        for (int j = 0; j < Nbins.at(i); j++) printf("Number of candidate at bin %d: %lf +- %lf\n", j, Var_hists.at(i)->GetBinContent(j + 1), Var_hists.at(i)->GetBinError(j + 1));
+        delete Var_hists.at(i);
+    }
+    Var_hists.clear();
+    Nbins.clear();
+    Var_hist_mins.clear();
+    Var_hist_maxs.clear();
+    Var_hist_titles.clear();
 
     if (Confusion_matrixIsOn == true) {
         printf("--------------- confusion matrix ---------------\n");
