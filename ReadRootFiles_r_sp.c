@@ -4,7 +4,7 @@
 /*
 when you add new variables:
 revise # define N_Needed_info ...
-revise typedef struct dataLoader::ConvertIntoSeparateDataFile(std::string output_name, double flag = 0)
+revise typedef struct
 revise void Loader::GetData(TFile* input_file)
 check MakeShiftDoubleToInt if it affects the code
 revise void Loader::PrintRootFile(std::string output_name)

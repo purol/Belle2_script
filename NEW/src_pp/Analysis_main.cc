@@ -94,10 +94,10 @@ int main(int argc, char* argv[]) {
         loader.PrintInformation(std::string("========== sig Mbc > 5.27 =========="), names.at(i), argv[4], argv[5], argv[6], true);
         //loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
-        loader.DrawTH1F("Bsig_deltaE", "Bsig_deltaE;Bsig_deltaE [GeV];candidates", 100, -0.3, 0.3, Loader::Bsig, 2);
-        loader.Cut(Loader::Bsig, 739, Loader::larger_than, -0.2);
-        loader.Cut(Loader::Bsig, 739, Loader::smaller_than, 0.2);
-        loader.PrintInformation(std::string("========== sig abs(deltaE) < 0.2 =========="), names.at(i), argv[4], argv[5], argv[6], true);
+        loader.DrawTH1F("Bsig_deltaE", "Bsig_deltaE;Bsig_deltaE [GeV];candidates", 100, -0.3, 0.3, Loader::Bsig, 739);
+        loader.Cut(Loader::Bsig, 739, Loader::larger_than, -0.1);
+        loader.Cut(Loader::Bsig, 739, Loader::smaller_than, 0.1);
+        loader.PrintInformation(std::string("========== sig abs(deltaE) < 0.1 =========="), names.at(i), argv[4], argv[5], argv[6], true);
         //loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         loader.BCS(Loader::Btag, 5, Loader::Highest);
