@@ -52,7 +52,7 @@ int main(int argc, char* argv[]) {
         std::string::size_type const p(names.at(i).find_last_of('.'));
         std::string file_without_extension = names.at(i).substr(0, p);
 
-        loader.PrintVariablebin.(std::string("========== initial =========="), Loader::Bsig, 6, 9, 0.45, 3.0, names.at(i), argv[4], argv[5], argv[6], true);
+        loader.PrintVariablebin(std::string("========== initial =========="), Loader::Bsig, 6, 9, 0.45, 3.0, names.at(i), argv[4], argv[5], argv[6], true);
 
     }
     loader.End();
