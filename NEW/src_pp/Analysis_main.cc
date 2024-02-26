@@ -110,6 +110,7 @@ int main(int argc, char* argv[]) {
             exit(1);
         }
         loader.PrintInformation(std::string("========== BCS =========="), names.at(i), argv[4], argv[5], argv[6], true);
+        loader.DrawTH1F("Mppbar", "Mppbar;Mppbar [GeV];candidates", 3, 1.8, 3.8, Loader::Upsilon, 164);
 
         loader.PrintSeparateRootFile("./" + file_without_extension + std::string("_") + std::string(argv[2]) + ".root");
     }
