@@ -3257,11 +3257,19 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             double Correction_PID = 1;
             double Correction_pi0 = 1;
             double Correction_fake = 1;
+
+            bool IsItNonePhysical = false;
+
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
+
+                if ((std::abs(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE) - 1) < MyEPSILON) && (temp_N_bin_PID[0][i_PID] > 0.5) && (i_PID != N_PID_syst - 1)) IsItNonePhysical = true;
+                if ((std::abs(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE) - 1) < MyEPSILON) && (temp_N_bin_PID[1][i_PID] > 0.5) && (i_PID != N_PID_syst - 1)) IsItNonePhysical = true;
+                if ((std::abs(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE) - 1) < MyEPSILON) && (temp_N_bin_PID[2][i_PID] > 0.5) && (i_PID != N_PID_syst - 1)) IsItNonePhysical = true;
+                if ((std::abs(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE) - 1) < MyEPSILON) && (temp_N_bin_PID[3][i_PID] > 0.5) && (i_PID != N_PID_syst - 1)) IsItNonePhysical = true;
             }
             for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
@@ -3269,13 +3277,25 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE), temp_N_bin_fakeE[2][i_fake]); // pi- from e
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE), temp_N_bin_fakeE[3][i_fake]); // pi+ from e
+
+                if ((std::abs(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE) - 1) < MyEPSILON) && (temp_N_bin_fakeE[0][i_fake] > 0.5) && (i_fake != N_fakeE_syst - 1)) IsItNonePhysical = true;
+                if ((std::abs(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE) - 1) < MyEPSILON) && (temp_N_bin_fakeE[1][i_fake] > 0.5) && (i_fake != N_fakeE_syst - 1)) IsItNonePhysical = true;
+                if ((std::abs(corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE) - 1) < MyEPSILON) && (temp_N_bin_fakeE[2][i_fake] > 0.5) && (i_fake != N_fakeE_syst - 1)) IsItNonePhysical = true;
+                if ((std::abs(corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE) - 1) < MyEPSILON) && (temp_N_bin_fakeE[3][i_fake] > 0.5) && (i_fake != N_fakeE_syst - 1)) IsItNonePhysical = true;
             }
             for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE), temp_N_bin_fakeMU[0][i_fake]); // K- from mu
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE), temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
+
+                if ((std::abs(corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE) - 1) < MyEPSILON) && (temp_N_bin_fakeMU[0][i_fake] > 0.5) && (i_fake != N_fakeMU_syst - 1)) IsItNonePhysical = true;
+                if ((std::abs(corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE) - 1) < MyEPSILON) && (temp_N_bin_fakeMU[1][i_fake] > 0.5) && (i_fake != N_fakeMU_syst - 1)) IsItNonePhysical = true;
+                if ((std::abs(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE) - 1) < MyEPSILON) && (temp_N_bin_fakeMU[2][i_fake] > 0.5) && (i_fake != N_fakeMU_syst - 1)) IsItNonePhysical = true;
+                if ((std::abs(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE) - 1) < MyEPSILON) && (temp_N_bin_fakeMU[3][i_fake] > 0.5) && (i_fake != N_fakeMU_syst - 1)) IsItNonePhysical = true;
             }
+
+            if (IsItNonePhysical) continue;
 
             // Knn correction factor
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
@@ -8216,6 +8236,7 @@ int main()
     TH1D* DDBAR_nominal = new TH1D("DDBAR_nominal", "DDBAR_nominal", RarityBins, BinMIN, BinMAX);
     TH1D* SSBAR_nominal = new TH1D("SSBAR_nominal", "SSBAR_nominal", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_nominal = new TH1D("CHARM_nominal", "CHARM_nominal", RarityBins, BinMIN, BinMAX);
+    TH1D* all_nominal = new TH1D("all_nominal", "all_nominal", RarityBins, BinMIN, BinMAX);
 
     // track uncertainty
     TH1D* Signal_track_p = new TH1D("Signal_track_p", "Signal_track_p", RarityBins, BinMIN, BinMAX);
@@ -8510,13 +8531,19 @@ int main()
     /* ====================================== */
     // Get PDFs
     // get nominal pdfs
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalPDFs(all_nominal, "B2Knunu", Signal_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+    GetNominalPDFs(all_nominal, "B2Kstarnunu", Signal_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+    GetNominalPDFs(all_nominal, "B2Xsnunu", Signal_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+    GetNominalPDFs(all_nominal, "B02K0nunu", Signal_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+    GetNominalPDFs(all_nominal, "B02Kstar0nunu", Signal_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+    GetNominalPDFs(all_nominal, "B02Xsnunu", Signal_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
+    double NevtCHGWithoutBDTc = GetNominalPDFs(all_nominal, "root", CHG_nominal, "Bplus", "CHG", ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+    double NevtMIXWithoutBDTc = GetNominalPDFs(all_nominal, "root", MIX_nominal, "Bzero", "MIX", ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    double NevtUUBARWithoutBDTc = GetNominalPDFs(all_nominal, "root", UUBAR_nominal, "Continuum", "UUBAR", ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+    double NevtDDBARWithoutBDTc = GetNominalPDFs(all_nominal, "root", DDBAR_nominal, "Continuum", "DDBAR", ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+    double NevtSSBARWithoutBDTc = GetNominalPDFs(all_nominal, "root", SSBAR_nominal, "Continuum", "SSBAR", ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+    double NevtCHARMWithoutBDTc = GetNominalPDFs(all_nominal, "root", CHARM_nominal, "Continuum", "CHARM", ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     /* ====================================== */
 
 
@@ -8695,12 +8722,14 @@ int main()
     SaveSpecificMXsBin(Signal_all_uncorrelated, MXsBin);
     /* ====================================== */
 
+    for (int i = 0; i < RarityBins; i++) printf("bin%d: %lf +- %lf\n", i, all_nominal->GetBinContent(i + 1), all_nominal->GetBinError(i + 1));
 
 
     /* ====================================== */
     // Save histograms
     TFile* file = new TFile("PDFandDATA.root", "RECREATE");
 
+    all_nominal->Write();
     Signal_nominal->Write();
     CHG_nominal->Write();
     MIX_nominal->Write();
