@@ -8531,19 +8531,19 @@ int main()
     /* ====================================== */
     // Get PDFs
     // get nominal pdfs
-    GetNominalPDFs(all_nominal, "B2Knunu", Signal_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalPDFs(all_nominal, "B2Kstarnunu", Signal_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetNominalPDFs(all_nominal, "B2Xsnunu", Signal_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalPDFs(all_nominal, "B02K0nunu", Signal_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalPDFs(all_nominal, "B02Kstar0nunu", Signal_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetNominalPDFs(all_nominal, "B02Xsnunu", Signal_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", all_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", all_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", all_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", all_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", all_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", all_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
-    double NevtCHGWithoutBDTc = GetNominalPDFs(all_nominal, "root", CHG_nominal, "Bplus", "CHG", ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    double NevtMIXWithoutBDTc = GetNominalPDFs(all_nominal, "root", MIX_nominal, "Bzero", "MIX", ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    double NevtUUBARWithoutBDTc = GetNominalPDFs(all_nominal, "root", UUBAR_nominal, "Continuum", "UUBAR", ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    double NevtDDBARWithoutBDTc = GetNominalPDFs(all_nominal, "root", DDBAR_nominal, "Continuum", "DDBAR", ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    double NevtSSBARWithoutBDTc = GetNominalPDFs(all_nominal, "root", SSBAR_nominal, "Continuum", "SSBAR", ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    double NevtCHARMWithoutBDTc = GetNominalPDFs(all_nominal, "root", CHARM_nominal, "Continuum", "CHARM", ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+    double NevtCHGWithoutBDTc = GetNominalPDFs(MC_dirname_CHG, "root", all_nominal, "Bplus", "CHG", ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+    double NevtMIXWithoutBDTc = GetNominalPDFs(MC_dirname_MIX, "root", all_nominal, "Bzero", "MIX", ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    double NevtUUBARWithoutBDTc = GetNominalPDFs(MC_dirname_UUBAR, "root", all_nominal, "Continuum", "UUBAR", ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+    double NevtDDBARWithoutBDTc = GetNominalPDFs(MC_dirname_DDBAR, "root", all_nominal, "Continuum", "DDBAR", ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+    double NevtSSBARWithoutBDTc = GetNominalPDFs(MC_dirname_SSBAR, "root", all_nominal, "Continuum", "SSBAR", ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+    double NevtCHARMWithoutBDTc = GetNominalPDFs(MC_dirname_CHARM, "root", all_nominal, "Continuum", "CHARM", ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     /* ====================================== */
 
 
@@ -8597,129 +8597,6 @@ int main()
     // Select specific MXs bin
     const int MXsBin = 0;
 
-    SaveSpecificMXsBin(Signal_nominal, MXsBin);
-
-    // track uncertainty
-    SaveSpecificMXsBin(Signal_track_p, MXsBin);
-    SaveSpecificMXsBin(Signal_track_m, MXsBin);
-
-    // KS0 uncertainty
-    SaveSpecificMXsBin(Signal_KS0_p, MXsBin);
-    SaveSpecificMXsBin(Signal_KS0_m, MXsBin);
-
-    // FEI uncertainty (correlated)
-    for (int i = 0; i < 2 * NPDFs_FEI; i++) {
-        SaveSpecificMXsBin(Signal_FEI_correlated[i], MXsBin);
-    }
-
-    // FEI uncertainty (uncorrelated)
-    SaveSpecificMXsBin(Signal_FEI_uncorrelated, MXsBin);
-
-    // Kaon PID uncertainty (correlated)
-    for (int i = 0; i < 2 * NPDFs_KID; i++) {
-        SaveSpecificMXsBin(Signal_KID_correlated[i], MXsBin);
-    }
-
-    // Kaon PID uncertainty (uncorrelated)
-    SaveSpecificMXsBin(Signal_KID_uncorrelated, MXsBin);
-
-    // Pion PID uncertainty (correlated)
-    for (int i = 0; i < 2 * NPDFs_PID; i++) {
-        SaveSpecificMXsBin(Signal_PID_correlated[i], MXsBin);
-    }
-
-    // Pion PID uncertainty (uncorrelated)
-    SaveSpecificMXsBin(Signal_PID_uncorrelated, MXsBin);
-
-    // BB BR uncertainty (correlated)
-    for (int i = 0; i < 2 * NPDFs_BR; i++) {
-        SaveSpecificMXsBin(Signal_BR_correlated[i], MXsBin);
-    }
-
-    // BB BR uncertainty (uncorrelated)
-    SaveSpecificMXsBin(Signal_BR_uncorrelated, MXsBin);
-
-    // pi0 uncertainty (correlated)
-    for (int i = 0; i < 2 * NPDFs_pi0; i++) {
-        SaveSpecificMXsBin(Signal_pi0_correlated[i], MXsBin);
-    }
-
-    // pi0 uncertainty (uncorrelated)
-    SaveSpecificMXsBin(Signal_pi0_uncorrelated, MXsBin);
-
-    // K nu nubar form factor
-    SaveSpecificMXsBin(Signal_Kff1_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kff1_m, MXsBin);
-    SaveSpecificMXsBin(Signal_Kff2_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kff2_m, MXsBin);
-    SaveSpecificMXsBin(Signal_Kff3_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kff3_m, MXsBin);
-
-    // Kstar nu nubar form factor
-    SaveSpecificMXsBin(Signal_Kstarff1_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff1_m, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff2_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff2_m, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff3_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff3_m, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff4_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff4_m, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff5_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff5_m, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff6_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff6_m, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff7_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff7_m, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff8_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff8_m, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff9_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarff9_m, MXsBin);
-
-    // K nu nubar OLD form factor
-    SaveSpecificMXsBin(Signal_Kff_OLD_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kff_OLD_m, MXsBin);
-
-    // faction
-    SaveSpecificMXsBin(Signal_Kfrac_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kfrac_m, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarfrac_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarfrac_m, MXsBin);
-
-    // fragmentation uncertainty
-    for (unsigned int i = 0; i < Signal_Fragmentaions.size(); i++) SaveSpecificMXsBin(Signal_Fragmentaions.at(i), MXsBin);
-
-    // pf uncertainty
-    SaveSpecificMXsBin(Signal_pf_p, MXsBin);
-    SaveSpecificMXsBin(Signal_pf_m, MXsBin);
-
-    // mb uncertainty
-    SaveSpecificMXsBin(Signal_mb_p, MXsBin);
-    SaveSpecificMXsBin(Signal_mb_m, MXsBin);
-
-    // transition uncertainty
-    SaveSpecificMXsBin(Signal_transition_p, MXsBin);
-    SaveSpecificMXsBin(Signal_transition_m, MXsBin);
-
-    // fixed mKstar uncertainty
-    SaveSpecificMXsBin(Signal_mKstar_p, MXsBin);
-    SaveSpecificMXsBin(Signal_mKstar_m, MXsBin);
-
-    // multiplicity uncertainty
-    for (int i = 0; i < N_hist_multiplicity; i++) {
-        SaveSpecificMXsBin(Signal_multiplicity_p[i], MXsBin);
-        SaveSpecificMXsBin(Signal_multiplicity_m[i], MXsBin);
-    }
-
-    // B -> [D -> X KL0] anything uncertainties
-    SaveSpecificMXsBin(Signal_BtoDtoXKL_p, MXsBin);
-    SaveSpecificMXsBin(Signal_BtoDtoXKL_m, MXsBin);
-
-    // BR(B -> K KL KL)
-    SaveSpecificMXsBin(Signal_BRBtoKKLKL_p, MXsBin);
-    SaveSpecificMXsBin(Signal_BRBtoKKLKL_m, MXsBin);
-
-    // all uncorrelated uncertainties
-    SaveSpecificMXsBin(Signal_all_uncorrelated, MXsBin);
     /* ====================================== */
 
     for (int i = 0; i < RarityBins; i++) printf("bin%d: %lf +- %lf\n", i, all_nominal->GetBinContent(i + 1), all_nominal->GetBinError(i + 1));
