@@ -2529,6 +2529,7 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Bsig->Branch("Bsig_Mbc", &BsigDataToTree[738]);
         tree_Bsig->Branch("Bsig_deltaE", &BsigDataToTree[739]);
         tree_Bsig->Branch("Bsig_daughter_0_M", &BsigDataToTree[740]);
+        tree_Bsig->Branch("Bsig_isSignal", &BsigDataToTree[741]);
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -3051,6 +3052,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Bsig->Branch("Bsig_Mbc", &temp_BsigDataToTree[738]);
     temp_tree_Bsig->Branch("Bsig_deltaE", &temp_BsigDataToTree[739]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_M", &temp_BsigDataToTree[740]);
+    temp_tree_Bsig->Branch("Bsig_isSignal", &temp_BsigDataToTree[741]);
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -3559,6 +3561,7 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("Bsig_Mbc", &temp_BsigDataToTree[738]);
     temp_tree->Branch("Bsig_deltaE", &temp_BsigDataToTree[739]);
     temp_tree->Branch("Bsig_daughter_0_M", &temp_BsigDataToTree[740]);
+    temp_tree->Branch("Bsig_isSignal", &temp_BsigDataToTree[741]);
 
 
     // get Btag_info
