@@ -89,17 +89,14 @@ int main(int argc, char* argv[]) {
         loader.PrintInformation(std::string("========== D veto =========="), names.at(i), argv[4], argv[5], argv[6], true);
 */
 
-        loader.Cut(Loader::Upsilon, 32, Loader::larger_than, 0.2);
-        loader.PrintInformation(std::string("========== sphericity > 0.2 =========="), names.at(i), argv[4], argv[5], argv[6], true);
+        loader.Cut(Loader::Upsilon, 32, Loader::larger_than, 0.3);
+        loader.PrintInformation(std::string("========== sphericity > 0.3 =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
-        loader.Cut(Loader::Bsig, 14, Loader::smaller_than, 0.4);
-        loader.PrintInformation(std::string("========== Bsig_R2 < 0.4 =========="), names.at(i), argv[4], argv[5], argv[6], true);
+        loader.Cut(Loader::Bsig, 14, Loader::smaller_than, 0.3);
+        loader.PrintInformation(std::string("========== Bsig_R2 < 0.3 =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
-        loader.Cut(Loader::Upsilon, 34, Loader::smaller_than, 0.85);
-        loader.PrintInformation(std::string("========== thrust < 0.85 =========="), names.at(i), argv[4], argv[5], argv[6], true);
-
-        loader.Cut(Loader::Bsig, 17, Loader::smaller_than, 0.9);
-        loader.PrintInformation(std::string("========== Bsig_cosTBTO < 0.9 =========="), names.at(i), argv[4], argv[5], argv[6], true);
+        loader.Cut(Loader::Bsig, 17, Loader::smaller_than, 0.8);
+        loader.PrintInformation(std::string("========== Bsig_cosTBTO < 0.8 =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
         loader.PrintSeparateRootFile("./" + file_without_extension + std::string("_before_Mbcsig_") + std::string(argv[2]) + ".root");
         //loader.DrawTH1F("Bsig_Mbc", "Bsig_Mbc;Bsig_Mbc [GeV];candidates", 100, 5.24, 5.3, Loader::Bsig, 738);
@@ -109,9 +106,9 @@ int main(int argc, char* argv[]) {
 
         loader.PrintSeparateRootFile("./" + file_without_extension + std::string("_before_deltaE_sig_") + std::string(argv[2]) + ".root");
         //loader.DrawTH1F("Bsig_deltaE", "Bsig_deltaE;Bsig_deltaE [GeV];candidates", 100, -0.3, 0.3, Loader::Bsig, 739);
-        loader.Cut(Loader::Bsig, 739, Loader::larger_than, -0.1);
-        loader.Cut(Loader::Bsig, 739, Loader::smaller_than, 0.1);
-        loader.PrintInformation(std::string("========== sig abs(deltaE) < 0.1 =========="), names.at(i), argv[4], argv[5], argv[6], true);
+        loader.Cut(Loader::Bsig, 739, Loader::larger_than, -0.05);
+        loader.Cut(Loader::Bsig, 739, Loader::smaller_than, 0.05);
+        loader.PrintInformation(std::string("========== sig abs(deltaE) < 0.05 =========="), names.at(i), argv[4], argv[5], argv[6], true);
         //loader.DrawTH1F("Bsig_Mbc", "Bsig_Mbc;Bsig_Mbc [GeV];candidates", 100, 5.24, 5.3, Loader::Bsig, 738);
         //loader.DrawTH2F("MbcVSdeltaE_after_deltaE_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 

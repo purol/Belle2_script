@@ -111,7 +111,7 @@ typedef struct data {
     // 67-358: PIDs
     // 359-366: pi0s
     // 367-514: fake from E, 542-737: fake from MU
-    // 738: Mbc, 739: deltaE, 740: MXs
+    // 738: Mbc, 739: deltaE, 740: MXs, 741: Bsig_isSignal
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
@@ -803,6 +803,7 @@ void Loader::GetData(TFile* input_file) {
     tree_Bsig->SetBranchAddress("Bsig_Mbc", &temp.Bsig_info[738]);
     tree_Bsig->SetBranchAddress("Bsig_deltaE", &temp.Bsig_info[739]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_M", &temp.Bsig_info[740]);
+    tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[741]);
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
