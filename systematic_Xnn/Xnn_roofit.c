@@ -237,7 +237,7 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            double total_weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * additional_weight;
+            double total_weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * additional_weight;
 
             *Mbc_ = Mbc_var;
             *weight_ = total_weight;
