@@ -307,17 +307,17 @@ void Xnn_roofit() {
     RooDataSet* d_Mbc = (RooDataSet*)info.reduce(RooArgSet(Mbc));
 
     // ARGUS background
-    RooRealVar End("End", "End of Argus", 5.29);
-    RooRealVar c("curvature", "curvature of ARGUS", -40, -100, 20);
-    RooRealVar power("power", "power of ARGUS", 0.5);
+    RooRealVar End("End", "End of Argus", 5.29); // fixed by experimental setting
+    RooRealVar c("curvature", "curvature of ARGUS", -68, -100, 20);
+    RooRealVar power("power", "power of ARGUS", 0.5); // just fixed
 
     RooArgusBG pdfARGUS("ARGUS", "ARGUS PDF", Mbc, End, c, power);
 
     // crystal ball signal
-    RooRealVar mean("mean", "mean of Crystal ball", 5.28);
-    RooRealVar width("width", "width of Crystal ball", 0.003, 0.002, 0.004);
-    RooRealVar alpha("alpha", "alpha of Crystal ball", 2.3, 1.9, 2.5);
-    RooRealVar n("n", "n of Crystal ball", 1.0, 0.9, 1.1);
+    RooRealVar mean("mean", "mean of Crystal ball", 5.27981); // fixed by MC
+    RooRealVar width("width", "width of Crystal ball", 0.003151); // fixed by MC
+    RooRealVar alpha("alpha", "alpha of Crystal ball", 1.327851); // fixed by MC
+    RooRealVar n("n", "n of Crystal ball", 0.9, 0.5, 1.5);
 
     RooCrystalBall pdfCRYSTAL("CRYSTAL", "CRYSTAL PDF", Mbc, mean, width, alpha, n);
 
