@@ -97,13 +97,13 @@ void Xnn_roofit(){
     RooAddPdf  model("model", "b+n", RooArgList(ebkg, esig));
 
     // fit
-    model.fitTo(Mbc, Extended());
+    model.fitTo(d_Mbc, Extended());
 
     // Draw result
     d_Mbc->plotOn(Mbcframe);
-    model.plotOn(xframe, LineColor(kRed), Normalization(1.0, RooAbsReal::RelativeExpected));
-    model.plotOn(xframe, Components(pdfARGUS), LineColor(kBlue), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
-    model.plotOn(xframe, Components(pdfGaussian), LineColor(kViolet), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
+    model.plotOn(Mbcframe, LineColor(kRed), Normalization(1.0, RooAbsReal::RelativeExpected));
+    model.plotOn(Mbcframe, Components(pdfARGUS), LineColor(kBlue), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
+    model.plotOn(Mbcframe, Components(pdfCRYSTAL), LineColor(kViolet), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
 
     new TCanvas("Mbc", "Mbc", 600, 600);
     gPad->SetLeftMargin(0.15); Mbcframe->GetYaxis()->SetTitleOffset(1.4); Mbcframe->Draw();
