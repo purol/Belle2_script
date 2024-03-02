@@ -28,7 +28,7 @@ void load_files(const char *dirname, std::vector<string>* names){
    }
 }
 
-double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooDataSet* info_) {
+double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar* weight_, RooDataSet* info_) {
     double Nevt = 0;
     double Mbc_var = 0;
 
@@ -55,7 +55,8 @@ double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooDataSet* info_) {
             double total_weight = 1.0;
 
             *Mbc_ = Mbc_var;
-            info_->add(RooArgSet(*Mbc_), total_weight);
+            *weight_ = total_weight;
+            info_->add(RooArgSet(*Mbc_), weight_->getVal());
             Nevt = Nevt + total_weight;
         }
         input_file->Close();
@@ -68,11 +69,12 @@ double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooDataSet* info_) {
 void Xnn_roofit(){
 
     // Observable:
-    RooRealVar  Mbc("Mbc", "Mbc", 5.2, 5.3);
+    RooRealVar Mbc("Mbc", "Mbc", 5.2, 5.3);
+    RooRealVar weight("weight", "weight", 0.0, 10.0);
     RooDataSet info("info", "info", RooArgSet(Mbc));
 
     const char* dirname = "./";
-    LetsAdd(dirname, &Mbc, &info);
+    LetsAdd(dirname, &Mbc, &weight, &info);
     RooPlot* Mbcframe = Mbc.frame(Bins(50), Title("M_{bc}^{sig} fit"));
     RooDataSet* d_Mbc = (RooDataSet*)info.reduce(RooArgSet(Mbc));
 
@@ -86,7 +88,7 @@ void Xnn_roofit(){
     // crystal ball signal
     RooRealVar mean("mean", "mean of Crystal ball", 5.28);
     RooRealVar width("width", "width of Crystal ball", 0.003, 0.002, 0.004);
-    RooRealVar alpha("alpha", "alpha of Crystal ball", 2.3, 2.1, 2.5);
+    RooRealVar alpha("alpha", "alpha of Crystal ball", 2.3, 1.9, 2.5);
     RooRealVar n("n", "n of Crystal ball", 1.0, 0.9, 1.1);
 
     RooCrystalBall pdfCRYSTAL("CRYSTAL", "CRYSTAL PDF", Mbc, mean, width, alpha, n);
