@@ -56,7 +56,7 @@ double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar* weight_, RooDa
 
             *Mbc_ = Mbc_var;
             *weight_ = total_weight;
-            info_->add(RooArgSet(*Mbc_), weight_->getVal());
+            info_->add(RooArgSet(*Mbc_, *weight_), weight_->GetName());
             Nevt = Nevt + total_weight;
         }
         input_file->Close();
@@ -102,7 +102,7 @@ void Xnn_roofit(){
     RooAddPdf  model("model", "b+n", RooArgList(ebkg, esig));
 
     // fit
-    model.fitTo(*d_Mbc, Extended(), SumW2Error(true));
+    model.fitTo(*d_Mbc, Extended(), Save(), SumW2Error(true));
 
     // Draw result
     d_Mbc->plotOn(Mbcframe, DataError(RooAbsData::SumW2));
