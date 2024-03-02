@@ -28,7 +28,7 @@ Corrector_PID corrector_PID;
 Corrector_pi0 corrector_pi0;
 Corrector_FakePID corrector_FakePID;
 Corrector_Knn corrector_Knn;
-Corrector_Multiplicity corrector_Multiplicity;
+//Corrector_Multiplicity corrector_Multiplicity;
 Corrector_KpKLKL corrector_KpKLKL;
 Corrector_KSKLKL corrector_KSKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
@@ -225,7 +225,7 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
-            double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+            //double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
             // B+ --> K+ KL0 KL0 correction factor
             double Correction_KpKLKL = corrector_KpKLKL.GetCorrectionFactorAtGeneric(s13_KpKLKL, s23_KpKLKL, nB2KpKLKL_all_KpKLKL, nB2KpKLKL_NR_KpKLKL);
