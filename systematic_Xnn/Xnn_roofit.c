@@ -33,23 +33,7 @@ Corrector_KpKLKL corrector_KpKLKL;
 Corrector_KSKLKL corrector_KSKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
 
-void load_files(const char *dirname, std::vector<string>* names){
-   TSystemDirectory dir(dirname, dirname);
-   TList *files = dir.GetListOfFiles();
-   if (files) {
-      TSystemFile *file;
-      TString fname;
-      TIter next(files);
-      while ((file=(TSystemFile*)next())) {
-         fname = file->GetName();
-         if (!file->IsDirectory() && fname.EndsWith(".root")) {
-            names->push_back(fname.Data());
-         }
-      }
-   }
-}
-
-double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar* weight_, RooDataSet* info_, std::string SampleName, double additional_weight) {
+double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mbc_, RooRealVar* weight_, RooDataSet* info_, std::string SampleName, double additional_weight = 1.0) {
     double Nevt = 0;
     double Mbc_var = 0;
 
@@ -95,7 +79,7 @@ double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar* weight_, RooDa
     double Bsig_M = -1;
 
     std::vector<string> names;
-    load_files(dirname, &names);
+    load_files(dirname, &names, including_string);
 
     for (unsigned int i = 0; i < names.size(); i++) {
 
@@ -270,7 +254,7 @@ double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar* weight_, RooDa
     return Nevt;
 }
 
-void Xnn_roofit(){
+void Xnn_roofit() {
 
     // Observable:
     RooRealVar Mbc("Mbc", "Mbc", 5.2, 5.3);
@@ -278,7 +262,12 @@ void Xnn_roofit(){
     RooDataSet info("info", "info", RooArgSet(Mbc, weight), WeightVar("weight"));
 
     const char* dirname = "./";
-    LetsAdd(dirname, &Mbc, &weight, &info);
+    LetsAdd(dirname, "CHG",  & Mbc, &weight, &info, "CHG", 1.0);
+    LetsAdd(dirname, "MIX", &Mbc, &weight, &info, "MIX", 1.0);
+    LetsAdd(dirname, "UUBAR", &Mbc, &weight, &info, "UUBAR", 1.0);
+    LetsAdd(dirname, "DDBAR", &Mbc, &weight, &info, "DDBAR", 1.0);
+    LetsAdd(dirname, "SSBAR", &Mbc, &weight, &info, "SSBAR", 1.0);
+    LetsAdd(dirname, "CHARM", &Mbc, &weight, &info, "CHARM", 1.0);
     RooPlot* Mbcframe = Mbc.frame(Bins(50), Title("M_{bc}^{sig} fit"));
     RooDataSet* d_Mbc = (RooDataSet*)info.reduce(RooArgSet(Mbc));
 
