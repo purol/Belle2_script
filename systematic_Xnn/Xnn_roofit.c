@@ -97,7 +97,7 @@ void Xnn_roofit(){
     RooAddPdf  model("model", "b+n", RooArgList(ebkg, esig));
 
     // fit
-    model.fitTo(d_Mbc, Extended());
+    model.fitTo(*d_Mbc, Extended());
 
     // Draw result
     d_Mbc->plotOn(Mbcframe);
