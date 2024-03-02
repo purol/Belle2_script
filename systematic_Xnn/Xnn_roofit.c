@@ -56,7 +56,7 @@ double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar* weight_, RooDa
 
             *Mbc_ = Mbc_var;
             *weight_ = total_weight;
-            info_->add(RooArgSet(*Mbc_, *weight_));
+            info_->add(RooArgSet(*Mbc_, *weight_), weight_->getVal());
             Nevt = Nevt + total_weight;
         }
         input_file->Close();
@@ -71,11 +71,10 @@ void Xnn_roofit(){
     // Observable:
     RooRealVar Mbc("Mbc", "Mbc", 5.2, 5.3);
     RooRealVar weight("weight", "weight", 0.0, 10.0);
-    RooDataSet info("info", "info", RooArgSet(Mbc));
+    RooDataSet info("info", "info", RooArgSet(Mbc, weight), WeightVar("weight"));
 
     const char* dirname = "./";
     LetsAdd(dirname, &Mbc, &weight, &info);
-    info.setWeightVar(weight);
     RooPlot* Mbcframe = Mbc.frame(Bins(50), Title("M_{bc}^{sig} fit"));
     RooDataSet* d_Mbc = (RooDataSet*)info.reduce(RooArgSet(Mbc));
 
