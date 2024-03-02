@@ -1,6 +1,17 @@
 // last update: 2021-10-13
 // for Belle2 data
 
+#include "RooRealVar.h"
+#include "RooDataSet.h"
+#include "RooGaussian.h"
+#include "RooConstVar.h"
+#include "RooPolynomial.h"
+#include "RooHistPdf.h"
+#include "TCanvas.h"
+#include "TAxis.h"
+#include "RooPlot.h"
+using namespace RooFit;
+
 void load_files(const char *dirname, std::vector<string>* names){
    TSystemDirectory dir(dirname, dirname);
    TList *files = dir.GetListOfFiles();
@@ -59,7 +70,7 @@ void Xnn_roofit(){
 
     const char* dirname = "./rootfile/";
     LetsAdd(dirname, &Mbc, &info);
-
+    RooPlot* Mbcframe = Mbc.frame(Bins(50), Title("Operations on binned datasets"));
     RooDataSet* d_Mbc = (RooDataSet*)info.reduce(RooArgSet(Mbc));
 
     // ARGUS background
@@ -80,10 +91,13 @@ void Xnn_roofit(){
     // Construct a signal and background PDF:
     RooRealVar nsig("nsig", "nsig", 10, 0, 20);
     RooRealVar nbkg("nbkg", "nkbkg", 800, 0, 10000);
-    RooAddPdf  model("model", "nonpeak + peak", RooArgList(pdfARGUS, pdfCRYSTAL), RooArgList(nbkg, nsig));
+    RooExtendPdf esig("esignal", "extended signal p.d.f", pdfCRYSTAL, nsig);
+    RooExtendPdf ebkg("ebkg", "extended background p.d.f", pdfARGUS, nbkg);
+
+    RooAddPdf  model("model", "b+n", RooArgList(ebkg, esig));
 
     // fit
-    model.fitTo(Mbc, Extended(true));
+    model.fitTo(Mbc, Extended());
 
     // Draw result
     d_Mbc->plotOn(Mbcframe);
