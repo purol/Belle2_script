@@ -105,7 +105,7 @@ void Xnn_roofit(){
     model.plotOn(Mbcframe, Components(pdfARGUS), LineColor(kBlue), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
     model.plotOn(Mbcframe, Components(pdfCRYSTAL), LineColor(kViolet), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
 
-    new TCanvas("Mbc", "Mbc", 600, 600);
+    TCanvas c = new TCanvas("Mbc", "Mbc", 600, 600);
     gPad->SetLeftMargin(0.15); Mbcframe->GetYaxis()->SetTitleOffset(1.4); Mbcframe->Draw();
-
+    c->SaveAs("fit_result.png");
 }
