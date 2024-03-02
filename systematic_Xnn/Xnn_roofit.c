@@ -94,15 +94,27 @@ void Xnn_roofit(){
     RooCrystalBall pdfCRYSTAL("CRYSTAL", "CRYSTAL PDF", Mbc, mean, width, alpha, n);
 
     // Construct a signal and background PDF:
-    RooRealVar nsig("nsig", "nsig", 20, 10, 130);
-    RooRealVar nbkg("nbkg", "nkbkg", 1300, 800, 1800);
+    RooRealVar nsig("nsig", "nsig", 20, 0, 50);
+    RooRealVar nbkg("nbkg", "nkbkg", 300, 200, 500);
     RooExtendPdf esig("esignal", "extended signal p.d.f", pdfCRYSTAL, nsig);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", pdfARGUS, nbkg);
 
     RooAddPdf  model("model", "b+n", RooArgList(ebkg, esig));
 
     // fit
-    model.fitTo(*d_Mbc, Extended(), Save(), SumW2Error(true));
+    RooFitResult* result = model.fitTo(*d_Mbc, Extended(), Save(), SumW2Error(true));
+
+    // print fit result
+    RooArgSet fitargs_LT = result->floatParsFinal();
+    TIterator* iter_LT(fitargs_LT.createIterator());
+
+    for (TObject* a_LT = iter_LT->Next(); a_LT != 0; a_LT = iter_LT->Next()) {
+        RooRealVar* rrv_LT = dynamic_cast<RooRealVar*>(a_LT);
+        std::string name_LT = rrv_LT->GetName();
+        double val_LT = rrv_LT->getVal();
+        double err_LT = rrv_LT->getError();
+        printf("%s: %lf +- %lf\n", name_LT.c_str(), val_LT, err_LT);
+    }
 
     // Draw result
     d_Mbc->plotOn(Mbcframe, DataError(RooAbsData::SumW2));
