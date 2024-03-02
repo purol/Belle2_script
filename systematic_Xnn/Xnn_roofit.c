@@ -28,7 +28,8 @@ void load_files(const char *dirname, std::vector<string>* names){
    }
 }
 
-void LetsAdd(const char* dirname, RooRealVar* Mbc_, RooDataSet* info_) {
+double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooDataSet* info_) {
+    double Nevt = 0;
     double Mbc_var = 0;
 
     std::vector<string> names;
@@ -55,11 +56,13 @@ void LetsAdd(const char* dirname, RooRealVar* Mbc_, RooDataSet* info_) {
 
             *Mbc_ = Mbc_var;
             info_->add(RooArgSet(*Mbc_), total_weight);
+            Nevt = Nevt + total_weight;
         }
         input_file->Close();
 
     }
 
+    return Nevt;
 }
 
 void Xnn_roofit(){
@@ -68,9 +71,9 @@ void Xnn_roofit(){
     RooRealVar  Mbc("Mbc", "Mbc", 5.2, 5.3);
     RooDataSet info("info", "info", RooArgSet(Mbc));
 
-    const char* dirname = "./rootfile/";
+    const char* dirname = "./";
     LetsAdd(dirname, &Mbc, &info);
-    RooPlot* Mbcframe = Mbc.frame(Bins(50), Title("Operations on binned datasets"));
+    RooPlot* Mbcframe = Mbc.frame(Bins(50), Title("M_{bc}^{sig} fit"));
     RooDataSet* d_Mbc = (RooDataSet*)info.reduce(RooArgSet(Mbc));
 
     // ARGUS background
@@ -97,10 +100,10 @@ void Xnn_roofit(){
     RooAddPdf  model("model", "b+n", RooArgList(ebkg, esig));
 
     // fit
-    model.fitTo(*d_Mbc, Extended());
+    model.fitTo(*d_Mbc, Extended(), SumW2Error(true));
 
     // Draw result
-    d_Mbc->plotOn(Mbcframe);
+    d_Mbc->plotOn(Mbcframe, DataError(RooAbsData::SumW2));
     model.plotOn(Mbcframe, LineColor(kRed), Normalization(1.0, RooAbsReal::RelativeExpected));
     model.plotOn(Mbcframe, Components(pdfARGUS), LineColor(kBlue), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
     model.plotOn(Mbcframe, Components(pdfCRYSTAL), LineColor(kViolet), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
