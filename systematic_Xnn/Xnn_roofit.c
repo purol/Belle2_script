@@ -254,6 +254,44 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
     return Nevt;
 }
 
+double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar* weight_, RooDataSet* info_) {
+    double Nevt = 0;
+    double Mbc_var = 0;
+
+    std::vector<string> names;
+    load_files(dirname, &names);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        tree_Bsig->SetBranchAddress("Bsig_Mbc", &Mbc_var); // Mbc
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+            tree_upsilon->GetEntry(j);
+            tree_Bsig->GetEntry(j);
+            tree_Btag->GetEntry(j);
+
+            double total_weight = 0.25;
+
+            *Mbc_ = Mbc_var;
+            *weight_ = total_weight;
+            info_->add(RooArgSet(*Mbc_, *weight_), weight_->getVal());
+            Nevt = Nevt + total_weight;
+        }
+        input_file->Close();
+
+    }
+
+    return Nevt;
+}
+
 void Xnn_roofit() {
 
     // Observable:
