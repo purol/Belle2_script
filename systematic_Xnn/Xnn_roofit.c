@@ -78,22 +78,22 @@ void Xnn_roofit(){
 
     // ARGUS background
     RooRealVar End("End", "End of Argus", 5.29);
-    RooRealVar c("curvature", "curvature of ARGUS", 1, 0.9, 1.1);
+    RooRealVar c("curvature", "curvature of ARGUS", -40, -100, 20);
     RooRealVar power("power", "power of ARGUS", 0.5);
 
     RooArgusBG pdfARGUS("ARGUS", "ARGUS PDF", Mbc, End, c, power);
 
     // crystal ball signal
     RooRealVar mean("mean", "mean of Crystal ball", 5.28);
-    RooRealVar width("width", "width of Crystal ball", 0.0027, 0.0024, 0.0030);
-    RooRealVar alpha("alpha", "alpha of Crystal ball", 2.42, 2.30, 2.50);
-    RooRealVar n("n", "n of Crystal ball", 1.117, 1.0, 1.2);
+    RooRealVar width("width", "width of Crystal ball", 0.003, 0.002, 0.004);
+    RooRealVar alpha("alpha", "alpha of Crystal ball", 2.3, 2.1, 2.5);
+    RooRealVar n("n", "n of Crystal ball", 1.0, 0.9, 1.1);
 
     RooCrystalBall pdfCRYSTAL("CRYSTAL", "CRYSTAL PDF", Mbc, mean, width, alpha, n);
 
     // Construct a signal and background PDF:
-    RooRealVar nsig("nsig", "nsig", 10, 0, 20);
-    RooRealVar nbkg("nbkg", "nkbkg", 800, 0, 10000);
+    RooRealVar nsig("nsig", "nsig", 20, 10, 130);
+    RooRealVar nbkg("nbkg", "nkbkg", 1300, 800, 1800);
     RooExtendPdf esig("esignal", "extended signal p.d.f", pdfCRYSTAL, nsig);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", pdfARGUS, nbkg);
 
