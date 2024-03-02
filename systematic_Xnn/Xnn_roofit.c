@@ -40,8 +40,10 @@ void LetsAdd(const char* dirname, RooRealVar* Mbc_, RooDataSet* info_) {
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
+            double total_weight = 1.0;
+
             *Mbc_ = Mbc_var;
-            info_->add(RooArgSet(*Mbc_));
+            info_->add(RooArgSet(*Mbc_), total_weight);
         }
         input_file->Close();
 
@@ -54,6 +56,9 @@ void Xnn_roofit(){
     // Observable:
     RooRealVar  Mbc("Mbc", "Mbc", 5.2, 5.3);
     RooDataSet info("info", "info", RooArgSet(Mbc));
+
+    const char* dirname = "./rootfile/";
+    LetsAdd(dirname, &Mbc, &info);
 
     RooDataSet* d_Mbc = (RooDataSet*)info.reduce(RooArgSet(Mbc));
 
@@ -78,7 +83,7 @@ void Xnn_roofit(){
     RooAddPdf  model("model", "nonpeak + peak", RooArgList(pdfARGUS, pdfCRYSTAL), RooArgList(nbkg, nsig));
 
     // fit
-    model.fitTo(Mbc);
+    model.fitTo(Mbc, Extended(true));
 
     // Draw result
     d_Mbc->plotOn(Mbcframe);
