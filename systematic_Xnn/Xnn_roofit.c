@@ -52,7 +52,7 @@ double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar* weight_, RooDa
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            double total_weight = 1.0;
+            double total_weight = 0.25;
 
             *Mbc_ = Mbc_var;
             *weight_ = total_weight;
