@@ -56,7 +56,6 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
     double N_K0nn = 0;
     double N_K0starnn = 0;
 
-    int Ngamma_v200_index = -1;
     double Ngamma_v200 = -1;
 
     double s13_KpKLKL = -1;
@@ -130,8 +129,7 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
 
-        Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
-        if (Ngamma_v200_index == variable_names.size()) tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
 
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
@@ -227,7 +225,6 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
-            if (Ngamma_v200_index != variable_names.size()) Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
             // B+ --> K+ KL0 KL0 correction factor
