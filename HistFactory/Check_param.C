@@ -1242,7 +1242,7 @@ int Check_param() {
     mu->setRange(mu->getValV() - 4, mu->getValV() + 4);
     RooPlot* mu_frame = mu->frame();
     RooAbsReal* pll = nll->createProfile(*mu);
-    pll->plotOn(mu_frame);
+    pll->plotOn(mu_frame, RooFit::Precision(0.01));
 
     TCanvas* cmu = new TCanvas("pllPlot", "pllPlot", 700, 700);
     mu_frame->Draw();
