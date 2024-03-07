@@ -972,6 +972,8 @@ void Loader::GetData(TFile* input_file) {
             temp.Upsilon_info[155] = static_cast<double>(MakeShiftDoubleToInt[14]);
             temp.Upsilon_info[159] = static_cast<double>(MakeShiftDoubleToInt[15]);
             temp.Upsilon_info[160] = static_cast<double>(MakeShiftDoubleToInt[16]);
+            temp.Upsilon_info[165] = static_cast<double>(MakeShiftDoubleToInt[17]);
+            temp.Upsilon_info[166] = static_cast<double>(MakeShiftDoubleToInt[18]);
         }
 
         TotalData.push(temp);
