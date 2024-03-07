@@ -78,7 +78,7 @@ gbasf2_Kumoi.py -> (KS0 MC finder bug fix) -> gbasf2_Kumoi_BUGFIX.py -> (n0 MC f
 -> (for ppbar and KSKS, save # of ppbar and KSKS decay) ->
 gbasf2_Zanmu.py
 -> (add proton ID correction grid) ->
-gbasf2_Komano.py
+gbasf2_Komano.py -> (BUGFIX on B->XKSKS match) -> gbasf2_Komano_BUGFIX.py
 
 plan
 - Emiss + Pmiss
