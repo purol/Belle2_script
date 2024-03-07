@@ -2,7 +2,7 @@
 #define CONSTANTS_H
 
 # define N_Needed_info 37
-# define N_Upsilon_info 165
+# define N_Upsilon_info 167
 # define N_Bsig_info 742
 # define N_Btag_info 11
 # define N_decay 38 // five decay mode + others
