@@ -571,6 +571,9 @@ for analysistype in Options:
         ma.cutAndCopyList("K_L0:XKLKL_2nd", "K_L0:XKLKL", "extraInfo(KL_XKLKL_rank) == 2",path=my_path)
 
         # get the numbeer for B -> X KS0 KS0
+        ma.fillParticleListFromMC("B+:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+        ma.fillParticleListFromMC("B0:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+
         ma.buildRestOfEvent("B+:PrimaryMC",path=my_path)
         roe_path_KSKS_one = basf2.Path()
         deadEndPath_KSKS_one = basf2.Path()
