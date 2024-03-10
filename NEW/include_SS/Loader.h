@@ -113,7 +113,7 @@ typedef struct data {
     // 67-358: PIDs
     // 359-366: pi0s
     // 367-514: fake from E, 542-737: fake from MU
-    // 738: Mbc, 739: deltaE, 740: MXs, 741: Bsig_isSignal
+    // 738: Mbc, 739: deltaE, 740: MXs, 741: Bsig_isSignal, 742: Bsig_phi
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
@@ -826,6 +826,7 @@ void Loader::GetData(TFile* input_file) {
     tree_Bsig->SetBranchAddress("Bsig_deltaE", &temp.Bsig_info[739]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_M", &temp.Bsig_info[740]);
     tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[741]);
+    tree_Bsig->SetBranchAddress("Bsig_phi", &temp.Bsig_info[742]);
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
@@ -2568,6 +2569,7 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Bsig->Branch("Bsig_deltaE", &BsigDataToTree[739]);
         tree_Bsig->Branch("Bsig_daughter_0_M", &BsigDataToTree[740]);
         tree_Bsig->Branch("Bsig_isSignal", &BsigDataToTree[741]);
+        tree_Bsig->Branch("Bsig_phi", &BsigDataToTree[742]);
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -3105,6 +3107,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Bsig->Branch("Bsig_deltaE", &temp_BsigDataToTree[739]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_M", &temp_BsigDataToTree[740]);
     temp_tree_Bsig->Branch("Bsig_isSignal", &temp_BsigDataToTree[741]);
+    temp_tree_Bsig->Branch("Bsig_phi", &temp_BsigDataToTree[742]);
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -3628,6 +3631,7 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("Bsig_deltaE", &temp_BsigDataToTree[739]);
     temp_tree->Branch("Bsig_daughter_0_M", &temp_BsigDataToTree[740]);
     temp_tree->Branch("Bsig_isSignal", &temp_BsigDataToTree[741]);
+    temp_tree->Branch("Bsig_phi", &temp_BsigDataToTree[742]);
 
 
     // get Btag_info
