@@ -1141,12 +1141,12 @@ private:
 
     void ReadPIDFile_MC15rd();
 public:
-    Corrector_PID();
+    Corrector_ProtonID();
     double GetCorrectionFactor(int PID_type, int bin_PID, std::string type);
     double GetUncertainty(int PID_type, int bin_PID, std::string type);
 };
 
-Corrector_ProtonID::Corrector_PID() {
+Corrector_ProtonID::Corrector_ProtonID() {
     for (int i = 0; i < 1; i++) {
         for (int j = 0; j < N_ProtonID_syst; j++) {
             PID_correction_MC15rd[i][j] = 0.0;
@@ -1188,7 +1188,7 @@ void Corrector_ProtonID::ReadPIDFile_MC15rd() {
     double temp_threshold;
 
     for (int i = 0; i < N_ProtonID_syst - 1; i++) {
-        fscanf(fp_KID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,protonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction_MC15rd[0][i], &PID_correction_stat_uncer_MC15rd[0][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer_MC15rd[0][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+        fscanf(fp_ProtonID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,protonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction_MC15rd[0][i], &PID_correction_stat_uncer_MC15rd[0][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer_MC15rd[0][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
 
         if (((std::abs(PID_correction_MC15rd[0][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15rd[0][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15rd[0][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15rd[0][i]) > 10000.0)) {
             PID_correction_MC15rd[0][i] = 1.0;
@@ -1204,7 +1204,7 @@ void Corrector_ProtonID::ReadPIDFile_MC15rd() {
     PID_correction_sys_uncer_MC15rd[0][N_ProtonID_syst - 1] = 0.0;
     PID_correction_uncer_MC15rd[0][N_ProtonID_syst - 1] = 0.0;
 
-    fclose(fp_KID_true);
+    fclose(fp_ProtonID_true);
 }
 
 double Corrector_ProtonID::GetCorrectionFactor(int PID_type, int bin_PID, std::string type) {
