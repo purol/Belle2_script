@@ -2,12 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Data
-x = np.array([2.1125, 2.7375, 3.3625, 3.9875])
-x_error = np.array([0.3125, 0.3125, 0.3125, 0.3125])
-y1 = np.array([12.214117, 3.725622, 3.080373, 0.0])  # data
-y1_error = np.array([5.989638, 4.059391, 3.556183, 0.0])
-y2 = np.array([11.067578, 18.262794, 5.169804, 0.407888])  # MC (corrected)
-y2_error = np.array([1.381697, 1.784659, 0.962326, 0.236261])
+x = np.array([1.50833333333, 2.62500000001, 3.74166666668])
+x_error = np.array([0.55833333333, 0.55833333333, 0.55833333333])
+y1 = np.array([0.000025, 2.319038, 0.00001])  # data
+y1_error = np.array([0.018579, 2.075404, 0.010699])
+y2 = np.array([3.019785, 4.636813, 1.685280])  # MC (corrected)
+y2_error = np.array([0.736193, 0.902065, 0.554836])
 
 # Define an offset for x-values
 offset = 0.0
@@ -16,8 +16,8 @@ offset = 0.0
 plt.errorbar(x - offset, y1, xerr=x_error, yerr=y1_error, fmt='bo', label='Data', capsize=5, elinewidth=2, alpha=0.7)
 plt.errorbar(x + offset, y2, xerr=x_error, yerr=y2_error, fmt='ro', label='signal MC with correction', capsize=5, elinewidth=2, alpha=0.7)
 
-plt.title(r'$B \rightarrow X_{s} p \bar{p}$ analysis')
-plt.xlabel(r'$M_{p\bar{p}}$ [GeV]')
+plt.title(r'$B \rightarrow X_{s} K_{S}^{0} K_{S}^{0}$ analysis')
+plt.xlabel(r'$M_{K_{S}^{0}K_{S}^{0}}$ [GeV]')
 plt.ylabel('the number of events')
 plt.legend()
 
@@ -25,7 +25,7 @@ plt.legend()
 plt.grid(True)
 
 # Setting x-axis limits
-plt.xlim(1.8, 4.3)
+plt.xlim(0.95, 4.3)
 
 plt.tight_layout()
 plt.show()

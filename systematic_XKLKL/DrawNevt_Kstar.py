@@ -2,12 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Data
-x = np.array([2.1125, 2.7375, 3.3625, 3.9875])
-x_error = np.array([0.3125, 0.3125, 0.3125, 0.3125])
-y1 = np.array([12.214117, 3.725622, 3.080373, 0.0])  # data
-y1_error = np.array([5.989638, 4.059391, 3.556183, 0.0])
-y2 = np.array([11.067578, 18.262794, 5.169804, 0.407888])  # MC (corrected)
-y2_error = np.array([1.381697, 1.784659, 0.962326, 0.236261])
+x = np.array([2.825])
+x_error = np.array([1.875])
+y1 = np.array([0.0])  # data
+y1_error = np.array([0.000039])
+y2 = np.array([4.090920])  # MC (corrected)
+y2_error = np.array([0.904186])
 
 # Define an offset for x-values
 offset = 0.0
@@ -16,8 +16,8 @@ offset = 0.0
 plt.errorbar(x - offset, y1, xerr=x_error, yerr=y1_error, fmt='bo', label='Data', capsize=5, elinewidth=2, alpha=0.7)
 plt.errorbar(x + offset, y2, xerr=x_error, yerr=y2_error, fmt='ro', label='signal MC with correction', capsize=5, elinewidth=2, alpha=0.7)
 
-plt.title(r'$B \rightarrow X_{s} p \bar{p}$ analysis')
-plt.xlabel(r'$M_{p\bar{p}}$ [GeV]')
+plt.title(r'$B \rightarrow K^{*} K_{S}^{0} K_{S}^{0}$ analysis')
+plt.xlabel(r'$M_{K_{S}^{0} K_{S}^{0}}$ [GeV]')
 plt.ylabel('the number of events')
 plt.legend()
 
@@ -25,7 +25,7 @@ plt.legend()
 plt.grid(True)
 
 # Setting x-axis limits
-plt.xlim(1.8, 4.3)
+plt.xlim(0.95, 4.7)
 
 plt.tight_layout()
 plt.show()
