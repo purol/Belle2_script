@@ -1126,6 +1126,103 @@ double Corrector_FakePID::GetUncertaintyfakeMU(int PID_type, int bin_PID, std::s
     }
 }
 
+# define N_ProtonID_syst 73
+class Corrector_ProtonID {
+private:
+    double PID_correction_MC15ri[1][N_ProtonID_syst]; // proton-true
+    double PID_correction_stat_uncer_MC15ri[1][N_ProtonID_syst]; // proton-true
+    double PID_correction_sys_uncer_MC15ri[1][N_ProtonID_syst]; // proton-true
+    double PID_correction_uncer_MC15ri[1][N_ProtonID_syst]; // proton-true
+
+    double PID_correction_MC15rd[1][N_ProtonID_syst]; // proton-true
+    double PID_correction_stat_uncer_MC15rd[1][N_ProtonID_syst]; // proton-true
+    double PID_correction_sys_uncer_MC15rd[1][N_ProtonID_syst]; // proton-true
+    double PID_correction_uncer_MC15rd[1][N_ProtonID_syst]; // proton-true
+
+    void ReadPIDFile_MC15rd();
+public:
+    Corrector_PID();
+    double GetCorrectionFactor(int PID_type, int bin_PID, std::string type);
+    double GetUncertainty(int PID_type, int bin_PID, std::string type);
+};
+
+Corrector_ProtonID::Corrector_PID() {
+    for (int i = 0; i < 1; i++) {
+        for (int j = 0; j < N_ProtonID_syst; j++) {
+            PID_correction_MC15rd[i][j] = 0.0;
+            PID_correction_stat_uncer_MC15rd[i][j] = 0.0;
+            PID_correction_sys_uncer_MC15rd[i][j] = 0.0;
+            PID_correction_uncer_MC15rd[i][j] = 0.0;
+        }
+    }
+
+    ReadPIDFile_MC15rd();
+}
+
+void Corrector_ProtonID::ReadPIDFile_MC15rd() {
+    const char* ProtonID_true_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15rd_PID/ProtonEff.csv";
+
+    FILE* fp_ProtonID_true = fopen(ProtonID_true_file, "r");
+
+    fscanf(fp_ProtonID_true, "p_min,p_max,cosTheta_min,cosTheta_max,data_MC_ratio,data_MC_uncertainty_stat_up,data_MC_uncertainty_stat_dn,data_MC_uncertainty_sys_up,data_MC_uncertainty_sys_dn,data_efficiency,data_uncertainty_stat_up,data_uncertainty_stat_dn,data_uncertainty_sys_up,data_uncertainty_sys_dn,MC_efficiency,MC_uncertainty_stat_up,MC_uncertainty_stat_dn,MC_uncertainty_sys_up,MC_uncertainty_sys_dn,threshold,variable\n");
+
+    double temp_p_min;
+    double temp_p_max;
+    double temp_cosTheta_min;
+    double temp_cosTheta_max;
+    double temp_data_MC_ratio;
+    double temp_data_MC_uncertainty_stat_up;
+    double temp_data_MC_uncertainty_stat_dn;
+    double temp_data_MC_uncertainty_sys_up;
+    double temp_data_MC_uncertainty_sys_dn;
+    double temp_data_efficiency;
+    double temp_data_uncertainty_stat_up;
+    double temp_data_uncertainty_stat_dn;
+    double temp_data_uncertainty_sys_up;
+    double temp_data_uncertainty_sys_dn;
+    double temp_MC_efficiency;
+    double temp_MC_uncertainty_stat_up;
+    double temp_MC_uncertainty_stat_dn;
+    double temp_MC_uncertainty_sys_up;
+    double temp_MC_uncertainty_sys_dn;
+    double temp_threshold;
+
+    for (int i = 0; i < N_ProtonID_syst - 1; i++) {
+        fscanf(fp_KID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,protonID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction_MC15rd[0][i], &PID_correction_stat_uncer_MC15rd[0][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer_MC15rd[0][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
+
+        if (((std::abs(PID_correction_MC15rd[0][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15rd[0][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15rd[0][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15rd[0][i]) > 10000.0)) {
+            PID_correction_MC15rd[0][i] = 1.0;
+            PID_correction_stat_uncer_MC15rd[0][i] = 0.0;
+            PID_correction_sys_uncer_MC15rd[0][i] = 0.0;
+        }
+
+        PID_correction_uncer_MC15rd[0][i] = std::sqrt(PID_correction_stat_uncer_MC15rd[0][i] * PID_correction_stat_uncer_MC15rd[0][i] + PID_correction_sys_uncer_MC15rd[0][i] * PID_correction_sys_uncer_MC15rd[0][i]);
+    }
+
+    PID_correction_MC15rd[0][N_ProtonID_syst - 1] = 1.0;
+    PID_correction_stat_uncer_MC15rd[0][N_ProtonID_syst - 1] = 0.0;
+    PID_correction_sys_uncer_MC15rd[0][N_ProtonID_syst - 1] = 0.0;
+    PID_correction_uncer_MC15rd[0][N_ProtonID_syst - 1] = 0.0;
+
+    fclose(fp_KID_true);
+}
+
+double Corrector_ProtonID::GetCorrectionFactor(int PID_type, int bin_PID, std::string type) {
+    if (type == "MC15rd") return PID_correction_MC15rd[PID_type][bin_PID];
+    else {
+        printf("[Corrector_PID] Invalid type!\n");
+        exit(1);
+    }
+}
+
+double Corrector_ProtonID::GetUncertainty(int PID_type, int bin_PID, std::string type) {
+    if (type == "MC15rd") return PID_correction_uncer_MC15rd[PID_type][bin_PID];
+    else {
+        printf("[Corrector_PID] Invalid type!\n");
+        exit(1);
+    }
+}
+
 # define N_pi0_syst 8
 class Corrector_pi0 {
 private:
