@@ -81,6 +81,11 @@ typedef struct data {
     // 146: nBplustoKnn, 147: inv_Knn, 148: nBplustoK*nn, 149: inv_K*nn, 150: nBzerotoK0nn, 151: inv_K0nn, 152: nBzerotoK0*nn, 153: inv_K0*nn
     // 154: nBplustoKpKLKL_all, 155: nBplustoKpKLKL_NR, 156: BplustoKpKLKL_M01, 157: BplustoKpKLKL_M02, 158: BplustoKpKLKL_M12
     // 159: nBzerotoKSKLKL_all, 160: nBzerotoKSKLKL_NR, 161: BzerotoKSKLKL_M01, 162: BzerotoKSKLKL_M02, 163: BzerotoKSKLKL_M12
+    // 164: nBplustoXnn, 165: nBzerotoXnn, 166: Mnnbar
+    // 167: nKL0_XKLKL, 168: avg_KL0_XKLKL_E, 169: avg_KL0_XKLKL_px, 170: avg_KL0_XKLKL_py, 171: avg_KL0_XKLKL_pz
+    // 172: avg_1st_KL0_XKLKL_E, 173: avg_1st_KL0_XKLKL_px, 174: avg_1st_KL0_XKLKL_py, 175: avg_1st_KL0_XKLKL_pz
+    // 176: avg_2nd_KL0_XKLKL_E, 177: avg_2nd_KL0_XKLKL_px, 178: avg_2nd_KL0_XKLKL_py, 179: avg_2nd_KL0_XKLKL_pz
+    // 180: nKS0_XKLKL, 181: avg_KS0_XKLKL_E, 182: avg_KL0_XKLKL_px, 183: avg_KL0_XKLKL_py, 184: avg_KL0_XKLKL_pz
 
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
@@ -109,12 +114,12 @@ typedef struct data {
     // 64: mychiProb, 65: mydr, 66: mydz
     // 67-358: PIDs
     // 359-366: pi0s
-    // 367-514: fake from E, 542-737: fake from MU
+    // 367-514: fake from E, 542-737: fake from MU, 738: Bsig_isSignal
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
     // 3: Btag_E, 4: Btag_E_CMS, 5: Btag_signalprobability, 6: chiProb_tag
-    // 7: dr, 8: dz, 9: Btag_p_CMS, 10: Btag_CMS_phi
+    // 7: dr, 8: dz, 9: Btag_p_CMS, 10: Btag_CMS_phi, 11: Btag_isSignal
 
     double Needed_info[N_Needed_info];
     // 0: Btag_R2, 1: Btag_thrustBm, 2: Btag_thrustOm. 3: Btag_cosTBTO
@@ -487,7 +492,7 @@ void Loader::GetData(TFile* input_file) {
 
     Data temp = { 0 };
 
-    int MakeShiftDoubleToInt[17] = { 0 }; // intermediate variable to convert from int to double
+    int MakeShiftDoubleToInt[21] = { 0 }; // intermediate variable to convert from int to double
     const char* TypeName = tree_upsilon->FindLeaf("nRemainingTracksInEvent")->GetTypeName(); // to get type name. Check `nRemainingTracksInEvent` only
 
     // get event_info
@@ -709,6 +714,43 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp.Upsilon_info[161]);
     tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp.Upsilon_info[162]);
     tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp.Upsilon_info[163]);
+    if (strcmp(TypeName, "Int_t") == 0) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clXnn__bc", &MakeShiftDoubleToInt[17]); // temp.Upsilon_info[164]
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clXnn__bc", &MakeShiftDoubleToInt[18]); // temp.Upsilon_info[165]
+    }
+    else {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clXnn__bc", &temp.Upsilon_info[164]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clXnn__bc", &temp.Upsilon_info[165]);
+    }
+    tree_upsilon->SetBranchAddress("invMassInLists__bon0__clXnn__bc", &temp.Upsilon_info[166]);
+    if (strcmp(TypeName, "Int_t") == 0) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boK_L0__clXKLKL__bc", &MakeShiftDoubleToInt[19]); // temp.Upsilon_info[167]
+    }
+    else {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boK_L0__clXKLKL__bc", &temp.Upsilon_info[167]);
+    }
+    tree_upsilon->SetBranchAddress("averageValuesInList__boK_L0__clXKLKL__cm__spE__bc", &temp.Upsilon_info[168]);
+    tree_upsilon->SetBranchAddress("averageValuesInList__boK_L0__clXKLKL__cm__sppx__bc", &temp.Upsilon_info[169]);
+    tree_upsilon->SetBranchAddress("averageValuesInList__boK_L0__clXKLKL__cm__sppy__bc", &temp.Upsilon_info[170]);
+    tree_upsilon->SetBranchAddress("averageValuesInList__boK_L0__clXKLKL__cm__sppz__bc", &temp.Upsilon_info[171]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__spE__bc", &temp.Upsilon_info[172]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppx__bc", &temp.Upsilon_info[173]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppy__bc", &temp.Upsilon_info[174]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppz__bc", &temp.Upsilon_info[175]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__spE__bc", &temp.Upsilon_info[176]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppx__bc", &temp.Upsilon_info[177]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppy__bc", &temp.Upsilon_info[178]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppz__bc", &temp.Upsilon_info[179]);
+    if (strcmp(TypeName, "Int_t") == 0) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boK_S0__clXKLKL__bc", &MakeShiftDoubleToInt[20]); // temp.Upsilon_info[180]
+    }
+    else {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boK_S0__clXKLKL__bc", &temp.Upsilon_info[180]);
+    }
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__spE__bc", &temp.Upsilon_info[181]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &temp.Upsilon_info[182]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &temp.Upsilon_info[183]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp.Upsilon_info[184]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
@@ -797,6 +839,7 @@ void Loader::GetData(TFile* input_file) {
         tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp.Bsig_info[542 + 4 * i_PID + 2]);
         tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp.Bsig_info[542 + 4 * i_PID + 3]);
     }
+    tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[738]);
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
@@ -810,6 +853,7 @@ void Loader::GetData(TFile* input_file) {
     tree_Btag->SetBranchAddress("Btag_dz", &temp.Btag_info[8]);
     tree_Btag->SetBranchAddress("Btag_useCMSFrame_p", &temp.Btag_info[9]);
     tree_Btag->SetBranchAddress("Btag_useCMSFrame_phi", &temp.Btag_info[10]);
+    tree_Btag->SetBranchAddress("Btag_isSignal", &temp.Btag_info[11]);
 
     // other information I need
     tree_Btag->SetBranchAddress("Btag_R2", &temp.Needed_info[0]);
@@ -957,6 +1001,11 @@ void Loader::GetData(TFile* input_file) {
             temp.Upsilon_info[155] = static_cast<double>(MakeShiftDoubleToInt[14]);
             temp.Upsilon_info[159] = static_cast<double>(MakeShiftDoubleToInt[15]);
             temp.Upsilon_info[160] = static_cast<double>(MakeShiftDoubleToInt[16]);
+            temp.Upsilon_info[164] = static_cast<double>(MakeShiftDoubleToInt[17]);
+            temp.Upsilon_info[165] = static_cast<double>(MakeShiftDoubleToInt[18]);
+            temp.Upsilon_info[167] = static_cast<double>(MakeShiftDoubleToInt[19]);
+            temp.Upsilon_info[180] = static_cast<double>(MakeShiftDoubleToInt[20]);
+
         }
 
         TotalData.push(temp);
@@ -2430,6 +2479,27 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &UpsilonDataToTree[161]);
         tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &UpsilonDataToTree[162]);
         tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &UpsilonDataToTree[163]);
+        tree_upsilon->Branch("nParticlesInList__boB__pl__clXnn__bc", &UpsilonDataToTree[164]);
+        tree_upsilon->Branch("nParticlesInList__boB0__clXnn__bc", &UpsilonDataToTree[165]);
+        tree_upsilon->Branch("invMassInLists__bon0__clXnn__bc", &UpsilonDataToTree[166]);
+        tree_upsilon->Branch("nParticlesInList__boK_L0__clXKLKL__bc", &UpsilonDataToTree[167]);
+        tree_upsilon->Branch("averageValuesInList__boK_L0__clXKLKL__cm__spE__bc", &UpsilonDataToTree[168]);
+        tree_upsilon->Branch("averageValuesInList__boK_L0__clXKLKL__cm__sppx__bc", &UpsilonDataToTree[169]);
+        tree_upsilon->Branch("averageValuesInList__boK_L0__clXKLKL__cm__sppy__bc", &UpsilonDataToTree[170]);
+        tree_upsilon->Branch("averageValuesInList__boK_L0__clXKLKL__cm__sppz__bc", &UpsilonDataToTree[171]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__spE__bc", &UpsilonDataToTree[172]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppx__bc", &UpsilonDataToTree[173]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppy__bc", &UpsilonDataToTree[174]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppz__bc", &UpsilonDataToTree[175]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__spE__bc", &UpsilonDataToTree[176]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppx__bc", &UpsilonDataToTree[177]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppy__bc", &UpsilonDataToTree[178]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppz__bc", &UpsilonDataToTree[179]);
+        tree_upsilon->Branch("nParticlesInList__boK_S0__clXKLKL__bc", &UpsilonDataToTree[180]);
+        tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__spE__bc", &UpsilonDataToTree[181]);
+        tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &UpsilonDataToTree[182]);
+        tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &UpsilonDataToTree[183]);
+        tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &UpsilonDataToTree[184]);
 
         // get Bsig_info
         tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
@@ -2518,6 +2588,7 @@ void Loader::PrintRootFile(std::string output_name) {
             tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &BsigDataToTree[542 + 4 * i_PID + 2]);
             tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &BsigDataToTree[542 + 4 * i_PID + 3]);
         }
+        tree_Bsig->Branch("Bsig_isSignal", &BsigDataToTree[738]);
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -2531,6 +2602,7 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Btag->Branch("Btag_dz", &BtagDataToTree[8]);
         tree_Btag->Branch("Btag_useCMSFrame_p", &BtagDataToTree[9]);
         tree_Btag->Branch("Btag_useCMSFrame_phi", &BtagDataToTree[10]);
+        tree_Btag->Branch("Btag_isSignal", &BtagDataToTree[11]);
 
         // other information I need
         tree_Btag->Branch("Btag_R2", &DataToTree[0]);
@@ -2948,6 +3020,27 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp_UpsilonDataToTree[161]);
     temp_tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp_UpsilonDataToTree[162]);
     temp_tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp_UpsilonDataToTree[163]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB__pl__clXnn__bc", &temp_UpsilonDataToTree[164]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB0__clXnn__bc", &temp_UpsilonDataToTree[165]);
+    temp_tree_upsilon->Branch("invMassInLists__bon0__clXnn__bc", &temp_UpsilonDataToTree[166]);
+    temp_tree_upsilon->Branch("nParticlesInList__boK_L0__clXKLKL__bc", &temp_UpsilonDataToTree[167]);
+    temp_tree_upsilon->Branch("averageValuesInList__boK_L0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[168]);
+    temp_tree_upsilon->Branch("averageValuesInList__boK_L0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[169]);
+    temp_tree_upsilon->Branch("averageValuesInList__boK_L0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[170]);
+    temp_tree_upsilon->Branch("averageValuesInList__boK_L0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[171]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__spE__bc", &temp_UpsilonDataToTree[172]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppx__bc", &temp_UpsilonDataToTree[173]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppy__bc", &temp_UpsilonDataToTree[174]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppz__bc", &temp_UpsilonDataToTree[175]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__spE__bc", &temp_UpsilonDataToTree[176]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppx__bc", &temp_UpsilonDataToTree[177]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppy__bc", &temp_UpsilonDataToTree[178]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppz__bc", &temp_UpsilonDataToTree[179]);
+    temp_tree_upsilon->Branch("nParticlesInList__boK_S0__clXKLKL__bc", &temp_UpsilonDataToTree[180]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[181]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[182]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[183]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[184]);
 
     // get Bsig_info
     temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -3036,6 +3129,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 2]);
         temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
     }
+    temp_tree_Bsig->Branch("Bsig_isSignal", &temp_BsigDataToTree[738]);
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -3049,6 +3143,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Btag->Branch("Btag_dz", &temp_BtagDataToTree[8]);
     temp_tree_Btag->Branch("Btag_useCMSFrame_p", &temp_BtagDataToTree[9]);
     temp_tree_Btag->Branch("Btag_useCMSFrame_phi", &temp_BtagDataToTree[10]);
+    temp_tree_Btag->Branch("Btag_isSignal", &temp_BtagDataToTree[11]);
 
     // other information I need
     temp_tree_Btag->Branch("Btag_R2", &temp_DataToTree[0]);
@@ -3452,6 +3547,27 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp_UpsilonDataToTree[161]);
     temp_tree->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp_UpsilonDataToTree[162]);
     temp_tree->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp_UpsilonDataToTree[163]);
+    temp_tree->Branch("nParticlesInList__boB__pl__clXnn__bc", &temp_UpsilonDataToTree[164]);
+    temp_tree->Branch("nParticlesInList__boB0__clXnn__bc", &temp_UpsilonDataToTree[165]);
+    temp_tree->Branch("invMassInLists__bon0__clXnn__bc", &temp_UpsilonDataToTree[166]);
+    temp_tree->Branch("nParticlesInList__boK_L0__clXKLKL__bc", &temp_UpsilonDataToTree[167]);
+    temp_tree->Branch("averageValuesInList__boK_L0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[168]);
+    temp_tree->Branch("averageValuesInList__boK_L0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[169]);
+    temp_tree->Branch("averageValuesInList__boK_L0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[170]);
+    temp_tree->Branch("averageValuesInList__boK_L0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[171]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__spE__bc", &temp_UpsilonDataToTree[172]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppx__bc", &temp_UpsilonDataToTree[173]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppy__bc", &temp_UpsilonDataToTree[174]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppz__bc", &temp_UpsilonDataToTree[175]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__spE__bc", &temp_UpsilonDataToTree[176]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppx__bc", &temp_UpsilonDataToTree[177]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppy__bc", &temp_UpsilonDataToTree[178]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppz__bc", &temp_UpsilonDataToTree[179]);
+    temp_tree->Branch("nParticlesInList__boK_S0__clXKLKL__bc", &temp_UpsilonDataToTree[180]);
+    temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[181]);
+    temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[182]);
+    temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[183]);
+    temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[184]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -3540,6 +3656,7 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
         temp_tree->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 2]);
         temp_tree->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
     }
+    temp_tree->Branch("Bsig_isSignal", &temp_BsigDataToTree[738]);
 
 
     // get Btag_info
@@ -3554,6 +3671,7 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("Btag_dz", &temp_BtagDataToTree[8]);
     temp_tree->Branch("Btag_useCMSFrame_p", &temp_BtagDataToTree[9]);
     temp_tree->Branch("Btag_useCMSFrame_phi", &temp_BtagDataToTree[10]);
+    temp_tree->Branch("Btag_isSignal", &temp_BtagDataToTree[11]);
 
     // other information I need
     temp_tree->Branch("Btag_R2", &temp_DataToTree[0]);

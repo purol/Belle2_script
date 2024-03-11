@@ -2,9 +2,9 @@
 #define CONSTANTS_H
 
 # define N_Needed_info 37
-# define N_Upsilon_info 164
-# define N_Bsig_info 738
-# define N_Btag_info 11
+# define N_Upsilon_info 185
+# define N_Bsig_info 739
+# define N_Btag_info 12
 # define N_decay 38 // five decay mode + others
 # define N_decay_nparticles 5 // # of nu_e, B->Xs nu_e nu_e_bar, B0->Xs nu_e nu_e_bar, B+-, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
