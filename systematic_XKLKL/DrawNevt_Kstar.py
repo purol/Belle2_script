@@ -6,8 +6,8 @@ x = np.array([2.825])
 x_error = np.array([1.875])
 y1 = np.array([0.0])  # data
 y1_error = np.array([0.000039])
-y2 = np.array([4.090920])  # MC (corrected)
-y2_error = np.array([0.904186])
+y2 = np.array([4.281276])  # MC (corrected)
+y2_error = np.array([0.923316])
 
 # Define an offset for x-values
 offset = 0.0
