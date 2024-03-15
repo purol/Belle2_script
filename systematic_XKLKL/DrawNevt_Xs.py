@@ -2,12 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Data
-x = np.array([1.50833333333, 2.62500000001, 3.74166666668])
-x_error = np.array([0.55833333333, 0.55833333333, 0.55833333333])
-y1 = np.array([0.000228, 2.319038, 0.000003])  # data
-y1_error = np.array([0.050669, 2.075404, 0.006469])
-y2 = np.array([3.194886, 4.893317, 1.766684])  # MC (corrected)
-y2_error = np.array([0.767612, 0.938536, 0.572470])
+x = np.array([2.625])
+x_error = np.array([1.675])
+y1 = np.array([1.414669])  # data
+y1_error = np.array([3.746412])
+y2 = np.array([9.854887])  # MC (corrected)
+y2_error = np.array([1.340821])
 
 # Define an offset for x-values
 offset = 0.0
