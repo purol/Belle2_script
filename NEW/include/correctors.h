@@ -1986,7 +1986,7 @@ private:
 
 public:
     Corrector_XsKLKL();
-    double GetCorrectionFactorAtGeneric(double E_1, double px_1, double py_1, double pz_1, double E_2, double px_2, double py_2, double pz_2, double nB2KpKLKL_all, double nB2KSKLKL_all, double nB2KstarKLKL, double nB2XsKLKL);
+    double GetCorrectionFactorAtGeneric(double E_1, double px_1, double py_1, double pz_1, double E_2, double px_2, double py_2, double pz_2, double nB2KpKLKL_all, double nB2KSKLKL_all, double nB2KstarKLKL, double nKL_XKLKL);
 };
 
 Corrector_XsKLKL::Corrector_XsKLKL() :
@@ -2007,17 +2007,17 @@ Corrector_XsKLKL::Corrector_XsKLKL() :
 
 }
 
-double Corrector_XsKLKL::GetCorrectionFactorAtGeneric(double E_1, double px_1, double py_1, double pz_1, double E_2, double px_2, double py_2, double pz_2, double nB2KpKLKL_all, double nB2KSKLKL_all, double nB2KstarKLKL, double nB2XsKLKL) {
+double Corrector_XsKLKL::GetCorrectionFactorAtGeneric(double E_1, double px_1, double py_1, double pz_1, double E_2, double px_2, double py_2, double pz_2, double nB2KpKLKL_all, double nB2KSKLKL_all, double nB2KstarKLKL, double nKL_XKLKL) {
 
     double Correction_XsKLKL = 1;
 
-    if (nB2XsKLKL < N_EPSILON) Correction_XsKLKL = 1; // there is no B -> Xs KL KL decay
+    if (nKL_XKLKL < N_EPSILON) Correction_XsKLKL = 1; // there is no B -> Xs KL KL decay
     else if ((nB2KpKLKL_all > N_EPSILON) || (nB2KSKLKL_all > N_EPSILON) || (nB2KstarKLKL > N_EPSILON)) Correction_XsKLKL = 1; // one of the resonance decay
-    else if (std::abs(nB2XsKLKL - 1) < N_EPSILON) {
+    else if (std::abs(nKL_XKLKL - 2) < N_EPSILON) {
         int Bin = weights_XsKLKL->FindBin(invM);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_XsKLKL) Bin = STEP_XsKLKL;
-        Correction_XsKLKL = std::pow(weights_XsKLKL->GetBinContent(Bin), nB2XsKLKL); // BR correction * invM correction
+        Correction_XsKLKL = std::pow(weights_XsKLKL->GetBinContent(Bin), nKL_XKLKL / 2); // BR correction * invM correction
     }
 
     return Correction_XsKLKL;

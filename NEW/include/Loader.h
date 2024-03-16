@@ -85,7 +85,7 @@ typedef struct data {
     // 167: nKL0_XKLKL, 168: avg_KL0_XKLKL_E, 169: avg_KL0_XKLKL_px, 170: avg_KL0_XKLKL_py, 171: avg_KL0_XKLKL_pz
     // 172: avg_1st_KL0_XKLKL_E, 173: avg_1st_KL0_XKLKL_px, 174: avg_1st_KL0_XKLKL_py, 175: avg_1st_KL0_XKLKL_pz
     // 176: avg_2nd_KL0_XKLKL_E, 177: avg_2nd_KL0_XKLKL_px, 178: avg_2nd_KL0_XKLKL_py, 179: avg_2nd_KL0_XKLKL_pz
-    // 180: nKS0_XKLKL, 181: avg_KS0_XKLKL_E, 182: avg_KL0_XKLKL_px, 183: avg_KL0_XKLKL_py, 184: avg_KL0_XKLKL_pz
+    // 180: nKS0_XKLKL, 181: avg_KS0_XKLKL_E, 182: avg_KS0_XKLKL_px, 183: avg_KS0_XKLKL_py, 184: avg_KS0_XKLKL_pz
     // 185: nB2KstarKLKL, 186: nB02KstarKLKL
 
     double Bsig_info[N_Bsig_info];
