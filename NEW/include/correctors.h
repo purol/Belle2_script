@@ -1687,7 +1687,7 @@ Corrector_Xsnn::Corrector_Xsnn() :
     // read Xsnn weights
     fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/Xpp_weight/Xpp_weight.txt", "r");
     fscanf(fp, "%d %lf %lf\n", &STEP_Xsnn, &mininvM_Xsnn, &maxinvM_Xsnn);
-    weights_Xsnn = new TH1D("Knn_weights", ";;", STEP_Xsnn, mininvM_Xsnn, maxinvM_Xsnn);
+    weights_Xsnn = new TH1D("Xsnn_weights", ";;", STEP_Xsnn, mininvM_Xsnn, maxinvM_Xsnn);
     for (int i = 0; i < STEP_Xsnn; i++) {
         double temp;
         fscanf(fp, "%lf\n", &temp);
@@ -1706,7 +1706,7 @@ double Corrector_Xsnn::GetCorrectionFactorAtGeneric(double invM_Xsnn, double N_X
         int Bin = weights_Xsnn->FindBin(invM_Xsnn);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_Xsnn) Bin = STEP_Xsnn;
-        Correction_Xsnn = std::pow(weights_Xsnn->GetBinContent(Bin), invM_Xsnn); // BR correction * invM correction
+        Correction_Xsnn = std::pow(weights_Xsnn->GetBinContent(Bin), N_Xsnn); // BR correction * invM correction
     }
 
     return Correction_Xsnn;
@@ -1916,6 +1916,54 @@ double Corrector_KSKLKL::GetCorrectionFactorAtGeneric(double smax, double smin, 
     Correction = weights_KSKLKL->GetBinContent(GLobalBin_weight) * (BR_KSKLKL_all_PDG / BR_KSKLKL_NR_evtpdl);
 
     return Correction;
+}
+
+class Corrector_KstarKLKL {
+private:
+
+    int STEP_KstarKLKL;
+    double mininvM_KstarKLKL;
+    double maxinvM_KstarKLKL;
+    TH1D* weights_KstarKLKL;
+
+    const double N_EPSILON;
+
+public:
+    Corrector_KstarKLKL();
+    double GetCorrectionFactorAtGeneric(double invM, double nB2KstarKLKL);
+};
+
+Corrector_KstarKLKL::Corrector_KstarKLKL() :
+    N_EPSILON(0.01)
+{
+    FILE* fp;
+
+    // read KstarKLKL weights
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/XKSKS_weight/KstarKSKS_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_KstarKLKL, &mininvM_KstarKLKL, &maxinvM_KstarKLKL);
+    weights_KstarKLKL = new TH1D("KstarKLKL_weights", ";;", STEP_KstarKLKL, mininvM_KstarKLKL, maxinvM_KstarKLKL);
+    for (int i = 0; i < STEP_KstarKLKL; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        weights_KstarKLKL->SetBinContent(i + 1, temp);
+    }
+    fclose(fp);
+
+}
+
+double Corrector_KstarKLKL::GetCorrectionFactorAtGeneric(double invM, double nB2KstarKLKL) {
+
+    double Correction_KstarKLKL = 1;
+
+    if (nB2KstarKLKL < N_EPSILON) Correction_KstarKLKL = 1;
+    else {
+        int Bin = weights_KstarKLKL->FindBin(invM);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_KstarKLKL) Bin = STEP_KstarKLKL;
+        Correction_KstarKLKL = std::pow(weights_KstarKLKL->GetBinContent(Bin), nB2KstarKLKL); // BR correction * invM correction
+    }
+
+    return Correction_KstarKLKL;
 }
 
 class Corrector_BtoDtoXKL {
