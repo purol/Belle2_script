@@ -4,10 +4,10 @@ import numpy as np
 # Data
 x = np.array([2.1125, 2.7375, 3.3625, 3.9875])
 x_error = np.array([0.3125, 0.3125, 0.3125, 0.3125])
-y1 = np.array([12.214117, 3.725622, 3.080373, 0.0])  # data
-y1_error = np.array([5.989638, 4.059391, 3.556183, 0.0])
-y2 = np.array([11.067578, 18.262794, 5.169804, 0.407888])  # MC (corrected)
-y2_error = np.array([1.381697, 1.784659, 0.962326, 0.236261])
+y1 = np.array([12.156990, 4.882687, 4.410669, 0])  # data
+y1_error = np.array([5.980024, 4.319868, 3.763518, 0])
+y2 = np.array([10.031623, 17.807606, 9.050026, 0.372727])  # MC (corrected)
+y2_error = np.array([1.253486, 1.685581, 1.203908, 0.216617])
 
 # Define an offset for x-values
 offset = 0.0

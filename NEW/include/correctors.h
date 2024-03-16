@@ -1663,6 +1663,55 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
     return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
 }
 
+class Corrector_Xsnn {
+private:
+
+    // Xsnn
+    int STEP_Xsnn;
+    double mininvM_Xsnn;
+    double maxinvM_Xsnn;
+    TH1D* weights_Xsnn;
+
+    const double N_EPSILON;
+
+public:
+    Corrector_Xsnn();
+    double GetCorrectionFactorAtGeneric(double invM_Xsnn, double N_Xsnn);
+};
+
+Corrector_Xsnn::Corrector_Xsnn() :
+    N_EPSILON(0.01)
+{
+    FILE* fp;
+
+    // read Xsnn weights
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/Xpp_weight/Xpp_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_Xsnn, &mininvM_Xsnn, &maxinvM_Xsnn);
+    weights_Xsnn = new TH1D("Knn_weights", ";;", STEP_Xsnn, mininvM_Xsnn, maxinvM_Xsnn);
+    for (int i = 0; i < STEP_Xsnn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        weights_Xsnn->SetBinContent(i + 1, temp);
+    }
+    fclose(fp);
+
+}
+
+double Corrector_Xsnn::GetCorrectionFactorAtGeneric(double invM_Xsnn, double N_Xsnn) {
+
+    double Correction_Xsnn = 1;
+
+    if (N_Xsnn < N_EPSILON) Correction_Xsnn = 1;
+    else {
+        int Bin = weights_Xsnn->FindBin(invM_Xsnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Xsnn) Bin = STEP_Xsnn;
+        Correction_Xsnn = std::pow(weights_Xsnn->GetBinContent(Bin), invM_Xsnn); // BR correction * invM correction
+    }
+
+    return Correction_Xsnn;
+}
+
 class Corrector_Multiplicity {
 private:
 
