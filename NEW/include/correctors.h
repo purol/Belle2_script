@@ -2014,6 +2014,13 @@ double Corrector_XsKLKL::GetCorrectionFactorAtGeneric(double E_1, double px_1, d
     if (nKL_XKLKL < N_EPSILON) Correction_XsKLKL = 1; // there is no B -> Xs KL KL decay
     else if ((nB2KpKLKL_all > N_EPSILON) || (nB2KSKLKL_all > N_EPSILON) || (nB2KstarKLKL > N_EPSILON)) Correction_XsKLKL = 1; // one of the resonance decay
     else if (std::abs(nKL_XKLKL - 2) < N_EPSILON) {
+        double E_sum = E_1 + E_2;
+        double px_sum = px_1 + px_2;
+        double py_sum = py_1 + py_2;
+        double pz_sum = pz_1 + pz_2;
+
+        double invM = std::sqrt(E_sum * E_sum - px_sum * px_sum - py_sum * py_sum - pz_sum * pz_sum);
+
         int Bin = weights_XsKLKL->FindBin(invM);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_XsKLKL) Bin = STEP_XsKLKL;
