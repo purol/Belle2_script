@@ -24,9 +24,12 @@ Corrector_PID corrector_PID;
 Corrector_pi0 corrector_pi0;
 Corrector_FakePID corrector_FakePID;
 Corrector_Knn corrector_Knn;
+Corrector_Xsnn corrector_Xsnn;
 Corrector_Multiplicity corrector_Multiplicity;
 Corrector_KpKLKL corrector_KpKLKL;
 Corrector_KSKLKL corrector_KSKLKL;
+Corrector_KstarKLKL corrector_KstarKLKL;
+Corrector_XsKLKL corrector_XsKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
 
 # define MCTYPE "MC15ri"
@@ -116,10 +119,13 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
     double invM_Kstarnn = 0;
     double invM_K0nn = 0;
     double invM_K0starnn = 0;
+    double invM_Xnn = 0;
     double N_Knn = 0;
     double N_Kstarnn = 0;
     double N_K0nn = 0;
     double N_K0starnn = 0;
+    double N_Xplusnn = 0;
+    double N_Xzeronn = 0;
 
     int Ngamma_v200_index = -1;
     double Ngamma_v200 = -1;
@@ -205,6 +211,9 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clXnn__bc", &N_Xplusnn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clXnn__bc", &N_Xzeronn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clXnn__bc", &invM_Xnn);
 
         Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
         if(Ngamma_v200_index == variable_names.size()) tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
@@ -324,6 +333,9 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
             // Knn correction factor
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
+            // Xsnn correction factor
+            double Correction_Xnn = corrector_Xsnn.GetCorrectionFactorAtGeneric(invM_Xnn, N_Xplusnn + N_Xzeronn);
+
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             if (Ngamma_v200_index != variable_names.size()) Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
@@ -334,11 +346,16 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
             // B0 --> KS0 KL0 KL0 correction factor
             double Correction_KSKLKL = corrector_KSKLKL.GetCorrectionFactorAtGeneric(std::max(std::max(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), std::min(std::min(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), nB2KSKLKL_all_KSKLKL, nB2KSKLKL_NR_KSKLKL);
 
+            // B --> K* KL KL correction factor
+            double Correction_KstarKLKL = corrector_KstarKLKL.
+            Corrector_KstarKLKL corrector_KstarKLKL;
+            Corrector_XsKLKL corrector_XsKLKL;
+
             // B-> [D -> KL0 X] anything correction factor
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * additional_weight);
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * additional_weight);
 
 
         }
@@ -591,10 +608,13 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
     double invM_Kstarnn = 0;
     double invM_K0nn = 0;
     double invM_K0starnn = 0;
+    double invM_Xnn = 0;
     double N_Knn = 0;
     double N_Kstarnn = 0;
     double N_K0nn = 0;
     double N_K0starnn = 0;
+    double N_Xplusnn = 0;
+    double N_Xzeronn = 0;
 
     int Ngamma_v200_index = -1;
     double Ngamma_v200 = -1;
@@ -683,6 +703,9 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clXnn__bc", &N_Xplusnn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clXnn__bc", &N_Xzeronn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clXnn__bc", &invM_Xnn);
 
         Ngamma_v200_index = std::find(variable_names.begin(), variable_names.end(), std::string("extraInfo__boNgammav200__bc")) - variable_names.begin();
         if (Ngamma_v200_index == variable_names.size()) tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
@@ -806,6 +829,9 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
             // Knn correction factor
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
+            // Xsnn correction factor
+            double Correction_Xnn = corrector_Xsnn.GetCorrectionFactorAtGeneric(invM_Xnn, N_Xplusnn + N_Xzeronn);
+
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             if (Ngamma_v200_index != variable_names.size()) Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
@@ -820,7 +846,7 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight);
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight);
 
 
         }
@@ -878,10 +904,13 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
     double invM_Kstarnn = 0;
     double invM_K0nn = 0;
     double invM_K0starnn = 0;
+    double invM_Xnn = 0;
     double N_Knn = 0;
     double N_Kstarnn = 0;
     double N_K0nn = 0;
     double N_K0starnn = 0;
+    double N_Xplusnn = 0;
+    double N_Xzeronn = 0;
 
     double Ngamma_v200 = -1;
 
@@ -956,6 +985,9 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clXnn__bc", &N_Xplusnn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clXnn__bc", &N_Xzeronn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clXnn__bc", &invM_Xnn);
 
         tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
 
@@ -1057,6 +1089,9 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
             // Knn correction factor
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
+            // Xsnn correction factor
+            double Correction_Xnn = corrector_Xsnn.GetCorrectionFactorAtGeneric(invM_Xnn, N_Xplusnn + N_Xzeronn);
+
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
@@ -1070,8 +1105,8 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * additional_weight;
-            nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight;
+            nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * additional_weight;
+            nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight;
 
 
         }
