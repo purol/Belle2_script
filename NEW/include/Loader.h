@@ -86,6 +86,7 @@ typedef struct data {
     // 172: avg_1st_KL0_XKLKL_E, 173: avg_1st_KL0_XKLKL_px, 174: avg_1st_KL0_XKLKL_py, 175: avg_1st_KL0_XKLKL_pz
     // 176: avg_2nd_KL0_XKLKL_E, 177: avg_2nd_KL0_XKLKL_px, 178: avg_2nd_KL0_XKLKL_py, 179: avg_2nd_KL0_XKLKL_pz
     // 180: nKS0_XKLKL, 181: avg_KS0_XKLKL_E, 182: avg_KL0_XKLKL_px, 183: avg_KL0_XKLKL_py, 184: avg_KL0_XKLKL_pz
+    // 185: nB2KstarKLKL, 186: nB02KstarKLKL
 
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
@@ -492,7 +493,7 @@ void Loader::GetData(TFile* input_file) {
 
     Data temp = { 0 };
 
-    int MakeShiftDoubleToInt[21] = { 0 }; // intermediate variable to convert from int to double
+    int MakeShiftDoubleToInt[23] = { 0 }; // intermediate variable to convert from int to double
     const char* TypeName = tree_upsilon->FindLeaf("nRemainingTracksInEvent")->GetTypeName(); // to get type name. Check `nRemainingTracksInEvent` only
 
     // get event_info
@@ -751,6 +752,14 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &temp.Upsilon_info[182]);
     tree_upsilon->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &temp.Upsilon_info[183]);
     tree_upsilon->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp.Upsilon_info[184]);
+    if (strcmp(TypeName, "Int_t") == 0) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarKLKL__bc", &MakeShiftDoubleToInt[21]); // temp.Upsilon_info[185]
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstarKLKL__bc", &MakeShiftDoubleToInt[22]); // temp.Upsilon_info[186]
+    }
+    else {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp.Upsilon_info[185]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstarKLKL__bc", &temp.Upsilon_info[186]);
+    }
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
@@ -1005,6 +1014,8 @@ void Loader::GetData(TFile* input_file) {
             temp.Upsilon_info[165] = static_cast<double>(MakeShiftDoubleToInt[18]);
             temp.Upsilon_info[167] = static_cast<double>(MakeShiftDoubleToInt[19]);
             temp.Upsilon_info[180] = static_cast<double>(MakeShiftDoubleToInt[20]);
+            temp.Upsilon_info[185] = static_cast<double>(MakeShiftDoubleToInt[21]);
+            temp.Upsilon_info[186] = static_cast<double>(MakeShiftDoubleToInt[22]);
 
         }
 
@@ -2500,6 +2511,8 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &UpsilonDataToTree[182]);
         tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &UpsilonDataToTree[183]);
         tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &UpsilonDataToTree[184]);
+        tree_upsilon->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &UpsilonDataToTree[185]);
+        tree_upsilon->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &UpsilonDataToTree[186]);
 
         // get Bsig_info
         tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
@@ -3041,6 +3054,8 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[182]);
     temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[183]);
     temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[184]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
 
     // get Bsig_info
     temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -3568,6 +3583,8 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[182]);
     temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[183]);
     temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[184]);
+    temp_tree->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
+    temp_tree->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);

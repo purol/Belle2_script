@@ -334,7 +334,7 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             // Xsnn correction factor
-            double Correction_Xnn = corrector_Xsnn.GetCorrectionFactorAtGeneric(invM_Xnn, N_Xplusnn + N_Xzeronn);
+            double Correction_Xnn = corrector_Xsnn.GetCorrectionFactorAtGeneric(invM_Xnn, invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Xplusnn + N_Xzeronn);
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             if (Ngamma_v200_index != variable_names.size()) Ngamma_v200 = var[Ngamma_v200_index];
@@ -830,7 +830,7 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             // Xsnn correction factor
-            double Correction_Xnn = corrector_Xsnn.GetCorrectionFactorAtGeneric(invM_Xnn, N_Xplusnn + N_Xzeronn);
+            double Correction_Xnn = corrector_Xsnn.GetCorrectionFactorAtGeneric(invM_Xnn, invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Xplusnn + N_Xzeronn);
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             if (Ngamma_v200_index != variable_names.size()) Ngamma_v200 = var[Ngamma_v200_index];
@@ -1090,7 +1090,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
             double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
 
             // Xsnn correction factor
-            double Correction_Xnn = corrector_Xsnn.GetCorrectionFactorAtGeneric(invM_Xnn, N_Xplusnn + N_Xzeronn);
+            double Correction_Xnn = corrector_Xsnn.GetCorrectionFactorAtGeneric(invM_Xnn, invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Xplusnn + N_Xzeronn);
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
