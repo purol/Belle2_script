@@ -40,6 +40,7 @@ using namespace RooFit;
 using std::string;
 using std::to_string;
 
+Corrector corrector;
 Corrector_FEI corrector_FEI;
 Corrector_PID corrector_PID;
 Corrector_pi0 corrector_pi0;
@@ -52,6 +53,7 @@ Corrector_KSKLKL corrector_KSKLKL;
 Corrector_KstarKLKL corrector_KstarKLKL;
 Corrector_XsKLKL corrector_XsKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
+Corrector_Fragmentation corrector_Fragmentation;
 
 # define MCTYPE "MC15rd"
 

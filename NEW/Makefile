@@ -19,8 +19,8 @@ MAINS = $(wildcard *.cc)
 TARGETS = $(MAINS:%.cc=$(BINDIR)/%)
 
 SRCS = $(wildcard $(SRCDIR)/*.cc)
-#OBJS = $(MAINS:%.cc=$(TMPDIR)/%.o)
-OBJS = $(SRCS:$(SRCDIR)/%.cc=$(TMPDIR)/%.o)
+OBJS = $(MAINS:%.cc=$(TMPDIR)/%.o)
+#OBJS = $(SRCS:$(SRCDIR)/%.cc=$(TMPDIR)/%.o)
 
 .PHONY : all clean
 
