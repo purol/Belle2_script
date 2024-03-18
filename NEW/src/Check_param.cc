@@ -831,10 +831,10 @@ int main() {
 
     // draw profile likelihood
     RooRealVar* mu_MXs1 = w->var("mu_MXs1");
-    mu_MXs1->setRange(mu_MXs1->GetValV() - 4, mu_MXs1->GetValV() + 4);
+    mu_MXs1->setRange(mu_MXs1->getValV() - 4, mu_MXs1->getValV() + 4);
 
     RooRealVar* mu_MXs2 = w->var("mu_MXs2");
-    mu_MXs2->setRange(mu_MXs2->GetValV() - 4, mu_MXs2->GetValV() + 4);
+    mu_MXs2->setRange(mu_MXs2->getValV() - 4, mu_MXs2->getValV() + 4);
 
     RooRealVar* mu_MXs3 = w->var("mu_MXs3");
     mu_MXs3->setRange(mu_MXs3->getValV() - 4, mu_MXs3->getValV() + 4);
