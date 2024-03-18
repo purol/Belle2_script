@@ -1573,10 +1573,10 @@ Corrector_Knn::Corrector_Knn() :
     new_BR_K0nn = new_BR_Kpp * (tau_B0 / tau_Bp);
     new_BR_K0starnn = new_BR_Kstarpp * (tau_B0 / tau_Bp);
 
-    Nscale_initial_Knn = (2.0 * N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0)) * new_BR_Knn);
-    Nscale_initial_Kstarnn = (2.0 * N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0)) * new_BR_Kstarnn);
-    Nscale_initial_K0nn = (2.0 * N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0)) * new_BR_K0nn);
-    Nscale_initial_K0starnn = (2.0 * N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0)) * new_BR_K0starnn);
+    Nscale_initial_Knn = (2.0 * N_BB_LS1 * (fpm_f0 / (fpm_f0 + 1.0)) * new_BR_Knn);
+    Nscale_initial_Kstarnn = (2.0 * N_BB_LS1 * (fpm_f0 / (fpm_f0 + 1.0)) * new_BR_Kstarnn);
+    Nscale_initial_K0nn = (2.0 * N_BB_LS1 * (1.0 / (fpm_f0 + 1.0)) * new_BR_K0nn);
+    Nscale_initial_K0starnn = (2.0 * N_BB_LS1 * (1.0 / (fpm_f0 + 1.0)) * new_BR_K0starnn);
 }
 
 double Corrector_Knn::GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
