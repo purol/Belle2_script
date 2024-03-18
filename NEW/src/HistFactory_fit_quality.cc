@@ -86,7 +86,9 @@ std::random_device rd;
 std::default_random_engine generator(rd());
 
 std::vector<std::string> Sample_names = {
-    "L_x_Signal_nominal_channel_overallSyst_x_StatUncert_x_channel_Signal_all_uncorr_uncer_ShapeSys",
+    "L_x_Signal_nominal_MXs1_channel_overallSyst_x_StatUncert_x_channel_Signal_all_uncorr_uncer_ShapeSys",
+    "L_x_Signal_nominal_MXs2_channel_overallSyst_x_StatUncert_x_channel_Signal_all_uncorr_uncer_ShapeSys",
+    "L_x_Signal_nominal_MXs3_channel_overallSyst_x_StatUncert_x_channel_Signal_all_uncorr_uncer_ShapeSys",
     "L_x_CHG_nominal_channel_overallSyst_x_StatUncert_x_channel_CHG_all_uncorr_uncer_ShapeSys",
     "L_x_MIX_nominal_channel_overallSyst_x_StatUncert_x_channel_MIX_all_uncorr_uncer_ShapeSys",
     "L_x_UUBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_UUBAR_all_uncorr_uncer_ShapeSys",
@@ -326,7 +328,9 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal* nll, 
     // this causes a memory leak
     minim.optimizeConst(2);
     minim.migrad();
-    minim.minos(RooArgSet(*w->var("mu")));
+    minim.minos(RooArgSet(*w->var("mu_MXs1")));
+    minim.minos(RooArgSet(*w->var("mu_MXs2")));
+    minim.minos(RooArgSet(*w->var("mu_MXs3")));
 
     // fit!
     int status;
@@ -505,7 +509,9 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
         }
     }
 
-    w->var("mu")->setVal(injected_mu);
+    w->var("mu_MXs1")->setVal(injected_mu);
+    w->var("mu_MXs2")->setVal(injected_mu);
+    w->var("mu_MXs3")->setVal(injected_mu);
 
     /* ================================ cal Nexpected ================================*/
     RooAbsBinning const& binning = x_val->getBinning();
@@ -650,13 +656,15 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
     RooRealVar* x_val = w->var("obs_x_channel");
 
     int index = -1;
-    if (strcmp(sample_type, "Signal") == 0) index = 0;
-    else if (strcmp(sample_type, "CHG") == 0) index = 1;
-    else if (strcmp(sample_type, "MIX") == 0) index = 2;
-    else if (strcmp(sample_type, "UUBAR") == 0) index = 3;
-    else if (strcmp(sample_type, "DDBAR") == 0) index = 4;
-    else if (strcmp(sample_type, "SSBAR") == 0) index = 5;
-    else if (strcmp(sample_type, "CHARM") == 0) index = 6;
+    if (strcmp(sample_type, "Signal_MX1") == 0) index = 0;
+    else if (strcmp(sample_type, "Signal_MX2") == 0) index = 1;
+    else if (strcmp(sample_type, "Signal_MX3") == 0) index = 2;
+    else if (strcmp(sample_type, "CHG") == 0) index = 3;
+    else if (strcmp(sample_type, "MIX") == 0) index = 4;
+    else if (strcmp(sample_type, "UUBAR") == 0) index = 5;
+    else if (strcmp(sample_type, "DDBAR") == 0) index = 6;
+    else if (strcmp(sample_type, "SSBAR") == 0) index = 7;
+    else if (strcmp(sample_type, "CHARM") == 0) index = 8;
     else {
         printf("[ERROR] unexpected sample type!\n");
         exit(1);
@@ -751,10 +759,11 @@ void FitToData(RooWorkspace* w, double eps) {
         std::string name = rrv->GetName();
         double val = rrv->getVal();
         double err = rrv->getError();
+        double HIerr = rrv->getAsymErrorHi();
+        double LOerr = rrv->getAsymErrorLo();
 
-        if (name == std::string("mu")) {
-            printf("mu: %lf +- %lf\n", val, err);
-        }
+        printf("fit result for %s = %lf +- %lf\n", name.c_str(), val, err);
+        printf("MINOS error: %lf %lf\n", HIerr, LOerr);
 
     }
 
@@ -1114,7 +1123,9 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // uncorrelated
     for (int i = 0; i < RarityBins; i++) {
-        w->var(("gamma_Signal_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
+        w->var(("gamma_Signal_MXs1_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
+        w->var(("gamma_Signal_MXs2_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
+        w->var(("gamma_Signal_MXs3_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
         w->var(("gamma_CHG_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
         w->var(("gamma_MIX_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
         w->var(("gamma_UUBAR_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
@@ -1128,7 +1139,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 }
 
 void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
-
+    // deprecated. Do not use it before fix the function
     RooArgSet fitargs = fitres->floatParsFinal();
     TIterator* iter(fitargs.createIterator());
 
