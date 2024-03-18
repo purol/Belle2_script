@@ -69,7 +69,7 @@ using std::endl;
 void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data);
 
 #include "template.h"
-#include "corrector.h"
+#include "correctors.h"
 
 int Toy_iter_num = 0.0;
 int LT_iter_num = 0.0;
