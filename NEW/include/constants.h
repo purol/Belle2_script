@@ -139,4 +139,37 @@
 # define Scale_SSBAR_validation_MC15rd (0.361673/1.458959)
 # define Scale_CHARM_validation_MC15rd (0.361673/1.458959)
 
+// the number of Xs decay
+# define Xsu_frag_decay1 531.4
+# define Xsu_frag_decay2 1062.1
+# define Xsu_frag_decay3 673.9
+# define Xsu_frag_decay4 825.3
+# define Xsu_frag_decay5 473.3
+# define Xsu_frag_decay6 119.1
+# define Xsu_frag_decay7 24.6
+# define Xsu_frag_decay8 148.2
+# define Xsu_frag_decay9 127.6
+# define Xsu_frag_decay10 102.9
+# define Xsu_frag_decay11 91.8
+# define Xsu_frag_decay12 54.8
+# define Xsu_frag_decay13 21.7
+# define Xsu_frag_decay14 11.0
+# define Xsu_frag_decay30 858.4
+
+# define Xsd_frag_decay16 1072.6
+# define Xsd_frag_decay17 536.2
+# define Xsd_frag_decay18 835.5
+# define Xsd_frag_decay19 677.4
+# define Xsd_frag_decay20 120.5
+# define Xsd_frag_decay21 475.9
+# define Xsd_frag_decay22 149.8
+# define Xsd_frag_decay23 25.0
+# define Xsd_frag_decay24 129.2
+# define Xsd_frag_decay25 104.4
+# define Xsd_frag_decay26 92.4
+# define Xsd_frag_decay27 54.9
+# define Xsd_frag_decay28 14.5
+# define Xsd_frag_decay29 10.9
+# define Xsd_frag_decay30 871.0
+
 #endif 

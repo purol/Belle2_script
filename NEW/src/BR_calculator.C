@@ -49,6 +49,8 @@ Corrector_Xsnn corrector_Xsnn;
 Corrector_Multiplicity corrector_Multiplicity;
 Corrector_KpKLKL corrector_KpKLKL;
 Corrector_KSKLKL corrector_KSKLKL;
+Corrector_KstarKLKL corrector_KstarKLKL;
+Corrector_XsKLKL corrector_XsKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
 
 # define MCTYPE "MC15rd"
