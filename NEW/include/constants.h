@@ -29,6 +29,12 @@
 # define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
 # define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
 
+// arXiv:1409.4557v2
+# define BR_Kplus_nunubar_OLD 0.00000398
+# define BR_K0_nunubar_OLD (BR_Kplus_nunubar_OLD*TB0/TBp)
+# define BR_Xsu_nonresonant_nunubar_OLD (BR_Xs_nunubar - BR_Kplus_nunubar_OLD - BR_Kplusstar_nunubar)
+# define BR_Xsd_nonresonant_nunubar_OLD (BR_Xs_nunubar - BR_K0_nunubar_OLD - BR_K0star_nunubar)
+
 // according to DIRAC
 # define N_BpBp_1invab 540000000.0
 # define N_B0B0_1invab 510000000.0
@@ -171,5 +177,20 @@
 # define Xsd_frag_decay28 14.5
 # define Xsd_frag_decay29 10.9
 # define Xsd_frag_decay30 871.0
+
+// uncertainty of BR from parametric reason
+# define Sigma_BR_Kplus_nunubar 0.000000402
+# define Sigma_BR_K0star_nunubar 0.00000050
+# define Sigma_BR_K0_nunubar (Sigma_BR_Kplus_nunubar*TB0/TBp)
+# define Sigma_BR_Kplusstar_nunubar (Sigma_BR_K0star_nunubar*TBp/TB0)
+# define Sigma_BR_Xs_nunubar 0.000003
+
+# define N_Knn_type 4 //  B2Knn B2Kstarnn B02K0nn B02K0starnn
+const double B2Knn_up_uncer[N_Knn_type] = { // relative uncertainty
+    0.32 / 2.66, 0.28 / 1.24, 0.5 / 5.9, 0.8 / 3.6
+};
+const double B2Knn_dn_uncer[N_Knn_type] = { // relative uncertainty
+    0.32 / 2.66, 0.25 / 1.24, 0.5 / 5.9, 0.7 / 3.6
+};
 
 #endif 

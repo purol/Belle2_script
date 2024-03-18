@@ -50,6 +50,7 @@ Corrector_KSKLKL corrector_KSKLKL;
 Corrector_KstarKLKL corrector_KstarKLKL;
 Corrector_XsKLKL corrector_XsKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
+Corrector_Fragmentation corrector_Fragmentation;
 
 # define MCTYPE "MC15rd"
 
