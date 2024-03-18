@@ -144,7 +144,7 @@ int ReadMultiplicityInfo(const char* dirname) {
 	return N_hist;
 }
 
-int WorkSpace() {
+int main() {
 
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
 	int NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
