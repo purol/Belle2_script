@@ -492,6 +492,8 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
     // this causes a memory leak
     minim.optimizeConst(2);
     minim.migrad();
+    minim.minos(RooArgSet(*w->var("mu_MXs1")));
+    minim.minos(RooArgSet(*w->var("mu_MXs2")));
     minim.minos(RooArgSet(*w->var("mu_MXs3")));
 
     // fit!
@@ -722,7 +724,7 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
 
 }
 
-int Check_param() {
+int main() {
 
     ::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit"); // default: Minuit Migrad
     ::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
@@ -777,10 +779,8 @@ int Check_param() {
         double HIerr = rrv->getAsymErrorHi();
         double LOerr = rrv->getAsymErrorLo();
 
-        if (name == "mu_MXs3") {
-            printf("fit result mu_MXs3 = %lf +- %lf\n", val, err);
-            printf("MINOS error: %lf %lf\n", HIerr, LOerr);
-        }
+        printf("fit result for %s = %lf +- %lf\n", name.c_str(), val, err);
+        printf("MINOS error: %lf %lf\n", HIerr, LOerr);
 
     }
 
@@ -830,11 +830,18 @@ int Check_param() {
     delete cdata;
 
     // draw profile likelihood
-    RooRealVar* mu = w->var("mu_MXs3");
-    mu->setRange(mu->getValV() - 4, mu->getValV() + 4);
-    RooPlot* mu_frame = mu->frame();
-    RooAbsReal* pll = nll->createProfile(*mu);
-    pll->plotOn(mu_frame);
+    RooRealVar* mu_MXs1 = w->var("mu_MXs1");
+    mu_MXs1->setRange(mu_MXs1->GetValV() - 4, mu_MXs1->GetValV() + 4);
+
+    RooRealVar* mu_MXs2 = w->var("mu_MXs2");
+    mu_MXs2->setRange(mu_MXs2->GetValV() - 4, mu_MXs2->GetValV() + 4);
+
+    RooRealVar* mu_MXs3 = w->var("mu_MXs3");
+    mu_MXs3->setRange(mu_MXs3->getValV() - 4, mu_MXs3->getValV() + 4);
+
+    RooPlot* mu_frame = mu_MXs3->frame();
+    RooAbsReal* pll = nll->createProfile(*mu_MXs3);
+    pll->plotOn(mu_frame, RooFit::Precision(-1));
 
     TCanvas* cmu = new TCanvas("pllPlot", "pllPlot", 700, 700);
     mu_frame->Draw();
