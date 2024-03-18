@@ -185,6 +185,19 @@
 # define Sigma_BR_Kplusstar_nunubar (Sigma_BR_K0star_nunubar*TBp/TB0)
 # define Sigma_BR_Xs_nunubar 0.000003
 
+// scale factor for systematic MC sample
+# define N_K0star_nunubar_syst 10000000.0
+# define N_Kplusstar_nunubar_syst 10000000.0
+# define N_Xsu_nonresonant_nunubar_syst 10000000.0
+# define N_Xsd_nonresonant_nunubar_syst 10000000.0
+
+# define KS0_rel_uncertainty 0.6 // %/cm
+# define track_rel_uncertainty 0.24 // %
+# define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
+
+# define BR_KpKLKL_uncertainty (0.04/1.05) // not percentage. relative uncertainty
+# define BR_KSKLKL_uncertainty (0.5/6.0) // not percentage. relative uncertainty
+
 # define N_Knn_type 4 //  B2Knn B2Kstarnn B02K0nn B02K0starnn
 const double B2Knn_up_uncer[N_Knn_type] = { // relative uncertainty
     0.32 / 2.66, 0.28 / 1.24, 0.5 / 5.9, 0.8 / 3.6

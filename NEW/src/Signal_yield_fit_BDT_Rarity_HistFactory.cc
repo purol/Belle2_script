@@ -54,25 +54,6 @@ Corrector_Fragmentation corrector_Fragmentation;
 
 # define MCTYPE "MC15rd"
 
-// scale facto for systematic MC sample
-# define N_K0star_nunubar_syst 10000000.0
-# define N_Kplusstar_nunubar_syst 10000000.0
-# define N_Xsu_nonresonant_nunubar_syst 10000000.0
-# define N_Xsd_nonresonant_nunubar_syst 10000000.0
-
-// scale factor for each systematic MC sample (364.436 - 2.763 = 361.673/fb)
-# define Scale_Kplusstar_syst (N_Kplusstar_nunubar_LS1/N_Kplusstar_nunubar_syst)
-# define Scale_Xsu_nonresonant_syst (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_nunubar_syst)
-# define Scale_K0star_syst (N_K0star_nunubar_LS1/N_K0star_nunubar_syst)
-# define Scale_Xsd_nonresonant_syst (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar_syst)
-
-# define KS0_rel_uncertainty 0.6 // %/cm
-# define track_rel_uncertainty 0.24 // %
-# define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
-
-# define BR_KpKLKL_uncertainty (0.04/1.05) // not percentage. relative uncertainty
-# define BR_KSKLKL_uncertainty (0.5/6.0) // not percentage. relative uncertainty
-
 TH1D* Xsu_Hmb_weight;
 TH1D* Xsu_Lmb_weight;
 TH1D* Xsu_Hpf_weight;
@@ -356,37 +337,9 @@ double GetFragmentationWeight(const char* type, DecayModeMC SelectedDecayMode, b
     return 0;
 }
 
-
-//# define Htransition_Xsu_change (-0.142)
-//# define Htransition_Xsd_change (-0.099)
-//# define Ltransition_Xsu_change (-0.002)
-//# define Ltransition_Xsd_change (0.067)
-//# define Hmb_Xsu_change (-0.067)
-//# define Hmb_Xsd_change (-0.058)
-//# define Lmb_Xsu_change (-0.062)
-//# define Lmb_Xsd_change (-0.046)
-//# define Hpf_Xsu_change (-0.120)
-//# define Hpf_Xsd_change (-0.073)
-//# define Lpf_Xsu_change (-0.014)
-//# define Lpf_Xsd_change (0.019)
-
-//# define FEI_cal_Bc 1.0
-//# define FEI_cal_Bc_uncertainty 0.0
-//# define FEI_cal_B0 1.0
-//# define FEI_cal_B0_uncertainty 0.0
-
-//# define Htransition_Xsu_change 0.0
-//# define Htransition_Xsd_change 0.0
-//# define Ltransition_Xsu_change 0.0
-//# define Ltransition_Xsd_change 0.0
-//# define Hmb_Xsu_change 0.0
-//# define Hmb_Xsd_change 0.0
-//# define Lmb_Xsu_change 0.0
-//# define Lmb_Xsd_change 0.0
-//# define Hpf_Xsu_change 0.0
-//# define Hpf_Xsd_change 0.0
-//# define Lpf_Xsu_change 0.0
-//# define Lpf_Xsd_change 0.0
+int N_correction_multiplicity_weightfile = 0; // maximum value of Ngamma in weightfile
+int N_correction_multiplicity_MCsample = -1; // maximum value of Ngamma in MC samples
+TH1D* weights_Ngamma_uncer; // multiplication factor. If this number is multiplied to the number of event, result is the number of event with 1 sigma (nominal + 1 sigma)
 
 /* ====================================== */
 
