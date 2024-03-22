@@ -32,7 +32,7 @@ Corrector_KstarKLKL corrector_KstarKLKL;
 Corrector_XsKLKL corrector_XsKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
 
-# define MCTYPE "MC15ri"
+# define MCTYPE "MC15rd"
 
 # define KS0_rel_uncertainty 0.6 // %/cm
 # define track_rel_uncertainty 0.24 // %
@@ -310,7 +310,7 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "SIGNAL") {
-                numberings->push_back(14);
+                numberings->push_back(static_cast<int>(MCsample::SIGNAL));
                 if (nBp > 0) {
                     FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
@@ -831,7 +831,7 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "SIGNAL") {
-                numberings->push_back(14);
+                numberings->push_back(static_cast<int>(MCsample::SIGNAL));
                 if (nBp > 0) {
                     FEI_calibration_factor = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
                     weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));

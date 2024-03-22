@@ -27,35 +27,21 @@ void THStack_plot_sideband() {
     Nevt nevt_SSBAR = { 0.0, 0.0 };
     Nevt nevt_CHARM = { 0.0, 0.0 };
 
-    const char* Sideband_MC_CHG_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHG_analysis/train_v000/final_output";
-    const char* Sideband_MC_MIX_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/MIX_analysis/train_v000/final_output";
-    const char* Sideband_MC_UUBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/UUBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_DDBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/DDBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_SSBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/SSBAR_analysis/train_v000/final_output";
-    const char* Sideband_MC_CHARM_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHARM_analysis/train_v000/final_output";
+    const char* Sideband_MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_side/CHG_analysis/validation_v004/final_output";
+    const char* Sideband_MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_side/MIX_analysis/validation_v004/final_output";
+    const char* Sideband_MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_side/UUBAR_analysis/validation_v004/final_output";
+    const char* Sideband_MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_side/DDBAR_analysis/validation_v004/final_output";
+    const char* Sideband_MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_side/SSBAR_analysis/validation_v004/final_output";
+    const char* Sideband_MC_CHARM_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_side/CHARM_analysis/validation_v004/final_output";
 
-    const char* Sideband_MC_CHG_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHG_analysis/test_v000/final_output";
-    const char* Sideband_MC_MIX_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/MIX_analysis/test_v000/final_output";
-    const char* Sideband_MC_UUBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/UUBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_DDBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/DDBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_SSBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/SSBAR_analysis/test_v000/final_output";
-    const char* Sideband_MC_CHARM_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_side/CHARM_analysis/test_v000/final_output";
+    const char* Sideband_data_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_data_side/SIGNAL_analysis/validation_v004/final_output";
 
-    const char* Sideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_data_side/SIGNAL_analysis/validation_v000/final_output";
-
-    NevtCount_ri(Sideband_MC_CHG_train_dirname, "CHG", &nevt_CHG);
-    NevtCount_ri(Sideband_MC_MIX_train_dirname, "MIX", &nevt_MIX);
-    NevtCount_ri(Sideband_MC_UUBAR_train_dirname, "UUBAR", &nevt_UUBAR);
-    NevtCount_ri(Sideband_MC_DDBAR_train_dirname, "DDBAR", &nevt_DDBAR);
-    NevtCount_ri(Sideband_MC_SSBAR_train_dirname, "SSBAR", &nevt_SSBAR);
-    NevtCount_ri(Sideband_MC_CHARM_train_dirname, "CHARM", &nevt_CHARM);
-
-    NevtCount_ri(Sideband_MC_CHG_test_dirname, "CHG", &nevt_CHG);
-    NevtCount_ri(Sideband_MC_MIX_test_dirname, "MIX", &nevt_MIX);
-    NevtCount_ri(Sideband_MC_UUBAR_test_dirname, "UUBAR", &nevt_UUBAR);
-    NevtCount_ri(Sideband_MC_DDBAR_test_dirname, "DDBAR", &nevt_DDBAR);
-    NevtCount_ri(Sideband_MC_SSBAR_test_dirname, "SSBAR", &nevt_SSBAR);
-    NevtCount_ri(Sideband_MC_CHARM_test_dirname, "CHARM", &nevt_CHARM);
+    NevtCount_ri(Sideband_MC_CHG_validation_dirname, "CHG", &nevt_CHG);
+    NevtCount_ri(Sideband_MC_MIX_validation_dirname, "MIX", &nevt_MIX);
+    NevtCount_ri(Sideband_MC_UUBAR_validation_dirname, "UUBAR", &nevt_UUBAR);
+    NevtCount_ri(Sideband_MC_DDBAR_validation_dirname, "DDBAR", &nevt_DDBAR);
+    NevtCount_ri(Sideband_MC_SSBAR_validation_dirname, "SSBAR", &nevt_SSBAR);
+    NevtCount_ri(Sideband_MC_CHARM_validation_dirname, "CHARM", &nevt_CHARM);
 
     double NormFactor_CHG = nevt_CHG.NevtwithoutCorrection / nevt_CHG.NevtwithCorrection;
     double NormFactor_MIX = nevt_MIX.NevtwithoutCorrection / nevt_MIX.NevtwithCorrection;
@@ -238,33 +224,21 @@ void THStack_plot_sideband() {
     std::vector<double> eemumu_weights;
     std::vector<double> llXX_weights;
     std::vector<double> hhISR_weights;
-
-    LetsFillMC(Sideband_MC_CHG_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
-    LetsFillMC(Sideband_MC_MIX_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
-    LetsFillMC_correction(Sideband_MC_UUBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR);
-    LetsFillMC_correction(Sideband_MC_DDBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR);
-    LetsFillMC_correction(Sideband_MC_SSBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR);
-    LetsFillMC_correction(Sideband_MC_CHARM_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM", NormFactor_CHARM);
-    LetsFillMC(Sideband_MC_CHG_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
-    LetsFillMC(Sideband_MC_MIX_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
-    LetsFillMC_correction(Sideband_MC_UUBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR);
-    LetsFillMC_correction(Sideband_MC_DDBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR);
-    LetsFillMC_correction(Sideband_MC_SSBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR);
-    LetsFillMC_correction(Sideband_MC_CHARM_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM", NormFactor_CHARM);
     /*
-    LetsFillMC(Sideband_MC_CHG_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
-    LetsFillMC(Sideband_MC_MIX_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
-    LetsFillMC(Sideband_MC_UUBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR");
-    LetsFillMC(Sideband_MC_DDBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR");
-    LetsFillMC(Sideband_MC_SSBAR_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR");
-    LetsFillMC(Sideband_MC_CHARM_train_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM");
-    LetsFillMC(Sideband_MC_CHG_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
-    LetsFillMC(Sideband_MC_MIX_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
-    LetsFillMC(Sideband_MC_UUBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR");
-    LetsFillMC(Sideband_MC_DDBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR");
-    LetsFillMC(Sideband_MC_SSBAR_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR");
-    LetsFillMC(Sideband_MC_CHARM_test_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM");
+    LetsFillMC(Sideband_MC_CHG_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
+    LetsFillMC(Sideband_MC_MIX_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
+    LetsFillMC_correction(Sideband_MC_UUBAR_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR);
+    LetsFillMC_correction(Sideband_MC_DDBAR_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR);
+    LetsFillMC_correction(Sideband_MC_SSBAR_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR);
+    LetsFillMC_correction(Sideband_MC_CHARM_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM", NormFactor_CHARM);
     */
+    LetsFillMC(Sideband_MC_CHG_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
+    LetsFillMC(Sideband_MC_MIX_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
+    LetsFillMC(Sideband_MC_UUBAR_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR");
+    LetsFillMC(Sideband_MC_DDBAR_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR");
+    LetsFillMC(Sideband_MC_SSBAR_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR");
+    LetsFillMC(Sideband_MC_CHARM_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM");
+    
     LetsFilldata(Sideband_data_dirname, variable_names, branch_names, Sideband_data_values);
 
     // sort variables

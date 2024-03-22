@@ -21,14 +21,14 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 void THStack_plot_embedded() {
 
     // dirnames
-    const char* Embedded_MC_CHG_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/CHG";
-    const char* Embedded_MC_MIX_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/MIX";
-    const char* Embedded_MC_UUBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/UUBAR";
-    const char* Embedded_MC_DDBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/DDBAR";
-    const char* Embedded_MC_SSBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/SSBAR";
-    const char* Embedded_MC_CHARM_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/CHARM";
+    const char* Embedded_MC_CHG_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_embedded/SIGNAL_analysis/validation_v004/final_output_root_after_MVA_Application/for_plot/CHG";
+    const char* Embedded_MC_MIX_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_embedded/SIGNAL_analysis/validation_v004/final_output_root_after_MVA_Application/for_plot/MIX";
+    const char* Embedded_MC_UUBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_embedded/SIGNAL_analysis/validation_v004/final_output_root_after_MVA_Application/for_plot/UUBAR";
+    const char* Embedded_MC_DDBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_embedded/SIGNAL_analysis/validation_v004/final_output_root_after_MVA_Application/for_plot/DDBAR";
+    const char* Embedded_MC_SSBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_embedded/SIGNAL_analysis/validation_v004/final_output_root_after_MVA_Application/for_plot/SSBAR";
+    const char* Embedded_MC_CHARM_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_embedded/SIGNAL_analysis/validation_v004/final_output_root_after_MVA_Application/for_plot/CHARM";
 
-    const char* Embedded_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_embedded/SIGNAL_analysis/validation_v005/final_output_root_after_MVA_Application/for_plot/data";
+    const char* Embedded_data_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_embedded/SIGNAL_analysis/validation_v004/final_output_root_after_MVA_Application/for_plot/data";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;

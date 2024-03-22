@@ -18,24 +18,34 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "base.h"
 #include "THStack_plot.h"
 
-void THStack_plot_offres() {
+void THStack_plot_sideband() {
 
+    Nevt nevt_CHG = { 0.0, 0.0 };
+    Nevt nevt_MIX = { 0.0, 0.0 };
     Nevt nevt_UUBAR = { 0.0, 0.0 };
     Nevt nevt_DDBAR = { 0.0, 0.0 };
     Nevt nevt_SSBAR = { 0.0, 0.0 };
     Nevt nevt_CHARM = { 0.0, 0.0 };
 
-    const char* Offres_MC_UUBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_off/UUBAR_analysis/validation_v004/final_output";
-    const char* Offres_MC_DDBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_off/DDBAR_analysis/validation_v004/final_output";
-    const char* Offres_MC_SSBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_off/SSBAR_analysis/validation_v004/final_output";
-    const char* Offres_MC_CHARM_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_off/CHARM_analysis/validation_v004/final_output";
-    const char* Offres_data_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_data_off/SIGNAL_analysis/validation_v004/final_output";
+    const char* Nominal_MC_SIGNAL_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/final_output";
+    const char* Nominal_MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHG_analysis/validation_v004/final_output";
+    const char* Nominal_MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/MIX_analysis/validation_v004/final_output";
+    const char* Nominal_MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/UUBAR_analysis/validation_v004/final_output";
+    const char* Nominal_MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/DDBAR_analysis/validation_v004/final_output";
+    const char* Nominal_MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SSBAR_analysis/validation_v004/final_output";
+    const char* Nominal_MC_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHARM_analysis/validation_v004/final_output";
 
-    NevtCount_ri(Offres_MC_UUBAR_dirname, "UUBAR", &nevt_UUBAR);
-    NevtCount_ri(Offres_MC_DDBAR_dirname, "DDBAR", &nevt_DDBAR);
-    NevtCount_ri(Offres_MC_SSBAR_dirname, "SSBAR", &nevt_SSBAR);
-    NevtCount_ri(Offres_MC_CHARM_dirname, "CHARM", &nevt_CHARM);
+    const char* Nominal_data_dirname = "";
 
+    NevtCount_ri(Nominal_MC_CHG_validation_dirname, "CHG", &nevt_CHG);
+    NevtCount_ri(Nominal_MC_MIX_validation_dirname, "MIX", &nevt_MIX);
+    NevtCount_ri(Nominal_MC_UUBAR_validation_dirname, "UUBAR", &nevt_UUBAR);
+    NevtCount_ri(Nominal_MC_DDBAR_validation_dirname, "DDBAR", &nevt_DDBAR);
+    NevtCount_ri(Nominal_MC_SSBAR_validation_dirname, "SSBAR", &nevt_SSBAR);
+    NevtCount_ri(Nominal_MC_CHARM_validation_dirname, "CHARM", &nevt_CHARM);
+
+    double NormFactor_CHG = nevt_CHG.NevtwithoutCorrection / nevt_CHG.NevtwithCorrection;
+    double NormFactor_MIX = nevt_MIX.NevtwithoutCorrection / nevt_MIX.NevtwithCorrection;
     double NormFactor_UUBAR = nevt_UUBAR.NevtwithoutCorrection / nevt_UUBAR.NevtwithCorrection;
     double NormFactor_DDBAR = nevt_DDBAR.NevtwithoutCorrection / nevt_DDBAR.NevtwithCorrection;
     double NormFactor_SSBAR = nevt_SSBAR.NevtwithoutCorrection / nevt_SSBAR.NevtwithCorrection;
@@ -181,7 +191,7 @@ void THStack_plot_offres() {
 
     Nvar_num = static_cast<int>(variable_names.size());
 
-    std::vector<double>* Offres_MC_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* Nominal_MC_values = new std::vector<double>[Nvar_num];
     std::vector<double>* charged_values = new std::vector<double>[Nvar_num];
     std::vector<double>* mixed_values = new std::vector<double>[Nvar_num];
     std::vector<double>* uubar_values = new std::vector<double>[Nvar_num];
@@ -196,9 +206,10 @@ void THStack_plot_offres() {
     std::vector<double>* eemumu_values = new std::vector<double>[Nvar_num];
     std::vector<double>* llXX_values = new std::vector<double>[Nvar_num];
     std::vector<double>* hhISR_values = new std::vector<double>[Nvar_num];
-    std::vector<int> Offres_MC_numbering;
+    std::vector<double>* signal_values = new std::vector<double>[Nvar_num];
+    std::vector<int> Nominal_MC_numbering;
 
-    std::vector<double>* Offres_data_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* Nominal_data_values = new std::vector<double>[Nvar_num];
 
     std::vector<double> weights;
     std::vector<double> charged_weights;
@@ -215,76 +226,87 @@ void THStack_plot_offres() {
     std::vector<double> eemumu_weights;
     std::vector<double> llXX_weights;
     std::vector<double> hhISR_weights;
-
+    std::vector<double> signal_weights;
     /*
-    LetsFillMC_correction(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR, 0, (0.25 / Scale_UUBAR_validation_MC15rd));
-    LetsFillMC_correction(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR, 0, (0.25 / Scale_DDBAR_validation_MC15rd));
-    LetsFillMC_correction(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR, 0, (0.25 / Scale_SSBAR_validation_MC15rd));
-    LetsFillMC_correction(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM", NormFactor_CHARM, 0, (0.25 / Scale_CHARM_validation_MC15rd));
+    LetsFillMC(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "CHG");
+    LetsFillMC(Nominal_MC_CHG_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "CHG");
+    LetsFillMC(Nominal_MC_MIX_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "MIX");
+    LetsFillMC_correction(Nominal_MC_UUBAR_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR);
+    LetsFillMC_correction(Nominal_MC_DDBAR_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR);
+    LetsFillMC_correction(Nominal_MC_SSBAR_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR);
+    LetsFillMC_correction(Nominal_MC_CHARM_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "CHARM", NormFactor_CHARM);
     */
-    LetsFillMC(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR", 0, (0.25 / Scale_UUBAR_validation_MC15rd));
-    LetsFillMC(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR", 0, (0.25 / Scale_DDBAR_validation_MC15rd));
-    LetsFillMC(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR", 0, (0.25 / Scale_SSBAR_validation_MC15rd));
-    LetsFillMC(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM", 0, (0.25 / Scale_CHARM_validation_MC15rd));
-    LetsFilldata(Offres_data_dirname, variable_names, branch_names, Offres_data_values);
+    LetsFillMC(Nominal_MC_SIGNAL_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "SIGNAL");
+    LetsFillMC(Nominal_MC_CHG_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "CHG");
+    LetsFillMC(Nominal_MC_MIX_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "MIX");
+    LetsFillMC(Nominal_MC_UUBAR_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "UUBAR");
+    LetsFillMC(Nominal_MC_DDBAR_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "DDBAR");
+    LetsFillMC(Nominal_MC_SSBAR_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "SSBAR");
+    LetsFillMC(Nominal_MC_CHARM_validation_dirname, variable_names, branch_names, Nominal_MC_values, &Nominal_MC_numbering, &weights, "CHARM");
+    
+    LetsFilldata(Nominal_data_dirname, variable_names, branch_names, Nominal_data_values);
 
     // sort variables
-    for (int k = 0; k < (int)Offres_MC_numbering.size(); k++) {
-        if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::CHG)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) charged_values[l].push_back(Offres_MC_values[l].at(k));
+    for (int k = 0; k < (int)Nominal_MC_numbering.size(); k++) {
+        if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::CHG)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) charged_values[l].push_back(Nominal_MC_values[l].at(k));
             charged_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::MIX)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) mixed_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::MIX)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) mixed_values[l].push_back(Nominal_MC_values[l].at(k));
             mixed_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::UUBAR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) uubar_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::UUBAR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) uubar_values[l].push_back(Nominal_MC_values[l].at(k));
             uubar_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::DDBAR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ddbar_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::DDBAR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ddbar_values[l].push_back(Nominal_MC_values[l].at(k));
             ddbar_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::SSBAR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ssbar_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::SSBAR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ssbar_values[l].push_back(Nominal_MC_values[l].at(k));
             ssbar_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::CHARM)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ccbar_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::CHARM)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ccbar_values[l].push_back(Nominal_MC_values[l].at(k));
             ccbar_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::TAU)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) taupair_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::TAU)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) taupair_values[l].push_back(Nominal_MC_values[l].at(k));
             taupair_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::MUMU)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) mumu_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::MUMU)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) mumu_values[l].push_back(Nominal_MC_values[l].at(k));
             mumu_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::GG)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) gg_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::GG)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) gg_values[l].push_back(Nominal_MC_values[l].at(k));
             gg_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::EE)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ee_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::EE)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ee_values[l].push_back(Nominal_MC_values[l].at(k));
             ee_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::EEEE)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) eeee_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::EEEE)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) eeee_values[l].push_back(Nominal_MC_values[l].at(k));
             eeee_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::EEMUMU)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) eemumu_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::EEMUMU)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) eemumu_values[l].push_back(Nominal_MC_values[l].at(k));
             eemumu_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::LLXX)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) llXX_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::LLXX)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) llXX_values[l].push_back(Nominal_MC_values[l].at(k));
             llXX_weights.push_back(weights.at(k));
         }
-        else if (Offres_MC_numbering.at(k) == static_cast<int>(MCsample::HHISR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) hhISR_values[l].push_back(Offres_MC_values[l].at(k));
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::HHISR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) hhISR_values[l].push_back(Nominal_MC_values[l].at(k));
             hhISR_weights.push_back(weights.at(k));
+        }
+        else if (Nominal_MC_numbering.at(k) == static_cast<int>(MCsample::SIGNAL)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) signal_values[l].push_back(Nominal_MC_values[l].at(k));
+            signal_weights.push_back(weights.at(k));
         }
         else {
             printf("undefined numbering!\n");
@@ -307,6 +329,7 @@ void THStack_plot_offres() {
     TH1D** eemumu_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
     TH1D** llXX_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
     TH1D** hhISR_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
+    TH1D** signal_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
     TH1D** stat_error_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
     TH1D** data_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
     TH1D** Ratio_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
@@ -331,7 +354,8 @@ void THStack_plot_offres() {
         temp_v.insert(temp_v.end(), eemumu_values[k].begin(), eemumu_values[k].end());
         temp_v.insert(temp_v.end(), llXX_values[k].begin(), llXX_values[k].end());
         temp_v.insert(temp_v.end(), hhISR_values[k].begin(), hhISR_values[k].end());
-        temp_v.insert(temp_v.end(), Offres_data_values[k].begin(), Offres_data_values[k].end());
+        temp_v.insert(temp_v.end(), signal_values[k].begin(), signal_values[k].end());
+        temp_v.insert(temp_v.end(), Nominal_data_values[k].begin(), Nominal_data_values[k].end());
 
 
         double min = *min_element(temp_v.begin(), temp_v.end());
@@ -446,6 +470,7 @@ void THStack_plot_offres() {
         eemumu_hist[k] = new TH1D("e#bar{e}#mu#bar{#mu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         llXX_hist[k] = new TH1D("\ell#bar{\ell}XX", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         hhISR_hist[k] = new TH1D("hhISR", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        signal_hist[k] = new TH1D("signal", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;data/MC", bins, min, max);
@@ -466,8 +491,9 @@ void THStack_plot_offres() {
     for (int i = 0; i < (int)eemumu_values[index].size(); i++) eemumu_values[index].at(i) = log10l(eemumu_values[index].at(i));
     for (int i = 0; i < (int)llXX_values[index].size(); i++) llXX_values[index].at(i) = log10l(llXX_values[index].at(i));
     for (int i = 0; i < (int)hhISR_values[index].size(); i++) hhISR_values[index].at(i) = log10l(hhISR_values[index].at(i));
-    for (int i = 0; i < (int)Offres_MC_values[index].size(); i++) Offres_MC_values[index].at(i) = log10l(Offres_MC_values[index].at(i));
-    for (int i = 0; i < (int)Offres_data_values[index].size(); i++) Offres_data_values[index].at(i) = log10l(Offres_data_values[index].at(i));
+    for (int i = 0; i < (int)signal_values[index].size(); i++) signal_values[index].at(i) = log10l(signal_values[index].at(i));
+    for (int i = 0; i < (int)Nominal_MC_values[index].size(); i++) Nominal_MC_values[index].at(i) = log10l(Nominal_MC_values[index].at(i));
+    for (int i = 0; i < (int)Nominal_data_values[index].size(); i++) Nominal_data_values[index].at(i) = log10l(Nominal_data_values[index].at(i));
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
         for (int i = 0; i < (int)charged_values[k].size(); i++) charged_hist[k]->Fill(charged_values[k].at(i), charged_weights.at(i));
@@ -484,12 +510,13 @@ void THStack_plot_offres() {
         for (int i = 0; i < (int)eemumu_values[k].size(); i++) eemumu_hist[k]->Fill(eemumu_values[k].at(i), eemumu_weights.at(i));
         for (int i = 0; i < (int)llXX_values[k].size(); i++) llXX_hist[k]->Fill(llXX_values[k].at(i), llXX_weights.at(i));
         for (int i = 0; i < (int)hhISR_values[k].size(); i++) hhISR_hist[k]->Fill(hhISR_values[k].at(i), hhISR_weights.at(i));
-        for (int i = 0; i < (int)Offres_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Offres_MC_values[k].at(i), weights.at(i));
-        for (int i = 0; i < (int)Offres_data_values[k].size(); i++) data_hist[k]->Fill(Offres_data_values[k].at(i));
+        for (int i = 0; i < (int)signal_values[k].size(); i++) signal_hist[k]->Fill(signal_values[k].at(i), signal_weights.at(i));
+        for (int i = 0; i < (int)Nominal_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Nominal_MC_values[k].at(i), weights.at(i));
+        for (int i = 0; i < (int)Nominal_data_values[k].size(); i++) data_hist[k]->Fill(Nominal_data_values[k].at(i));
 
         if (variable_names.at(k) == "nROE_ParticlesInList__bopi0__clmyneutralPion__bc") {
-            for (int i = 0; i < (int)Offres_MC_values[k].size(); i++) MC_one_bin->Fill(Offres_MC_values[k].at(i), weights.at(i));
-            for (int i = 0; i < (int)Offres_data_values[k].size(); i++) data_one_bin->Fill(Offres_data_values[k].at(i));
+            for (int i = 0; i < (int)Nominal_MC_values[k].size(); i++) MC_one_bin->Fill(Nominal_MC_values[k].at(i), weights.at(i));
+            for (int i = 0; i < (int)Nominal_data_values[k].size(); i++) data_one_bin->Fill(Nominal_data_values[k].at(i));
         }
     }
     Ratio_one_bin->Divide(data_one_bin, MC_one_bin);
@@ -508,11 +535,12 @@ void THStack_plot_offres() {
     printf("eemuu: %d\n", (int)eemumu_values[0].size());
     printf("llXX: %d\n", (int)llXX_values[0].size());
     printf("hhISR: %d\n", (int)hhISR_values[0].size());
-    printf("data: %d\n", (int)Offres_data_values[0].size());
+    printf("signal: %d\n", (int)signal_values[0].size());
+    printf("data: %d\n", (int)Nominal_data_values[0].size());
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
-        //Stack[k]->Add(charged_hist[k]);
-        //Stack[k]->Add(mixed_hist[k]);
+        Stack[k]->Add(charged_hist[k]);
+        Stack[k]->Add(mixed_hist[k]);
         Stack[k]->Add(uubar_hist[k]);
         Stack[k]->Add(ddbar_hist[k]);
         Stack[k]->Add(ssbar_hist[k]);
@@ -525,6 +553,7 @@ void THStack_plot_offres() {
         //Stack[k]->Add(eemumu_hist[k]);
         //Stack[k]->Add(llXX_hist[k]);
         //Stack[k]->Add(hhISR_hist[k]);
+        signal_hist[k]->SetLineWidth(3); signal_hist[k]->SetLineColor(2); signal_hist[k]->SetFillStyle(0);
 
         Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
         Ratio_hist[k]->Divide(data_hist[k], stat_error_hist[k]);
@@ -534,7 +563,7 @@ void THStack_plot_offres() {
         TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
         pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
         pad1->SetGridx(); pad1->Draw(); pad1->cd();
-        if((variable_names.at(k).find("MVA") != std::string::npos) && (Offres_MC_values[k].size() > 10000)) pad1->SetLogy(1);
+        if((variable_names.at(k).find("MVA") != std::string::npos) && (Nominal_MC_values[k].size() > 10000)) pad1->SetLogy(1);
         else pad1->SetLogy(0);
 
         gStyle->SetPalette(kPastel);
@@ -549,7 +578,7 @@ void THStack_plot_offres() {
 
         Stack[k]->Draw("pfc Hist");
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
-        data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP");
+        data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP"); signal_hist[k]->Draw("HistSAME");
         TLegend* legend = pad1->BuildLegend(0.9, 0.9, 0.7, 0.7);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
         TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str()); pt->Draw();
@@ -573,15 +602,15 @@ void THStack_plot_offres() {
 
     // Print data-MC discrepancy
     double MC_sum = 0;
-    for (int i = 0; i < (int)Offres_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
-    printf("data num: %ld\n", Offres_data_values[0].size());
+    for (int i = 0; i < (int)Nominal_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
+    printf("data num: %ld\n", Nominal_data_values[0].size());
     printf("MC num with calibration: %lf\n", MC_sum);
     printf("MC with calibration: %lf +- %lf\n", MC_one_bin->GetBinContent(1), MC_one_bin->GetBinError(1));
     printf("data with calibration: %lf +- %lf\n", data_one_bin->GetBinContent(1), data_one_bin->GetBinError(1));
     printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin->GetBinContent(1), Ratio_one_bin->GetBinError(1));
 
     // free
-    delete[] Offres_MC_values;
+    delete[] Nominal_MC_values;
     delete[] charged_values;
     delete[] mixed_values;
     delete[] uubar_values;
@@ -596,8 +625,9 @@ void THStack_plot_offres() {
     delete[] eemumu_values;
     delete[] llXX_values;
     delete[] hhISR_values;
+    delete[] signal_values;
 
-    delete[] Offres_data_values;
+    delete[]  Nominal_data_values;
 
     for (int k = 0; k < Nvar_num; k++) {
         delete Stack[k];
@@ -615,6 +645,7 @@ void THStack_plot_offres() {
         delete eemumu_hist[k];
         delete llXX_hist[k];
         delete hhISR_hist[k];
+        delete signal_hist[k];
         delete stat_error_hist[k];
         delete data_hist[k];
         delete Ratio_hist[k];
@@ -635,6 +666,7 @@ void THStack_plot_offres() {
     free(eemumu_hist);
     free(llXX_hist);
     free(hhISR_hist);
+    free(signal_hist);
     free(stat_error_hist);
     free(data_hist);
     free(Ratio_hist);

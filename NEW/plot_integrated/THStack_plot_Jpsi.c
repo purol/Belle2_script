@@ -22,15 +22,15 @@ void THStack_plot_Jpsi() {
 
 
     // dirnames
-    const char* Jpsi_MC_SIGNAL_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_Jpsi/SIGNAL_analysis/validation_v000/final_output";
-    const char* Jpsi_MC_CHG_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_Jpsi/CHG_analysis/validation_v000/final_output";
-    const char* Jpsi_MC_MIX_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_Jpsi/MIX_analysis/validation_v000/final_output";
-    const char* Jpsi_MC_UUBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_Jpsi/UUBAR_analysis/validation_v000/final_output";
-    const char* Jpsi_MC_DDBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_Jpsi/DDBAR_analysis/validation_v000/final_output";
-    const char* Jpsi_MC_SSBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_Jpsi/SSBAR_analysis/validation_v000/final_output";
-    const char* Jpsi_MC_CHARM_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_Jpsi/CHARM_analysis/validation_v000/final_output";
+    const char* Jpsi_MC_SIGNAL_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/SIGNAL_analysis/validation_v004/final_output";
+    const char* Jpsi_MC_CHG_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/CHG_analysis/validation_v004/final_output";
+    const char* Jpsi_MC_MIX_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/MIX_analysis/validation_v004/final_output";
+    const char* Jpsi_MC_UUBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/UUBAR_analysis/validation_v004/final_output";
+    const char* Jpsi_MC_DDBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/DDBAR_analysis/validation_v004/final_output";
+    const char* Jpsi_MC_SSBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/SSBAR_analysis/validation_v004/final_output";
+    const char* Jpsi_MC_CHARM_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/CHARM_analysis/validation_v004/final_output";
 
-    const char* Jpsi_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_data_Jpsi/SIGNAL_analysis/validation_v000/final_output";
+    const char* Jpsi_data_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_data_Jpsi/SIGNAL_analysis/validation_v004/final_output";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;

@@ -27,35 +27,21 @@ void THStack_plot_charge_sideband() {
     Nevt nevt_SSBAR = { 0.0, 0.0 };
     Nevt nevt_CHARM = { 0.0, 0.0 };
 
-    const char* ChargeSideband_MC_CHG_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/CHG_analysis/train_v000/final_output";
-    const char* ChargeSideband_MC_MIX_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/MIX_analysis/train_v000/final_output";
-    const char* ChargeSideband_MC_UUBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/UUBAR_analysis/train_v000/final_output";
-    const char* ChargeSideband_MC_DDBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/DDBAR_analysis/train_v000/final_output";
-    const char* ChargeSideband_MC_SSBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/SSBAR_analysis/train_v000/final_output";
-    const char* ChargeSideband_MC_CHARM_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/CHARM_analysis/train_v000/final_output";
+    const char* ChargeSideband_MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/CHG_analysis/validation_v004/final_output";
+    const char* ChargeSideband_MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/MIX_analysis/validation_v004/final_output";
+    const char* ChargeSideband_MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/UUBAR_analysis/validation_v004/final_output";
+    const char* ChargeSideband_MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/DDBAR_analysis/validation_v004/final_output";
+    const char* ChargeSideband_MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/SSBAR_analysis/validation_v004/final_output";
+    const char* ChargeSideband_MC_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/CHARM_analysis/validation_v004/final_output";
 
-    const char* ChargeSideband_MC_CHG_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/CHG_analysis/test_v000/final_output";
-    const char* ChargeSideband_MC_MIX_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/MIX_analysis/test_v000/final_output";
-    const char* ChargeSideband_MC_UUBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/UUBAR_analysis/test_v000/final_output";
-    const char* ChargeSideband_MC_DDBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/DDBAR_analysis/test_v000/final_output";
-    const char* ChargeSideband_MC_SSBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/SSBAR_analysis/test_v000/final_output";
-    const char* ChargeSideband_MC_CHARM_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/CHARM_analysis/test_v000/final_output";
+    const char* ChargeSideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_data_cside/SIGNAL_analysis/validation_v004/final_output";
 
-    const char* ChargeSideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_data_cside/SIGNAL_analysis/validation_v000/final_output";
-
-    NevtCount_ri(ChargeSideband_MC_CHG_train_dirname, "CHG", &nevt_CHG);
-    NevtCount_ri(ChargeSideband_MC_MIX_train_dirname, "MIX", &nevt_MIX);
-    NevtCount_ri(ChargeSideband_MC_UUBAR_train_dirname, "UUBAR", &nevt_UUBAR);
-    NevtCount_ri(ChargeSideband_MC_DDBAR_train_dirname, "DDBAR", &nevt_DDBAR);
-    NevtCount_ri(ChargeSideband_MC_SSBAR_train_dirname, "SSBAR", &nevt_SSBAR);
-    NevtCount_ri(ChargeSideband_MC_CHARM_train_dirname, "CHARM", &nevt_CHARM);
-
-    NevtCount_ri(ChargeSideband_MC_CHG_test_dirname, "CHG", &nevt_CHG);
-    NevtCount_ri(ChargeSideband_MC_MIX_test_dirname, "MIX", &nevt_MIX);
-    NevtCount_ri(ChargeSideband_MC_UUBAR_test_dirname, "UUBAR", &nevt_UUBAR);
-    NevtCount_ri(ChargeSideband_MC_DDBAR_test_dirname, "DDBAR", &nevt_DDBAR);
-    NevtCount_ri(ChargeSideband_MC_SSBAR_test_dirname, "SSBAR", &nevt_SSBAR);
-    NevtCount_ri(ChargeSideband_MC_CHARM_test_dirname, "CHARM", &nevt_CHARM);
+    NevtCount_ri(ChargeSideband_MC_CHG_validation_dirname, "CHG", &nevt_CHG);
+    NevtCount_ri(ChargeSideband_MC_MIX_validation_dirname, "MIX", &nevt_MIX);
+    NevtCount_ri(ChargeSideband_MC_UUBAR_validation_dirname, "UUBAR", &nevt_UUBAR);
+    NevtCount_ri(ChargeSideband_MC_DDBAR_validation_dirname, "DDBAR", &nevt_DDBAR);
+    NevtCount_ri(ChargeSideband_MC_SSBAR_validation_dirname, "SSBAR", &nevt_SSBAR);
+    NevtCount_ri(ChargeSideband_MC_CHARM_validation_dirname, "CHARM", &nevt_CHARM);
 
     double NormFactor_CHG = nevt_CHG.NevtwithoutCorrection / nevt_CHG.NevtwithCorrection;
     double NormFactor_MIX = nevt_MIX.NevtwithoutCorrection / nevt_MIX.NevtwithCorrection;
@@ -240,18 +226,12 @@ void THStack_plot_charge_sideband() {
     std::vector<double> hhISR_weights;
 
     
-    LetsFillMC(ChargeSideband_MC_CHG_train_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "CHG", 1);
-    LetsFillMC(ChargeSideband_MC_MIX_train_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "MIX", 1);
-    LetsFillMC(ChargeSideband_MC_UUBAR_train_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "UUBAR", 1);
-    LetsFillMC(ChargeSideband_MC_DDBAR_train_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "DDBAR", 1);
-    LetsFillMC(ChargeSideband_MC_SSBAR_train_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "SSBAR", 1);
-    LetsFillMC(ChargeSideband_MC_CHARM_train_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "CHARM", 1);
-    LetsFillMC(ChargeSideband_MC_CHG_test_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "CHG", 1);
-    LetsFillMC(ChargeSideband_MC_MIX_test_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "MIX", 1);
-    LetsFillMC(ChargeSideband_MC_UUBAR_test_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "UUBAR", 1);
-    LetsFillMC(ChargeSideband_MC_DDBAR_test_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "DDBAR", 1);
-    LetsFillMC(ChargeSideband_MC_SSBAR_test_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "SSBAR", 1);
-    LetsFillMC(ChargeSideband_MC_CHARM_test_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "CHARM", 1);
+    LetsFillMC(ChargeSideband_MC_CHG_validation_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "CHG", 1);
+    LetsFillMC(ChargeSideband_MC_MIX_validation_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "MIX", 1);
+    LetsFillMC(ChargeSideband_MC_UUBAR_validation_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "UUBAR", 1);
+    LetsFillMC(ChargeSideband_MC_DDBAR_validation_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "DDBAR", 1);
+    LetsFillMC(ChargeSideband_MC_SSBAR_validation_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "SSBAR", 1);
+    LetsFillMC(ChargeSideband_MC_CHARM_validation_dirname, variable_names, branch_names, ChargeSideband_MC_values, &ChargeSideband_MC_numbering, &weights, "CHARM", 1);
     
     LetsFilldata(ChargeSideband_data_dirname, variable_names, branch_names, ChargeSideband_data_values, "root", 1);
 
