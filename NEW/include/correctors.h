@@ -173,6 +173,8 @@ public:
 };
 
 Corrector_PID::Corrector_PID() {
+    printf("[Corrector_PID] try to read PID correction files...\n");
+
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < N_PID_syst; j++) {
             PID_correction_MC15ri[i][j] = 0.0;
@@ -429,6 +431,8 @@ public:
 };
 
 Corrector_FakePID::Corrector_FakePID() {
+    printf("[Corrector_FakePID] try to read fake PID correction files...\n");
+
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < N_fakeE_syst; j++) {
             PID_fakeE_correction_MC15ri[i][j] = 0.0;
@@ -1160,6 +1164,8 @@ Corrector_ProtonID::Corrector_ProtonID() {
 }
 
 void Corrector_ProtonID::ReadPIDFile_MC15rd() {
+    printf("[Corrector_ProtonID] try to read protonID correction files...\n");
+
     const char* ProtonID_true_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15rd_PID/ProtonEff.csv";
 
     FILE* fp_ProtonID_true = fopen(ProtonID_true_file, "r");
@@ -1516,6 +1522,8 @@ Corrector_Knn::Corrector_Knn() :
     tau_Bp(1.6384), // ps
     tau_B0(1.5195) // ps
 {
+    printf("[Corrector_Knn] try to read Knn correction files...\n");
+
     FILE* fp;
 
     // read Knn weights
@@ -1682,6 +1690,8 @@ public:
 Corrector_Xsnn::Corrector_Xsnn() :
     N_EPSILON(0.01)
 {
+    printf("[Corrector_Xsnn] try to read Xnn correction files...\n");
+
     FILE* fp;
 
     // read Xsnn weights
@@ -1729,6 +1739,8 @@ public:
 Corrector_Multiplicity::Corrector_Multiplicity() :
     CUTOFF(50.0)
 {
+    printf("[Corrector_Multiplicity] try to read Multiplicity correction files...\n");
+
     FILE* fp;
 
     // read multiplicity weights
@@ -1750,6 +1762,8 @@ Corrector_Multiplicity::Corrector_Multiplicity() :
 Corrector_Multiplicity::Corrector_Multiplicity(const char* filename) :
     CUTOFF(50.0)
 {
+    printf("[Corrector_Multiplicity] try to read Multiplicity correction files, %s...\n", filename);
+
     FILE* fp;
 
     // read multiplicity weights
@@ -1808,6 +1822,8 @@ Corrector_KpKLKL::Corrector_KpKLKL() :
     BR_KpKLKL_NR_evtpdl(0.0000115),
     BR_RelativeUncertainty_KpKLKL_all_PDG(0.04 / 1.05)
 {
+    printf("[Corrector_KpKLKL] try to read KpKLKL correction files...\n");
+
     FILE* fp;
 
     // read KpKLKL weights
@@ -1878,6 +1894,8 @@ Corrector_KSKLKL::Corrector_KSKLKL() :
     BR_KSKLKL_NR_evtpdl(0.000018),
     BR_RelativeUncertainty_KSKLKL_all_PDG(0.5 / 6.0)
 {
+    printf("[Corrector_KSKLKL] try to read KSKLKL correction files...\n");
+
     FILE* fp;
 
     // read KSKLKL weights
@@ -1937,6 +1955,8 @@ public:
 Corrector_KstarKLKL::Corrector_KstarKLKL() :
     N_EPSILON(0.01)
 {
+    printf("[Corrector_KstarKLKL] try to read KstarKLKL correction files...\n");
+
     FILE* fp;
 
     // read KstarKLKL weights
@@ -1992,6 +2012,8 @@ public:
 Corrector_XsKLKL::Corrector_XsKLKL() :
     N_EPSILON(0.01)
 {
+    printf("[Corrector_XsKLKL] try to read XsKLKL correction files...\n");
+
     FILE* fp;
 
     // read XsKLKL weights
