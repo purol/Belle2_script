@@ -26,6 +26,8 @@ Corrector_KstarKLKL corrector_KstarKLKL;
 Corrector_XsKLKL corrector_XsKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
 
+Corrector_Multiplicity* corrector_Multiplicity;
+
 /* ====================================== */
 
 void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleName, int option, bool IsMultiplicityCorrectionApplied) {
