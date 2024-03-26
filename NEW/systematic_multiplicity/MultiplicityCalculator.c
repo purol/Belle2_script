@@ -385,7 +385,7 @@ void MultiplicityCalculator(){
     LetsFillNgamma(ChargeSideband_data_dirname, Ngamma_v200_data, 1);
 
     // print weight file
-    FILE* fp;/* = fopen("multiplicity_weight.txt","w");
+    FILE* fp = fopen("multiplicity_weight.txt","w");
     fprintf(fp, "%d\n", NgammaMAX);
     for (int i = 0; i < NgammaMAX + 1; i++) {
         double MC_num_bin = Ngamma_v200_MC->GetBinContent(i + 1);
@@ -394,10 +394,10 @@ void MultiplicityCalculator(){
         else fprintf(fp, "%lf %lf %lf\n", data_num_bin, MC_num_bin, 1.0);
     }
     fclose(fp);
-*/
+
     double MC_num = 0;
     double data_num = 0;
-/*
+
     for (int i = 0; i < NgammaMAX + 1; i++) {
         MC_num = MC_num + Ngamma_v200_MC->GetBinContent(i + 1);
         data_num = data_num + Ngamma_v200_data->GetBinContent(i + 1);
@@ -405,7 +405,7 @@ void MultiplicityCalculator(){
 
     printf("option1 data num: %lf\n", data_num);
     printf("option1 MC num with calibration: %lf\n", MC_num);
-*/
+
 
 
 
