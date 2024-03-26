@@ -3,7 +3,7 @@
 
 # define N_Needed_info 37
 # define N_Upsilon_info 187
-# define N_Bsig_info 739
+# define N_Bsig_info 760
 # define N_Btag_info 12
 # define N_decay 38 // five decay mode + others
 # define N_decay_nparticles 5 // # of nu_e, B->Xs nu_e nu_e_bar, B0->Xs nu_e nu_e_bar, B+-, B0

@@ -116,6 +116,12 @@ typedef struct data {
     // 67-358: PIDs
     // 359-366: pi0s
     // 367-514: fake from E, 542-737: fake from MU, 738: Bsig_isSignal
+    // 739: nDc_noDCS, 740: Dc_pValue_med_noDCS, 741: Dc_pValue:std_noDCS, 742: Dcsimpleveto_chiProb_noDCS
+    // 743: Dcsimpleveto_dr_noDCS, 744: Dcsimpleveto_dz_noDCS, 745: Dcsimpleveto_M_noDCS
+    // 746: nDc_yespizero, 747: Dc_pValue_med_yespizero, 748: Dc_pValue:std_yespizero, 749: Dcsimpleveto_chiProb_yespizero
+    // 750: Dcsimpleveto_dr_yespizero, 751: Dcsimpleveto_dz_yespizero, 752: Dcsimpleveto_M_yespizero
+    // 753: nD0_yespizero, 754: D0_pValue_med_yespizero, 755: D0_pValue:std_yespizero, 756: D0simpleveto_chiProb_yespizero
+    // 757: D0simpleveto_dr_yespizero, 758: D0simpleveto_dz_yespizero, 759: D0simpleveto_M_yespizero
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
@@ -849,6 +855,27 @@ void Loader::GetData(TFile* input_file) {
         tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp.Bsig_info[542 + 4 * i_PID + 3]);
     }
     tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[738]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nDc_noDCS", &temp.Bsig_info[739]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &temp.Bsig_info[740]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &temp.Bsig_info[741]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &temp.Bsig_info[742]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_noDCS", &temp.Bsig_info[743]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &temp.Bsig_info[744]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &temp.Bsig_info[745]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nDc_yespizero", &temp.Bsig_info[746]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med_yespizero", &temp.Bsig_info[747]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std_yespizero", &temp.Bsig_info[748]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_yespizero", &temp.Bsig_info[749]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_yespizero", &temp.Bsig_info[750]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_yespizero", &temp.Bsig_info[751]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_yespizero", &temp.Bsig_info[752]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nD0_yespizero", &temp.Bsig_info[753]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &temp.Bsig_info[754]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &temp.Bsig_info[755]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &temp.Bsig_info[756]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &temp.Bsig_info[757]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &temp.Bsig_info[758]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &temp.Bsig_info[759]);
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
@@ -2602,6 +2629,27 @@ void Loader::PrintRootFile(std::string output_name) {
             tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &BsigDataToTree[542 + 4 * i_PID + 3]);
         }
         tree_Bsig->Branch("Bsig_isSignal", &BsigDataToTree[738]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc_noDCS", &BsigDataToTree[739]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &BsigDataToTree[740]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &BsigDataToTree[741]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &BsigDataToTree[742]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_noDCS", &BsigDataToTree[743]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &BsigDataToTree[744]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &BsigDataToTree[745]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc_yespizero", &BsigDataToTree[746]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_yespizero", &BsigDataToTree[747]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_yespizero", &BsigDataToTree[748]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_yespizero", &BsigDataToTree[749]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_yespizero", &BsigDataToTree[750]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_yespizero", &BsigDataToTree[751]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_yespizero", &BsigDataToTree[752]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nD0_yespizero", &BsigDataToTree[753]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &BsigDataToTree[754]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &BsigDataToTree[755]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &BsigDataToTree[756]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &BsigDataToTree[757]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &BsigDataToTree[758]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &BsigDataToTree[759]);
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -3145,6 +3193,27 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
     }
     temp_tree_Bsig->Branch("Bsig_isSignal", &temp_BsigDataToTree[738]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc_noDCS", &temp_BsigDataToTree[739]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &temp_BsigDataToTree[740]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &temp_BsigDataToTree[741]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &temp_BsigDataToTree[742]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_noDCS", &temp_BsigDataToTree[743]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &temp_BsigDataToTree[744]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &temp_BsigDataToTree[745]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc_yespizero", &temp_BsigDataToTree[746]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_yespizero", &temp_BsigDataToTree[747]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_yespizero", &temp_BsigDataToTree[748]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_yespizero", &temp_BsigDataToTree[749]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_yespizero", &temp_BsigDataToTree[750]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_yespizero", &temp_BsigDataToTree[751]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_yespizero", &temp_BsigDataToTree[752]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nD0_yespizero", &temp_BsigDataToTree[753]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &temp_BsigDataToTree[754]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &temp_BsigDataToTree[755]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &temp_BsigDataToTree[756]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &temp_BsigDataToTree[757]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &temp_BsigDataToTree[758]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &temp_BsigDataToTree[759]);
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -3674,6 +3743,27 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
         temp_tree->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
     }
     temp_tree->Branch("Bsig_isSignal", &temp_BsigDataToTree[738]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nDc_noDCS", &temp_BsigDataToTree[739]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &temp_BsigDataToTree[740]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &temp_BsigDataToTree[741]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &temp_BsigDataToTree[742]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_noDCS", &temp_BsigDataToTree[743]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &temp_BsigDataToTree[744]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &temp_BsigDataToTree[745]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nDc_yespizero", &temp_BsigDataToTree[746]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_yespizero", &temp_BsigDataToTree[747]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_yespizero", &temp_BsigDataToTree[748]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_yespizero", &temp_BsigDataToTree[749]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_yespizero", &temp_BsigDataToTree[750]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_yespizero", &temp_BsigDataToTree[751]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_yespizero", &temp_BsigDataToTree[752]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nD0_yespizero", &temp_BsigDataToTree[753]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &temp_BsigDataToTree[754]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &temp_BsigDataToTree[755]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &temp_BsigDataToTree[756]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &temp_BsigDataToTree[757]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &temp_BsigDataToTree[758]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &temp_BsigDataToTree[759]);
 
 
     // get Btag_info
