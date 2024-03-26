@@ -4,7 +4,7 @@
 # define NgammaMAX 20
 
 # define MyEPSILON 0.000001
-# define MCTYPE "MC15ri"
+# define MCTYPE "MC15rd"
 
 // arXiv:1409.4557v2, PhysRevD.107.014511
 # define TB0 1.5195 // (Table. 1)
@@ -130,7 +130,7 @@
 double ObtainWeight(const char* type, const char* MC_version, const char* category, std::string filename);
 
 # define KS0_rel_uncertainty 0.6 // %/cm
-# define track_rel_uncertainty 0.24 // %
+# define track_rel_uncertainty 0.69 // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
 
 # define FEI_cal_Bc_num 12
@@ -208,11 +208,11 @@ double Corrector_FEI::GetFEICalFactor(double UpsilonID, double BtagID, std::stri
 double Corrector_FEI::GetFEICalFactor(int index, bool IsItCharged, std::string type) {
     if (type == "MC15ri") {
         if (IsItCharged) return FEI_cal_Bc_MC15ri[index];
-        else return FEI_cal_B0_MC15ri[index];
+        else FEI_cal_B0_MC15ri[index];
     }
     else if (type == "MC15rd") {
         if (IsItCharged) return FEI_cal_Bc_MC15rd[index];
-        else return FEI_cal_B0_MC15rd[index];
+        else FEI_cal_B0_MC15rd[index];
     }
     else {
         printf("[Corrector_FEI] Invalid type!\n");
@@ -266,11 +266,11 @@ double Corrector_FEI::GetFEICalFactorUncer(double UpsilonID, double BtagID, std:
 double Corrector_FEI::GetmodeID(int index, bool IsItCharged, std::string type) {
     if (type == "MC15ri") {
         if (IsItCharged) return FEI_cal_Bc_modeID_MC15ri[index];
-        else return FEI_cal_B0_modeID_MC15ri[index];
+        else FEI_cal_B0_modeID_MC15ri[index];
     }
     else if (type == "MC15rd") {
         if (IsItCharged) return FEI_cal_Bc_modeID_MC15rd[index];
-        else return FEI_cal_B0_modeID_MC15rd[index];
+        else FEI_cal_B0_modeID_MC15rd[index];
     }
     else {
         printf("[Corrector_FEI] Invalid type!\n");
@@ -279,7 +279,7 @@ double Corrector_FEI::GetmodeID(int index, bool IsItCharged, std::string type) {
     }
 }
 
-# define CAL 1.0 // this should be 1.0
+# define CAL 1.0270 // this should be 1.0
 # define CAL_qq 1.0
 # define Stream 0.25
 
@@ -371,22 +371,22 @@ void Corrector_PID::ReadPIDFile_MC15ri() {
         fscanf(fp_PID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction_MC15ri[2][i], &PID_correction_stat_uncer_MC15ri[2][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer_MC15ri[2][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
         fscanf(fp_PID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction_MC15ri[3][i], &PID_correction_stat_uncer_MC15ri[3][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer_MC15ri[3][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
 
-        if (((std::abs(PID_correction_MC15ri[0][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15ri[0][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15ri[0][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15ri[0][i]) > 10000.0)) {
+        if ((std::abs(PID_correction_MC15ri[0][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15ri[0][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15ri[0][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15ri[0][i]) > 10000.0)) {
             PID_correction_MC15ri[0][i] = 1.0;
             PID_correction_stat_uncer_MC15ri[0][i] = 0.0;
             PID_correction_sys_uncer_MC15ri[0][i] = 0.0;
         }
-        if (((std::abs(PID_correction_MC15ri[1][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15ri[1][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15ri[1][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15ri[1][i]) > 10000.0)) {
+        if ((std::abs(PID_correction_MC15ri[1][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15ri[1][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15ri[1][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15ri[1][i]) > 10000.0)) {
             PID_correction_MC15ri[1][i] = 1.0;
             PID_correction_stat_uncer_MC15ri[1][i] = 0.0;
             PID_correction_sys_uncer_MC15ri[1][i] = 0.0;
         }
-        if (((std::abs(PID_correction_MC15ri[2][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15ri[2][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15ri[2][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15ri[2][i]) > 10000.0)) {
+        if ((std::abs(PID_correction_MC15ri[2][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15ri[2][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15ri[2][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15ri[2][i]) > 10000.0)) {
             PID_correction_MC15ri[2][i] = 1.0;
             PID_correction_stat_uncer_MC15ri[2][i] = 0.0;
             PID_correction_sys_uncer_MC15ri[2][i] = 0.0;
         }
-        if (((std::abs(PID_correction_MC15ri[3][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15ri[3][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15ri[3][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15ri[3][i]) > 10000.0)) {
+        if ((std::abs(PID_correction_MC15ri[3][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15ri[3][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15ri[3][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15ri[3][i]) > 10000.0)) {
             PID_correction_MC15ri[3][i] = 1.0;
             PID_correction_stat_uncer_MC15ri[3][i] = 0.0;
             PID_correction_sys_uncer_MC15ri[3][i] = 0.0;
@@ -467,22 +467,22 @@ void Corrector_PID::ReadPIDFile_MC15rd() {
         fscanf(fp_PID_true, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction_MC15rd[2][i], &PID_correction_stat_uncer_MC15rd[2][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer_MC15rd[2][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
         fscanf(fp_PID_mis, "%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,%lf,pionID\n", &temp_p_min, &temp_p_max, &temp_cosTheta_min, &temp_cosTheta_max, &PID_correction_MC15rd[3][i], &PID_correction_stat_uncer_MC15rd[3][i], &temp_data_MC_uncertainty_stat_dn, &PID_correction_sys_uncer_MC15rd[3][i], &temp_data_MC_uncertainty_sys_dn, &temp_data_efficiency, &temp_data_uncertainty_stat_up, &temp_data_uncertainty_stat_dn, &temp_data_uncertainty_sys_up, &temp_data_uncertainty_sys_dn, &temp_MC_efficiency, &temp_MC_uncertainty_stat_up, &temp_MC_uncertainty_stat_dn, &temp_MC_uncertainty_sys_up, &temp_MC_uncertainty_sys_dn, &temp_threshold);
 
-        if (((std::abs(PID_correction_MC15rd[0][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15rd[0][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15rd[0][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15rd[0][i]) > 10000.0)) {
+        if ((std::abs(PID_correction_MC15rd[0][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15rd[0][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15rd[0][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15rd[0][i]) > 10000.0)) {
             PID_correction_MC15rd[0][i] = 1.0;
             PID_correction_stat_uncer_MC15rd[0][i] = 0.0;
             PID_correction_sys_uncer_MC15rd[0][i] = 0.0;
         }
-        if (((std::abs(PID_correction_MC15rd[1][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15rd[1][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15rd[1][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15rd[1][i]) > 10000.0)) {
+        if ((std::abs(PID_correction_MC15rd[1][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15rd[1][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15rd[1][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15rd[1][i]) > 10000.0)) {
             PID_correction_MC15rd[1][i] = 1.0;
             PID_correction_stat_uncer_MC15rd[1][i] = 0.0;
             PID_correction_sys_uncer_MC15rd[1][i] = 0.0;
         }
-        if (((std::abs(PID_correction_MC15rd[2][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15rd[2][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15rd[2][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15rd[2][i]) > 10000.0)) {
+        if ((std::abs(PID_correction_MC15rd[2][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15rd[2][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15rd[2][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15rd[2][i]) > 10000.0)) {
             PID_correction_MC15rd[2][i] = 1.0;
             PID_correction_stat_uncer_MC15rd[2][i] = 0.0;
             PID_correction_sys_uncer_MC15rd[2][i] = 0.0;
         }
-        if (((std::abs(PID_correction_MC15rd[3][i]) < MyEPSILON) && (std::abs(PID_correction_stat_uncer_MC15rd[3][i] - 1.0) < MyEPSILON || std::abs(PID_correction_sys_uncer_MC15rd[3][i] - 1.0) < MyEPSILON)) || (std::abs(PID_correction_MC15rd[3][i]) > 10000.0)) {
+        if ((std::abs(PID_correction_MC15rd[3][i]) < MyEPSILON && std::abs(PID_correction_stat_uncer_MC15rd[3][i] - 1.0) < MyEPSILON && std::abs(PID_correction_sys_uncer_MC15rd[3][i] - 1.0) < MyEPSILON) || (std::abs(PID_correction_MC15rd[3][i]) > 10000.0)) {
             PID_correction_MC15rd[3][i] = 1.0;
             PID_correction_stat_uncer_MC15rd[3][i] = 0.0;
             PID_correction_sys_uncer_MC15rd[3][i] = 0.0;
@@ -1554,49 +1554,27 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
 class Corrector_Multiplicity {
 private:
 
-    int NgammaMAX;
+    int NgammaMAX_;
     TH1D* weights_Ngamma;
     const double CUTOFF;
 
 public:
     Corrector_Multiplicity();
-    Corrector_Multiplicity(const char* filename);
     double GetCorrectionFactor(double Ngamma);
 };
 
-Corrector_Multiplicity corrector_Multiplicity;
+Corrector_Multiplicity *corrector_Multiplicity;
 
 Corrector_Multiplicity::Corrector_Multiplicity() :
     CUTOFF(50.0)
 {
     FILE* fp;
 
-    // read multiplicity weights
+    // read Knn weights
     fp = fopen("./multiplicity_weight.txt", "r");
-    fscanf(fp, "%d\n", &NgammaMAX);
-    weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
-    for (int i = 0; i < NgammaMAX + 1; i++) {
-        double temp1;
-        double temp2;
-        double temp3;
-        fscanf(fp, "%lf %lf %lf\n", &temp1, &temp2, &temp3);
-        if (temp3 < CUTOFF) weights_Ngamma->SetBinContent(i + 1, temp3);
-        else weights_Ngamma->SetBinContent(i + 1, CUTOFF);
-    }
-    fclose(fp);
-
-}
-
-Corrector_Multiplicity::Corrector_Multiplicity(const char* filename) :
-    CUTOFF(50.0)
-{
-    FILE* fp;
-
-    // read multiplicity weights
-    fp = fopen(filename, "r");
-    fscanf(fp, "%d\n", &NgammaMAX);
-    weights_Ngamma = new TH1D(("weights_Ngamma_" + std::string(filename)).c_str(), ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
-    for (int i = 0; i < NgammaMAX + 1; i++) {
+    fscanf(fp, "%d\n", &NgammaMAX_);
+    weights_Ngamma = new TH1D("weights_Ngamma", ";;", NgammaMAX_ + 1, -0.5, NgammaMAX_ + 0.5);
+    for (int i = 0; i < NgammaMAX_ + 1; i++) {
         double temp1;
         double temp2;
         double temp3;
@@ -1614,7 +1592,7 @@ double Corrector_Multiplicity::GetCorrectionFactor(double Ngamma) {
         printf("[ERROR] Ngamma is smaller than 0!\n");
         exit(1);
     }
-    else if (Bin > NgammaMAX + 1) return 1.0;
+    else if (Bin > NgammaMAX_ + 1) return 1.0;
 
     return weights_Ngamma->GetBinContent(Bin);
 }
@@ -2136,7 +2114,7 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, int option) {
 
             if (option == 1 && Upsilon_ID != 0) continue;
             else if (option == 2 && Upsilon_ID != 1) continue;
-
+if(option == 2) printf("value for option2: %lf\n", var);
             hist_Ngamma->Fill(var);
 
         }
@@ -2227,21 +2205,14 @@ double ObtainWeight(const char* type, const char* MC_version, const char* catego
 void MultiplicityCalculator(){
 
     
-    const char* ChargeSideband_MC_CHG_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/CHG_analysis/train_v000/final_output";
-    const char* ChargeSideband_MC_MIX_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/MIX_analysis/train_v000/final_output";
-    const char* ChargeSideband_MC_UUBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/UUBAR_analysis/train_v000/final_output";
-    const char* ChargeSideband_MC_DDBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/DDBAR_analysis/train_v000/final_output";
-    const char* ChargeSideband_MC_SSBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/SSBAR_analysis/train_v000/final_output";
-    const char* ChargeSideband_MC_CHARM_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/CHARM_analysis/train_v000/final_output";
+    const char* ChargeSideband_MC_CHG_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/CHG_analysis/validation_v009/final_output";
+    const char* ChargeSideband_MC_MIX_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/MIX_analysis/validation_v009/final_output";
+    const char* ChargeSideband_MC_UUBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/UUBAR_analysis/validation_v009/final_output";
+    const char* ChargeSideband_MC_DDBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/DDBAR_analysis/validation_v009/final_output";
+    const char* ChargeSideband_MC_SSBAR_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/SSBAR_analysis/validation_v009/final_output";
+    const char* ChargeSideband_MC_CHARM_train_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/CHARM_analysis/validation_v009/final_output";
 
-    const char* ChargeSideband_MC_CHG_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/CHG_analysis/test_v000/final_output";
-    const char* ChargeSideband_MC_MIX_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/MIX_analysis/test_v000/final_output";
-    const char* ChargeSideband_MC_UUBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/UUBAR_analysis/test_v000/final_output";
-    const char* ChargeSideband_MC_DDBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/DDBAR_analysis/test_v000/final_output";
-    const char* ChargeSideband_MC_SSBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/SSBAR_analysis/test_v000/final_output";
-    const char* ChargeSideband_MC_CHARM_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_cside/CHARM_analysis/test_v000/final_output";
-
-    const char* ChargeSideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_data_cside/SIGNAL_analysis/validation_v000/final_output";
+    const char* ChargeSideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_data_cside/SIGNAL_analysis/validation_v009/final_output";
 
     // Lets fill!
     TH1D* Ngamma_v200_MC = new TH1D("Ngamma_v200_MC", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
@@ -2253,17 +2224,11 @@ void MultiplicityCalculator(){
     LetsFillNgamma(ChargeSideband_MC_DDBAR_train_dirname, Ngamma_v200_MC, "DDBAR", 1, false);
     LetsFillNgamma(ChargeSideband_MC_SSBAR_train_dirname, Ngamma_v200_MC, "SSBAR", 1, false);
     LetsFillNgamma(ChargeSideband_MC_CHARM_train_dirname, Ngamma_v200_MC, "CHARM", 1, false);
-    LetsFillNgamma(ChargeSideband_MC_CHG_test_dirname, Ngamma_v200_MC, "CHG", 1, false);
-    LetsFillNgamma(ChargeSideband_MC_MIX_test_dirname, Ngamma_v200_MC, "MIX", 1, false);
-    LetsFillNgamma(ChargeSideband_MC_UUBAR_test_dirname, Ngamma_v200_MC, "UUBAR", 1, false);
-    LetsFillNgamma(ChargeSideband_MC_DDBAR_test_dirname, Ngamma_v200_MC, "DDBAR", 1, false);
-    LetsFillNgamma(ChargeSideband_MC_SSBAR_test_dirname, Ngamma_v200_MC, "SSBAR", 1, false);
-    LetsFillNgamma(ChargeSideband_MC_CHARM_test_dirname, Ngamma_v200_MC, "CHARM", 1, false);
 
     LetsFillNgamma(ChargeSideband_data_dirname, Ngamma_v200_data, 1);
 
     // print weight file
-    FILE* fp = fopen("multiplicity_weight.txt","w");
+    FILE* fp;/* = fopen("multiplicity_weight.txt","w");
     fprintf(fp, "%d\n", NgammaMAX);
     for (int i = 0; i < NgammaMAX + 1; i++) {
         double MC_num_bin = Ngamma_v200_MC->GetBinContent(i + 1);
@@ -2272,10 +2237,10 @@ void MultiplicityCalculator(){
         else fprintf(fp, "%lf %lf %lf\n", data_num_bin, MC_num_bin, 1.0);
     }
     fclose(fp);
-
+*/
     double MC_num = 0;
     double data_num = 0;
-
+/*
     for (int i = 0; i < NgammaMAX + 1; i++) {
         MC_num = MC_num + Ngamma_v200_MC->GetBinContent(i + 1);
         data_num = data_num + Ngamma_v200_data->GetBinContent(i + 1);
@@ -2283,7 +2248,7 @@ void MultiplicityCalculator(){
 
     printf("option1 data num: %lf\n", data_num);
     printf("option1 MC num with calibration: %lf\n", MC_num);
-
+*/
 
 
 
@@ -2299,12 +2264,6 @@ void MultiplicityCalculator(){
     LetsFillNgamma(ChargeSideband_MC_DDBAR_train_dirname, Ngamma_v200_MC_test, "DDBAR", 2, true);
     LetsFillNgamma(ChargeSideband_MC_SSBAR_train_dirname, Ngamma_v200_MC_test, "SSBAR", 2, true);
     LetsFillNgamma(ChargeSideband_MC_CHARM_train_dirname, Ngamma_v200_MC_test, "CHARM", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_CHG_test_dirname, Ngamma_v200_MC_test, "CHG", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_MIX_test_dirname, Ngamma_v200_MC_test, "MIX", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_UUBAR_test_dirname, Ngamma_v200_MC_test, "UUBAR", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_DDBAR_test_dirname, Ngamma_v200_MC_test, "DDBAR", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_SSBAR_test_dirname, Ngamma_v200_MC_test, "SSBAR", 2, true);
-    LetsFillNgamma(ChargeSideband_MC_CHARM_test_dirname, Ngamma_v200_MC_test, "CHARM", 2, true);
 
     LetsFillNgamma(ChargeSideband_data_dirname, Ngamma_v200_data_test, 2);
 
