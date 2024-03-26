@@ -75,10 +75,13 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
     double invM_Kstarnn = 0;
     double invM_K0nn = 0;
     double invM_K0starnn = 0;
+    double invM_Xnn = 0;
     double N_Knn = 0;
     double N_Kstarnn = 0;
     double N_K0nn = 0;
     double N_K0starnn = 0;
+    double N_Xplusnn = 0;
+    double N_Xzeronn = 0;
 
     double s13_KpKLKL = -1;
     double s23_KpKLKL = -1;
@@ -90,6 +93,18 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
     double s12_KSKLKL = -1;
     double nB2KSKLKL_all_KSKLKL = -1;
     double nB2KSKLKL_NR_KSKLKL = -1;
+
+    double nKL_XKLKL = -1;
+    double XKLKL_E_1st = -1;
+    double XKLKL_px_1st = -1;
+    double XKLKL_py_1st = -1;
+    double XKLKL_pz_1st = -1;
+    double XKLKL_E_2nd = -1;
+    double XKLKL_px_2nd = -1;
+    double XKLKL_py_2nd = -1;
+    double XKLKL_pz_2nd = -1;
+    double nB2KstarKLKL = -1;
+    double nB02KstarKLKL = -1;
 
     double nDptoXKL = -1;
     double nD0toXKL = -1;
@@ -138,6 +153,9 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clK0nn__bc", &invM_K0nn);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstar0nn__bc", &N_K0starnn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKstar0nn__bc", &invM_K0starnn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clXnn__bc", &N_Xplusnn);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clXnn__bc", &N_Xzeronn);
+        tree_upsilon->SetBranchAddress("invMassInLists__bon0__clXnn__bc", &invM_Xnn);
 
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
@@ -149,6 +167,18 @@ void LetsFillNgamma(const char* dirname, TH1D* hist_Ngamma, std::string SampleNa
         tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s12_KSKLKL);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_all__bc", &nB2KSKLKL_all_KSKLKL);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_NR__bc", &nB2KSKLKL_NR_KSKLKL);
+
+        tree_upsilon->SetBranchAddress("nParticlesInList__boK_L0__clXKLKL__bc", &nKL_XKLKL);
+        tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__spE__bc", &XKLKL_E_1st);
+        tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppx__bc", &XKLKL_px_1st);
+        tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppy__bc", &XKLKL_py_1st);
+        tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppz__bc", &XKLKL_pz_1st);
+        tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__spE__bc", &XKLKL_E_2nd);
+        tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppx__bc", &XKLKL_px_2nd);
+        tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppy__bc", &XKLKL_py_2nd);
+        tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppz__bc", &XKLKL_pz_2nd);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarKLKL__bc", &nB2KstarKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstarKLKL__bc", &nB02KstarKLKL);
 
         tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &nDptoXKL);
         tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &nD0toXKL);
