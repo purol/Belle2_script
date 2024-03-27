@@ -380,7 +380,7 @@ void THStack_plot_sideband() {
             max = 0.2;
             min = -0.2;
         }
-        else if (hasEnding(variable_names.at(k), std::string("M"))) {
+        else if (hasEnding(variable_names.at(k), std::string("Bsig_M"))) {
             max = 2.0;
             min = 0.0;
         }
@@ -463,6 +463,10 @@ void THStack_plot_sideband() {
         else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op7"))) {
             min = 0.0;
             max = 15.0;
+        }
+        else if ((variable_names.at(k).find("Bsig_daughter_0_extraInfo_D") != std::string::npos) && (variable_names.at(k).find("_M") != std::string::npos)) {
+            min = 0.6;
+            max = 2.1;
         }
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";" + variable_names.at(k) + ";number of candidates").c_str());
