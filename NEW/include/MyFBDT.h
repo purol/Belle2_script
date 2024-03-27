@@ -12,7 +12,7 @@
 #include "Classifier.h"
 #include "correctors.h"
 
-# define Nvar 33
+# define Nvar 30
 # define DvetoNvar 4
 
 Corrector corrector;
@@ -244,6 +244,29 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
     theTree->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp_UpsilonDataToTree[161]);
     theTree->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp_UpsilonDataToTree[162]);
     theTree->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp_UpsilonDataToTree[163]);
+    theTree->SetBranchAddress("nParticlesInList__boB__pl__clXnn__bc", &temp_UpsilonDataToTree[164]);
+    theTree->SetBranchAddress("nParticlesInList__boB0__clXnn__bc", &temp_UpsilonDataToTree[165]);
+    theTree->SetBranchAddress("invMassInLists__bon0__clXnn__bc", &temp_UpsilonDataToTree[166]);
+    theTree->SetBranchAddress("nParticlesInList__boK_L0__clXKLKL__bc", &temp_UpsilonDataToTree[167]);
+    theTree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[168]);
+    theTree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[169]);
+    theTree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[170]);
+    theTree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[171]);
+    theTree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__spE__bc", &temp_UpsilonDataToTree[172]);
+    theTree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppx__bc", &temp_UpsilonDataToTree[173]);
+    theTree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppy__bc", &temp_UpsilonDataToTree[174]);
+    theTree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppz__bc", &temp_UpsilonDataToTree[175]);
+    theTree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__spE__bc", &temp_UpsilonDataToTree[176]);
+    theTree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppx__bc", &temp_UpsilonDataToTree[177]);
+    theTree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppy__bc", &temp_UpsilonDataToTree[178]);
+    theTree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppz__bc", &temp_UpsilonDataToTree[179]);
+    theTree->SetBranchAddress("nParticlesInList__boK_S0__clXKLKL__bc", &temp_UpsilonDataToTree[180]);
+    theTree->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[181]);
+    theTree->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[182]);
+    theTree->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[183]);
+    theTree->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[184]);
+    theTree->SetBranchAddress("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
+    theTree->SetBranchAddress("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
 
     // get Bsig_info
     theTree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -332,6 +355,28 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
         theTree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 2]);
         theTree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
     }
+    theTree->SetBranchAddress("Bsig_isSignal", &temp_BsigDataToTree[738]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nDc_noDCS", &temp_BsigDataToTree[739]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &temp_BsigDataToTree[740]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &temp_BsigDataToTree[741]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &temp_BsigDataToTree[742]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_noDCS", &temp_BsigDataToTree[743]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &temp_BsigDataToTree[744]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &temp_BsigDataToTree[745]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nDc_yespizero", &temp_BsigDataToTree[746]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med_yespizero", &temp_BsigDataToTree[747]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std_yespizero", &temp_BsigDataToTree[748]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_yespizero", &temp_BsigDataToTree[749]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_yespizero", &temp_BsigDataToTree[750]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_yespizero", &temp_BsigDataToTree[751]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_yespizero", &temp_BsigDataToTree[752]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_nD0_yespizero", &temp_BsigDataToTree[753]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &temp_BsigDataToTree[754]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &temp_BsigDataToTree[755]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &temp_BsigDataToTree[756]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &temp_BsigDataToTree[757]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &temp_BsigDataToTree[758]);
+    theTree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &temp_BsigDataToTree[759]);
 
     // get Btag_info
     theTree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -345,6 +390,7 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
     theTree->SetBranchAddress("Btag_dz", &temp_BtagDataToTree[8]);
     theTree->SetBranchAddress("Btag_useCMSFrame_p", &temp_BtagDataToTree[9]);
     theTree->SetBranchAddress("Btag_useCMSFrame_phi", &temp_BtagDataToTree[10]);
+    theTree->SetBranchAddress("Btag_isSignal", &temp_BtagDataToTree[11]);
 
     // other information I need
     theTree->SetBranchAddress("Btag_R2", &temp_DataToTree[0]);
@@ -628,6 +674,29 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
     temp_tree->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp_UpsilonDataToTree[161]);
     temp_tree->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp_UpsilonDataToTree[162]);
     temp_tree->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp_UpsilonDataToTree[163]);
+    temp_tree->Branch("nParticlesInList__boB__pl__clXnn__bc", &temp_UpsilonDataToTree[164]);
+    temp_tree->Branch("nParticlesInList__boB0__clXnn__bc", &temp_UpsilonDataToTree[165]);
+    temp_tree->Branch("invMassInLists__bon0__clXnn__bc", &temp_UpsilonDataToTree[166]);
+    temp_tree->Branch("nParticlesInList__boK_L0__clXKLKL__bc", &temp_UpsilonDataToTree[167]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[168]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[169]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[170]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[171]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__spE__bc", &temp_UpsilonDataToTree[172]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppx__bc", &temp_UpsilonDataToTree[173]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppy__bc", &temp_UpsilonDataToTree[174]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppz__bc", &temp_UpsilonDataToTree[175]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__spE__bc", &temp_UpsilonDataToTree[176]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppx__bc", &temp_UpsilonDataToTree[177]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppy__bc", &temp_UpsilonDataToTree[178]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppz__bc", &temp_UpsilonDataToTree[179]);
+    temp_tree->Branch("nParticlesInList__boK_S0__clXKLKL__bc", &temp_UpsilonDataToTree[180]);
+    temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[181]);
+    temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[182]);
+    temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[183]);
+    temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[184]);
+    temp_tree->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
+    temp_tree->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -716,6 +785,28 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
         temp_tree->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 2]);
         temp_tree->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
     }
+    temp_tree->Branch("Bsig_isSignal", &temp_BsigDataToTree[738]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nDc_noDCS", &temp_BsigDataToTree[739]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &temp_BsigDataToTree[740]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &temp_BsigDataToTree[741]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &temp_BsigDataToTree[742]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_noDCS", &temp_BsigDataToTree[743]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &temp_BsigDataToTree[744]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &temp_BsigDataToTree[745]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nDc_yespizero", &temp_BsigDataToTree[746]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_yespizero", &temp_BsigDataToTree[747]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_yespizero", &temp_BsigDataToTree[748]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_yespizero", &temp_BsigDataToTree[749]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_yespizero", &temp_BsigDataToTree[750]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_yespizero", &temp_BsigDataToTree[751]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_yespizero", &temp_BsigDataToTree[752]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nD0_yespizero", &temp_BsigDataToTree[753]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &temp_BsigDataToTree[754]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &temp_BsigDataToTree[755]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &temp_BsigDataToTree[756]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &temp_BsigDataToTree[757]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &temp_BsigDataToTree[758]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &temp_BsigDataToTree[759]);
 
     // get Btag_info
     temp_tree->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -729,6 +820,7 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
     temp_tree->Branch("Btag_dz", &temp_BtagDataToTree[8]);
     temp_tree->Branch("Btag_useCMSFrame_p", &temp_BtagDataToTree[9]);
     temp_tree->Branch("Btag_useCMSFrame_phi", &temp_BtagDataToTree[10]);
+    temp_tree->Branch("Btag_isSignal", &temp_BtagDataToTree[11]);
 
     // other information I need
     temp_tree->Branch("Btag_R2", &temp_DataToTree[0]);
@@ -855,18 +947,15 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
         inputs.push_back(temp_DataToTree[34]); // Btag_useCMSFrame_theta
         inputs.push_back(temp_UpsilonDataToTree[69]); // extraInfo__boEeclv200__bc
         inputs.push_back(temp_UpsilonDataToTree[66]); // extraInfo__boNgammav200__bc
-        inputs.push_back(temp_UpsilonDataToTree[14]); // foxWolframR1
         inputs.push_back(temp_UpsilonDataToTree[16]); // foxWolframR3
         inputs.push_back(temp_UpsilonDataToTree[17]); // foxWolframR4
         inputs.push_back(temp_UpsilonDataToTree[19]); // harmonicMomentThrust1
         inputs.push_back(temp_UpsilonDataToTree[20]); // harmonicMomentThrust2
-        inputs.push_back(temp_UpsilonDataToTree[9]); // missingEnergyOfEventCMS
         inputs.push_back(temp_UpsilonDataToTree[8]); // missingMomentumOfEvent
         inputs.push_back(temp_UpsilonDataToTree[7]); // missingMomentumOfEvent_theta
         if(strstr(output_path, "Jpsi") == NULL) inputs.push_back(temp_UpsilonDataToTree[10]); // nRemainingTracksInEvent
         else inputs.push_back(temp_UpsilonDataToTree[10] - 2.0); // nRemainingTracksInEvent
         inputs.push_back(temp_UpsilonDataToTree[44]); // roePTheta__bocleanMask__bc
-        inputs.push_back(temp_BsigDataToTree[5]); // useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc
 
         if (temp_BsigDataToTree[53] > -0.5) {
             inputs.push_back(temp_BsigDataToTree[52]); // Bsig_daughter_0_extraInfo_Dc_pValue_std
@@ -960,17 +1049,14 @@ void FillVariables(const char* filename, std::vector<float> input_vars[Nvar], st
     tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[15]);
     tree_data->SetBranchAddress("extraInfo__boEeclv200__bc", &Vars[16]);
     tree_data->SetBranchAddress("extraInfo__boNgammav200__bc", &Vars[17]);
-    tree_data->SetBranchAddress("foxWolframR1", &Vars[18]);
-    tree_data->SetBranchAddress("foxWolframR3", &Vars[19]);
-    tree_data->SetBranchAddress("foxWolframR4", &Vars[20]);
-    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[21]);
-    tree_data->SetBranchAddress("harmonicMomentThrust2", &Vars[22]);
-    tree_data->SetBranchAddress("missingEnergyOfEventCMS", &Vars[23]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[24]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[25]);
-    tree_data->SetBranchAddress("nRemainingTracksInEvent", &Vars[26]);
-    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[27]);
-    tree_data->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &Vars[28]);
+    tree_data->SetBranchAddress("foxWolframR3", &Vars[18]);
+    tree_data->SetBranchAddress("foxWolframR4", &Vars[19]);
+    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[20]);
+    tree_data->SetBranchAddress("harmonicMomentThrust2", &Vars[21]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[22]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[23]);
+    tree_data->SetBranchAddress("nRemainingTracksInEvent", &Vars[24]);
+    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[25]);
 
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &Dc_pvalue_med);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
@@ -1125,17 +1211,14 @@ void FillVariables_Off(const char* filename, std::vector<float> input_vars[Nvar]
     tree_data->SetBranchAddress("Btag_useCMSFrame_theta", &Vars[15]);
     tree_data->SetBranchAddress("extraInfo__boEeclv200__bc", &Vars[16]);
     tree_data->SetBranchAddress("extraInfo__boNgammav200__bc", &Vars[17]);
-    tree_data->SetBranchAddress("foxWolframR1", &Vars[18]);
-    tree_data->SetBranchAddress("foxWolframR3", &Vars[19]);
-    tree_data->SetBranchAddress("foxWolframR4", &Vars[20]);
-    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[21]);
-    tree_data->SetBranchAddress("harmonicMomentThrust2", &Vars[22]);
-    tree_data->SetBranchAddress("missingEnergyOfEventCMS", &Vars[23]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[24]);
-    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[25]);
-    tree_data->SetBranchAddress("nRemainingTracksInEvent", &Vars[26]);
-    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[27]);
-    tree_data->SetBranchAddress("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc", &Vars[28]);
+    tree_data->SetBranchAddress("foxWolframR3", &Vars[18]);
+    tree_data->SetBranchAddress("foxWolframR4", &Vars[19]);
+    tree_data->SetBranchAddress("harmonicMomentThrust1", &Vars[20]);
+    tree_data->SetBranchAddress("harmonicMomentThrust2", &Vars[21]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent", &Vars[22]);
+    tree_data->SetBranchAddress("missingMomentumOfEvent_theta", &Vars[23]);
+    tree_data->SetBranchAddress("nRemainingTracksInEvent", &Vars[24]);
+    tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[25]);
 
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &Dc_pvalue_med);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
