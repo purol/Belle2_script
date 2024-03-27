@@ -12,8 +12,8 @@
 #include "Classifier.h"
 #include "correctors.h"
 
-# define Nvar 30
-# define DvetoNvar 4
+# define Nvar 32
+# define DvetoNvar 6
 
 Corrector corrector;
 Corrector_Fragmentation corrector_Fragmentation;
@@ -957,13 +957,13 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
         else inputs.push_back(temp_UpsilonDataToTree[10] - 2.0); // nRemainingTracksInEvent
         inputs.push_back(temp_UpsilonDataToTree[44]); // roePTheta__bocleanMask__bc
 
-        if (temp_BsigDataToTree[53] > -0.5) {
-            inputs.push_back(temp_BsigDataToTree[52]); // Bsig_daughter_0_extraInfo_Dc_pValue_std
-            inputs.push_back(temp_BsigDataToTree[56]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_M
+        if (temp_BsigDataToTree[742] > -0.5) {
+            inputs.push_back(temp_BsigDataToTree[741]); // Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS
+            inputs.push_back(temp_BsigDataToTree[745]); // Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS
         }
         else {
-            inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_Dc_pValue_std
-            inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_Dcsimpleveto_M
+            inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS
+            inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS
         }
 
         if (temp_BsigDataToTree[60] > -0.5) {
@@ -973,6 +973,15 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
         else {
             inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_D0_pValue_std
             inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_D0simpleveto_M
+        }
+
+        if (temp_BsigDataToTree[756] > -0.5) {
+            inputs.push_back(temp_BsigDataToTree[755]); // Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero
+            inputs.push_back(temp_BsigDataToTree[759]); // Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero
+        }
+        else {
+            inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero
+            inputs.push_back(0.0); // Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero
         }
 
         Output_BB = classifier_BB.predict(inputs);
@@ -1009,18 +1018,24 @@ void FillVariables(const char* filename, std::vector<float> input_vars[Nvar], st
     double Vars[Nvar];
     int flag;
 
-    double Dc_chiProb; // 0.0
-    double Dc_pvalue_med;
-    double Dc_pvalue_std; // 0.0
-    double Dc_dr; // -1.0
-    double Dc_dz; // -100.0
-    double Dc_M; // 0.0
+    double Dc_chiProb_noDCS; // 0.0
+    double Dc_pvalue_med_noDCS;
+    double Dc_pvalue_std_noDCS; // 0.0
+    double Dc_dr_noDCS; // -1.0
+    double Dc_dz_noDCS; // -100.0
+    double Dc_M_noDCS; // 0.0
     double D0_chiProb;
     double D0_pvalue_med;
     double D0_pvalue_std;
     double D0_dr;
     double D0_dz;
     double D0_M;
+    double D0_chiProb_yespizero;
+    double D0_pvalue_med_yespizero;
+    double D0_pvalue_std_yespizero;
+    double D0_dr_yespizero;
+    double D0_dz_yespizero;
+    double D0_M_yespizero;
 
     int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
@@ -1058,16 +1073,21 @@ void FillVariables(const char* filename, std::vector<float> input_vars[Nvar], st
     tree_data->SetBranchAddress("nRemainingTracksInEvent", &Vars[24]);
     tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[25]);
 
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &Dc_pvalue_med);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &Dc_chiProb);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &Dc_dz);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &Dc_M);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &Dc_pvalue_med_noDCS);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &Dc_pvalue_std_noDCS);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &Dc_chiProb_noDCS);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &Dc_dz_noDCS);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &Dc_M_noDCS);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med", &D0_pvalue_med);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std", &D0_pvalue_std);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &D0_chiProb);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &D0_dz);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &D0_M);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &D0_pvalue_med_yespizero);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &D0_pvalue_std_yespizero);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &D0_chiProb_yespizero);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &D0_dz_yespizero);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &D0_M_yespizero);
 
     tree_data->SetBranchAddress("flag", &flag);
 
@@ -1128,9 +1148,9 @@ void FillVariables(const char* filename, std::vector<float> input_vars[Nvar], st
 
         for (unsigned int k = 0; k < Nvar - DvetoNvar; k++) input_vars[k].push_back((float)Vars[k]);
 
-        if (Dc_chiProb > -0.5) {
-            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_pvalue_std);
-            input_vars[Nvar - DvetoNvar + 1].push_back((float)Dc_M);
+        if (Dc_chiProb_noDCS > -0.5) {
+            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_pvalue_std_noDCS);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float)Dc_M_noDCS);
         }
         else {
             input_vars[Nvar - DvetoNvar + 0].push_back((float)0.0);
@@ -1143,6 +1163,14 @@ void FillVariables(const char* filename, std::vector<float> input_vars[Nvar], st
         else {
             input_vars[Nvar - DvetoNvar + 2].push_back((float)0.0);
             input_vars[Nvar - DvetoNvar + 3].push_back((float)0.0);
+        }
+        if (D0_chiProb_yespizero > -0.5) {
+            input_vars[Nvar - DvetoNvar + 4].push_back((float)D0_pvalue_std_yespizero);
+            input_vars[Nvar - DvetoNvar + 5].push_back((float)D0_M_yespizero);
+        }
+        else {
+            input_vars[Nvar - DvetoNvar + 4].push_back((float)0.0);
+            input_vars[Nvar - DvetoNvar + 5].push_back((float)0.0);
         }
 
         IsSignal->push_back(tempissignal);
@@ -1170,18 +1198,24 @@ void FillVariables_Off(const char* filename, std::vector<float> input_vars[Nvar]
     double Vars[Nvar];
     int flag;
 
-    double Dc_chiProb; // 0.0
-    double Dc_pvalue_med;
-    double Dc_pvalue_std; // 0.0
-    double Dc_dr; // -1.0
-    double Dc_dz; // -100.0
-    double Dc_M; // 0.0
+    double Dc_chiProb_noDCS; // 0.0
+    double Dc_pvalue_med_noDCS;
+    double Dc_pvalue_std_noDCS; // 0.0
+    double Dc_dr_noDCS; // -1.0
+    double Dc_dz_noDCS; // -100.0
+    double Dc_M_noDCS; // 0.0
     double D0_chiProb;
     double D0_pvalue_med;
     double D0_pvalue_std;
     double D0_dr;
     double D0_dz;
     double D0_M;
+    double D0_chiProb_yespizero;
+    double D0_pvalue_med_yespizero;
+    double D0_pvalue_std_yespizero;
+    double D0_dr_yespizero;
+    double D0_dz_yespizero;
+    double D0_M_yespizero;
 
     int Decay_Kplus = -1;
     int Decay_Kplusstar_ch1 = -1;
@@ -1220,16 +1254,21 @@ void FillVariables_Off(const char* filename, std::vector<float> input_vars[Nvar]
     tree_data->SetBranchAddress("nRemainingTracksInEvent", &Vars[24]);
     tree_data->SetBranchAddress("roePTheta__bocleanMask__bc", &Vars[25]);
 
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med", &Dc_pvalue_med);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std", &Dc_pvalue_std);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb", &Dc_chiProb);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz", &Dc_dz);
-    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M", &Dc_M);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &Dc_pvalue_med_noDCS);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &Dc_pvalue_std_noDCS);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &Dc_chiProb_noDCS);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &Dc_dz_noDCS);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &Dc_M_noDCS);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med", &D0_pvalue_med);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std", &D0_pvalue_std);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb", &D0_chiProb);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz", &D0_dz);
     tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M", &D0_M);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &D0_pvalue_med_yespizero);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &D0_pvalue_std_yespizero);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &D0_chiProb_yespizero);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &D0_dz_yespizero);
+    tree_data->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &D0_M_yespizero);
 
     tree_data->SetBranchAddress("flag", &flag);
 
@@ -1244,9 +1283,9 @@ void FillVariables_Off(const char* filename, std::vector<float> input_vars[Nvar]
 
         for (unsigned int k = 0; k < Nvar - DvetoNvar; k++) input_vars[k].push_back((float)Vars[k]);
 
-        if (Dc_chiProb > -0.5) {
-            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_pvalue_std);
-            input_vars[Nvar - DvetoNvar + 1].push_back((float)Dc_M);
+        if (Dc_chiProb_noDCS > -0.5) {
+            input_vars[Nvar - DvetoNvar + 0].push_back((float)Dc_pvalue_std_noDCS);
+            input_vars[Nvar - DvetoNvar + 1].push_back((float)Dc_M_noDCS);
         }
         else {
             input_vars[Nvar - DvetoNvar + 0].push_back((float)0.0);
@@ -1259,6 +1298,14 @@ void FillVariables_Off(const char* filename, std::vector<float> input_vars[Nvar]
         else {
             input_vars[Nvar - DvetoNvar + 2].push_back((float)0.0);
             input_vars[Nvar - DvetoNvar + 3].push_back((float)0.0);
+        }
+        if (D0_chiProb_yespizero > -0.5) {
+            input_vars[Nvar - DvetoNvar + 4].push_back((float)D0_pvalue_std_yespizero);
+            input_vars[Nvar - DvetoNvar + 5].push_back((float)D0_M_yespizero);
+        }
+        else {
+            input_vars[Nvar - DvetoNvar + 4].push_back((float)0.0);
+            input_vars[Nvar - DvetoNvar + 5].push_back((float)0.0);
         }
 
         IsSignal->push_back(tempissignal);
