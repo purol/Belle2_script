@@ -276,6 +276,29 @@ int main(int argc, char* argv[]){
             temp_tree->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp_UpsilonDataToTree[161]);
             temp_tree->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp_UpsilonDataToTree[162]);
             temp_tree->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp_UpsilonDataToTree[163]);
+            temp_tree->SetBranchAddress("nParticlesInList__boB__pl__clXnn__bc", &temp_UpsilonDataToTree[164]);
+            temp_tree->SetBranchAddress("nParticlesInList__boB0__clXnn__bc", &temp_UpsilonDataToTree[165]);
+            temp_tree->SetBranchAddress("invMassInLists__bon0__clXnn__bc", &temp_UpsilonDataToTree[166]);
+            temp_tree->SetBranchAddress("nParticlesInList__boK_L0__clXKLKL__bc", &temp_UpsilonDataToTree[167]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[168]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[169]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[170]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[171]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__spE__bc", &temp_UpsilonDataToTree[172]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppx__bc", &temp_UpsilonDataToTree[173]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppy__bc", &temp_UpsilonDataToTree[174]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppz__bc", &temp_UpsilonDataToTree[175]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__spE__bc", &temp_UpsilonDataToTree[176]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppx__bc", &temp_UpsilonDataToTree[177]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppy__bc", &temp_UpsilonDataToTree[178]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppz__bc", &temp_UpsilonDataToTree[179]);
+            temp_tree->SetBranchAddress("nParticlesInList__boK_S0__clXKLKL__bc", &temp_UpsilonDataToTree[180]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[181]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[182]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[183]);
+            temp_tree->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[184]);
+            temp_tree->SetBranchAddress("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
+            temp_tree->SetBranchAddress("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
 
             // get Bsig_info
             temp_tree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -364,6 +387,28 @@ int main(int argc, char* argv[]){
                 temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 2]);
                 temp_tree->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
             }
+            temp_tree->SetBranchAddress("Bsig_isSignal", &temp_BsigDataToTree[738]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_nDc_noDCS", &temp_BsigDataToTree[739]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &temp_BsigDataToTree[740]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &temp_BsigDataToTree[741]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &temp_BsigDataToTree[742]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_noDCS", &temp_BsigDataToTree[743]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &temp_BsigDataToTree[744]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &temp_BsigDataToTree[745]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_nDc_yespizero", &temp_BsigDataToTree[746]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med_yespizero", &temp_BsigDataToTree[747]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std_yespizero", &temp_BsigDataToTree[748]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_yespizero", &temp_BsigDataToTree[749]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_yespizero", &temp_BsigDataToTree[750]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_yespizero", &temp_BsigDataToTree[751]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_yespizero", &temp_BsigDataToTree[752]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_nD0_yespizero", &temp_BsigDataToTree[753]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &temp_BsigDataToTree[754]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &temp_BsigDataToTree[755]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &temp_BsigDataToTree[756]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &temp_BsigDataToTree[757]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &temp_BsigDataToTree[758]);
+            temp_tree->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &temp_BsigDataToTree[759]);
 
             // get Btag_info
             temp_tree->SetBranchAddress("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -377,6 +422,7 @@ int main(int argc, char* argv[]){
             temp_tree->SetBranchAddress("Btag_dz", &temp_BtagDataToTree[8]);
             temp_tree->SetBranchAddress("Btag_useCMSFrame_p", &temp_BtagDataToTree[9]);
             temp_tree->SetBranchAddress("Btag_useCMSFrame_phi", &temp_BtagDataToTree[10]);
+            temp_tree->SetBranchAddress("Btag_isSignal", &temp_BtagDataToTree[11]);
 
             // other information I need
             temp_tree->SetBranchAddress("Btag_R2", &temp_DataToTree[0]);
@@ -689,6 +735,29 @@ int main(int argc, char* argv[]){
             temp_tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp_UpsilonDataToTree[161]);
             temp_tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp_UpsilonDataToTree[162]);
             temp_tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp_UpsilonDataToTree[163]);
+            temp_tree_upsilon->Branch("nParticlesInList__boB__pl__clXnn__bc", &temp_UpsilonDataToTree[164]);
+            temp_tree_upsilon->Branch("nParticlesInList__boB0__clXnn__bc", &temp_UpsilonDataToTree[165]);
+            temp_tree_upsilon->Branch("invMassInLists__bon0__clXnn__bc", &temp_UpsilonDataToTree[166]);
+            temp_tree_upsilon->Branch("nParticlesInList__boK_L0__clXKLKL__bc", &temp_UpsilonDataToTree[167]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[168]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[169]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[170]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[171]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__spE__bc", &temp_UpsilonDataToTree[172]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppx__bc", &temp_UpsilonDataToTree[173]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppy__bc", &temp_UpsilonDataToTree[174]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppz__bc", &temp_UpsilonDataToTree[175]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__spE__bc", &temp_UpsilonDataToTree[176]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppx__bc", &temp_UpsilonDataToTree[177]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppy__bc", &temp_UpsilonDataToTree[178]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppz__bc", &temp_UpsilonDataToTree[179]);
+            temp_tree_upsilon->Branch("nParticlesInList__boK_S0__clXKLKL__bc", &temp_UpsilonDataToTree[180]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[181]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[182]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[183]);
+            temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[184]);
+            temp_tree_upsilon->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
+            temp_tree_upsilon->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
 
             // get Bsig_info
             temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -777,6 +846,28 @@ int main(int argc, char* argv[]){
                 temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 2]);
                 temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
             }
+            temp_tree_Bsig->Branch("Bsig_isSignal", &temp_BsigDataToTree[738]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc_noDCS", &temp_BsigDataToTree[739]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &temp_BsigDataToTree[740]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &temp_BsigDataToTree[741]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &temp_BsigDataToTree[742]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_noDCS", &temp_BsigDataToTree[743]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &temp_BsigDataToTree[744]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &temp_BsigDataToTree[745]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc_yespizero", &temp_BsigDataToTree[746]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_yespizero", &temp_BsigDataToTree[747]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_yespizero", &temp_BsigDataToTree[748]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_yespizero", &temp_BsigDataToTree[749]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_yespizero", &temp_BsigDataToTree[750]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_yespizero", &temp_BsigDataToTree[751]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_yespizero", &temp_BsigDataToTree[752]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nD0_yespizero", &temp_BsigDataToTree[753]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &temp_BsigDataToTree[754]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &temp_BsigDataToTree[755]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &temp_BsigDataToTree[756]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &temp_BsigDataToTree[757]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &temp_BsigDataToTree[758]);
+            temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &temp_BsigDataToTree[759]);
 
             // get Btag_info
             temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -790,6 +881,7 @@ int main(int argc, char* argv[]){
             temp_tree_Btag->Branch("Btag_dz", &temp_BtagDataToTree[8]);
             temp_tree_Btag->Branch("Btag_useCMSFrame_p", &temp_BtagDataToTree[9]);
             temp_tree_Btag->Branch("Btag_useCMSFrame_phi", &temp_BtagDataToTree[10]);
+            temp_tree_Btag->Branch("Btag_isSignal", &temp_BtagDataToTree[11]);
 
             // other information I need
             temp_tree_Btag->Branch("Btag_R2", &temp_DataToTree[0]);
