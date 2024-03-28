@@ -1275,7 +1275,7 @@ void Corrector_LID::ReadPIDFile_MC15rd() {
         else {
             printf("[ERROR] unknown p bin!\n");
             printf("[ERROR] just ignore it: [%lf, %lf]!\n", temp_p_min, temp_p_max);
-            exit(1);
+            //exit(1);
         }
 
         if (std::abs(temp_theta_min - 0.4) < MyEPSILON && std::abs(temp_theta_max - 0.64) < MyEPSILON) theta_bin = 0;
@@ -1289,7 +1289,7 @@ void Corrector_LID::ReadPIDFile_MC15rd() {
         else {
             printf("[ERROR] unknown theta bin!\n");
             printf("[ERROR] just ignore it: [%lf, %lf]!\n", temp_theta_min, temp_theta_max);
-            exit(1);
+            //exit(1);
         }
 
         int bin = theta_bin + 8 * p_bin;
