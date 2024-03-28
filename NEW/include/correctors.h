@@ -1203,7 +1203,7 @@ void Corrector_LID::ReadPIDFile_MC15rd() {
     double temp_data_MC_uncertainty_dn;
 
     // true electron
-    while (fscanf(fp_fromE, "electronID_noSVD_noTOP,%c,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_MC_ratio, temp_data_MC_uncertainty_dn, temp_data_MC_uncertainty_up) != EOF) {
+    while (fscanf(fp_fromE, "electronID_noSVD_noTOP,%c,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_MC_ratio, &temp_data_MC_uncertainty_dn, &temp_data_MC_uncertainty_up) != EOF) {
         int p_bin = -1;
         int theta_bin = -1;
 
@@ -1215,7 +1215,8 @@ void Corrector_LID::ReadPIDFile_MC15rd() {
         else if (std::abs(temp_p_min - 2.5) < MyEPSILON && std::abs(temp_p_max - 3.0) < MyEPSILON) p_bin = 5;
         else {
             printf("[ERROR] unknown p bin!\n");
-            exit(1);
+            printf("[ERROR] just ignore it: [%lf, %lf]!\n", temp_p_min, temp_p_max);
+            //exit(1);
         }
 
         if (std::abs(temp_theta_min - 0.22) < MyEPSILON && std::abs(temp_theta_max - 0.56) < MyEPSILON) theta_bin = 0;
@@ -1226,7 +1227,8 @@ void Corrector_LID::ReadPIDFile_MC15rd() {
         else if (std::abs(temp_theta_min - 2.23) < MyEPSILON && std::abs(temp_theta_max - 2.71) < MyEPSILON) theta_bin = 5;
         else {
             printf("[ERROR] unknown theta bin!\n");
-            exit(1);
+            printf("[ERROR] just ignore it: [%lf, %lf]!\n", temp_theta_min, temp_theta_max);
+            //exit(1);
         }
 
         int bin = theta_bin + 6 * p_bin;
@@ -1260,7 +1262,7 @@ void Corrector_LID::ReadPIDFile_MC15rd() {
 
 
     // Kaon from fake muon
-    while (fscanf(fp_fromMU, "muonID_noSVD,%c,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_MC_ratio, temp_data_MC_uncertainty_dn, temp_data_MC_uncertainty_up) != EOF) {
+    while (fscanf(fp_fromMU, "muonID_noSVD,%c,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_MC_ratio, &temp_data_MC_uncertainty_dn, &temp_data_MC_uncertainty_up) != EOF) {
         int p_bin = -1;
         int theta_bin = -1;
 
@@ -1272,6 +1274,7 @@ void Corrector_LID::ReadPIDFile_MC15rd() {
         else if (std::abs(temp_p_min - 2.0) < MyEPSILON && std::abs(temp_p_max - 2.5) < MyEPSILON) p_bin = 5;
         else {
             printf("[ERROR] unknown p bin!\n");
+            printf("[ERROR] just ignore it: [%lf, %lf]!\n", temp_p_min, temp_p_max);
             exit(1);
         }
 
@@ -1285,6 +1288,7 @@ void Corrector_LID::ReadPIDFile_MC15rd() {
         else if (std::abs(temp_theta_min - 2.22) < MyEPSILON && std::abs(temp_theta_max - 2.6) < MyEPSILON) theta_bin = 7;
         else {
             printf("[ERROR] unknown theta bin!\n");
+            printf("[ERROR] just ignore it: [%lf, %lf]!\n", temp_theta_min, temp_theta_max);
             exit(1);
         }
 
