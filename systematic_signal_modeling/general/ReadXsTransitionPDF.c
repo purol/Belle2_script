@@ -704,66 +704,8 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
     return Nevt;
 }
 
-void ReadMultiplicityFile() {
-
-    FILE* fp;
-    int NgammaMAX = 0;
-    const double CUTOFF = 50;
-
-    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/multiplicity/multiplicity_weight_uncertainty.txt", "r");
-    fscanf(fp, "%d\n", &NgammaMAX);
-    weights_Ngamma_uncer = new TH1D("weights_Ngamma_uncer", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
-    for (int i = 0; i < NgammaMAX + 1; i++) {
-        double temp1;
-        double temp2;
-        double temp3;
-        fscanf(fp, "%lf %lf %lf\n", &temp1, &temp2, &temp3);
-        if (temp3 < CUTOFF) weights_Ngamma_uncer->SetBinContent(i + 1, temp3);
-        else weights_Ngamma_uncer->SetBinContent(i + 1, CUTOFF);
-
-        if(temp2 > MyEPSILON) N_correction_multiplicity_weightfile = i;
-    }
-
-    fclose(fp);
-
-}
-
-void CheckMaxNgamma(const char* dirname, const char* included_string) {
-
-    double Ngamma_v200 = -1;
-
-    std::vector<string> names;
-    load_files(dirname, &names, included_string);
-
-    for (unsigned int i = 0; i < names.size(); i++) {
-
-        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
-        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
-
-        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
-
-        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
-
-        printf("%lld entries...\n", tree_upsilon->GetEntries());
-        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
-            tree_upsilon->GetEntry(j);
-
-            if (N_correction_multiplicity_MCsample < std::lround(Ngamma_v200)) N_correction_multiplicity_MCsample = std::lround(Ngamma_v200);
-
-        }
-        input_file->Close();
-
-
-    }
-
-}
-
 void ReadXsTransitionPDF()
 {
-
-    ReadMultiplicityFile();
-
-
 
     /* ====================================== */
     // Define PDFs for HistFactory
