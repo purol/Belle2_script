@@ -15,7 +15,7 @@
 # define BinMAX_MX2 1.0
 
 // 1.0 < MXs < 2.0
-# define RarityBins_MX3 4
+# define RarityBins_MX3 6
 # define BinMIN_MX3 0.96
 # define BinMAX_MX3 1.0
 
