@@ -37,6 +37,14 @@ using std::to_string;
 
 # define MCTYPE "MC15ri"
 
+// scale facto for systematic MC sample
+# define N_Xsu_nonresonant_nunubar_syst 10000000.0
+# define N_Xsd_nonresonant_nunubar_syst 10000000.0
+
+// scale factor for each systematic MC sample (364.436 - 2.763 = 361.673/fb)
+# define Scale_Xsu_nonresonant_syst (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_nunubar_syst)
+# define Scale_Xsd_nonresonant_syst (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar_syst)
+
 Corrector corrector;
 Corrector_FEI corrector_FEI;
 Corrector_PID corrector_PID;
