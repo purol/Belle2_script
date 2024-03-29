@@ -46,14 +46,11 @@
 #include "RooStats/HistFactory/RooBarlowBeestonLL.h"
 
 #include "template.h"
-#include "correctors.h"
 #include "Fitter.h"
 
 using namespace RooFit;
 using namespace RooStats;
 using namespace HistFactory;
-
-Corrector_Fragmentation corrector_Fragmentation;
 
 double weight_KIDsys[RarityBins * 7] = { 0.0 };
 double weight_PIDsys[RarityBins * 7] = { 0.0 };

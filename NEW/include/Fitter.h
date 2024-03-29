@@ -5,10 +5,13 @@
 # include <string>
 # include "RooFitResult.h"
 # include "template.h"
+#include "correctors.h"
 
 using namespace RooFit;
 using namespace RooStats;
 using namespace HistFactory;
+
+Corrector_Fragmentation corrector_Fragmentation;
 
 std::vector<std::string> Sample_names = {
     "L_x_Signal_nominal_MXs1_channel_overallSyst_x_StatUncert_x_channel_Signal_all_uncorr_uncer_ShapeSys",

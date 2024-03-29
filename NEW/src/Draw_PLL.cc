@@ -46,14 +46,11 @@
 #include "RooStats/HistFactory/RooBarlowBeestonLL.h"
 
 #include "template.h"
-#include "correctors.h"
 #include "Fitter.h"
 
 using namespace RooFit;
 using namespace RooStats;
 using namespace HistFactory;
-
-Corrector_Fragmentation corrector_Fragmentation;
 
 std::vector<std::string> split(std::string str, char Delimiter) {
     std::istringstream iss(str);
@@ -115,18 +112,21 @@ int main(int argc, char* argv[]) {
     double set_value = std::atof(argv[2]);
     double PLL_value = -1;
     if (std::string(argv[1]) == std::string("mu_MXs1")) {
+        RooRealVar* mu_MXs1 = w->var("mu_MXs1");
         mu_frame = mu_MXs1->frame();
         RooAbsReal* pll = nll->createProfile(*mu_MXs1);
         mu_MXs1->setVal(set_value);
         PLL_value = pll->getVal();
     }
     else if (std::string(argv[1]) == std::string("mu_MXs2")) {
+        RooRealVar* mu_MXs2 = w->var("mu_MXs2");
         mu_frame = mu_MXs2->frame();
         RooAbsReal* pll = nll->createProfile(*mu_MXs2);
         mu_MXs2->setVal(set_value);
         PLL_value = pll->getVal();
     }
     else if (std::string(argv[1]) == std::string("mu_MXs3")) {
+        RooRealVar* mu_MXs3 = w->var("mu_MXs3");
         mu_frame = mu_MXs3->frame();
         RooAbsReal* pll = nll->createProfile(*mu_MXs3);
         mu_MXs3->setVal(set_value);
@@ -138,8 +138,8 @@ int main(int argc, char* argv[]) {
     }
     
     // save the result
-    FILE* fp = fopen("./" + std::string(argv[1]) + "_" + std::to_string(argv[2]), "w");
-    fprintf(fp, "%s %lf %lf", argv[1], argv[2], PLL_value);
+    FILE* fp = fopen("./" + std::string(argv[1]) + "_" + std::string(argv[2]), "w");
+    fprintf(fp, "%s %s %lf", argv[1], argv[2], PLL_value);
     fclose(fp);
 
     return 0;
