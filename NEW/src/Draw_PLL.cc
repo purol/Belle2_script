@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
     }
     
     // save the result
-    FILE* fp = fopen("./" + std::string(argv[1]) + "_" + std::string(argv[2]), "w");
+    FILE* fp = fopen(("./" + std::string(argv[1]) + "_" + std::string(argv[2])).c_str(), "w");
     fprintf(fp, "%s %s %lf", argv[1], argv[2], PLL_value);
     fclose(fp);
 

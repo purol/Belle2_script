@@ -80,8 +80,6 @@ double weight_BRsys[RarityBins * 3] = { 0.0 };
 double weight_pi0sys[RarityBins * 7] = { 0.0 };
 double weight_FEIsys[RarityBins * 3] = { 0.0 };
 
-Corrector_Fragmentation corrector_Fragmentation;
-
 std::random_device rd;
 std::default_random_engine generator(rd());
 
