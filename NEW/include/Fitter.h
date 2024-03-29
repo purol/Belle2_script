@@ -51,8 +51,8 @@ typedef struct Options
     bool BDTc;
     bool BBcounting;
     bool BBBR;
-    bool BRBtoKKLKL;
-    bool BRKnn;
+    bool BRBtoXKLKL;
+    bool BRXnn;
     bool BRDKL0;
     bool uncorrelated;
 
@@ -179,8 +179,8 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     options_->BDTc = false;
     options_->BBcounting = false;
     options_->BBBR = false;
-    options_->BRBtoKKLKL = false;
-    options_->BRKnn = false;
+    options_->BRBtoXKLKL = false;
+    options_->BRXnn = false;
     options_->BRDKL0 = false;
     options_->uncorrelated = false;
 
@@ -208,8 +208,8 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
         options_->BDTc = true;
         options_->BBcounting = true;
         options_->BBBR = true;
-        options_->BRBtoKKLKL = true;
-        options_->BRKnn = true;
+        options_->BRBtoXKLKL = true;
+        options_->BRXnn = true;
         options_->BRDKL0 = true;
         options_->uncorrelated = true;
     }
@@ -237,8 +237,8 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     else if (std::string(tested_param) == std::string("BDTc")) options_->BDTc = true;
     else if (std::string(tested_param) == std::string("BBcounting")) options_->BBcounting = true;
     else if (std::string(tested_param) == std::string("BBBR")) options_->BBBR = true;
-    else if (std::string(tested_param) == std::string("BRBtoKKLKL")) options_->BRBtoKKLKL = true;
-    else if (std::string(tested_param) == std::string("BRKnn")) options_->BRKnn = true;
+    else if (std::string(tested_param) == std::string("BRBtoXKLKL")) options_->BRBtoXKLKL = true;
+    else if (std::string(tested_param) == std::string("BRXnn")) options_->BRXnn = true;
     else if (std::string(tested_param) == std::string("BtoDtoXKL")) options_->BRDKL0 = true;
     else if (std::string(tested_param) == std::string("uncorrelated")) options_->uncorrelated = true;
     else {
@@ -371,15 +371,10 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->BBBR) for (int i = 0; i < options_->NEntryBR; i++) w->var(("alpha_BBBR" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->BBBR);
 
     // B->K KL KL BR
-    if (options_->BRBtoKKLKL) w->var("alpha_BRBtoKKLKL_uncer")->setConstant(options_->BRBtoKKLKL);
+    if (options_->BRBtoXKLKL) w->var("alpha_BRBtoXKLKL_uncer")->setConstant(options_->BRBtoXKLKL);
 
-    // B->Knn BR
-    if (options_->BRKnn) {
-        w->var("alpha_Knn_BR_uncer")->setConstant(options_->BRKnn);
-        w->var("alpha_Kstarnn_BR_uncer")->setConstant(options_->BRKnn);
-        w->var("alpha_K0nn_BR_uncer")->setConstant(options_->BRKnn);
-        w->var("alpha_K0starnn_BR_uncer")->setConstant(options_->BRKnn);
-    }
+    // B->Xnn BR
+    if (options_->BRXnn) w->var("alpha_Xnn_BR_uncer")->setConstant(options_->BRXnn);
 
     // B->(D->X KL0) + anything
     if (options_->BRDKL0) w->var("alpha_BtoDtoXKL_uncer")->setConstant(options_->BRDKL0);
