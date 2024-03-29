@@ -37,6 +37,21 @@ using std::to_string;
 
 # define MCTYPE "MC15ri"
 
+Corrector corrector;
+Corrector_FEI corrector_FEI;
+Corrector_PID corrector_PID;
+Corrector_pi0 corrector_pi0;
+Corrector_FakePID corrector_FakePID;
+Corrector_Knn corrector_Knn;
+Corrector_Xsnn corrector_Xsnn;
+Corrector_Multiplicity corrector_Multiplicity;
+Corrector_KpKLKL corrector_KpKLKL;
+Corrector_KSKLKL corrector_KSKLKL;
+Corrector_KstarKLKL corrector_KstarKLKL;
+Corrector_XsKLKL corrector_XsKLKL;
+Corrector_BtoDtoXKL corrector_BtoDtoXKL;
+Corrector_Fragmentation corrector_Fragmentation;
+
 TH1D* Xsu_Hmb_weight;
 TH1D* Xsu_Lmb_weight;
 TH1D* Xsu_Hpf_weight;
