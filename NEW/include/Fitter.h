@@ -14,9 +14,9 @@ using namespace HistFactory;
 Corrector_Fragmentation corrector_Fragmentation;
 
 std::vector<std::string> Sample_names = {
-    "L_x_Signal_nominal_MXs1_channel_overallSyst_x_StatUncert_x_channel_Signal_all_uncorr_uncer_ShapeSys",
-    "L_x_Signal_nominal_MXs2_channel_overallSyst_x_StatUncert_x_channel_Signal_all_uncorr_uncer_ShapeSys",
-    "L_x_Signal_nominal_MXs3_channel_overallSyst_x_StatUncert_x_channel_Signal_all_uncorr_uncer_ShapeSys",
+    "L_x_Signal_nominal_MXs1_channel_overallSyst_x_StatUncert_x_channel_Signal_MXs1_all_uncorr_uncer_ShapeSys",
+    "L_x_Signal_nominal_MXs2_channel_overallSyst_x_StatUncert_x_channel_Signal_MXs2_all_uncorr_uncer_ShapeSys",
+    "L_x_Signal_nominal_MXs3_channel_overallSyst_x_StatUncert_x_channel_Signal_MXs3_all_uncorr_uncer_ShapeSys",
     "L_x_CHG_nominal_channel_overallSyst_x_StatUncert_x_channel_CHG_all_uncorr_uncer_ShapeSys",
     "L_x_MIX_nominal_channel_overallSyst_x_StatUncert_x_channel_MIX_all_uncorr_uncer_ShapeSys",
     "L_x_UUBAR_nominal_channel_overallSyst_x_StatUncert_x_channel_UUBAR_all_uncorr_uncer_ShapeSys",

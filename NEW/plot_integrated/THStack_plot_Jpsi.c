@@ -189,6 +189,7 @@ void THStack_plot_Jpsi() {
     variable_names.push_back("MsquaredBsig_op3"); branch_names.push_back("Upsilon");
     variable_names.push_back("MsquaredBsig_op4"); branch_names.push_back("Upsilon");
     variable_names.push_back("MsquaredBsig_op7"); branch_names.push_back("Upsilon");
+    variable_names.push_back("MVA_BB"); branch_names.push_back("Upsilon");
 
     Nvar_num = static_cast<int>(variable_names.size());
 
@@ -352,7 +353,7 @@ void THStack_plot_Jpsi() {
 
         double min = *min_element(temp_v.begin(), temp_v.end());
         double max = *max_element(temp_v.begin(), temp_v.end());
-        int bins = 100;
+        int bins = 30;
 
         if (hasEnding(variable_names.at(k), std::string("dr"))) { // exceptions
             max = 0.2;
