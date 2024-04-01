@@ -263,17 +263,17 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
 
             /* gaussian */
             RooRealVar* variable = w->var(names->at(i).c_str());
-            RooErrorVar* err_variable = variable->errorVar();
+            RooErrorVar* err_variable_gamma = variable->errorVar();
 
-            std::normal_distribution<double> distribution(1.0, err_variable->getValV());
+            std::normal_distribution<double> distribution(1.0, err_variable_gamma->getValV());
             w->var(names->at(i).c_str())->setVal(distribution(generator));
         }
         else if ( (names->at(i).find("gamma") != std::string::npos) && (names->at(i).find("uncorr") != std::string::npos) ) {
 
             RooRealVar* variable = w->var(names->at(i).c_str());
-            RooErrorVar* err_variable = variable->errorVar();
+            RooErrorVar* err_variable_gamma = variable->errorVar();
 
-            std::normal_distribution<double> distribution(1.0, err_variable->getValV());
+            std::normal_distribution<double> distribution(1.0, err_variable_gamma->getValV());
             w->var(names->at(i).c_str())->setVal(distribution(generator));
 
         }
@@ -570,11 +570,6 @@ int main(int argc, char* argv[]) {
     RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
 
     RooRandom::randomGenerator()->SetSeed(rd());
-
-    ReadPIDuncorrsysFile("./KID_cov_remain_truncated.txt", "./PID_cov_remain_truncated.txt");
-    ReadBRuncorrsysFile("./BR_cov_remain_truncated.txt");
-    Readpi0uncorrsysFile("./pi0_cov_remain_truncated.txt");
-    ReadFEIuncorrsysFile("./FEI_cov_remain_truncated.txt");
 
     // argv[1]: {ToyMC|LinearityTest}
     // argv[2]: injected mu when Linearity test

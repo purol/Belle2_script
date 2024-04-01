@@ -103,8 +103,8 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
 
             /* gaussian */
             RooRealVar* variable = w->var(name.c_str());
-            RooErrorVar* err_variable = variable->errorVar();
-            double width = err_variable->getValV();
+            RooErrorVar* err_variable_gamma = variable->errorVar();
+            double width = err_variable_gamma->getValV();
 
             pulls.push_back((val - 1.0) / width);
             pull_errors.push_back(err / width);
@@ -113,8 +113,8 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
         else if ((name.find("gamma") != std::string::npos) && (name.find("uncorr") != std::string::npos)) {
 
             RooRealVar* variable = w->var(name.c_str());
-            RooErrorVar* err_variable = variable->errorVar();
-            double width = err_variable->getValV();
+            RooErrorVar* err_variable_gamma = variable->errorVar();
+            double width = err_variable_gamma->getValV();
 
             pulls.push_back((val - 1.0) / width);
             pull_errors.push_back(err / width);
@@ -183,59 +183,10 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
     delete cpull;
 }
 
-void ReadPIDuncorrsysFile(const char* dirname_KID, const char* dirname_PID) {
-    FILE* fp;
-
-    fp = fopen(dirname_KID, "r");
-    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_KIDsys[i]);
-    fclose(fp);
-    for (int i = 0; i < RarityBins * 7; i++) weight_KIDsys[i] = std::sqrt(weight_KIDsys[i]);
-
-    fp = fopen(dirname_PID, "r");
-    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_PIDsys[i]);
-    fclose(fp);
-    for (int i = 0; i < RarityBins * 7; i++) weight_PIDsys[i] = std::sqrt(weight_PIDsys[i]);
-}
-
-void ReadBRuncorrsysFile(const char* dirname_BR) {
-    FILE* fp;
-
-    fp = fopen(dirname_BR, "r");
-    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_BRsys[i]);
-    fclose(fp);
-    for (int i = 0; i < RarityBins * 3; i++) weight_BRsys[i] = std::sqrt(weight_BRsys[i]);
-
-}
-
-void Readpi0uncorrsysFile(const char* dirname_pi0) {
-    FILE* fp;
-
-    fp = fopen(dirname_pi0, "r");
-    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_pi0sys[i]);
-    fclose(fp);
-    for (int i = 0; i < RarityBins * 7; i++) weight_pi0sys[i] = std::sqrt(weight_pi0sys[i]);
-
-}
-
-void ReadFEIuncorrsysFile(const char* dirname_FEI) {
-    FILE* fp;
-
-    fp = fopen(dirname_FEI, "r");
-    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_FEIsys[i]);
-    fclose(fp);
-    for (int i = 0; i < RarityBins * 3; i++) weight_FEIsys[i] = std::sqrt(weight_FEIsys[i]);
-
-}
-
 int main() {
 
     ::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit"); // default: Minuit Migrad
     ::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
-
-    ReadPIDuncorrsysFile("./KID_cov_remain_truncated.txt", "./PID_cov_remain_truncated.txt");
-    ReadBRuncorrsysFile("./BR_cov_remain_truncated.txt");
-    Readpi0uncorrsysFile("./pi0_cov_remain_truncated.txt");
-    ReadFEIuncorrsysFile("./FEI_cov_remain_truncated.txt");
 
     const char* fname = "./PDFandDATA_workspace.root";
 
