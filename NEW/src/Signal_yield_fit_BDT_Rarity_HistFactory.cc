@@ -5858,8 +5858,11 @@ void GetMCstatisticalRelativeError(TH1D* nominal_hist, TH1D * MCstat_hist, int N
     for (int i = 0; i < Nbin; i++) {
         double value = nominal_hist->GetBinContent(i + 1);
         double error = nominal_hist->GetBinError(i + 1);
-        double relative_error = error / value;
-        MCstat_hist->SetBinContent(i + 1, relative_error);
+        if(value < MyEPSILON) MCstat_hist->SetBinContent(i + 1, 0.0);
+        else {
+            double relative_error = error / value;
+            MCstat_hist->SetBinContent(i + 1, relative_error);
+        }
     }
 }
 
