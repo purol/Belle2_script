@@ -37,6 +37,7 @@
 #include "RooHist.h"
 #include "RooRandom.h"
 #include "RooMsgService.h"
+#include "RooErrorVar.h"
 
 #include "RooStats/ModelConfig.h"
 #include "RooStats/ToyMCSampler.h"
@@ -263,17 +264,17 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
 
             /* gaussian */
             RooRealVar* variable = w->var(names->at(i).c_str());
-            RooErrorVar* err_variable_gamma = variable->errorVar();
+            RooErrorVar* err_variable = variable->errorVar();
 
-            std::normal_distribution<double> distribution(1.0, err_variable_gamma->getValV());
+            std::normal_distribution<double> distribution(1.0, err_variable->getValV());
             w->var(names->at(i).c_str())->setVal(distribution(generator));
         }
         else if ( (names->at(i).find("gamma") != std::string::npos) && (names->at(i).find("uncorr") != std::string::npos) ) {
 
             RooRealVar* variable = w->var(names->at(i).c_str());
-            RooErrorVar* err_variable_gamma = variable->errorVar();
+            RooErrorVar* err_variable = variable->errorVar();
 
-            std::normal_distribution<double> distribution(1.0, err_variable_gamma->getValV());
+            std::normal_distribution<double> distribution(1.0, err_variable->getValV());
             w->var(names->at(i).c_str())->setVal(distribution(generator));
 
         }

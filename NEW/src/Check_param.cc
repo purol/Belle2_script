@@ -30,6 +30,7 @@
 #include "RooParamHistFunc.h"
 #include "RooHist.h"
 #include "RooRandom.h"
+#include "RooErrorVar.h"
 
 #include "RooStats/ModelConfig.h"
 #include "RooStats/ToyMCSampler.h"
@@ -103,8 +104,8 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
 
             /* gaussian */
             RooRealVar* variable = w->var(name.c_str());
-            RooErrorVar* err_variable_gamma = variable->errorVar();
-            double width = err_variable_gamma->getValV();
+            RooErrorVar* err_variable = variable->errorVar();
+            double width = err_variable->getValV();
 
             pulls.push_back((val - 1.0) / width);
             pull_errors.push_back(err / width);
@@ -113,8 +114,8 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
         else if ((name.find("gamma") != std::string::npos) && (name.find("uncorr") != std::string::npos)) {
 
             RooRealVar* variable = w->var(name.c_str());
-            RooErrorVar* err_variable_gamma = variable->errorVar();
-            double width = err_variable_gamma->getValV();
+            RooErrorVar* err_variable = variable->errorVar();
+            double width = err_variable->getValV();
 
             pulls.push_back((val - 1.0) / width);
             pull_errors.push_back(err / width);
