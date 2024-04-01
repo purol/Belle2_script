@@ -102,7 +102,7 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
             //w->var(names->at(i).c_str())->setVal(distribution(generator) / norm->getValV());
 
             /* gaussian */
-            RooRealVar* variable = w->var(names->at(i).c_str());
+            RooRealVar* variable = w->var(name);
             RooErrorVar* err_variable = variable->errorVar();
             double width = err_variable->getValV();
 
@@ -112,7 +112,7 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
         }
         else if ((name.find("gamma") != std::string::npos) && (name.find("uncorr") != std::string::npos)) {
 
-            RooRealVar* variable = w->var(names->at(i).c_str());
+            RooRealVar* variable = w->var(name);
             RooErrorVar* err_variable = variable->errorVar();
             double width = err_variable->getValV();
 
