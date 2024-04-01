@@ -37,6 +37,8 @@ using namespace RooFit;
 using std::string;
 using std::to_string;
 
+# define Knunu_only false
+
 Corrector corrector;
 Corrector_FEI corrector_FEI;
 Corrector_PID corrector_PID;
@@ -5843,6 +5845,24 @@ void AddSQRTHist(TH1D* output_hist, TH1D* input_hist, int Nbin) {
     }
 }
 
+void AddSQRTHist(TH1D* output_hist, TH1D* input_hist1, TH1D* input_hist2, int Nbin) {
+    for (int i = 0; i < Nbin; i++) {
+        double input_1 = input_hist1->GetBinContent(i + 1);
+        double input_2 = input_hist2->GetBinContent(i + 1);
+        double output = std::sqrt(input_1 * input_1 + input_2 * input_2);
+        output_hist->SetBinContent(i + 1, output);
+    }
+}
+
+void GetMCstatisticalRelativeError(TH1D* nominal_hist, TH1D * MCstat_hist, int Nbin) {
+    for (int i = 0; i < Nbin; i++) {
+        double value = nominal_hist->GetBinContent(i + 1);
+        double error = nominal_hist->GetBinError(i + 1);
+        double relative_error = error / value;
+        MCstat_hist->SetBinContent(i + 1, relative_error);
+    }
+}
+
 void SaveSpecificMXsBin(TH1D* hist, int MXsBin) {
     if (MXsBin == 1) {
         for (int i = RarityBins_MX1; i < RarityBins; i++) {
@@ -6132,6 +6152,24 @@ int main()
     TH1D* DDBAR_all_uncorrelated = new TH1D("DDBAR_all_uncorrelated", "DDBAR_all_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* SSBAR_all_uncorrelated = new TH1D("SSBAR_all_uncorrelated", "SSBAR_all_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_all_uncorrelated = new TH1D("CHARM_all_uncorrelated", "CHARM_all_uncorrelated", RarityBins, BinMIN, BinMAX);
+
+    // MC statistical uncertainties
+    TH1D* Signal_MC_stat = new TH1D("Signal_MC_stat", "Signal_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_MC_stat = new TH1D("CHG_MC_stat", "CHG_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_MC_stat = new TH1D("MIX_MC_stat", "MIX_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_MC_stat = new TH1D("UUBAR_MC_stat", "UUBAR_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_MC_stat = new TH1D("DDBAR_MC_stat", "DDBAR_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_MC_stat = new TH1D("SSBAR_MC_stat", "SSBAR_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_MC_stat = new TH1D("CHARM_MC_stat", "CHARM_MC_stat", RarityBins, BinMIN, BinMAX);
+
+    // all of uncorrelated uncertainties + MC statistical uncertainties
+    TH1D* Signal_all_uncorrelated_MC_stat = new TH1D("Signal_all_uncorrelated_MC_stat", "Signal_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_all_uncorrelated_MC_stat = new TH1D("CHG_all_uncorrelated_MC_stat", "CHG_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_all_uncorrelated_MC_stat = new TH1D("MIX_all_uncorrelated_MC_stat", "MIX_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_all_uncorrelated_MC_stat = new TH1D("UUBAR_all_uncorrelated_MC_stat", "UUBAR_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_all_uncorrelated_MC_stat = new TH1D("DDBAR_all_uncorrelated_MC_stat", "DDBAR_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_all_uncorrelated_MC_stat = new TH1D("SSBAR_all_uncorrelated_MC_stat", "SSBAR_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_all_uncorrelated_MC_stat = new TH1D("CHARM_all_uncorrelated_MC_stat", "CHARM_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
     /* ====================================== */
 
 
@@ -6620,6 +6658,24 @@ int main()
     AddSQRTHist(DDBAR_all_uncorrelated, DDBAR_pi0_uncorrelated, RarityBins);
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_pi0_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_pi0_uncorrelated, RarityBins);
+
+    // calculate MC statistical uncertainties (relative errors)
+    GetMCstatisticalRelativeError(Signal_nominal, Signal_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(CHG_nominal, CHG_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(MIX_nominal, MIX_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(UUBAR_nominal, UUBAR_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(DDBAR_nominal, DDBAR_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(SSBAR_nominal, SSBAR_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(CHARM_nominal, CHARM_MC_stat, RarityBins);
+
+    // all of uncorrelated uncertainties + MC statistical uncertainties
+    AddSQRTHist(Signal_all_uncorrelated_MC_stat, Signal_all_uncorrelated, Signal_MC_stat, RarityBins);
+    AddSQRTHist(CHG_all_uncorrelated_MC_stat, CHG_all_uncorrelated, CHG_MC_stat, RarityBins);
+    AddSQRTHist(MIX_all_uncorrelated_MC_stat, MIX_all_uncorrelated, MIX_MC_stat, RarityBins);
+    AddSQRTHist(UUBAR_all_uncorrelated_MC_stat, UUBAR_all_uncorrelated, UUBAR_MC_stat, RarityBins);
+    AddSQRTHist(DDBAR_all_uncorrelated_MC_stat, DDBAR_all_uncorrelated, DDBAR_MC_stat, RarityBins);
+    AddSQRTHist(SSBAR_all_uncorrelated_MC_stat, SSBAR_all_uncorrelated, SSBAR_MC_stat, RarityBins);
+    AddSQRTHist(CHARM_all_uncorrelated_MC_stat, CHARM_all_uncorrelated, CHARM_MC_stat, RarityBins);
     /* ====================================== */
 
 
@@ -6796,6 +6852,12 @@ int main()
 
     // all uncorrelated uncertainties
     SaveSpecificMXsBin(Signal_all_uncorrelated, MXsBin);
+
+    // MC statistical uncertainties
+    SaveSpecificMXsBin(Signal_MC_stat, MXsBin);
+
+    // all of uncorrelated uncertainties + MC statistical uncertainties
+    SaveSpecificMXsBin(Signal_all_uncorrelated_MC_stat, MXsBin);
     /* ====================================== */
 
 
@@ -7049,6 +7111,24 @@ int main()
     DDBAR_all_uncorrelated->Write(); 
     SSBAR_all_uncorrelated->Write(); 
     CHARM_all_uncorrelated->Write();
+
+    // MC statistical uncertainties
+    Signal_MC_stat->Write();
+    CHG_MC_stat->Write();
+    MIX_MC_stat->Write();
+    UUBAR_MC_stat->Write();
+    DDBAR_MC_stat->Write();
+    SSBAR_MC_stat->Write();
+    CHARM_MC_stat->Write();
+
+    // all of uncorrelated uncertainties + MC statistical uncertainties
+    Signal_all_uncorrelated_MC_stat->Write();
+    CHG_all_uncorrelated_MC_stat->Write();
+    MIX_all_uncorrelated_MC_stat->Write();
+    UUBAR_all_uncorrelated_MC_stat->Write();
+    DDBAR_all_uncorrelated_MC_stat->Write();
+    SSBAR_all_uncorrelated_MC_stat->Write();
+    CHARM_all_uncorrelated_MC_stat->Write();
 
     total_DATA->Write();
 
