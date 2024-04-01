@@ -74,12 +74,6 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data);
 int Toy_iter_num = 0.0;
 int LT_iter_num = 0.0;
 
-double weight_KIDsys[RarityBins * 7] = { 0.0 };
-double weight_PIDsys[RarityBins * 7] = { 0.0 };
-double weight_BRsys[RarityBins * 3] = { 0.0 };
-double weight_pi0sys[RarityBins * 7] = { 0.0 };
-double weight_FEIsys[RarityBins * 3] = { 0.0 };
-
 std::random_device rd;
 std::default_random_engine generator(rd());
 
@@ -261,44 +255,26 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
             w->var(names->at(i).c_str())->setVal(distribution(generator));
         }
         else if (names->at(i).find("gamma_stat") != std::string::npos) {
-            RooRealVar* norm = w->var(("nom_" + names->at(i)).c_str());
-            std::poisson_distribution<> distribution(norm->getValV());
-            w->var(names->at(i).c_str())->setVal(distribution(generator) / norm->getValV());
+
+            /* poisson */
+            //RooRealVar* norm = w->var(("nom_" + names->at(i)).c_str());
+            //std::poisson_distribution<> distribution(norm->getValV());
+            //w->var(names->at(i).c_str())->setVal(distribution(generator) / norm->getValV());
+
+            /* gaussian */
+            RooRealVar* variable = w->var(names->at(i).c_str());
+            RooErrorVar* err_variable = variable->errorVar();
+
+            std::normal_distribution<double> distribution(1.0, err_variable->getValV());
+            w->var(names->at(i).c_str())->setVal(distribution(generator));
         }
         else if ( (names->at(i).find("gamma") != std::string::npos) && (names->at(i).find("uncorr") != std::string::npos) ) {
-            int sample_index = -1;
-            int bin_index = -1;
 
-            if (names->at(i).find("CHG") != std::string::npos) sample_index = 0;
-            else if(names->at(i).find("MIX") != std::string::npos) sample_index = 1;
-            else if (names->at(i).find("UUBAR") != std::string::npos) sample_index = 2;
-            else if (names->at(i).find("DDBAR") != std::string::npos) sample_index = 3;
-            else if (names->at(i).find("SSBAR") != std::string::npos) sample_index = 4;
-            else if (names->at(i).find("CHARM") != std::string::npos) sample_index = 5;
-            else if (names->at(i).find("Signal") != std::string::npos) sample_index = 6;
+            RooRealVar* variable = w->var(names->at(i).c_str());
+            RooErrorVar* err_variable = variable->errorVar();
 
-            std::vector<std::string> temp_strings = split(names->at(i), '_');
-            bin_index = stoi(temp_strings.back()); // from 0
-
-            if (names->at(i).find("all") != std::string::npos) {
-                double KID_uncertainty = weight_KIDsys[RarityBins * sample_index + bin_index];
-                double PID_uncertainty = weight_PIDsys[RarityBins * sample_index + bin_index];
-                double BR_uncertainty = 0.0;
-                double pi0_uncertainty = weight_pi0sys[RarityBins * sample_index + bin_index];
-                double FEI_uncertainty = 0.0;
-                if ((names->at(i).find("CHG") != std::string::npos) || (names->at(i).find("MIX") != std::string::npos)) {
-                    BR_uncertainty = weight_BRsys[RarityBins * sample_index + bin_index];
-                    FEI_uncertainty = weight_FEIsys[RarityBins * sample_index + bin_index];
-                }
-                else if (names->at(i).find("Signal") != std::string::npos) {
-                    BR_uncertainty = weight_BRsys[RarityBins * 2 + bin_index]; // exception for signal BB BR uncorrelated uncertainty!
-                    FEI_uncertainty = weight_FEIsys[RarityBins * 2 + bin_index]; // exception for signal FEI uncorrelated uncertainty!
-                }
-                
-                double total_uncertainty = std::sqrt(KID_uncertainty * KID_uncertainty + PID_uncertainty * PID_uncertainty + BR_uncertainty * BR_uncertainty + pi0_uncertainty * pi0_uncertainty + FEI_uncertainty * FEI_uncertainty);
-                std::normal_distribution<double> distribution(1.0, total_uncertainty);
-                w->var(names->at(i).c_str())->setVal(distribution(generator));
-            }
+            std::normal_distribution<double> distribution(1.0, err_variable->getValV());
+            w->var(names->at(i).c_str())->setVal(distribution(generator));
 
         }
     }
@@ -394,50 +370,6 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         delete fitres;
 
     }
-}
-
-void ReadPIDuncorrsysFile(const char* dirname_KID, const char* dirname_PID) {
-    FILE* fp;
-
-    fp = fopen(dirname_KID, "r");
-    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_KIDsys[i]);
-    fclose(fp);
-    for (int i = 0; i < RarityBins * 7; i++) weight_KIDsys[i] = std::sqrt(weight_KIDsys[i]);
-
-    fp = fopen(dirname_PID, "r");
-    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_PIDsys[i]);
-    fclose(fp);
-    for (int i = 0; i < RarityBins * 7; i++) weight_PIDsys[i] = std::sqrt(weight_PIDsys[i]);
-}
-
-void ReadBRuncorrsysFile(const char* dirname_BR) {
-    FILE* fp;
-
-    fp = fopen(dirname_BR, "r");
-    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_BRsys[i]);
-    fclose(fp);
-    for (int i = 0; i < RarityBins * 3; i++) weight_BRsys[i] = std::sqrt(weight_BRsys[i]);
-
-}
-
-void Readpi0uncorrsysFile(const char* dirname_pi0) {
-    FILE* fp;
-
-    fp = fopen(dirname_pi0, "r");
-    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_pi0sys[i]);
-    fclose(fp);
-    for (int i = 0; i < RarityBins * 7; i++) weight_pi0sys[i] = std::sqrt(weight_pi0sys[i]);
-
-}
-
-void ReadFEIuncorrsysFile(const char* dirname_FEI) {
-    FILE* fp;
-
-    fp = fopen(dirname_FEI, "r");
-    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_FEIsys[i]);
-    fclose(fp);
-    for (int i = 0; i < RarityBins * 3; i++) weight_FEIsys[i] = std::sqrt(weight_FEIsys[i]);
-
 }
 
 void FitToData(RooWorkspace* w, double eps) {

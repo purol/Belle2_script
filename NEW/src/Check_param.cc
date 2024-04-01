@@ -95,47 +95,31 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
             names.push_back(name);
         }
         else if (name.find("gamma_stat") != std::string::npos) {
-            RooRealVar* norm = w->var(("nom_" + name).c_str());
-            double width = std::pow(norm->getValV(), -0.5);
+
+            /* poisson */
+            //RooRealVar* norm = w->var(("nom_" + names->at(i)).c_str());
+            //std::poisson_distribution<> distribution(norm->getValV());
+            //w->var(names->at(i).c_str())->setVal(distribution(generator) / norm->getValV());
+
+            /* gaussian */
+            RooRealVar* variable = w->var(names->at(i).c_str());
+            RooErrorVar* err_variable = variable->errorVar();
+            double width = err_variable->getValV();
+
             pulls.push_back((val - 1.0) / width);
             pull_errors.push_back(err / width);
             names.push_back(name);
         }
         else if ((name.find("gamma") != std::string::npos) && (name.find("uncorr") != std::string::npos)) {
-            int sample_index = -1;
-            int bin_index = -1;
 
-            if (name.find("CHG") != std::string::npos) sample_index = 0;
-            else if (name.find("MIX") != std::string::npos) sample_index = 1;
-            else if (name.find("UUBAR") != std::string::npos) sample_index = 2;
-            else if (name.find("DDBAR") != std::string::npos) sample_index = 3;
-            else if (name.find("SSBAR") != std::string::npos) sample_index = 4;
-            else if (name.find("CHARM") != std::string::npos) sample_index = 5;
-            else if (name.find("Signal") != std::string::npos) sample_index = 6;
+            RooRealVar* variable = w->var(names->at(i).c_str());
+            RooErrorVar* err_variable = variable->errorVar();
+            double width = err_variable->getValV();
 
-            std::vector<std::string> temp_strings = split(name, '_');
-            bin_index = stoi(temp_strings.back()); // from 0
+            pulls.push_back((val - 1.0) / width);
+            pull_errors.push_back(err / width);
+            names.push_back(name);
 
-            if (name.find("all") != std::string::npos) {
-                double KID_uncertainty = weight_KIDsys[RarityBins * sample_index + bin_index];
-                double PID_uncertainty = weight_PIDsys[RarityBins * sample_index + bin_index];
-                double BR_uncertainty = 0.0;
-                double pi0_uncertainty = weight_pi0sys[RarityBins * sample_index + bin_index];
-                double FEI_uncertainty = 0.0;
-                if ((name.find("CHG") != std::string::npos) || (name.find("MIX") != std::string::npos)) {
-                    BR_uncertainty = weight_BRsys[RarityBins * sample_index + bin_index];
-                    FEI_uncertainty = weight_FEIsys[RarityBins * sample_index + bin_index];
-                }
-                else if (name.find("Signal") != std::string::npos) {
-                    BR_uncertainty = weight_BRsys[RarityBins * 2 + bin_index]; // exception for signal BB BR uncorrelated uncertainty!
-                    FEI_uncertainty = weight_FEIsys[RarityBins * 2 + bin_index]; // exception for signal FEI uncorrelated uncertainty!
-                }
-
-                double total_uncertainty = std::sqrt(KID_uncertainty * KID_uncertainty + PID_uncertainty * PID_uncertainty + BR_uncertainty * BR_uncertainty + pi0_uncertainty * pi0_uncertainty + FEI_uncertainty * FEI_uncertainty);
-                pulls.push_back((val - 1.0) / total_uncertainty);
-                pull_errors.push_back(err / total_uncertainty);
-                names.push_back(name);
-            }
         }
     }
 

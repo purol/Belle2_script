@@ -379,33 +379,6 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     // B->(D->X KL0) + anything
     if (options_->BRDKL0) w->var("alpha_BtoDtoXKL_uncer")->setConstant(options_->BRDKL0);
 
-    // uncorrelated
-    if (options_->uncorrelated) {
-        for (int i = 0; i < RarityBins_MX1; i++) {
-            w->var(("gamma_Signal_MXs1_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
-            w->var(("gamma_Signal_MXs2_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(true);
-            w->var(("gamma_Signal_MXs3_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(true);
-        }
-        for (int i = RarityBins_MX1; i < RarityBins_MX1 + RarityBins_MX2; i++) {
-            w->var(("gamma_Signal_MXs1_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(true);
-            w->var(("gamma_Signal_MXs2_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
-            w->var(("gamma_Signal_MXs3_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(true);
-        }
-        for (int i = RarityBins_MX1 + RarityBins_MX2; i < RarityBins; i++) {
-            w->var(("gamma_Signal_MXs1_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(true);
-            w->var(("gamma_Signal_MXs2_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(true);
-            w->var(("gamma_Signal_MXs3_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
-        }
-        for (int i = 0; i < RarityBins; i++) {
-            w->var(("gamma_CHG_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
-            w->var(("gamma_MIX_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
-            w->var(("gamma_UUBAR_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
-            w->var(("gamma_DDBAR_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
-            w->var(("gamma_SSBAR_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
-            w->var(("gamma_CHARM_all_uncorr_uncer_bin_" + std::to_string(i)).c_str())->setConstant(options_->uncorrelated);
-        }
-    }
-
     // save snapshot
     w->saveSnapshot("ParamValues", *params, true);
 }
