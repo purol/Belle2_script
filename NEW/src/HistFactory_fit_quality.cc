@@ -509,7 +509,7 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
         double err = rrv->getError();
 
         if (name == "mu_MXs1") {
-            if (fit_status < 0.5) {
+            if (std::abs(fit_status) > 0.5) {
 
                 ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
                 RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
@@ -554,7 +554,7 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
                 leg->AddEntry("Continuum", "q#bar{q}");
                 leg->Draw();
 
-                canvas->SaveAs( (std::string("fit_plot_") + "mu-" + std::to_string(val) + "_" + "err-" + std::to_string(err) + ".png").c_str() );
+                canvas->SaveAs( (std::string("fit_plot_") + "mu-" + std::to_string(val) + "_" + "err-" + std::to_string(err) + "_" + std::to_string(fit_status) + ".png").c_str() );
 
                 delete canvas;
 
