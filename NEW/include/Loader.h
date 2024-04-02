@@ -273,7 +273,10 @@ public:
     };
     enum MassRegion {
         SmallMass = 0,
-        LargeMass
+        LargeMass,
+        KaonMass,
+        KstarMass,
+        XsMass
     };
 
 private:
@@ -4722,6 +4725,28 @@ void Loader::MVACut(double OBB, double Oqq, Loader::MassRegion massRegion) {
             else {
                 if (temp_data.MVA_BB > OBB && temp_data.MVA_Continuum > Oqq) temp_queue.push(temp_data);
             }
+        }
+        else if (massRegion == Loader::KaonMass) {
+            if (temp_data.Bsig_info[6] > 0.6) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB > OBB && temp_data.MVA_Continuum > Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else if (massRegion == Loader::KstarMass) {
+            if ((temp_data.Bsig_info[6] < 0.6) || (temp_data.Bsig_info[6] > 1.0)) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB > OBB && temp_data.MVA_Continuum > Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else if (massRegion == Loader::XsMass) {
+            if (temp_data.Bsig_info[6] < 1.0) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB > OBB && temp_data.MVA_Continuum > Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else {
+            printf("[Loader::MVACut] undefined mass region\n");
+            exit(1);
         }
 
     }
