@@ -6733,54 +6733,128 @@ int main()
     const int MXsBin = 1;
 
     SaveSpecificMXsBin(Signal_nominal, MXsBin);
+    SaveSpecificMXsBin(CHG_nominal, MXsBin);
+    SaveSpecificMXsBin(MIX_nominal, MXsBin);
+    SaveSpecificMXsBin(UUBAR_nominal, MXsBin);
+    SaveSpecificMXsBin(DDBAR_nominal, MXsBin);
+    SaveSpecificMXsBin(SSBAR_nominal, MXsBin);
+    SaveSpecificMXsBin(CHARM_nominal, MXsBin);
 
     // track uncertainty
     SaveSpecificMXsBin(Signal_track_p, MXsBin);
+    SaveSpecificMXsBin(CHG_track_p, MXsBin);
+    SaveSpecificMXsBin(MIX_track_p, MXsBin);
+    SaveSpecificMXsBin(UUBAR_track_p, MXsBin);
+    SaveSpecificMXsBin(DDBAR_track_p, MXsBin);
+    SaveSpecificMXsBin(SSBAR_track_p, MXsBin);
+    SaveSpecificMXsBin(CHARM_track_p, MXsBin);
     SaveSpecificMXsBin(Signal_track_m, MXsBin);
+    SaveSpecificMXsBin(CHG_track_m, MXsBin);
+    SaveSpecificMXsBin(MIX_track_m, MXsBin);
+    SaveSpecificMXsBin(UUBAR_track_m, MXsBin);
+    SaveSpecificMXsBin(DDBAR_track_m, MXsBin);
+    SaveSpecificMXsBin(SSBAR_track_m, MXsBin);
+    SaveSpecificMXsBin(CHARM_track_m, MXsBin);
 
     // KS0 uncertainty
     SaveSpecificMXsBin(Signal_KS0_p, MXsBin);
+    SaveSpecificMXsBin(CHG_KS0_p, MXsBin);
+    SaveSpecificMXsBin(MIX_KS0_p, MXsBin);
+    SaveSpecificMXsBin(UUBAR_KS0_p, MXsBin);
+    SaveSpecificMXsBin(DDBAR_KS0_p, MXsBin);
+    SaveSpecificMXsBin(SSBAR_KS0_p, MXsBin);
+    SaveSpecificMXsBin(CHARM_KS0_p, MXsBin);
     SaveSpecificMXsBin(Signal_KS0_m, MXsBin);
+    SaveSpecificMXsBin(CHG_KS0_m, MXsBin);
+    SaveSpecificMXsBin(MIX_KS0_m, MXsBin);
+    SaveSpecificMXsBin(UUBAR_KS0_m, MXsBin);
+    SaveSpecificMXsBin(DDBAR_KS0_m, MXsBin);
+    SaveSpecificMXsBin(SSBAR_KS0_m, MXsBin);
+    SaveSpecificMXsBin(CHARM_KS0_m, MXsBin);
 
     // FEI uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_FEI; i++) {
         SaveSpecificMXsBin(Signal_FEI_correlated[i], MXsBin);
+        SaveSpecificMXsBin(CHG_FEI_correlated[i], MXsBin);
+        SaveSpecificMXsBin(MIX_FEI_correlated[i], MXsBin);
     }
 
     // FEI uncertainty (uncorrelated)
     SaveSpecificMXsBin(Signal_FEI_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(CHG_FEI_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(MIX_FEI_uncorrelated, MXsBin);
 
     // Kaon PID uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_KID; i++) {
         SaveSpecificMXsBin(Signal_KID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(CHG_KID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(MIX_KID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(UUBAR_KID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(DDBAR_KID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(SSBAR_KID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(CHARM_KID_correlated[i], MXsBin);
     }
 
     // Kaon PID uncertainty (uncorrelated)
     SaveSpecificMXsBin(Signal_KID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(CHG_KID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(MIX_KID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(UUBAR_KID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(DDBAR_KID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(SSBAR_KID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(CHARM_KID_uncorrelated, MXsBin);
 
     // Pion PID uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_PID; i++) {
         SaveSpecificMXsBin(Signal_PID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(CHG_PID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(MIX_PID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(UUBAR_PID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(DDBAR_PID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(SSBAR_PID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(CHARM_PID_correlated[i], MXsBin);
     }
 
     // Pion PID uncertainty (uncorrelated)
     SaveSpecificMXsBin(Signal_PID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(CHG_PID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(MIX_PID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(UUBAR_PID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(DDBAR_PID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(SSBAR_PID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(CHARM_PID_uncorrelated, MXsBin);
 
     // BB BR uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_BR; i++) {
         SaveSpecificMXsBin(Signal_BR_correlated[i], MXsBin);
+        SaveSpecificMXsBin(CHG_BR_correlated[i], MXsBin);
+        SaveSpecificMXsBin(MIX_BR_correlated[i], MXsBin);
     }
 
     // BB BR uncertainty (uncorrelated)
     SaveSpecificMXsBin(Signal_BR_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(CHG_BR_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(MIX_BR_uncorrelated, MXsBin);
 
     // pi0 uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_pi0; i++) {
         SaveSpecificMXsBin(Signal_pi0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(CHG_pi0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(MIX_pi0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(UUBAR_pi0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(DDBAR_pi0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(SSBAR_pi0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(CHARM_pi0_correlated[i], MXsBin);
     }
 
     // pi0 uncertainty (uncorrelated)
     SaveSpecificMXsBin(Signal_pi0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(CHG_pi0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(MIX_pi0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(UUBAR_pi0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(DDBAR_pi0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(SSBAR_pi0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(CHARM_pi0_uncorrelated, MXsBin);
 
     // K nu nubar form factor
     SaveSpecificMXsBin(Signal_Kff1_p, MXsBin);
@@ -6839,28 +6913,84 @@ int main()
     SaveSpecificMXsBin(Signal_mKstar_p, MXsBin);
     SaveSpecificMXsBin(Signal_mKstar_m, MXsBin);
 
+    // BDTc
+    SaveSpecificMXsBin(UUBAR_BDTc_p, MXsBin);
+    SaveSpecificMXsBin(DDBAR_BDTc_p, MXsBin);
+    SaveSpecificMXsBin(SSBAR_BDTc_p, MXsBin);
+    SaveSpecificMXsBin(CHARM_BDTc_p, MXsBin);
+    SaveSpecificMXsBin(UUBAR_BDTc_m, MXsBin);
+    SaveSpecificMXsBin(DDBAR_BDTc_m, MXsBin);
+    SaveSpecificMXsBin(SSBAR_BDTc_m, MXsBin);
+    SaveSpecificMXsBin(CHARM_BDTc_m, MXsBin);
+
+    // B2Knn BR
+    SaveSpecificMXsBin(Signal_Xnn_p, MXsBin);
+    SaveSpecificMXsBin(CHG_Xnn_p, MXsBin);
+    SaveSpecificMXsBin(MIX_Xnn_p, MXsBin);
+    SaveSpecificMXsBin(Signal_Xnn_m, MXsBin);
+    SaveSpecificMXsBin(CHG_Xnn_m, MXsBin);
+    SaveSpecificMXsBin(MIX_Xnn_m, MXsBin);
+
     // multiplicity uncertainty
     for (int i = 0; i < N_hist_multiplicity; i++) {
         SaveSpecificMXsBin(Signal_multiplicity_p[i], MXsBin);
+        SaveSpecificMXsBin(CHG_multiplicity_p[i], MXsBin);
+        SaveSpecificMXsBin(MIX_multiplicity_p[i], MXsBin);
+        SaveSpecificMXsBin(UUBAR_multiplicity_p[i], MXsBin);
+        SaveSpecificMXsBin(DDBAR_multiplicity_p[i], MXsBin);
+        SaveSpecificMXsBin(SSBAR_multiplicity_p[i], MXsBin);
+        SaveSpecificMXsBin(CHARM_multiplicity_p[i], MXsBin);
         SaveSpecificMXsBin(Signal_multiplicity_m[i], MXsBin);
+        SaveSpecificMXsBin(CHG_multiplicity_m[i], MXsBin);
+        SaveSpecificMXsBin(MIX_multiplicity_m[i], MXsBin);
+        SaveSpecificMXsBin(UUBAR_multiplicity_m[i], MXsBin);
+        SaveSpecificMXsBin(DDBAR_multiplicity_m[i], MXsBin);
+        SaveSpecificMXsBin(SSBAR_multiplicity_m[i], MXsBin);
+        SaveSpecificMXsBin(CHARM_multiplicity_m[i], MXsBin);
     }
 
     // B -> [D -> X KL0] anything uncertainties
     SaveSpecificMXsBin(Signal_BtoDtoXKL_p, MXsBin);
+    SaveSpecificMXsBin(CHG_BtoDtoXKL_p, MXsBin);
+    SaveSpecificMXsBin(MIX_BtoDtoXKL_p, MXsBin);
     SaveSpecificMXsBin(Signal_BtoDtoXKL_m, MXsBin);
+    SaveSpecificMXsBin(CHG_BtoDtoXKL_m, MXsBin);
+    SaveSpecificMXsBin(MIX_BtoDtoXKL_m, MXsBin);
 
     // BR(B -> X KL KL)
     SaveSpecificMXsBin(Signal_BRBtoXKLKL_p, MXsBin);
+    SaveSpecificMXsBin(CHG_BRBtoXKLKL_p, MXsBin);
+    SaveSpecificMXsBin(MIX_BRBtoXKLKL_p, MXsBin);
     SaveSpecificMXsBin(Signal_BRBtoXKLKL_m, MXsBin);
+    SaveSpecificMXsBin(CHG_BRBtoXKLKL_m, MXsBin);
+    SaveSpecificMXsBin(MIX_BRBtoXKLKL_m, MXsBin);
 
     // all uncorrelated uncertainties
     SaveSpecificMXsBin(Signal_all_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(CHG_all_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(MIX_all_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(UUBAR_all_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(DDBAR_all_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(SSBAR_all_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(CHARM_all_uncorrelated, MXsBin);
 
     // MC statistical uncertainties
     SaveSpecificMXsBin(Signal_MC_stat, MXsBin);
+    SaveSpecificMXsBin(CHG_MC_stat, MXsBin);
+    SaveSpecificMXsBin(MIX_MC_stat, MXsBin);
+    SaveSpecificMXsBin(UUBAR_MC_stat, MXsBin);
+    SaveSpecificMXsBin(DDBAR_MC_stat, MXsBin);
+    SaveSpecificMXsBin(SSBAR_MC_stat, MXsBin);
+    SaveSpecificMXsBin(CHARM_MC_stat, MXsBin);
 
     // all of uncorrelated uncertainties + MC statistical uncertainties
     SaveSpecificMXsBin(Signal_all_uncorrelated_MC_stat, MXsBin);
+    SaveSpecificMXsBin(CHG_all_uncorrelated_MC_stat, MXsBin);
+    SaveSpecificMXsBin(MIX_all_uncorrelated_MC_stat, MXsBin);
+    SaveSpecificMXsBin(UUBAR_all_uncorrelated_MC_stat, MXsBin);
+    SaveSpecificMXsBin(DDBAR_all_uncorrelated_MC_stat, MXsBin);
+    SaveSpecificMXsBin(SSBAR_all_uncorrelated_MC_stat, MXsBin);
+    SaveSpecificMXsBin(CHARM_all_uncorrelated_MC_stat, MXsBin);
     /* ====================================== */
 
 
