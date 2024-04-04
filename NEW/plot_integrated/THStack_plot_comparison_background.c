@@ -14,6 +14,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # include <algorithm>
 # include <float.h>
 # include "THStack_plot_MC15rdVSMC15ri.h"
+#include "template.h"
 
 /* ====================================== */
 
@@ -191,6 +192,7 @@ void THStack_plot_comparison_background() {
     variable_names.push_back("MsquaredBsig_op4"); branch_names.push_back("Upsilon");
     variable_names.push_back("MsquaredBsig_op7"); branch_names.push_back("Upsilon");
     variable_names.push_back("MVA_BB"); branch_names.push_back("Upsilon");
+    variable_names.push_back("FBDT_index"); branch_names.push_back("Upsilon");
 
     Nvar_num = static_cast<int>(variable_names.size());
 
@@ -510,6 +512,11 @@ void THStack_plot_comparison_background() {
         else if ((variable_names.at(k).find("Bsig_daughter_0_extraInfo_D") != std::string::npos) && (variable_names.at(k).find("_M") != std::string::npos)) {
             min = 0.6;
             max = 2.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("FBDT_index"))) {
+            min = 0.0;
+            max = RarityBins;
+            bins = RarityBins;
         }
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";" + variable_names.at(k) + ";number of candidates").c_str());

@@ -17,6 +17,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "constants.h"
 #include "base.h"
 #include "THStack_plot.h"
+#include "template.h"
 
 const bool Normalized = true;
 
@@ -211,6 +212,7 @@ void THStack_plot_sideband() {
     variable_names.push_back("MsquaredBsig_op4"); branch_names.push_back("Upsilon");
     variable_names.push_back("MsquaredBsig_op7"); branch_names.push_back("Upsilon");
     variable_names.push_back("MVA_BB"); branch_names.push_back("Upsilon");
+    variable_names.push_back("FBDT_index"); branch_names.push_back("Upsilon");
 
     Nvar_num = static_cast<int>(variable_names.size());
 
@@ -480,6 +482,11 @@ void THStack_plot_sideband() {
         else if ((variable_names.at(k).find("Bsig_daughter_0_extraInfo_D") != std::string::npos) && (variable_names.at(k).find("_M") != std::string::npos)) {
             min = 0.6;
             max = 2.1;
+        }
+        else if (hasEnding(variable_names.at(k), std::string("FBDT_index"))) {
+            min = 0.0;
+            max = RarityBins;
+            bins = RarityBins;
         }
 
         if (Normalized) {
