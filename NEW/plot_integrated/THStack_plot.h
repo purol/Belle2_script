@@ -276,7 +276,7 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
                 if (variable_names.at(k).find("FBDT_index") != std::string::npos) {
-                    int index_FBDT_raw = variable_names.find(variable_names.begin(), variable_names.end(), "MVA_BB") - variable_names.begin();
+                    int index_FBDT_raw = variable_names.find(variable_names.begin(), variable_names.end(), std::string("MVA_BB")) - variable_names.begin();
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
@@ -462,7 +462,7 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
                 if (variable_names.at(k).find("FBDT_index") != std::string::npos) {
-                    int index_FBDT_raw = variable_names.find(variable_names.begin(), variable_names.end(), "MVA_BB") - variable_names.begin();
+                    int index_FBDT_raw = variable_names.find(variable_names.begin(), variable_names.end(), std::string("MVA_BB")) - variable_names.begin();
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
@@ -549,7 +549,7 @@ void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_n
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
                 if (variable_names.at(k).find("FBDT_index") != std::string::npos) {
-                    int index_FBDT_raw = variable_names.find(variable_names.begin(), variable_names.end(), "MVA_BB") - variable_names.begin();
+                    int index_FBDT_raw = variable_names.find(variable_names.begin(), variable_names.end(), std::string("MVA_BB")) - variable_names.begin();
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
@@ -815,7 +815,7 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
                 if (variable_names.at(k).find("FBDT_index") != std::string::npos) {
-                    int index_FBDT_raw = variable_names.find(variable_names.begin(), variable_names.end(), "MVA_BB") - variable_names.begin();
+                    int index_FBDT_raw = variable_names.find(variable_names.begin(), variable_names.end(), std::string("MVA_BB")) - variable_names.begin();
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
@@ -1144,7 +1144,7 @@ void LetsFillMC_ESide(const char* dirname, std::vector<std::string> variable_nam
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
                 if (variable_names.at(k).find("FBDT_index") != std::string::npos) {
-                    int index_FBDT_raw = variable_names.find(variable_names.begin(), variable_names.end(), "MVA_BB") - variable_names.begin();
+                    int index_FBDT_raw = variable_names.find(variable_names.begin(), variable_names.end(), std::string("MVA_BB")) - variable_names.begin();
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
@@ -1470,7 +1470,7 @@ void LetsFillMC_MUSide(const char* dirname, std::vector<std::string> variable_na
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
                 if (variable_names.at(k).find("FBDT_index") != std::string::npos) {
-                    int index_FBDT_raw = variable_names.find(variable_names.begin(), variable_names.end(), "MVA_BB") - variable_names.begin();
+                    int index_FBDT_raw = variable_names.find(variable_names.begin(), variable_names.end(), std::string("MVA_BB")) - variable_names.begin();
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
