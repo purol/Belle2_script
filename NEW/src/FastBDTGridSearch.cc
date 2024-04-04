@@ -218,8 +218,6 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(SIGNAL_input_test.c_str(), &names, "B2Knunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            // take even only
-            if (i % 2 == 1) continue;
             FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, MCTYPE, ObtainWeight("SIGNAL", MCTYPE, "test", std::string("B2Knunu")), "B2Knunu");
         }
     }
@@ -227,8 +225,6 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(SIGNAL_input_test.c_str(), &names, "B2Kstarnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            // take even only
-            if (i % 2 == 1) continue;
             FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, MCTYPE, ObtainWeight("SIGNAL", MCTYPE, "test", std::string("B2Kstarnunu")), "otherwise");
         }
     }
@@ -236,8 +232,6 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(SIGNAL_input_test.c_str(), &names, "B2Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            // take even only
-            if (i % 2 == 1) continue;
             FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, MCTYPE, ObtainWeight("SIGNAL", MCTYPE, "test", std::string("B2Xsnunu")), "B2Xsnunu");
         }
     }
@@ -245,8 +239,6 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(SIGNAL_input_test.c_str(), &names, "B02K0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            // take even only
-            if (i % 2 == 1) continue;
             FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, MCTYPE, ObtainWeight("SIGNAL", MCTYPE, "test", std::string("B02K0nunu")), "B02K0nunu");
         }
     }
@@ -254,8 +246,6 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(SIGNAL_input_test.c_str(), &names, "B02Kstar0nunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            // take even only
-            if (i % 2 == 1) continue;
             FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, MCTYPE, ObtainWeight("SIGNAL", MCTYPE, "test", std::string("B02Kstar0nunu")), "otherwise");
         }
     }
@@ -263,8 +253,6 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(SIGNAL_input_test.c_str(), &names, "B02Xsnunu");
         for (unsigned int i = 0; i < names.size(); ++i) {
-            // take even only
-            if (i % 2 == 1) continue;
             FillVariables((SIGNAL_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, true, MCTYPE, ObtainWeight("SIGNAL", MCTYPE, "test", std::string("B02Xsnunu")), "B02Xsnunu");
         }
     }
@@ -272,8 +260,6 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(CHG_input_test.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            // take even only
-            if (i % 2 == 1) continue;
             FillVariables((CHG_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("CHG", MCTYPE, "test", std::string("")), "otherwise");
         }
     }
@@ -281,8 +267,6 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(MIX_input_test.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            // take even only
-            if (i % 2 == 1) continue;
             FillVariables((MIX_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("MIX", MCTYPE, "test", std::string("")), "otherwise");
         }
     }
@@ -290,8 +274,6 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(UUBAR_input_test.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            // take even only
-            if (i % 2 == 1) continue;
             FillVariables((UUBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("UUBAR", MCTYPE, "test", std::string("")), "otherwise");
         }
     }
@@ -299,8 +281,6 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(DDBAR_input_test.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            // take even only
-            if (i % 2 == 1) continue;
             FillVariables((DDBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("DDBAR", MCTYPE, "test", std::string("")), "otherwise");
         }
     }
@@ -308,8 +288,6 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(SSBAR_input_test.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            // take even only
-            if (i % 2 == 1) continue;
             FillVariables((SSBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("SSBAR", MCTYPE, "test", std::string("")), "otherwise");
         }
     }
@@ -317,8 +295,6 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(CHARM_input_test.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            // take even only
-            if (i % 2 == 1) continue;
             FillVariables((CHARM_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("CHARM", MCTYPE, "test", std::string("")), "otherwise");
         }
     }
