@@ -598,7 +598,7 @@ void THStack_plot_offres() {
         line->Draw();
 
         c_temp->SetBottomMargin(0.0);
-        c_temp->SaveAs((variable_names.at(k) + "_sideband.png").c_str());
+        c_temp->SaveAs((variable_names.at(k) + "_offres.png").c_str());
 
         delete c_temp;
     }

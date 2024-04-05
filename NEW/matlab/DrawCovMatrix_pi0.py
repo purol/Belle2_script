@@ -21,7 +21,7 @@ ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-0.3, v
 ax.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
-ticks = [0, 24, 48, 72, 96, 120, 144, 168]
+ticks = [0, 23, 46, 69, 92, 115, 138, 161]
 ax.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
 ax.set_yticklabels(labels, rotation=90, va="center")
 ax.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
@@ -37,7 +37,7 @@ ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-0.
 ax_p.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
-ticks = [0, 24, 48, 72, 96, 120, 144, 168]
+ticks = [0, 23, 46, 69, 92, 115, 138, 161]
 ax_p.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
 ax_p.set_yticklabels(labels, rotation=90, va="center")
 ax_p.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
