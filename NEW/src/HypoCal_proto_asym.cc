@@ -44,7 +44,7 @@
 #include "RooStats/HistFactory/HistFactoryModelUtils.h"
 #include "RooStats/HistFactory/RooBarlowBeestonLL.h"
 
-#include "RooStats/HybridCalculator.h"
+#include "RooStats/AsymptoticCalculator.h"
 #include "RooStats/HypoTestInverter.h"
 #include "RooStats/HypoTestInverterPlot.h"
 
