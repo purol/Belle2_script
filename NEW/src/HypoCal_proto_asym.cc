@@ -131,7 +131,7 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, 
 		}
 
 		FILE* fp;
-		fp = fopen(("CLs_hyb_" + std::string(mu) + ".txt").c_str(), "a");
+		fp = fopen(("CLs_asym_" + std::string(mu) + ".txt").c_str(), "a");
 		if (type == 0) {
 			fprintf(fp, "observed CLs central value: %lf\n", CLVal);
 			fprintf(fp, "observed CLs error: %lf\n", CLErr);
