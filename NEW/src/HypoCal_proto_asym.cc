@@ -80,7 +80,7 @@ void GetExpectedCL(RooStats::HypoTestInverterResult* fResults, const char* mu) {
 		TMath::Quantiles(values.size(), 5, x, q, p, false);
 
 		FILE* fp;
-		fp = fopen(("CLs_hyb_" + std::string(mu) + ".txt").c_str(), "a");
+		fp = fopen(("CLs_asym_" + std::string(mu) + ".txt").c_str(), "a");
 		fprintf(fp, "expected CLs median: %lf\n", q[2]);
 		fprintf(fp, "expected CLs +1sigma: %lf\n", q[3] - q[2]);
 		fprintf(fp, "expected CLs -1sigma: %lf\n", q[2] - q[1]);
