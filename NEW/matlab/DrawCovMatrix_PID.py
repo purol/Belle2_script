@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 
 from matplotlib.ticker import FixedLocator
 
+Nbins = 29
+
 # KID
 file_KID_cov_all = "KID_corr_all.txt"
 file_KID_cov_partial = "KID_corr_partial.txt"
@@ -21,7 +23,7 @@ ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-0.3, v
 ax.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
-ticks = [0, 23, 46, 69, 92, 115, 138, 161]
+ticks = [i * Nbins for i in range(8)]
 ax.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
 ax.set_yticklabels(labels, rotation=90, va="center")
 ax.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
@@ -37,7 +39,7 @@ ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-0.
 ax_p.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
-ticks = [0, 23, 46, 69, 92, 115, 138, 161]
+ticks = [i * Nbins for i in range(8)]
 ax_p.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
 ax_p.set_yticklabels(labels, rotation=90, va="center")
 ax_p.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
@@ -60,7 +62,7 @@ ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[],vmin=-0.5, vm
 ax.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
-ticks = [0, 23, 46, 69, 92, 115, 138, 161]
+ticks = [i * Nbins for i in range(8)]
 ax.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
 ax.set_yticklabels(labels, rotation=90, va="center")
 ax.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
@@ -76,7 +78,7 @@ ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[],vmin=-0.5
 ax_p.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
-ticks = [0, 23, 46, 69, 92, 115, 138, 161]
+ticks = [i * Nbins for i in range(8)]
 ax_p.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
 ax_p.set_yticklabels(labels, rotation=90, va="center")
 ax_p.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))

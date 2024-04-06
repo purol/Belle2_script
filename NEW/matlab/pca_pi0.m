@@ -1,7 +1,7 @@
 clear all
 format long
 
-N_total_bins = 161;
+N_total_bins = 203;
 N_selected_vectors = 3;
 
 % pi0 correction
