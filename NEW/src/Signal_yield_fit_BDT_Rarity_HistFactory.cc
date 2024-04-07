@@ -6071,10 +6071,10 @@ int main()
             name_Signal_Fragmentation.push_back(std::string("Signal_Xs_frag_decay_") + std::to_string(MxsBin) + std::string("_") + std::to_string(Category) + std::string("_m"));
         }
     }
-    std::vector<TH1D*> Signal_Fragmentaions;
+    std::vector<TH1D*> Signal_Fragmentations;
     for (unsigned int i = 0; i < name_Signal_Fragmentation.size(); i++) {
         TH1D* temp = new TH1D(name_Signal_Fragmentation.at(i).c_str(), name_Signal_Fragmentation.at(i).c_str(), RarityBins, BinMIN, BinMAX);
-        Signal_Fragmentaions.push_back(temp);
+        Signal_Fragmentations.push_back(temp);
     }
 
     // pf
@@ -6411,12 +6411,12 @@ int main()
                     exit(1);
                 }
 
-                GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Fragmentaions.at(temp_index), "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-                GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Fragmentaions.at(temp_index), "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-                GetFragmentationPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Fragmentaions.at(temp_index), "Bplus", "SIGNAL", MxsBin, Category, IsItUp, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-                GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Fragmentaions.at(temp_index), "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-                GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Fragmentaions.at(temp_index), "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-                GetFragmentationPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Fragmentaions.at(temp_index), "Bzero", "SIGNAL", MxsBin, Category, IsItUp, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+                GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Fragmentations.at(temp_index), "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+                GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Fragmentations.at(temp_index), "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+                GetFragmentationPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Fragmentations.at(temp_index), "Bplus", "SIGNAL", MxsBin, Category, IsItUp, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+                GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Fragmentations.at(temp_index), "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+                GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Fragmentations.at(temp_index), "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+                GetFragmentationPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Fragmentations.at(temp_index), "Bzero", "SIGNAL", MxsBin, Category, IsItUp, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
             }
         }
@@ -6895,7 +6895,7 @@ int main()
     SaveSpecificMXsBin(Signal_Kstarfrac_m, MXsBin);
 
     // fragmentation uncertainty
-    for (unsigned int i = 0; i < Signal_Fragmentaions.size(); i++) SaveSpecificMXsBin(Signal_Fragmentaions.at(i), MXsBin);
+    for (unsigned int i = 0; i < Signal_Fragmentations.size(); i++) SaveSpecificMXsBin(Signal_Fragmentations.at(i), MXsBin);
 
     // pf uncertainty
     SaveSpecificMXsBin(Signal_pf_p, MXsBin);
@@ -7162,7 +7162,7 @@ int main()
     Signal_Kstarfrac_m->Write();
 
     // fragmentation uncertainty
-    for (unsigned int i = 0; i < Signal_Fragmentaions.size(); i++) Signal_Fragmentaions.at(i)->Write();
+    for (unsigned int i = 0; i < Signal_Fragmentations.size(); i++) Signal_Fragmentations.at(i)->Write();
 
     // pf uncertainty
     Signal_pf_p->Write();
