@@ -484,4 +484,18 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
     return minim.save();
 }
 
+void ObtainNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll) {
+    // what we have done
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    // get nll
+    RooArgSet* allParams = model->getParameters(*data);
+    RooStats::RemoveConstantParameters(allParams);
+    RooArgSet fGlobalObs = *mc->GetGlobalObservables();
+    RooArgSet fConditionalObs;
+    Bool_t fLOffset = RooStats::IsNLLOffset();
+    (*nll) = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
+}
+
 #endif 
