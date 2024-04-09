@@ -171,7 +171,7 @@ int WorkSpace_Knunu() {
 	channel.SetData("total_DATA", fname);
 
 	// read signal template
-    /* ================================ SIGNAL MX1 ================================ */
+    /* ================================ SIGNAL ================================ */
 	RooStats::HistFactory::Sample sig_temp("Signal_nominal_MXs1", "Signal_nominal", fname);
 	sig_temp.AddHistoSys("track_eff_uncer", "Signal_track_m", fname, "", "Signal_track_p", fname, "");
 	sig_temp.AddHistoSys("BtoDtoXKL_uncer", "Signal_BtoDtoXKL_m", fname, "", "Signal_BtoDtoXKL_p", fname, "");
