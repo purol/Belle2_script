@@ -758,7 +758,9 @@ void ReadXsTransitionPDF_Knunu()
     fp = fopen("Xsu_Htransition_weight.txt", "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsu up
-        double correction_factor = Xsu_transition_p->GetBinContent(i + 1) / Xsu_nominal->GetBinContent(i + 1);
+        double correction_factor = 1.0;
+        if (Xsu_nominal->GetBinContent(i + 1) > MyEPSILON) correction_factor = Xsu_transition_p->GetBinContent(i + 1) / Xsu_nominal->GetBinContent(i + 1);
+        else correction_factor = 1.0;
         fprintf(fp, "%lf\n", correction_factor);
     }
     fclose(fp);
@@ -766,7 +768,9 @@ void ReadXsTransitionPDF_Knunu()
     fp = fopen("Xsu_Ltransition_weight.txt", "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsu down
-        double correction_factor = Xsu_transition_m->GetBinContent(i + 1) / Xsu_nominal->GetBinContent(i + 1);
+        double correction_factor = 1.0;
+        if (Xsu_nominal->GetBinContent(i + 1) > MyEPSILON) correction_factor = Xsu_transition_m->GetBinContent(i + 1) / Xsu_nominal->GetBinContent(i + 1);
+        else correction_factor = 1.0;
         fprintf(fp, "%lf\n", correction_factor);
     }
     fclose(fp);
@@ -774,7 +778,9 @@ void ReadXsTransitionPDF_Knunu()
     fp = fopen("Xsd_Htransition_weight.txt", "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsd up
-        double correction_factor = Xsd_transition_p->GetBinContent(i + 1) / Xsd_nominal->GetBinContent(i + 1);
+        double correction_factor = 1.0;
+        if (Xsd_nominal->GetBinContent(i + 1) > MyEPSILON)correction_factor = Xsd_transition_p->GetBinContent(i + 1) / Xsd_nominal->GetBinContent(i + 1);
+        else correction_factor = 1.0;
         fprintf(fp, "%lf\n", correction_factor);
     }
     fclose(fp);
@@ -782,7 +788,9 @@ void ReadXsTransitionPDF_Knunu()
     fp = fopen("Xsd_Ltransition_weight.txt", "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsd down
-        double correction_factor = Xsd_transition_m->GetBinContent(i + 1) / Xsd_nominal->GetBinContent(i + 1);
+        double correction_factor = 1.0;
+        if (Xsd_nominal->GetBinContent(i + 1) > MyEPSILON) correction_factor = Xsd_transition_m->GetBinContent(i + 1) / Xsd_nominal->GetBinContent(i + 1);
+        else correction_factor = 1.0;
         fprintf(fp, "%lf\n", correction_factor);
     }
     fclose(fp);
