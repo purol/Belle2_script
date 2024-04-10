@@ -57,6 +57,8 @@ using std::to_string;
 using std::cout;
 using std::endl;
 
+# define NToys 100
+
 void GetExpectedCL(RooStats::HypoTestInverterResult* fResults, const char* mu) {
 	// get CLs CLb CLs+b
 	const int nEntries = fResults->ArraySize();
@@ -230,7 +232,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index,
 
 		RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)FreqCalc.GetTestStatSampler();
 		toymcs->SetTestStatistic(plr);
-		FreqCalc.SetToys(1000, 1000);
+		FreqCalc.SetToys(NToys, NToys);
 
 		RooStats::HypoTestInverter inverter(FreqCalc);
 		//inverter.SetConfidenceLevel(0.90);
@@ -260,7 +262,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index,
 
 		RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)HybCalc.GetTestStatSampler();
 		toymcs->SetTestStatistic(plr);
-		HybCalc.SetToys(100, 100);
+		HybCalc.SetToys(NToys, NToys);
 
 		RooStats::HypoTestInverter inverter(HybCalc);
 		//inverter.SetConfidenceLevel(0.90);
