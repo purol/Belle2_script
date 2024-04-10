@@ -707,8 +707,8 @@ int main()
 
     printf("print x-asix error list for python input:\n");
     printf("[");
-    for (int i = 0; i < RarityBins - 1; i++) printf("%d, ", 0.5);
-    printf("%d]\n", 0.5);
+    for (int i = 0; i < RarityBins - 1; i++) printf("%lf, ", 0.5);
+    printf("%lf]\n", 0.5);
 
     printf("print y-asix list for python input:\n");
     printf("[");
