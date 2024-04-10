@@ -44,7 +44,7 @@
 #include "RooStats/HistFactory/HistFactoryModelUtils.h"
 #include "RooStats/HistFactory/RooBarlowBeestonLL.h"
 
-#include "RooStats/HybridCalculator.h"
+#include "RooStats/FrequentistCalculator.h"
 #include "RooStats/HypoTestInverter.h"
 #include "RooStats/HypoTestInverterPlot.h"
 
@@ -80,7 +80,7 @@ void GetExpectedCL(RooStats::HypoTestInverterResult* fResults, const char* mu) {
 		TMath::Quantiles(values.size(), 5, x, q, p, false);
 
 		FILE* fp;
-		fp = fopen(("CLs_hyb_" + std::string(mu) + ".txt").c_str(), "a");
+		fp = fopen(("CLs_freq_" + std::string(mu) + ".txt").c_str(), "a");
 		fprintf(fp, "expected CLs median: %lf\n", q[2]);
 		fprintf(fp, "expected CLs +1sigma: %lf\n", q[3] - q[2]);
 		fprintf(fp, "expected CLs -1sigma: %lf\n", q[2] - q[1]);
@@ -131,7 +131,7 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, 
 		}
 
 		FILE* fp;
-		fp = fopen(("CLs_hyb_" + std::string(mu) + ".txt").c_str(), "a");
+		fp = fopen(("CLs_freq_" + std::string(mu) + ".txt").c_str(), "a");
 		if (type == 0) {
 			fprintf(fp, "observed CLs central value: %lf\n", CLVal);
 			fprintf(fp, "observed CLs error: %lf\n", CLErr);
@@ -152,7 +152,7 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, 
 	}
 }
 
-int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: eps
+int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index, argv[3]: calculator type
 
 	const char* fname = "./PDFandDATA_workspace.root";
 
@@ -220,35 +220,76 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: eps
 	poi->setVal(0);
 	bModel->SetSnapshot(*poi);
 
-	RooStats::HybridCalculator HybCalc(*data, *bModel, *sbModel);
-	RooStats::ProfileLikelihoodTestStat* plr = new RooStats::ProfileLikelihoodTestStat(*sbModel->GetPdf());
-	plr->SetOneSided(true);
-	plr->SetMinimizer("Minuit2");
-	plr->SetStrategy(1);
-	//plr->SetTolerance(std::atof(argv[2]));
+	if (std::string(argv[3]) == "freq") {
+		RooStats::FrequentistCalculator FreqCalc(*data, *bModel, *sbModel);
+		RooStats::ProfileLikelihoodTestStat* plr = new RooStats::ProfileLikelihoodTestStat(*sbModel->GetPdf());
+		plr->SetOneSided(true);
+		plr->SetMinimizer("Minuit2");
+		plr->SetStrategy(1);
+		//plr->SetTolerance(std::atof(argv[2]));
 
-	RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)HybCalc.GetTestStatSampler();
-	toymcs->SetTestStatistic(plr);
-	HybCalc.SetToys(1000, 1000);
+		RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)FreqCalc.GetTestStatSampler();
+		toymcs->SetTestStatistic(plr);
+		FreqCalc.SetToys(1000, 1000);
 
-	RooStats::HypoTestInverter inverter(HybCalc);
-	//inverter.SetConfidenceLevel(0.90);
-	inverter.UseCLs(true);
-	inverter.SetVerbose(false);
-	inverter.SetFixedScan(1, std::stof(argv[1]), std::stof(argv[1])); // set number of points , xmin and xmax
+		RooStats::HypoTestInverter inverter(FreqCalc);
+		//inverter.SetConfidenceLevel(0.90);
+		inverter.UseCLs(true);
+		inverter.SetVerbose(false);
+		inverter.SetFixedScan(1, std::stof(argv[1]), std::stof(argv[1])); // set number of points , xmin and xmax
 
-	TStopwatch sw;
-	sw.Start();
+		TStopwatch sw;
+		sw.Start();
 
-	RooStats::HypoTestInverterResult* result = inverter.GetInterval();
+		RooStats::HypoTestInverterResult* result = inverter.GetInterval();
 
-	sw.Stop();
-	printf("consumed time: %lf (s)\n", sw.RealTime());
+		sw.Stop();
+		printf("consumed time: %lf (s)\n", sw.RealTime());
 
-	GetExpectedCL(result, argv[1]);
-	GetObservedCLs(result, argv[1], 0);
-	GetObservedCLs(result, argv[1], 1);
-	GetObservedCLs(result, argv[1], 2);
+		TFile* file = new TFile(("Hypotestinverter_freq_" + std::string(argv[1]) + "_" + std::string(argv[2]) + ".root").c_str(), "RECREATE");
+		result->Write();
+		file->Close();
+	}
+	else if (std::string(argv[3]) == "hyb") {
+		RooStats::HybridCalculator HybCalc(*data, *bModel, *sbModel);
+		RooStats::ProfileLikelihoodTestStat* plr = new RooStats::ProfileLikelihoodTestStat(*sbModel->GetPdf());
+		plr->SetOneSided(true);
+		plr->SetMinimizer("Minuit2");
+		plr->SetStrategy(1);
+		//plr->SetTolerance(std::atof(argv[2]));
+
+		RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)HybCalc.GetTestStatSampler();
+		toymcs->SetTestStatistic(plr);
+		HybCalc.SetToys(100, 100);
+
+		RooStats::HypoTestInverter inverter(HybCalc);
+		//inverter.SetConfidenceLevel(0.90);
+		inverter.UseCLs(true);
+		inverter.SetVerbose(false);
+		inverter.SetFixedScan(1, std::stof(argv[1]), std::stof(argv[1])); // set number of points , xmin and xmax
+
+		TStopwatch sw;
+		sw.Start();
+
+		RooStats::HypoTestInverterResult* result = inverter.GetInterval();
+
+		sw.Stop();
+		printf("consumed time: %lf (s)\n", sw.RealTime());
+
+		TFile* file = new TFile(("Hypotestinverter_hyb_" + std::string(argv[1]) + "_" + std::string(argv[2]) + ".root").c_str(), "RECREATE");
+		result->Write();
+		file->Close();
+	}
+	else {
+		printf("improper calculator type!\n");
+		printf("usage: HypoCal {mu} {index} {freq|hyb}\n");
+		exit(1);
+	}
+
+	//GetExpectedCL(result, argv[1]);
+	//GetObservedCLs(result, argv[1], 0);
+	//GetObservedCLs(result, argv[1], 1);
+	//GetObservedCLs(result, argv[1], 2);
 
 	return 0;
 }
