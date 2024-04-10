@@ -156,34 +156,40 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, 
 
 int main(int argc, char* argv[]) {
 
-	const double mu_MXs1_max = 10.0;
-	const double mu_MXs2_max = 15.0;
-	const double mu_MXs3_max = 30.0;
+	const double mu_max = 10.0;
 
-	const double mu_MXs1_step = 0.2;
-	const double mu_MXs2_step = 0.2;
-	const double mu_MXs3_step = 0.3;
+	double mu = 0.0;
 
-	
-	for () {
+	mu = 0.0;
+	while(mu < mu_max) {
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(1) << mu;
+		std::string mu_string = stream.str();
 
+		std::vector<std::string> names;
+		load_files("./", &names, ("Hypotestinverter_freq_" + mu_string + "_").c_str());
+
+		RooStats::HypoTestInverterResult* result = nullptr;
+
+		for (unsigned int i = 0; i < names.size(); i++) {
+			TFile* file = TFile::Open(names.at(i).c_str());
+			if (result == nullptr) result = (RooStats::HypoTestInverterResult*)file->Get("result_mu_MXs1");
+			else {
+				RooStats::HypoTestInverterResult* result_temp = (RooStats::HypoTestInverterResult*)file->Get("result_mu_MXs1");
+				result->Add(*result_temp);
+			}
+		}
+
+		// print result
+		if (result != nullptr) {
+			GetExpectedCL(result, mu_string.c_str());
+			GetObservedCLs(result, mu_string.c_str(), 0);
+			GetObservedCLs(result, mu_string.c_str(), 1);
+			GetObservedCLs(result, mu_string.c_str(), 2);
+		}
+
+		mu = mu + 0.1;
 	}
-
-	std::vector<std::string> names;
-
-	load_files("./", &names, "");
-
-	const char* fname = "./PDFandDATA_workspace.root";
-
-	TFile* f = TFile::Open(fname);
-
-	RooStats::HypoTestInverterResult* result = inverter.GetInterval();
-
-
-	//GetExpectedCL(result, argv[1]);
-	//GetObservedCLs(result, argv[1], 0);
-	//GetObservedCLs(result, argv[1], 1);
-	//GetObservedCLs(result, argv[1], 2);
 
 	return 0;
 }
