@@ -564,6 +564,15 @@ void THStack_plot_Jpsi() {
     printf("data: %d\n", (int)Jpsi_data_values[0].size());
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
+        // Scale the histogram
+        CAL = Ratio_one_bin->GetBinContent(1);
+        charged_hist[k]->Scale(CAL);
+        mixed_hist[k]->Scale(CAL);
+        uubar_hist[k]->Scale(CAL);
+        ddbar_hist[k]->Scale(CAL);
+        ssbar_hist[k]->Scale(CAL);
+        ccbar_hist[k]->Scale(CAL);
+
         Stack[k]->Add(charged_hist[k]);
         Stack[k]->Add(mixed_hist[k]);
         Stack[k]->Add(uubar_hist[k]);

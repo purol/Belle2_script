@@ -351,7 +351,18 @@ void THStack_plot_comparison_signal() {
         for (int i = 0; i < (int)data_values[k].size(); i++) data_hist[k]->Fill(data_values[k].at(i));
     }
 
+    double MC15ri_sum = 0;
+    double MC15rd_sum = 0;
+    for (int i = 0; i < (int)MC15ri_values[0].size(); i++) MC15ri_sum = MC15ri_sum + MC15ri_weights.at(i);
+    for (int i = 0; i < (int)MC15rd_values[0].size(); i++) MC15rd_sum = MC15rd_sum + MC15rd_weights.at(i);
+
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
+        // Scale the histogram
+        CAL_MC15ri = MC15rd_sum / MC15ri_sum;
+        CAL_MC15rd = 1.0;
+        MC15rd_hist[k]->Scale(1.0);
+        MC15ri_hist[k]->Scale(CAL_MC15ri);
+
         //Stack[k]->Add(charged_hist[k]);
         //Stack[k]->Add(mixed_hist[k]);
         //Stack[k]->Add(uubar_hist[k]);
@@ -413,10 +424,6 @@ void THStack_plot_comparison_signal() {
     }
 
     // Print rd-ri discrepancy
-    double MC15ri_sum = 0;
-    double MC15rd_sum = 0;
-    for (int i = 0; i < (int)MC15ri_values[0].size(); i++) MC15ri_sum = MC15ri_sum + MC15ri_weights.at(i);
-    for (int i = 0; i < (int)MC15rd_values[0].size(); i++) MC15rd_sum = MC15rd_sum + MC15rd_weights.at(i);
     printf("data num: %ld\n", data_values[0].size());
     printf("MC15ri num with calibration: %lf\n", MC15ri_sum);
     printf("MC15rd num with calibration: %lf\n", MC15rd_sum);

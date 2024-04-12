@@ -42,7 +42,7 @@ Corrector_LID corrector_LID;
 
 int Nvar_num = -1;
 
-# define CAL 1.1728
+double CAL = 1.0; // must be 1.0
 # define CAL_qq 1.0
 
 /* ====================================== */
