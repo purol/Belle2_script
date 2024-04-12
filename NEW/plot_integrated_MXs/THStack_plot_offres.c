@@ -334,6 +334,10 @@ void THStack_plot_offres() {
     TH1D** data_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
     TH1D** Ratio_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
 
+    TH1D* MC_one_bin = new TH1D("MC_one_bin", ";number of candidates", 1, -100, 100);
+    TH1D* data_one_bin = new TH1D("data_one_bin", ";number of candidates", 1, -100, 100);
+    TH1D* Ratio_one_bin = new TH1D("ratio_one_bin", ";number of candidates", 1, -100, 100);
+
     for (int k = 0; k < (int)variable_names.size(); k++) { // malloc TH1D
         std::vector<double> temp_v;
         temp_v.insert(temp_v.end(), charged_values[k].begin(), charged_values[k].end());
@@ -514,6 +518,11 @@ void THStack_plot_offres() {
         for (int i = 0; i < (int)hhISR_values[k].size(); i++) hhISR_hist[k]->Fill(hhISR_values[k].at(i), hhISR_weights.at(i));
         for (int i = 0; i < (int)Offres_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Offres_MC_values[k].at(i), weights.at(i));
         for (int i = 0; i < (int)Offres_data_values[k].size(); i++) data_hist[k]->Fill(Offres_data_values[k].at(i));
+
+        if (variable_names.at(k) == "nROE_ParticlesInList__bopi0__clmyneutralPion__bc") {
+            for (int i = 0; i < (int)Offres_MC_values[k].size(); i++) MC_one_bin->Fill(Offres_MC_values[k].at(i), weights.at(i));
+            for (int i = 0; i < (int)Offres_data_values[k].size(); i++) data_one_bin->Fill(Offres_data_values[k].at(i));
+        }
     }
     Ratio_one_bin->Divide(data_one_bin, MC_one_bin);
 

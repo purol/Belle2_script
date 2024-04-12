@@ -359,10 +359,6 @@ void THStack_plot_sideband() {
     TH1D** data_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
     TH1D** Ratio_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
 
-    TH1D* MC_one_bin = new TH1D("MC_one_bin", ";number of candidates", 1, -100, 100);
-    TH1D* data_one_bin = new TH1D("data_one_bin", ";number of candidates", 1, -100, 100);
-    TH1D* Ratio_one_bin = new TH1D("ratio_one_bin", ";number of candidates", 1, -100, 100);
-
     for (int k = 0; k < (int)variable_names.size(); k++) { // malloc TH1D
         std::vector<double> temp_v;
         temp_v.insert(temp_v.end(), charged_values[k].begin(), charged_values[k].end());
@@ -569,11 +565,6 @@ void THStack_plot_sideband() {
         for (int i = 0; i < (int)signal_values[k].size(); i++) signal_hist[k]->Fill(signal_values[k].at(i), signal_weights.at(i));
         for (int i = 0; i < (int)Nominal_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Nominal_MC_values[k].at(i), weights.at(i));
         for (int i = 0; i < (int)Nominal_data_values[k].size(); i++) data_hist[k]->Fill(Nominal_data_values[k].at(i));
-
-        if (variable_names.at(k) == "nROE_ParticlesInList__bopi0__clmyneutralPion__bc") {
-            for (int i = 0; i < (int)Nominal_MC_values[k].size(); i++) MC_one_bin->Fill(Nominal_MC_values[k].at(i), weights.at(i));
-            for (int i = 0; i < (int)Nominal_data_values[k].size(); i++) data_one_bin->Fill(Nominal_data_values[k].at(i));
-        }
     }
     Ratio_one_bin->Divide(data_one_bin, MC_one_bin);
 
@@ -647,6 +638,15 @@ void THStack_plot_sideband() {
             delete c_temp;
         }
         else {
+            // Scale the histogram
+            CAL = Ratio_one_bin->GetBinContent(1);
+            charged_hist[k]->Scale(CAL);
+            mixed_hist[k]->Scale(CAL);
+            uubar_hist[k]->Scale(CAL);
+            ddbar_hist[k]->Scale(CAL);
+            ssbar_hist[k]->Scale(CAL);
+            ccbar_hist[k]->Scale(CAL);
+
             Stack[k]->Add(charged_hist[k]);
             Stack[k]->Add(mixed_hist[k]);
             Stack[k]->Add(uubar_hist[k]);

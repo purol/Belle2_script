@@ -42,15 +42,10 @@ Corrector_LID corrector_LID;
 
 int Nvar_num = -1;
 
-const double CAL = 1.0; // must be 1.0
+double CAL = 1.0; // must be 1.0
 # define CAL_qq 1.0
 
 /* ====================================== */
-
-// Histogram for counting
-TH1D* MC_one_bin = new TH1D("MC_one_bin", ";number of candidates", 1, -100, 100);
-TH1D* data_one_bin = new TH1D("data_one_bin", ";number of candidates", 1, -100, 100);
-TH1D* Ratio_one_bin = new TH1D("ratio_one_bin", ";number of candidates", 1, -100, 100);
 
 enum class MCsample {
     CHG,
@@ -396,7 +391,7 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
 
             weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
 
-            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+
         }
         input_file->Close();
 
@@ -477,8 +472,6 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
                 else variable_values[k].push_back((double)var_float[k]);
                 //else variable_values[k].push_back(GetBinIndex((double)var_float[k], Bsig_M));
             }
-
-            if (j == 0) data_one_bin->Fill(1.0);
         }
         input_file->Close();
 
@@ -604,8 +597,6 @@ void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_n
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
             weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_multiplicity * additional_weight);
-
-            if(j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_multiplicity * additional_weight);
         }
         input_file->Close();
 
@@ -942,7 +933,7 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
 
             weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight);
 
-            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight);
+
         }
         input_file->Close();
 
@@ -1269,7 +1260,7 @@ void LetsFillMC_ESide(const char* dirname, std::vector<std::string> variable_nam
 
             weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
 
-            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+
         }
         input_file->Close();
 
@@ -1596,7 +1587,7 @@ void LetsFillMC_MUSide(const char* dirname, std::vector<std::string> variable_na
 
             weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
 
-            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+
         }
         input_file->Close();
 

@@ -329,10 +329,6 @@ void THStack_plot_Jpsi() {
     TH1D** data_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
     TH1D** Ratio_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
 
-    TH1D* MC_one_bin = new TH1D("MC_one_bin", ";number of candidates", 1, -100, 100);
-    TH1D* data_one_bin = new TH1D("data_one_bin", ";number of candidates", 1, -100, 100);
-    TH1D* Ratio_one_bin = new TH1D("ratio_one_bin", ";number of candidates", 1, -100, 100);
-
     for (int k = 0; k < (int)variable_names.size(); k++) { // malloc TH1D
         std::vector<double> temp_v;
         temp_v.insert(temp_v.end(), charged_values[k].begin(), charged_values[k].end());
@@ -538,11 +534,6 @@ void THStack_plot_Jpsi() {
         for (int i = 0; i < (int)signal_values[k].size(); i++) signal_hist[k]->Fill(signal_values[k].at(i), signal_weights.at(i));
         for (int i = 0; i < (int)Jpsi_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Jpsi_MC_values[k].at(i), weights.at(i));
         for (int i = 0; i < (int)Jpsi_data_values[k].size(); i++) data_hist[k]->Fill(Jpsi_data_values[k].at(i));
-
-        if (variable_names.at(k) == "nROE_ParticlesInList__bopi0__clmyneutralPion__bc") {
-            for (int i = 0; i < (int)Jpsi_MC_values[k].size(); i++) MC_one_bin->Fill(Jpsi_MC_values[k].at(i), weights.at(i));
-            for (int i = 0; i < (int)Jpsi_data_values[k].size(); i++) data_one_bin->Fill(Jpsi_data_values[k].at(i));
-        }
     }
     Ratio_one_bin->Divide(data_one_bin, MC_one_bin);
 
