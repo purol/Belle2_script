@@ -7619,44 +7619,44 @@ int main()
     SaveSpecificMXsBin(CHARM_all_uncorrelated_MC_stat, MXsBin);
 
     // background normalization PDFs
-    SaveSpecificMXsBin(CHG_norm_MXs1_p);
-    SaveSpecificMXsBin(MIX_norm_MXs1_p);
-    SaveSpecificMXsBin(UUBAR_norm_MXs1_p);
-    SaveSpecificMXsBin(DDBAR_norm_MXs1_p);
-    SaveSpecificMXsBin(SSBAR_norm_MXs1_p);
-    SaveSpecificMXsBin(CHARM_norm_MXs1_p);
-    SaveSpecificMXsBin(CHG_norm_MXs1_m);
-    SaveSpecificMXsBin(MIX_norm_MXs1_m);
-    SaveSpecificMXsBin(UUBAR_norm_MXs1_m);
-    SaveSpecificMXsBin(DDBAR_norm_MXs1_m);
-    SaveSpecificMXsBin(SSBAR_norm_MXs1_m);
-    SaveSpecificMXsBin(CHARM_norm_MXs1_m);
+    SaveSpecificMXsBin(CHG_norm_MXs1_p, MXsBin);
+    SaveSpecificMXsBin(MIX_norm_MXs1_p, MXsBin);
+    SaveSpecificMXsBin(UUBAR_norm_MXs1_p, MXsBin);
+    SaveSpecificMXsBin(DDBAR_norm_MXs1_p, MXsBin);
+    SaveSpecificMXsBin(SSBAR_norm_MXs1_p, MXsBin);
+    SaveSpecificMXsBin(CHARM_norm_MXs1_p, MXsBin);
+    SaveSpecificMXsBin(CHG_norm_MXs1_m, MXsBin);
+    SaveSpecificMXsBin(MIX_norm_MXs1_m, MXsBin);
+    SaveSpecificMXsBin(UUBAR_norm_MXs1_m, MXsBin);
+    SaveSpecificMXsBin(DDBAR_norm_MXs1_m, MXsBin);
+    SaveSpecificMXsBin(SSBAR_norm_MXs1_m, MXsBin);
+    SaveSpecificMXsBin(CHARM_norm_MXs1_m, MXsBin);
 
-    SaveSpecificMXsBin(CHG_norm_MXs2_p);
-    SaveSpecificMXsBin(MIX_norm_MXs2_p);
-    SaveSpecificMXsBin(UUBAR_norm_MXs2_p);
-    SaveSpecificMXsBin(DDBAR_norm_MXs2_p);
-    SaveSpecificMXsBin(SSBAR_norm_MXs2_p);
-    SaveSpecificMXsBin(CHARM_norm_MXs2_p);
-    SaveSpecificMXsBin(CHG_norm_MXs2_m);
-    SaveSpecificMXsBin(MIX_norm_MXs2_m);
-    SaveSpecificMXsBin(UUBAR_norm_MXs2_m);
-    SaveSpecificMXsBin(DDBAR_norm_MXs2_m);
-    SaveSpecificMXsBin(SSBAR_norm_MXs2_m);
-    SaveSpecificMXsBin(CHARM_norm_MXs2_m);
+    SaveSpecificMXsBin(CHG_norm_MXs2_p, MXsBin);
+    SaveSpecificMXsBin(MIX_norm_MXs2_p, MXsBin);
+    SaveSpecificMXsBin(UUBAR_norm_MXs2_p, MXsBin);
+    SaveSpecificMXsBin(DDBAR_norm_MXs2_p, MXsBin);
+    SaveSpecificMXsBin(SSBAR_norm_MXs2_p, MXsBin);
+    SaveSpecificMXsBin(CHARM_norm_MXs2_p, MXsBin);
+    SaveSpecificMXsBin(CHG_norm_MXs2_m, MXsBin);
+    SaveSpecificMXsBin(MIX_norm_MXs2_m, MXsBin);
+    SaveSpecificMXsBin(UUBAR_norm_MXs2_m, MXsBin);
+    SaveSpecificMXsBin(DDBAR_norm_MXs2_m, MXsBin);
+    SaveSpecificMXsBin(SSBAR_norm_MXs2_m, MXsBin);
+    SaveSpecificMXsBin(CHARM_norm_MXs2_m, MXsBin);
 
-    SaveSpecificMXsBin(CHG_norm_MXs3_p);
-    SaveSpecificMXsBin(MIX_norm_MXs3_p);
-    SaveSpecificMXsBin(UUBAR_norm_MXs3_p);
-    SaveSpecificMXsBin(DDBAR_norm_MXs3_p);
-    SaveSpecificMXsBin(SSBAR_norm_MXs3_p);
-    SaveSpecificMXsBin(CHARM_norm_MXs3_p);
-    SaveSpecificMXsBin(CHG_norm_MXs3_m);
-    SaveSpecificMXsBin(MIX_norm_MXs3_m);
-    SaveSpecificMXsBin(UUBAR_norm_MXs3_m);
-    SaveSpecificMXsBin(DDBAR_norm_MXs3_m);
-    SaveSpecificMXsBin(SSBAR_norm_MXs3_m);
-    SaveSpecificMXsBin(CHARM_norm_MXs3_m);
+    SaveSpecificMXsBin(CHG_norm_MXs3_p, MXsBin);
+    SaveSpecificMXsBin(MIX_norm_MXs3_p, MXsBin);
+    SaveSpecificMXsBin(UUBAR_norm_MXs3_p, MXsBin);
+    SaveSpecificMXsBin(DDBAR_norm_MXs3_p, MXsBin);
+    SaveSpecificMXsBin(SSBAR_norm_MXs3_p, MXsBin);
+    SaveSpecificMXsBin(CHARM_norm_MXs3_p, MXsBin);
+    SaveSpecificMXsBin(CHG_norm_MXs3_m, MXsBin);
+    SaveSpecificMXsBin(MIX_norm_MXs3_m, MXsBin);
+    SaveSpecificMXsBin(UUBAR_norm_MXs3_m, MXsBin);
+    SaveSpecificMXsBin(DDBAR_norm_MXs3_m, MXsBin);
+    SaveSpecificMXsBin(SSBAR_norm_MXs3_m, MXsBin);
+    SaveSpecificMXsBin(CHARM_norm_MXs3_m, MXsBin);
     /* ====================================== */
 
 
