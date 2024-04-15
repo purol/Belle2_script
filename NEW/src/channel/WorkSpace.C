@@ -361,13 +361,13 @@ int WorkSpace() {
 	channel_MXs3.SetStatErrorConfig(1e-5, "Gaussian");
 
 	// fill channels
-	AddSample(channel_MXs1, fname_MXs1, 1, expmu);
+	AddSample(&channel_MXs1, fname_MXs1, 1, expmu);
 	channel_MXs1.SetData("total_DATA", fname_MXs1);
 
-	AddSample(channel_MXs2, fname_MXs2, 1, expmu);
+	AddSample(&channel_MXs2, fname_MXs2, 2, expmu);
 	channel_MXs2.SetData("total_DATA", fname_MXs2);
 
-	AddSample(channel_MXs3, fname_MXs3, 1, expmu);
+	AddSample(&channel_MXs3, fname_MXs3, 3, expmu);
 	channel_MXs3.SetData("total_DATA", fname_MXs3);
 
 
