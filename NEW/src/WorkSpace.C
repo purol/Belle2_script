@@ -56,6 +56,13 @@ using std::to_string;
 
 Corrector_Fragmentation corrector_Fragmentation;
 
+int NEntryFEI;
+int NEntryKID;
+int NEntryPID;
+int NEntryBR;
+int NEntrypi0;
+int NEntryMultiplicity;
+
 int ReadNFEIEigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
@@ -591,12 +598,12 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 
 int WorkSpace() {
 
-	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
-	int NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
-	int NEntryPID = ReadNPIDEigenVector("./PID_selected.txt");
-	int NEntryBR = ReadNBREigenVector("./BR_selected.txt");
-	int NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
-	int NEntryMultiplicity = ReadMultiplicityInfo("./Multiplicity_info.txt");
+	NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
+	NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
+	NEntryPID = ReadNPIDEigenVector("./PID_selected.txt");
+	NEntryBR = ReadNBREigenVector("./BR_selected.txt");
+	NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
+	NEntryMultiplicity = ReadMultiplicityInfo("./Multiplicity_info.txt");
 
 	const double expmu = 1.0;
     const char* fname = "PDFandDATA_nominal.root";
