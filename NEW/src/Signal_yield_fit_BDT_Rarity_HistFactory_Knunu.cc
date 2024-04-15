@@ -7227,33 +7227,33 @@ int main()
     GetNormalizationPDFs(MC_dirname_SSBAR, "root", SSBAR_norm_MXs1_m, "Continuum", "SSBAR", 0.7, 1, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
     GetNormalizationPDFs(MC_dirname_CHARM, "root", CHARM_norm_MXs1_m, "Continuum", "CHARM", 0.7, 1, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
 
-    GetNormalizationPDFs(MC_dirname_CHG, "root", CHG_norm_MXs2_p, "Bplus", "CHG", 1.3, 1, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_MIX, "root", MIX_norm_MXs2_p, "Bzero", "MIX", 1.3, 1, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_UUBAR, "root", UUBAR_norm_MXs2_p, "Continuum", "UUBAR", 1.3, 1, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_DDBAR, "root", DDBAR_norm_MXs2_p, "Continuum", "DDBAR", 1.3, 1, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_SSBAR, "root", SSBAR_norm_MXs2_p, "Continuum", "SSBAR", 1.3, 1, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_CHARM, "root", CHARM_norm_MXs2_p, "Continuum", "CHARM", 1.3, 1, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_CHG, "root", CHG_norm_MXs2_p, "Bplus", "CHG", 1.3, 2, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_MIX, "root", MIX_norm_MXs2_p, "Bzero", "MIX", 1.3, 2, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_UUBAR, "root", UUBAR_norm_MXs2_p, "Continuum", "UUBAR", 1.3, 2, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_DDBAR, "root", DDBAR_norm_MXs2_p, "Continuum", "DDBAR", 1.3, 2, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_SSBAR, "root", SSBAR_norm_MXs2_p, "Continuum", "SSBAR", 1.3, 2, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_CHARM, "root", CHARM_norm_MXs2_p, "Continuum", "CHARM", 1.3, 2, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
 
-    GetNormalizationPDFs(MC_dirname_CHG, "root", CHG_norm_MXs2_m, "Bplus", "CHG", 0.7, 1, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_MIX, "root", MIX_norm_MXs2_m, "Bzero", "MIX", 0.7, 1, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_UUBAR, "root", UUBAR_norm_MXs2_m, "Continuum", "UUBAR", 0.7, 1, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_DDBAR, "root", DDBAR_norm_MXs2_m, "Continuum", "DDBAR", 0.7, 1, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_SSBAR, "root", SSBAR_norm_MXs2_m, "Continuum", "SSBAR", 0.7, 1, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_CHARM, "root", CHARM_norm_MXs2_m, "Continuum", "CHARM", 0.7, 1, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_CHG, "root", CHG_norm_MXs2_m, "Bplus", "CHG", 0.7, 2, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_MIX, "root", MIX_norm_MXs2_m, "Bzero", "MIX", 0.7, 2, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_UUBAR, "root", UUBAR_norm_MXs2_m, "Continuum", "UUBAR", 0.7, 2, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_DDBAR, "root", DDBAR_norm_MXs2_m, "Continuum", "DDBAR", 0.7, 2, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_SSBAR, "root", SSBAR_norm_MXs2_m, "Continuum", "SSBAR", 0.7, 2, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_CHARM, "root", CHARM_norm_MXs2_m, "Continuum", "CHARM", 0.7, 2, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
 
-    GetNormalizationPDFs(MC_dirname_CHG, "root", CHG_norm_MXs3_p, "Bplus", "CHG", 1.3, 1, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_MIX, "root", MIX_norm_MXs3_p, "Bzero", "MIX", 1.3, 1, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_UUBAR, "root", UUBAR_norm_MXs3_p, "Continuum", "UUBAR", 1.3, 1, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_DDBAR, "root", DDBAR_norm_MXs3_p, "Continuum", "DDBAR", 1.3, 1, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_SSBAR, "root", SSBAR_norm_MXs3_p, "Continuum", "SSBAR", 1.3, 1, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_CHARM, "root", CHARM_norm_MXs3_p, "Continuum", "CHARM", 1.3, 1, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_CHG, "root", CHG_norm_MXs3_p, "Bplus", "CHG", 1.3, 3, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_MIX, "root", MIX_norm_MXs3_p, "Bzero", "MIX", 1.3, 3, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_UUBAR, "root", UUBAR_norm_MXs3_p, "Continuum", "UUBAR", 1.3, 3, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_DDBAR, "root", DDBAR_norm_MXs3_p, "Continuum", "DDBAR", 1.3, 3, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_SSBAR, "root", SSBAR_norm_MXs3_p, "Continuum", "SSBAR", 1.3, 3, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_CHARM, "root", CHARM_norm_MXs3_p, "Continuum", "CHARM", 1.3, 3, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
 
-    GetNormalizationPDFs(MC_dirname_CHG, "root", CHG_norm_MXs3_m, "Bplus", "CHG", 0.7, 1, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_MIX, "root", MIX_norm_MXs3_m, "Bzero", "MIX", 0.7, 1, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_UUBAR, "root", UUBAR_norm_MXs3_m, "Continuum", "UUBAR", 0.7, 1, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_DDBAR, "root", DDBAR_norm_MXs3_m, "Continuum", "DDBAR", 0.7, 1, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_SSBAR, "root", SSBAR_norm_MXs3_m, "Continuum", "SSBAR", 0.7, 1, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    GetNormalizationPDFs(MC_dirname_CHARM, "root", CHARM_norm_MXs3_m, "Continuum", "CHARM", 0.7, 1, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_CHG, "root", CHG_norm_MXs3_m, "Bplus", "CHG", 0.7, 3, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_MIX, "root", MIX_norm_MXs3_m, "Bzero", "MIX", 0.7, 3, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_UUBAR, "root", UUBAR_norm_MXs3_m, "Continuum", "UUBAR", 0.7, 3, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_DDBAR, "root", DDBAR_norm_MXs3_m, "Continuum", "DDBAR", 0.7, 3, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_SSBAR, "root", SSBAR_norm_MXs3_m, "Continuum", "SSBAR", 0.7, 3, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+    GetNormalizationPDFs(MC_dirname_CHARM, "root", CHARM_norm_MXs3_m, "Continuum", "CHARM", 0.7, 3, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     /* ====================================== */
 
 
