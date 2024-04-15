@@ -144,7 +144,7 @@ int ReadMultiplicityInfo(const char* dirname) {
 	return N_hist;
 }
 
-int WorkSpace() {
+int WorkSpace_one() {
 
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
 	int NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
@@ -154,7 +154,7 @@ int WorkSpace() {
 	int NEntryMultiplicity = ReadMultiplicityInfo("./Multiplicity_info.txt");
 
 	const double expmu = 1.0;
-	const char* fname = "PDFandDATA_MXs1.root";
+        const char* fname = "PDFandDATA_MXs3.root";
 
 	RooStats::HistFactory::Measurement meas("my_measurement", "my measurement");
 	meas.SetOutputFilePrefix("results/my_measurement");
@@ -173,12 +173,12 @@ int WorkSpace() {
 	channel.SetData("total_DATA", fname);
 
 	// read signal template
-    /* ================================ SIGNAL MX1 ================================ */
+    /* ================================ SIGNAL MXs3 ================================ */
 	RooStats::HistFactory::Sample sig_temp("Signal_nominal", "Signal_nominal", fname);
 	sig_temp.AddHistoSys("track_eff_uncer", "Signal_track_m", fname, "", "Signal_track_p", fname, "");
 	sig_temp.AddHistoSys("KS0_reco_uncer", "Signal_KS0_m", fname, "", "Signal_KS0_p", fname, "");
 	sig_temp.AddHistoSys("BtoDtoXKL_uncer", "Signal_BtoDtoXKL_m", fname, "", "Signal_BtoDtoXKL_p", fname, "");
-    sig_temp.AddHistoSys("BRBtoXKLKL_uncer", "Signal_BRBtoXKLKL_m", fname, "", "Signal_BRBtoXKLKL_p", fname, "");
+        sig_temp.AddHistoSys("BRBtoXKLKL_uncer", "Signal_BRBtoXKLKL_m", fname, "", "Signal_BRBtoXKLKL_p", fname, "");
 	sig_temp.AddHistoSys("Xnn_BR_uncer", "Signal_Xnn_m", fname, "", "Signal_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) sig_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_multiplicity" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_multiplicity" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFEI; i++) sig_temp.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -198,9 +198,9 @@ int WorkSpace() {
 	sig_temp.AddHistoSys("Kstarff7_uncer", "Signal_Kstarff7_m", fname, "", "Signal_Kstarff7_p", fname, "");
 	sig_temp.AddHistoSys("Kstarff8_uncer", "Signal_Kstarff8_m", fname, "", "Signal_Kstarff8_p", fname, "");
 	sig_temp.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname, "", "Signal_Kstarff9_p", fname, "");
-    sig_temp.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname, "", "Signal_Kstarff9_p", fname, "");
+        sig_temp.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname, "", "Signal_Kstarff9_p", fname, "");
 	sig_temp.AddHistoSys("Kff_OLD_uncer", "Signal_Kff_OLD_m", fname, "", "Signal_Kff_OLD_p", fname, "");
-    sig_temp.AddHistoSys("Kfrac_uncer", "Signal_Kfrac_m", fname, "", "Signal_Kfrac_p", fname, "");
+        sig_temp.AddHistoSys("Kfrac_uncer", "Signal_Kfrac_m", fname, "", "Signal_Kfrac_p", fname, "");
 	sig_temp.AddHistoSys("Kstarfrac_uncer", "Signal_Kstarfrac_m", fname, "", "Signal_Kstarfrac_p", fname, "");
 	for (int MxsBin = 0; MxsBin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); MxsBin++) {
 		for (int Category = 0; Category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); Category++) {
@@ -217,8 +217,8 @@ int WorkSpace() {
 	sig_temp.AddHistoSys("mb_uncer", "Signal_mb_m", fname, "", "Signal_mb_p", fname, "");
 	sig_temp.AddHistoSys("transition_uncer", "Signal_transition_m", fname, "", "Signal_transition_p", fname, "");
 	sig_temp.AddHistoSys("mKstar_uncer", "Signal_mKstar_m", fname, "", "Signal_mKstar_p", fname, "");
-	sig_temp.AddNormFactor("FBDT_efficiency_CAL", 0.8605, 0.8605, 0.8605, true);
-	sig_temp.AddOverallSys("FBDT_efficiency_uncer", 0.9262, 1.0737);
+	sig_temp.AddNormFactor("FBDT_efficiency_CAL", 1.0367, 1.0367, 1.0367, true);
+	sig_temp.AddOverallSys("FBDT_efficiency_uncer", 0.8664, 1.1336);
 	sig_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	sig_temp.ActivateStatError("Signal_all_uncorrelated_MC_stat", fname, "");
 	sig_temp.SetNormalizeByTheory(kFALSE);
@@ -231,7 +231,7 @@ int WorkSpace() {
 	CHG_temp.AddHistoSys("track_eff_uncer", "CHG_track_m", fname, "", "CHG_track_p", fname, "");
 	CHG_temp.AddHistoSys("KS0_reco_uncer", "CHG_KS0_m", fname, "", "CHG_KS0_p", fname, "");
 	CHG_temp.AddHistoSys("BtoDtoXKL_uncer", "CHG_BtoDtoXKL_m", fname, "", "CHG_BtoDtoXKL_p", fname, "");
-    CHG_temp.AddHistoSys("BRBtoXKLKL_uncer", "CHG_BRBtoXKLKL_m", fname, "", "CHG_BRBtoXKLKL_p", fname, "");
+        CHG_temp.AddHistoSys("BRBtoXKLKL_uncer", "CHG_BRBtoXKLKL_m", fname, "", "CHG_BRBtoXKLKL_p", fname, "");
 	CHG_temp.AddHistoSys("Xnn_BR_uncer", "CHG_Xnn_m", fname, "", "CHG_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) CHG_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("CHG_multiplicity" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_multiplicity" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFEI; i++) CHG_temp.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("CHG_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -252,7 +252,7 @@ int WorkSpace() {
 	MIX_temp.AddHistoSys("track_eff_uncer", "MIX_track_m", fname, "", "MIX_track_p", fname, "");
 	MIX_temp.AddHistoSys("KS0_reco_uncer", "MIX_KS0_m", fname, "", "MIX_KS0_p", fname, "");
 	MIX_temp.AddHistoSys("BtoDtoXKL_uncer", "MIX_BtoDtoXKL_m", fname, "", "MIX_BtoDtoXKL_p", fname, "");
-    MIX_temp.AddHistoSys("BRBtoXKLKL_uncer", "MIX_BRBtoXKLKL_m", fname, "", "MIX_BRBtoXKLKL_p", fname, "");
+        MIX_temp.AddHistoSys("BRBtoXKLKL_uncer", "MIX_BRBtoXKLKL_m", fname, "", "MIX_BRBtoXKLKL_p", fname, "");
 	MIX_temp.AddHistoSys("Xnn_BR_uncer", "MIX_Xnn_m", fname, "", "MIX_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) MIX_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("MIX_multiplicity" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_multiplicity" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFEI; i++) MIX_temp.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("MIX_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -277,8 +277,8 @@ int WorkSpace() {
 	for (int i = 0; i < NEntryPID; i++) UUBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntrypi0; i++) UUBAR_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	UUBAR_temp.AddHistoSys("BDTc_shape_qq", "UUBAR_BDTc_m", fname, "", "UUBAR_BDTc_p", fname, "");
-	UUBAR_temp.AddNormFactor("qq_CAL_UUBAR", 1.1052, 1.1052, 1.1052, true);
-	UUBAR_temp.AddOverallSys("qq_CAL_UUBAR_uncer", 0.7932, 1.2068);
+	UUBAR_temp.AddNormFactor("qq_CAL_UUBAR", 0.8915, 0.8915, 0.8915, true);
+	UUBAR_temp.AddOverallSys("qq_CAL_UUBAR_uncer", 0.8815, 1.1185);
 	UUBAR_temp.AddOverallSys("mu_UUBAR", 0.7, 1.3);
 	UUBAR_temp.ActivateStatError("UUBAR_all_uncorrelated_MC_stat", fname, "");
 	UUBAR_temp.SetNormalizeByTheory(kFALSE);
@@ -294,8 +294,8 @@ int WorkSpace() {
 	for (int i = 0; i < NEntryPID; i++) DDBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntrypi0; i++) DDBAR_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	DDBAR_temp.AddHistoSys("BDTc_shape_qq", "DDBAR_BDTc_m", fname, "", "DDBAR_BDTc_p", fname, "");
-	DDBAR_temp.AddNormFactor("qq_CAL_DDBAR", 1.1052, 1.1052, 1.1052, true);
-	DDBAR_temp.AddOverallSys("qq_CAL_DDBAR_uncer", 0.7932, 1.2068);
+	DDBAR_temp.AddNormFactor("qq_CAL_DDBAR", 0.8915, 0.8915, 0.8915, true);
+	DDBAR_temp.AddOverallSys("qq_CAL_DDBAR_uncer", 0.8815, 1.1185);
 	DDBAR_temp.AddOverallSys("mu_DDBAR", 0.7, 1.3);
 	DDBAR_temp.ActivateStatError("DDBAR_all_uncorrelated_MC_stat", fname, "");
 	DDBAR_temp.SetNormalizeByTheory(kFALSE);
@@ -311,8 +311,8 @@ int WorkSpace() {
 	for (int i = 0; i < NEntryPID; i++) SSBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntrypi0; i++) SSBAR_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	SSBAR_temp.AddHistoSys("BDTc_shape_qq", "SSBAR_BDTc_m", fname, "", "SSBAR_BDTc_p", fname, "");
-	SSBAR_temp.AddNormFactor("qq_CAL_SSBAR", 1.1052, 1.1052, 1.1052, true);
-	SSBAR_temp.AddOverallSys("qq_CAL_SSBAR_uncer", 0.7932, 1.2068);
+	SSBAR_temp.AddNormFactor("qq_CAL_SSBAR", 0.8915, 0.8915, 0.8915, true);
+	SSBAR_temp.AddOverallSys("qq_CAL_SSBAR_uncer", 0.8815, 1.1185);
 	SSBAR_temp.AddOverallSys("mu_SSBAR", 0.7, 1.3);
 	SSBAR_temp.ActivateStatError("SSBAR_all_uncorrelated_MC_stat", fname, "");
 	SSBAR_temp.SetNormalizeByTheory(kFALSE);
@@ -328,8 +328,8 @@ int WorkSpace() {
 	for (int i = 0; i < NEntryPID; i++) CHARM_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("CHARM_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntrypi0; i++) CHARM_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("CHARM_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	CHARM_temp.AddHistoSys("BDTc_shape_qq", "CHARM_BDTc_m", fname, "", "CHARM_BDTc_p", fname, "");
-	CHARM_temp.AddNormFactor("qq_CAL_CHARM", 1.1052, 1.1052, 1.1052, true);
-	CHARM_temp.AddOverallSys("qq_CAL_CHARM_uncer", 0.7932, 1.2068);
+	CHARM_temp.AddNormFactor("qq_CAL_CHARM", 0.8915, 0.8915, 0.8915, true);
+	CHARM_temp.AddOverallSys("qq_CAL_CHARM_uncer", 0.8815, 1.1185);
 	CHARM_temp.AddOverallSys("mu_CHARM", 0.7, 1.3);
 	CHARM_temp.ActivateStatError("CHARM_all_uncorrelated_MC_stat", fname, "");
 	CHARM_temp.SetNormalizeByTheory(kFALSE);
@@ -344,7 +344,7 @@ int WorkSpace() {
 	w = RooStats::HistFactory::MakeModelAndMeasurementFast(meas);
 
 	w->Print();
-	w->writeToFile("PDFandDATA_workspace.root");
+	w->writeToFile("PDFandDATA_workspace_MXs3_one.root");
 
 	return 0;
 }
