@@ -145,6 +145,14 @@ int ReadMultiplicityInfo(const char* dirname) {
 }
 
 void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, const double expmu) {
+
+	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
+	int NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
+	int NEntryPID = ReadNPIDEigenVector("./PID_selected.txt");
+	int NEntryBR = ReadNBREigenVector("./BR_selected.txt");
+	int NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
+	int NEntryMultiplicity = ReadMultiplicityInfo("./Multiplicity_info.txt");
+
 	std::string bin_name = "";
 	if (MXs_bin == 1) bin_name = std::string("MXs1");
 	else if (MXs_bin == 2) bin_name = std::string("MXs2");
@@ -320,13 +328,6 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 }
 
 int WorkSpace() {
-
-	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
-	int NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
-	int NEntryPID = ReadNPIDEigenVector("./PID_selected.txt");
-	int NEntryBR = ReadNBREigenVector("./BR_selected.txt");
-	int NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
-	int NEntryMultiplicity = ReadMultiplicityInfo("./Multiplicity_info.txt");
 
 	const double expmu = 1.0;
 	const char* fname = "PDFandDATA_nominal.root";
