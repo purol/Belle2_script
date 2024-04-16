@@ -326,7 +326,7 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
             RooDataSet* genData = model->generate(RooArgSet(*x,model->indexCat()), Nevt_total, false, true, "", false, true);
 
             w->loadSnapshot("ParamValues");
-            RooFitResult* fitres = model->fitTo(*genData, RooFit::Minimizer("Minuit2", "migrad"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), Save());
+            RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), Save());
             //RooAbsReal* nll;
             //RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
 
@@ -358,7 +358,7 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, true, "", false, true);
         w->loadSnapshot("ParamValues");
 
-        RooFitResult* fitres = model->fitTo(*genData, RooFit::Minimizer("Minuit2", "migrad"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), Save());
+        RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), Save());
         //RooAbsReal* nll;
         //RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
 
@@ -385,7 +385,7 @@ void FitToData(RooWorkspace* w, double eps) {
     RooDataSet* data = (RooDataSet*)w->data("asimovData");
 
     // fit
-    RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2", "migrad"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), Save());
+    RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), Save());
     //RooAbsReal* nll;
     //RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps);
 
@@ -479,7 +479,7 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
         RooDataSet* genData = dataPDF.generate(RooArgSet(*x, model->indexCat()), Nevt_data_int, false, true, "", false, true);
 
         w->loadSnapshot("ParamValues");
-        RooFitResult* fitres = model->fitTo(*genData, RooFit::Minimizer("Minuit2", "migrad"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), Save());
+        RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), Save());
         //RooAbsReal* nll;
         //RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
 
