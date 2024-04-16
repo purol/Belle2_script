@@ -1,7 +1,7 @@
 clear all
 format long
 
-N_total_bins = 19 * 3;
+N_total_bins = 36 * 3;
 N_selected_vectors = 3;
 
 % FEI

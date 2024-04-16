@@ -365,12 +365,24 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // background normalization
     if (options_->BKGNorm) {
-        w->var("alpha_mu_CHG")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_MIX")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_UUBAR")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_DDBAR")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_SSBAR")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_CHARM")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_CHG_MXs1")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_CHG_MXs2")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_CHG_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_MIX_MXs1")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_MIX_MXs2")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_MIX_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_UUBAR_MXs1")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_UUBAR_MXs2")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_UUBAR_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_DDBAR_MXs1")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_DDBAR_MXs2")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_DDBAR_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_SSBAR_MXs1")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_SSBAR_MXs2")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_SSBAR_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_CHARM_MXs1")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_CHARM_MXs2")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_CHARM_MXs3")->setConstant(options_->BKGNorm);
     }
 
     // BDTc
