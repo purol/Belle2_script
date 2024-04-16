@@ -56,13 +56,6 @@ using std::to_string;
 
 Corrector_Fragmentation corrector_Fragmentation;
 
-int NEntryFEI;
-int NEntryKID;
-int NEntryPID;
-int NEntryBR;
-int NEntrypi0;
-int NEntryMultiplicity;
-
 int ReadNFEIEigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
@@ -328,12 +321,12 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 
 int WorkSpace() {
 
-	NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
-	NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
-	NEntryPID = ReadNPIDEigenVector("./PID_selected.txt");
-	NEntryBR = ReadNBREigenVector("./BR_selected.txt");
-	NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
-	NEntryMultiplicity = ReadMultiplicityInfo("./Multiplicity_info.txt");
+	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
+	int NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
+	int NEntryPID = ReadNPIDEigenVector("./PID_selected.txt");
+	int NEntryBR = ReadNBREigenVector("./BR_selected.txt");
+	int NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
+	int NEntryMultiplicity = ReadMultiplicityInfo("./Multiplicity_info.txt");
 
 	const double expmu = 1.0;
 	const char* fname = "PDFandDATA_nominal.root";
@@ -346,35 +339,24 @@ int WorkSpace() {
 	meas.SetExportOnly(kTRUE);
 
 	// setting measurement
-	meas.SetPOI("mu_MXs3");
+	meas.SetPOI("mu_MXs1");
 	meas.SetLumi(1.0);
 	meas.AddConstantParam("Lumi");
 
 	// define channel
-	HistFactory::Channel channel_MXs1("channel_MXs1");
-	channel_MXs1.SetStatErrorConfig(1e-5, "Gaussian");
+	HistFactory::Channel channel("channel");
+	channel.SetStatErrorConfig(1e-5, "Gaussian");
 
-	HistFactory::Channel channel_MXs2("channel_MXs2");
-	channel_MXs2.SetStatErrorConfig(1e-5, "Gaussian");
+	// point data
+	channel.SetData("total_DATA", fname);
 
-	HistFactory::Channel channel_MXs3("channel_MXs3");
-	channel_MXs3.SetStatErrorConfig(1e-5, "Gaussian");
-
-	// fill channels
-	AddSample(&channel_MXs1, fname_MXs1, 1, expmu);
-	channel_MXs1.SetData("total_DATA", fname_MXs1);
-
-	AddSample(&channel_MXs2, fname_MXs2, 2, expmu);
-	channel_MXs2.SetData("total_DATA", fname_MXs2);
-
-	AddSample(&channel_MXs3, fname_MXs3, 3, expmu);
-	channel_MXs3.SetData("total_DATA", fname_MXs3);
-
+	// get MC
+	AddSample(&channel, fname_MXs1, 1, expmu);
+	AddSample(&channel, fname_MXs2, 2, expmu);
+	AddSample(&channel, fname_MXs3, 3, expmu);
 
 	// add channel to measurement
-	meas.AddChannel(channel_MXs1);
-	meas.AddChannel(channel_MXs2);
-	meas.AddChannel(channel_MXs3);
+	meas.AddChannel(channel);
 	meas.CollectHistograms();
 
 	RooWorkspace* w;

@@ -506,7 +506,7 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
         double val = rrv->getVal();
         double err = rrv->getError();
 
-        if (name == "mu_MXs1") {
+        if (name == "mu") {
             if (std::abs(fit_status) > 0.5) {
 
                 ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
@@ -518,7 +518,7 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
                 RooCategory* idx = (RooCategory*)obs->find("channelCat");
 
                 // get expected num of evts for PDFs
-                double Signal_Nevts = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
+                double Signal_Nevts = GetNumEvts(w, "Signal");
                 double CHG_Nevts = GetNumEvts(w, "CHG");
                 double MIX_Nevts = GetNumEvts(w, "MIX");
                 double UUBAR_Nevts = GetNumEvts(w, "UUBAR");
