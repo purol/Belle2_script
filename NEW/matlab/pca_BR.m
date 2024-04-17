@@ -1,7 +1,7 @@
 clear all
 format long
 
-N_total_bins = 36 * 3;
+N_total_bins = 24 * 3;
 N_selected_vectors = 5;
 
 % BR
