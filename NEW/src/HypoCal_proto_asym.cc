@@ -223,7 +223,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: eps
 	RooStats::AsymptoticCalculator AsymCalc(*data, *bModel, *sbModel);
 	RooStats::ProfileLikelihoodTestStat* plr = new RooStats::ProfileLikelihoodTestStat(*sbModel->GetPdf());
 	plr->SetOneSided(true);
-	plr->SetMinimizer("Minuit2");
+	plr->SetMinimizer("Minuit");
 	plr->SetStrategy(1);
 	//plr->SetLOffset(true);
 	//plr->SetTolerance(std::atof(argv[2]));

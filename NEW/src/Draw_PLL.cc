@@ -102,12 +102,12 @@ int main(int argc, char* argv[]) {
     RooDataSet* data = (RooDataSet*)w->data("asimovData");
 
     // fit
-    RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2", "migrad"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
-    RooAbsReal* nll;
-    ObtainNLL(w, data, &nll);
-    //double eps = 0.001;
+    //RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2", "migrad"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
     //RooAbsReal* nll;
-    //RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps);
+    //ObtainNLL(w, data, &nll);
+    double eps = ::ROOT::Math::MinimizerOptions::DefaultTolerance();
+    RooAbsReal* nll;
+    RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps);
 
     // get PLL value
     RooPlot* mu_frame;

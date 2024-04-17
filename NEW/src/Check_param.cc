@@ -219,10 +219,10 @@ int main() {
     RooDataSet* data = (RooDataSet*)w->data("asimovData");
 
     // fit
-    RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2", "migrad"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
-    //double eps = 0.001;
-    //RooAbsReal* nll;
-    //RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps);
+    //RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2", "migrad"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
+    double eps = ::ROOT::Math::MinimizerOptions::DefaultTolerance();
+    RooAbsReal* nll;
+    RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps);
 
     RooArgSet fitargs = fitres->floatParsFinal();
     TIterator* iter(fitargs.createIterator());
