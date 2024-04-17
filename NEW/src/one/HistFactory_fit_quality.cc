@@ -57,7 +57,7 @@
 #include "RooStats/HypoTestInverter.h"
 #include "RooStats/HypoTestInverterPlot.h"
 
-#include "Fitter_one.h"
+#include "Fitter.h"
 
 using namespace RooFit;
 using namespace RooStats;
