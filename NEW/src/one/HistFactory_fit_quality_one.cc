@@ -57,7 +57,7 @@
 #include "RooStats/HypoTestInverter.h"
 #include "RooStats/HypoTestInverterPlot.h"
 
-#include "Fitter.h"
+#include "Fitter_one.h"
 
 using namespace RooFit;
 using namespace RooStats;
@@ -280,9 +280,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
         }
     }
 
-    w->var("mu_MXs1")->setVal(injected_mu);
-    w->var("mu_MXs2")->setVal(injected_mu);
-    w->var("mu_MXs3")->setVal(injected_mu);
+    w->var("mu")->setVal(injected_mu);
 
     /* ================================ cal Nexpected ================================*/
     RooAbsBinning const& binning = x_val->getBinning();
@@ -328,7 +326,7 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
             RooDataSet* genData = model->generate(RooArgSet(*x,model->indexCat()), Nevt_total, false, true, "", false, true);
 
             w->loadSnapshot("ParamValues");
-            RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
+            RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), Save());
             //RooAbsReal* nll;
             //RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
 
@@ -360,7 +358,7 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
         RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, true, "", false, true);
         w->loadSnapshot("ParamValues");
 
-        RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
+        RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), Save());
         //RooAbsReal* nll;
         //RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
 
@@ -387,18 +385,18 @@ void FitToData(RooWorkspace* w, double eps) {
     RooDataSet* data = (RooDataSet*)w->data("asimovData");
 
     // fit
-    RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
+    RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), Save());
     //RooAbsReal* nll;
     //RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps);
 
     // get expected num of evts for PDFs
-    double Signal_Nevts = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
-    double CHG_Nevts = GetNumEvts(w, "CHG_MX1") + GetNumEvts(w, "CHG_MX2") + GetNumEvts(w, "CHG_MX3");
-    double MIX_Nevts = GetNumEvts(w, "MIX_MX1") + GetNumEvts(w, "MIX_MX2") + GetNumEvts(w, "MIX_MX3");
-    double UUBAR_Nevts = GetNumEvts(w, "UUBAR_MX1") + GetNumEvts(w, "UUBAR_MX2") + GetNumEvts(w, "UUBAR_MX3");
-    double DDBAR_Nevts = GetNumEvts(w, "DDBAR_MX1") + GetNumEvts(w, "DDBAR_MX2") + GetNumEvts(w, "DDBAR_MX3");
-    double SSBAR_Nevts = GetNumEvts(w, "SSBAR_MX1") + GetNumEvts(w, "SSBAR_MX2") + GetNumEvts(w, "SSBAR_MX3");
-    double CHARM_Nevts = GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
+    double Signal_Nevts = GetNumEvts(w, "Signal");
+    double CHG_Nevts = GetNumEvts(w, "CHG");
+    double MIX_Nevts = GetNumEvts(w, "MIX");
+    double UUBAR_Nevts = GetNumEvts(w, "UUBAR");
+    double DDBAR_Nevts = GetNumEvts(w, "DDBAR");
+    double SSBAR_Nevts = GetNumEvts(w, "SSBAR");
+    double CHARM_Nevts = GetNumEvts(w, "CHARM");
 
     // draw
     RooPlot* x_frame = x_val->frame(Title("FBDT"));
@@ -481,7 +479,7 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
         RooDataSet* genData = dataPDF.generate(RooArgSet(*x, model->indexCat()), Nevt_data_int, false, true, "", false, true);
 
         w->loadSnapshot("ParamValues");
-        RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
+        RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu"))), RooFit::SumW2Error(false), Save());
         //RooAbsReal* nll;
         //RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
 
@@ -508,7 +506,7 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
         double val = rrv->getVal();
         double err = rrv->getError();
 
-        if (name == "mu_MXs1") {
+        if (name == "mu") {
             if (std::abs(fit_status) > 0.5) {
 
                 ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
@@ -520,13 +518,13 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
                 RooCategory* idx = (RooCategory*)obs->find("channelCat");
 
                 // get expected num of evts for PDFs
-                double Signal_Nevts = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
-                double CHG_Nevts = GetNumEvts(w, "CHG_MX1") + GetNumEvts(w, "CHG_MX2") + GetNumEvts(w, "CHG_MX3");
-                double MIX_Nevts = GetNumEvts(w, "MIX_MX1") + GetNumEvts(w, "MIX_MX2") + GetNumEvts(w, "MIX_MX3");
-                double UUBAR_Nevts = GetNumEvts(w, "UUBAR_MX1") + GetNumEvts(w, "UUBAR_MX2") + GetNumEvts(w, "UUBAR_MX3");
-                double DDBAR_Nevts = GetNumEvts(w, "DDBAR_MX1") + GetNumEvts(w, "DDBAR_MX2") + GetNumEvts(w, "DDBAR_MX3");
-                double SSBAR_Nevts = GetNumEvts(w, "SSBAR_MX1") + GetNumEvts(w, "SSBAR_MX2") + GetNumEvts(w, "SSBAR_MX3");
-                double CHARM_Nevts = GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
+                double Signal_Nevts = GetNumEvts(w, "Signal");
+                double CHG_Nevts = GetNumEvts(w, "CHG");
+                double MIX_Nevts = GetNumEvts(w, "MIX");
+                double UUBAR_Nevts = GetNumEvts(w, "UUBAR");
+                double DDBAR_Nevts = GetNumEvts(w, "DDBAR");
+                double SSBAR_Nevts = GetNumEvts(w, "SSBAR");
+                double CHARM_Nevts = GetNumEvts(w, "CHARM");
 
                 // draw
                 RooPlot* x_frame = x_val->frame(Title("FBDT"));
