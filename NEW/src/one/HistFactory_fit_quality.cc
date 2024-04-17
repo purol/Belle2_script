@@ -567,6 +567,8 @@ int main(int argc, char* argv[]) {
     ::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit"); // default: Minuit Migrad
     ::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
 
+    // RooStats::UseNLLOffset(true);
+
     RooMsgService::instance().setStreamStatus(1, false);
     RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
 
