@@ -1,7 +1,7 @@
 clear all
 format long
 
-N_total_bins = 18 * 7;
+N_total_bins = 30 * 7;
 N_selected_vectors = 3;
 
 % pi0 correction
