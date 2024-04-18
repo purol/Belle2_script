@@ -384,8 +384,8 @@ void GetNominalNevt(const char* dirname, const char* included_string, TH1D* hist
 
     int ArrayBinID = -1;
     
-    if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
-    else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
+    if ((strcmp(sample, "CHG") == 0) || (strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B2Xsnunu") == 0)) ArrayBinID = 0;
+    else if ((strcmp(sample, "MIX") == 0) || (strcmp(included_string, "B02K0nunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) ArrayBinID = 1;
     else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 2;
 
     for (int i = 0; i < RarityBins; i++) {
@@ -701,8 +701,8 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
 
     int ArrayBinID = -1;
 
-    if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
-    else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
+    if ((strcmp(sample, "CHG") == 0) || (strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B2Xsnunu") == 0)) ArrayBinID = 0;
+    else if ((strcmp(sample, "MIX") == 0) || (strcmp(included_string, "B02K0nunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) ArrayBinID = 1;
     else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 2;
 
     for (int i = 0; i < RarityBins; i++) {
