@@ -325,9 +325,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
-            Nevt = Nevt + total_weight;
-
-            FillTemplate(hist, MVA_var, total_weight, Bsig_M);
+            Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
         }
         input_file->Close();
 
@@ -625,9 +623,7 @@ double GetNonPhysicalPDFs(const char* dirname, const char* included_string, TH1D
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
-            Nevt = Nevt + total_weight;
-
-            FillTemplate(hist, MVA_var, total_weight, Bsig_M);
+            Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
         }
         input_file->Close();
 
