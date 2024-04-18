@@ -155,15 +155,22 @@ int ReadNpi0EigenVector(const char* dirname) {
 }
 
 int ReadMultiplicityInfo(const char* dirname) {
-
-    int N_hist = -1;
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 7] = { 0.0 }; // eigen vector
 
     FILE* fp;
     fp = fopen(dirname, "r");
-    fscanf(fp, "%d", &N_hist);
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 7; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
     fclose(fp);
 
-    return N_hist;
+    return Nentry;
 }
 
 void Initialize_options(OPTIONS* options_, const char* tested_param) {
@@ -264,7 +271,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     options_->NEntryPID = ReadNPIDEigenVector("./PID_selected.txt");
     options_->NEntryBR = ReadNBREigenVector("./BR_selected.txt");
     options_->NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
-    options_->NEntryMultiplicity = ReadMultiplicityInfo("./Multiplicity_info.txt");
+    options_->NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
 }
 
 void FixParameters(RooWorkspace* w, OPTIONS* options_) {
