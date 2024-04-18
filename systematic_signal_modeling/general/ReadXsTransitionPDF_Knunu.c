@@ -696,9 +696,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, systtype, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, systtype, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
-            Nevt = Nevt + total_weight;
-
-            FillTemplate(hist, MVA_var, total_weight, Bsig_M);
+            Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
         }
         input_file->Close();
 
