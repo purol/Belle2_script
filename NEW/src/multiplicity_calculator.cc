@@ -729,6 +729,8 @@ void FluctuateMultiplicityCorrection() {
 int main(int argc, char* argv[])
 {
 
+    ReadMultiplicityFile();
+
     RooRandom::randomGenerator()->SetSeed(rd());
 
     double Nevt_nominal[RarityBins * 7] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL
