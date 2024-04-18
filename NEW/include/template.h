@@ -25,7 +25,7 @@ const int BinMAX = RarityBins;
 
 // TH1D* hist = new TH1D("histogram", ";;", RarityBins, BinMIN, BinMAX);
 
-void FillTemplate(TH1D* hist, double FBDToutput, double total_weight, double MXs) {
+double FillTemplate(TH1D* hist, double FBDToutput, double total_weight, double MXs) {
 	if ((MXs > 0.0) && (MXs < 0.6)) { // MXs1
 		if ((FBDToutput >= BinMIN_MX1) && (FBDToutput <= BinMAX_MX1)) {
 			double binwidth = (BinMAX_MX1 - BinMIN_MX1) / RarityBins_MX1;
@@ -39,6 +39,7 @@ void FillTemplate(TH1D* hist, double FBDToutput, double total_weight, double MXs
 				binindex = 0.0;
 			}
 			hist->Fill(binindex + 0.5, total_weight); // add 0.5 to avoid unexpected rounding error
+			return total_weight;
 		}
 		else {
 			printf("FBDT output is out of range!\n");
@@ -58,6 +59,7 @@ void FillTemplate(TH1D* hist, double FBDToutput, double total_weight, double MXs
 				binindex = RarityBins_MX1;
 			}
 			hist->Fill(binindex + 0.5, total_weight); // add 0.5 to avoid unexpected rounding error
+			return total_weight;
 		}
 		else {
 			printf("FBDT output is out of range!\n");
@@ -77,6 +79,7 @@ void FillTemplate(TH1D* hist, double FBDToutput, double total_weight, double MXs
 				binindex = RarityBins_MX1 + RarityBins_MX2;
 			}
 			hist->Fill(binindex + 0.5, total_weight); // add 0.5 to avoid unexpected rounding error
+			return total_weight;
 		}
 		else {
 			printf("FBDT output is out of range!\n");
