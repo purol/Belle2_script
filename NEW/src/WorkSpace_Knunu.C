@@ -151,12 +151,32 @@ int ReadMultiplicityInfo(const char* dirname) {
 	return Nentry;
 }
 
+int ReadNFragmentationEigenVector(const char* dirname) {
+	int Nentry = 0; // number of eigen values/vectors
+	double eigen_value = 0; // eigen value
+	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+
+	FILE* fp;
+	fp = fopen(dirname, "r");
+	while (true) {
+		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+		for (int i = 0; i < RarityBins * 3; i++) {
+			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+		}
+		Nentry++;
+	}
+	fclose(fp);
+
+	return Nentry;
+}
+
 int WorkSpace_Knunu() {
 
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
 	int NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
 	int NEntryBR = ReadNBREigenVector("./BR_selected.txt");
 	int NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
+	int NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
 
 	const double expmu = 1.0;
     const char* fname = "PDFandDATA_nominal.root";
@@ -228,17 +248,7 @@ int WorkSpace_Knunu() {
 	CHG_temp.AddHistoSys("Kff_OLD_uncer", "CHG_Kff_OLD_m", fname, "", "CHG_Kff_OLD_p", fname, "");
 	CHG_temp.AddHistoSys("Kfrac_uncer", "CHG_Kfrac_m", fname, "", "CHG_Kfrac_p", fname, "");
 	CHG_temp.AddHistoSys("Kstarfrac_uncer", "CHG_Kstarfrac_m", fname, "", "CHG_Kstarfrac_p", fname, "");
-	for (int MxsBin = 0; MxsBin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); MxsBin++) {
-		for (int Category = 0; Category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); Category++) {
-			int temp_index = MxsBin * corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma) + Category;
-
-			std::string uncertainty_name = "Xs_fragmentation" + std::to_string(temp_index) + "_uncer";
-			std::string plus_name = std::string("CHG_Xs_frag_decay_") + std::to_string(MxsBin) + std::string("_") + std::to_string(Category) + std::string("_p");
-			std::string minus_name = std::string("CHG_Xs_frag_decay_") + std::to_string(MxsBin) + std::string("_") + std::to_string(Category) + std::string("_m");
-
-			CHG_temp.AddHistoSys(uncertainty_name.c_str(), plus_name.c_str(), fname, "", minus_name.c_str(), fname, "");
-		}
-	}
+	for (int i = 0; i < NEntryFragmentation; i++) CHG_temp.AddHistoSys(("Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), ("CHG_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	CHG_temp.AddHistoSys("pf_uncer", "CHG_pf_m", fname, "", "CHG_pf_p", fname, "");
 	CHG_temp.AddHistoSys("mb_uncer", "CHG_mb_m", fname, "", "CHG_mb_p", fname, "");
 	CHG_temp.AddHistoSys("transition_uncer", "CHG_transition_m", fname, "", "CHG_transition_p", fname, "");
@@ -277,17 +287,7 @@ int WorkSpace_Knunu() {
 	MIX_temp.AddHistoSys("Kff_OLD_uncer", "MIX_Kff_OLD_m", fname, "", "MIX_Kff_OLD_p", fname, "");
 	MIX_temp.AddHistoSys("Kfrac_uncer", "MIX_Kfrac_m", fname, "", "MIX_Kfrac_p", fname, "");
 	MIX_temp.AddHistoSys("Kstarfrac_uncer", "MIX_Kstarfrac_m", fname, "", "MIX_Kstarfrac_p", fname, "");
-	for (int MxsBin = 0; MxsBin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); MxsBin++) {
-		for (int Category = 0; Category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); Category++) {
-			int temp_index = MxsBin * corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma) + Category;
-
-			std::string uncertainty_name = "Xs_fragmentation" + std::to_string(temp_index) + "_uncer";
-			std::string plus_name = std::string("MIX_Xs_frag_decay_") + std::to_string(MxsBin) + std::string("_") + std::to_string(Category) + std::string("_p");
-			std::string minus_name = std::string("MIX_Xs_frag_decay_") + std::to_string(MxsBin) + std::string("_") + std::to_string(Category) + std::string("_m");
-
-			MIX_temp.AddHistoSys(uncertainty_name.c_str(), plus_name.c_str(), fname, "", minus_name.c_str(), fname, "");
-		}
-	}
+	for (int i = 0; i < NEntryFragmentation; i++) MIX_temp.AddHistoSys(("Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), ("MIX_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	MIX_temp.AddHistoSys("pf_uncer", "MIX_pf_m", fname, "", "MIX_pf_p", fname, "");
 	MIX_temp.AddHistoSys("mb_uncer", "MIX_mb_m", fname, "", "MIX_mb_p", fname, "");
 	MIX_temp.AddHistoSys("transition_uncer", "MIX_transition_m", fname, "", "MIX_transition_p", fname, "");

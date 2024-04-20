@@ -151,6 +151,25 @@ int ReadMultiplicityInfo(const char* dirname) {
 	return Nentry;
 }
 
+int ReadNFragmentationEigenVector(const char* dirname) {
+	int Nentry = 0; // number of eigen values/vectors
+	double eigen_value = 0; // eigen value
+	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+
+	FILE* fp;
+	fp = fopen(dirname, "r");
+	while (true) {
+		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+		for (int i = 0; i < RarityBins * 3; i++) {
+			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+		}
+		Nentry++;
+	}
+	fclose(fp);
+
+	return Nentry;
+}
+
 void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, const double expmu) {
 
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
@@ -159,6 +178,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	int NEntryBR = ReadNBREigenVector("./BR_selected.txt");
 	int NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
 	int NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
+	int NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
 
 	std::string bin_name = "";
 	if (MXs_bin == 1) bin_name = std::string("MXs1");
@@ -199,17 +219,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp.AddHistoSys("Kff_OLD_uncer", "Signal_Kff_OLD_m", fname, "", "Signal_Kff_OLD_p", fname, "");
 	sig_temp.AddHistoSys("Kfrac_uncer", "Signal_Kfrac_m", fname, "", "Signal_Kfrac_p", fname, "");
 	sig_temp.AddHistoSys("Kstarfrac_uncer", "Signal_Kstarfrac_m", fname, "", "Signal_Kstarfrac_p", fname, "");
-	for (int MxsBin = 0; MxsBin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); MxsBin++) {
-		for (int Category = 0; Category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); Category++) {
-			int temp_index = MxsBin * corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma) + Category;
-
-			std::string uncertainty_name = "Xs_fragmentation" + std::to_string(temp_index) + "_uncer";
-			std::string plus_name = std::string("Signal_Xs_frag_decay_") + std::to_string(MxsBin) + std::string("_") + std::to_string(Category) + std::string("_p");
-			std::string minus_name = std::string("Signal_Xs_frag_decay_") + std::to_string(MxsBin) + std::string("_") + std::to_string(Category) + std::string("_m");
-
-			sig_temp.AddHistoSys(uncertainty_name.c_str(), plus_name.c_str(), fname, "", minus_name.c_str(), fname, "");
-		}
-	}
+	for (int i = 0; i < NEntryFragmentation; i++) sig_temp.AddHistoSys(("Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), ("Signal_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	sig_temp.AddHistoSys("pf_uncer", "Signal_pf_m", fname, "", "Signal_pf_p", fname, "");
 	sig_temp.AddHistoSys("mb_uncer", "Signal_mb_m", fname, "", "Signal_mb_p", fname, "");
 	sig_temp.AddHistoSys("transition_uncer", "Signal_transition_m", fname, "", "Signal_transition_p", fname, "");

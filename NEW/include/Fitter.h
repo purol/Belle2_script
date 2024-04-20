@@ -62,6 +62,7 @@ typedef struct Options
     int NEntryBR;
     int NEntrypi0;
     int NEntryMultiplicity;
+    int NEntryFragmentation;
 
     int Nsyst = 25;
 } OPTIONS;
@@ -152,6 +153,25 @@ int ReadMultiplicityInfo(const char* dirname) {
     while (true) {
         if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
         for (int i = 0; i < RarityBins * 7; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    return Nentry;
+}
+
+int ReadNFragmentationEigenVector(const char* dirname) {
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 3; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
         Nentry++;
@@ -260,6 +280,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     options_->NEntryBR = ReadNBREigenVector("./BR_selected.txt");
     options_->NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
     options_->NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
+    options_->NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
 }
 
 void FixParameters(RooWorkspace* w, OPTIONS* options_) {
@@ -346,14 +367,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->MCstat) for (int i = 0; i < RarityBins; i++) w->var(("gamma_stat_channel_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
 
     // Fragmentation
-    if (options_->Fragmentation) {
-        for (int MxsBin = 0; MxsBin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); MxsBin++) {
-            for (int Category = 0; Category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); Category++) {
-                int temp_index = MxsBin * corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma) + Category;
-                w->var(("alpha_Xs_fragmentation" + std::to_string(temp_index) + "_uncer").c_str())->setConstant(options_->Fragmentation);
-            }
-        }
-    }
+    if (options_->Fragmentation) for (int i = 0; i < options_->NEntryFragmentation; i++) w->var(("alpha_Xs_fragmentation" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->Fragmentation);
 
     // mKstar
     if (options_->mKstar) w->var("alpha_mKstar_uncer")->setConstant(options_->mKstar);
