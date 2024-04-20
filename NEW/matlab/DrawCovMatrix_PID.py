@@ -19,7 +19,7 @@ KID_cov_all = np.loadtxt(file_KID_cov_all, dtype=float)
 KID_cov_partial = np.loadtxt(file_KID_cov_partial, dtype=float)
 
 ar = np.array(KID_cov_all)
-ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-0.3, vmax=1.0)
+ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-1.0, vmax=1.0)
 ax.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
@@ -35,7 +35,7 @@ plt.savefig('KID_corr_all.png')
 plt.clf()
 
 ar_p = np.array(KID_cov_partial)
-ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-0.3, vmax=1.0)
+ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-1.0, vmax=1.0)
 ax_p.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
@@ -58,7 +58,7 @@ PID_cov_all = np.loadtxt(file_PID_cov_all, dtype=float)
 PID_cov_partial = np.loadtxt(file_PID_cov_partial, dtype=float)
 
 ar = np.array(PID_cov_all)
-ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[],vmin=-0.5, vmax=1.0)
+ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-1.0, vmax=1.0)
 ax.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
@@ -74,7 +74,7 @@ plt.savefig('PID_corr_all.png')
 plt.clf()
 
 ar_p = np.array(PID_cov_partial)
-ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[],vmin=-0.5, vmax=1.0)
+ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-1.0, vmax=1.0)
 ax_p.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]

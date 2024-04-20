@@ -19,7 +19,7 @@ multiplicity_cov_all = np.loadtxt(file_multiplicity_cov_all, dtype=float)
 multiplicity_cov_partial = np.loadtxt(file_multiplicity_cov_partial, dtype=float)
 
 ar = np.array(multiplicity_cov_all)
-ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-0.3, vmax=1.0)
+ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-1.0, vmax=1.0)
 ax.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
@@ -35,7 +35,7 @@ plt.savefig('multiplicity_corr_all.png')
 plt.clf()
 
 ar_p = np.array(multiplicity_cov_partial)
-ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-0.3, vmax=1.0)
+ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-1.0, vmax=1.0)
 ax_p.tick_params(left=False, bottom=False)
 
 labels = ["CHG", "MIX", "UUBAR", "DDBAR", "SSBAR", "CHARM", "Signal"]
