@@ -692,7 +692,6 @@ void GetOneSigmaNevt(const char* dirname, const char* included_string, TH1D* his
 
 int main(int argc, char* argv[])
 {
-    ReadEvtFile();
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
