@@ -21,12 +21,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 void THStack_plot_sideband() {
 
-    Nevt nevt_CHG = { 0.0, 0.0 };
-    Nevt nevt_MIX = { 0.0, 0.0 };
-    Nevt nevt_UUBAR = { 0.0, 0.0 };
-    Nevt nevt_DDBAR = { 0.0, 0.0 };
-    Nevt nevt_SSBAR = { 0.0, 0.0 };
-    Nevt nevt_CHARM = { 0.0, 0.0 };
+    NormalizeAtEachMXs = true;
 
     const char* Sideband_MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_side/CHG_analysis/validation_v004/final_output";
     const char* Sideband_MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_side/MIX_analysis/validation_v004/final_output";
@@ -37,19 +32,15 @@ void THStack_plot_sideband() {
 
     const char* Sideband_data_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_data_side/SIGNAL_analysis/validation_v004/final_output";
 
-    NevtCount_ri(Sideband_MC_CHG_validation_dirname, "CHG", &nevt_CHG);
-    NevtCount_ri(Sideband_MC_MIX_validation_dirname, "MIX", &nevt_MIX);
-    NevtCount_ri(Sideband_MC_UUBAR_validation_dirname, "UUBAR", &nevt_UUBAR);
-    NevtCount_ri(Sideband_MC_DDBAR_validation_dirname, "DDBAR", &nevt_DDBAR);
-    NevtCount_ri(Sideband_MC_SSBAR_validation_dirname, "SSBAR", &nevt_SSBAR);
-    NevtCount_ri(Sideband_MC_CHARM_validation_dirname, "CHARM", &nevt_CHARM);
+    // Count event to normalize at each MXs region
+    LetsCountMC(Sideband_MC_CHG_validation_dirname, "CHG");
+    LetsCountMC(Sideband_MC_MIX_validation_dirname, "MIX");
+    LetsCountMC(Sideband_MC_UUBAR_validation_dirname, "UUBAR");
+    LetsCountMC(Sideband_MC_DDBAR_validation_dirname, "DDBAR");
+    LetsCountMC(Sideband_MC_SSBAR_validation_dirname, "SSBAR");
+    LetsCountMC(Sideband_MC_CHARM_validation_dirname, "CHARM");
 
-    double NormFactor_CHG = nevt_CHG.NevtwithoutCorrection / nevt_CHG.NevtwithCorrection;
-    double NormFactor_MIX = nevt_MIX.NevtwithoutCorrection / nevt_MIX.NevtwithCorrection;
-    double NormFactor_UUBAR = nevt_UUBAR.NevtwithoutCorrection / nevt_UUBAR.NevtwithCorrection;
-    double NormFactor_DDBAR = nevt_DDBAR.NevtwithoutCorrection / nevt_DDBAR.NevtwithCorrection;
-    double NormFactor_SSBAR = nevt_SSBAR.NevtwithoutCorrection / nevt_SSBAR.NevtwithCorrection;
-    double NormFactor_CHARM = nevt_CHARM.NevtwithoutCorrection / nevt_CHARM.NevtwithCorrection;
+    LetsCountdata(Sideband_data_dirname);
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
@@ -528,7 +519,14 @@ void THStack_plot_sideband() {
         for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Sideband_MC_values[k].at(i), weights.at(i));
         for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_hist[k]->Fill(Sideband_data_values[k].at(i));
     }
-    Ratio_one_bin->Divide(data_one_bin, MC_one_bin);
+    if (NormalizeAtEachMXs == false) {
+        Ratio_one_bin->Divide(data_one_bin, MC_one_bin);
+    }
+    else {
+        Ratio_Nevt_MXs1->Divide(data_Nevt_MXs1, MC_Nevt_MXs1);
+        Ratio_Nevt_MXs2->Divide(data_Nevt_MXs2, MC_Nevt_MXs2);
+        Ratio_Nevt_MXs3->Divide(data_Nevt_MXs3, MC_Nevt_MXs3);
+    }
 
     printf("charged: %d\n", (int)charged_values[0].size());
     printf("mixed: %d\n", (int)mixed_values[0].size());
@@ -547,14 +545,16 @@ void THStack_plot_sideband() {
     printf("data: %d\n", (int)Sideband_data_values[0].size());
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
-        // Scale the histogram
-        CAL = Ratio_one_bin->GetBinContent(1);
-        charged_hist[k]->Scale(CAL);
-        mixed_hist[k]->Scale(CAL);
-        uubar_hist[k]->Scale(CAL);
-        ddbar_hist[k]->Scale(CAL);
-        ssbar_hist[k]->Scale(CAL);
-        ccbar_hist[k]->Scale(CAL);
+        // Scale the histogram if `NormalizeAtEachMXs` is not turned on
+        if (NormalizeAtEachMXs == false) {
+            CAL = Ratio_one_bin->GetBinContent(1);
+            charged_hist[k]->Scale(CAL);
+            mixed_hist[k]->Scale(CAL);
+            uubar_hist[k]->Scale(CAL);
+            ddbar_hist[k]->Scale(CAL);
+            ssbar_hist[k]->Scale(CAL);
+            ccbar_hist[k]->Scale(CAL);
+        }
 
         Stack[k]->Add(charged_hist[k]);
         Stack[k]->Add(mixed_hist[k]);
@@ -597,7 +597,20 @@ void THStack_plot_sideband() {
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP");
         TLegend* legend = pad1->BuildLegend(0.9, 0.9, 0.7, 0.7);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
-        TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str()); pt->Draw();
+        if (NormalizeAtEachMXs == false) {
+            TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB");
+            pt->SetFillStyle(0);
+            pt->SetLineWidth(0);
+            pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str());
+            pt->Draw();
+        }
+        else {
+            TPaveText* pt = new TPaveText(0.135, 0.88, 0.9, 1.0, "NDC NB");
+            pt->SetFillStyle(0);
+            pt->SetLineWidth(0);
+            pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + std::to_string(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs3->GetBinContent(1)) ).c_str());
+            pt->Draw();
+        }
 
         c_temp->cd();
         TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
@@ -617,13 +630,28 @@ void THStack_plot_sideband() {
     }
 
     // Print data-MC discrepancy
-    double MC_sum = 0;
-    for (int i = 0; i < (int)Sideband_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
-    printf("data num: %ld\n", Sideband_data_values[0].size());
-    printf("MC num with calibration: %lf\n", MC_sum);
-    printf("MC with calibration: %lf +- %lf\n", MC_one_bin->GetBinContent(1), MC_one_bin->GetBinError(1));
-    printf("data with calibration: %lf +- %lf\n", data_one_bin->GetBinContent(1), data_one_bin->GetBinError(1));
-    printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin->GetBinContent(1), Ratio_one_bin->GetBinError(1));
+    if (NormalizeAtEachMXs == false) {
+        double MC_sum = 0;
+        for (int i = 0; i < (int)Sideband_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
+        printf("data num: %ld\n", Sideband_data_values[0].size());
+        printf("MC num with calibration: %lf\n", MC_sum);
+        printf("MC with calibration: %lf +- %lf\n", MC_one_bin->GetBinContent(1), MC_one_bin->GetBinError(1));
+        printf("data with calibration: %lf +- %lf\n", data_one_bin->GetBinContent(1), data_one_bin->GetBinError(1));
+        printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin->GetBinContent(1), Ratio_one_bin->GetBinError(1));
+    }
+    else {
+        printf("data num in 1st region: %lf +- %lf\n", data_Nevt_MXs1->GetBinContent(1), data_Nevt_MXs1->GetBinError(1));
+        printf("data num in 2nd region: %lf +- %lf\n", data_Nevt_MXs2->GetBinContent(1), data_Nevt_MXs2->GetBinError(1));
+        printf("data num in 3rd region: %lf +- %lf\n", data_Nevt_MXs3->GetBinContent(1), data_Nevt_MXs3->GetBinError(1));
+
+        printf("MC num in 1st region: %lf +- %lf\n", MC_Nevt_MXs1->GetBinContent(1), MC_Nevt_MXs1->GetBinError(1));
+        printf("MC num in 2nd region: %lf +- %lf\n", MC_Nevt_MXs2->GetBinContent(1), MC_Nevt_MXs2->GetBinError(1));
+        printf("MC num in 3rd region: %lf +- %lf\n", MC_Nevt_MXs3->GetBinContent(1), MC_Nevt_MXs3->GetBinError(1));
+
+        printf("data/MC in 1st region: %lf +- %lf\n", Ratio_Nevt_MXs1->GetBinContent(1), Ratio_Nevt_MXs1->GetBinError(1));
+        printf("data/MC in 2nd region: %lf +- %lf\n", Ratio_Nevt_MXs2->GetBinContent(1), Ratio_Nevt_MXs2->GetBinError(1));
+        printf("data/MC in 3rd region: %lf +- %lf\n", Ratio_Nevt_MXs3->GetBinContent(1), Ratio_Nevt_MXs3->GetBinError(1));
+    }
 
     // free
     delete[] Sideband_MC_values;

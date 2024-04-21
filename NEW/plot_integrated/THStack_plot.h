@@ -45,6 +45,8 @@ int Nvar_num = -1;
 double CAL = 1.0; // must be 1.0
 # define CAL_qq 1.0
 
+bool NormalizeAtEachMXs = false;
+
 /* ====================================== */
 
 // Histogram for counting
@@ -404,9 +406,17 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+            // norm factor for each MXs
+            double normfactor_MXs =  1.0;
+            if (NormalizeAtEachMXs == true) {
+                if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) normfactor_MXs = data_Nevt_MXs1->GetBinContent(1) / MC_Nevt_MXs1->GetBinContent(1);
+                else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) normfactor_MXs = data_Nevt_MXs2->GetBinContent(1) / MC_Nevt_MXs2->GetBinContent(1);
+                else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) normfactor_MXs = data_Nevt_MXs3->GetBinContent(1) / MC_Nevt_MXs3->GetBinContent(1);
+            }
 
-            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+            weights->push_back(FEI_calibration_factor* CAL* weight_ri* Correction_pi0* Correction_KID* Correction_PID* Correction_fake* Correction_Knn* Correction_Xnn* Correction_multiplicity* Correction_KpKLKL* Correction_KSKLKL* Correction_KstarKLKL* Correction_XKLKL* Correction_BtoDtoXKL* additional_weight * normfactor_MXs);
+
+            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight * normfactor_MXs);
         }
         input_file->Close();
 
@@ -613,9 +623,18 @@ void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_n
             if (Ngamma_v200_index != variable_names.size()) Ngamma_v200 = var[Ngamma_v200_index];
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_multiplicity * additional_weight);
+            // norm factor for each MXs
+            double normfactor_MXs = 1.0;
+            if (NormalizeAtEachMXs == true) {
+                if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) normfactor_MXs = data_Nevt_MXs1->GetBinContent(1) / MC_Nevt_MXs1->GetBinContent(1);
+                else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) normfactor_MXs = data_Nevt_MXs2->GetBinContent(1) / MC_Nevt_MXs2->GetBinContent(1);
+                else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) normfactor_MXs = data_Nevt_MXs3->GetBinContent(1) / MC_Nevt_MXs3->GetBinContent(1);
+            }
 
-            if(j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_multiplicity * additional_weight);
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_multiplicity * additional_weight * normfactor_MXs);
+
+            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_multiplicity * additional_weight * normfactor_MXs);
+
         }
         input_file->Close();
 
@@ -950,9 +969,18 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight);
+            // norm factor for each MXs
+            double normfactor_MXs = 1.0;
+            if (NormalizeAtEachMXs == true) {
+                if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) normfactor_MXs = data_Nevt_MXs1->GetBinContent(1) / MC_Nevt_MXs1->GetBinContent(1);
+                else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) normfactor_MXs = data_Nevt_MXs2->GetBinContent(1) / MC_Nevt_MXs2->GetBinContent(1);
+                else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) normfactor_MXs = data_Nevt_MXs3->GetBinContent(1) / MC_Nevt_MXs3->GetBinContent(1);
+            }
 
-            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight);
+            weights->push_back(FEI_calibration_factor* CAL* weight_ri* Correction_pi0* Correction_KID* Correction_PID* Correction_fake* Correction_Knn* Correction_Xnn* Correction_multiplicity* Correction_KpKLKL* Correction_KSKLKL* Correction_KstarKLKL* Correction_XKLKL* Correction_BtoDtoXKL* BDTc_correction* additional_weight * normfactor_MXs);
+
+            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight * normfactor_MXs);
+
         }
         input_file->Close();
 
@@ -1277,9 +1305,18 @@ void LetsFillMC_ESide(const char* dirname, std::vector<std::string> variable_nam
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+            // norm factor for each MXs
+            double normfactor_MXs = 1.0;
+            if (NormalizeAtEachMXs == true) {
+                if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) normfactor_MXs = data_Nevt_MXs1->GetBinContent(1) / MC_Nevt_MXs1->GetBinContent(1);
+                else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) normfactor_MXs = data_Nevt_MXs2->GetBinContent(1) / MC_Nevt_MXs2->GetBinContent(1);
+                else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) normfactor_MXs = data_Nevt_MXs3->GetBinContent(1) / MC_Nevt_MXs3->GetBinContent(1);
+            }
 
-            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+            weights->push_back(FEI_calibration_factor* CAL* weight_ri* Correction_pi0* Correction_KID* Correction_PID* Correction_fake* Correction_LID* Correction_Knn* Correction_Xnn* Correction_multiplicity* Correction_KpKLKL* Correction_KSKLKL* Correction_KstarKLKL* Correction_XKLKL* Correction_BtoDtoXKL* additional_weight * normfactor_MXs);
+
+            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight * normfactor_MXs);
+
         }
         input_file->Close();
 
@@ -1604,9 +1641,18 @@ void LetsFillMC_MUSide(const char* dirname, std::vector<std::string> variable_na
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+            // norm factor for each MXs
+            double normfactor_MXs = 1.0;
+            if (NormalizeAtEachMXs == true) {
+                if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) normfactor_MXs = data_Nevt_MXs1->GetBinContent(1) / MC_Nevt_MXs1->GetBinContent(1);
+                else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) normfactor_MXs = data_Nevt_MXs2->GetBinContent(1) / MC_Nevt_MXs2->GetBinContent(1);
+                else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) normfactor_MXs = data_Nevt_MXs3->GetBinContent(1) / MC_Nevt_MXs3->GetBinContent(1);
+            }
 
-            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+            weights->push_back(FEI_calibration_factor* CAL* weight_ri* Correction_pi0* Correction_KID* Correction_PID* Correction_fake* Correction_LID* Correction_Knn* Correction_Xnn* Correction_multiplicity* Correction_KpKLKL* Correction_KSKLKL* Correction_KstarKLKL* Correction_XKLKL* Correction_BtoDtoXKL* additional_weight* normfactor_MXs);
+
+            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight * normfactor_MXs);
+
         }
         input_file->Close();
 
@@ -1617,7 +1663,7 @@ void LetsFillMC_MUSide(const char* dirname, std::vector<std::string> variable_na
 
 }
 
-void LetsCountMC(const char* dirname, std::vector<double>* weights, std::string SampleName, int option = 0, double additional_weight = 1.0) {
+void LetsCountMC(const char* dirname, std::string SampleName, int option = 0, double additional_weight = 1.0) {
     /*
     SampleName for Knn
     CHG
@@ -1649,6 +1695,10 @@ void LetsCountMC(const char* dirname, std::vector<double>* weights, std::string 
     12: llXX
     13: hhISR
     */
+
+    if (NormalizeAtEachMXs == false) {
+        printf("`NormalizeAtEachMXs` is false. Just skip to count Nevt\n");
+    }
 
     double* var = (double*)malloc(sizeof(double) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var[i] = 0.0;
     float* var_float = (float*)malloc(sizeof(float) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var_float[i] = 0.0;
@@ -1919,6 +1969,11 @@ void LetsCountdata(const char* dirname, const char* included_string = "root", in
     option 1: select Btag+
     option 2: select Btag0
     */
+
+    if (NormalizeAtEachMXs == false) {
+        printf("`NormalizeAtEachMXs` is false. Just skip to count Nevt\n");
+    }
+
     double* var = (double*)malloc(sizeof(double) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var[i] = 0.0;
     float* var_float = (float*)malloc(sizeof(float) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var_float[i] = 0.0;
     double Upsilon_ID = -1;
@@ -1978,6 +2033,11 @@ void LetsCountembeddedMC(const char* dirname, std::string SampleName, int option
     option 1: select Btag+
     option 2: select Btag0
     */
+
+    if (NormalizeAtEachMXs == false) {
+        printf("`NormalizeAtEachMXs` is false. Just skip to count Nevt\n");
+    }
+
     double* var = (double*)malloc(sizeof(double) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var[i] = 0.0;
     float* var_float = (float*)malloc(sizeof(float) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var_float[i] = 0.0;
     double Upsilon_ID = -1;
@@ -2104,6 +2164,10 @@ void LetsCountMC_correction(const char* dirname, std::string SampleName, double 
     12: llXX
     13: hhISR
     */
+
+    if (NormalizeAtEachMXs == false) {
+        printf("`NormalizeAtEachMXs` is false. Just skip to count Nevt\n");
+    }
 
     double* var = (double*)malloc(sizeof(double) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var[i] = 0.0;
     float* var_float = (float*)malloc(sizeof(float) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var_float[i] = 0.0;
@@ -2408,6 +2472,10 @@ void LetsCountMC_ESide(const char* dirname, std::string SampleName, int option =
     13: hhISR
     */
 
+    if (NormalizeAtEachMXs == false) {
+        printf("`NormalizeAtEachMXs` is false. Just skip to count Nevt\n");
+    }
+
     double* var = (double*)malloc(sizeof(double) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var[i] = 0.0;
     float* var_float = (float*)malloc(sizeof(float) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var_float[i] = 0.0;
     double Upsilon_ID = -1;
@@ -2700,6 +2768,10 @@ void LetsCountMC_MUSide(const char* dirname, std::string SampleName, int option 
     12: llXX
     13: hhISR
     */
+
+    if (NormalizeAtEachMXs == false) {
+        printf("`NormalizeAtEachMXs` is false. Just skip to count Nevt\n");
+    }
 
     double* var = (double*)malloc(sizeof(double) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var[i] = 0.0;
     float* var_float = (float*)malloc(sizeof(float) * Nvar_num); for (int i = 0; i < Nvar_num; i++) var_float[i] = 0.0;
