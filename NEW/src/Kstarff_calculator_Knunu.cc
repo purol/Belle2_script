@@ -769,7 +769,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
 
             // select B+ --> K+ nu nubar reconstruction only
             if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
