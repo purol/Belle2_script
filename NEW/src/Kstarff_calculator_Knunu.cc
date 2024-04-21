@@ -633,7 +633,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
+        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -709,12 +709,12 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
         if (strcmp(sample, "SIGNAL") == 0) {
             if (strcmp(included_string, "B02Kstar0nunu") == 0) {
                 tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &m_b);
-                tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &m_k);
+                m_k = Mxs_B0_MC;
                 tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &costheta);
             }
-            else if(strcmp(included_string, "B2Kstarnunu") == 0) {
+            else if (strcmp(included_string, "B2Kstarnunu") == 0) {
                 tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &m_b);
-                tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &m_k);
+                m_k = Mxs_Bc_MC;
                 tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &costheta);
             }
         }
