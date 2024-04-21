@@ -61,15 +61,15 @@ std::random_device rd;
 std::default_random_engine generator(rd());
 
 // nominal form factors
-const double alpha0_A1_nominal = 0.3;
-const double alpha1_A1_nominal = 0.39;
-const double alpha2_A1_nominal = 1.19;
-const double alpha0_A12_nominal = 0.27;
-const double alpha1_A12_nominal = 0.53;
-const double alpha2_A12_nominal = 0.48;
-const double alpha0_v0_nominal = 0.38;
-const double alpha1_v0_nominal = -1.17;
-const double alpha2_v0_nominal = 2.42;
+const double alpha0_A1 = 0.3;
+const double alpha1_A1 = 0.39;
+const double alpha2_A1 = 1.19;
+const double alpha0_A12 = 0.27;
+const double alpha1_A12 = 0.53;
+const double alpha2_A12 = 0.48;
+const double alpha0_v0 = 0.38;
+const double alpha1_v0 = -1.17;
+const double alpha2_v0 = 2.42;
 double alpha0_A1_fluc = 0.0;
 double alpha1_A1_fluc = 0.0;
 double alpha2_A1_fluc = 0.0;
@@ -189,9 +189,9 @@ double GetDifferentialBR(const double alpha0_A1, const double alpha1_A1, const d
     double z = (std::sqrt(tp - q2) - std::sqrt(tp - t0)) / (std::sqrt(tp - q2) + std::sqrt(tp - t0));
     double z0 = (std::sqrt(tp) - std::sqrt(tp - t0)) / (std::sqrt(tp) + std::sqrt(tp - t0));
 
-    double v0 = (1 / (1 - q2 / (mR_v0 * mR_v0))) * (alpha0_v0 + alpha1_v0 * (z - z0) + alpha2_v0 * (z - z0) * (z - z0));
-    double A1 = (1 / (1 - q2 / (mR_A1 * mR_A1))) * (alpha0_A1 + alpha1_A1 * (z - z0) + alpha2_A1 * (z - z0) * (z - z0));
-    double A12 = (1 / (1 - q2 / (mR_A12 * mR_A12))) * (alpha0_A12 + alpha1_A12 * (z - z0) + alpha2_A12 * (z - z0) * (z - z0));
+    double v0 = (1 / (1 - q2 / (mR_v0 * mR_v0))) * (alpha0_v0_fluc + alpha1_v0_fluc * (z - z0) + alpha2_v0_fluc * (z - z0) * (z - z0));
+    double A1 = (1 / (1 - q2 / (mR_A1 * mR_A1))) * (alpha0_A1_fluc + alpha1_A1_fluc * (z - z0) + alpha2_A1_fluc * (z - z0) * (z - z0));
+    double A12 = (1 / (1 - q2 / (mR_A12 * mR_A12))) * (alpha0_A12_fluc + alpha1_A12_fluc * (z - z0) + alpha2_A12_fluc * (z - z0) * (z - z0));
     double lambda = (tp - q2) * (tm - q2);
     double A2 = ((m_b + m_k) * (m_b + m_k) * (m_b * m_b - m_k * m_k - q2) * A1 - A12 * 16 * m_b * m_k * m_k * (m_b + m_k)) / lambda;
 
@@ -209,7 +209,7 @@ double GetDifferentialBR(const double alpha0_A1, const double alpha1_A1, const d
 }
 
 double GetDifferentialBR_correction(const double q2, const double costheta, const double m_b, const double m_K) {
-    double nominal = GetDifferentialBR(alpha0_A1_nominal, alpha1_A1_nominal, alpha2_A1_nominal, alpha0_A12_nominal, alpha1_A12_nominal, alpha2_A12_nominal, alpha0_v0_nominal, alpha1_v0_nominal, alpha2_v0_nominal, q2, costheta, m_b, m_K);
+    double nominal = GetDifferentialBR(alpha0_A1, alpha1_A1, alpha2_A1, alpha0_A12, alpha1_A12, alpha2_A12, alpha0_v0, alpha1_v0, alpha2_v0, q2, costheta, m_b, m_K);
     double fluctuated = GetDifferentialBR(alpha0_A1_fluc, alpha1_A1_fluc, alpha2_A1_fluc, alpha0_A12_fluc, alpha1_A12_fluc, alpha2_A12_fluc, alpha0_v0_fluc, alpha1_v0_fluc, alpha2_v0_fluc, q2, costheta, m_b, m_K);
 
     if ((fluctuated < 0) && (std::abs(fluctuated + 1) < MyEPSILON)) return 1.0;
@@ -217,7 +217,7 @@ double GetDifferentialBR_correction(const double q2, const double costheta, cons
 }
 
 double GetArbitraryBR_correction(int charge) {
-    double nominal = GetArbitraryBR(alpha0_A1_nominal, alpha1_A1_nominal, alpha2_A1_nominal, alpha0_A12_nominal, alpha1_A12_nominal, alpha2_A12_nominal, alpha0_v0_nominal, alpha1_v0_nominal, alpha2_v0_nominal, charge);
+    double nominal = GetArbitraryBR(alpha0_A1, alpha1_A1, alpha2_A1, alpha0_A12, alpha1_A12, alpha2_A12, alpha0_v0, alpha1_v0, alpha2_v0, charge);
     double fluctuated = GetArbitraryBR(alpha0_A1_fluc, alpha1_A1_fluc, alpha2_A1_fluc, alpha0_A12_fluc, alpha1_A12_fluc, alpha2_A12_fluc, alpha0_v0_fluc, alpha1_v0_fluc, alpha2_v0_fluc, charge);
 
     return (fluctuated / nominal);
@@ -858,15 +858,15 @@ void FluctuateKstarff() {
     double nuisance[9] = { 0.0 };
     for(int i = 0; i < 9; i++) nuisance[i] = nuisance_distribution(generator);
 
-    alpha0_A1_fluc = alpha0_A1_nominal;
-    alpha1_A1_fluc = alpha1_A1_nominal;
-    alpha2_A1_fluc = alpha2_A1_nominal;
-    alpha0_A12_fluc = alpha0_A12_nominal;
-    alpha1_A12_fluc = alpha1_A12_nominal;
-    alpha2_A12_fluc = alpha2_A12_nominal;
-    alpha0_v0_fluc = alpha0_v0_nominal;
-    alpha1_v0_fluc = alpha1_v0_nominal;
-    alpha2_v0_fluc = alpha2_v0_nominal;
+    alpha0_A1_fluc = alpha0_A1;
+    alpha1_A1_fluc = alpha1_A1;
+    alpha2_A1_fluc = alpha2_A1;
+    alpha0_A12_fluc = alpha0_A12;
+    alpha1_A12_fluc = alpha1_A12;
+    alpha2_A12_fluc = alpha2_A12;
+    alpha0_v0_fluc = alpha0_v0;
+    alpha1_v0_fluc = alpha1_v0;
+    alpha2_v0_fluc = alpha2_v0;
     for (int i = 0; i < 9; i++) {
         alpha0_A1_fluc = alpha0_A1_fluc + nuisance[i] * Lambdas[i] * LinearCoefficients[i][0];
         alpha1_A1_fluc = alpha1_A1_fluc + nuisance[i] * Lambdas[i] * LinearCoefficients[i][1];
