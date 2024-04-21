@@ -170,25 +170,6 @@ int ReadNFragmentationEigenVector(const char* dirname) {
 	return Nentry;
 }
 
-int ReadNKstarffEigenVector(const char* dirname) {
-	int Nentry = 0; // number of eigen values/vectors
-	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
-
-	FILE* fp;
-	fp = fopen(dirname, "r");
-	while (true) {
-		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 3; i++) {
-			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
-		}
-		Nentry++;
-	}
-	fclose(fp);
-
-	return Nentry;
-}
-
 int WorkSpace() {
 
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
@@ -198,7 +179,6 @@ int WorkSpace() {
 	int NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
 	int NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
 	int NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
-	int NEntryKstarff = ReadNKstarffEigenVector("./Kstarff_selected.txt");
 
 	const double expmu = 1.0;
 	const char* fname = "PDFandDATA_nominal.root";
@@ -239,7 +219,16 @@ int WorkSpace() {
 	sig_temp_MXs1.AddHistoSys("Kff1_uncer", "Signal_Kff1_m", fname_MXs1, "", "Signal_Kff1_p", fname_MXs1, "");
 	sig_temp_MXs1.AddHistoSys("Kff2_uncer", "Signal_Kff2_m", fname_MXs1, "", "Signal_Kff2_p", fname_MXs1, "");
 	sig_temp_MXs1.AddHistoSys("Kff3_uncer", "Signal_Kff3_m", fname_MXs1, "", "Signal_Kff3_p", fname_MXs1, "");
-	for (int i = 0; i < NEntryKstarff; i++) sig_temp_MXs1.AddHistoSys(("Kstarff" + std::to_string(i) + "_uncer").c_str(), ("Signal_Kstarff_correlated" + std::to_string(i) + "_m").c_str(), fname_MXs1, "", ("Signal_Kstarff_correlated" + std::to_string(i) + "_p").c_str(), fname_MXs1, "");
+	sig_temp_MXs1.AddHistoSys("Kstarff1_uncer", "Signal_Kstarff1_m", fname_MXs1, "", "Signal_Kstarff1_p", fname_MXs1, "");
+	sig_temp_MXs1.AddHistoSys("Kstarff2_uncer", "Signal_Kstarff2_m", fname_MXs1, "", "Signal_Kstarff2_p", fname_MXs1, "");
+	sig_temp_MXs1.AddHistoSys("Kstarff3_uncer", "Signal_Kstarff3_m", fname_MXs1, "", "Signal_Kstarff3_p", fname_MXs1, "");
+	sig_temp_MXs1.AddHistoSys("Kstarff4_uncer", "Signal_Kstarff4_m", fname_MXs1, "", "Signal_Kstarff4_p", fname_MXs1, "");
+	sig_temp_MXs1.AddHistoSys("Kstarff5_uncer", "Signal_Kstarff5_m", fname_MXs1, "", "Signal_Kstarff5_p", fname_MXs1, "");
+	sig_temp_MXs1.AddHistoSys("Kstarff6_uncer", "Signal_Kstarff6_m", fname_MXs1, "", "Signal_Kstarff6_p", fname_MXs1, "");
+	sig_temp_MXs1.AddHistoSys("Kstarff7_uncer", "Signal_Kstarff7_m", fname_MXs1, "", "Signal_Kstarff7_p", fname_MXs1, "");
+	sig_temp_MXs1.AddHistoSys("Kstarff8_uncer", "Signal_Kstarff8_m", fname_MXs1, "", "Signal_Kstarff8_p", fname_MXs1, "");
+	sig_temp_MXs1.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname_MXs1, "", "Signal_Kstarff9_p", fname_MXs1, "");
+	sig_temp_MXs1.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname_MXs1, "", "Signal_Kstarff9_p", fname_MXs1, "");
 	sig_temp_MXs1.AddHistoSys("Kff_OLD_uncer", "Signal_Kff_OLD_m", fname_MXs1, "", "Signal_Kff_OLD_p", fname_MXs1, "");
 	sig_temp_MXs1.AddHistoSys("Kfrac_uncer", "Signal_Kfrac_m", fname_MXs1, "", "Signal_Kfrac_p", fname_MXs1, "");
 	sig_temp_MXs1.AddHistoSys("Kstarfrac_uncer", "Signal_Kstarfrac_m", fname_MXs1, "", "Signal_Kstarfrac_p", fname_MXs1, "");
@@ -272,7 +261,16 @@ int WorkSpace() {
 	sig_temp_MXs2.AddHistoSys("Kff1_uncer", "Signal_Kff1_m", fname_MXs2, "", "Signal_Kff1_p", fname_MXs2, "");
 	sig_temp_MXs2.AddHistoSys("Kff2_uncer", "Signal_Kff2_m", fname_MXs2, "", "Signal_Kff2_p", fname_MXs2, "");
 	sig_temp_MXs2.AddHistoSys("Kff3_uncer", "Signal_Kff3_m", fname_MXs2, "", "Signal_Kff3_p", fname_MXs2, "");
-	for (int i = 0; i < NEntryKstarff; i++) sig_temp_MXs2.AddHistoSys(("Kstarff" + std::to_string(i) + "_uncer").c_str(), ("Signal_Kstarff_correlated" + std::to_string(i) + "_m").c_str(), fname_MXs2, "", ("Signal_Kstarff_correlated" + std::to_string(i) + "_p").c_str(), fname_MXs2, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff1_uncer", "Signal_Kstarff1_m", fname_MXs2, "", "Signal_Kstarff1_p", fname_MXs2, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff2_uncer", "Signal_Kstarff2_m", fname_MXs2, "", "Signal_Kstarff2_p", fname_MXs2, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff3_uncer", "Signal_Kstarff3_m", fname_MXs2, "", "Signal_Kstarff3_p", fname_MXs2, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff4_uncer", "Signal_Kstarff4_m", fname_MXs2, "", "Signal_Kstarff4_p", fname_MXs2, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff5_uncer", "Signal_Kstarff5_m", fname_MXs2, "", "Signal_Kstarff5_p", fname_MXs2, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff6_uncer", "Signal_Kstarff6_m", fname_MXs2, "", "Signal_Kstarff6_p", fname_MXs2, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff7_uncer", "Signal_Kstarff7_m", fname_MXs2, "", "Signal_Kstarff7_p", fname_MXs2, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff8_uncer", "Signal_Kstarff8_m", fname_MXs2, "", "Signal_Kstarff8_p", fname_MXs2, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname_MXs2, "", "Signal_Kstarff9_p", fname_MXs2, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname_MXs2, "", "Signal_Kstarff9_p", fname_MXs2, "");
 	sig_temp_MXs2.AddHistoSys("Kff_OLD_uncer", "Signal_Kff_OLD_m", fname_MXs2, "", "Signal_Kff_OLD_p", fname_MXs2, "");
 	sig_temp_MXs2.AddHistoSys("Kfrac_uncer", "Signal_Kfrac_m", fname_MXs2, "", "Signal_Kfrac_p", fname_MXs2, "");
 	sig_temp_MXs2.AddHistoSys("Kstarfrac_uncer", "Signal_Kstarfrac_m", fname_MXs2, "", "Signal_Kstarfrac_p", fname_MXs2, "");
@@ -305,7 +303,16 @@ int WorkSpace() {
 	sig_temp_MXs3.AddHistoSys("Kff1_uncer", "Signal_Kff1_m", fname_MXs3, "", "Signal_Kff1_p", fname_MXs3, "");
 	sig_temp_MXs3.AddHistoSys("Kff2_uncer", "Signal_Kff2_m", fname_MXs3, "", "Signal_Kff2_p", fname_MXs3, "");
 	sig_temp_MXs3.AddHistoSys("Kff3_uncer", "Signal_Kff3_m", fname_MXs3, "", "Signal_Kff3_p", fname_MXs3, "");
-	for (int i = 0; i < NEntryKstarff; i++) sig_temp_MXs3.AddHistoSys(("Kstarff" + std::to_string(i) + "_uncer").c_str(), ("Signal_Kstarff_correlated" + std::to_string(i) + "_m").c_str(), fname_MXs3, "", ("Signal_Kstarff_correlated" + std::to_string(i) + "_p").c_str(), fname_MXs3, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff1_uncer", "Signal_Kstarff1_m", fname_MXs3, "", "Signal_Kstarff1_p", fname_MXs3, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff2_uncer", "Signal_Kstarff2_m", fname_MXs3, "", "Signal_Kstarff2_p", fname_MXs3, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff3_uncer", "Signal_Kstarff3_m", fname_MXs3, "", "Signal_Kstarff3_p", fname_MXs3, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff4_uncer", "Signal_Kstarff4_m", fname_MXs3, "", "Signal_Kstarff4_p", fname_MXs3, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff5_uncer", "Signal_Kstarff5_m", fname_MXs3, "", "Signal_Kstarff5_p", fname_MXs3, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff6_uncer", "Signal_Kstarff6_m", fname_MXs3, "", "Signal_Kstarff6_p", fname_MXs3, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff7_uncer", "Signal_Kstarff7_m", fname_MXs3, "", "Signal_Kstarff7_p", fname_MXs3, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff8_uncer", "Signal_Kstarff8_m", fname_MXs3, "", "Signal_Kstarff8_p", fname_MXs3, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname_MXs3, "", "Signal_Kstarff9_p", fname_MXs3, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname_MXs3, "", "Signal_Kstarff9_p", fname_MXs3, "");
 	sig_temp_MXs3.AddHistoSys("Kff_OLD_uncer", "Signal_Kff_OLD_m", fname_MXs3, "", "Signal_Kff_OLD_p", fname_MXs3, "");
 	sig_temp_MXs3.AddHistoSys("Kfrac_uncer", "Signal_Kfrac_m", fname_MXs3, "", "Signal_Kfrac_p", fname_MXs3, "");
 	sig_temp_MXs3.AddHistoSys("Kstarfrac_uncer", "Signal_Kstarfrac_m", fname_MXs3, "", "Signal_Kstarfrac_p", fname_MXs3, "");

@@ -170,25 +170,6 @@ int ReadNFragmentationEigenVector(const char* dirname) {
 	return Nentry;
 }
 
-int ReadNKstarffEigenVector(const char* dirname) {
-	int Nentry = 0; // number of eigen values/vectors
-	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
-
-	FILE* fp;
-	fp = fopen(dirname, "r");
-	while (true) {
-		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 3; i++) {
-			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
-		}
-		Nentry++;
-	}
-	fclose(fp);
-
-	return Nentry;
-}
-
 int WorkSpace_one() {
 
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
@@ -198,7 +179,6 @@ int WorkSpace_one() {
 	int NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
 	int NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
 	int NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
-	int NEntryKstarff = ReadNKstarffEigenVector("./Kstarff_selected.txt");
 
 	const double expmu = 1.0;
         const char* fname = "PDFandDATA_MXs3.root";
@@ -236,7 +216,16 @@ int WorkSpace_one() {
 	sig_temp.AddHistoSys("Kff1_uncer", "Signal_Kff1_m", fname, "", "Signal_Kff1_p", fname, "");
 	sig_temp.AddHistoSys("Kff2_uncer", "Signal_Kff2_m", fname, "", "Signal_Kff2_p", fname, "");
 	sig_temp.AddHistoSys("Kff3_uncer", "Signal_Kff3_m", fname, "", "Signal_Kff3_p", fname, "");
-	for (int i = 0; i < NEntryKstarff; i++) sig_temp.AddHistoSys(("Kstarff" + std::to_string(i) + "_uncer").c_str(), ("Signal_Kstarff_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_Kstarff_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	sig_temp.AddHistoSys("Kstarff1_uncer", "Signal_Kstarff1_m", fname, "", "Signal_Kstarff1_p", fname, "");
+	sig_temp.AddHistoSys("Kstarff2_uncer", "Signal_Kstarff2_m", fname, "", "Signal_Kstarff2_p", fname, "");
+	sig_temp.AddHistoSys("Kstarff3_uncer", "Signal_Kstarff3_m", fname, "", "Signal_Kstarff3_p", fname, "");
+	sig_temp.AddHistoSys("Kstarff4_uncer", "Signal_Kstarff4_m", fname, "", "Signal_Kstarff4_p", fname, "");
+	sig_temp.AddHistoSys("Kstarff5_uncer", "Signal_Kstarff5_m", fname, "", "Signal_Kstarff5_p", fname, "");
+	sig_temp.AddHistoSys("Kstarff6_uncer", "Signal_Kstarff6_m", fname, "", "Signal_Kstarff6_p", fname, "");
+	sig_temp.AddHistoSys("Kstarff7_uncer", "Signal_Kstarff7_m", fname, "", "Signal_Kstarff7_p", fname, "");
+	sig_temp.AddHistoSys("Kstarff8_uncer", "Signal_Kstarff8_m", fname, "", "Signal_Kstarff8_p", fname, "");
+	sig_temp.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname, "", "Signal_Kstarff9_p", fname, "");
+    sig_temp.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname, "", "Signal_Kstarff9_p", fname, "");
 	sig_temp.AddHistoSys("Kff_OLD_uncer", "Signal_Kff_OLD_m", fname, "", "Signal_Kff_OLD_p", fname, "");
     sig_temp.AddHistoSys("Kfrac_uncer", "Signal_Kfrac_m", fname, "", "Signal_Kfrac_p", fname, "");
 	sig_temp.AddHistoSys("Kstarfrac_uncer", "Signal_Kstarfrac_m", fname, "", "Signal_Kstarfrac_p", fname, "");
