@@ -2,7 +2,7 @@ clear all
 format long
 
 N_total_bins = 22 * 7;
-N_selected_vectors = 5;
+N_selected_vectors = 2;
 
 % multiplicity correction
 multiplicityfileID = fopen('multiplicity_toys.txt','r');

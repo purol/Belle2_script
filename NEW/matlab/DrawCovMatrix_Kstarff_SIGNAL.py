@@ -21,7 +21,6 @@ Kstarff_corr_partial = np.loadtxt(file_Kstarff_corr_partial, dtype=float)
 ar = np.array(Kstarff_corr_all)
 ar = np.delete(ar, np.s_[:Nbins * 2], axis = 0) # select SIGNAL only
 ar = np.delete(ar, np.s_[:Nbins * 2], axis = 1) # select SIGNAL only
-print(ar)
 ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-1.0, vmax=1.0)
 ax.tick_params(left=False, bottom=False)
 
