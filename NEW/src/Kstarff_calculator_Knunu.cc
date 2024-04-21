@@ -709,12 +709,12 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
         if (strcmp(sample, "SIGNAL") == 0) {
             if (strcmp(included_string, "B02Kstar0nunu") == 0) {
                 tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &m_b);
-                m_k = Mxs_B0_MC;
+                tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &m_k);
                 tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &costheta);
             }
-            else if (strcmp(included_string, "B2Kstarnunu") == 0) {
+            else if(strcmp(included_string, "B2Kstarnunu") == 0) {
                 tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &m_b);
-                m_k = Mxs_Bc_MC;
+                tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &m_k);
                 tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spextraInfo__bohelicityangle__bc__bc", &costheta);
             }
         }
