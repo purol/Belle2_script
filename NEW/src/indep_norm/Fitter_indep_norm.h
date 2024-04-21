@@ -75,7 +75,6 @@ typedef struct Options
     int NEntrypi0;
     int NEntryMultiplicity;
     int NEntryFragmentation;
-    int NEntryKstarff;
 
     int Nsyst = 25;
 } OPTIONS;
@@ -194,25 +193,6 @@ int ReadNFragmentationEigenVector(const char* dirname) {
     return Nentry;
 }
 
-int ReadNKstarffEigenVector(const char* dirname) {
-    int Nentry = 0; // number of eigen values/vectors
-    double eigen_value = 0; // eigen value
-    double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
-
-    FILE* fp;
-    fp = fopen(dirname, "r");
-    while (true) {
-        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-        for (int i = 0; i < RarityBins * 3; i++) {
-            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
-        }
-        Nentry++;
-    }
-    fclose(fp);
-
-    return Nentry;
-}
-
 void Initialize_options(OPTIONS* options_, const char* tested_param) {
     // initialize
     options_->track = false;
@@ -313,7 +293,6 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     options_->NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
     options_->NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
     options_->NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
-    options_->NEntryKstarff = ReadNKstarffEigenVector("./Kstarff_selected.txt");
 }
 
 void FixParameters(RooWorkspace* w, OPTIONS* options_) {
@@ -366,7 +345,17 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     }
 
     // B->Kstar form factor
-    if (options_->Kstarff) for (int i = 0; i < options_->NEntryKstarff; i++) w->var(("alpha_Kstarff" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->Kstarff);
+    if (options_->Kstarff) {
+        w->var("alpha_Kstarff1_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff2_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff3_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff4_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff5_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff6_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff7_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff8_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff9_uncer")->setConstant(options_->Kstarff);
+    }
 
     // new B->K form factor
     if (options_->OLD_Kff) w->var("alpha_Kff_OLD_uncer")->setConstant(options_->OLD_Kff);
