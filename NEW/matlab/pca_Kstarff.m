@@ -2,7 +2,7 @@ clear all
 format long
 
 N_total_bins = 22 * 3;
-N_selected_vectors = 2;
+N_selected_vectors = 5;
 
 % Kstarff
 KstarfffileID = fopen('Kstarff_toys.txt','r');

@@ -1899,10 +1899,9 @@ void LetsCountMC(const char* dirname, std::vector<double>* weights, std::string 
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) MC_Nevt_MXs1->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
-            else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) MC_Nevt_MXs2->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
-            else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) MC_Nevt_MXs3->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
 
+            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
         }
         input_file->Close();
 
@@ -1958,10 +1957,7 @@ void LetsCountdata(const char* dirname, const char* included_string = "root", in
                 exit(1);
             }
 
-            if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) data_Nevt_MXs1->Fill(1.0);
-            else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) data_Nevt_MXs2->Fill(1.0);
-            else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) data_Nevt_MXs3->Fill(1.0);
-
+            if (j == 0) data_one_bin->Fill(1.0);
         }
         input_file->Close();
 
@@ -1972,7 +1968,7 @@ void LetsCountdata(const char* dirname, const char* included_string = "root", in
 
 }
 
-void LetsCountembeddedMC(const char* dirname, std::string SampleName, int option = 0, double additional_weight = 1.0) {
+void LetsCountembeddedMC(const char* dirname, std::vector<double>* weights, std::string SampleName, int option = 0, double additional_weight = 1.0) {
     /*
     option 0: select all Btag
     option 1: select Btag+
@@ -2058,10 +2054,9 @@ void LetsCountembeddedMC(const char* dirname, std::string SampleName, int option
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
 
-            if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) MC_Nevt_MXs1->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
-            else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) MC_Nevt_MXs2->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
-            else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) MC_Nevt_MXs3->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_multiplicity * additional_weight);
 
+            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_multiplicity * additional_weight);
         }
         input_file->Close();
 
@@ -2072,7 +2067,7 @@ void LetsCountembeddedMC(const char* dirname, std::string SampleName, int option
 
 }
 
-void LetsCountMC_correction(const char* dirname, std::string SampleName, double NormFactor = 1.0, int option = 0, double additional_weight = 1.0) {
+void LetsCountMC_correction(const char* dirname, std::vector<double>* weights, std::string SampleName, double NormFactor = 1.0, int option = 0, double additional_weight = 1.0) {
     /*
     SampleName for Knn
     CHG
@@ -2361,10 +2356,9 @@ void LetsCountMC_correction(const char* dirname, std::string SampleName, double 
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) MC_Nevt_MXs1->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
-            else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) MC_Nevt_MXs2->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
-            else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) MC_Nevt_MXs3->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight);
 
+            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight);
         }
         input_file->Close();
 
@@ -2375,7 +2369,7 @@ void LetsCountMC_correction(const char* dirname, std::string SampleName, double 
 
 }
 
-void LetsCountMC_ESide(const char* dirname, std::string SampleName, int option = 0, double additional_weight = 1.0) {
+void LetsCountMC_ESide(const char* dirname, std::vector<double>* weights, std::string SampleName, int option = 0, double additional_weight = 1.0) {
     /*
     SampleName for Knn
     CHG
@@ -2654,10 +2648,9 @@ void LetsCountMC_ESide(const char* dirname, std::string SampleName, int option =
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) MC_Nevt_MXs1->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
-            else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) MC_Nevt_MXs2->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
-            else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) MC_Nevt_MXs3->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
 
+            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
         }
         input_file->Close();
 
@@ -2668,7 +2661,7 @@ void LetsCountMC_ESide(const char* dirname, std::string SampleName, int option =
 
 }
 
-void LetsCountMC_MUSide(const char* dirname, std::string SampleName, int option = 0, double additional_weight = 1.0) {
+void LetsCountMC_MUSide(const char* dirname, std::vector<double>* weights, std::string SampleName, int option = 0, double additional_weight = 1.0) {
     /*
     SampleName for Knn
     CHG
@@ -2947,10 +2940,9 @@ void LetsCountMC_MUSide(const char* dirname, std::string SampleName, int option 
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) MC_Nevt_MXs1->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
-            else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) MC_Nevt_MXs2->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
-            else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) MC_Nevt_MXs3->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
+            weights->push_back(FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
 
+            if (j == 0) MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_LID * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight);
         }
         input_file->Close();
 
