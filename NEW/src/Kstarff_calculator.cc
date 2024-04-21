@@ -174,7 +174,7 @@ double GetArbitraryBR(const double alpha0_A1, const double alpha1_A1, const doub
     return tot_value;
 }
 
-double GetDifferentialBR(const double alpha0_A1, const double alpha1_A1, const double alpha2_A1, const double alpha0_A12, const double alpha1_A12, const double alpha2_A12, const double alpha0_v0, const double alpha1_v0, const double alpha2_v0, const double q2, const double costheta, const double m_b, const double m_k) {
+double GetDifferentialBR(const double alpha0_A1, const double alpha1_A1, const double alpha2_A1, const double alpha0_A12, const double alpha1_A12, const double alpha2_A12, const double alpha0_v0, const double alpha1_v0, const double alpha2_v0, const double q2, const double costheta, const double m_b, const double m_K) {
     if (q2 < MyEPSILON) return -1; // makeshift
     
     double value = 0.0; // value of dBR/dsdcostheta [arbitrary unit]
@@ -218,7 +218,7 @@ double GetDifferentialBR_correction(const double q2, const double costheta, cons
 
 double GetArbitraryBR_correction(int charge) {
     double nominal = GetArbitraryBR(alpha0_A1, alpha1_A1, alpha2_A1, alpha0_A12, alpha1_A12, alpha2_A12, alpha0_v0, alpha1_v0, alpha2_v0, charge);
-    double fluctuated = GetArbitraryBR(alpha0_A1_fluc, alpha1_A1_fluc, alpha2_A1_fluc, alpha0_A12_fluc, alpha1_A12_fluc, alpha2_A12_fluc, alpha0_v0_fluc, alpha1_v0_fluc, alpha2_v0_fluc, charge);
+    double fluctuated = GetArbitraryBR(alpha0_A1_fluc, alpha1_A1_fluc, alpha2_A1_fluc, alpha0_A12_fluc, alpha1_A12_fluc, alpha2_A12_fluc, alpha0_v0_fluc, alpha1_v0_fluc, alpha2_v0_flucalpha0_A1, alpha1_A1, alpha2_A1, alpha0_A12, alpha1_A12, alpha2_A12, alpha0_v0, alpha1_v0, alpha2_v0, charge);
 
     return (fluctuated / nominal);
 }
@@ -828,7 +828,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
 
             // correction about Kstar ff
             double q2 = invM * invM;
-            if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) total_weight = total_weight * GetDifferentialBR_correction(q2, costheta, m_b, m_k);
+            if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) total_weight = total_weight * GetDifferentialBR_correction(q2, costheta, m_b, m_K);
 
             Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
         }
