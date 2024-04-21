@@ -321,17 +321,31 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->pi0) for (int i = 0; i < options_->NEntrypi0; i++) w->var(("alpha_pi0" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->pi0);
 
     // FBDT efficiency
-    if (options_->FBDT) w->var("alpha_FBDT_efficiency_uncer")->setConstant(options_->FBDT);
+    if (options_->FBDT) {
+        w->var("alpha_FBDT_efficiency_uncer_MXs1")->setConstant(options_->FBDT);
+        w->var("alpha_FBDT_efficiency_uncer_MXs2")->setConstant(options_->FBDT);
+        w->var("alpha_FBDT_efficiency_uncer_MXs3")->setConstant(options_->FBDT);
+    }
 
     // FEI
     if (options_->FEI) for (int i = 0; i < options_->NEntryFEI; i++) w->var(("alpha_FEI" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->FEI);
 
     // qqbar normalization
     if (options_->qqbar) {
-        w->var("alpha_qq_CAL_UUBAR_uncer")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_DDBAR_uncer")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_SSBAR_uncer")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_CHARM_uncer")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_UUBAR_uncer_MXs1")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_DDBAR_uncer_MXs1")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_SSBAR_uncer_MXs1")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_CHARM_uncer_MXs1")->setConstant(options_->qqbar);
+
+        w->var("alpha_qq_CAL_UUBAR_uncer_MXs2")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_DDBAR_uncer_MXs2")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_SSBAR_uncer_MXs2")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_CHARM_uncer_MXs2")->setConstant(options_->qqbar);
+
+        w->var("alpha_qq_CAL_UUBAR_uncer_MXs3")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_DDBAR_uncer_MXs3")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_SSBAR_uncer_MXs3")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_CHARM_uncer_MXs3")->setConstant(options_->qqbar);
     }
 
     // photon multiplicity correction
