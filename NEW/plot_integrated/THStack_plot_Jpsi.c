@@ -21,6 +21,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 void THStack_plot_Jpsi() {
 
+    NormalizeAtEachMXs = true;
 
     // dirnames
     const char* Jpsi_MC_SIGNAL_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/SIGNAL_analysis/validation_v004/final_output";
@@ -32,6 +33,17 @@ void THStack_plot_Jpsi() {
     const char* Jpsi_MC_CHARM_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/CHARM_analysis/validation_v004/final_output";
 
     const char* Jpsi_data_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_data_Jpsi/SIGNAL_analysis/validation_v004/final_output";
+
+    // Count event to normalize at each MXs region
+    LetsCountMC(Jpsi_MC_SIGNAL_dirname, "SIGNAL");
+    LetsCountMC(Jpsi_MC_CHG_dirname, "CHG");
+    LetsCountMC(Jpsi_MC_MIX_dirname, "MIX");
+    LetsCountMC(Jpsi_MC_UUBAR_dirname, "UUBAR");
+    LetsCountMC(Jpsi_MC_DDBAR_dirname, "DDBAR");
+    LetsCountMC(Jpsi_MC_SSBAR_dirname, "SSBAR");
+    LetsCountMC(Jpsi_MC_CHARM_dirname, "CHARM");
+
+    LetsCountdata(Jpsi_data_dirname);
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
@@ -535,7 +547,14 @@ void THStack_plot_Jpsi() {
         for (int i = 0; i < (int)Jpsi_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Jpsi_MC_values[k].at(i), weights.at(i));
         for (int i = 0; i < (int)Jpsi_data_values[k].size(); i++) data_hist[k]->Fill(Jpsi_data_values[k].at(i));
     }
-    Ratio_one_bin->Divide(data_one_bin, MC_one_bin);
+    if (NormalizeAtEachMXs == false) {
+        Ratio_one_bin->Divide(data_one_bin, MC_one_bin);
+    }
+    else {
+        Ratio_Nevt_MXs1->Divide(data_Nevt_MXs1, MC_Nevt_MXs1);
+        Ratio_Nevt_MXs2->Divide(data_Nevt_MXs2, MC_Nevt_MXs2);
+        Ratio_Nevt_MXs3->Divide(data_Nevt_MXs3, MC_Nevt_MXs3);
+    }
 
     printf("charged: %d\n", (int)charged_values[0].size());
     printf("mixed: %d\n", (int)mixed_values[0].size());
@@ -555,14 +574,16 @@ void THStack_plot_Jpsi() {
     printf("data: %d\n", (int)Jpsi_data_values[0].size());
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
-        // Scale the histogram
-        CAL = Ratio_one_bin->GetBinContent(1);
-        charged_hist[k]->Scale(CAL);
-        mixed_hist[k]->Scale(CAL);
-        uubar_hist[k]->Scale(CAL);
-        ddbar_hist[k]->Scale(CAL);
-        ssbar_hist[k]->Scale(CAL);
-        ccbar_hist[k]->Scale(CAL);
+        // Scale the histogram if `NormalizeAtEachMXs` is not turned on
+        if (NormalizeAtEachMXs == false) {
+            CAL = Ratio_one_bin->GetBinContent(1);
+            charged_hist[k]->Scale(CAL);
+            mixed_hist[k]->Scale(CAL);
+            uubar_hist[k]->Scale(CAL);
+            ddbar_hist[k]->Scale(CAL);
+            ssbar_hist[k]->Scale(CAL);
+            ccbar_hist[k]->Scale(CAL);
+        }
 
         Stack[k]->Add(charged_hist[k]);
         Stack[k]->Add(mixed_hist[k]);
@@ -604,7 +625,21 @@ void THStack_plot_Jpsi() {
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP");
         TLegend* legend = pad1->BuildLegend(0.9, 0.9, 0.7, 0.7);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
-        TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str()); pt->Draw();
+        if (NormalizeAtEachMXs == false) {
+            TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB");
+            pt->SetFillStyle(0);
+            pt->SetLineWidth(0);
+            pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL) + ", Data= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
+            pt->Draw();
+
+        }
+        else {
+            TPaveText* pt = new TPaveText(0.135, 0.88, 0.9, 1.0, "NDC NB");
+            pt->SetFillStyle(0);
+            pt->SetLineWidth(0);
+            pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + std::to_string(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs3->GetBinContent(1)) + ", TotalData= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
+            pt->Draw();
+        }
 
         c_temp->cd();
         TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
@@ -624,13 +659,28 @@ void THStack_plot_Jpsi() {
     }
 
     // Print data-MC discrepancy
-    double MC_sum = 0;
-    for (int i = 0; i < (int)Jpsi_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
-    printf("data num: %ld\n", Jpsi_data_values[0].size());
-    printf("MC num with calibration: %lf\n", MC_sum);
-    printf("MC with calibration: %lf +- %lf\n", MC_one_bin->GetBinContent(1), MC_one_bin->GetBinError(1));
-    printf("data with calibration: %lf +- %lf\n", data_one_bin->GetBinContent(1), data_one_bin->GetBinError(1));
-    printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin->GetBinContent(1), Ratio_one_bin->GetBinError(1));
+    if (NormalizeAtEachMXs == false) {
+        double MC_sum = 0;
+        for (int i = 0; i < (int)Jpsi_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
+        printf("data num: %ld\n", Jpsi_data_values[0].size());
+        printf("MC num with calibration: %lf\n", MC_sum);
+        printf("MC with calibration: %lf +- %lf\n", MC_one_bin->GetBinContent(1), MC_one_bin->GetBinError(1));
+        printf("data with calibration: %lf +- %lf\n", data_one_bin->GetBinContent(1), data_one_bin->GetBinError(1));
+        printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin->GetBinContent(1), Ratio_one_bin->GetBinError(1));
+    }
+    else {
+        printf("data num in 1st region: %lf +- %lf\n", data_Nevt_MXs1->GetBinContent(1), data_Nevt_MXs1->GetBinError(1));
+        printf("data num in 2nd region: %lf +- %lf\n", data_Nevt_MXs2->GetBinContent(1), data_Nevt_MXs2->GetBinError(1));
+        printf("data num in 3rd region: %lf +- %lf\n", data_Nevt_MXs3->GetBinContent(1), data_Nevt_MXs3->GetBinError(1));
+
+        printf("MC num in 1st region: %lf +- %lf\n", MC_Nevt_MXs1->GetBinContent(1), MC_Nevt_MXs1->GetBinError(1));
+        printf("MC num in 2nd region: %lf +- %lf\n", MC_Nevt_MXs2->GetBinContent(1), MC_Nevt_MXs2->GetBinError(1));
+        printf("MC num in 3rd region: %lf +- %lf\n", MC_Nevt_MXs3->GetBinContent(1), MC_Nevt_MXs3->GetBinError(1));
+
+        printf("data/MC in 1st region: %lf +- %lf\n", Ratio_Nevt_MXs1->GetBinContent(1), Ratio_Nevt_MXs1->GetBinError(1));
+        printf("data/MC in 2nd region: %lf +- %lf\n", Ratio_Nevt_MXs2->GetBinContent(1), Ratio_Nevt_MXs2->GetBinError(1));
+        printf("data/MC in 3rd region: %lf +- %lf\n", Ratio_Nevt_MXs3->GetBinContent(1), Ratio_Nevt_MXs3->GetBinError(1));
+    }
 
     // free
     delete[] Jpsi_MC_values;
