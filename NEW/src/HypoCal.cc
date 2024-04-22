@@ -221,6 +221,13 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index,
 	RooStats::ModelConfig* bModel = (RooStats::ModelConfig*)sbModel->Clone("BonlyModel");
 	RooRealVar* poi = (RooRealVar*)bModel->GetParametersOfInterest()->first();
 	poi->setVal(0);
+	// try to make 0 for mu_MXs1, mu_MXs2, and mu_MXs3
+	RooRealVar* mu_MXs1 = (RooRealVar*)bModel->GetNuisanceParameters()->find("mu_MXs1");
+	if (mu_MXs1 != nullptr) mu_MXs1->setVal(0);
+	RooRealVar* mu_MXs2 = (RooRealVar*)bModel->GetNuisanceParameters()->find("mu_MXs2");
+	if (mu_MXs2 != nullptr) mu_MXs2->setVal(0);
+	RooRealVar* mu_MXs3 = (RooRealVar*)bModel->GetNuisanceParameters()->find("mu_MXs3");
+	if (mu_MXs3 != nullptr) mu_MXs3->setVal(0);
 	bModel->SetSnapshot(*poi);
 
 	if (std::string(argv[3]) == "freq") {
