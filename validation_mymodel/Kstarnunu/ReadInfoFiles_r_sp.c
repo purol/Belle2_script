@@ -83,11 +83,11 @@ void ReadInfoFiles_r_sp(){
         printf("%s (%d/%zu)\n",("Read "+names.at(i) + "... ").c_str(), i, names.size());
 
         // Get Data
-        TTree* tree_info = (TTree*)input_file->Get("info");
+        TTree* tree_info = (TTree*)input_file->Get("Xs");
 
         int __experiment__;
         int __run__;
-        int __event__;
+        unsigned int __event__;
         int __candidate__;
         int __ncandidates__;
         double s;
@@ -100,13 +100,13 @@ void ReadInfoFiles_r_sp(){
         tree_info->SetBranchAddress("__event__", &__event__);
         tree_info->SetBranchAddress("__candidate__", &__candidate__);
         tree_info->SetBranchAddress("__ncandidates__", &__ncandidates__);
-        tree_info->SetBranchAddress("invMassInLists__bonu_e__clPrimaryMC_signal__bc", &s);
-        tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &MXs);
+        tree_info->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &s);
+        tree_info->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &MXs);
 
         printf("%lld entries...\n", tree_info->GetEntries());
         for (unsigned int j = 0; j < tree_info->GetEntries(); j++) { // Fill
             tree_info->GetEntry(j);
-            Plot->Fill(s*s, ReadWeightHist(Kstar_delta_weight, MXs););
+            Plot->Fill(s*s, ReadWeightHist(Kstar_delta_weight, MXs));
         }
         input_file->Close();
     }
@@ -151,7 +151,7 @@ void ReadInfoFiles_r_sp(){
     gr->SetMinimum(0.0);
     gr->SetTitle(";q^{2} [GeV^{2}];arbitrary unit");
 
-    TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
+    TCanvas* c_temp = new TCanvas("c", "", 1200, 800); c_temp->cd();
     TLegend *legend = new TLegend(0.35, 0.35, 0.1, 0.1);
     legend->AddEntry(gr_MC,"MC","lpfe");
     legend->AddEntry(gr,"[arXiv:1409.4557]","f");

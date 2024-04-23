@@ -4222,8 +4222,8 @@ double GetKstardeltaPDFs(const char* dirname, const char* included_string, TH1D*
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
 
-            if (IsItXsu == true) total_weight = total_weight * ReadWeightHist(Kstar_delta_weight, MXs);
-            else total_weight = total_weight * ReadWeightHist(K0star_delta_weight, MXs);
+            if (IsItXsu == true) total_weight = total_weight * ReadWeightHist(Kstar_delta_weight, invM * invM);
+            else total_weight = total_weight * ReadWeightHist(K0star_delta_weight, invM * invM);
 
             Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
 
@@ -5326,7 +5326,7 @@ void ReadSignalModelingFile() {
     fclose(fp);
 
     // Kstar_delta_weight
-    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/signal_modeling/MKstar_weight.txt", "r");
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/NEW_mKstar/Kstar_mKstar_uncertainty.txt", "r");
     fscanf(fp, "%d %lf %lf\n", &Nentry, &RangeMIN, &RangeMAX);
     Kstar_delta_weight = new TH1D("Kstar_delta_weight", ";;", Nentry, RangeMIN, RangeMAX);
     for (int i = 0; i < Nentry; i++) {
@@ -5337,7 +5337,7 @@ void ReadSignalModelingFile() {
     fclose(fp);
 
     // K0star_delta_weight
-    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/signal_modeling/MK0star_weight.txt", "r");
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/NEW_mKstar/K0star_mKstar_uncertainty.txt", "r");
     fscanf(fp, "%d %lf %lf\n", &Nentry, &RangeMIN, &RangeMAX);
     K0star_delta_weight = new TH1D("K0star_delta_weight", ";;", Nentry, RangeMIN, RangeMAX);
     for (int i = 0; i < Nentry; i++) {
