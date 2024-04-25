@@ -70,7 +70,7 @@ double ReturnBinIndex(double FBDToutput, double MXs) {
 
 double FillTemplate(TH1D* hist, double FBDToutput, double total_weight, double MXs) {
 	double binindex = ReturnBinIndex(FBDToutput, MXs);
-	hist->Fill(binindex + 0.5, total_weight); // add 0.5 to avoid unexpected rounding error
+	hist->Fill(binindex, total_weight); // add 0.5 to avoid unexpected rounding error
 	return total_weight;
 }
 
