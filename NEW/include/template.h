@@ -43,7 +43,7 @@ double ReturnBinIndex(double FBDToutput, double MXs) {
 	else if ((MXs >= 0.6) && (MXs < 1.0)) { // MX2
 		if ((FBDToutput >= BinMIN_MX2) && (FBDToutput <= BinMAX_MX2)) {
 			for (int i = 0; i < RarityBins_MX2; i++) {
-				if ((FBDToutput > boundary_MXs2[i]) && (FBDToutput <= boundary_MXs2[i + 1])) return ((double)(i)+0.5);
+				if ((FBDToutput > boundary_MXs2[i]) && (FBDToutput <= boundary_MXs2[i + 1])) return ((double)(i + RarityBins_MX1) + 0.5);
 			}
 		}
 		else {
@@ -54,7 +54,7 @@ double ReturnBinIndex(double FBDToutput, double MXs) {
 	else if ((MXs >= 1.0) && (MXs < 2.0)) { // MX3
 		if ((FBDToutput >= BinMIN_MX3) && (FBDToutput <= BinMAX_MX3)) {
 			for (int i = 0; i < RarityBins_MX3; i++) {
-				if ((FBDToutput > boundary_MXs3[i]) && (FBDToutput <= boundary_MXs3[i + 1])) return ((double)(i)+0.5);
+				if ((FBDToutput > boundary_MXs3[i]) && (FBDToutput <= boundary_MXs3[i + 1])) return ((double)(i + RarityBins_MX1 + RarityBins_MX2) + 0.5);
 			}
 		}
 		else {
