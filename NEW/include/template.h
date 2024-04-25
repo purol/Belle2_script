@@ -66,6 +66,8 @@ double ReturnBinIndex(double FBDToutput, double MXs) {
 		printf("MXs is out of range!\n");
 		exit(1);
 	}
+	exit(1);
+	return -1;
 }
 
 double FillTemplate(TH1D* hist, double FBDToutput, double total_weight, double MXs) {
