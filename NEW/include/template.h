@@ -20,7 +20,7 @@ const double boundary_MXs2[RarityBins_MX2 + 1] = { BinMIN_MX2, 0.925, 0.95, 0.97
 # define RarityBins_MX3 5
 # define BinMIN_MX3 0.90
 # define BinMAX_MX3 1.0
-const double boundary_MXs2[RarityBins_MX3 + 1] = { BinMIN_MX3, 0.92, 0.94, 0.96, 0.98, BinMAX_MX3 };
+const double boundary_MXs3[RarityBins_MX3 + 1] = { BinMIN_MX3, 0.92, 0.94, 0.96, 0.98, BinMAX_MX3 };
 
 const int RarityBins = (RarityBins_MX1 + RarityBins_MX2 + RarityBins_MX3);
 const int BinMIN = 0;
