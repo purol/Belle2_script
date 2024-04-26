@@ -690,7 +690,6 @@ void Fluctuatefraction() {
 
 int main(int argc, char* argv[])
 {
-    ReadEvtFile();
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
