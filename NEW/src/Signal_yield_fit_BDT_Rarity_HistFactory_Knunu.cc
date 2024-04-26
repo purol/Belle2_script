@@ -6325,6 +6325,10 @@ int main()
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_multiplicity_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_multiplicity_uncorrelated, RarityBins);
 
+    AddSQRTHist(Signal_all_uncorrelated, Signal_fraction_uncorrelated, RarityBins);
+    AddSQRTHist(CHG_all_uncorrelated, CHG_fraction_uncorrelated, RarityBins);
+    AddSQRTHist(MIX_all_uncorrelated, MIX_fraction_uncorrelated, RarityBins);
+
     AddSQRTHist(Signal_all_uncorrelated, Signal_Fragmentation_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_Fragmentation_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_Fragmentation_uncorrelated, RarityBins);
