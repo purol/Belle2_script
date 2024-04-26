@@ -738,7 +738,7 @@ int main(int argc, char* argv[])
 
 
     /* ====================================== */
-    // get fluctuated Nevt for BR
+    // get fluctuated Nevt for fraction
     for (int i = 0; i < NToys; i++) {
         Fluctuatefraction();
 
@@ -780,7 +780,7 @@ int main(int argc, char* argv[])
     // file output
     FILE* fp;
     
-    fp = fopen(("BR_toys_" + std::string(argv[1]) + ".txt").c_str(),"w");
+    fp = fopen(("fraction_toys_" + std::string(argv[1]) + ".txt").c_str(),"w");
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 3; j++) {
             fprintf(fp, "%lf ", Relative_Uncertainty[i][j]);
