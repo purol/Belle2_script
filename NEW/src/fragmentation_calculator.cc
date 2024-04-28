@@ -376,7 +376,8 @@ void GetFlucNevt(double Nevt_nominal[RarityBins * 3], double*** Nevt_WhenPlusOne
                 double nuisance_parameter = nuisance_distribution(generator);
 
                 double OneSigmaRelativeChange = 1.0;
-                if (nuisance_parameter > 0) OneSigmaRelativeChange = (Nevt_WhenPlusOneSigma[i][j][k] - Nevt_nominal[i]) / Nevt_nominal[i];
+                if (std::abs(Nevt_nominal[i]) < MyEPSILON) OneSigmaRelativeChange = 0.0;
+                else if (nuisance_parameter > 0) OneSigmaRelativeChange = (Nevt_WhenPlusOneSigma[i][j][k] - Nevt_nominal[i]) / Nevt_nominal[i];
                 else OneSigmaRelativeChange = (Nevt_WhenMinusOneSigma[i][j][k] - Nevt_nominal[i]) / Nevt_nominal[i];
 
                 Nevt_fluc[ToyNum][i] = Nevt_fluc[ToyNum][i] * (1.0 + OneSigmaRelativeChange * std::abs(nuisance_parameter));
