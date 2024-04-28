@@ -716,6 +716,15 @@ int main(int argc, char* argv[])
         }
     }
 
+    for (int i = 0; i < (RarityBins * 3); i++) {
+        for (int bin = 0; bin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); bin++) {
+            for (int category = 0; category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); category++) {
+                Nevt_WhenPlusOneSigma[i][bin][category] = 0.0;
+                Nevt_WhenMinusOneSigma[i][bin][category] = 0.0;
+            }
+        }
+    }
+
 
     /* ====================================== */
     // define TH1D for temporary usage
