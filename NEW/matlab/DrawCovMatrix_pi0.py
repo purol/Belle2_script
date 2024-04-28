@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib.ticker import FixedLocator
 
-Nbins = 14
+Nbins = 12
 
 # pi0
 file_pi0_cov_all = "pi0_corr_all.txt"
