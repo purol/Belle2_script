@@ -1490,6 +1490,75 @@ void GetBRUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, 
     for (int i = 0; i < RarityBins; i++) Signal_hist->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
 }
 
+int GetfractioncorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists) { // get shape sys histogram from txt file
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 3; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    *CHG_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *MIX_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+
+    for (int i = 0; i < Nentry; i++) {
+        (*CHG_hists)[i] = new TH1D(("CHG_fraction_correlated" + std::to_string(i) + "_p").c_str(), ("CHG_fraction_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*MIX_hists)[i] = new TH1D(("MIX_fraction_correlated" + std::to_string(i) + "_p").c_str(), ("MIX_fraction_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists)[i] = new TH1D(("Signal_fraction_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_fraction_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    }
+
+    for (int i = Nentry; i < 2 * Nentry; i++) {
+        (*CHG_hists)[i] = new TH1D(("CHG_fraction_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_fraction_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*MIX_hists)[i] = new TH1D(("MIX_fraction_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("MIX_fraction_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists)[i] = new TH1D(("Signal_fraction_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_fraction_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    }
+
+    fp = fopen(dirname, "r");
+    for (int i = 0; i < Nentry; i++) {
+        fscanf(fp, "%lf\n", &eigen_value);
+        for (int j = 0; j < RarityBins * 3; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
+
+        for (int k = 0; k < RarityBins; k++) {
+            (*CHG_hists)[i]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
+            (*MIX_hists)[i]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 1 * RarityBins]));
+            (*Signal_hists)[i]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
+
+            (*CHG_hists)[i + Nentry]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 0 * RarityBins]));
+            (*MIX_hists)[i + Nentry]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 1 * RarityBins]));
+            (*Signal_hists)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
+        }
+
+    }
+
+    fclose(fp);
+
+    return Nentry;
+}
+
+void GetfractionUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* Signal_hist) { // get shape sys histogram from txt file
+    FILE* fp;
+    fp = fopen(dirname, "r");
+
+    double weight_sys[RarityBins * 3] = { 0.0 };
+    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    fclose(fp);
+
+    for (int i = 0; i < RarityBins * 3; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
+
+    for (int i = 0; i < RarityBins; i++) CHG_hist->SetBinContent(i + 1, weight_sys[i]);
+    for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
+}
+
 int GetFragmentationcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists) { // get shape sys histogram from txt file
     int Nentry = 0; // number of eigen values/vectors
     double eigen_value = 0; // eigen value
@@ -5575,11 +5644,15 @@ int main()
     TH1D* Signal_Kff_OLD_p = new TH1D("Signal_Kff_OLD_p", "Signal_Kff_OLD_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kff_OLD_m = new TH1D("Signal_Kff_OLD_m", "Signal_Kff_OLD_m", RarityBins, BinMIN, BinMAX);
 
-    // fraction
-    TH1D* Signal_Kfrac_p = new TH1D("Signal_Kfrac_p", "Signal_Kfrac_p", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_Kfrac_m = new TH1D("Signal_Kfrac_m", "Signal_Kfrac_m", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_Kstarfrac_p = new TH1D("Signal_Kstarfrac_p", "Signal_Kstarfrac_p", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_Kstarfrac_m = new TH1D("Signal_Kstarfrac_m", "Signal_Kstarfrac_m", RarityBins, BinMIN, BinMAX);
+    // fraction uncertainty(correlated)
+    TH1D** Signal_fraction_correlated;
+    TH1D** CHG_fraction_correlated;
+    TH1D** MIX_fraction_correlated;
+
+    // fraction uncertainty (uncorrelated)
+    TH1D* Signal_fraction_uncorrelated = new TH1D("Signal_fraction_uncorrelated", "Signal_fraction_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_fraction_uncorrelated = new TH1D("CHG_fraction_uncorrelated", "CHG_fraction_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_fraction_uncorrelated = new TH1D("MIX_fraction_uncorrelated", "MIX_fraction_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // fragmentation uncertainty(correlated)
     TH1D** Signal_Fragmentation_correlated;
@@ -5725,6 +5798,10 @@ int main()
     // for multiplicity
     const char* multiplicity_correlated_info = "./multiplicity_selected.txt";
     const char* multiplicity_uncorrelated_info = "./multiplicity_cov_remain_truncated.txt";
+
+    // for fraction
+    const char* fraction_correlated_info = "./fraction_selected.txt";
+    const char* fraction_uncorrelated_info = "./fraction_cov_remain_truncated.txt";
 
     // for fragmentation
     const char* Fragmentation_correlated_info = "./Fragmentation_selected.txt";
@@ -5893,34 +5970,11 @@ int main()
 
     GetNegativeChangePDFs(Signal_nominal, Signal_Kff_OLD_p, Signal_Kff_OLD_m);
 
-    // get fraction uncertainty PDFs
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar + Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Kfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar + Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Kfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Kfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu");
+    // get fraction uncertainty pdfs (correlated)
+    int NPDFs_fraction = GetfractioncorrelatedPDFs(fraction_correlated_info, CHG_nominal, MIX_nominal, Signal_nominal, &CHG_fraction_correlated, &MIX_fraction_correlated, &Signal_fraction_correlated);
 
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Kfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar - Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Kfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Kfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar - Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu");
-
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu") * ((BR_Kplusstar_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Kstarfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Kstarfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu") * ((BR_K0star_nunubar + Sigma_BR_K0star_nunubar) / BR_K0star_nunubar), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Kstarfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu");
-
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Kstarfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Kstarfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu") * ((BR_Kplusstar_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Kstarfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu") * ((BR_K0star_nunubar - Sigma_BR_K0star_nunubar) / BR_K0star_nunubar), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu");
+    // get fraction uncertainty pdfs (uncorrelated)
+    GetfractionUncorrelatedPDFs(fraction_uncorrelated_info, CHG_fraction_uncorrelated, MIX_fraction_uncorrelated, Signal_fraction_uncorrelated);
 
     // get fragmentation uncertainty pdfs (correlated)
     int NPDFs_Fragmentation = GetFragmentationcorrelatedPDFs(Fragmentation_correlated_info, CHG_nominal, MIX_nominal, Signal_nominal, &CHG_Fragmentation_correlated, &MIX_Fragmentation_correlated, &Signal_Fragmentation_correlated);
@@ -6123,6 +6177,10 @@ int main()
     AddSQRTHist(DDBAR_all_uncorrelated, DDBAR_multiplicity_uncorrelated, RarityBins);
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_multiplicity_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_multiplicity_uncorrelated, RarityBins);
+
+    AddSQRTHist(Signal_all_uncorrelated, Signal_fraction_uncorrelated, RarityBins);
+    AddSQRTHist(CHG_all_uncorrelated, CHG_fraction_uncorrelated, RarityBins);
+    AddSQRTHist(MIX_all_uncorrelated, MIX_fraction_uncorrelated, RarityBins);
 
     AddSQRTHist(Signal_all_uncorrelated, Signal_Fragmentation_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_Fragmentation_uncorrelated, RarityBins);
@@ -6354,11 +6412,17 @@ int main()
     SaveSpecificMXsBin(Signal_Kff_OLD_p, MXsBin);
     SaveSpecificMXsBin(Signal_Kff_OLD_m, MXsBin);
 
-    // faction
-    SaveSpecificMXsBin(Signal_Kfrac_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kfrac_m, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarfrac_p, MXsBin);
-    SaveSpecificMXsBin(Signal_Kstarfrac_m, MXsBin);
+    // fraction uncertainty (correlated)
+    for (int i = 0; i < 2 * NPDFs_fraction; i++) {
+        SaveSpecificMXsBin(Signal_fraction_correlated[i], MXsBin);
+        SaveSpecificMXsBin(CHG_fraction_correlated[i], MXsBin);
+        SaveSpecificMXsBin(MIX_fraction_correlated[i], MXsBin);
+    }
+
+    // fraction uncertainty (uncorrelated)
+    SaveSpecificMXsBin(Signal_fraction_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(CHG_fraction_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(MIX_fraction_uncorrelated, MXsBin);
 
     // fragmentation uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_Fragmentation; i++) {
@@ -6632,11 +6696,17 @@ int main()
     Signal_Kff_OLD_p->Write();
     Signal_Kff_OLD_m->Write();
 
-    // faction
-    Signal_Kfrac_p->Write();
-    Signal_Kfrac_m->Write();
-    Signal_Kstarfrac_p->Write();
-    Signal_Kstarfrac_m->Write();
+    // fraction uncertainty (correlated)
+    for (int i = 0; i < 2 * NPDFs_fraction; i++) {
+        Signal_fraction_correlated[i]->Write();
+        CHG_fraction_correlated[i]->Write();
+        MIX_fraction_correlated[i]->Write();
+    }
+
+    // fraction uncertainty (uncorrelated)
+    Signal_fraction_uncorrelated->Write();
+    CHG_fraction_uncorrelated->Write();
+    MIX_fraction_uncorrelated->Write();
 
     // fragmentation uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_Fragmentation; i++) {

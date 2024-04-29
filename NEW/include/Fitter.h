@@ -62,6 +62,7 @@ typedef struct Options
     int NEntryBR;
     int NEntrypi0;
     int NEntryMultiplicity;
+    int NEntryfraction;
     int NEntryFragmentation;
 
     int Nsyst = 25;
@@ -153,6 +154,25 @@ int ReadMultiplicityInfo(const char* dirname) {
     while (true) {
         if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
         for (int i = 0; i < RarityBins * 7; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    return Nentry;
+}
+
+int ReadNfractionEigenVector(const char* dirname) {
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 3; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
         Nentry++;
@@ -280,6 +300,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     options_->NEntryBR = ReadNBREigenVector("./BR_selected.txt");
     options_->NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
     options_->NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
+    options_->NEntryfraction = ReadNfractionEigenVector("./fraction_selected.txt");
     options_->NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
 }
 
@@ -358,10 +379,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->mb) w->var("alpha_mb_uncer")->setConstant(options_->mb);
 
     // relative fraction
-    if (options_->fraction) {
-        w->var("alpha_Kfrac_uncer")->setConstant(options_->fraction);
-        w->var("alpha_Kstarfrac_uncer")->setConstant(options_->fraction);
-    }
+    if (options_->fraction) for (int i = 0; i < options_->NEntryfraction; i++) w->var(("alpha_fraction" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->fraction);
 
     // MC statistics
     if (options_->MCstat) for (int i = 0; i < RarityBins; i++) w->var(("gamma_stat_channel_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
