@@ -170,7 +170,7 @@ int ReadNFragmentationEigenVector(const char* dirname) {
 	return Nentry;
 }
 
-void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, const double expmu, double qq_CAL, double qq_CAL_relativeuncer) {
+void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, const double expmu, double qq_CAL, double qq_CAL_relativeuncer, double FBDT_CAL, double FBDT_CAL_relativeuncer) {
 
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
 	int NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
@@ -224,8 +224,8 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp.AddHistoSys("mb_uncer", "Signal_mb_m", fname, "", "Signal_mb_p", fname, "");
 	sig_temp.AddHistoSys("transition_uncer", "Signal_transition_m", fname, "", "Signal_transition_p", fname, "");
 	sig_temp.AddHistoSys("mKstar_uncer", "Signal_mKstar_m", fname, "", "Signal_mKstar_p", fname, "");
-	sig_temp.AddNormFactor("FBDT_efficiency_CAL", 1.0578, 1.0578, 1.0578, true);
-	sig_temp.AddOverallSys("FBDT_efficiency_uncer", 0.8899, 1.1122);
+	sig_temp.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL, true);
+	sig_temp.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
 	sig_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	sig_temp.ActivateStatError("Signal_all_uncorrelated_MC_stat", fname, "");
 	sig_temp.SetNormalizeByTheory(kFALSE);
