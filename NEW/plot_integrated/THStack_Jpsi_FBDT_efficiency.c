@@ -141,74 +141,28 @@ void THStack_Jpsi_FBDT_efficiency() {
     double efficiency_data = (Ndata_after - NBKG_after) / (Ndata_before - NBKG_before);
     double efficiency_MC = Nsig_after / Nsig_before;
 
-    /* ============================== assume no correlation ============================== */
-    /* calculate uncertainty of efficiency data*/
-    double efficiency_data_uncer_Ndata_after = Ndata_after_uncer / (Ndata_after - NBKG_after);
-    double efficiency_data_uncer_NBKG_after = NBKG_after_uncer / (Ndata_after - NBKG_after);
-    double efficiency_data_uncer_Ndata_before = Ndata_before_uncer / (Ndata_before - NBKG_before);
-    double efficiency_data_uncer_NBKG_before = NBKG_before_uncer / (Ndata_before - NBKG_before);
-    double efficiency_data_uncer = std::sqrt(
-        efficiency_data_uncer_Ndata_after * efficiency_data_uncer_Ndata_after +
-        efficiency_data_uncer_NBKG_after * efficiency_data_uncer_NBKG_after +
-        efficiency_data_uncer_Ndata_before * efficiency_data_uncer_Ndata_before +
-        efficiency_data_uncer_NBKG_before * efficiency_data_uncer_NBKG_before
-    ); // it is relative uncertainty
+    // define TH1D to calculate efficiency
+    TH1D* MC_SIGNAL_efficiency = new TH1D("MC_SIGNAL_efficiency", ";FBDT;Nevt", 1, 0.0, 1.0);
+    TH1D* data_SIGNAL_before_one_bin = new TH1D("data_SIGNAL_before_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
+    TH1D* data_SIGNAL_after_one_bin = new TH1D("data_SIGNAL_after_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
+    TH1D* data_SIGNAL_efficiency = new TH1D("data_SIGNAL_efficiency", ";FBDT;Nevt", 1, 0.0, 1.0);
+    TH1D* efficiency_ratio = new TH1D("efficiency_ratio", ";FBDT;Nevt", 1, 0.0, 1.0);
+    TH1D* MC_after_one_bin = new TH1D("MC_after_one_bin", ";FBDT;Nevt", 1, 0.0, 1.0);
+    TH1D* Nevt_ratio = new TH1D("Nevt_ratio", ";FBDT;Nevt", 1, 0.0, 1.0);
 
-    /* calculate uncertainty of efficiency MC*/
-    double efficiency_MC_uncer_Nsig_after = Nsig_after_uncer / Nsig_after;
-    double efficiency_MC_uncer_Nsig_before = Nsig_before_uncer / Nsig_before;
-    double efficiency_MC_uncer = std::sqrt(
-        efficiency_MC_uncer_Nsig_after * efficiency_MC_uncer_Nsig_after +
-        efficiency_MC_uncer_Nsig_before * efficiency_MC_uncer_Nsig_before
-    ); // it is relative uncertainty
+    // calculate efficiency!
+    MC_SIGNAL_efficiency->Divide(MC_SIGNAL_after_one_bin, MC_SIGNAL_before_one_bin, 1.0, 1.0, "B");
+    data_SIGNAL_before_one_bin->Add(data_before_one_bin, MC_BKG_before_one_bin, 1.0, -1.0);
+    data_SIGNAL_after_one_bin->Add(data_after_one_bin, MC_BKG_after_one_bin, 1.0, -1.0);
+    data_SIGNAL_efficiency->Divide(data_SIGNAL_after_one_bin, data_SIGNAL_before_one_bin, 1.0, 1.0, "B");
+    efficiency_ratio->Divide(data_SIGNAL_efficiency, MC_SIGNAL_efficiency);
+    MC_after_one_bin->Add(MC_SIGNAL_after_one_bin, MC_BKG_after_one_bin);
+    Nevt_ratio->Divide(data_after_one_bin, MC_after_one_bin);
 
-    /* calculate total uncertainty */
-    double efficiency_ratio = efficiency_data / efficiency_MC;
-    double efficiency_ratio_uncer = efficiency_ratio * std::sqrt(
-        efficiency_data_uncer * efficiency_data_uncer +
-        efficiency_MC_uncer * efficiency_MC_uncer
-    ); // it is relative uncertainty
-    /* ============================== assume no correlation ============================== */
-
-    /* ============================== assume 100% correlation ============================== */
-    /* calculate uncertainty of efficiency data*/
-    //double efficiency_data_uncer_Ndata_after = Ndata_after_uncer / (Ndata_after - NBKG_after);
-    //double efficiency_data_uncer_NBKG_after = NBKG_after_uncer / (Ndata_after - NBKG_after);
-    //double efficiency_data_uncer_Ndata_before = Ndata_before_uncer / (Ndata_before - NBKG_before);
-    //double efficiency_data_uncer_NBKG_before = NBKG_before_uncer / (Ndata_before - NBKG_before);
-    //double efficiency_data_uncer = std::sqrt(
-    //    (efficiency_data_uncer_Ndata_after - efficiency_data_uncer_Ndata_before) *
-    //    (efficiency_data_uncer_Ndata_after - efficiency_data_uncer_Ndata_before));
-
-    /* calculate uncertainty of efficiency MC*/
-    //double efficiency_MC_uncer = std::sqrt(
-    //    (-efficiency_data_uncer_NBKG_after + efficiency_data_uncer_NBKG_before) *
-    //    (-efficiency_data_uncer_NBKG_after + efficiency_data_uncer_NBKG_before));
-
-    /* calculate total uncertainty */
-    //double efficiency_ratio = efficiency_data / efficiency_MC;
-    //double efficiency_ratio_uncer = efficiency_ratio * std::sqrt(
-    //    efficiency_data_uncer * efficiency_data_uncer +
-    //    efficiency_MC_uncer * efficiency_MC_uncer
-    //); // it is relative uncertainty
-    /* ============================== assume 100% correlation ============================== */
-
-    /* ============================== Uncertainty for all cut ============================== */
-    /* calculate ratio between data and MC */
-    double Nevt_ratio = Ndata_after / (NBKG_after + Nsig_after);
-
-    /* calculate uncertainty of the ratio */
-    double N_data_rel_uncer = Ndata_after_uncer / Ndata_after;
-    double N_MC_rel_uncer = std::sqrt(Nsig_after_uncer * Nsig_after_uncer + NBKG_after_uncer * NBKG_after_uncer) / (Nsig_after + NBKG_after);
-
-    double Nevt_ratio_uncer = std::sqrt(
-        N_data_rel_uncer * N_data_rel_uncer +
-        N_MC_rel_uncer * N_MC_rel_uncer
-    ); // it is relative uncertainty
-    /* ============================== Uncertainty for all cut ============================== */
-
-    printf("eps_data/eps_MC for FBDT = %lf +- %lf\n", efficiency_ratio, efficiency_ratio * efficiency_ratio_uncer);
-    printf("N_{data}/N_{MC}          = %lf +- %lf\n", Nevt_ratio, Nevt_ratio * Nevt_ratio_uncer);
+    printf("eps_data for FBDT = %lf +- %lf\n", data_SIGNAL_efficiency->GetBinContent(1), data_SIGNAL_efficiency->GetBinError(1));
+    printf("eps_MC for FBDT = %lf +- %lf\n", MC_SIGNAL_efficiency->GetBinContent(1), MC_SIGNAL_efficiency->GetBinError(1));
+    printf("eps_data/eps_MC for FBDT = %lf +- %lf\n", efficiency_ratio->GetBinContent(1), efficiency_ratio->GetBinError(1));
+    printf("N_{data}/N_{MC}          = %lf +- %lf\n", Nevt_ratio->GetBinContent(1), Nevt_ratio->GetBinError(1));
 
     delete[] Jpsi_MC_values_before;
     delete[] Jpsi_MC_values_after;
