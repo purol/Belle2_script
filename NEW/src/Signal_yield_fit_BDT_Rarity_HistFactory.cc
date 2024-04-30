@@ -6549,6 +6549,9 @@ int main()
     SaveSpecificMXsBin(DDBAR_all_uncorrelated_MC_stat, MXsBin);
     SaveSpecificMXsBin(SSBAR_all_uncorrelated_MC_stat, MXsBin);
     SaveSpecificMXsBin(CHARM_all_uncorrelated_MC_stat, MXsBin);
+
+    // data
+    SaveSpecificMXsBin(total_DATA, MXsBin);
     /* ====================================== */
 
 
