@@ -5458,27 +5458,39 @@ void GetMCstatisticalRelativeError(TH1D* nominal_hist, TH1D * MCstat_hist, int N
     }
 }
 
-void SaveSpecificMXsBin(TH1D* hist, int MXsBin) {
+void SaveSpecificMXsBin(TH1D*& hist, int MXsBin) {
+
+    TH1D* replace_hist;
+    if (MXsBin == 1) replace_hist = new TH1D("", "", RarityBins_MX1, 0, RarityBins_MX1);
+    else if (MXsBin == 2) replace_hist = new TH1D("", "", RarityBins_MX2, 0, RarityBins_MX2);
+    else if (MXsBin == 3) replace_hist = new TH1D("", "", RarityBins_MX3, 0, RarityBins_MX3);
+    else if (MXsBin == 0) {
+        return;
+    }
+    else {
+        printf("Improper Bin index.\n");
+        exit(1);
+    }
+
+    std::string name_original = std::string(hist->GetName());
+    std::string title_original = std::string(hist->GetTitle());
+
     if (MXsBin == 1) {
-        for (int i = RarityBins_MX1; i < RarityBins; i++) {
-            hist->SetBinError(i + 1, 0);
-            hist->SetBinContent(i + 1, 0);
+        for (int i = 0; i < RarityBins_MX1; i++) {
+            replace_hist->SetBinError(i + 1, hist->GetBinError(i + 1));
+            replace_hist->SetBinContent(i + 1, hist->GetBinContent(i + 1));
         }
     }
     else if (MXsBin == 2) {
-        for (int i = 0; i < RarityBins_MX1; i++) {
-            hist->SetBinError(i + 1, 0);
-            hist->SetBinContent(i + 1, 0);
-        }
-        for (int i = RarityBins_MX1 + RarityBins_MX2; i < RarityBins; i++) {
-            hist->SetBinError(i + 1, 0);
-            hist->SetBinContent(i + 1, 0);
+        for (int i = 0; i < RarityBins_MX2; i++) {
+            replace_hist->SetBinError(i + 1, hist->GetBinError(i + 1 + RarityBins_MX1));
+            replace_hist->SetBinContent(i + 1, hist->GetBinContent(i + 1 + RarityBins_MX1));
         }
     }
     else if (MXsBin == 3) {
-        for (int i = 0; i < RarityBins_MX1 + RarityBins_MX2; i++) {
-            hist->SetBinError(i + 1, 0);
-            hist->SetBinContent(i + 1, 0);
+        for (int i = 0; i < RarityBins_MX3; i++) {
+            replace_hist->SetBinError(i + 1, hist->GetBinError(i + 1 + RarityBins_MX1 + RarityBins_MX2));
+            replace_hist->SetBinContent(i + 1, hist->GetBinContent(i + 1 + RarityBins_MX1 + RarityBins_MX2));
         }
     }
     else if (MXsBin == 0) {}
@@ -5486,6 +5498,11 @@ void SaveSpecificMXsBin(TH1D* hist, int MXsBin) {
         printf("Improper Bin index.\n");
         exit(1);
     }
+
+    delete hist;
+
+    replace_hist->SetNameTitle(name_original.c_str(), title_original.c_str());
+    hist = replace_hist;
 }
 
 int main()
