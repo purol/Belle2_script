@@ -6,6 +6,7 @@
 # include "RooFitResult.h"
 # include "template.h"
 #include "correctors.h"
+# include <cstring>
 
 using namespace RooFit;
 using namespace RooStats;
@@ -14,27 +15,27 @@ using namespace HistFactory;
 Corrector_Fragmentation corrector_Fragmentation;
 
 std::vector<std::string> Sample_names = {
-    "L_x_Signal_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_Signal_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_Signal_nominal_MXs3_channel_overallSyst_x_StatUncert",
-    "L_x_CHG_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_CHG_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_CHG_nominal_MXs3_channel_overallSyst_x_StatUncert",
-    "L_x_MIX_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_MIX_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_MIX_nominal_MXs3_channel_overallSyst_x_StatUncert",
-    "L_x_UUBAR_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_UUBAR_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_UUBAR_nominal_MXs3_channel_overallSyst_x_StatUncert",
-    "L_x_DDBAR_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_DDBAR_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_DDBAR_nominal_MXs3_channel_overallSyst_x_StatUncert",
-    "L_x_SSBAR_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_SSBAR_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_SSBAR_nominal_MXs3_channel_overallSyst_x_StatUncert",
-    "L_x_CHARM_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_CHARM_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_CHARM_nominal_MXs3_channel_overallSyst_x_StatUncert"
+    "L_x_Signal_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_Signal_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_Signal_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
+    "L_x_CHG_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_CHG_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_CHG_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
+    "L_x_MIX_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_MIX_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_MIX_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
+    "L_x_UUBAR_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_UUBAR_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_UUBAR_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
+    "L_x_DDBAR_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_DDBAR_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_DDBAR_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
+    "L_x_SSBAR_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_SSBAR_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_SSBAR_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
+    "L_x_CHARM_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_CHARM_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_CHARM_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert"
 };
 
 typedef struct Options
@@ -323,8 +324,10 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     w->loadSnapshot("NominalParamValues");
 
-    RooRealVar* x_val = w->var("obs_x_channel");
-    std::unique_ptr<RooArgSet> params{model->getParameters(*x_val)};
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+    std::unique_ptr<RooArgSet> params{model->getParameters(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3))};
 
     // track
     if (options_->track) w->var("alpha_track_eff_uncer")->setConstant(options_->track);
@@ -457,7 +460,14 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
     RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-    RooRealVar* x_val = w->var("obs_x_channel");
+    RooRealVar* x_val;
+    if(std::strstr(sample_type, "MX1") != nullptr) x_val = w->var("obs_x_channel_MXs1");
+    else if (std::strstr(sample_type, "MX2") != nullptr) x_val = w->var("obs_x_channel_MXs2");
+    else if (std::strstr(sample_type, "MX3") != nullptr) x_val = w->var("obs_x_channel_MXs3");
+    else {
+        printf("[ERROR] unexpected sample type!\n");
+        exit(1);
+    }
 
     int index = -1;
     if (strcmp(sample_type, "Signal_MX1") == 0) index = 0;

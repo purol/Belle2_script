@@ -248,7 +248,9 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
     RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-    RooRealVar* x_val = w->var("obs_x_channel");
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
 
     for (unsigned int i = 0; i < names->size(); i++) {
         if (names->at(i).find("alpha") != std::string::npos) {
@@ -285,27 +287,83 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
     w->var("mu_MXs3")->setVal(injected_mu);
 
     /* ================================ cal Nexpected ================================*/
-    RooAbsBinning const& binning = x_val->getBinning();
-    const double oldVal = x_val->getVal();
+    {
+        RooAbsBinning const& binning = x_val_MXs1->getBinning();
+        const double oldVal = x_val_MXs1->getVal();
 
-    for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
-        double binCenter = binning.binCenter(iBin);
-        double binWidth = binning.binWidth(iBin);
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
 
-        *x_val = binCenter; // set x value
+            *x_val_MXs1 = binCenter; // set x value
 
-        for (unsigned int j = 0; j < Sample_names.size(); j++) {
-            RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
-            Nevt = Nevt + temp_func->getValV();
-            if (temp_func->getValV() < 0) {
-                printf("[ERROR] negative count!\n");
-                exit(1);
+            for (unsigned int j = 0; j < Sample_names.size(); j++) {
+                if (std::strstr(sample_type, "MXs1") == nullptr) continue; // skip non-MXs1
+
+                RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
+                Nevt = Nevt + temp_func->getValV();
+                if (temp_func->getValV() < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
             }
+
         }
 
+        *x_val_MXs1 = oldVal;
     }
 
-    *x_val = oldVal;
+    {
+        RooAbsBinning const& binning = x_val_MXs2->getBinning();
+        const double oldVal = x_val_MXs2->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs2 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < Sample_names.size(); j++) {
+                if (std::strstr(sample_type, "MXs2") == nullptr) continue; // skip non-MXs2
+
+                RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
+                Nevt = Nevt + temp_func->getValV();
+                if (temp_func->getValV() < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs2 = oldVal;
+    }
+
+    {
+        RooAbsBinning const& binning = x_val_MXs3->getBinning();
+        const double oldVal = x_val_MXs3->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs3 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < Sample_names.size(); j++) {
+                if (std::strstr(sample_type, "MXs3") == nullptr) continue; // skip non-MXs3
+
+                RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
+                Nevt = Nevt + temp_func->getValV();
+                if (temp_func->getValV() < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs3 = oldVal;
+    }
 
     return Nevt;
 
@@ -380,7 +438,9 @@ void FitToData(RooWorkspace* w, double eps) {
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
     RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-    RooRealVar* x_val = w->var("obs_x_channel");
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
 
     // get Category and data
     RooCategory* idx = (RooCategory*)obs->find("channelCat");
@@ -401,7 +461,7 @@ void FitToData(RooWorkspace* w, double eps) {
     double CHARM_Nevts = GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
 
     // draw
-    RooPlot* x_frame = x_val->frame(Title("FBDT"));
+    RooPlot* x_frame = x_val_MXs1->frame(Title("FBDT"));
     data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), DrawOption("ZP"), Name("data"));
     //data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"), Normalization(1, RooAbsReal::ScaleType::NumEvent));
     model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed - 6), LineWidth(0), Components("L_x_*Signal*_StatUncert,L_x_*CHG*_StatUncert,L_x_*MIX*_StatUncert,L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(Signal_Nevts + CHG_Nevts + MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("signal"));
@@ -514,7 +574,9 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
                 ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
                 RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
                 RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-                RooRealVar* x_val = w->var("obs_x_channel");
+                RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+                RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+                RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
 
                 // get Category and data
                 RooCategory* idx = (RooCategory*)obs->find("channelCat");
@@ -529,7 +591,7 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
                 double CHARM_Nevts = GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
 
                 // draw
-                RooPlot* x_frame = x_val->frame(Title("FBDT"));
+                RooPlot* x_frame = x_val_MXs1->frame(Title("FBDT"));
                 data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), DrawOption("ZP"), Name("data"));
                 //data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"), Normalization(1, RooAbsReal::ScaleType::NumEvent));
                 model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed - 6), LineWidth(0), Components("L_x_*Signal*_StatUncert,L_x_*CHG*_StatUncert,L_x_*MIX*_StatUncert,L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(Signal_Nevts + CHG_Nevts + MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("signal"));
@@ -643,8 +705,10 @@ int main(int argc, char* argv[]) {
 
         w->loadSnapshot("NominalParamValues");
 
-        RooRealVar* x_val = w->var("obs_x_channel");
-        std::unique_ptr<RooArgSet> params{model->getParameters(*x_val)};
+        RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+        RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+        RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+        std::unique_ptr<RooArgSet> params{model->getParameters(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3))};
 
         // save snapshot
         w->saveSnapshot("ParamValues", *params, true);
@@ -655,8 +719,10 @@ int main(int argc, char* argv[]) {
 
         w->loadSnapshot("NominalParamValues");
 
-        RooRealVar* x_val = w->var("obs_x_channel");
-        std::unique_ptr<RooArgSet> params{model->getParameters(*x_val)};
+        RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+        RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+        RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+        std::unique_ptr<RooArgSet> params{model->getParameters(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3))};
 
         // save snapshot
         w->saveSnapshot("ParamValues", *params, true);
