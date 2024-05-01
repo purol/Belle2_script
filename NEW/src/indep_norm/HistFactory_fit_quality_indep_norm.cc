@@ -375,7 +375,9 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
         RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
         RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-        RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
+        RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+        RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+        RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
 
         for(int i=0; i< Toy_iter_num; i++) { // Do Toy MC study
             
@@ -383,7 +385,7 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
 
             filesaver.GetTrueValues(w, names);
 
-            RooDataSet* genData = model->generate(RooArgSet(*x,model->indexCat()), Nevt_total, false, true, "", false, true);
+            RooDataSet* genData = model->generate(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3,model->indexCat()), Nevt_total, false, true, "", false, true);
 
             w->loadSnapshot("ParamValues");
             RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
@@ -407,7 +409,9 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
     RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-    RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
 
     for (int i = 0; i < LT_iter_num; i++) { // Do LT MC study
 
@@ -415,7 +419,7 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
 
         filesaver.GetTrueValues(w, names);
 
-        RooDataSet* genData = model->generate(RooArgSet(*x, model->indexCat()), Nevt_total, false, true, "", false, true);
+        RooDataSet* genData = model->generate(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, model->indexCat()), Nevt_total, false, true, "", false, true);
         w->loadSnapshot("ParamValues");
 
         RooFitResult* fitres = model->fitTo(*genData, RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
