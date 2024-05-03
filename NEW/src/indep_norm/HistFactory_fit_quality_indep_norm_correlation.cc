@@ -57,7 +57,7 @@
 #include "RooStats/HypoTestInverter.h"
 #include "RooStats/HypoTestInverterPlot.h"
 
-#include "Fitter.h"
+#include "Fitter_indep_norm.h"
 
 using namespace RooFit;
 using namespace RooStats;
@@ -319,6 +319,9 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
         RooArgSet* obs = (RooArgSet*)mc->GetObservables();
         RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
 
+        FILE* fp;
+        fp = fopen(("param_result_" + std::to_string(indicator) + ".txt").c_str(), "w");
+
         for(int i=0; i< Toy_iter_num; i++) { // Do Toy MC study
             
             double Nevt_total = SetParamsForToy(w, names, 1.0);
@@ -338,9 +341,28 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
             filesaver.GetFittingStatus(fitres);
             filesaver.WriteIntoBranch();
 
+            RooArgSet fitargs = fitres->floatParsFinal();
+            TIterator* iter(fitargs.createIterator());
+            for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
+                RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+                std::string name = rrv->GetName();
+                double val = rrv->getVal();
+                double err = rrv->getError();
+                double HIerr = rrv->getAsymErrorHi();
+                double LOerr = rrv->getAsymErrorLo();
+
+                printf("%s", name.c_str());
+                fprintf(fp, "%lf ", val);
+
+            }
+            fprintf(fp, "\n");
+            printf("\n");
+
             delete fitres;
 
         }
+
+        fclose(fp);
 }
 
 void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu_injected, double eps, int indicator = 0) {
@@ -393,12 +415,12 @@ void FitToData(RooWorkspace* w, double eps) {
 
     // get expected num of evts for PDFs
     double Signal_Nevts = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
-    double CHG_Nevts = GetNumEvts(w, "CHG");
-    double MIX_Nevts = GetNumEvts(w, "MIX");
-    double UUBAR_Nevts = GetNumEvts(w, "UUBAR");
-    double DDBAR_Nevts = GetNumEvts(w, "DDBAR");
-    double SSBAR_Nevts = GetNumEvts(w, "SSBAR");
-    double CHARM_Nevts = GetNumEvts(w, "CHARM");
+    double CHG_Nevts = GetNumEvts(w, "CHG_MX1") + GetNumEvts(w, "CHG_MX2") + GetNumEvts(w, "CHG_MX3");
+    double MIX_Nevts = GetNumEvts(w, "MIX_MX1") + GetNumEvts(w, "MIX_MX2") + GetNumEvts(w, "MIX_MX3");
+    double UUBAR_Nevts = GetNumEvts(w, "UUBAR_MX1") + GetNumEvts(w, "UUBAR_MX2") + GetNumEvts(w, "UUBAR_MX3");
+    double DDBAR_Nevts = GetNumEvts(w, "DDBAR_MX1") + GetNumEvts(w, "DDBAR_MX2") + GetNumEvts(w, "DDBAR_MX3");
+    double SSBAR_Nevts = GetNumEvts(w, "SSBAR_MX1") + GetNumEvts(w, "SSBAR_MX2") + GetNumEvts(w, "SSBAR_MX3");
+    double CHARM_Nevts = GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
 
     // draw
     RooPlot* x_frame = x_val->frame(Title("FBDT"));
@@ -521,12 +543,12 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
 
                 // get expected num of evts for PDFs
                 double Signal_Nevts = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
-                double CHG_Nevts = GetNumEvts(w, "CHG");
-                double MIX_Nevts = GetNumEvts(w, "MIX");
-                double UUBAR_Nevts = GetNumEvts(w, "UUBAR");
-                double DDBAR_Nevts = GetNumEvts(w, "DDBAR");
-                double SSBAR_Nevts = GetNumEvts(w, "SSBAR");
-                double CHARM_Nevts = GetNumEvts(w, "CHARM");
+                double CHG_Nevts = GetNumEvts(w, "CHG_MX1") + GetNumEvts(w, "CHG_MX2") + GetNumEvts(w, "CHG_MX3");
+                double MIX_Nevts = GetNumEvts(w, "MIX_MX1") + GetNumEvts(w, "MIX_MX2") + GetNumEvts(w, "MIX_MX3");
+                double UUBAR_Nevts = GetNumEvts(w, "UUBAR_MX1") + GetNumEvts(w, "UUBAR_MX2") + GetNumEvts(w, "UUBAR_MX3");
+                double DDBAR_Nevts = GetNumEvts(w, "DDBAR_MX1") + GetNumEvts(w, "DDBAR_MX2") + GetNumEvts(w, "DDBAR_MX3");
+                double SSBAR_Nevts = GetNumEvts(w, "SSBAR_MX1") + GetNumEvts(w, "SSBAR_MX2") + GetNumEvts(w, "SSBAR_MX3");
+                double CHARM_Nevts = GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
 
                 // draw
                 RooPlot* x_frame = x_val->frame(Title("FBDT"));
