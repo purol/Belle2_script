@@ -157,6 +157,9 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, 
 
 int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index, argv[3]: calculator type
 
+	::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit2"); // default: Minuit Migrad
+	::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
+
 	const char* fname = "./PDFandDATA_workspace.root";
 
 	TFile* f = TFile::Open(fname);
@@ -234,7 +237,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index,
 		RooStats::FrequentistCalculator FreqCalc(*data, *bModel, *sbModel);
 		RooStats::ProfileLikelihoodTestStat* plr = new RooStats::ProfileLikelihoodTestStat(*sbModel->GetPdf());
 		plr->SetOneSided(true);
-		plr->SetMinimizer("Minuit");
+		plr->SetMinimizer("Minuit2");
 		plr->SetStrategy(1);
 		//plr->SetLOffset(true);
 		//plr->SetTolerance(std::atof(argv[2]));

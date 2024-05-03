@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
     // argv[1]: {mu_MXs1|mu_MXs2|mu_MXs3}
     // argv[2]: MXs value
 
-    ::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit"); // default: Minuit Migrad
+    ::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit2"); // default: Minuit Migrad
     ::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
 
     const char* fname = "./PDFandDATA_workspace.root";
@@ -102,7 +102,7 @@ int main(int argc, char* argv[]) {
     RooDataSet* data = (RooDataSet*)w->data("asimovData");
 
     // fit
-    //RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2", "migrad"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
+    //RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
     //RooAbsReal* nll;
     //ObtainNLL(w, data, &nll);
     double eps = ::ROOT::Math::MinimizerOptions::DefaultTolerance();
