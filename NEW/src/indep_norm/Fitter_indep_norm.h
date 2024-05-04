@@ -444,7 +444,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->BRXnn) w->var("alpha_Xnn_BR_uncer")->setConstant(options_->BRXnn);
 
     // B->(D->X KL0) + anything
-    if (options_->BRDKL0) w->var("alpha_BtoDtoXKL_uncer")->setConstant(options_->BRDKL0);
+    // if (options_->BRDKL0) w->var("alpha_BtoDtoXKL_uncer")->setConstant(options_->BRDKL0);
 
     // save snapshot
     w->saveSnapshot("ParamValues", *params, true);
