@@ -159,6 +159,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index,
 
 	::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit2"); // default: Minuit Migrad
 	::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
+	RooStats::UseNLLOffset(true); // default off
 	double eps = std::atof(argv[4]);
 	::ROOT::Math::MinimizerOptions::SetDefaultTolerance(eps); // default 0.01. but it is better to use 0.001
 
