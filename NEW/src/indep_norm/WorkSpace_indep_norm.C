@@ -214,7 +214,6 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	RooStats::HistFactory::Sample sig_temp(("Signal_nominal_" + bin_name).c_str(), "Signal_nominal", fname);
 	sig_temp.AddHistoSys("track_eff_uncer", "Signal_track_m", fname, "", "Signal_track_p", fname, "");
 	sig_temp.AddHistoSys("KS0_reco_uncer", "Signal_KS0_m", fname, "", "Signal_KS0_p", fname, "");
-	sig_temp.AddHistoSys("BtoDtoXKL_uncer", "Signal_BtoDtoXKL_m", fname, "", "Signal_BtoDtoXKL_p", fname, "");
 	sig_temp.AddHistoSys("BRBtoXKLKL_uncer", "Signal_BRBtoXKLKL_m", fname, "", "Signal_BRBtoXKLKL_p", fname, "");
 	sig_temp.AddHistoSys("Xnn_BR_uncer", "Signal_Xnn_m", fname, "", "Signal_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) sig_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -256,7 +255,6 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	RooStats::HistFactory::Sample CHG_temp(("CHG_nominal_" + bin_name).c_str(), "CHG_nominal", fname);
 	CHG_temp.AddHistoSys("track_eff_uncer", "CHG_track_m", fname, "", "CHG_track_p", fname, "");
 	CHG_temp.AddHistoSys("KS0_reco_uncer", "CHG_KS0_m", fname, "", "CHG_KS0_p", fname, "");
-	CHG_temp.AddHistoSys("BtoDtoXKL_uncer", "CHG_BtoDtoXKL_m", fname, "", "CHG_BtoDtoXKL_p", fname, "");
 	CHG_temp.AddHistoSys("BRBtoXKLKL_uncer", "CHG_BRBtoXKLKL_m", fname, "", "CHG_BRBtoXKLKL_p", fname, "");
 	CHG_temp.AddHistoSys("Xnn_BR_uncer", "CHG_Xnn_m", fname, "", "CHG_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) CHG_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("CHG_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -277,7 +275,6 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	RooStats::HistFactory::Sample MIX_temp(("MIX_nominal_" + bin_name).c_str(), "MIX_nominal", fname);
 	MIX_temp.AddHistoSys("track_eff_uncer", "MIX_track_m", fname, "", "MIX_track_p", fname, "");
 	MIX_temp.AddHistoSys("KS0_reco_uncer", "MIX_KS0_m", fname, "", "MIX_KS0_p", fname, "");
-	MIX_temp.AddHistoSys("BtoDtoXKL_uncer", "MIX_BtoDtoXKL_m", fname, "", "MIX_BtoDtoXKL_p", fname, "");
 	MIX_temp.AddHistoSys("BRBtoXKLKL_uncer", "MIX_BRBtoXKLKL_m", fname, "", "MIX_BRBtoXKLKL_p", fname, "");
 	MIX_temp.AddHistoSys("Xnn_BR_uncer", "MIX_Xnn_m", fname, "", "MIX_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) MIX_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("MIX_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
