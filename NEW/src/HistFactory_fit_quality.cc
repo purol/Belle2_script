@@ -85,7 +85,9 @@ void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
     w->loadSnapshot("ParamValues");
 
     RooAbsData* data = (RooAbsData*)w->data("asimovData");
-    RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+    //RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::SumW2Error(false), PrintLevel(-1), Save());
+    RooAbsReal* nll;
+    RooFitResult* fitres = MyMinimizeNLL(w, data, &nll);
 
     RooArgSet fitargs = fitres->floatParsFinal();
     TIterator* iter(fitargs.createIterator());

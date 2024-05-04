@@ -180,7 +180,9 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: eps
 	RooAbsData* data = (RooAbsData*)w->data("asimovData");
 
 	// fit
-	RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(true), RooFit::SumW2Error(false));
+	//RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(true), RooFit::SumW2Error(false));
+	RooAbsReal* nll;
+	RooFitResult* fitres = MyMinimizeNLL(w, data, &nll);
 
 	// define frame
 	RooPlot* x_frame = x->frame(Title("FBDT"));
