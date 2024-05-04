@@ -631,6 +631,8 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
+    ::ROOT::Math::MinimizerOptions::SetDefaultTolerance(eps); // default 0.01. but it is better to use 0.001
+
     const char* fname = "./PDFandDATA_workspace.root";
 
     TFile* f = TFile::Open(fname);

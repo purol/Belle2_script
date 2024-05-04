@@ -155,10 +155,12 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, 
 	}
 }
 
-int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index, argv[3]: calculator type
+int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index, argv[3]: calculator type, argv[4]: eps
 
 	::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit2"); // default: Minuit Migrad
 	::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
+	double eps = std::atof(argv[4]);
+	::ROOT::Math::MinimizerOptions::SetDefaultTolerance(eps); // default 0.01. but it is better to use 0.001
 
 	const char* fname = "./PDFandDATA_workspace.root";
 
@@ -240,7 +242,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index,
 		plr->SetMinimizer("Minuit2");
 		plr->SetStrategy(1);
 		//plr->SetLOffset(true);
-		//plr->SetTolerance(std::atof(argv[2]));
+		plr->SetTolerance(eps);
 
 		RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)FreqCalc.GetTestStatSampler();
 		toymcs->SetTestStatistic(plr);
@@ -271,7 +273,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index,
 		plr->SetMinimizer("Minuit2");
 		plr->SetStrategy(1);
 		//plr->SetLOffset(true);
-		//plr->SetTolerance(std::atof(argv[2]));
+		plr->SetTolerance(eps);
 
 		RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)HybCalc.GetTestStatSampler();
 		toymcs->SetTestStatistic(plr);
