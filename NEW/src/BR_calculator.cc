@@ -57,6 +57,11 @@ Corrector_Fragmentation corrector_Fragmentation;
 
 # define MCTYPE "MC15rd"
 
+// gaussian parameter for B->XKLKL, B->Xnn, and B->(D->XKL) + anything
+double alpha_XKLKL = 1.0;
+double alpha_Xnn = 1.0;
+double alpha_BtoDtoXKL = 1.0;
+
 // define struct and sorting function for a binary search
 typedef struct EventInformation {
     int experiment;
@@ -801,6 +806,9 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
 
             // Xsnn correction factor
             double Correction_Xnn = corrector_Xsnn.GetCorrectionFactorAtGeneric(invM_Xnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn, N_Xplusnn + N_Xzeronn);
+            if ((N_Xplusnn + N_Xzeronn) > 0.5) { // uncertainty for all B->X n nbar, including K n nbar and Kstar n nbar
+                Correction_Xnn = Correction_Xnn * alpha_Xnn;
+            }
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
@@ -816,10 +824,16 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
 
             // B --> X KL KL correction factor
             double Correction_XKLKL = corrector_XsKLKL.GetCorrectionFactorAtGeneric(XKLKL_E_1st, XKLKL_px_1st, XKLKL_py_1st, XKLKL_pz_1st, XKLKL_E_2nd, XKLKL_px_2nd, XKLKL_py_2nd, XKLKL_pz_2nd, nB2KpKLKL_all_KpKLKL, nB2KSKLKL_all_KSKLKL, nB2KstarKLKL + nB02KstarKLKL, nKL_XKLKL);
+            if (nKL_XKLKL > 1.5) { // uncertainty for all B->X KL KL, including K KL KL and Kstar KL KL
+                Correction_XKLKL = Correction_XKLKL * alpha_XKLKL;
+            }
 
             // B-> [D -> KL0 X] anything correction factor
             double Correction_BtoDtoXKL = 1.0;
-            if ((strcmp(sample, "CHG") == 0) || (strcmp(sample, "MIX") == 0) || (strcmp(sample, "SIGNAL") == 0)) Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
+            if ((strcmp(sample, "CHG") == 0) || (strcmp(sample, "MIX") == 0) || (strcmp(sample, "SIGNAL") == 0)) {
+                Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
+                Correction_BtoDtoXKL = Correction_BtoDtoXKL * (1 + corrector_BtoDtoXKL.GetRelativeUncertainty(nDptoXKL + nD0toXKL) * (alpha_BtoDtoXKL - 1.0));
+            }
 
             double Correction_BR = GetBRRelativeUncertainty(__experiment__, __run__, __event__, __candidate__, __ncandidates__);
 
@@ -865,6 +879,12 @@ void FluctuateBBBR() {
 
         BRuncertainty.BR_correction_fluctuated.push_back(Correction_BR);
     }
+
+    std::normal_distribution<double> extra_BR_distribution(1.0, 1.0);
+
+    alpha_XKLKL = extra_BR_distribution(generator);
+    alpha_Xnn = extra_BR_distribution(generator);
+    alpha_BtoDtoXKL = extra_BR_distribution(generator);
 
 }
 
