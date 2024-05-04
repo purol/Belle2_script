@@ -244,7 +244,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index,
 		plr->SetOneSided(true);
 		plr->SetMinimizer("Minuit2");
 		plr->SetStrategy(1);
-		//plr->SetLOffset(true);
+		plr->SetLOffset(true);
 		plr->SetTolerance(eps);
 
 		RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)FreqCalc.GetTestStatSampler();
@@ -275,7 +275,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index,
 		plr->SetOneSided(true);
 		plr->SetMinimizer("Minuit2");
 		plr->SetStrategy(1);
-		//plr->SetLOffset(true);
+		plr->SetLOffset(true);
 		plr->SetTolerance(eps);
 
 		RooStats::ToyMCSampler* toymcs = (RooStats::ToyMCSampler*)HybCalc.GetTestStatSampler();
