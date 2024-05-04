@@ -285,6 +285,15 @@ int main() {
     cdata->SaveAs("FitResult.png");
     delete cdata;
 
+    // get correlation matrix
+    TCanvas* c_corr = new TCanvas("correlation_matrix", "correlation_matrix", 5000, 5000);
+
+    TH2* hcorr = fitres->correlationHist();
+    hcorr->GetYaxis()->SetTitleOffset(1.4);
+    hcorr->Draw("colz");
+
+    c_corr->SaveAs("correlation_matrix.png");
+
     // draw profile likelihood
     /*
     * it is obsolete. Please use `Draw_PLL.cc`
