@@ -568,12 +568,10 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
 
 int main(int argc, char* argv[]) {
 
-    ::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit2"); // default: Minuit Migrad
+    ::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit2", "Minimize"); // default: Minuit Migrad
     ::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
 
     RooStats::UseNLLOffset(true); // default off
-
-    // RooStats::UseNLLOffset(true);
 
     RooMsgService::instance().setStreamStatus(1, false);
     RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
