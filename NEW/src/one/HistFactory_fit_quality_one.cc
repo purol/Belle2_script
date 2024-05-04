@@ -84,7 +84,7 @@ void GetNameOfParams(RooWorkspace* w, std::vector<std::string>* names) {
 
     w->loadSnapshot("ParamValues");
 
-    RooAbsData* data = (RooAbsData*)w->data("asimovData");
+    RooDataSet* data = (RooDataSet*)w->data("asimovData");
     //RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::SumW2Error(false), PrintLevel(-1), Save());
     RooAbsReal* nll;
     RooFitResult* fitres = MyMinimizeNLL(w, data, &nll);
@@ -460,7 +460,7 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
     RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
 
     // construct PDfs from data
-    RooAbsData* data = (RooAbsData*)w->data("asimovData");
+    RooDataSet* data = (RooDataSet*)w->data("asimovData");
     TH1D* HistData = (TH1D*)data->createHistogram("HistData", *x, Binning(RarityBins, BinMIN, BinMAX));
     RooDataHist DataHist("DataHist", "DataHist", *x, HistData);
     RooHistPdf dataPDF("dataPDF", "dataPDF", RooArgSet(*x, model->indexCat()), DataHist);

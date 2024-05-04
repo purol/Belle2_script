@@ -49,6 +49,8 @@
 #include "RooStats/HypoTestInverter.h"
 #include "RooStats/HypoTestInverterPlot.h"
 
+#include "Fitter.h"
+
 using namespace RooFit;
 using namespace RooStats;
 using namespace HistFactory;
@@ -181,7 +183,7 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index,
 
 	// get Category and data
 	RooCategory* idx = (RooCategory*)obs->find("channelCat");
-	RooAbsData* data = (RooAbsData*)w->data("asimovData");
+	RooDataSet* data = (RooDataSet*)w->data("asimovData");
 
 	// fit
 	//RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(true), RooFit::SumW2Error(false));
