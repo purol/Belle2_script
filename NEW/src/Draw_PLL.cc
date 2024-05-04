@@ -105,7 +105,8 @@ int main(int argc, char* argv[]) {
     //RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
     //RooAbsReal* nll;
     //ObtainNLL(w, data, &nll);
-    double eps = ::ROOT::Math::MinimizerOptions::DefaultTolerance();
+    //double eps = ::ROOT::Math::MinimizerOptions::DefaultTolerance();
+    double eps = 0.001;
     RooAbsReal* nll;
     RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps);
 
