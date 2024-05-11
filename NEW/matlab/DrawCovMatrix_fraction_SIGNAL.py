@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib.ticker import FixedLocator
 
-Nbins = 9
+Nbins = 18
 
 # fraction
 file_fraction_corr_all = "fraction_corr_all.txt"

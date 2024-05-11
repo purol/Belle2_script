@@ -1,7 +1,7 @@
 clear all
 format long
 
-N_total_bins = 9 * 3;
+N_total_bins = 18 * 3;
 N_selected_vectors = 2;
 
 % fraction

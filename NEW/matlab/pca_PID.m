@@ -1,8 +1,8 @@
 clear all
 format long
 
-N_total_bins = 9 * 7;
-N_selected_vectors = 15;
+N_total_bins = 18 * 7;
+N_selected_vectors = 16;
 
 % Kaon ID
 KIDfileID = fopen('KID_toys.txt','r');

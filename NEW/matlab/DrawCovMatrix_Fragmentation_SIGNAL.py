@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib.ticker import FixedLocator
 
-Nbins = 9
+Nbins = 18
 
 # Fragmentation
 file_Fragmentation_corr_all = "Fragmentation_corr_all.txt"

@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib.ticker import FixedLocator
 
-Nbins = 9
+Nbins = 18
 
 # multiplicity
 file_multiplicity_cov_all = "multiplicity_corr_all.txt"

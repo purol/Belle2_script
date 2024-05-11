@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 from matplotlib.ticker import FixedLocator
 
-Nbins = 9
+Nbins = 18
 
 # BR
 file_BR_corr_all = "FEI_corr_all.txt"
