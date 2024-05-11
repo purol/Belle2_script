@@ -189,6 +189,25 @@ int ReadNFragmentationEigenVector(const char* dirname) {
 	return Nentry;
 }
 
+int ReadNKstarffEigenVector(const char* dirname) {
+	int Nentry = 0; // number of eigen values/vectors
+	double eigen_value = 0; // eigen value
+	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+
+	FILE* fp;
+	fp = fopen(dirname, "r");
+	while (true) {
+		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+		for (int i = 0; i < RarityBins * 3; i++) {
+			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+		}
+		Nentry++;
+	}
+	fclose(fp);
+
+	return Nentry;
+}
+
 int WorkSpace_Knunu() {
 
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
@@ -197,6 +216,7 @@ int WorkSpace_Knunu() {
 	int NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
 	int NEntryfraction = ReadNfractionEigenVector("./fraction_selected.txt");
 	int NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
+	int NEntryKstarff = ReadNKstarffEigenVector("./Kstarff_selected.txt");
 
 	const double expmu = 1.0;
     const char* fname = "PDFandDATA_nominal.root";
@@ -255,16 +275,7 @@ int WorkSpace_Knunu() {
 	CHG_temp.AddHistoSys("Kff1_uncer", "CHG_Kff1_m", fname, "", "CHG_Kff1_p", fname, "");
 	CHG_temp.AddHistoSys("Kff2_uncer", "CHG_Kff2_m", fname, "", "CHG_Kff2_p", fname, "");
 	CHG_temp.AddHistoSys("Kff3_uncer", "CHG_Kff3_m", fname, "", "CHG_Kff3_p", fname, "");
-	CHG_temp.AddHistoSys("Kstarff1_uncer", "CHG_Kstarff1_m", fname, "", "CHG_Kstarff1_p", fname, "");
-	CHG_temp.AddHistoSys("Kstarff2_uncer", "CHG_Kstarff2_m", fname, "", "CHG_Kstarff2_p", fname, "");
-	CHG_temp.AddHistoSys("Kstarff3_uncer", "CHG_Kstarff3_m", fname, "", "CHG_Kstarff3_p", fname, "");
-	CHG_temp.AddHistoSys("Kstarff4_uncer", "CHG_Kstarff4_m", fname, "", "CHG_Kstarff4_p", fname, "");
-	CHG_temp.AddHistoSys("Kstarff5_uncer", "CHG_Kstarff5_m", fname, "", "CHG_Kstarff5_p", fname, "");
-	CHG_temp.AddHistoSys("Kstarff6_uncer", "CHG_Kstarff6_m", fname, "", "CHG_Kstarff6_p", fname, "");
-	CHG_temp.AddHistoSys("Kstarff7_uncer", "CHG_Kstarff7_m", fname, "", "CHG_Kstarff7_p", fname, "");
-	CHG_temp.AddHistoSys("Kstarff8_uncer", "CHG_Kstarff8_m", fname, "", "CHG_Kstarff8_p", fname, "");
-	CHG_temp.AddHistoSys("Kstarff9_uncer", "CHG_Kstarff9_m", fname, "", "CHG_Kstarff9_p", fname, "");
-	CHG_temp.AddHistoSys("Kstarff9_uncer", "CHG_Kstarff9_m", fname, "", "CHG_Kstarff9_p", fname, "");
+	for (int i = 0; i < NEntryKstarff; i++) CHG_temp.AddHistoSys(("Kstarff" + std::to_string(i) + "_uncer").c_str(), ("CHG_Kstarff_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_Kstarff_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	CHG_temp.AddHistoSys("Kff_OLD_uncer", "CHG_Kff_OLD_m", fname, "", "CHG_Kff_OLD_p", fname, "");
 	for (int i = 0; i < NEntryfraction; i++) CHG_temp.AddHistoSys(("fraction" + std::to_string(i) + "_uncer").c_str(), ("CHG_fraction_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_fraction_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFragmentation; i++) CHG_temp.AddHistoSys(("Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), ("CHG_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -293,16 +304,7 @@ int WorkSpace_Knunu() {
 	MIX_temp.AddHistoSys("Kff1_uncer", "MIX_Kff1_m", fname, "", "MIX_Kff1_p", fname, "");
 	MIX_temp.AddHistoSys("Kff2_uncer", "MIX_Kff2_m", fname, "", "MIX_Kff2_p", fname, "");
 	MIX_temp.AddHistoSys("Kff3_uncer", "MIX_Kff3_m", fname, "", "MIX_Kff3_p", fname, "");
-	MIX_temp.AddHistoSys("Kstarff1_uncer", "MIX_Kstarff1_m", fname, "", "MIX_Kstarff1_p", fname, "");
-	MIX_temp.AddHistoSys("Kstarff2_uncer", "MIX_Kstarff2_m", fname, "", "MIX_Kstarff2_p", fname, "");
-	MIX_temp.AddHistoSys("Kstarff3_uncer", "MIX_Kstarff3_m", fname, "", "MIX_Kstarff3_p", fname, "");
-	MIX_temp.AddHistoSys("Kstarff4_uncer", "MIX_Kstarff4_m", fname, "", "MIX_Kstarff4_p", fname, "");
-	MIX_temp.AddHistoSys("Kstarff5_uncer", "MIX_Kstarff5_m", fname, "", "MIX_Kstarff5_p", fname, "");
-	MIX_temp.AddHistoSys("Kstarff6_uncer", "MIX_Kstarff6_m", fname, "", "MIX_Kstarff6_p", fname, "");
-	MIX_temp.AddHistoSys("Kstarff7_uncer", "MIX_Kstarff7_m", fname, "", "MIX_Kstarff7_p", fname, "");
-	MIX_temp.AddHistoSys("Kstarff8_uncer", "MIX_Kstarff8_m", fname, "", "MIX_Kstarff8_p", fname, "");
-	MIX_temp.AddHistoSys("Kstarff9_uncer", "MIX_Kstarff9_m", fname, "", "MIX_Kstarff9_p", fname, "");
-	MIX_temp.AddHistoSys("Kstarff9_uncer", "MIX_Kstarff9_m", fname, "", "MIX_Kstarff9_p", fname, "");
+	for (int i = 0; i < NEntryKstarff; i++) MIX_temp.AddHistoSys(("Kstarff" + std::to_string(i) + "_uncer").c_str(), ("MIX_Kstarff_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_Kstarff_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	MIX_temp.AddHistoSys("Kff_OLD_uncer", "MIX_Kff_OLD_m", fname, "", "MIX_Kff_OLD_p", fname, "");
 	for (int i = 0; i < NEntryfraction; i++) MIX_temp.AddHistoSys(("fraction" + std::to_string(i) + "_uncer").c_str(), ("MIX_fraction_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_fraction_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFragmentation; i++) MIX_temp.AddHistoSys(("Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), ("MIX_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), fname, "");

@@ -189,6 +189,25 @@ int ReadNFragmentationEigenVector(const char* dirname) {
 	return Nentry;
 }
 
+int ReadNKstarffEigenVector(const char* dirname) {
+	int Nentry = 0; // number of eigen values/vectors
+	double eigen_value = 0; // eigen value
+	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+
+	FILE* fp;
+	fp = fopen(dirname, "r");
+	while (true) {
+		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+		for (int i = 0; i < RarityBins * 3; i++) {
+			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+		}
+		Nentry++;
+	}
+	fclose(fp);
+
+	return Nentry;
+}
+
 void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, const double expmu, double qq_CAL, double qq_CAL_relativeuncer, double FBDT_CAL, double FBDT_CAL_relativeuncer) {
 
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
@@ -199,6 +218,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	int NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
 	int NEntryfraction = ReadNfractionEigenVector("./fraction_selected.txt");
 	int NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
+	int NEntryKstarff = ReadNKstarffEigenVector("./Kstarff_selected.txt");
 
 	std::string bin_name = "";
 	if (MXs_bin == 1) bin_name = std::string("MXs1");
@@ -226,16 +246,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp.AddHistoSys("Kff1_uncer", "Signal_Kff1_m", fname, "", "Signal_Kff1_p", fname, "");
 	sig_temp.AddHistoSys("Kff2_uncer", "Signal_Kff2_m", fname, "", "Signal_Kff2_p", fname, "");
 	sig_temp.AddHistoSys("Kff3_uncer", "Signal_Kff3_m", fname, "", "Signal_Kff3_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff1_uncer", "Signal_Kstarff1_m", fname, "", "Signal_Kstarff1_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff2_uncer", "Signal_Kstarff2_m", fname, "", "Signal_Kstarff2_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff3_uncer", "Signal_Kstarff3_m", fname, "", "Signal_Kstarff3_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff4_uncer", "Signal_Kstarff4_m", fname, "", "Signal_Kstarff4_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff5_uncer", "Signal_Kstarff5_m", fname, "", "Signal_Kstarff5_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff6_uncer", "Signal_Kstarff6_m", fname, "", "Signal_Kstarff6_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff7_uncer", "Signal_Kstarff7_m", fname, "", "Signal_Kstarff7_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff8_uncer", "Signal_Kstarff8_m", fname, "", "Signal_Kstarff8_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname, "", "Signal_Kstarff9_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname, "", "Signal_Kstarff9_p", fname, "");
+	for (int i = 0; i < NEntryKstarff; i++) sig_temp.AddHistoSys(("Kstarff" + std::to_string(i) + "_uncer").c_str(), ("Signal_Kstarff_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_Kstarff_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	sig_temp.AddHistoSys("Kff_OLD_uncer", "Signal_Kff_OLD_m", fname, "", "Signal_Kff_OLD_p", fname, "");
 	for (int i = 0; i < NEntryfraction; i++) sig_temp.AddHistoSys(("fraction" + std::to_string(i) + "_uncer").c_str(), ("Signal_fraction_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_fraction_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFragmentation; i++) sig_temp.AddHistoSys(("Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), ("Signal_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
