@@ -32,10 +32,10 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
 
 void ReadToyRootFile(){
 
-    TH1F* ToyMCmu = new TH1F("ToyMCmu", ";#mu;Toys", 40, -10, 15);
+    TH1F* ToyMCmu = new TH1F("ToyMCmu", ";#mu;Toys", 40, -20, 25);
     TH1F* ToyMCmuerror = new TH1F("ToyMCmuerror", ";error of #mu;Toys", 50, 1, 7);
-    TH1F* ToyMCmuHIerror = new TH1F("ToyMCmuHIerror", ";error of #mu;Toys", 50, 1, 7);
-    TH1F* ToyMCmuLOerror = new TH1F("ToyMCmuLOerror", ";error of #mu;Toys", 50, -7, -1);
+    TH1F* ToyMCmuHIerror = new TH1F("ToyMCmuHIerror", ";error of #mu;Toys", 50, 5, 15);
+    TH1F* ToyMCmuLOerror = new TH1F("ToyMCmuLOerror", ";error of #mu;Toys", 50, -15, -5);
     TH1F* ToyMCmupull = new TH1F("ToyMCmupull", ";pull of #mu;Toys", 40, -4, 4);
 
     ToyMCmu->SetMarkerStyle(kFullCircle);
@@ -76,11 +76,11 @@ void ReadToyRootFile(){
         int temp_status = -1;
         double temp_edm = -1;
 
-        temp_tree->SetBranchAddress("mu_true", &temp_mu_true);
-        temp_tree->SetBranchAddress("mu_value", &temp_mu_fitting);
-        temp_tree->SetBranchAddress("mu_error", &temp_mu_error);
-        temp_tree->SetBranchAddress("mu_HIerror", &temp_mu_HIerror);
-        temp_tree->SetBranchAddress("mu_LOerror", &temp_mu_LOerror);
+        temp_tree->SetBranchAddress("mu_MXs3_true", &temp_mu_true);
+        temp_tree->SetBranchAddress("mu_MXs3_value", &temp_mu_fitting);
+        temp_tree->SetBranchAddress("mu_MXs3_error", &temp_mu_error);
+        temp_tree->SetBranchAddress("mu_MXs3_HIerror", &temp_mu_HIerror);
+        temp_tree->SetBranchAddress("mu_MXs3_LOerror", &temp_mu_LOerror);
 
         temp_tree->SetBranchAddress("covQual", &temp_covQual);
         temp_tree->SetBranchAddress("status", &temp_status);
@@ -102,28 +102,28 @@ void ReadToyRootFile(){
 
     TCanvas* c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
     ToyMCmu->Draw("PE1");
-    c->SaveAs("TOYMC_mu.png");
+    c->SaveAs("TOYMC_mu_MXs3.png");
     delete c;
 
     c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
     ToyMCmuerror->Draw("PE1");
-    c->SaveAs("TOYMC_muerror.png");
+    c->SaveAs("TOYMC_mu_MXs3_error.png");
     delete c;
 
     c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
     ToyMCmuHIerror->Draw("PE1");
-    c->SaveAs("TOYMC_muHIerror.png");
+    c->SaveAs("TOYMC_mu_MXs3_HIerror.png");
     delete c;
 
     c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
     ToyMCmuLOerror->Draw("PE1");
-    c->SaveAs("TOYMC_muLOerror.png");
+    c->SaveAs("TOYMC_mu_MXs3_LOerror.png");
     delete c;
 
     c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
     ToyMCmupull->Fit("gaus");
     ToyMCmupull->Draw("PE1");
-    c->SaveAs("TOYMC_mupull.png");
+    c->SaveAs("TOYMC_mu_MXs3_pull.png");
     delete c;
 
     TF1* fit_pull_gauss = ToyMCmupull->GetFunction("gaus");

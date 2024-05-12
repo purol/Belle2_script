@@ -1,4 +1,4 @@
-#define LT_number 51
+#define LT_number 10
 
 void load_files(const char* dirname, std::vector<string>* names) {
     TSystemDirectory dir(dirname, dirname);
@@ -43,7 +43,7 @@ void ReadLinearityRootFile_pull(){
     double outputmuerror[LT_number] = { 0 };
 
     for (int i = 0; i < LT_number; i++) {
-        double injected_mu = i * 0.2;
+        double injected_mu = i * 1.0;
         Inputmu[i] = injected_mu;
 
         std::vector<double> out_pulls;
@@ -64,10 +64,10 @@ void ReadLinearityRootFile_pull(){
             double temp_mu_LOerror = -1;
             Nentry = temp_tree->GetEntries();
 
-            temp_tree->SetBranchAddress("mu_MXs1_true", &temp_mu_true);
-            temp_tree->SetBranchAddress("mu_MXs1_value", &temp_mu_fitting);
-            temp_tree->SetBranchAddress("mu_MXs1_HIerror", &temp_mu_HIerror);
-            temp_tree->SetBranchAddress("mu_MXs1_LOerror", &temp_mu_LOerror);
+            temp_tree->SetBranchAddress("mu_MXs3_true", &temp_mu_true);
+            temp_tree->SetBranchAddress("mu_MXs3_value", &temp_mu_fitting);
+            temp_tree->SetBranchAddress("mu_MXs3_HIerror", &temp_mu_HIerror);
+            temp_tree->SetBranchAddress("mu_MXs3_LOerror", &temp_mu_LOerror);
 
             for (unsigned int j = 0; j < Nentry; j++) { // Fill
                 temp_tree->GetEntry(j);
@@ -83,10 +83,10 @@ void ReadLinearityRootFile_pull(){
             pull_roorealvar = out_pulls.at(j);
             pull_RooDataSet.add(RooArgSet(pull_roorealvar));
         }
-        RooRealVar gausmean("gausmean", "", 0.0, -1.0, 1.0);
-        RooRealVar gauswidth("gauswidth", "", 1.0, 0.5, 1.5);
+        RooRealVar gausmean("mean", "", 0.0, -1.0, 1.0);
+        RooRealVar gauswidth("width", "", 1.0, 0.8, 1.2);
         RooGaussian gauss("gauss", "gauss", pull_roorealvar, gausmean, gauswidth);
-        RooRealVar nentry("nentry", "number of entries", 1000, 950, 1050);
+        RooRealVar nentry("nentry", "number of entries", 10000, 9500, 10500);
         RooExtendPdf egauss("egauss", "extended gauss", gauss, nentry);
         RooFitResult* result_LT = egauss.fitTo(pull_RooDataSet, RooFit::Save(), RooFit::Minimizer("Minuit2", "migrad"));
 
@@ -98,18 +98,18 @@ void ReadLinearityRootFile_pull(){
             std::string name_LT = rrv_LT->GetName();
             double val_LT = rrv_LT->getVal();
             double err_LT = rrv_LT->getError();
-            if (name_LT == std::string("gausmean")) {
+            if (name_LT == std::string("mean")) {
                 outputmu[i] = val_LT;
                 outputmuerror[i] = err_LT;
             }
         }
 
-        RooPlot* pullframe = pull_roorealvar.frame(RooFit::Bins(40), RooFit::Title(" "));
+        RooPlot* pullframe = pull_roorealvar.frame(RooFit::Bins(20), RooFit::Title(" "));
         pull_RooDataSet.plotOn(pullframe);
         egauss.plotOn(pullframe, RooFit::LineColor(kBlue));
-        egauss.paramOn(pullframe, RooFit::Layout(0.4, 0.9, 0.9));
+        egauss.paramOn(pullframe, RooFit::Layout(0.55, 0.9, 0.9)); pullframe->getAttText()->SetTextSize(0.03);
         TCanvas* c = new TCanvas("mu_gauss_fit", "mu_gauss_fit", 600, 600);
-        gPad->SetLeftMargin(0.15); pullframe->GetYaxis()->SetTitleOffset(1.4); pullframe->Draw(); c->SaveAs(("mu_MXs1_" + to_string(injected_mu) + "_pull_distribution.png").c_str());
+        gPad->SetLeftMargin(0.15); pullframe->GetYaxis()->SetTitleOffset(1.4); pullframe->Draw(); c->SaveAs(("mu_MXs3_" + to_string(injected_mu) + "_pull_distribution.png").c_str());
 
     }
 
@@ -119,7 +119,7 @@ void ReadLinearityRootFile_pull(){
     TGraphErrors* gr = new TGraphErrors(LT_number, Inputmu, outputmu, Inputmuerror, outputmuerror);
     gr->SetMarkerStyle(21); gr->SetTitle(";input #mu;pull of #mu");
     gr->Fit("pol1"); gr->Draw("AP");
-    c->SaveAs("Linearity_MXs1_test_pull.png");
+    c->SaveAs("Linearity_MXs3_test_pull.png");
 
     /*
     gr->SetMinimum(-1);
