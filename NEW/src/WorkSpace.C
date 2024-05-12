@@ -380,20 +380,30 @@ int WorkSpace_indep_norm() {
 	meas.SetLumi(1.0);
 	meas.AddConstantParam("Lumi");
 
-	// define channel
-	HistFactory::Channel channel("channel");
-	channel.SetStatErrorConfig(1e-5, "Gaussian");
+	// define channels
+	HistFactory::Channel channel_MXs1("channel_MXs1");
+	channel_MXs1.SetStatErrorConfig(1e-5, "Gaussian");
+
+	HistFactory::Channel channel_MXs2("channel_MXs2");
+	channel_MXs2.SetStatErrorConfig(1e-5, "Gaussian");
+
+	HistFactory::Channel channel_MXs3("channel_MXs3");
+	channel_MXs3.SetStatErrorConfig(1e-5, "Gaussian");
 
 	// point data
-	channel.SetData("total_DATA", fname);
+	channel_MXs1.SetData("total_DATA", fname_MXs1);
+	channel_MXs2.SetData("total_DATA", fname_MXs2);
+	channel_MXs3.SetData("total_DATA", fname_MXs3);
 
 	// get MC
-	AddSample(&channel, fname_MXs1, 1, expmu);
-	AddSample(&channel, fname_MXs2, 2, expmu);
-	AddSample(&channel, fname_MXs3, 3, expmu);
+	AddSample(&channel_MXs1, fname_MXs1, 1, expmu);
+	AddSample(&channel_MXs2, fname_MXs2, 2, expmu);
+	AddSample(&channel_MXs3, fname_MXs3, 3, expmu);
 
 	// add channel to measurement
-	meas.AddChannel(channel);
+	meas.AddChannel(channel_MXs1);
+	meas.AddChannel(channel_MXs2);
+	meas.AddChannel(channel_MXs3);
 	meas.CollectHistograms();
 
 	RooWorkspace* w;
