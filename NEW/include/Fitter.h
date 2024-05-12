@@ -17,12 +17,24 @@ std::vector<std::string> Sample_names = {
     "L_x_Signal_nominal_MXs1_channel_overallSyst_x_StatUncert",
     "L_x_Signal_nominal_MXs2_channel_overallSyst_x_StatUncert",
     "L_x_Signal_nominal_MXs3_channel_overallSyst_x_StatUncert",
-    "L_x_CHG_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_MIX_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_UUBAR_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_DDBAR_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_SSBAR_nominal_channel_overallSyst_x_StatUncert",
-    "L_x_CHARM_nominal_channel_overallSyst_x_StatUncert"
+    "L_x_CHG_nominal_MXs1_channel_overallSyst_x_StatUncert",
+    "L_x_CHG_nominal_MXs2_channel_overallSyst_x_StatUncert",
+    "L_x_CHG_nominal_MXs3_channel_overallSyst_x_StatUncert",
+    "L_x_MIX_nominal_MXs1_channel_overallSyst_x_StatUncert",
+    "L_x_MIX_nominal_MXs2_channel_overallSyst_x_StatUncert",
+    "L_x_MIX_nominal_MXs3_channel_overallSyst_x_StatUncert",
+    "L_x_UUBAR_nominal_MXs1_channel_overallSyst_x_StatUncert",
+    "L_x_UUBAR_nominal_MXs2_channel_overallSyst_x_StatUncert",
+    "L_x_UUBAR_nominal_MXs3_channel_overallSyst_x_StatUncert",
+    "L_x_DDBAR_nominal_MXs1_channel_overallSyst_x_StatUncert",
+    "L_x_DDBAR_nominal_MXs2_channel_overallSyst_x_StatUncert",
+    "L_x_DDBAR_nominal_MXs3_channel_overallSyst_x_StatUncert",
+    "L_x_SSBAR_nominal_MXs1_channel_overallSyst_x_StatUncert",
+    "L_x_SSBAR_nominal_MXs2_channel_overallSyst_x_StatUncert",
+    "L_x_SSBAR_nominal_MXs3_channel_overallSyst_x_StatUncert",
+    "L_x_CHARM_nominal_MXs1_channel_overallSyst_x_StatUncert",
+    "L_x_CHARM_nominal_MXs2_channel_overallSyst_x_StatUncert",
+    "L_x_CHARM_nominal_MXs3_channel_overallSyst_x_StatUncert"
 };
 
 typedef struct Options
@@ -330,18 +342,22 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->pi0) for (int i = 0; i < options_->NEntrypi0; i++) w->var(("alpha_pi0" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->pi0);
 
     // FBDT efficiency
-    if (options_->FBDT) w->var("alpha_FBDT_efficiency_uncer")->setConstant(options_->FBDT);
+    if (options_->FBDT) {
+        w->var("alpha_FBDT_efficiency_uncer_MXs1")->setConstant(options_->FBDT);
+        w->var("alpha_FBDT_efficiency_uncer_MXs2")->setConstant(options_->FBDT);
+        w->var("alpha_FBDT_efficiency_uncer_MXs3")->setConstant(options_->FBDT);
+    }
 
     // FEI
     if (options_->FEI) for (int i = 0; i < options_->NEntryFEI; i++) w->var(("alpha_FEI" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->FEI);
 
     // qqbar normalization
-    if (options_->qqbar) {
-        w->var("alpha_qq_CAL_UUBAR_uncer")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_DDBAR_uncer")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_SSBAR_uncer")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_CHARM_uncer")->setConstant(options_->qqbar);
-    }
+    //if (options_->qqbar) {
+    //    w->var("alpha_qq_CAL_UUBAR_uncer")->setConstant(options_->qqbar);
+    //    w->var("alpha_qq_CAL_DDBAR_uncer")->setConstant(options_->qqbar);
+    //    w->var("alpha_qq_CAL_SSBAR_uncer")->setConstant(options_->qqbar);
+    //    w->var("alpha_qq_CAL_CHARM_uncer")->setConstant(options_->qqbar);
+    //}
 
     // photon multiplicity correction
     if (options_->multiplicity) for (int i = 0; i < options_->NEntryMultiplicity; i++) w->var(("alpha_multiplicity" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->multiplicity);
@@ -392,12 +408,24 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // background normalization
     if (options_->BKGNorm) {
-        w->var("alpha_mu_CHG")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_MIX")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_UUBAR")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_DDBAR")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_SSBAR")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_CHARM")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_CHG_MXs1")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_CHG_MXs2")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_CHG_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_MIX_MXs1")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_MIX_MXs2")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_MIX_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_UUBAR_MXs1")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_UUBAR_MXs2")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_UUBAR_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_DDBAR_MXs1")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_DDBAR_MXs2")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_DDBAR_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_SSBAR_MXs1")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_SSBAR_MXs2")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_SSBAR_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_CHARM_MXs1")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_CHARM_MXs2")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_CHARM_MXs3")->setConstant(options_->BKGNorm);
     }
 
     // BDTc
@@ -435,12 +463,24 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
     if (strcmp(sample_type, "Signal_MX1") == 0) index = 0;
     else if (strcmp(sample_type, "Signal_MX2") == 0) index = 1;
     else if (strcmp(sample_type, "Signal_MX3") == 0) index = 2;
-    else if (strcmp(sample_type, "CHG") == 0) index = 3;
-    else if (strcmp(sample_type, "MIX") == 0) index = 4;
-    else if (strcmp(sample_type, "UUBAR") == 0) index = 5;
-    else if (strcmp(sample_type, "DDBAR") == 0) index = 6;
-    else if (strcmp(sample_type, "SSBAR") == 0) index = 7;
-    else if (strcmp(sample_type, "CHARM") == 0) index = 8;
+    else if (strcmp(sample_type, "CHG_MX1") == 0) index = 3;
+    else if (strcmp(sample_type, "CHG_MX2") == 0) index = 4;
+    else if (strcmp(sample_type, "CHG_MX3") == 0) index = 5;
+    else if (strcmp(sample_type, "MIX_MX1") == 0) index = 6;
+    else if (strcmp(sample_type, "MIX_MX2") == 0) index = 7;
+    else if (strcmp(sample_type, "MIX_MX3") == 0) index = 8;
+    else if (strcmp(sample_type, "UUBAR_MX1") == 0) index = 9;
+    else if (strcmp(sample_type, "UUBAR_MX2") == 0) index = 10;
+    else if (strcmp(sample_type, "UUBAR_MX3") == 0) index = 11;
+    else if (strcmp(sample_type, "DDBAR_MX1") == 0) index = 12;
+    else if (strcmp(sample_type, "DDBAR_MX2") == 0) index = 13;
+    else if (strcmp(sample_type, "DDBAR_MX3") == 0) index = 14;
+    else if (strcmp(sample_type, "SSBAR_MX1") == 0) index = 15;
+    else if (strcmp(sample_type, "SSBAR_MX2") == 0) index = 16;
+    else if (strcmp(sample_type, "SSBAR_MX3") == 0) index = 17;
+    else if (strcmp(sample_type, "CHARM_MX1") == 0) index = 18;
+    else if (strcmp(sample_type, "CHARM_MX2") == 0) index = 19;
+    else if (strcmp(sample_type, "CHARM_MX3") == 0) index = 20;
     else {
         printf("[ERROR] unexpected sample type!\n");
         exit(1);

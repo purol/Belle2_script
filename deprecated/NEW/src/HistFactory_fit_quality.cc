@@ -57,7 +57,7 @@
 #include "RooStats/HypoTestInverter.h"
 #include "RooStats/HypoTestInverterPlot.h"
 
-#include "Fitter_indep_norm.h"
+#include "Fitter.h"
 
 using namespace RooFit;
 using namespace RooStats;
@@ -395,12 +395,12 @@ void FitToData(RooWorkspace* w, double eps) {
 
     // get expected num of evts for PDFs
     double Signal_Nevts = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
-    double CHG_Nevts = GetNumEvts(w, "CHG_MX1") + GetNumEvts(w, "CHG_MX2") + GetNumEvts(w, "CHG_MX3");
-    double MIX_Nevts = GetNumEvts(w, "MIX_MX1") + GetNumEvts(w, "MIX_MX2") + GetNumEvts(w, "MIX_MX3");
-    double UUBAR_Nevts = GetNumEvts(w, "UUBAR_MX1") + GetNumEvts(w, "UUBAR_MX2") + GetNumEvts(w, "UUBAR_MX3");
-    double DDBAR_Nevts = GetNumEvts(w, "DDBAR_MX1") + GetNumEvts(w, "DDBAR_MX2") + GetNumEvts(w, "DDBAR_MX3");
-    double SSBAR_Nevts = GetNumEvts(w, "SSBAR_MX1") + GetNumEvts(w, "SSBAR_MX2") + GetNumEvts(w, "SSBAR_MX3");
-    double CHARM_Nevts = GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
+    double CHG_Nevts = GetNumEvts(w, "CHG");
+    double MIX_Nevts = GetNumEvts(w, "MIX");
+    double UUBAR_Nevts = GetNumEvts(w, "UUBAR");
+    double DDBAR_Nevts = GetNumEvts(w, "DDBAR");
+    double SSBAR_Nevts = GetNumEvts(w, "SSBAR");
+    double CHARM_Nevts = GetNumEvts(w, "CHARM");
 
     // draw
     RooPlot* x_frame = x_val->frame(Title("FBDT"));
@@ -523,12 +523,12 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
 
                 // get expected num of evts for PDFs
                 double Signal_Nevts = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
-                double CHG_Nevts = GetNumEvts(w, "CHG_MX1") + GetNumEvts(w, "CHG_MX2") + GetNumEvts(w, "CHG_MX3");
-                double MIX_Nevts = GetNumEvts(w, "MIX_MX1") + GetNumEvts(w, "MIX_MX2") + GetNumEvts(w, "MIX_MX3");
-                double UUBAR_Nevts = GetNumEvts(w, "UUBAR_MX1") + GetNumEvts(w, "UUBAR_MX2") + GetNumEvts(w, "UUBAR_MX3");
-                double DDBAR_Nevts = GetNumEvts(w, "DDBAR_MX1") + GetNumEvts(w, "DDBAR_MX2") + GetNumEvts(w, "DDBAR_MX3");
-                double SSBAR_Nevts = GetNumEvts(w, "SSBAR_MX1") + GetNumEvts(w, "SSBAR_MX2") + GetNumEvts(w, "SSBAR_MX3");
-                double CHARM_Nevts = GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
+                double CHG_Nevts = GetNumEvts(w, "CHG");
+                double MIX_Nevts = GetNumEvts(w, "MIX");
+                double UUBAR_Nevts = GetNumEvts(w, "UUBAR");
+                double DDBAR_Nevts = GetNumEvts(w, "DDBAR");
+                double SSBAR_Nevts = GetNumEvts(w, "SSBAR");
+                double CHARM_Nevts = GetNumEvts(w, "CHARM");
 
                 // draw
                 RooPlot* x_frame = x_val->frame(Title("FBDT"));
