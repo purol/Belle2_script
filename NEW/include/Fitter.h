@@ -401,7 +401,11 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->fraction) for (int i = 0; i < options_->NEntryfraction; i++) w->var(("alpha_fraction" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->fraction);
 
     // MC statistics
-    if (options_->MCstat) for (int i = 0; i < RarityBins; i++) w->var(("gamma_stat_channel_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+    if (options_->MCstat) {
+        for (int i = 0; i < RarityBins_MX1; i++) w->var(("gamma_stat_channel_MXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+        for (int i = 0; i < RarityBins_MX2; i++) w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+        for (int i = 0; i < RarityBins_MX3; i++) w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+    }
 
     // Fragmentation
     if (options_->Fragmentation) for (int i = 0; i < options_->NEntryFragmentation; i++) w->var(("alpha_Xs_fragmentation" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->Fragmentation);
