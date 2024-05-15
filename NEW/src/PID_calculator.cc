@@ -967,5 +967,4 @@ int main(int argc, char* argv[])
     fclose(fp);
     /* ====================================== */
 
-    delete temp_hist;
 }
