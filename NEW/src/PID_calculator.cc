@@ -68,7 +68,7 @@ std::default_random_engine generator(rd());
 
 /* ====================================== */
 
-void GetNominalNevt(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double Nevt_nominal[RarityBins * 7], double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+void GetNominalNevt(const char* dirname, const char* included_string, const char* type, const char* sample, double Nevt_nominal[RarityBins * 9], double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -169,7 +169,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, TH1D* hist
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -197,7 +197,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, TH1D* hist
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -287,7 +287,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, TH1D* hist
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -348,7 +348,39 @@ void GetNominalNevt(const char* dirname, const char* included_string, TH1D* hist
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
-            Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
+            int ArrayBinID = -1;
+            if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
+            else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
+            else if (strcmp(sample, "UUBAR") == 0) ArrayBinID = 2;
+            else if (strcmp(sample, "DDBAR") == 0) ArrayBinID = 3;
+            else if (strcmp(sample, "SSBAR") == 0) ArrayBinID = 4;
+            else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
+            else if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) ArrayBinID = 6;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) ArrayBinID = 7;
+                else if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) ArrayBinID = 8;
+            }
+
+            int BinIndex = (int)std::floor(ReturnBinIndex(MVA_var, Bsig_M));
+            Nevt_nominal[ArrayBinID * RarityBins + BinIndex] = Nevt_nominal[ArrayBinID * RarityBins + BinIndex] + total_weight;
+            Nevt = Nevt + total_weight;
         }
         input_file->Close();
 
@@ -356,24 +388,10 @@ void GetNominalNevt(const char* dirname, const char* included_string, TH1D* hist
 
     }
 
-    int ArrayBinID = -1;
-    
-    if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
-    else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
-    else if (strcmp(sample, "UUBAR") == 0) ArrayBinID = 2;
-    else if (strcmp(sample, "DDBAR") == 0) ArrayBinID = 3;
-    else if (strcmp(sample, "SSBAR") == 0) ArrayBinID = 4;
-    else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
-    else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 6;
-
-    for (int i = 0; i < RarityBins; i++) {
-        Nevt_nominal[ArrayBinID * RarityBins + i] = Nevt_nominal[ArrayBinID * RarityBins + i] + hist->GetBinContent(i + 1);
-    }
-
     return;
 }
 
-void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 7], int ToyNum, bool IsItKID, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+void GetFlucNevt(const char* dirname, const char* included_string, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 9], int ToyNum, bool IsItKID, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -474,7 +492,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -502,7 +520,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -592,7 +610,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -679,26 +697,44 @@ void GetFlucNevt(const char* dirname, const char* included_string, TH1D* hist, c
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
-            Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
+            int ArrayBinID = -1;
+            if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
+            else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
+            else if (strcmp(sample, "UUBAR") == 0) ArrayBinID = 2;
+            else if (strcmp(sample, "DDBAR") == 0) ArrayBinID = 3;
+            else if (strcmp(sample, "SSBAR") == 0) ArrayBinID = 4;
+            else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
+            else if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) ArrayBinID = 6;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) ArrayBinID = 7;
+                else if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) ArrayBinID = 8;
+            }
+
+            int BinIndex = (int)std::floor(ReturnBinIndex(MVA_var, Bsig_M));
+            Nevt_fluc[ToyNum][ArrayBinID * RarityBins + BinIndex] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins + BinIndex] + total_weight;
+            Nevt = Nevt + total_weight;
         }
         input_file->Close();
 
         printf("%s has %lf events (with correction)\n", dirname, Nevt);
 
-    }
-
-    int ArrayBinID = -1;
-
-    if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
-    else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
-    else if (strcmp(sample, "UUBAR") == 0) ArrayBinID = 2;
-    else if (strcmp(sample, "DDBAR") == 0) ArrayBinID = 3;
-    else if (strcmp(sample, "SSBAR") == 0) ArrayBinID = 4;
-    else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
-    else if (strcmp(sample, "SIGNAL") == 0) ArrayBinID = 6;
-
-    for (int i = 0; i < RarityBins; i++) {
-        Nevt_fluc[ToyNum][ArrayBinID * RarityBins + i] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins + i] + hist->GetBinContent(i + 1);
     }
 
     return;
@@ -804,19 +840,11 @@ int main(int argc, char* argv[])
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
-    double Nevt_nominal[RarityBins * 7] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL
-    double Nevt_fluc_KID[NToys][RarityBins * 7] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL
-    double Nevt_fluc_PID[NToys][RarityBins * 7] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL
-    double Relative_Uncertainty_KID[NToys][RarityBins * 7] = { 0.0 };
-    double Relative_Uncertainty_PID[NToys][RarityBins * 7] = { 0.0 };
-
-
-
-    /* ====================================== */
-    // define TH1D for temporary usage
-    TH1D* temp_hist = new TH1D("temp_hist", "temp_hist", RarityBins, BinMIN, BinMAX);
-    temp_hist->Reset();
-    /* ====================================== */
+    double Nevt_nominal[RarityBins * 9] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL_1 SIGNAL_2 SIGNAL_3
+    double Nevt_fluc_KID[NToys][RarityBins * 9] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL_1 SIGNAL_2 SIGNAL_3
+    double Nevt_fluc_PID[NToys][RarityBins * 9] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL_1 SIGNAL_2 SIGNAL_3
+    double Relative_Uncertainty_KID[NToys][RarityBins * 9] = { 0.0 };
+    double Relative_Uncertainty_PID[NToys][RarityBins * 9] = { 0.0 };
 
 
 
@@ -837,30 +865,18 @@ int main(int argc, char* argv[])
     /* ====================================== */
     // get nominal Nevt
     GetNominalNevt(MC_dirname_SIGNAL, "B2Knunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    temp_hist->Reset();
     GetNominalNevt(MC_dirname_SIGNAL, "B2Kstarnunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    temp_hist->Reset();
     GetNominalNevt(MC_dirname_SIGNAL, "B2Xsnunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    temp_hist->Reset();
     GetNominalNevt(MC_dirname_SIGNAL, "B02K0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    temp_hist->Reset();
     GetNominalNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    temp_hist->Reset();
     GetNominalNevt(MC_dirname_SIGNAL, "B02Xsnunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
-    temp_hist->Reset();
 
     GetNominalNevt(MC_dirname_CHG, "root", temp_hist, "Bplus", "CHG", Nevt_nominal, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    temp_hist->Reset();
     GetNominalNevt(MC_dirname_MIX, "root", temp_hist, "Bzero", "MIX", Nevt_nominal, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    temp_hist->Reset();
     GetNominalNevt(MC_dirname_UUBAR, "root", temp_hist, "Continuum", "UUBAR", Nevt_nominal, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    temp_hist->Reset();
     GetNominalNevt(MC_dirname_DDBAR, "root", temp_hist, "Continuum", "DDBAR", Nevt_nominal, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    temp_hist->Reset();
     GetNominalNevt(MC_dirname_SSBAR, "root", temp_hist, "Continuum", "SSBAR", Nevt_nominal, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    temp_hist->Reset();
     GetNominalNevt(MC_dirname_CHARM, "root", temp_hist, "Continuum", "CHARM", Nevt_nominal, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
-    temp_hist->Reset();
     /* ====================================== */
 
 
@@ -871,30 +887,18 @@ int main(int argc, char* argv[])
         FluctuatePIDCorrection(true);
 
         GetFlucNevt(MC_dirname_SIGNAL, "B2Knunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_SIGNAL, "B2Kstarnunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_SIGNAL, "B2Xsnunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_SIGNAL, "B02K0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_SIGNAL, "B02Xsnunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
-        temp_hist->Reset();
 
         GetFlucNevt(MC_dirname_CHG, "root", temp_hist, "Bplus", "CHG", Nevt_fluc_KID, i, true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_MIX, "root", temp_hist, "Bzero", "MIX", Nevt_fluc_KID, i, true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_UUBAR, "root", temp_hist, "Continuum", "UUBAR", Nevt_fluc_KID, i, true, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_DDBAR, "root", temp_hist, "Continuum", "DDBAR", Nevt_fluc_KID, i, true, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_SSBAR, "root", temp_hist, "Continuum", "SSBAR", Nevt_fluc_KID, i, true, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_CHARM, "root", temp_hist, "Continuum", "CHARM", Nevt_fluc_KID, i, true, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
-        temp_hist->Reset();
     }
     /* ====================================== */
 
@@ -906,30 +910,18 @@ int main(int argc, char* argv[])
         FluctuatePIDCorrection(false);
 
         GetFlucNevt(MC_dirname_SIGNAL, "B2Knunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_SIGNAL, "B2Kstarnunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_SIGNAL, "B2Xsnunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_SIGNAL, "B02K0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_SIGNAL, "B02Xsnunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
-        temp_hist->Reset();
 
         GetFlucNevt(MC_dirname_CHG, "root", temp_hist, "Bplus", "CHG", Nevt_fluc_PID, i, false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_MIX, "root", temp_hist, "Bzero", "MIX", Nevt_fluc_PID, i, false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_UUBAR, "root", temp_hist, "Continuum", "UUBAR", Nevt_fluc_PID, i, false, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_DDBAR, "root", temp_hist, "Continuum", "DDBAR", Nevt_fluc_PID, i, false, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_SSBAR, "root", temp_hist, "Continuum", "SSBAR", Nevt_fluc_PID, i, false, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-        temp_hist->Reset();
         GetFlucNevt(MC_dirname_CHARM, "root", temp_hist, "Continuum", "CHARM", Nevt_fluc_PID, i, false, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
-        temp_hist->Reset();
     }
     /* ====================================== */
 
@@ -937,13 +929,13 @@ int main(int argc, char* argv[])
     /* ====================================== */
     // get relative uncertainty
     for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 7; j++) {
+        for (int j = 0; j < RarityBins * 9; j++) {
             if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty_KID[i][j] = 1.0;
             else Relative_Uncertainty_KID[i][j] = Nevt_fluc_KID[i][j] / Nevt_nominal[j];
         }
     }
     for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 7; j++) {
+        for (int j = 0; j < RarityBins * 9; j++) {
             if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty_PID[i][j] = 1.0;
             else Relative_Uncertainty_PID[i][j] = Nevt_fluc_PID[i][j] / Nevt_nominal[j];
         }
@@ -958,7 +950,7 @@ int main(int argc, char* argv[])
     
     fp = fopen(("KID_toys_" + std::string(argv[1]) + ".txt").c_str(), "w");
     for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 7; j++) {
+        for (int j = 0; j < RarityBins * 9; j++) {
             fprintf(fp, "%lf ", Relative_Uncertainty_KID[i][j]);
         }
         fprintf(fp, "\n");
@@ -967,7 +959,7 @@ int main(int argc, char* argv[])
 
     fp = fopen(("PID_toys_" + std::string(argv[1]) + ".txt").c_str(), "w");
     for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 7; j++) {
+        for (int j = 0; j < RarityBins * 9; j++) {
             fprintf(fp, "%lf ", Relative_Uncertainty_PID[i][j]);
         }
         fprintf(fp, "\n");
