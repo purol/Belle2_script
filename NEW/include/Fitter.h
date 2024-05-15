@@ -633,7 +633,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
 
             *x_val = binCenter; // set x value
 
-            RooAbsReal* temp_func = w->function(Sample_names.at(index).c_str());
+            RooAbsReal* temp_func = w->function(Sample_names.at(i).c_str());
             double Nevt = temp_func->getValV();
 
             int index = -1;
