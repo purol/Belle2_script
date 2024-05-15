@@ -388,7 +388,7 @@ double BDTcToWeight(double BDTc) {
 
 }
 
-double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -402,6 +402,11 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
     else if (strcmp(type, "Continuum") == 0) {}
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -477,7 +482,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -505,7 +510,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -595,7 +600,40 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);

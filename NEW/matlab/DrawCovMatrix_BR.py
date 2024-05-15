@@ -9,7 +9,8 @@ import matplotlib.pyplot as plt
 
 from matplotlib.ticker import FixedLocator
 
-Nbins = 22
+plt.figure(figsize=(6.4 * 1.6, 4.8 * 1.6))
+Nbins = 15
 
 # BR
 file_BR_corr_all = "BR_corr_all.txt"
@@ -22,8 +23,8 @@ ar = np.array(BR_corr_all)
 ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-1.0, vmax=1.0)
 ax.tick_params(left=False, bottom=False)
 
-labels = ["CHG", "MIX", "Signal"]
-ticks = [ i * Nbins for i in range(4)]
+labels = ["CHG", "MIX", "Signal_1", "Signal_2", "Signal_3"]
+ticks = [i * Nbins for i in range(6)]
 ax.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
 ax.set_yticklabels(labels, rotation=90, va="center")
 ax.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
@@ -38,8 +39,8 @@ ar_p = np.array(BR_corr_partial)
 ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-1.0, vmax=1.0)
 ax_p.tick_params(left=False, bottom=False)
 
-labels = ["CHG", "MIX", "Signal"]
-ticks = [i * Nbins for i in range(4)]
+labels = ["CHG", "MIX", "Signal_1", "Signal_2", "Signal_3"]
+ticks = [i * Nbins for i in range(6)]
 ax_p.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
 ax_p.set_yticklabels(labels, rotation=90, va="center")
 ax_p.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
