@@ -5,7 +5,12 @@
 # include <string>
 # include "RooFitResult.h"
 # include "template.h"
-#include "correctors.h"
+# include "correctors.h"
+# include <cstring>
+# include "THStack.h"
+# include "TStyle.h"
+# include "TLine.h"
+# include "TColor.h"
 
 using namespace RooFit;
 using namespace RooStats;
@@ -14,27 +19,27 @@ using namespace HistFactory;
 Corrector_Fragmentation corrector_Fragmentation;
 
 std::vector<std::string> Sample_names = {
-    "L_x_Signal_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_Signal_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_Signal_nominal_MXs3_channel_overallSyst_x_StatUncert",
-    "L_x_CHG_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_CHG_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_CHG_nominal_MXs3_channel_overallSyst_x_StatUncert",
-    "L_x_MIX_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_MIX_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_MIX_nominal_MXs3_channel_overallSyst_x_StatUncert",
-    "L_x_UUBAR_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_UUBAR_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_UUBAR_nominal_MXs3_channel_overallSyst_x_StatUncert",
-    "L_x_DDBAR_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_DDBAR_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_DDBAR_nominal_MXs3_channel_overallSyst_x_StatUncert",
-    "L_x_SSBAR_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_SSBAR_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_SSBAR_nominal_MXs3_channel_overallSyst_x_StatUncert",
-    "L_x_CHARM_nominal_MXs1_channel_overallSyst_x_StatUncert",
-    "L_x_CHARM_nominal_MXs2_channel_overallSyst_x_StatUncert",
-    "L_x_CHARM_nominal_MXs3_channel_overallSyst_x_StatUncert"
+    "L_x_Signal_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_Signal_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_Signal_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
+    "L_x_CHG_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_CHG_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_CHG_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
+    "L_x_MIX_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_MIX_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_MIX_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
+    "L_x_UUBAR_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_UUBAR_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_UUBAR_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
+    "L_x_DDBAR_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_DDBAR_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_DDBAR_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
+    "L_x_SSBAR_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_SSBAR_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_SSBAR_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
+    "L_x_CHARM_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
+    "L_x_CHARM_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
+    "L_x_CHARM_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert"
 };
 
 typedef struct Options
@@ -323,8 +328,10 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     w->loadSnapshot("NominalParamValues");
 
-    RooRealVar* x_val = w->var("obs_x_channel");
-    std::unique_ptr<RooArgSet> params{model->getParameters(*x_val)};
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+    std::unique_ptr<RooArgSet> params{model->getParameters(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3))};
 
     // track
     if (options_->track) w->var("alpha_track_eff_uncer")->setConstant(options_->track);
@@ -398,7 +405,11 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->fraction) for (int i = 0; i < options_->NEntryfraction; i++) w->var(("alpha_fraction" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->fraction);
 
     // MC statistics
-    if (options_->MCstat) for (int i = 0; i < RarityBins; i++) w->var(("gamma_stat_channel_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+    if (options_->MCstat) {
+        for (int i = 0; i < RarityBins_MX1; i++) w->var(("gamma_stat_channel_MXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+        for (int i = 0; i < RarityBins_MX2; i++) w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+        for (int i = 0; i < RarityBins_MX3; i++) w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+    }
 
     // Fragmentation
     if (options_->Fragmentation) for (int i = 0; i < options_->NEntryFragmentation; i++) w->var(("alpha_Xs_fragmentation" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->Fragmentation);
@@ -457,7 +468,14 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
     RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-    RooRealVar* x_val = w->var("obs_x_channel");
+    RooRealVar* x_val;
+    if (std::strstr(sample_type, "MX1") != nullptr) x_val = w->var("obs_x_channel_MXs1");
+    else if (std::strstr(sample_type, "MX2") != nullptr) x_val = w->var("obs_x_channel_MXs2");
+    else if (std::strstr(sample_type, "MX3") != nullptr) x_val = w->var("obs_x_channel_MXs3");
+    else {
+        printf("[ERROR] unexpected sample type!\n");
+        exit(1);
+    }
 
     int index = -1;
     if (strcmp(sample_type, "Signal_MX1") == 0) index = 0;
@@ -561,6 +579,151 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
     status = minim.minimize(minimizer, algorithm);
 
     return minim.save();
+}
+
+void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
+
+    THStack* Stack = new THStack("Stack", ";FBDT index;number of event");
+    TH1D* charged_hist = new TH1D("charged", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* mixed_hist = new TH1D("mixed", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* uubar_hist = new TH1D("u#bar{u}", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* ddbar_hist = new TH1D("d#bar{d}", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* ssbar_hist = new TH1D("s#bar{s}", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* ccbar_hist = new TH1D("c#bar{c}", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* SIGNAL_hist = new TH1D("SIGNAL", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* all_hist = new TH1D("all", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* data_hist = nullptr;
+    if (data != nullptr) {
+        data_hist = new TH1D("data", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
+        data_hist->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+    }
+    TH1D* Ratio_hist = new TH1D("Ratio", ";FBDT index;data/MC", RarityBins, BinMIN, BinMAX);
+
+    // fill histogram
+    for (int i = 0; i < Sample_names.size(); i++) {
+
+        RooRealVar* x_val;
+        if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs1") != nullptr) x_val = w->var("obs_x_channel_MXs1");
+        else if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs2") != nullptr) x_val = w->var("obs_x_channel_MXs2");
+        else if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs3") != nullptr) x_val = w->var("obs_x_channel_MXs3");
+        else {
+            printf("[ERROR] unexpected sample type!\n");
+            exit(1);
+        }
+
+        RooAbsBinning const& binning = x_val->getBinning();
+        const double oldVal = x_val->getVal();
+
+        TH1D* temp_hist;
+        if (std::strstr(Sample_names.at(i).c_str(), "Signal") != nullptr) temp_hist = SIGNAL_hist;
+        else if (std::strstr(Sample_names.at(i).c_str(), "CHG") != nullptr) temp_hist = charged_hist;
+        else if (std::strstr(Sample_names.at(i).c_str(), "MIX") != nullptr) temp_hist = mixed_hist;
+        else if (std::strstr(Sample_names.at(i).c_str(), "UUBAR") != nullptr) temp_hist = uubar_hist;
+        else if (std::strstr(Sample_names.at(i).c_str(), "DDBAR") != nullptr) temp_hist = ddbar_hist;
+        else if (std::strstr(Sample_names.at(i).c_str(), "SSBAR") != nullptr) temp_hist = ssbar_hist;
+        else if (std::strstr(Sample_names.at(i).c_str(), "CHARM") != nullptr) temp_hist = ccbar_hist;
+        else {
+            printf("[ERROR] unexpected sample type!\n");
+            exit(1);
+        }
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val = binCenter; // set x value
+
+            RooAbsReal* temp_func = w->function(Sample_names.at(i).c_str());
+            double Nevt = temp_func->getValV();
+
+            int index = -1;
+            if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs1") != nullptr) index = iBin + 1;
+            else if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs2") != nullptr) index = iBin + RarityBins_MX1 + 1;
+            else if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs3") != nullptr) index = iBin + RarityBins_MX1 + RarityBins_MX2 + 1;
+            else {
+                printf("[ERROR] unexpected sample type!\n");
+                exit(1);
+            }
+
+            temp_hist->SetBinContent(index, Nevt);
+            all_hist->Fill(((double)index) - 0.5, Nevt);
+            all_hist->SetBinError(index, 0);
+        }
+
+        *x_val = oldVal;
+
+    }
+
+    // Fill data
+    if (data != nullptr) {
+        for (int i = 0; i < RarityBins; i++) {
+            const RooArgSet* argSet = data->get(i);
+            data_hist->SetBinContent(i + 1, data->weight());
+        }
+    }
+
+    // fill stack
+    Stack->Add(charged_hist);
+    Stack->Add(mixed_hist);
+    Stack->Add(uubar_hist);
+    Stack->Add(ddbar_hist);
+    Stack->Add(ssbar_hist);
+    Stack->Add(ccbar_hist);
+    Stack->Add(SIGNAL_hist);
+
+    // fill ratio
+    Ratio_hist->SetLineColor(kBlack); Ratio_hist->SetMarkerStyle(21); Ratio_hist->Sumw2(); Ratio_hist->SetStats(0);
+    Ratio_hist->Divide(data_hist, all_hist);
+
+    // draw plot
+    TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+
+    TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
+    pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
+    pad1->SetGridx(); pad1->Draw(); pad1->cd();
+
+    gStyle->SetPalette(kPastel);
+
+    Stack->Draw("pfc Hist");
+    if (data != nullptr) {
+        data_hist->SetLineWidth(2);
+        data_hist->SetLineColor(kBlack);
+        data_hist->SetMarkerStyle(8);
+        data_hist->Draw("SAME eP");
+    }
+    TLegend* legend = pad1->BuildLegend(0.9, 0.9, 0.7, 0.7);
+    legend->SetFillStyle(0); legend->SetLineWidth(0);
+
+    c_temp->cd();
+    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+    Ratio_hist->SetMinimum(0.5); Ratio_hist->SetMaximum(1.5); Ratio_hist->SetLineWidth(2);
+    Ratio_hist->GetYaxis()->SetTitleSize(0.08); Ratio_hist->GetYaxis()->SetTitleOffset(0.5);
+    Ratio_hist->GetXaxis()->SetLabelSize(0.08); Ratio_hist->GetYaxis()->SetLabelSize(0.08);
+    Ratio_hist->Draw("e0p");
+    TLine* line = new TLine(Ratio_hist->GetXaxis()->GetXmin(), 1.0, Ratio_hist->GetXaxis()->GetXmax(), 1.0);
+    line->SetLineColor(kRed);
+    line->SetLineStyle(1); line->SetLineWidth(3);
+    line->Draw();
+
+    c_temp->SetBottomMargin(0.0);
+    c_temp->SaveAs("hist_data_plot.png");
+
+    // delete
+    delete c_temp;
+
+    delete Stack;
+    delete charged_hist;
+    delete mixed_hist;
+    delete uubar_hist;
+    delete ddbar_hist;
+    delete ssbar_hist;
+    delete ccbar_hist;
+    delete SIGNAL_hist;
+    delete all_hist;
+    if (data != nullptr) {
+        delete data_hist;
+    }
+    delete Ratio_hist;
 }
 
 void ObtainNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll) {
