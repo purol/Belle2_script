@@ -29,12 +29,6 @@
 # define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
 # define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
 
-// arXiv:1409.4557v2
-# define BR_Kplus_nunubar_OLD 0.00000398
-# define BR_K0_nunubar_OLD (BR_Kplus_nunubar_OLD*TB0/TBp)
-# define BR_Xsu_nonresonant_nunubar_OLD (BR_Xs_nunubar - BR_Kplus_nunubar_OLD - BR_Kplusstar_nunubar)
-# define BR_Xsd_nonresonant_nunubar_OLD (BR_Xs_nunubar - BR_K0_nunubar_OLD - BR_K0star_nunubar)
-
 // according to DIRAC
 # define N_BpBp_1invab 540000000.0
 # define N_B0B0_1invab 510000000.0
