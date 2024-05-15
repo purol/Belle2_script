@@ -730,8 +730,6 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
             int BinIndex = (int)std::floor(ReturnBinIndex(MVA_var, Bsig_M));
             Nevt_fluc[ToyNum][ArrayBinID * RarityBins + BinIndex] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins + BinIndex] + total_weight;
             Nevt = Nevt + total_weight;
-
-            Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
         }
         input_file->Close();
 
