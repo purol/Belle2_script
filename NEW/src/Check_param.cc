@@ -260,33 +260,7 @@ int main() {
     double CHARM_Nevts = GetNumEvts(w, "CHARM");
 
     // draw
-    model->plotOn(x_frame, Name("signal_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed - 6), LineWidth(0), Components("L_x_*Signal*_StatUncert,L_x_*CHG*_StatUncert,L_x_*MIX*_StatUncert,L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(Signal_Nevts + CHG_Nevts + MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
-    model->plotOn(x_frame, Name("CHG_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kBlue - 6), LineWidth(0), Components("L_x_*CHG*_StatUncert,L_x_*MIX*_StatUncert,L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(CHG_Nevts + MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
-    model->plotOn(x_frame, Name("MIX_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kCyan - 6), LineWidth(0), Components("L_x_*MIX*_StatUncert,L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
-    model->plotOn(x_frame, Name("UUBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kOrange - 6), LineWidth(0), Components("L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
-    model->plotOn(x_frame, Name("DDBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kViolet - 6), LineWidth(0), Components("L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
-    model->plotOn(x_frame, Name("SSBAR_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kGreen - 6), LineWidth(0), Components("L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
-    model->plotOn(x_frame, Name("CHARM_name"), Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kYellow - 6), LineWidth(0), Components("L_x_*CHARM*_StatUncert"), Normalization(CHARM_Nevts, RooAbsReal::ScaleType::NumEvent));
-    data->plotOn(x_frame, Name("data_name"), DataError(RooAbsData::Poisson), Cut("channelCat==0"), RooFit::MarkerSize(1.0), RooFit::LineWidth(1.0), DrawOption("ZP"));
-    //model->paramOn(x_frame);
-    TCanvas* cdata = new TCanvas("sPlot", "sPlot demo", 700, 700);
-    x_frame->Draw();
-
-    TLegend* leg = new TLegend(0.7, 0.6, 0.9, 0.9);
-    leg->SetFillStyle(0);
-    leg->SetLineWidth(0);
-    leg->AddEntry("data_name", "Data", "LP");
-    leg->AddEntry("CHG_name", "charged", "F");
-    leg->AddEntry("MIX_name", "mixed", "F");
-    leg->AddEntry("UUBAR_name", "u#bar{u}", "F");
-    leg->AddEntry("DDBAR_name", "d#bar{d}", "F");
-    leg->AddEntry("SSBAR_name", "s#bar{s}", "F");
-    leg->AddEntry("CHARM_name", "c#bar{c}", "F");
-    leg->AddEntry("signal_name", "signal", "F");
-    leg->Draw();
-
-    cdata->SaveAs("FitResult.png");
-    delete cdata;
+    // GetPlotTemplate(w, data);
 
     // draw profile likelihood
     /*

@@ -467,32 +467,7 @@ void FitToData(RooWorkspace* w, double eps) {
     double CHARM_Nevts = GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
 
     // draw
-    RooPlot* x_frame = x_val_MXs1->frame(Title("FBDT"));
-    data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), DrawOption("ZP"), Name("data"));
-    //data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"), Normalization(1, RooAbsReal::ScaleType::NumEvent));
-    model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed - 6), LineWidth(0), Components("L_x_*Signal*_StatUncert,L_x_*CHG*_StatUncert,L_x_*MIX*_StatUncert,L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(Signal_Nevts + CHG_Nevts + MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("signal"));
-    model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kBlue - 6), LineWidth(0), Components("L_x_*CHG*_StatUncert,L_x_*MIX*_StatUncert,L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(CHG_Nevts + MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("Charged B"));
-    model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kCyan - 6), LineWidth(0), Components("L_x_*MIX*_StatUncert,L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("Neutral B"));
-    model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kOrange - 6), LineWidth(0), Components("L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("Continuum"));
-    data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), DrawOption("ZP"), Name("data"));
-
-    TCanvas* canvas = new TCanvas("sPlot", "sPlot demo", 700, 700);
-
-    // draw PDFs
-    x_frame->Draw();
-
-    // draw legend
-    TLegend* leg = new TLegend(0.9, 0.9, 0.7, 0.7);
-    leg->SetFillStyle(0);
-    leg->SetLineWidth(0);
-    leg->AddEntry("data", "Data");
-    leg->AddEntry("signal", "B #rightarrow X_{s} #nu #bar{#nu}");
-    leg->AddEntry("Charged B", "Charged B");
-    leg->AddEntry("Neutral B", "Neutral B");
-    leg->AddEntry("Continuum", "q#bar{q}");
-    leg->Draw();
-
-    canvas->SaveAs("fit_plot.png");
+    // GetPlotTemplate(w, data);
 
     // Get fitting variables
     RooArgSet fitargs = fitres->floatParsFinal();
@@ -597,32 +572,7 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
                 double CHARM_Nevts = GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
 
                 // draw
-                RooPlot* x_frame = x_val_MXs1->frame(Title("FBDT"));
-                data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), DrawOption("ZP"), Name("data"));
-                //data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), MarkerSize(0.4), DrawOption("ZP"), Normalization(1, RooAbsReal::ScaleType::NumEvent));
-                model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kRed - 6), LineWidth(0), Components("L_x_*Signal*_StatUncert,L_x_*CHG*_StatUncert,L_x_*MIX*_StatUncert,L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(Signal_Nevts + CHG_Nevts + MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("signal"));
-                model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kBlue - 6), LineWidth(0), Components("L_x_*CHG*_StatUncert,L_x_*MIX*_StatUncert,L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(CHG_Nevts + MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("Charged B"));
-                model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kCyan - 6), LineWidth(0), Components("L_x_*MIX*_StatUncert,L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(MIX_Nevts + UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("Neutral B"));
-                model->plotOn(x_frame, Slice(*idx), ProjWData(*idx, *data), DrawOption("F"), FillColor(kOrange - 6), LineWidth(0), Components("L_x_*UUBAR*_StatUncert,L_x_*DDBAR*_StatUncert,L_x_*SSBAR*_StatUncert,L_x_*CHARM*_StatUncert"), Normalization(UUBAR_Nevts + DDBAR_Nevts + SSBAR_Nevts + CHARM_Nevts, RooAbsReal::ScaleType::NumEvent), Name("Continuum"));
-                data->plotOn(x_frame, DataError(RooAbsData::Poisson), Cut("channelCat==0"), DrawOption("ZP"), Name("data"));
-
-                TCanvas* canvas = new TCanvas("sPlot", "sPlot demo", 700, 700);
-
-                // draw PDFs
-                x_frame->Draw();
-
-                // draw legend
-                TLegend* leg = new TLegend(0.9, 0.9, 0.7, 0.7);
-                leg->SetFillStyle(0);
-                leg->SetLineWidth(0);
-                leg->AddEntry("data", "Data");
-                leg->AddEntry("signal", "B #rightarrow X_{s} #nu #bar{#nu}");
-                leg->AddEntry("Charged B", "Charged B");
-                leg->AddEntry("Neutral B", "Neutral B");
-                leg->AddEntry("Continuum", "q#bar{q}");
-                leg->Draw();
-
-                canvas->SaveAs( (std::string("fit_plot_") + "mu-" + std::to_string(val) + "_" + "err-" + std::to_string(err) + "_" + std::to_string(fit_status) + ".png").c_str() );
+                // GetPlotTemplate(w, data);
 
                 delete canvas;
 
