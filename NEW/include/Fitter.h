@@ -5,8 +5,12 @@
 # include <string>
 # include "RooFitResult.h"
 # include "template.h"
-#include "correctors.h"
+# include "correctors.h"
 # include <cstring>
+# include "THStack.h"
+# include "TStyle.h"
+# include "TLine.h"
+# include "TColor.h"
 
 using namespace RooFit;
 using namespace RooStats;
@@ -599,9 +603,9 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
     for (int i = 0; i < Sample_names.size(); i++) {
 
         RooRealVar* x_val;
-        if (std::strstr(Sample_names.at(i), "channel_MXs1") != nullptr) x_val = w->var("obs_x_channel_MXs1");
-        else if (std::strstr(Sample_names.at(i), "channel_MXs2") != nullptr) x_val = w->var("obs_x_channel_MXs2");
-        else if (std::strstr(Sample_names.at(i), "channel_MXs3") != nullptr) x_val = w->var("obs_x_channel_MXs3");
+        if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs1") != nullptr) x_val = w->var("obs_x_channel_MXs1");
+        else if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs2") != nullptr) x_val = w->var("obs_x_channel_MXs2");
+        else if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs3") != nullptr) x_val = w->var("obs_x_channel_MXs3");
         else {
             printf("[ERROR] unexpected sample type!\n");
             exit(1);
@@ -611,13 +615,13 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
         const double oldVal = x_val->getVal();
 
         TH1D* temp_hist;
-        if (std::strstr(Sample_names.at(i), "Signal") != nullptr) temp_hist = SIGNAL_hist;
-        else if (std::strstr(Sample_names.at(i), "CHG") != nullptr) temp_hist = charged_hist;
-        else if (std::strstr(Sample_names.at(i), "MIX") != nullptr) temp_hist = mixed_hist;
-        else if (std::strstr(Sample_names.at(i), "UUBAR") != nullptr) temp_hist = uubar_hist;
-        else if (std::strstr(Sample_names.at(i), "DDBAR") != nullptr) temp_hist = ddbar_hist;
-        else if (std::strstr(Sample_names.at(i), "SSBAR") != nullptr) temp_hist = ssbar_hist;
-        else if (std::strstr(Sample_names.at(i), "CHARM") != nullptr) temp_hist = ccbar_hist;
+        if (std::strstr(Sample_names.at(i).c_str(), "Signal") != nullptr) temp_hist = SIGNAL_hist;
+        else if (std::strstr(Sample_names.at(i).c_str(), "CHG") != nullptr) temp_hist = charged_hist;
+        else if (std::strstr(Sample_names.at(i).c_str(), "MIX") != nullptr) temp_hist = mixed_hist;
+        else if (std::strstr(Sample_names.at(i).c_str(), "UUBAR") != nullptr) temp_hist = uubar_hist;
+        else if (std::strstr(Sample_names.at(i).c_str(), "DDBAR") != nullptr) temp_hist = ddbar_hist;
+        else if (std::strstr(Sample_names.at(i).c_str(), "SSBAR") != nullptr) temp_hist = ssbar_hist;
+        else if (std::strstr(Sample_names.at(i).c_str(), "CHARM") != nullptr) temp_hist = ccbar_hist;
         else {
             printf("[ERROR] unexpected sample type!\n");
             exit(1);
@@ -633,9 +637,9 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
             double Nevt = temp_func->getValV();
 
             int index = -1;
-            if (std::strstr(Sample_names.at(i), "channel_MXs1") != nullptr) index = iBin + 1;
-            else if (std::strstr(Sample_names.at(i), "channel_MXs2") != nullptr) index = iBin + RarityBins_MX1 + 1;
-            else if (std::strstr(Sample_names.at(i), "channel_MXs3") != nullptr) index = iBin + RarityBins_MX1 + RarityBins_MX2 + 1;
+            if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs1") != nullptr) index = iBin + 1;
+            else if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs2") != nullptr) index = iBin + RarityBins_MX1 + 1;
+            else if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs3") != nullptr) index = iBin + RarityBins_MX1 + RarityBins_MX2 + 1;
             else {
                 printf("[ERROR] unexpected sample type!\n");
                 exit(1);
@@ -653,7 +657,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
     // Fill data
     if (data != nullptr) {
         for (int i = 0; i < RarityBins; i++) {
-            RooArgSet* argSet = data->get(i);
+            const RooArgSet* argSet = data->get(i);
             data_hist->SetBinContent(i + 1, data->weight());
         }
     }
