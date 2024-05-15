@@ -597,7 +597,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
         data_hist = new TH1D("data", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
         data_hist->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
     }
-    TH1D* Ratio_hist = new TH1D("Ratio", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* Ratio_hist = new TH1D("Ratio", ";FBDT index;data/MC", RarityBins, BinMIN, BinMAX);
 
     // fill histogram
     for (int i = 0; i < Sample_names.size(); i++) {
