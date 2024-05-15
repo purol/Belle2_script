@@ -381,8 +381,6 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             int BinIndex = (int)std::floor(ReturnBinIndex(MVA_var, Bsig_M));
             Nevt_nominal[ArrayBinID * RarityBins + BinIndex] = Nevt_nominal[ArrayBinID * RarityBins + BinIndex] + total_weight;
             Nevt = Nevt + total_weight;
-
-            Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
         }
         input_file->Close();
 
@@ -771,19 +769,19 @@ int main(int argc, char* argv[])
 
     /* ====================================== */
     // get nominal Nevt
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Knunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Kstarnunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Xsnunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02K0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02Xsnunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+    GetNominalNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+    GetNominalNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
-    GetNominalNevt(MC_dirname_CHG, "root", temp_hist, "Bplus", "CHG", Nevt_nominal, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetNominalNevt(MC_dirname_MIX, "root", temp_hist, "Bzero", "MIX", Nevt_nominal, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    GetNominalNevt(MC_dirname_UUBAR, "root", temp_hist, "Continuum", "UUBAR", Nevt_nominal, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    GetNominalNevt(MC_dirname_DDBAR, "root", temp_hist, "Continuum", "DDBAR", Nevt_nominal, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    GetNominalNevt(MC_dirname_SSBAR, "root", temp_hist, "Continuum", "SSBAR", Nevt_nominal, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    GetNominalNevt(MC_dirname_CHARM, "root", temp_hist, "Continuum", "CHARM", Nevt_nominal, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+    GetNominalNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_nominal, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+    GetNominalNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_nominal, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetNominalNevt(MC_dirname_UUBAR, "root", "Continuum", "UUBAR", Nevt_nominal, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+    GetNominalNevt(MC_dirname_DDBAR, "root", "Continuum", "DDBAR", Nevt_nominal, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+    GetNominalNevt(MC_dirname_SSBAR, "root", "Continuum", "SSBAR", Nevt_nominal, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+    GetNominalNevt(MC_dirname_CHARM, "root", "Continuum", "CHARM", Nevt_nominal, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     /* ====================================== */
 
 
@@ -793,19 +791,19 @@ int main(int argc, char* argv[])
     for (int i = 0; i < NToys; i++) {
         Fluctuatepi0Correction();
 
-        GetFlucNevt(MC_dirname_SIGNAL, "B2Knunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-        GetFlucNevt(MC_dirname_SIGNAL, "B2Kstarnunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-        GetFlucNevt(MC_dirname_SIGNAL, "B2Xsnunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-        GetFlucNevt(MC_dirname_SIGNAL, "B02K0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-        GetFlucNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-        GetFlucNevt(MC_dirname_SIGNAL, "B02Xsnunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
-        GetFlucNevt(MC_dirname_CHG, "root", temp_hist, "Bplus", "CHG", Nevt_fluc_pi0, i, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-        GetFlucNevt(MC_dirname_MIX, "root", temp_hist, "Bzero", "MIX", Nevt_fluc_pi0, i, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-        GetFlucNevt(MC_dirname_UUBAR, "root", temp_hist, "Continuum", "UUBAR", Nevt_fluc_pi0, i, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-        GetFlucNevt(MC_dirname_DDBAR, "root", temp_hist, "Continuum", "DDBAR", Nevt_fluc_pi0, i, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-        GetFlucNevt(MC_dirname_SSBAR, "root", temp_hist, "Continuum", "SSBAR", Nevt_fluc_pi0, i, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-        GetFlucNevt(MC_dirname_CHARM, "root", temp_hist, "Continuum", "CHARM", Nevt_fluc_pi0, i, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+        GetFlucNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_fluc_pi0, i, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+        GetFlucNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_fluc_pi0, i, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+        GetFlucNevt(MC_dirname_UUBAR, "root", "Continuum", "UUBAR", Nevt_fluc_pi0, i, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_DDBAR, "root", "Continuum", "DDBAR", Nevt_fluc_pi0, i, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_SSBAR, "root", "Continuum", "SSBAR", Nevt_fluc_pi0, i, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_CHARM, "root", "Continuum", "CHARM", Nevt_fluc_pi0, i, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     }
     /* ====================================== */
 

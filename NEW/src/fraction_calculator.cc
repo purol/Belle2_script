@@ -751,15 +751,15 @@ int main(int argc, char* argv[])
 
     /* ====================================== */
     // get nominal Nevt
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Knunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Kstarnunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Xsnunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02K0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02Xsnunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+    GetNominalNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+    GetNominalNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
-    GetNominalNevt(MC_dirname_CHG, "root", temp_hist, "Bplus", "CHG", Nevt_nominal, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetNominalNevt(MC_dirname_MIX, "root", temp_hist, "Bzero", "MIX", Nevt_nominal, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetNominalNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_nominal, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+    GetNominalNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_nominal, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
     /* ====================================== */
 
 
@@ -769,15 +769,15 @@ int main(int argc, char* argv[])
     for (int i = 0; i < NToys; i++) {
         Fluctuatefraction();
 
-        GetFlucNevt(MC_dirname_SIGNAL, "B2Knunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * (BR_Kplus_nunubar_fluc / BR_Kplus_nunubar), "B2Knunu");
-        GetFlucNevt(MC_dirname_SIGNAL, "B2Kstarnunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu") * (BR_Kplusstar_nunubar_fluc / BR_Kplusstar_nunubar), "otherwise");
-        GetFlucNevt(MC_dirname_SIGNAL, "B2Xsnunu", temp_hist, "Bplus", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xs_nunubar - BR_Kplus_nunubar_fluc - BR_Kplusstar_nunubar_fluc) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu");
-        GetFlucNevt(MC_dirname_SIGNAL, "B02K0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * (BR_K0_nunubar_fluc / BR_K0_nunubar), "B02K0nunu");
-        GetFlucNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu") * (BR_K0star_nunubar_fluc / BR_K0star_nunubar), "otherwise");
-        GetFlucNevt(MC_dirname_SIGNAL, "B02Xsnunu", temp_hist, "Bzero", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xs_nunubar - BR_K0_nunubar_fluc - BR_K0star_nunubar_fluc) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * (BR_Kplus_nunubar_fluc / BR_Kplus_nunubar), "B2Knunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu") * (BR_Kplusstar_nunubar_fluc / BR_Kplusstar_nunubar), "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xs_nunubar - BR_Kplus_nunubar_fluc - BR_Kplusstar_nunubar_fluc) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * (BR_K0_nunubar_fluc / BR_K0_nunubar), "B02K0nunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu") * (BR_K0star_nunubar_fluc / BR_K0star_nunubar), "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xs_nunubar - BR_K0_nunubar_fluc - BR_K0star_nunubar_fluc) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu");
 
-        GetFlucNevt(MC_dirname_CHG, "root", temp_hist, "Bplus", "CHG", Nevt_fluc, i, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-        GetFlucNevt(MC_dirname_MIX, "root", temp_hist, "Bzero", "MIX", Nevt_fluc, i, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+        GetFlucNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_fluc, i, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+        GetFlucNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_fluc, i, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
     }
     /* ====================================== */
 

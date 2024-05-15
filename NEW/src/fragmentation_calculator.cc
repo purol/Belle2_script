@@ -786,15 +786,15 @@ int main(int argc, char* argv[])
 
     /* ====================================== */
     // get nominal Nevt
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Knunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Kstarnunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Xsnunu", temp_hist, "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02K0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02Xsnunu", temp_hist, "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+    GetNominalNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+    GetNominalNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+    GetNominalNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
-    GetNominalNevt(MC_dirname_CHG, "root", temp_hist, "Bplus", "CHG", Nevt_nominal, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetNominalNevt(MC_dirname_MIX, "root", temp_hist, "Bzero", "MIX", Nevt_nominal, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetNominalNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_nominal, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+    GetNominalNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_nominal, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
     /* ====================================== */
 
 
@@ -803,15 +803,15 @@ int main(int argc, char* argv[])
     // get +1sigma Nevt
     for (int bin = 0; bin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); bin++) {
         for (int category = 0; category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); category++) {
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Knunu", temp_hist, "Bplus", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Kstarnunu", temp_hist, "Bplus", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Xsnunu", temp_hist, "Bplus", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02K0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02Xsnunu", temp_hist, "Bzero", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
-            GetOneSigmaNevt(MC_dirname_CHG, "root", temp_hist, "Bplus", "CHG", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-            GetOneSigmaNevt(MC_dirname_MIX, "root", temp_hist, "Bzero", "MIX", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+            GetOneSigmaNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+            GetOneSigmaNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
         }
     }
     /* ====================================== */
@@ -822,15 +822,15 @@ int main(int argc, char* argv[])
     // get -1sigma Nevt
     for (int bin = 0; bin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); bin++) {
         for (int category = 0; category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); category++) {
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Knunu", temp_hist, "Bplus", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Kstarnunu", temp_hist, "Bplus", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Xsnunu", temp_hist, "Bplus", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02K0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", temp_hist, "Bzero", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02Xsnunu", temp_hist, "Bzero", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
-            GetOneSigmaNevt(MC_dirname_CHG, "root", temp_hist, "Bplus", "CHG", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-            GetOneSigmaNevt(MC_dirname_MIX, "root", temp_hist, "Bzero", "MIX", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+            GetOneSigmaNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+            GetOneSigmaNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
         }
     }
     /* ====================================== */
