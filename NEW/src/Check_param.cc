@@ -250,15 +250,6 @@ int main() {
     // define frame
     RooPlot* x_frame = x->frame(Title("fit result"));
 
-    // get expected num of evts for PDFs
-    double Signal_Nevts = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
-    double CHG_Nevts = GetNumEvts(w, "CHG");
-    double MIX_Nevts = GetNumEvts(w, "MIX");
-    double UUBAR_Nevts = GetNumEvts(w, "UUBAR");
-    double DDBAR_Nevts = GetNumEvts(w, "DDBAR");
-    double SSBAR_Nevts = GetNumEvts(w, "SSBAR");
-    double CHARM_Nevts = GetNumEvts(w, "CHARM");
-
     // draw
     // GetPlotTemplate(w, data);
 
