@@ -479,7 +479,6 @@ void FitToData(RooWorkspace* w, double eps) {
 
     w->loadSnapshot("ParamValues");
 
-    delete canvas;
     delete fitres;
 }
 
@@ -556,7 +555,6 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
                 // draw
                 // GetPlotTemplate(w, data);
 
-                delete canvas;
 
             }
         }
