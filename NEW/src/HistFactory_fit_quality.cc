@@ -300,7 +300,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
             *x_val_MXs1 = binCenter; // set x value
 
             for (unsigned int j = 0; j < Sample_names.size(); j++) {
-                if (std::strstr(Sample_names.at(j).c_str(), "MXs1") == nullptr) continue; // skip non-MXs1
+                if (std::strstr(Sample_names.at(j).c_str(), "channel_MXs1") == nullptr) continue; // skip non-MXs1
 
                 RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
                 Nevt = Nevt + temp_func->getValV();
@@ -326,7 +326,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
             *x_val_MXs2 = binCenter; // set x value
 
             for (unsigned int j = 0; j < Sample_names.size(); j++) {
-                if (std::strstr(Sample_names.at(j).c_str(), "MXs2") == nullptr) continue; // skip non-MXs2
+                if (std::strstr(Sample_names.at(j).c_str(), "channel_MXs2") == nullptr) continue; // skip non-MXs2
 
                 RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
                 Nevt = Nevt + temp_func->getValV();
@@ -352,7 +352,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
             *x_val_MXs3 = binCenter; // set x value
 
             for (unsigned int j = 0; j < Sample_names.size(); j++) {
-                if (std::strstr(Sample_names.at(j).c_str(), "MXs3") == nullptr) continue; // skip non-MXs3
+                if (std::strstr(Sample_names.at(j).c_str(), "channel_MXs3") == nullptr) continue; // skip non-MXs3
 
                 RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
                 Nevt = Nevt + temp_func->getValV();
