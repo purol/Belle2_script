@@ -6417,13 +6417,13 @@ int main()
     double Correction_factor_BR_Kstarzero[19] = { 0.0 };
 
     for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_Kstarff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
-    GetKstarffPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_Kstarff_array, Correction_factor_BR_Kstarplus, "Bplus", 1, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetKstarffPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_Kstarff_array, Correction_factor_BR_Kstarplus, "Bplus", 1, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), 2);
     for (int i = 0; i < 19; i++) {
         const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplusstar_nunubar - BR_Kplusstar_nunubar * Correction_factor_BR_Kstarplus[i]) / BR_Xsu_nonresonant_nunubar;
         GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_Kstarff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * non_res_Xsu_correction_factor, "B2Xsnunu", 2);
     }
     for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_Kstarff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
-    GetKstarffPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_Kstarff_array, Correction_factor_BR_Kstarzero, "Bzero", 0, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetKstarffPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_Kstarff_array, Correction_factor_BR_Kstarzero, "Bzero", 0, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), 2);
     for (int i = 0; i < 19; i++) {
         const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0star_nunubar - BR_K0star_nunubar * Correction_factor_BR_Kstarzero[i]) / BR_Xsd_nonresonant_nunubar;
         GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_Kstarff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * non_res_Xsd_correction_factor, "B02Xsnunu", 2);
@@ -6447,13 +6447,13 @@ int main()
     }
 
     for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kstarff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
-    GetKstarffPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kstarff_array, Correction_factor_BR_Kstarplus, "Bplus", 1, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetKstarffPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kstarff_array, Correction_factor_BR_Kstarplus, "Bplus", 1, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), 3);
     for (int i = 0; i < 19; i++) {
         const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplusstar_nunubar - BR_Kplusstar_nunubar * Correction_factor_BR_Kstarplus[i]) / BR_Xsu_nonresonant_nunubar;
         GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kstarff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * non_res_Xsu_correction_factor, "B2Xsnunu", 3);
     }
     for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kstarff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
-    GetKstarffPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kstarff_array, Correction_factor_BR_Kstarzero, "Bzero", 0, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetKstarffPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kstarff_array, Correction_factor_BR_Kstarzero, "Bzero", 0, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), 3);
     for (int i = 0; i < 19; i++) {
         const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0star_nunubar - BR_K0star_nunubar * Correction_factor_BR_Kstarzero[i]) / BR_Xsd_nonresonant_nunubar;
         GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kstarff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * non_res_Xsd_correction_factor, "B02Xsnunu", 3);
@@ -6802,9 +6802,9 @@ int main()
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_multiplicity_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_multiplicity_uncorrelated, RarityBins);
 
-    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_Fragmentation_correlated, RarityBins);
-    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_Fragmentation_correlated, RarityBins);
-    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_Fragmentation_correlated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_Fragmentation_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_Fragmentation_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_Fragmentation_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_Fragmentation_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_Fragmentation_uncorrelated, RarityBins);
 
@@ -6880,9 +6880,9 @@ int main()
 
     /* ====================================== */
     // calculate total Signal PDFs
-    AddPDFsWithRelativeUncertainty(Signal_nominal, Signal_MXs1_nominal, Signal_all_uncorrelated_MC_stat, Signal_MXs1_all_uncorrelated_MC_stat);
-    AddPDFsWithRelativeUncertainty(Signal_nominal, Signal_MXs2_nominal, Signal_all_uncorrelated_MC_stat, Signal_MXs2_all_uncorrelated_MC_stat);
-    AddPDFsWithRelativeUncertainty(Signal_nominal, Signal_MXs3_nominal, Signal_all_uncorrelated_MC_stat, Signal_MXs3_all_uncorrelated_MC_stat);
+    AddPDFsWithRelativeUncertainty(Signal_nominal, Signal_MXs1_nominal, Signal_all_uncorrelated_MC_stat, Signal_MXs1_all_uncorrelated_MC_stat, RarityBins);
+    AddPDFsWithRelativeUncertainty(Signal_nominal, Signal_MXs2_nominal, Signal_all_uncorrelated_MC_stat, Signal_MXs2_all_uncorrelated_MC_stat, RarityBins);
+    AddPDFsWithRelativeUncertainty(Signal_nominal, Signal_MXs3_nominal, Signal_all_uncorrelated_MC_stat, Signal_MXs3_all_uncorrelated_MC_stat, RarityBins);
 
     AddPDFs(Signal_track_p, Signal_MXs1_track_p);
     AddPDFs(Signal_track_p, Signal_MXs2_track_p);
