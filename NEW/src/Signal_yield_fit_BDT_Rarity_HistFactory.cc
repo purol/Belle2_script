@@ -5748,7 +5748,11 @@ void SaveSpecificMXsBin(TH1D*& hist, int MXsBin) {
     hist = replace_hist;
 }
 
-void AddPDFs(TH1D* output_hist, TH1D* input_hist, TH1D* output_reluncer_hist, TH1D* input_reluncer_hist, int Nbin) {
+void AddPDFs(TH1D* output_hist, TH1D* input_hist) {
+    output_hist->Add(output_hist, input_hist);
+}
+
+void AddPDFsWithRelativeUncertainty(TH1D* output_hist, TH1D* input_hist, TH1D* output_reluncer_hist, TH1D* input_reluncer_hist, int Nbin) {
     for (int i = 0; i < Nbin; i++) {
         double temp_1 = output_hist->GetBinContent(i + 1);
         double temp_2 = input_hist->GetBinContent(i + 1);
@@ -6746,11 +6750,15 @@ int main()
     ClearHist(SSBAR_all_uncorrelated);
     ClearHist(CHARM_all_uncorrelated);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_FEI_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_FEI_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_FEI_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_FEI_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_FEI_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_FEI_uncorrelated, RarityBins);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_KID_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_KID_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_KID_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_KID_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_KID_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_KID_uncorrelated, RarityBins);
     AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_KID_uncorrelated, RarityBins);
@@ -6758,7 +6766,9 @@ int main()
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_KID_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_KID_uncorrelated, RarityBins);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_PID_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_PID_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_PID_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_PID_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_PID_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_PID_uncorrelated, RarityBins);
     AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_PID_uncorrelated, RarityBins);
@@ -6766,11 +6776,15 @@ int main()
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_PID_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_PID_uncorrelated, RarityBins);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_BR_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_BR_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_BR_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_BR_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_BR_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_BR_uncorrelated, RarityBins);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_pi0_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_pi0_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_pi0_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_pi0_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_pi0_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_pi0_uncorrelated, RarityBins);
     AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_pi0_uncorrelated, RarityBins);
@@ -6778,7 +6792,9 @@ int main()
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_pi0_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_pi0_uncorrelated, RarityBins);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_multiplicity_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_multiplicity_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_multiplicity_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_multiplicity_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_multiplicity_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_multiplicity_uncorrelated, RarityBins);
     AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_multiplicity_uncorrelated, RarityBins);
@@ -6786,12 +6802,16 @@ int main()
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_multiplicity_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_multiplicity_uncorrelated, RarityBins);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_Fragmentation_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_Fragmentation_correlated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_Fragmentation_correlated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_Fragmentation_correlated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_Fragmentation_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_Fragmentation_uncorrelated, RarityBins);
 
     // calculate MC statistical uncertainties (relative errors)
-    GetMCstatisticalRelativeError(Signal_nominal, Signal_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(Signal_MXs1_nominal, Signal_MXs1_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(Signal_MXs2_nominal, Signal_MXs2_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(Signal_MXs3_nominal, Signal_MXs3_MC_stat, RarityBins);
     GetMCstatisticalRelativeError(CHG_nominal, CHG_MC_stat, RarityBins);
     GetMCstatisticalRelativeError(MIX_nominal, MIX_MC_stat, RarityBins);
     GetMCstatisticalRelativeError(UUBAR_nominal, UUBAR_MC_stat, RarityBins);
@@ -6800,7 +6820,9 @@ int main()
     GetMCstatisticalRelativeError(CHARM_nominal, CHARM_MC_stat, RarityBins);
 
     // all of uncorrelated uncertainties + MC statistical uncertainties
-    AddSQRTHist(Signal_all_uncorrelated_MC_stat, Signal_all_uncorrelated, Signal_MC_stat, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated_MC_stat, Signal_MXs1_all_uncorrelated, Signal_MXs1_MC_stat, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated_MC_stat, Signal_MXs2_all_uncorrelated, Signal_MXs2_MC_stat, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated_MC_stat, Signal_MXs3_all_uncorrelated, Signal_MXs3_MC_stat, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated_MC_stat, CHG_all_uncorrelated, CHG_MC_stat, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated_MC_stat, MIX_all_uncorrelated, MIX_MC_stat, RarityBins);
     AddSQRTHist(UUBAR_all_uncorrelated_MC_stat, UUBAR_all_uncorrelated, UUBAR_MC_stat, RarityBins);
@@ -6852,6 +6874,229 @@ int main()
     GetNominalPDFs(DATA_dirname_DDBAR, "root", total_DATA, "Continuum", "DATA", 1.0);
     GetNominalPDFs(DATA_dirname_SSBAR, "root", total_DATA, "Continuum", "DATA", 1.0);
     GetNominalPDFs(DATA_dirname_CHARM, "root", total_DATA, "Continuum", "DATA", 1.0);
+    /* ====================================== */
+
+
+
+    /* ====================================== */
+    // calculate total Signal PDFs
+    AddPDFsWithRelativeUncertainty(Signal_nominal, Signal_MXs1_nominal, Signal_all_uncorrelated_MC_stat, Signal_MXs1_all_uncorrelated_MC_stat);
+    AddPDFsWithRelativeUncertainty(Signal_nominal, Signal_MXs2_nominal, Signal_all_uncorrelated_MC_stat, Signal_MXs2_all_uncorrelated_MC_stat);
+    AddPDFsWithRelativeUncertainty(Signal_nominal, Signal_MXs3_nominal, Signal_all_uncorrelated_MC_stat, Signal_MXs3_all_uncorrelated_MC_stat);
+
+    AddPDFs(Signal_track_p, Signal_MXs1_track_p);
+    AddPDFs(Signal_track_p, Signal_MXs2_track_p);
+    AddPDFs(Signal_track_p, Signal_MXs3_track_p);
+    AddPDFs(Signal_track_m, Signal_MXs1_track_m);
+    AddPDFs(Signal_track_m, Signal_MXs2_track_m);
+    AddPDFs(Signal_track_m, Signal_MXs3_track_m);
+
+    AddPDFs(Signal_KS0_p, Signal_MXs1_KS0_p);
+    AddPDFs(Signal_KS0_p, Signal_MXs2_KS0_p);
+    AddPDFs(Signal_KS0_p, Signal_MXs3_KS0_p);
+    AddPDFs(Signal_KS0_m, Signal_MXs1_KS0_m);
+    AddPDFs(Signal_KS0_m, Signal_MXs2_KS0_m);
+    AddPDFs(Signal_KS0_m, Signal_MXs3_KS0_m);
+
+    Signal_FEI_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_FEI * 2);
+    for (int i = 0; i < NPDFs_FEI; i++) Signal_FEI_correlated[i] = new TH1D(("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_FEI; i < 2 * NPDFs_FEI; i++) Signal_FEI_correlated[i] = new TH1D(("Signal_FEI_correlated" + std::to_string(i - NPDFs_FEI) + "_m").c_str(), ("Signal_FEI_correlated" + std::to_string(i - NPDFs_FEI) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_FEI; i++) {
+        AddPDFs(Signal_FEI_correlated[i], Signal_MXs1_FEI_correlated[i]);
+        AddPDFs(Signal_FEI_correlated[i], Signal_MXs2_FEI_correlated[i]);
+        AddPDFs(Signal_FEI_correlated[i], Signal_MXs3_FEI_correlated[i]);
+    }
+
+    Signal_KID_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_KID * 2);
+    for (int i = 0; i < NPDFs_KID; i++) Signal_KID_correlated[i] = new TH1D(("Signal_KID_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_KID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_KID; i < 2 * NPDFs_KID; i++) Signal_KID_correlated[i] = new TH1D(("Signal_KID_correlated" + std::to_string(i - NPDFs_KID) + "_m").c_str(), ("Signal_KID_correlated" + std::to_string(i - NPDFs_KID) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_KID; i++) {
+        AddPDFs(Signal_KID_correlated[i], Signal_MXs1_KID_correlated[i]);
+        AddPDFs(Signal_KID_correlated[i], Signal_MXs2_KID_correlated[i]);
+        AddPDFs(Signal_KID_correlated[i], Signal_MXs3_KID_correlated[i]);
+    }
+
+    Signal_PID_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_PID * 2);
+    for (int i = 0; i < NPDFs_PID; i++) Signal_PID_correlated[i] = new TH1D(("Signal_PID_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_PID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_PID; i < 2 * NPDFs_PID; i++) Signal_PID_correlated[i] = new TH1D(("Signal_PID_correlated" + std::to_string(i - NPDFs_PID) + "_m").c_str(), ("Signal_PID_correlated" + std::to_string(i - NPDFs_PID) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_PID; i++) {
+        AddPDFs(Signal_PID_correlated[i], Signal_MXs1_PID_correlated[i]);
+        AddPDFs(Signal_PID_correlated[i], Signal_MXs2_PID_correlated[i]);
+        AddPDFs(Signal_PID_correlated[i], Signal_MXs3_PID_correlated[i]);
+    }
+
+    Signal_BR_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_BR * 2);
+    for (int i = 0; i < NPDFs_BR; i++) Signal_BR_correlated[i] = new TH1D(("Signal_BR_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_BR_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_BR; i < 2 * NPDFs_BR; i++) Signal_BR_correlated[i] = new TH1D(("Signal_BR_correlated" + std::to_string(i - NPDFs_BR) + "_m").c_str(), ("Signal_BR_correlated" + std::to_string(i - NPDFs_BR) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_BR; i++) {
+        AddPDFs(Signal_BR_correlated[i], Signal_MXs1_BR_correlated[i]);
+        AddPDFs(Signal_BR_correlated[i], Signal_MXs2_BR_correlated[i]);
+        AddPDFs(Signal_BR_correlated[i], Signal_MXs3_BR_correlated[i]);
+    }
+
+    Signal_pi0_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_pi0 * 2);
+    for (int i = 0; i < NPDFs_pi0; i++) Signal_pi0_correlated[i] = new TH1D(("Signal_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_pi0; i < 2 * NPDFs_pi0; i++) Signal_pi0_correlated[i] = new TH1D(("Signal_pi0_correlated" + std::to_string(i - NPDFs_pi0) + "_m").c_str(), ("Signal_pi0_correlated" + std::to_string(i - NPDFs_pi0) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_pi0; i++) {
+        AddPDFs(Signal_pi0_correlated[i], Signal_MXs1_pi0_correlated[i]);
+        AddPDFs(Signal_pi0_correlated[i], Signal_MXs2_pi0_correlated[i]);
+        AddPDFs(Signal_pi0_correlated[i], Signal_MXs3_pi0_correlated[i]);
+    }
+
+    AddPDFs(Signal_Kff1_p, Signal_MXs1_Kff1_p);
+    AddPDFs(Signal_Kff1_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kff1_p, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kff1_m, Signal_MXs1_Kff1_m);
+    AddPDFs(Signal_Kff1_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kff1_m, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kff2_p, Signal_MXs1_Kff2_p);
+    AddPDFs(Signal_Kff2_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kff2_p, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kff2_m, Signal_MXs1_Kff2_m);
+    AddPDFs(Signal_Kff2_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kff2_m, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kff3_p, Signal_MXs1_Kff3_p);
+    AddPDFs(Signal_Kff3_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kff3_p, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kff3_m, Signal_MXs1_Kff3_m);
+    AddPDFs(Signal_Kff3_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kff3_m, Signal_MXs3_nominal);
+
+    AddPDFs(Signal_Kstarff1_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff1_p, Signal_MXs2_Kstarff1_p);
+    AddPDFs(Signal_Kstarff1_p, Signal_MXs3_Kstarff1_p);
+    AddPDFs(Signal_Kstarff1_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff1_m, Signal_MXs2_Kstarff1_m);
+    AddPDFs(Signal_Kstarff1_m, Signal_MXs3_Kstarff1_m);
+    AddPDFs(Signal_Kstarff2_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff2_p, Signal_MXs2_Kstarff2_p);
+    AddPDFs(Signal_Kstarff2_p, Signal_MXs3_Kstarff2_p);
+    AddPDFs(Signal_Kstarff2_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff2_m, Signal_MXs2_Kstarff2_m);
+    AddPDFs(Signal_Kstarff2_m, Signal_MXs3_Kstarff2_m);
+    AddPDFs(Signal_Kstarff3_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff3_p, Signal_MXs2_Kstarff3_p);
+    AddPDFs(Signal_Kstarff3_p, Signal_MXs3_Kstarff3_p);
+    AddPDFs(Signal_Kstarff3_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff3_m, Signal_MXs2_Kstarff3_m);
+    AddPDFs(Signal_Kstarff3_m, Signal_MXs3_Kstarff3_m);
+    AddPDFs(Signal_Kstarff4_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff4_p, Signal_MXs2_Kstarff4_p);
+    AddPDFs(Signal_Kstarff4_p, Signal_MXs3_Kstarff4_p);
+    AddPDFs(Signal_Kstarff4_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff4_m, Signal_MXs2_Kstarff4_m);
+    AddPDFs(Signal_Kstarff4_m, Signal_MXs3_Kstarff4_m);
+    AddPDFs(Signal_Kstarff5_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff5_p, Signal_MXs2_Kstarff5_p);
+    AddPDFs(Signal_Kstarff5_p, Signal_MXs3_Kstarff5_p);
+    AddPDFs(Signal_Kstarff5_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff5_m, Signal_MXs2_Kstarff5_m);
+    AddPDFs(Signal_Kstarff5_m, Signal_MXs3_Kstarff5_m);
+    AddPDFs(Signal_Kstarff6_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff6_p, Signal_MXs2_Kstarff6_p);
+    AddPDFs(Signal_Kstarff6_p, Signal_MXs3_Kstarff6_p);
+    AddPDFs(Signal_Kstarff6_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff6_m, Signal_MXs2_Kstarff6_m);
+    AddPDFs(Signal_Kstarff6_m, Signal_MXs3_Kstarff6_m);
+    AddPDFs(Signal_Kstarff7_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff7_p, Signal_MXs2_Kstarff7_p);
+    AddPDFs(Signal_Kstarff7_p, Signal_MXs3_Kstarff7_p);
+    AddPDFs(Signal_Kstarff7_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff7_m, Signal_MXs2_Kstarff7_m);
+    AddPDFs(Signal_Kstarff7_m, Signal_MXs3_Kstarff7_m);
+    AddPDFs(Signal_Kstarff8_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff8_p, Signal_MXs2_Kstarff8_p);
+    AddPDFs(Signal_Kstarff8_p, Signal_MXs3_Kstarff8_p);
+    AddPDFs(Signal_Kstarff8_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff8_m, Signal_MXs2_Kstarff8_m);
+    AddPDFs(Signal_Kstarff8_m, Signal_MXs3_Kstarff8_m);
+    AddPDFs(Signal_Kstarff9_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff9_p, Signal_MXs2_Kstarff9_p);
+    AddPDFs(Signal_Kstarff9_p, Signal_MXs3_Kstarff9_p);
+    AddPDFs(Signal_Kstarff9_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff9_m, Signal_MXs2_Kstarff9_m);
+    AddPDFs(Signal_Kstarff9_m, Signal_MXs3_Kstarff9_m);
+
+    AddPDFs(Signal_Kfrac_p, Signal_MXs1_Kfrac_p);
+    AddPDFs(Signal_Kfrac_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kfrac_p, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kfrac_m, Signal_MXs1_Kfrac_m);
+    AddPDFs(Signal_Kfrac_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kfrac_m, Signal_MXs3_nominal);
+
+    AddPDFs(Signal_Kstarfrac_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarfrac_p, Signal_MXs2_Kstarfrac_p);
+    AddPDFs(Signal_Kstarfrac_p, Signal_MXs3_Kstarfrac_p);
+    AddPDFs(Signal_Kstarfrac_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarfrac_m, Signal_MXs2_Kstarfrac_m);
+    AddPDFs(Signal_Kstarfrac_m, Signal_MXs3_Kstarfrac_m);
+
+    Signal_Fragmentation_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_Fragmentation * 2);
+    for (int i = 0; i < NPDFs_Fragmentation; i++) Signal_Fragmentation_correlated[i] = new TH1D(("Signal_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_Fragmentation; i < 2 * NPDFs_Fragmentation; i++) Signal_Fragmentation_correlated[i] = new TH1D(("Signal_Fragmentation_correlated" + std::to_string(i - NPDFs_Fragmentation) + "_m").c_str(), ("Signal_Fragmentation_correlated" + std::to_string(i - NPDFs_Fragmentation) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_Fragmentation; i++) {
+        AddPDFs(Signal_Fragmentation_correlated[i], Signal_MXs1_nominal);
+        AddPDFs(Signal_Fragmentation_correlated[i], Signal_MXs2_nominal);
+        AddPDFs(Signal_Fragmentation_correlated[i], Signal_MXs3_Fragmentation_correlated[i]);
+    }
+
+    AddPDFs(Signal_pf_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_pf_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_pf_p, Signal_MXs3_pf_p);
+    AddPDFs(Signal_pf_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_pf_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_pf_m, Signal_MXs3_pf_m);
+
+    AddPDFs(Signal_mb_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_mb_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_mb_p, Signal_MXs3_mb_p);
+    AddPDFs(Signal_mb_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_mb_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_mb_m, Signal_MXs3_mb_m);
+
+    AddPDFs(Signal_transition_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_transition_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_transition_p, Signal_MXs3_transition_p);
+    AddPDFs(Signal_transition_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_transition_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_transition_m, Signal_MXs3_transition_m);
+
+    AddPDFs(Signal_mKstar_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_mKstar_p, Signal_MXs2_mKstar_p);
+    AddPDFs(Signal_mKstar_p, Signal_MXs3_mKstar_p);
+    AddPDFs(Signal_mKstar_m, Signal_MXs2_mKstar_m);
+    AddPDFs(Signal_mKstar_m, Signal_MXs2_mKstar_m);
+    AddPDFs(Signal_mKstar_m, Signal_MXs3_mKstar_m);
+
+    AddPDFs(Signal_Xnn_p, Signal_MXs1_Xnn_p);
+    AddPDFs(Signal_Xnn_p, Signal_MXs2_Xnn_p);
+    AddPDFs(Signal_Xnn_p, Signal_MXs3_Xnn_p);
+    AddPDFs(Signal_Xnn_m, Signal_MXs1_Xnn_m);
+    AddPDFs(Signal_Xnn_m, Signal_MXs2_Xnn_m);
+    AddPDFs(Signal_Xnn_m, Signal_MXs3_Xnn_m);
+
+    Signal_multiplicity_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_multiplicity * 2);
+    for (int i = 0; i < NPDFs_multiplicity; i++) Signal_multiplicity_correlated[i] = new TH1D(("Signal_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_multiplicity; i < 2 * NPDFs_multiplicity; i++) Signal_multiplicity_correlated[i] = new TH1D(("Signal_multiplicity_correlated" + std::to_string(i - NPDFs_multiplicity) + "_m").c_str(), ("Signal_multiplicity_correlated" + std::to_string(i - NPDFs_multiplicity) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_multiplicity; i++) {
+        AddPDFs(Signal_multiplicity_correlated[i], Signal_MXs1_multiplicity_correlated[i]);
+        AddPDFs(Signal_multiplicity_correlated[i], Signal_MXs2_multiplicity_correlated[i]);
+        AddPDFs(Signal_multiplicity_correlated[i], Signal_MXs3_multiplicity_correlated[i]);
+    }
+
+    AddPDFs(Signal_BtoDtoXKL_p, Signal_MXs1_BtoDtoXKL_p);
+    AddPDFs(Signal_BtoDtoXKL_p, Signal_MXs2_BtoDtoXKL_p);
+    AddPDFs(Signal_BtoDtoXKL_p, Signal_MXs3_BtoDtoXKL_p);
+    AddPDFs(Signal_BtoDtoXKL_m, Signal_MXs1_BtoDtoXKL_m);
+    AddPDFs(Signal_BtoDtoXKL_m, Signal_MXs2_BtoDtoXKL_m);
+    AddPDFs(Signal_BtoDtoXKL_m, Signal_MXs3_BtoDtoXKL_m);
+
+    AddPDFs(Signal_BRBtoXKLKL_p, Signal_MXs1_BRBtoXKLKL_p);
+    AddPDFs(Signal_BRBtoXKLKL_p, Signal_MXs2_BRBtoXKLKL_p);
+    AddPDFs(Signal_BRBtoXKLKL_p, Signal_MXs3_BRBtoXKLKL_p);
+    AddPDFs(Signal_BRBtoXKLKL_m, Signal_MXs1_BRBtoXKLKL_m);
+    AddPDFs(Signal_BRBtoXKLKL_m, Signal_MXs2_BRBtoXKLKL_m);
+    AddPDFs(Signal_BRBtoXKLKL_m, Signal_MXs3_BRBtoXKLKL_m);
     /* ====================================== */
 
 
