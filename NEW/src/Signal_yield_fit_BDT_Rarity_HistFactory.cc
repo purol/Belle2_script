@@ -6144,9 +6144,9 @@ int main()
     TH1D* CHARM_all_uncorrelated = new TH1D("CHARM_all_uncorrelated", "CHARM_all_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // MC statistical uncertainties
-    TH1D* Signal_MXs1_MC_stat = new TH1D("Signal_MC_stat", "Signal_MC_stat", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs2_MC_stat = new TH1D("Signal_MC_stat", "Signal_MC_stat", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs3_MC_stat = new TH1D("Signal_MC_stat", "Signal_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_MC_stat = new TH1D("Signal_MXs1_MC_stat", "Signal_MXs1_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_MC_stat = new TH1D("Signal_MXs2_MC_stat", "Signal_MXs2_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_MC_stat = new TH1D("Signal_MXs3_MC_stat", "Signal_MXs3_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_MC_stat = new TH1D("CHG_MC_stat", "CHG_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_MC_stat = new TH1D("MIX_MC_stat", "MIX_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_MC_stat = new TH1D("UUBAR_MC_stat", "UUBAR_MC_stat", RarityBins, BinMIN, BinMAX);
