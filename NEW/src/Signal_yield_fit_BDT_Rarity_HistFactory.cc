@@ -5779,6 +5779,9 @@ int main()
     // Define PDFs for HistFactory
     // nominal PDFs
     TH1D* Signal_nominal = new TH1D("Signal_nominal", "Signal_nominal", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_nominal = new TH1D("Signal_MXs1_nominal", "Signal_MXs1_nominal", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_nominal = new TH1D("Signal_MXs2_nominal", "Signal_MXs2_nominal", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_nominal = new TH1D("Signal_MXs3_nominal", "Signal_MXs3_nominal", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_nominal = new TH1D("CHG_nominal", "CHG_nominal", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_nominal = new TH1D("MIX_nominal", "MIX_nominal", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_nominal = new TH1D("UUBAR_nominal", "UUBAR_nominal", RarityBins, BinMIN, BinMAX);
@@ -5788,6 +5791,9 @@ int main()
 
     // track uncertainty
     TH1D* Signal_track_p = new TH1D("Signal_track_p", "Signal_track_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_track_p = new TH1D("Signal_MXs1_track_p", "Signal_MXs1_track_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_track_p = new TH1D("Signal_MXs2_track_p", "Signal_MXs2_track_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_track_p = new TH1D("Signal_MXs3_track_p", "Signal_MXs3_track_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_track_p = new TH1D("CHG_track_p", "CHG_track_p", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_track_p = new TH1D("MIX_track_p", "MIX_track_p", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_track_p = new TH1D("UUBAR_track_p", "UUBAR_track_p", RarityBins, BinMIN, BinMAX);
@@ -5795,6 +5801,9 @@ int main()
     TH1D* SSBAR_track_p = new TH1D("SSBAR_track_p", "SSBAR_track_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_track_p = new TH1D("CHARM_track_p", "CHARM_track_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_track_m = new TH1D("Signal_track_m", "Signal_track_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_track_m = new TH1D("Signal_MXs1_track_m", "Signal_MXs1_track_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_track_m = new TH1D("Signal_MXs2_track_m", "Signal_MXs2_track_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_track_m = new TH1D("Signal_MXs3_track_m", "Signal_MXs3_track_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_track_m = new TH1D("CHG_track_m", "CHG_track_m", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_track_m = new TH1D("MIX_track_m", "MIX_track_m", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_track_m = new TH1D("UUBAR_track_m", "UUBAR_track_m", RarityBins, BinMIN, BinMAX);
@@ -5804,6 +5813,9 @@ int main()
 
     // KS0 uncertainty
     TH1D* Signal_KS0_p = new TH1D("Signal_KS0_p", "Signal_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_KS0_p = new TH1D("Signal_MXs1_KS0_p", "Signal_MXs1_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_KS0_p = new TH1D("Signal_MXs2_KS0_p", "Signal_MXs2_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_KS0_p = new TH1D("Signal_MXs3_KS0_p", "Signal_MXs3_KS0_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_KS0_p = new TH1D("CHG_KS0_p", "CHG_KS0_p", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_KS0_p = new TH1D("MIX_KS0_p", "MIX_KS0_p", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_KS0_p = new TH1D("UUBAR_KS0_p", "UUBAR_KS0_p", RarityBins, BinMIN, BinMAX);
@@ -5811,6 +5823,9 @@ int main()
     TH1D* SSBAR_KS0_p = new TH1D("SSBAR_KS0_p", "SSBAR_KS0_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_KS0_p = new TH1D("CHARM_KS0_p", "CHARM_KS0_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_KS0_m = new TH1D("Signal_KS0_m", "Signal_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_KS0_m = new TH1D("Signal_MXs1_KS0_m", "Signal_MXs1_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_KS0_m = new TH1D("Signal_MXs2_KS0_m", "Signal_MXs2_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_KS0_m = new TH1D("Signal_MXs3_KS0_m", "Signal_MXs3_KS0_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_KS0_m = new TH1D("CHG_KS0_m", "CHG_KS0_m", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_KS0_m = new TH1D("MIX_KS0_m", "MIX_KS0_m", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_KS0_m = new TH1D("UUBAR_KS0_m", "UUBAR_KS0_m", RarityBins, BinMIN, BinMAX);
@@ -5820,16 +5835,24 @@ int main()
 
     // FEI uncertainty (correlated)
     TH1D** Signal_FEI_correlated;
+    TH1D** Signal_MXs1_FEI_correlated;
+    TH1D** Signal_MXs2_FEI_correlated;
+    TH1D** Signal_MXs3_FEI_correlated;
     TH1D** CHG_FEI_correlated;
     TH1D** MIX_FEI_correlated;
 
     // FEI uncertainty (uncorrelated)
-    TH1D* Signal_FEI_uncorrelated = new TH1D("Signal_FEI_uncorrelated", "Signal_FEI_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_FEI_uncorrelated = new TH1D("Signal_MXs1_FEI_uncorrelated", "Signal_MXs1_FEI_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_FEI_uncorrelated = new TH1D("Signal_MXs2_FEI_uncorrelated", "Signal_MXs2_FEI_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_FEI_uncorrelated = new TH1D("Signal_MXs3_FEI_uncorrelated", "Signal_MXs3_FEI_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_FEI_uncorrelated = new TH1D("CHG_FEI_uncorrelated", "CHG_FEI_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_FEI_uncorrelated = new TH1D("MIX_FEI_uncorrelated", "MIX_FEI_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // Kaon PID uncertainty (correlated)
     TH1D** Signal_KID_correlated;
+    TH1D** Signal_MXs1_KID_correlated;
+    TH1D** Signal_MXs2_KID_correlated;
+    TH1D** Signal_MXs3_KID_correlated;
     TH1D** CHG_KID_correlated;
     TH1D** MIX_KID_correlated;
     TH1D** UUBAR_KID_correlated;
@@ -5838,7 +5861,9 @@ int main()
     TH1D** CHARM_KID_correlated;
 
     // Kaon PID uncertainty (uncorrelated)
-    TH1D* Signal_KID_uncorrelated = new TH1D("Signal_KID_uncorrelated", "Signal_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_KID_uncorrelated = new TH1D("Signal_MXs1_KID_uncorrelated", "Signal_MXs1_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_KID_uncorrelated = new TH1D("Signal_MXs2_KID_uncorrelated", "Signal_MXs2_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_KID_uncorrelated = new TH1D("Signal_MXs3_KID_uncorrelated", "Signal_MXs3_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_KID_uncorrelated = new TH1D("CHG_KID_uncorrelated", "CHG_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_KID_uncorrelated = new TH1D("MIX_KID_uncorrelated", "MIX_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_KID_uncorrelated = new TH1D("UUBAR_KID_uncorrelated", "UUBAR_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -5848,6 +5873,9 @@ int main()
 
     // Pion PID uncertainty (correlated)
     TH1D** Signal_PID_correlated;
+    TH1D** Signal_MXs1_PID_correlated;
+    TH1D** Signal_MXs2_PID_correlated;
+    TH1D** Signal_MXs3_PID_correlated;
     TH1D** CHG_PID_correlated;
     TH1D** MIX_PID_correlated;
     TH1D** UUBAR_PID_correlated;
@@ -5856,7 +5884,9 @@ int main()
     TH1D** CHARM_PID_correlated;
 
     // Pion PID uncertainty (uncorrelated)
-    TH1D* Signal_PID_uncorrelated = new TH1D("Signal_PID_uncorrelated", "Signal_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_PID_uncorrelated = new TH1D("Signal_MXs1_PID_uncorrelated", "Signal_MXs1_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_PID_uncorrelated = new TH1D("Signal_MXs2_PID_uncorrelated", "Signal_MXs2_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_PID_uncorrelated = new TH1D("Signal_MXs3_PID_uncorrelated", "Signal_MXs3_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_PID_uncorrelated = new TH1D("CHG_PID_uncorrelated", "CHG_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_PID_uncorrelated = new TH1D("MIX_PID_uncorrelated", "MIX_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_PID_uncorrelated = new TH1D("UUBAR_PID_uncorrelated", "UUBAR_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -5866,16 +5896,24 @@ int main()
 
     // BB BR uncertainty(correlated)
     TH1D** Signal_BR_correlated;
+    TH1D** Signal_MXs1_BR_correlated;
+    TH1D** Signal_MXs2_BR_correlated;
+    TH1D** Signal_MXs3_BR_correlated;
     TH1D** CHG_BR_correlated;
     TH1D** MIX_BR_correlated;
 
     // BB BR uncertainty (uncorrelated)
-    TH1D* Signal_BR_uncorrelated = new TH1D("Signal_BR_uncorrelated", "Signal_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_BR_uncorrelated = new TH1D("Signal_MXs1_BR_uncorrelated", "Signal_MXs1_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_BR_uncorrelated = new TH1D("Signal_MXs2_BR_uncorrelated", "Signal_MXs2_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_BR_uncorrelated = new TH1D("Signal_MXs3_BR_uncorrelated", "Signal_MXs3_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_BR_uncorrelated = new TH1D("CHG_BR_uncorrelated", "CHG_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BR_uncorrelated = new TH1D("MIX_BR_uncorrelated", "MIX_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // pi0 uncertainty (correlated)
     TH1D** Signal_pi0_correlated;
+    TH1D** Signal_MXs1_pi0_correlated;
+    TH1D** Signal_MXs2_pi0_correlated;
+    TH1D** Signal_MXs3_pi0_correlated;
     TH1D** CHG_pi0_correlated;
     TH1D** MIX_pi0_correlated;
     TH1D** UUBAR_pi0_correlated;
@@ -5884,7 +5922,9 @@ int main()
     TH1D** CHARM_pi0_correlated;
 
     // pi0 uncertainty (uncorrelated)
-    TH1D* Signal_pi0_uncorrelated = new TH1D("Signal_pi0_uncorrelated", "Signal_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_pi0_uncorrelated = new TH1D("Signal_MXs1_pi0_uncorrelated", "Signal_MXs1_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_pi0_uncorrelated = new TH1D("Signal_MXs2_pi0_uncorrelated", "Signal_MXs2_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_pi0_uncorrelated = new TH1D("Signal_MXs3_pi0_uncorrelated", "Signal_MXs3_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_pi0_uncorrelated = new TH1D("CHG_pi0_uncorrelated", "CHG_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_pi0_uncorrelated = new TH1D("MIX_pi0_uncorrelated", "MIX_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_pi0_uncorrelated = new TH1D("UUBAR_pi0_uncorrelated", "UUBAR_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -5899,6 +5939,12 @@ int main()
     TH1D* Signal_Kff2_m = new TH1D("Signal_Kff2_m", "Signal_Kff2_m", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kff3_p = new TH1D("Signal_Kff3_p", "Signal_Kff3_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kff3_m = new TH1D("Signal_Kff3_m", "Signal_Kff3_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kff1_p = new TH1D("Signal_MXs1_Kff1_p", "Signal_MXs1_Kff1_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kff1_m = new TH1D("Signal_MXs1_Kff1_m", "Signal_MXs1_Kff1_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kff2_p = new TH1D("Signal_MXs1_Kff2_p", "Signal_MXs1_Kff2_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kff2_m = new TH1D("Signal_MXs1_Kff2_m", "Signal_MXs1_Kff2_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kff3_p = new TH1D("Signal_MXs1_Kff3_p", "Signal_MXs1_Kff3_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kff3_m = new TH1D("Signal_MXs1_Kff3_m", "Signal_MXs1_Kff3_m", RarityBins, BinMIN, BinMAX);
 
     // Kstar nu nubar form factor
     TH1D* Signal_Kstarff1_p = new TH1D("Signal_Kstarff1_p", "Signal_Kstarff1_p", RarityBins, BinMIN, BinMAX);
@@ -5919,38 +5965,91 @@ int main()
     TH1D* Signal_Kstarff8_m = new TH1D("Signal_Kstarff8_m", "Signal_Kstarff8_m", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kstarff9_p = new TH1D("Signal_Kstarff9_p", "Signal_Kstarff9_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kstarff9_m = new TH1D("Signal_Kstarff9_m", "Signal_Kstarff9_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff1_p = new TH1D("Signal_MXs2_Kstarff1_p", "Signal_MXs2_Kstarff1_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff1_m = new TH1D("Signal_MXs2_Kstarff1_m", "Signal_MXs2_Kstarff1_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff2_p = new TH1D("Signal_MXs2_Kstarff2_p", "Signal_MXs2_Kstarff2_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff2_m = new TH1D("Signal_MXs2_Kstarff2_m", "Signal_MXs2_Kstarff2_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff3_p = new TH1D("Signal_MXs2_Kstarff3_p", "Signal_MXs2_Kstarff3_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff3_m = new TH1D("Signal_MXs2_Kstarff3_m", "Signal_MXs2_Kstarff3_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff4_p = new TH1D("Signal_MXs2_Kstarff4_p", "Signal_MXs2_Kstarff4_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff4_m = new TH1D("Signal_MXs2_Kstarff4_m", "Signal_MXs2_Kstarff4_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff5_p = new TH1D("Signal_MXs2_Kstarff5_p", "Signal_MXs2_Kstarff5_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff5_m = new TH1D("Signal_MXs2_Kstarff5_m", "Signal_MXs2_Kstarff5_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff6_p = new TH1D("Signal_MXs2_Kstarff6_p", "Signal_MXs2_Kstarff6_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff6_m = new TH1D("Signal_MXs2_Kstarff6_m", "Signal_MXs2_Kstarff6_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff7_p = new TH1D("Signal_MXs2_Kstarff7_p", "Signal_MXs2_Kstarff7_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff7_m = new TH1D("Signal_MXs2_Kstarff7_m", "Signal_MXs2_Kstarff7_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff8_p = new TH1D("Signal_MXs2_Kstarff8_p", "Signal_MXs2_Kstarff8_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff8_m = new TH1D("Signal_MXs2_Kstarff8_m", "Signal_MXs2_Kstarff8_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff9_p = new TH1D("Signal_MXs2_Kstarff9_p", "Signal_MXs2_Kstarff9_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff9_m = new TH1D("Signal_MXs2_Kstarff9_m", "Signal_MXs2_Kstarff9_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff1_p = new TH1D("Signal_MXs3_Kstarff1_p", "Signal_MXs3_Kstarff1_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff1_m = new TH1D("Signal_MXs3_Kstarff1_m", "Signal_MXs3_Kstarff1_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff2_p = new TH1D("Signal_MXs3_Kstarff2_p", "Signal_MXs3_Kstarff2_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff2_m = new TH1D("Signal_MXs3_Kstarff2_m", "Signal_MXs3_Kstarff2_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff3_p = new TH1D("Signal_MXs3_Kstarff3_p", "Signal_MXs3_Kstarff3_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff3_m = new TH1D("Signal_MXs3_Kstarff3_m", "Signal_MXs3_Kstarff3_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff4_p = new TH1D("Signal_MXs3_Kstarff4_p", "Signal_MXs3_Kstarff4_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff4_m = new TH1D("Signal_MXs3_Kstarff4_m", "Signal_MXs3_Kstarff4_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff5_p = new TH1D("Signal_MXs3_Kstarff5_p", "Signal_MXs3_Kstarff5_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff5_m = new TH1D("Signal_MXs3_Kstarff5_m", "Signal_MXs3_Kstarff5_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff6_p = new TH1D("Signal_MXs3_Kstarff6_p", "Signal_MXs3_Kstarff6_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff6_m = new TH1D("Signal_MXs3_Kstarff6_m", "Signal_MXs3_Kstarff6_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff7_p = new TH1D("Signal_MXs3_Kstarff7_p", "Signal_MXs3_Kstarff7_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff7_m = new TH1D("Signal_MXs3_Kstarff7_m", "Signal_MXs3_Kstarff7_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff8_p = new TH1D("Signal_MXs3_Kstarff8_p", "Signal_MXs3_Kstarff8_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff8_m = new TH1D("Signal_MXs3_Kstarff8_m", "Signal_MXs3_Kstarff8_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff9_p = new TH1D("Signal_MXs3_Kstarff9_p", "Signal_MXs3_Kstarff9_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff9_m = new TH1D("Signal_MXs3_Kstarff9_m", "Signal_MXs3_Kstarff9_m", RarityBins, BinMIN, BinMAX);
 
     // fraction
     TH1D* Signal_Kfrac_p = new TH1D("Signal_Kfrac_p", "Signal_Kfrac_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kfrac_m = new TH1D("Signal_Kfrac_m", "Signal_Kfrac_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_Kff1_Kfrac_p = new TH1D("Signal_Kff1_Kfrac_p", "Signal_Kff1_Kfrac_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_Kff1_Kfrac_m = new TH1D("Signal_Kff1_Kfrac_m", "Signal_Kff1_Kfrac_m", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kstarfrac_p = new TH1D("Signal_Kstarfrac_p", "Signal_Kstarfrac_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kstarfrac_m = new TH1D("Signal_Kstarfrac_m", "Signal_Kstarfrac_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarfrac_p = new TH1D("Signal_MXs2_Kstarfrac_p", "Signal_MXs2_Kstarfrac_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarfrac_m = new TH1D("Signal_MXs2_Kstarfrac_m", "Signal_MXs2_Kstarfrac_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarfrac_p = new TH1D("Signal_MXs3_Kstarfrac_p", "Signal_MXs3_Kstarfrac_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarfrac_m = new TH1D("Signal_MXs3_Kstarfrac_m", "Signal_MXs3_Kstarfrac_m", RarityBins, BinMIN, BinMAX);
 
     // fragmentation uncertainty(correlated)
     TH1D** Signal_Fragmentation_correlated;
+    TH1D** Signal_MXs3_Fragmentation_correlated;
     TH1D** CHG_Fragmentation_correlated;
     TH1D** MIX_Fragmentation_correlated;
 
     // fragmentation uncertainty (uncorrelated)
-    TH1D* Signal_Fragmentation_uncorrelated = new TH1D("Signal_Fragmentation_uncorrelated", "Signal_Fragmentation_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Fragmentation_uncorrelated = new TH1D("Signal_MXs3_Fragmentation_uncorrelated", "Signal_MXs3_Fragmentation_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_Fragmentation_uncorrelated = new TH1D("CHG_Fragmentation_uncorrelated", "CHG_Fragmentation_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_Fragmentation_uncorrelated = new TH1D("MIX_Fragmentation_uncorrelated", "MIX_Fragmentation_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // pf
     TH1D* Signal_pf_p = new TH1D("Signal_pf_p", "Signal_pf_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_pf_p = new TH1D("Signal_MXs3_pf_p", "Signal_MXs3_pf_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_pf_m = new TH1D("Signal_pf_m", "Signal_pf_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_pf_m = new TH1D("Signal_MXs3_pf_m", "Signal_MXs3_pf_m", RarityBins, BinMIN, BinMAX);
 
     // mb
     TH1D* Signal_mb_p = new TH1D("Signal_mb_p", "Signal_mb_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_mb_p = new TH1D("Signal_MXs3_mb_p", "Signal_MXs3_mb_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_mb_m = new TH1D("Signal_mb_m", "Signal_mb_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_mb_m = new TH1D("Signal_MXs3_mb_m", "Signal_MXs3_mb_m", RarityBins, BinMIN, BinMAX);
 
     // transition
     TH1D* Signal_transition_p = new TH1D("Signal_transition_p", "Signal_transition_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_transition_p = new TH1D("Signal_MXs3_transition_p", "Signal_MXs3_transition_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_transition_m = new TH1D("Signal_transition_m", "Signal_transition_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_transition_m = new TH1D("Signal_MXs3_transition_m", "Signal_MXs3_transition_m", RarityBins, BinMIN, BinMAX);
 
     // mK*
     TH1D* Signal_mKstar_p = new TH1D("Signal_mKstar_p", "Signal_mKstar_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_mKstar_p = new TH1D("Signal_MXs2_mKstar_p", "Signal_MXs2_mKstar_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_mKstar_p = new TH1D("Signal_MXs3_mKstar_p", "Signal_MXs3_mKstar_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_mKstar_m = new TH1D("Signal_mKstar_m", "Signal_mKstar_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_mKstar_m = new TH1D("Signal_MXs2_mKstar_m", "Signal_MXs2_mKstar_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_mKstar_m = new TH1D("Signal_MXs3_mKstar_m", "Signal_MXs3_mKstar_m", RarityBins, BinMIN, BinMAX);
 
     // BDTc
     //TH1D* CHG_BDTc_p = new TH1D("CHG_BDTc_p", "CHG_BDTc_p", RarityBins, BinMIN, BinMAX);
@@ -5968,14 +6067,23 @@ int main()
 
     // B2Knn BR
     TH1D* Signal_Xnn_p = new TH1D("Signal_Xnn_p", "Signal_Xnn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Xnn_p = new TH1D("Signal_MXs1_Xnn_p", "Signal_MXs1_Xnn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Xnn_p = new TH1D("Signal_MXs2_Xnn_p", "Signal_MXs2_Xnn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Xnn_p = new TH1D("Signal_MXs3_Xnn_p", "Signal_MXs3_Xnn_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_Xnn_p = new TH1D("CHG_Xnn_p", "CHG_Xnn_p", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_Xnn_p = new TH1D("MIX_Xnn_p", "MIX_Xnn_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Xnn_m = new TH1D("Signal_Xnn_m", "Signal_Xnn_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Xnn_m = new TH1D("Signal_MXs1_Xnn_m", "Signal_MXs1_Xnn_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Xnn_m = new TH1D("Signal_MXs2_Xnn_m", "Signal_MXs2_Xnn_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Xnn_m = new TH1D("Signal_MXs3_Xnn_m", "Signal_MXs3_Xnn_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_Xnn_m = new TH1D("CHG_Xnn_m", "CHG_Xnn_m", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_Xnn_m = new TH1D("MIX_Xnn_m", "MIX_Xnn_m", RarityBins, BinMIN, BinMAX);
 
     // multiplicity uncertainty (correlated)
     TH1D** Signal_multiplicity_correlated;
+    TH1D** Signal_MXs1_multiplicity_correlated;
+    TH1D** Signal_MXs2_multiplicity_correlated;
+    TH1D** Signal_MXs3_multiplicity_correlated;
     TH1D** CHG_multiplicity_correlated;
     TH1D** MIX_multiplicity_correlated;
     TH1D** UUBAR_multiplicity_correlated;
@@ -5984,7 +6092,9 @@ int main()
     TH1D** CHARM_multiplicity_correlated;
 
     // multiplicity uncertainty (uncorrelated)
-    TH1D* Signal_multiplicity_uncorrelated = new TH1D("Signal_multiplicity_uncorrelated", "Signal_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_multiplicity_uncorrelated = new TH1D("Signal_MXs1_multiplicity_uncorrelated", "Signal_MXs1_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_multiplicity_uncorrelated = new TH1D("Signal_MXs2_multiplicity_uncorrelated", "Signal_MXs2_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_multiplicity_uncorrelated = new TH1D("Signal_MXs3_multiplicity_uncorrelated", "Signal_MXs3_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_multiplicity_uncorrelated = new TH1D("CHG_multiplicity_uncorrelated", "CHG_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_multiplicity_uncorrelated = new TH1D("MIX_multiplicity_uncorrelated", "MIX_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_multiplicity_uncorrelated = new TH1D("UUBAR_multiplicity_uncorrelated", "UUBAR_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -5994,22 +6104,36 @@ int main()
 
     // B -> [D -> X KL0] anything
     TH1D* Signal_BtoDtoXKL_p = new TH1D("Signal_BtoDtoXKL_p", "Signal_BtoDtoXKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_BtoDtoXKL_p = new TH1D("Signal_MXs1_BtoDtoXKL_p", "Signal_MXs1_BtoDtoXKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_BtoDtoXKL_p = new TH1D("Signal_MXs2_BtoDtoXKL_p", "Signal_MXs2_BtoDtoXKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_BtoDtoXKL_p = new TH1D("Signal_MXs3_BtoDtoXKL_p", "Signal_MXs3_BtoDtoXKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_BtoDtoXKL_p = new TH1D("CHG_BtoDtoXKL_p", "CHG_BtoDtoXKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BtoDtoXKL_p = new TH1D("MIX_BtoDtoXKL_p", "MIX_BtoDtoXKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_BtoDtoXKL_m = new TH1D("Signal_BtoDtoXKL_m", "Signal_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_BtoDtoXKL_m = new TH1D("Signal_MXs1_BtoDtoXKL_m", "Signal_MXs1_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_BtoDtoXKL_m = new TH1D("Signal_MXs2_BtoDtoXKL_m", "Signal_MXs2_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_BtoDtoXKL_m = new TH1D("Signal_MXs3_BtoDtoXKL_m", "Signal_MXs3_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_BtoDtoXKL_m = new TH1D("CHG_BtoDtoXKL_m", "CHG_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BtoDtoXKL_m = new TH1D("MIX_BtoDtoXKL_m", "MIX_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
 
     // BR(B -> X KL KL)
     TH1D* Signal_BRBtoXKLKL_p = new TH1D("Signal_BRBtoXKLKL_p", "Signal_BRBtoXKLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_BRBtoXKLKL_p = new TH1D("Signal_MXs1_BRBtoXKLKL_p", "Signal_MXs1_BRBtoXKLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_BRBtoXKLKL_p = new TH1D("Signal_MXs2_BRBtoXKLKL_p", "Signal_MXs2_BRBtoXKLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_BRBtoXKLKL_p = new TH1D("Signal_MXs3_BRBtoXKLKL_p", "Signal_MXs3_BRBtoXKLKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_BRBtoXKLKL_p = new TH1D("CHG_BRBtoXKLKL_p", "CHG_BRBtoXKLKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BRBtoXKLKL_p = new TH1D("MIX_BRBtoXKLKL_p", "MIX_BRBtoXKLKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_BRBtoXKLKL_m = new TH1D("Signal_BRBtoXKLKL_m", "Signal_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_BRBtoXKLKL_m = new TH1D("Signal_MXs1_BRBtoXKLKL_m", "Signal_MXs1_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_BRBtoXKLKL_m = new TH1D("Signal_MXs2_BRBtoXKLKL_m", "Signal_MXs2_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_BRBtoXKLKL_m = new TH1D("Signal_MXs3_BRBtoXKLKL_m", "Signal_MXs3_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_BRBtoXKLKL_m = new TH1D("CHG_BRBtoXKLKL_m", "CHG_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BRBtoXKLKL_m = new TH1D("MIX_BRBtoXKLKL_m", "MIX_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
 
     // all of uncorrelated uncertainties
-    TH1D* Signal_all_uncorrelated = new TH1D("Signal_all_uncorrelated", "Signal_all_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_all_uncorrelated = new TH1D("Signal_MXs1_all_uncorrelated", "Signal_MXs1_all_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_all_uncorrelated = new TH1D("Signal_MXs2_all_uncorrelated", "Signal_MXs2_all_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_all_uncorrelated = new TH1D("Signal_MXs3_all_uncorrelated", "Signal_MXs3_all_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_all_uncorrelated = new TH1D("CHG_all_uncorrelated", "CHG_all_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_all_uncorrelated = new TH1D("MIX_all_uncorrelated", "MIX_all_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_all_uncorrelated = new TH1D("UUBAR_all_uncorrelated", "UUBAR_all_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -6018,7 +6142,9 @@ int main()
     TH1D* CHARM_all_uncorrelated = new TH1D("CHARM_all_uncorrelated", "CHARM_all_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // MC statistical uncertainties
-    TH1D* Signal_MC_stat = new TH1D("Signal_MC_stat", "Signal_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_MC_stat = new TH1D("Signal_MC_stat", "Signal_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_MC_stat = new TH1D("Signal_MC_stat", "Signal_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_MC_stat = new TH1D("Signal_MC_stat", "Signal_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_MC_stat = new TH1D("CHG_MC_stat", "CHG_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_MC_stat = new TH1D("MIX_MC_stat", "MIX_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_MC_stat = new TH1D("UUBAR_MC_stat", "UUBAR_MC_stat", RarityBins, BinMIN, BinMAX);
@@ -6028,6 +6154,9 @@ int main()
 
     // all of uncorrelated uncertainties + MC statistical uncertainties
     TH1D* Signal_all_uncorrelated_MC_stat = new TH1D("Signal_all_uncorrelated_MC_stat", "Signal_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_all_uncorrelated_MC_stat = new TH1D("Signal_MXs1_all_uncorrelated_MC_stat", "Signal_MXs1_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_all_uncorrelated_MC_stat = new TH1D("Signal_MXs2_all_uncorrelated_MC_stat", "Signal_MXs2_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_all_uncorrelated_MC_stat = new TH1D("Signal_MXs3_all_uncorrelated_MC_stat", "Signal_MXs3_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_all_uncorrelated_MC_stat = new TH1D("CHG_all_uncorrelated_MC_stat", "CHG_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_all_uncorrelated_MC_stat = new TH1D("MIX_all_uncorrelated_MC_stat", "MIX_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_all_uncorrelated_MC_stat = new TH1D("UUBAR_all_uncorrelated_MC_stat", "UUBAR_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
