@@ -705,7 +705,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
     return Nevt;
 }
 
-double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get track efficiency uncertainty PDF with appropriate correction
+double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // get track efficiency uncertainty PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -719,6 +719,11 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
     else if (strcmp(type, "Continuum") == 0) {}
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -794,7 +799,7 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -822,7 +827,7 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -912,7 +917,40 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Ntrack = GetNtracks(Upsilon_ID, Bsig_ID);
 
@@ -990,7 +1028,7 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
     return Nevt;
 }
 
-double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get KS0 uncertainty PDF with appropriate correction
+double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // get KS0 uncertainty PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -1004,6 +1042,11 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
     else if (strcmp(type, "Continuum") == 0) {}
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -1080,7 +1123,7 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -1109,7 +1152,7 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_KS0_3D_distance);
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -1199,7 +1242,40 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -1275,16 +1351,16 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
     return Nevt;
 }
 
-int GetFEIcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists) { // get shape sys histogram from txt file
+int GetFEIcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist_MXs1, TH1D* Signal_nominal_hist_MXs2, TH1D* Signal_nominal_hist_MXs3, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists_MXs1, TH1D*** Signal_hists_MXs2, TH1D*** Signal_hists_MXs3) { // get shape sys histogram from txt file
     int Nentry = 0; // number of eigen values/vectors
     double eigen_value = 0; // eigen value
-    double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+    double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
 
     FILE* fp;
     fp = fopen(dirname, "r");
     while (true) {
         if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-        for (int i = 0; i < RarityBins * 3; i++) {
+        for (int i = 0; i < RarityBins * 5; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
         Nentry++;
@@ -1293,33 +1369,43 @@ int GetFEIcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
 
     *CHG_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
     *MIX_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
-    *Signal_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs1 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs2 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs3 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
 
     for (int i = 0; i < Nentry; i++) {
         (*CHG_hists)[i] = new TH1D(("CHG_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("CHG_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
         (*MIX_hists)[i] = new TH1D(("MIX_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("MIX_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
-        (*Signal_hists)[i] = new TH1D(("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     for (int i = Nentry; i < 2 * Nentry; i++) {
         (*CHG_hists)[i] = new TH1D(("CHG_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
         (*MIX_hists)[i] = new TH1D(("MIX_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("MIX_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-        (*Signal_hists)[i] = new TH1D(("Signal_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs1_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs2_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs3_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     fp = fopen(dirname, "r");
     for (int i = 0; i < Nentry; i++) {
         fscanf(fp, "%lf\n", &eigen_value);
-        for (int j = 0; j < RarityBins * 3; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
+        for (int j = 0; j < RarityBins * 5; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
 
         for (int k = 0; k < RarityBins; k++) {
             (*CHG_hists)[i]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
             (*MIX_hists)[i]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 1 * RarityBins]));
-            (*Signal_hists)[i]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs1)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs2)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 3 * RarityBins]));
+            (*Signal_hists_MXs3)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 4 * RarityBins]));
 
             (*CHG_hists)[i + Nentry]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 0 * RarityBins]));
             (*MIX_hists)[i + Nentry]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 1 * RarityBins]));
-            (*Signal_hists)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs1)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs2)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 3 * RarityBins]));
+            (*Signal_hists_MXs3)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 4 * RarityBins]));
         }
 
     }
@@ -1329,19 +1415,21 @@ int GetFEIcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
     return Nentry;
 }
 
-void GetFEIUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* Signal_hist) { // get shape sys histogram from txt file
+void GetFEIUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* Signal_hist_MXs1, TH1D* Signal_hist_MXs2, TH1D* Signal_hist_MXs3) { // get shape sys histogram from txt file
     FILE* fp;
     fp = fopen(dirname, "r");
 
-    double weight_sys[RarityBins * 3] = { 0.0 };
-    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    double weight_sys[RarityBins * 5] = { 0.0 };
+    for (int i = 0; i < RarityBins * 5; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
     fclose(fp);
 
-    for (int i = 0; i < RarityBins * 3; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
+    for (int i = 0; i < RarityBins * 5; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
 
     for (int i = 0; i < RarityBins; i++) CHG_hist->SetBinContent(i + 1, weight_sys[i]);
     for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
-    for (int i = 0; i < RarityBins; i++) Signal_hist->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs1->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs2->SetBinContent(i + 1, weight_sys[3 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs3->SetBinContent(i + 1, weight_sys[4 * RarityBins + i]);
 }
 
 int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* UUBAR_nominal_hist, TH1D* DDBAR_nominal_hist, TH1D* SSBAR_nominal_hist, TH1D* CHARM_nominal_hist, TH1D* SIGNAL_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** UUBAR_hists, TH1D*** DDBAR_hists, TH1D*** SSBAR_hists, TH1D*** CHARM_hists, TH1D*** SIGNAL_hists, bool IsItKID) { // get shape sys histogram from txt file
