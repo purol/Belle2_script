@@ -395,7 +395,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ CHARM ================================ */
 }
 
-int WorkSpace_indep_norm() {
+int WorkSpace() {
 
 	const double expmu = 1.0;
 	const char* fname = "PDFandDATA_nominal.root";
