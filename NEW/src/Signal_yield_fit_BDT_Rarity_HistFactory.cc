@@ -7516,6 +7516,9 @@ int main()
     TFile* file = new TFile("PDFandDATA.root", "RECREATE");
 
     Signal_nominal->Write();
+    Signal_MXs1_nominal->Write();
+    Signal_MXs2_nominal->Write();
+    Signal_MXs3_nominal->Write();
     CHG_nominal->Write();
     MIX_nominal->Write();
     UUBAR_nominal->Write();
@@ -7525,6 +7528,9 @@ int main()
 
     // track uncertainty
     Signal_track_p->Write();
+    Signal_MXs1_track_p->Write();
+    Signal_MXs2_track_p->Write();
+    Signal_MXs3_track_p->Write();
     CHG_track_p->Write();
     MIX_track_p->Write();
     UUBAR_track_p->Write();
@@ -7532,6 +7538,9 @@ int main()
     SSBAR_track_p->Write();
     CHARM_track_p->Write();
     Signal_track_m->Write();
+    Signal_MXs1_track_m->Write();
+    Signal_MXs2_track_m->Write();
+    Signal_MXs3_track_m->Write();
     CHG_track_m->Write();
     MIX_track_m->Write();
     UUBAR_track_m->Write();
@@ -7541,6 +7550,9 @@ int main()
 
     // KS0 uncertainty
     Signal_KS0_p->Write();
+    Signal_MXs1_KS0_p->Write();
+    Signal_MXs2_KS0_p->Write();
+    Signal_MXs3_KS0_p->Write();
     CHG_KS0_p->Write();
     MIX_KS0_p->Write();
     UUBAR_KS0_p->Write();
@@ -7548,6 +7560,9 @@ int main()
     SSBAR_KS0_p->Write();
     CHARM_KS0_p->Write();
     Signal_KS0_m->Write();
+    Signal_MXs1_KS0_m->Write();
+    Signal_MXs2_KS0_m->Write();
+    Signal_MXs3_KS0_m->Write();
     CHG_KS0_m->Write();
     MIX_KS0_m->Write();
     UUBAR_KS0_m->Write();
@@ -7558,18 +7573,26 @@ int main()
     // FEI uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_FEI; i++) {
         Signal_FEI_correlated[i]->Write();
+        Signal_MXs1_FEI_correlated[i]->Write();
+        Signal_MXs2_FEI_correlated[i]->Write();
+        Signal_MXs3_FEI_correlated[i]->Write();
         CHG_FEI_correlated[i]->Write();
         MIX_FEI_correlated[i]->Write();
     }
 
     // FEI uncertainty (uncorrelated)
-    Signal_FEI_uncorrelated->Write();
+    Signal_MXs1_FEI_uncorrelated->Write();
+    Signal_MXs2_FEI_uncorrelated->Write();
+    Signal_MXs3_FEI_uncorrelated->Write();
     CHG_FEI_uncorrelated->Write();
     MIX_FEI_uncorrelated->Write();
 
     // Kaon PID uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_KID; i++) {
         Signal_KID_correlated[i]->Write();
+        Signal_MXs1_KID_correlated[i]->Write();
+        Signal_MXs2_KID_correlated[i]->Write();
+        Signal_MXs3_KID_correlated[i]->Write();
         CHG_KID_correlated[i]->Write();
         MIX_KID_correlated[i]->Write();
         UUBAR_KID_correlated[i]->Write();
@@ -7579,7 +7602,9 @@ int main()
     }
 
     // Kaon PID uncertainty (uncorrelated)
-    Signal_KID_uncorrelated->Write();
+    Signal_MXs1_KID_uncorrelated->Write();
+    Signal_MXs2_KID_uncorrelated->Write();
+    Signal_MXs3_KID_uncorrelated->Write();
     CHG_KID_uncorrelated->Write();
     MIX_KID_uncorrelated->Write();
     UUBAR_KID_uncorrelated->Write();
@@ -7590,6 +7615,9 @@ int main()
     // Pion PID uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_PID; i++) {
         Signal_PID_correlated[i]->Write();
+        Signal_MXs1_PID_correlated[i]->Write();
+        Signal_MXs2_PID_correlated[i]->Write();
+        Signal_MXs3_PID_correlated[i]->Write();
         CHG_PID_correlated[i]->Write();
         MIX_PID_correlated[i]->Write();
         UUBAR_PID_correlated[i]->Write();
@@ -7599,7 +7627,9 @@ int main()
     }
 
     // Pion PID uncertainty (uncorrelated)
-    Signal_PID_uncorrelated->Write();
+    Signal_MXs1_PID_uncorrelated->Write();
+    Signal_MXs2_PID_uncorrelated->Write();
+    Signal_MXs3_PID_uncorrelated->Write();
     CHG_PID_uncorrelated->Write();
     MIX_PID_uncorrelated->Write();
     UUBAR_PID_uncorrelated->Write();
@@ -7610,18 +7640,26 @@ int main()
     // BB BR uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_BR; i++) {
         Signal_BR_correlated[i]->Write();
+        Signal_MXs1_BR_correlated[i]->Write();
+        Signal_MXs2_BR_correlated[i]->Write();
+        Signal_MXs3_BR_correlated[i]->Write();
         CHG_BR_correlated[i]->Write();
         MIX_BR_correlated[i]->Write();
     }
 
     // BB BR uncertainty (uncorrelated)
-    Signal_BR_uncorrelated->Write();
+    Signal_MXs1_BR_uncorrelated->Write();
+    Signal_MXs2_BR_uncorrelated->Write();
+    Signal_MXs3_BR_uncorrelated->Write();
     CHG_BR_uncorrelated->Write();
     MIX_BR_uncorrelated->Write();
 
     // pi0 uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_pi0; i++) {
         Signal_pi0_correlated[i]->Write();
+        Signal_MXs1_pi0_correlated[i]->Write();
+        Signal_MXs2_pi0_correlated[i]->Write();
+        Signal_MXs3_pi0_correlated[i]->Write();
         CHG_pi0_correlated[i]->Write();
         MIX_pi0_correlated[i]->Write();
         UUBAR_pi0_correlated[i]->Write();
@@ -7631,7 +7669,9 @@ int main()
     }
 
     // pi0 uncertainty (uncorrelated)
-    Signal_pi0_uncorrelated->Write();
+    Signal_MXs1_pi0_uncorrelated->Write();
+    Signal_MXs2_pi0_uncorrelated->Write();
+    Signal_MXs3_pi0_uncorrelated->Write();
     CHG_pi0_uncorrelated->Write();
     MIX_pi0_uncorrelated->Write();
     UUBAR_pi0_uncorrelated->Write();
@@ -7646,6 +7686,12 @@ int main()
     Signal_Kff2_m->Write();
     Signal_Kff3_p->Write();
     Signal_Kff3_m->Write();
+    Signal_MXs1_Kff1_p->Write();
+    Signal_MXs1_Kff1_m->Write();
+    Signal_MXs1_Kff2_p->Write();
+    Signal_MXs1_Kff2_m->Write();
+    Signal_MXs1_Kff3_p->Write();
+    Signal_MXs1_Kff3_m->Write();
 
     // Kstar nu nubar form factor
     Signal_Kstarff1_p->Write();
@@ -7666,40 +7712,97 @@ int main()
     Signal_Kstarff8_m->Write();
     Signal_Kstarff9_p->Write();
     Signal_Kstarff9_m->Write();
+    Signal_MXs2_Kstarff1_p->Write();
+    Signal_MXs2_Kstarff1_m->Write();
+    Signal_MXs2_Kstarff2_p->Write();
+    Signal_MXs2_Kstarff2_m->Write();
+    Signal_MXs2_Kstarff3_p->Write();
+    Signal_MXs2_Kstarff3_m->Write();
+    Signal_MXs2_Kstarff4_p->Write();
+    Signal_MXs2_Kstarff4_m->Write();
+    Signal_MXs2_Kstarff5_p->Write();
+    Signal_MXs2_Kstarff5_m->Write();
+    Signal_MXs2_Kstarff6_p->Write();
+    Signal_MXs2_Kstarff6_m->Write();
+    Signal_MXs2_Kstarff7_p->Write();
+    Signal_MXs2_Kstarff7_m->Write();
+    Signal_MXs2_Kstarff8_p->Write();
+    Signal_MXs2_Kstarff8_m->Write();
+    Signal_MXs2_Kstarff9_p->Write();
+    Signal_MXs2_Kstarff9_m->Write();
+    Signal_MXs3_Kstarff1_p->Write();
+    Signal_MXs3_Kstarff1_m->Write();
+    Signal_MXs3_Kstarff2_p->Write();
+    Signal_MXs3_Kstarff2_m->Write();
+    Signal_MXs3_Kstarff3_p->Write();
+    Signal_MXs3_Kstarff3_m->Write();
+    Signal_MXs3_Kstarff4_p->Write();
+    Signal_MXs3_Kstarff4_m->Write();
+    Signal_MXs3_Kstarff5_p->Write();
+    Signal_MXs3_Kstarff5_m->Write();
+    Signal_MXs3_Kstarff6_p->Write();
+    Signal_MXs3_Kstarff6_m->Write();
+    Signal_MXs3_Kstarff7_p->Write();
+    Signal_MXs3_Kstarff7_m->Write();
+    Signal_MXs3_Kstarff8_p->Write();
+    Signal_MXs3_Kstarff8_m->Write();
+    Signal_MXs3_Kstarff9_p->Write();
+    Signal_MXs3_Kstarff9_m->Write();
 
     // faction
     Signal_Kfrac_p->Write();
     Signal_Kfrac_m->Write();
+    Signal_MXs1_Kfrac_p->Write();
+    Signal_MXs1_Kfrac_m->Write();
     Signal_Kstarfrac_p->Write();
     Signal_Kstarfrac_m->Write();
+    Signal_MXs2_Kstarfrac_p->Write();
+    Signal_MXs2_Kstarfrac_m->Write();
+    Signal_MXs3_Kstarfrac_p->Write();
+    Signal_MXs3_Kstarfrac_m->Write();
 
     // fragmentation uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_Fragmentation; i++) {
         Signal_Fragmentation_correlated[i]->Write();
+        Signal_MXs1_Fragmentation_correlated[i]->Write();
+        Signal_MXs2_Fragmentation_correlated[i]->Write();
+        Signal_MXs3_Fragmentation_correlated[i]->Write();
         CHG_Fragmentation_correlated[i]->Write();
         MIX_Fragmentation_correlated[i]->Write();
     }
 
     // fragmentation uncertainty (uncorrelated)
-    Signal_Fragmentation_uncorrelated->Write();
+    Signal_MXs1_Fragmentation_uncorrelated->Write();
+    Signal_MXs2_Fragmentation_uncorrelated->Write();
+    Signal_MXs3_Fragmentation_uncorrelated->Write();
     CHG_Fragmentation_uncorrelated->Write();
     MIX_Fragmentation_uncorrelated->Write();
 
     // pf uncertainty
     Signal_pf_p->Write();
+    Signal_MXs3_pf_p->Write();
     Signal_pf_m->Write();
+    Signal_MXs3_pf_m->Write();
 
     // mb uncertainty
     Signal_mb_p->Write();
+    Signal_MXs3_mb_p->Write();
     Signal_mb_m->Write();
+    Signal_MXs3_mb_m->Write();
 
     // transition uncertainty
     Signal_transition_p->Write();
+    Signal_MXs3_transition_p->Write();
     Signal_transition_m->Write();
+    Signal_MXs3_transition_m->Write();
 
     // fixed mKstar uncertainty
     Signal_mKstar_p->Write();
+    Signal_MXs2_mKstar_p->Write();
+    Signal_MXs3_mKstar_p->Write();
     Signal_mKstar_m->Write();
+    Signal_MXs2_mKstar_m->Write();
+    Signal_MXs3_mKstar_m->Write();
 
     // BDTc uncertainty
     //CHG_BDTc_p->Write();
@@ -7717,15 +7820,24 @@ int main()
 
     // B2Xnn BR uncertainty
     Signal_Xnn_p->Write();
+    Signal_MXs1_Xnn_p->Write();
+    Signal_MXs2_Xnn_p->Write();
+    Signal_MXs3_Xnn_p->Write();
     CHG_Xnn_p->Write();
     MIX_Xnn_p->Write();
     Signal_Xnn_m->Write();
+    Signal_MXs1_Xnn_m->Write();
+    Signal_MXs2_Xnn_m->Write();
+    Signal_MXs3_Xnn_m->Write();
     CHG_Xnn_m->Write();
     MIX_Xnn_m->Write();
 
     // multiplicity uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_multiplicity; i++) {
         Signal_multiplicity_correlated[i]->Write();
+        Signal_MXs1_multiplicity_correlated[i]->Write();
+        Signal_MXs2_multiplicity_correlated[i]->Write();
+        Signal_MXs3_multiplicity_correlated[i]->Write();
         CHG_multiplicity_correlated[i]->Write();
         MIX_multiplicity_correlated[i]->Write();
         UUBAR_multiplicity_correlated[i]->Write();
@@ -7735,7 +7847,9 @@ int main()
     }
 
     // multiplicity uncertainty (uncorrelated)
-    Signal_multiplicity_uncorrelated->Write();
+    Signal_MXs1_multiplicity_uncorrelated->Write();
+    Signal_MXs2_multiplicity_uncorrelated->Write();
+    Signal_MXs3_multiplicity_uncorrelated->Write();
     CHG_multiplicity_uncorrelated->Write();
     MIX_multiplicity_uncorrelated->Write();
     UUBAR_multiplicity_uncorrelated->Write();
@@ -7745,22 +7859,36 @@ int main()
 
     // B -> [D -> X KL0] anything uncertainties
     Signal_BtoDtoXKL_p->Write();
+    Signal_MXs1_BtoDtoXKL_p->Write();
+    Signal_MXs2_BtoDtoXKL_p->Write();
+    Signal_MXs3_BtoDtoXKL_p->Write();
     CHG_BtoDtoXKL_p->Write();
     MIX_BtoDtoXKL_p->Write();
     Signal_BtoDtoXKL_m->Write();
+    Signal_MXs1_BtoDtoXKL_m->Write();
+    Signal_MXs2_BtoDtoXKL_m->Write();
+    Signal_MXs3_BtoDtoXKL_m->Write();
     CHG_BtoDtoXKL_m->Write();
     MIX_BtoDtoXKL_m->Write();
 
     // BR(B -> X KL KL)
     Signal_BRBtoXKLKL_p->Write();
+    Signal_MXs1_BRBtoXKLKL_p->Write();
+    Signal_MXs2_BRBtoXKLKL_p->Write();
+    Signal_MXs3_BRBtoXKLKL_p->Write();
     CHG_BRBtoXKLKL_p->Write();
     MIX_BRBtoXKLKL_p->Write();
     Signal_BRBtoXKLKL_m->Write();
+    Signal_MXs1_BRBtoXKLKL_m->Write();
+    Signal_MXs2_BRBtoXKLKL_m->Write();
+    Signal_MXs3_BRBtoXKLKL_m->Write();
     CHG_BRBtoXKLKL_m->Write();
     MIX_BRBtoXKLKL_m->Write();
 
     // all uncorrelated uncertainties
-    Signal_all_uncorrelated->Write();
+    Signal_MXs1_all_uncorrelated->Write();
+    Signal_MXs2_all_uncorrelated->Write();
+    Signal_MXs3_all_uncorrelated->Write();
     CHG_all_uncorrelated->Write(); 
     MIX_all_uncorrelated->Write(); 
     UUBAR_all_uncorrelated->Write(); 
@@ -7769,7 +7897,9 @@ int main()
     CHARM_all_uncorrelated->Write();
 
     // MC statistical uncertainties
-    Signal_MC_stat->Write();
+    Signal_MXs1_MC_stat->Write();
+    Signal_MXs2_MC_stat->Write();
+    Signal_MXs3_MC_stat->Write();
     CHG_MC_stat->Write();
     MIX_MC_stat->Write();
     UUBAR_MC_stat->Write();
@@ -7779,6 +7909,9 @@ int main()
 
     // all of uncorrelated uncertainties + MC statistical uncertainties
     Signal_all_uncorrelated_MC_stat->Write();
+    Signal_MXs1_all_uncorrelated_MC_stat->Write();
+    Signal_MXs2_all_uncorrelated_MC_stat->Write();
+    Signal_MXs3_all_uncorrelated_MC_stat->Write();
     CHG_all_uncorrelated_MC_stat->Write();
     MIX_all_uncorrelated_MC_stat->Write();
     UUBAR_all_uncorrelated_MC_stat->Write();
