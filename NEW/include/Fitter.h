@@ -458,53 +458,70 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
         exit(1);
     }
 
-    int index = -1;
-    if (strcmp(sample_type, "Signal_MX1") == 0) index = 0;
-    else if (strcmp(sample_type, "Signal_MX2") == 0) index = 1;
-    else if (strcmp(sample_type, "Signal_MX3") == 0) index = 2;
-    else if (strcmp(sample_type, "CHG_MX1") == 0) index = 3;
-    else if (strcmp(sample_type, "CHG_MX2") == 0) index = 4;
-    else if (strcmp(sample_type, "CHG_MX3") == 0) index = 5;
-    else if (strcmp(sample_type, "MIX_MX1") == 0) index = 6;
-    else if (strcmp(sample_type, "MIX_MX2") == 0) index = 7;
-    else if (strcmp(sample_type, "MIX_MX3") == 0) index = 8;
-    else if (strcmp(sample_type, "UUBAR_MX1") == 0) index = 9;
-    else if (strcmp(sample_type, "UUBAR_MX2") == 0) index = 10;
-    else if (strcmp(sample_type, "UUBAR_MX3") == 0) index = 11;
-    else if (strcmp(sample_type, "DDBAR_MX1") == 0) index = 12;
-    else if (strcmp(sample_type, "DDBAR_MX2") == 0) index = 13;
-    else if (strcmp(sample_type, "DDBAR_MX3") == 0) index = 14;
-    else if (strcmp(sample_type, "SSBAR_MX1") == 0) index = 15;
-    else if (strcmp(sample_type, "SSBAR_MX2") == 0) index = 16;
-    else if (strcmp(sample_type, "SSBAR_MX3") == 0) index = 17;
-    else if (strcmp(sample_type, "CHARM_MX1") == 0) index = 18;
-    else if (strcmp(sample_type, "CHARM_MX2") == 0) index = 19;
-    else if (strcmp(sample_type, "CHARM_MX3") == 0) index = 20;
+    std::vector<int> indices;
+    if (strcmp(sample_type, "Signal_MX1") == 0) {
+        indices.push_back(0);
+        indices.push_back(1);
+        indices.push_back(2);
+    }
+    else if (strcmp(sample_type, "Signal_MX2") == 0) {
+        indices.push_back(3);
+        indices.push_back(4);
+        indices.push_back(5);
+    }
+    else if (strcmp(sample_type, "Signal_MX3") == 0) {
+        indices.push_back(6);
+        indices.push_back(7);
+        indices.push_back(8);
+    }
+    else if (strcmp(sample_type, "CHG_MX1") == 0) indices.push_back(9);
+    else if (strcmp(sample_type, "CHG_MX2") == 0) indices.push_back(10);
+    else if (strcmp(sample_type, "CHG_MX3") == 0) indices.push_back(11);
+    else if (strcmp(sample_type, "MIX_MX1") == 0) indices.push_back(12);
+    else if (strcmp(sample_type, "MIX_MX2") == 0) indices.push_back(13);
+    else if (strcmp(sample_type, "MIX_MX3") == 0) indices.push_back(14);
+    else if (strcmp(sample_type, "UUBAR_MX1") == 0) indices.push_back(15);
+    else if (strcmp(sample_type, "UUBAR_MX2") == 0) indices.push_back(16);
+    else if (strcmp(sample_type, "UUBAR_MX3") == 0) indices.push_back(17);
+    else if (strcmp(sample_type, "DDBAR_MX1") == 0) indices.push_back(18);
+    else if (strcmp(sample_type, "DDBAR_MX2") == 0) indices.push_back(19);
+    else if (strcmp(sample_type, "DDBAR_MX3") == 0) indices.push_back(20);
+    else if (strcmp(sample_type, "SSBAR_MX1") == 0) indices.push_back(21);
+    else if (strcmp(sample_type, "SSBAR_MX2") == 0) indices.push_back(22);
+    else if (strcmp(sample_type, "SSBAR_MX3") == 0) indices.push_back(23);
+    else if (strcmp(sample_type, "CHARM_MX1") == 0) indices.push_back(24);
+    else if (strcmp(sample_type, "CHARM_MX2") == 0) indices.push_back(25);
+    else if (strcmp(sample_type, "CHARM_MX3") == 0) indices.push_back(26);
     else {
         printf("[ERROR] unexpected sample type!\n");
         exit(1);
     }
 
+
     /* ================================ cal Nexpected ================================*/
-    RooAbsBinning const& binning = x_val->getBinning();
-    const double oldVal = x_val->getVal();
+    for (int i = 0; i < indices.size(); i++) {
+        int index = indices.at(i);
 
-    for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
-        double binCenter = binning.binCenter(iBin);
-        double binWidth = binning.binWidth(iBin);
+        RooAbsBinning const& binning = x_val->getBinning();
+        const double oldVal = x_val->getVal();
 
-        *x_val = binCenter; // set x value
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
 
-        RooAbsReal* temp_func = w->function(Sample_names.at(index).c_str());
-        Nevt = Nevt + temp_func->getValV();
-        if (temp_func->getValV() < 0) {
-            printf("[ERROR] negative count!\n");
-            exit(1);
+            *x_val = binCenter; // set x value
+
+            RooAbsReal* temp_func = w->function(Sample_names.at(index).c_str());
+            Nevt = Nevt + temp_func->getValV();
+            if (temp_func->getValV() < 0) {
+                printf("[ERROR] negative count!\n");
+                exit(1);
+            }
+
         }
 
+        *x_val = oldVal;
     }
-
-    *x_val = oldVal;
 
     return Nevt;
 
@@ -626,7 +643,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
                 exit(1);
             }
 
-            temp_hist->SetBinContent(index, Nevt);
+            temp_hist->SetBinContent(index, temp_hist->GetBinContent(index) + Nevt);
             all_hist->Fill(((double)index) - 0.5, Nevt);
             all_hist->SetBinError(index, 0);
         }
