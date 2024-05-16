@@ -59,13 +59,13 @@ Corrector_Fragmentation corrector_Fragmentation;
 int ReadNFEIEigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+	double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
 
 	FILE* fp;
 	fp = fopen(dirname, "r");
 	while (true) {
 		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 3; i++) {
+		for (int i = 0; i < RarityBins * 5; i++) {
 			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
 		}
 		Nentry++;
@@ -78,13 +78,13 @@ int ReadNFEIEigenVector(const char* dirname) {
 int ReadNPIDEigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 7] = { 0.0 }; // eigen vector
+	double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
 
 	FILE* fp;
 	fp = fopen(dirname, "r");
 	while (true) {
 		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 7; i++) {
+		for (int i = 0; i < RarityBins * 9; i++) {
 			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
 		}
 		Nentry++;
@@ -97,13 +97,13 @@ int ReadNPIDEigenVector(const char* dirname) {
 int ReadNBREigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+	double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
 
 	FILE* fp;
 	fp = fopen(dirname, "r");
 	while (true) {
 		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 3; i++) {
+		for (int i = 0; i < RarityBins * 5; i++) {
 			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
 		}
 		Nentry++;
@@ -116,13 +116,13 @@ int ReadNBREigenVector(const char* dirname) {
 int ReadNpi0EigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 7] = { 0.0 }; // eigen vector
+	double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
 
 	FILE* fp;
 	fp = fopen(dirname, "r");
 	while (true) {
 		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 7; i++) {
+		for (int i = 0; i < RarityBins * 9; i++) {
 			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
 		}
 		Nentry++;
@@ -135,13 +135,13 @@ int ReadNpi0EigenVector(const char* dirname) {
 int ReadMultiplicityInfo(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 7] = { 0.0 }; // eigen vector
+	double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
 
 	FILE* fp;
 	fp = fopen(dirname, "r");
 	while (true) {
 		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 7; i++) {
+		for (int i = 0; i < RarityBins * 9; i++) {
 			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
 		}
 		Nentry++;
@@ -154,13 +154,13 @@ int ReadMultiplicityInfo(const char* dirname) {
 int ReadNFragmentationEigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+	double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
 
 	FILE* fp;
 	fp = fopen(dirname, "r");
 	while (true) {
 		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 3; i++) {
+		for (int i = 0; i < RarityBins * 5; i++) {
 			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
 		}
 		Nentry++;
