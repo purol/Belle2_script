@@ -1,7 +1,7 @@
 clear all
 format long
 
-N_total_bins = 15 * 9;
+N_total_bins = 12 * 9;
 N_selected_vectors = 2;
 
 % multiplicity correction

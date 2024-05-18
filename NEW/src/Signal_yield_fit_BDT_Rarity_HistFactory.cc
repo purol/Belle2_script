@@ -5943,6 +5943,12 @@ int main()
     TH1D* Signal_MXs1_Kff2_m = new TH1D("Signal_MXs1_Kff2_m", "Signal_MXs1_Kff2_m", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_MXs1_Kff3_p = new TH1D("Signal_MXs1_Kff3_p", "Signal_MXs1_Kff3_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_MXs1_Kff3_m = new TH1D("Signal_MXs1_Kff3_m", "Signal_MXs1_Kff3_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff1_p = new TH1D("Signal_MXs3_Kff1_p", "Signal_MXs3_Kff1_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff1_m = new TH1D("Signal_MXs3_Kff1_m", "Signal_MXs3_Kff1_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff2_p = new TH1D("Signal_MXs3_Kff2_p", "Signal_MXs3_Kff2_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff2_m = new TH1D("Signal_MXs3_Kff2_m", "Signal_MXs3_Kff2_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff3_p = new TH1D("Signal_MXs3_Kff3_p", "Signal_MXs3_Kff3_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff3_m = new TH1D("Signal_MXs3_Kff3_m", "Signal_MXs3_Kff3_m", RarityBins, BinMIN, BinMAX);
 
     // Kstar nu nubar form factor
     TH1D* Signal_Kstarff1_p = new TH1D("Signal_Kstarff1_p", "Signal_Kstarff1_p", RarityBins, BinMIN, BinMAX);
@@ -6398,6 +6404,26 @@ int main()
     for (int i = 0; i < 7; i++) {
         const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0_nunubar - BR_K0_nunubar * Correction_factor_BR_Kzero[i]) / BR_Xsd_nonresonant_nunubar;
         GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_Kff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * non_res_Xsd_correction_factor, "B02Xsnunu", 1);
+    }
+
+    TH1D* Signal_MXs3_Kff_temp = new TH1D("Signal_MXs3_Kff_temp", "Signal_MXs3_Kff_temp", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff_array[7] = { Signal_MXs3_Kff_temp, Signal_MXs3_Kff1_p, Signal_MXs3_Kff1_m, Signal_MXs3_Kff2_p, Signal_MXs3_Kff2_m, Signal_MXs3_Kff3_p, Signal_MXs3_Kff3_m };
+    for (int i = 0; i < 7; i++) {
+        Correction_factor_BR_Kplus[i] = 0.0;
+        Correction_factor_BR_Kzero[i] = 0.0;
+    }
+
+    GetKffPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kff_array, Correction_factor_BR_Kplus, "Bplus", 1, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    for (int i = 0; i < 7; i++) {
+        const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplus_nunubar - BR_Kplus_nunubar * Correction_factor_BR_Kplus[i]) / BR_Xsu_nonresonant_nunubar;
+        GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * non_res_Xsu_correction_factor, "B2Xsnunu", 3);
+    }
+    GetKffPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kff_array, Correction_factor_BR_Kzero, "Bzero", 0, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    for (int i = 0; i < 7; i++) {
+        const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0_nunubar - BR_K0_nunubar * Correction_factor_BR_Kzero[i]) / BR_Xsd_nonresonant_nunubar;
+        GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * non_res_Xsd_correction_factor, "B02Xsnunu", 3);
     }
 
     // get Kstar ff uncertainty pdfs
@@ -6945,22 +6971,22 @@ int main()
 
     AddPDFs(Signal_Kff1_p, Signal_MXs1_Kff1_p);
     AddPDFs(Signal_Kff1_p, Signal_MXs2_nominal);
-    AddPDFs(Signal_Kff1_p, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kff1_p, Signal_MXs3_Kff1_p);
     AddPDFs(Signal_Kff1_m, Signal_MXs1_Kff1_m);
     AddPDFs(Signal_Kff1_m, Signal_MXs2_nominal);
-    AddPDFs(Signal_Kff1_m, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kff1_m, Signal_MXs3_Kff1_m);
     AddPDFs(Signal_Kff2_p, Signal_MXs1_Kff2_p);
     AddPDFs(Signal_Kff2_p, Signal_MXs2_nominal);
-    AddPDFs(Signal_Kff2_p, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kff2_p, Signal_MXs3_Kff2_p);
     AddPDFs(Signal_Kff2_m, Signal_MXs1_Kff2_m);
     AddPDFs(Signal_Kff2_m, Signal_MXs2_nominal);
-    AddPDFs(Signal_Kff2_m, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kff2_m, Signal_MXs3_Kff2_m);
     AddPDFs(Signal_Kff3_p, Signal_MXs1_Kff3_p);
     AddPDFs(Signal_Kff3_p, Signal_MXs2_nominal);
-    AddPDFs(Signal_Kff3_p, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kff3_p, Signal_MXs3_Kff3_p);
     AddPDFs(Signal_Kff3_m, Signal_MXs1_Kff3_m);
     AddPDFs(Signal_Kff3_m, Signal_MXs2_nominal);
-    AddPDFs(Signal_Kff3_m, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kff3_m, Signal_MXs3_Kff3_m);
 
     AddPDFs(Signal_Kstarff1_p, Signal_MXs1_nominal);
     AddPDFs(Signal_Kstarff1_p, Signal_MXs2_Kstarff1_p);
@@ -7282,6 +7308,12 @@ int main()
     SaveSpecificMXsBin(Signal_MXs1_Kff2_m, MXsBin);
     SaveSpecificMXsBin(Signal_MXs1_Kff3_p, MXsBin);
     SaveSpecificMXsBin(Signal_MXs1_Kff3_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kff1_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kff1_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kff2_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kff2_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kff3_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kff3_m, MXsBin);
 
     // Kstar nu nubar form factor
     SaveSpecificMXsBin(Signal_Kstarff1_p, MXsBin);
@@ -7692,6 +7724,12 @@ int main()
     Signal_MXs1_Kff2_m->Write();
     Signal_MXs1_Kff3_p->Write();
     Signal_MXs1_Kff3_m->Write();
+    Signal_MXs3_Kff1_p->Write();
+    Signal_MXs3_Kff1_m->Write();
+    Signal_MXs3_Kff2_p->Write();
+    Signal_MXs3_Kff2_m->Write();
+    Signal_MXs3_Kff3_p->Write();
+    Signal_MXs3_Kff3_m->Write();
 
     // Kstar nu nubar form factor
     Signal_Kstarff1_p->Write();

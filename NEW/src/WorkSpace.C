@@ -259,6 +259,9 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	for (int i = 0; i < NEntryPID; i++) sig_temp_MXs3.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryBR; i++) sig_temp_MXs3.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntrypi0; i++) sig_temp_MXs3.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	sig_temp_MXs3.AddHistoSys("Kff1_uncer", "Signal_MXs3_Kff1_m", fname, "", "Signal_MXs3_Kff1_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kff2_uncer", "Signal_MXs3_Kff2_m", fname, "", "Signal_MXs3_Kff2_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kff3_uncer", "Signal_MXs3_Kff3_m", fname, "", "Signal_MXs3_Kff3_p", fname, "");
 	sig_temp_MXs3.AddHistoSys("Kstarff1_uncer", "Signal_MXs3_Kstarff1_m", fname, "", "Signal_MXs3_Kstarff1_p", fname, "");
 	sig_temp_MXs3.AddHistoSys("Kstarff2_uncer", "Signal_MXs3_Kstarff2_m", fname, "", "Signal_MXs3_Kstarff2_p", fname, "");
 	sig_temp_MXs3.AddHistoSys("Kstarff3_uncer", "Signal_MXs3_Kstarff3_m", fname, "", "Signal_MXs3_Kstarff3_p", fname, "");
