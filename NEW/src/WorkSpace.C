@@ -272,6 +272,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp_MXs3.AddHistoSys("Kstarff8_uncer", "Signal_MXs3_Kstarff8_m", fname, "", "Signal_MXs3_Kstarff8_p", fname, "");
 	sig_temp_MXs3.AddHistoSys("Kstarff9_uncer", "Signal_MXs3_Kstarff9_m", fname, "", "Signal_MXs3_Kstarff9_p", fname, "");
 	sig_temp_MXs3.AddHistoSys("Kstarff9_uncer", "Signal_MXs3_Kstarff9_m", fname, "", "Signal_MXs3_Kstarff9_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kfrac_uncer", "Signal_MXs3_Kfrac_m", fname, "", "Signal_MXs3_Kfrac_p", fname, "");
 	sig_temp_MXs3.AddHistoSys("Kstarfrac_uncer", "Signal_MXs3_Kstarfrac_m", fname, "", "Signal_MXs3_Kstarfrac_p", fname, "");
 	for (int i = 0; i < NEntryFragmentation; i++) sig_temp_MXs3.AddHistoSys(("Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	sig_temp_MXs3.AddHistoSys("pf_uncer", "Signal_MXs3_pf_m", fname, "", "Signal_MXs3_pf_p", fname, "");

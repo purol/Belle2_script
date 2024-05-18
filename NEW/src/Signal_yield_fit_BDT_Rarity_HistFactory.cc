@@ -6011,6 +6011,8 @@ int main()
     TH1D* Signal_Kfrac_m = new TH1D("Signal_Kfrac_m", "Signal_Kfrac_m", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_MXs1_Kfrac_p = new TH1D("Signal_MXs1_Kfrac_p", "Signal_MXs1_Kfrac_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_MXs1_Kfrac_m = new TH1D("Signal_MXs1_Kfrac_m", "Signal_MXs1_Kfrac_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kfrac_p = new TH1D("Signal_MXs3_Kfrac_p", "Signal_MXs3_Kfrac_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kfrac_m = new TH1D("Signal_MXs3_Kfrac_m", "Signal_MXs3_Kfrac_m", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kstarfrac_p = new TH1D("Signal_Kstarfrac_p", "Signal_Kstarfrac_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kstarfrac_m = new TH1D("Signal_Kstarfrac_m", "Signal_Kstarfrac_m", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_MXs2_Kstarfrac_p = new TH1D("Signal_MXs2_Kstarfrac_p", "Signal_MXs2_Kstarfrac_p", RarityBins, BinMIN, BinMAX);
@@ -6499,6 +6501,20 @@ int main()
     GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar - Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu", 1);
     GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
     GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 1);
+
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar + Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar + Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 3);
+
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar - Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar - Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 3);
 
     GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
     GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu") * ((BR_Kplusstar_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise", 2);
@@ -7045,10 +7061,10 @@ int main()
 
     AddPDFs(Signal_Kfrac_p, Signal_MXs1_Kfrac_p);
     AddPDFs(Signal_Kfrac_p, Signal_MXs2_nominal);
-    AddPDFs(Signal_Kfrac_p, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kfrac_p, Signal_MXs3_Kfrac_p);
     AddPDFs(Signal_Kfrac_m, Signal_MXs1_Kfrac_m);
     AddPDFs(Signal_Kfrac_m, Signal_MXs2_nominal);
-    AddPDFs(Signal_Kfrac_m, Signal_MXs3_nominal);
+    AddPDFs(Signal_Kfrac_m, Signal_MXs3_Kfrac_m);
 
     AddPDFs(Signal_Kstarfrac_p, Signal_MXs1_nominal);
     AddPDFs(Signal_Kstarfrac_p, Signal_MXs2_Kstarfrac_p);
@@ -7376,6 +7392,8 @@ int main()
     SaveSpecificMXsBin(Signal_Kfrac_m, MXsBin);
     SaveSpecificMXsBin(Signal_MXs1_Kfrac_p, MXsBin);
     SaveSpecificMXsBin(Signal_MXs1_Kfrac_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kfrac_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kfrac_m, MXsBin);
     SaveSpecificMXsBin(Signal_Kstarfrac_p, MXsBin);
     SaveSpecificMXsBin(Signal_Kstarfrac_m, MXsBin);
     SaveSpecificMXsBin(Signal_MXs2_Kstarfrac_p, MXsBin);
@@ -7792,6 +7810,8 @@ int main()
     Signal_Kfrac_m->Write();
     Signal_MXs1_Kfrac_p->Write();
     Signal_MXs1_Kfrac_m->Write();
+    Signal_MXs3_Kfrac_p->Write();
+    Signal_MXs3_Kfrac_m->Write();
     Signal_Kstarfrac_p->Write();
     Signal_Kstarfrac_m->Write();
     Signal_MXs2_Kstarfrac_p->Write();
