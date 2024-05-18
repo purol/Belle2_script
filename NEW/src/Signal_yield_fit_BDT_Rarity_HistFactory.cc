@@ -6530,6 +6530,20 @@ int main()
     GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu") * ((BR_K0star_nunubar - Sigma_BR_K0star_nunubar) / BR_K0star_nunubar), "otherwise", 2);
     GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 2);
 
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu") * ((BR_Kplusstar_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kstarfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kstarfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu") * ((BR_K0star_nunubar + Sigma_BR_K0star_nunubar) / BR_K0star_nunubar), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kstarfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 3);
+
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kstarfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kstarfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu") * ((BR_Kplusstar_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kstarfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu") * ((BR_K0star_nunubar - Sigma_BR_K0star_nunubar) / BR_K0star_nunubar), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 3);
+
     // get fragmentation uncertainty pdfs (correlated)
     int NPDFs_Fragmentation = GetFragmentationcorrelatedPDFs(Fragmentation_correlated_info, CHG_nominal, MIX_nominal, Signal_MXs1_nominal, Signal_MXs2_nominal, Signal_MXs3_nominal, &CHG_Fragmentation_correlated, &MIX_Fragmentation_correlated, &Signal_MXs1_Fragmentation_correlated, &Signal_MXs2_Fragmentation_correlated, &Signal_MXs3_Fragmentation_correlated);
 
