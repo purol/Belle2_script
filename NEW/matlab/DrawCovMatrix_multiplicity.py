@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator
 
 plt.figure(figsize=(6.4 * 1.6, 4.8 * 1.6))
-Nbins = 12
+Nbins = 20
 
 # multiplicity
 file_multiplicity_cov_all = "multiplicity_corr_all.txt"

@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import FixedLocator
 
 plt.figure(figsize=(6.4 * 1.6, 4.8 * 1.6))
-Nbins = 12
+Nbins = 20
 
 # KID
 file_KID_cov_all = "KID_corr_all.txt"

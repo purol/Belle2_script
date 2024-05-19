@@ -175,23 +175,13 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index,
 	ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
 	RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
-	// Lets tell roofit the right names for our histogram variables //
-	RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-	RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
-	x->SetTitle("FBDT");
-	x->setUnit("");
-
-	// get Category and data
-	RooCategory* idx = (RooCategory*)obs->find("channelCat");
+	// get data
 	RooDataSet* data = (RooDataSet*)w->data("asimovData");
 
 	// fit
 	//RooFitResult* fitres = model->fitTo(*data, RooFit::Extended(true), RooFit::SumW2Error(false));
 	RooAbsReal* nll;
 	RooFitResult* fitres = MyMinimizeNLL(w, data, &nll);
-
-	// define frame
-	RooPlot* x_frame = x->frame(Title("FBDT"));
 
 	// draw
 	// GetPlotTemplate(w, data);
