@@ -17,6 +17,18 @@
 #include "TPaveText.h"
 
 Corrector corrector;
+Corrector_FEI corrector_FEI;
+Corrector_PID corrector_PID;
+Corrector_pi0 corrector_pi0;
+Corrector_FakePID corrector_FakePID;
+Corrector_Knn corrector_Knn;
+Corrector_Xsnn corrector_Xsnn;
+Corrector_Multiplicity corrector_Multiplicity;
+Corrector_KpKLKL corrector_KpKLKL;
+Corrector_KSKLKL corrector_KSKLKL;
+Corrector_KstarKLKL corrector_KstarKLKL;
+Corrector_XsKLKL corrector_XsKLKL;
+Corrector_BtoDtoXKL corrector_BtoDtoXKL;
 Corrector_Fragmentation corrector_Fragmentation;
 
 # define MCTYPE "MC15rd"
@@ -38,7 +50,7 @@ double Nevt_final_1st = 0.0;
 double Nevt_final_2nd = 0.0;
 double Nevt_final_3rd = 0.0;
 
-void CountNevt(const char* dirname, const char* included_string, const char* type, TH1D* hist_true, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+void ReadDecayInfo(const char* dirname, const char* included_string, const char* type, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
     else {
@@ -113,8 +125,6 @@ void CountNevt(const char* dirname, const char* included_string, const char* typ
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
-
-            hist_true->Fill(Mxs_MC, weight_var);
 
             if ((Mxs_MC > 0.0) && (Mxs_MC < 0.6)) Nevt_initial_1st = Nevt_initial_1st + weight_var;
             else if ((Mxs_MC > 0.6) && (Mxs_MC < 1.0)) Nevt_initial_2nd = Nevt_initial_2nd + weight_var;
@@ -219,7 +229,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
 
     double Bsig_M = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names, included_string);
 
     double Nevt = 0;
@@ -463,12 +473,12 @@ int main(int argc, char* argv[]) {
     GetNominalNevt(dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
     GetNominalNevt(dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
-    ReadDecayInfo(dirname_SIGNAL_initial, "B2Knunu", "Bplus", Nevt_SIGNAL_initial_true, Scale_Kplus_here, "B2Knunu");
-    ReadDecayInfo(dirname_SIGNAL_initial, "B2Kstarnunu", "Bplus", Nevt_SIGNAL_initial_true, Scale_Kplusstar_here, "otherwise");
-    ReadDecayInfo(dirname_SIGNAL_initial, "B2Xsnunu", "Bplus", Nevt_SIGNAL_initial_true, Scale_Xsu_nonresonant_here, "B2Xsnunu");
-    ReadDecayInfo(dirname_SIGNAL_initial, "B02K0nunu", "Bzero", Nevt_SIGNAL_initial_true, Scale_K0_here, "B02K0nunu");
-    ReadDecayInfo(dirname_SIGNAL_initial, "B02Kstar0nunu", "Bzero", Nevt_SIGNAL_initial_true, Scale_K0star_here, "otherwise");
-    ReadDecayInfo(dirname_SIGNAL_initial, "B02Xsnunu", "Bzero", Nevt_SIGNAL_initial_true, Scale_Xsd_nonresonant_here, "B02Xsnunu");
+    ReadDecayInfo(dirname_SIGNAL_initial, "B2Knunu", "Bplus", Scale_Kplus_here, "B2Knunu");
+    ReadDecayInfo(dirname_SIGNAL_initial, "B2Kstarnunu", "Bplus", Scale_Kplusstar_here, "otherwise");
+    ReadDecayInfo(dirname_SIGNAL_initial, "B2Xsnunu", "Bplus", Scale_Xsu_nonresonant_here, "B2Xsnunu");
+    ReadDecayInfo(dirname_SIGNAL_initial, "B02K0nunu", "Bzero", Scale_K0_here, "B02K0nunu");
+    ReadDecayInfo(dirname_SIGNAL_initial, "B02Kstar0nunu", "Bzero", Scale_K0star_here, "otherwise");
+    ReadDecayInfo(dirname_SIGNAL_initial, "B02Xsnunu", "Bzero", Scale_Xsd_nonresonant_here, "B02Xsnunu");
 
     printf("Nevt initial 1st: %lf\n", Nevt_initial_1st);
     printf("Nevt initial 2nd: %lf\n", Nevt_initial_2nd);
