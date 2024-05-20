@@ -1,22 +1,58 @@
-// last update: 2023-07-14
-// for Belle2 data
-
-#include <stdio.h>
+#include "RooRealVar.h"
+#include "RooDataSet.h"
+#include "RooGaussian.h"
+#include "RooConstVar.h"
+#include "RooPolynomial.h"
+#include "RooHistPdf.h"
+#include "TCanvas.h"
+#include "TAxis.h"
+#include "RooPlot.h"
+#include <cmath>
+#include <float.h>
 #include <string>
-#include <vector>
-
+#include <string.h>
 #include "TFile.h"
-#include "TH1.h"
 #include "TTree.h"
-
+#include "TSystemDirectory.h"
+#include "TSystemFile.h"
+#include "RooGenericPdf.h"
+#include "RooCBShape.h"
+#include "RooAddPdf.h"
+#include "TStyle.h"
+#include "TGraphErrors.h"
+#include "TLine.h"
+#include "RooFitResult.h"
+#include "RooExtendPdf.h"
+#include "TH1.h"
+#include "TF1.h"
+#include "RooDataHist.h"
+#include <time.h>
+#include <random>
+#include <algorithm>
+#include "TH2.h"
+#include "RooRandom.h"
+#include "template.h"
 #include "constants.h"
-#include "base.h"
 #include "ObtainWeight.h"
 #include "correctors.h"
-#include "TCanvas.h"
-#include "TPaveText.h"
+#include "base.h"
+using namespace RooFit;
+using std::string;
+using std::to_string;
 
 Corrector corrector;
+Corrector_FEI corrector_FEI;
+Corrector_PID corrector_PID;
+Corrector_pi0 corrector_pi0;
+Corrector_FakePID corrector_FakePID;
+Corrector_Knn corrector_Knn;
+Corrector_Xsnn corrector_Xsnn;
+Corrector_Multiplicity corrector_Multiplicity;
+Corrector_KpKLKL corrector_KpKLKL;
+Corrector_KSKLKL corrector_KSKLKL;
+Corrector_KstarKLKL corrector_KstarKLKL;
+Corrector_XsKLKL corrector_XsKLKL;
+Corrector_BtoDtoXKL corrector_BtoDtoXKL;
 Corrector_Fragmentation corrector_Fragmentation;
 
 # define MCTYPE "MC15rd"
