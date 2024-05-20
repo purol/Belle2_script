@@ -6,10 +6,18 @@
 #include <vector>
 
 #include "TFile.h"
+#include "TH1.h"
+#include "TTree.h"
 
 #include "constants.h"
 #include "base.h"
 #include "ObtainWeight.h"
+#include "correctors.h"
+#include "TCanvas.h"
+#include "TPaveText.h"
+
+Corrector corrector;
+Corrector_Fragmentation corrector_Fragmentation;
 
 # define MCTYPE "MC15rd"
 
@@ -51,7 +59,7 @@ void FillBKG(const char* dirname, const char* included_string, TH1D* hist, doubl
     int __ncandidates__;
     double Bsig_M = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names, included_string);
 
     double Nevt = 0;
@@ -109,7 +117,7 @@ void FillSIGNAL(const char* dirname, const char* included_string, const char* ty
     double Mxs_MC = -1.0;
     double invM = -1.0;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names, included_string);
 
     double Nevt = 0;
@@ -212,7 +220,7 @@ void ReadDecayInfo(const char* dirname, const char* included_string, const char*
     double Mxs_MC = -1.0;
     double invM = -1.0;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names, included_string);
 
     double Nevt = 0;
