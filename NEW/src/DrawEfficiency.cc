@@ -397,19 +397,19 @@ int main(int argc, char* argv[]) {
     SIGNAL_FBDT_efficiency->SetLineWidth(2);
     SIGNAL_FBDT_efficiency->SetMarkerColor(4);
     SIGNAL_FBDT_efficiency->SetMarkerStyle(21);
-    SIGNAL_pre_and_selection_efficiency_true->SetStats(false);
+    SIGNAL_FBDT_efficiency->SetStats(false);
 
     BKG_FBDT_efficiency->SetMarkerSize(0.0);
     BKG_FBDT_efficiency->SetLineWidth(2);
     BKG_FBDT_efficiency->SetMarkerColor(4);
     BKG_FBDT_efficiency->SetMarkerStyle(21);
-    SIGNAL_pre_and_selection_efficiency_true->SetStats(false);
+    BKG_FBDT_efficiency->SetStats(false);
 
     BKG_selection_efficiency->SetMarkerSize(0.0);
     BKG_selection_efficiency->SetLineWidth(2);
     BKG_selection_efficiency->SetMarkerColor(4);
     BKG_selection_efficiency->SetMarkerStyle(21);
-    SIGNAL_pre_and_selection_efficiency_true->SetStats(false);
+    BKG_selection_efficiency->SetStats(false);
 
     TPaveText* pt;
 
