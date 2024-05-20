@@ -209,14 +209,7 @@ int main() {
     //RooRealVar* alpha = w->var("nom_gamma_stat_channel_bin_0");
     //printf("%lf", alpha->getValV());
 
-    // Lets tell roofit the right names for our histogram variables //
-    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-    RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
-    x->SetTitle("FBDT output");
-    x->setUnit("");
-
     // get Category and data
-    RooCategory* idx = (RooCategory*)obs->find("channelCat");
     //RooAbsData* data = (RooAbsData*)w->data("obsData");
     RooDataSet* data = (RooDataSet*)w->data("asimovData");
 
@@ -249,15 +242,6 @@ int main() {
 
     // define frame
     RooPlot* x_frame = x->frame(Title("fit result"));
-
-    // get expected num of evts for PDFs
-    double Signal_Nevts = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
-    double CHG_Nevts = GetNumEvts(w, "CHG");
-    double MIX_Nevts = GetNumEvts(w, "MIX");
-    double UUBAR_Nevts = GetNumEvts(w, "UUBAR");
-    double DDBAR_Nevts = GetNumEvts(w, "DDBAR");
-    double SSBAR_Nevts = GetNumEvts(w, "SSBAR");
-    double CHARM_Nevts = GetNumEvts(w, "CHARM");
 
     // draw
     // GetPlotTemplate(w, data);

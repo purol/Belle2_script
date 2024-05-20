@@ -388,7 +388,7 @@ double BDTcToWeight(double BDTc) {
 
 }
 
-double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -402,6 +402,11 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
     else if (strcmp(type, "Continuum") == 0) {}
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -477,7 +482,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -505,7 +510,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -595,7 +600,40 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -667,7 +705,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
     return Nevt;
 }
 
-double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get track efficiency uncertainty PDF with appropriate correction
+double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // get track efficiency uncertainty PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -681,6 +719,11 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
     else if (strcmp(type, "Continuum") == 0) {}
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -756,7 +799,7 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -784,7 +827,7 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -874,7 +917,40 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Ntrack = GetNtracks(Upsilon_ID, Bsig_ID);
 
@@ -952,7 +1028,7 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
     return Nevt;
 }
 
-double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get KS0 uncertainty PDF with appropriate correction
+double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // get KS0 uncertainty PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -966,6 +1042,11 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
     else if (strcmp(type, "Continuum") == 0) {}
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -1042,7 +1123,7 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -1071,7 +1152,7 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_KS0_3D_distance);
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -1161,7 +1242,40 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -1237,16 +1351,16 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
     return Nevt;
 }
 
-int GetFEIcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists) { // get shape sys histogram from txt file
+int GetFEIcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist_MXs1, TH1D* Signal_nominal_hist_MXs2, TH1D* Signal_nominal_hist_MXs3, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists_MXs1, TH1D*** Signal_hists_MXs2, TH1D*** Signal_hists_MXs3) { // get shape sys histogram from txt file
     int Nentry = 0; // number of eigen values/vectors
     double eigen_value = 0; // eigen value
-    double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+    double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
 
     FILE* fp;
     fp = fopen(dirname, "r");
     while (true) {
         if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-        for (int i = 0; i < RarityBins * 3; i++) {
+        for (int i = 0; i < RarityBins * 5; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
         Nentry++;
@@ -1255,33 +1369,43 @@ int GetFEIcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
 
     *CHG_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
     *MIX_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
-    *Signal_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs1 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs2 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs3 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
 
     for (int i = 0; i < Nentry; i++) {
         (*CHG_hists)[i] = new TH1D(("CHG_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("CHG_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
         (*MIX_hists)[i] = new TH1D(("MIX_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("MIX_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
-        (*Signal_hists)[i] = new TH1D(("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     for (int i = Nentry; i < 2 * Nentry; i++) {
         (*CHG_hists)[i] = new TH1D(("CHG_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
         (*MIX_hists)[i] = new TH1D(("MIX_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("MIX_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-        (*Signal_hists)[i] = new TH1D(("Signal_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs1_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs2_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs3_FEI_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     fp = fopen(dirname, "r");
     for (int i = 0; i < Nentry; i++) {
         fscanf(fp, "%lf\n", &eigen_value);
-        for (int j = 0; j < RarityBins * 3; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
+        for (int j = 0; j < RarityBins * 5; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
 
         for (int k = 0; k < RarityBins; k++) {
             (*CHG_hists)[i]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
             (*MIX_hists)[i]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 1 * RarityBins]));
-            (*Signal_hists)[i]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs1)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs2)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 3 * RarityBins]));
+            (*Signal_hists_MXs3)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 4 * RarityBins]));
 
             (*CHG_hists)[i + Nentry]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 0 * RarityBins]));
             (*MIX_hists)[i + Nentry]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 1 * RarityBins]));
-            (*Signal_hists)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs1)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs2)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 3 * RarityBins]));
+            (*Signal_hists_MXs3)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 4 * RarityBins]));
         }
 
     }
@@ -1291,31 +1415,33 @@ int GetFEIcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
     return Nentry;
 }
 
-void GetFEIUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* Signal_hist) { // get shape sys histogram from txt file
+void GetFEIUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* Signal_hist_MXs1, TH1D* Signal_hist_MXs2, TH1D* Signal_hist_MXs3) { // get shape sys histogram from txt file
     FILE* fp;
     fp = fopen(dirname, "r");
 
-    double weight_sys[RarityBins * 3] = { 0.0 };
-    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    double weight_sys[RarityBins * 5] = { 0.0 };
+    for (int i = 0; i < RarityBins * 5; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
     fclose(fp);
 
-    for (int i = 0; i < RarityBins * 3; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
+    for (int i = 0; i < RarityBins * 5; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
 
     for (int i = 0; i < RarityBins; i++) CHG_hist->SetBinContent(i + 1, weight_sys[i]);
     for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
-    for (int i = 0; i < RarityBins; i++) Signal_hist->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs1->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs2->SetBinContent(i + 1, weight_sys[3 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs3->SetBinContent(i + 1, weight_sys[4 * RarityBins + i]);
 }
 
-int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* UUBAR_nominal_hist, TH1D* DDBAR_nominal_hist, TH1D* SSBAR_nominal_hist, TH1D* CHARM_nominal_hist, TH1D* SIGNAL_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** UUBAR_hists, TH1D*** DDBAR_hists, TH1D*** SSBAR_hists, TH1D*** CHARM_hists, TH1D*** SIGNAL_hists, bool IsItKID) { // get shape sys histogram from txt file
+int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* UUBAR_nominal_hist, TH1D* DDBAR_nominal_hist, TH1D* SSBAR_nominal_hist, TH1D* CHARM_nominal_hist, TH1D* Signal_nominal_hist_MXs1, TH1D* Signal_nominal_hist_MXs2, TH1D* Signal_nominal_hist_MXs3, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** UUBAR_hists, TH1D*** DDBAR_hists, TH1D*** SSBAR_hists, TH1D*** CHARM_hists, TH1D*** Signal_hists_MXs1, TH1D*** Signal_hists_MXs2, TH1D*** Signal_hists_MXs3, bool IsItKID) { // get shape sys histogram from txt file
     int Nentry = 0; // number of eigen values/vectors
     double eigen_value = 0; // eigen value
-    double weight_sys[RarityBins * 7] = { 0.0 }; // eigen vector
+    double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
 
     FILE* fp;
     fp = fopen(dirname, "r");
     while (true) {
         if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-        for (int i = 0; i < RarityBins * 7; i++) {
+        for (int i = 0; i < RarityBins * 9; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
         Nentry++;
@@ -1328,7 +1454,9 @@ int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
     *DDBAR_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
     *SSBAR_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
     *CHARM_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
-    *SIGNAL_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs1 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs2 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs3 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
 
     for (int i = 0; i < Nentry; i++) {
         if (IsItKID) {
@@ -1338,7 +1466,9 @@ int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
             (*DDBAR_hists)[i] = new TH1D(("DDBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), ("DDBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
             (*SSBAR_hists)[i] = new TH1D(("SSBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), ("SSBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
             (*CHARM_hists)[i] = new TH1D(("CHARM_KID_correlated" + std::to_string(i) + "_p").c_str(), ("CHARM_KID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
-            (*SIGNAL_hists)[i] = new TH1D(("Signal_KID_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_KID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+            (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_KID_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs1_KID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+            (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_KID_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs2_KID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+            (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_KID_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs3_KID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
         }
         else {
             (*CHG_hists)[i] = new TH1D(("CHG_PID_correlated" + std::to_string(i) + "_p").c_str(), ("CHG_PID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
@@ -1347,7 +1477,9 @@ int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
             (*DDBAR_hists)[i] = new TH1D(("DDBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), ("DDBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
             (*SSBAR_hists)[i] = new TH1D(("SSBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), ("SSBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
             (*CHARM_hists)[i] = new TH1D(("CHARM_PID_correlated" + std::to_string(i) + "_p").c_str(), ("CHARM_PID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
-            (*SIGNAL_hists)[i] = new TH1D(("Signal_PID_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_PID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+            (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_PID_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs1_PID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+            (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_PID_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs2_PID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+            (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_PID_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs3_PID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
         }
     }
 
@@ -1359,7 +1491,9 @@ int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
             (*DDBAR_hists)[i] = new TH1D(("DDBAR_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("DDBAR_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
             (*SSBAR_hists)[i] = new TH1D(("SSBAR_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("SSBAR_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
             (*CHARM_hists)[i] = new TH1D(("CHARM_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHARM_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*SIGNAL_hists)[i] = new TH1D(("Signal_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs1_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs2_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs3_KID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
         }
         else {
             (*CHG_hists)[i] = new TH1D(("CHG_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
@@ -1368,14 +1502,16 @@ int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
             (*DDBAR_hists)[i] = new TH1D(("DDBAR_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("DDBAR_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
             (*SSBAR_hists)[i] = new TH1D(("SSBAR_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("SSBAR_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
             (*CHARM_hists)[i] = new TH1D(("CHARM_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHARM_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-            (*SIGNAL_hists)[i] = new TH1D(("Signal_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs1_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs2_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+            (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs3_PID_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
         }
     }
 
     fp = fopen(dirname, "r");
     for (int i = 0; i < Nentry; i++) {
         fscanf(fp, "%lf\n", &eigen_value);
-        for (int j = 0; j < RarityBins * 7; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
+        for (int j = 0; j < RarityBins * 9; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
 
         for (int k = 0; k < RarityBins; k++) {
             (*CHG_hists)[i]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
@@ -1384,7 +1520,9 @@ int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
             (*DDBAR_hists)[i]->SetBinContent(k + 1, DDBAR_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 3 * RarityBins]));
             (*SSBAR_hists)[i]->SetBinContent(k + 1, SSBAR_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 4 * RarityBins]));
             (*CHARM_hists)[i]->SetBinContent(k + 1, CHARM_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 5 * RarityBins]));
-            (*SIGNAL_hists)[i]->SetBinContent(k + 1, SIGNAL_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs1)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs2)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 7 * RarityBins]));
+            (*Signal_hists_MXs3)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 8 * RarityBins]));
 
             (*CHG_hists)[i + Nentry]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 0 * RarityBins]));
             (*MIX_hists)[i + Nentry]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 1 * RarityBins]));
@@ -1392,7 +1530,9 @@ int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
             (*DDBAR_hists)[i + Nentry]->SetBinContent(k + 1, DDBAR_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 3 * RarityBins]));
             (*SSBAR_hists)[i + Nentry]->SetBinContent(k + 1, SSBAR_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 4 * RarityBins]));
             (*CHARM_hists)[i + Nentry]->SetBinContent(k + 1, CHARM_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 5 * RarityBins]));
-            (*SIGNAL_hists)[i + Nentry]->SetBinContent(k + 1, SIGNAL_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs1)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs2)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 7 * RarityBins]));
+            (*Signal_hists_MXs3)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 8 * RarityBins]));
         }
 
     }
@@ -1402,15 +1542,15 @@ int GetPIDcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
     return Nentry;
 }
 
-void GetPIDUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* UUBAR_hist, TH1D* DDBAR_hist, TH1D* SSBAR_hist, TH1D* CHARM_hist, TH1D* SIGNAL_hist) { // get shape sys histogram from txt file
+void GetPIDUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* UUBAR_hist, TH1D* DDBAR_hist, TH1D* SSBAR_hist, TH1D* CHARM_hist, TH1D* Signal_hist_MXs1, TH1D* Signal_hist_MXs2, TH1D* Signal_hist_MXs3) { // get shape sys histogram from txt file
     FILE* fp;
     fp = fopen(dirname, "r");
 
-    double weight_sys[RarityBins * 7] = { 0.0 };
-    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    double weight_sys[RarityBins * 9] = { 0.0 };
+    for (int i = 0; i < RarityBins * 9; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
     fclose(fp);
 
-    for (int i = 0; i < RarityBins * 7; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
+    for (int i = 0; i < RarityBins * 9; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
 
     for (int i = 0; i < RarityBins; i++) CHG_hist->SetBinContent(i + 1, weight_sys[i]);
     for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
@@ -1418,19 +1558,21 @@ void GetPIDUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist,
     for (int i = 0; i < RarityBins; i++) DDBAR_hist->SetBinContent(i + 1, weight_sys[3 * RarityBins + i]);
     for (int i = 0; i < RarityBins; i++) SSBAR_hist->SetBinContent(i + 1, weight_sys[4 * RarityBins + i]);
     for (int i = 0; i < RarityBins; i++) CHARM_hist->SetBinContent(i + 1, weight_sys[5 * RarityBins + i]);
-    for (int i = 0; i < RarityBins; i++) SIGNAL_hist->SetBinContent(i + 1, weight_sys[6 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs1->SetBinContent(i + 1, weight_sys[6 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs2->SetBinContent(i + 1, weight_sys[7 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs3->SetBinContent(i + 1, weight_sys[8 * RarityBins + i]);
 }
 
-int GetBRcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists) { // get shape sys histogram from txt file
+int GetBRcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist_MXs1, TH1D* Signal_nominal_hist_MXs2, TH1D* Signal_nominal_hist_MXs3, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists_MXs1, TH1D*** Signal_hists_MXs2, TH1D*** Signal_hists_MXs3) { // get shape sys histogram from txt file
     int Nentry = 0; // number of eigen values/vectors
     double eigen_value = 0; // eigen value
-    double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+    double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
 
     FILE* fp;
     fp = fopen(dirname, "r");
     while (true) {
         if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-        for (int i = 0; i < RarityBins * 3; i++) {
+        for (int i = 0; i < RarityBins * 5; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
         Nentry++;
@@ -1439,33 +1581,43 @@ int GetBRcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_n
 
     *CHG_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
     *MIX_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
-    *Signal_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs1 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs2 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs3 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
 
     for (int i = 0; i < Nentry; i++) {
         (*CHG_hists)[i] = new TH1D(("CHG_BR_correlated" + std::to_string(i) + "_p").c_str(), ("CHG_BR_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
         (*MIX_hists)[i] = new TH1D(("MIX_BR_correlated" + std::to_string(i) + "_p").c_str(), ("MIX_BR_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
-        (*Signal_hists)[i] = new TH1D(("Signal_BR_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_BR_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_BR_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs1_BR_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_BR_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs2_BR_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_BR_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs3_BR_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     for (int i = Nentry; i < 2 * Nentry; i++) {
         (*CHG_hists)[i] = new TH1D(("CHG_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
         (*MIX_hists)[i] = new TH1D(("MIX_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("MIX_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-        (*Signal_hists)[i] = new TH1D(("Signal_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs1_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs2_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs3_BR_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     fp = fopen(dirname, "r");
     for (int i = 0; i < Nentry; i++) {
         fscanf(fp, "%lf\n", &eigen_value);
-        for (int j = 0; j < RarityBins * 3; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
+        for (int j = 0; j < RarityBins * 5; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
 
         for (int k = 0; k < RarityBins; k++) {
             (*CHG_hists)[i]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
             (*MIX_hists)[i]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 1 * RarityBins]));
-            (*Signal_hists)[i]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs1)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs2)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 3 * RarityBins]));
+            (*Signal_hists_MXs3)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 4 * RarityBins]));
 
             (*CHG_hists)[i + Nentry]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 0 * RarityBins]));
             (*MIX_hists)[i + Nentry]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 1 * RarityBins]));
-            (*Signal_hists)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs1)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs2)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 3 * RarityBins]));
+            (*Signal_hists_MXs3)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 4 * RarityBins]));
         }
 
     }
@@ -1475,31 +1627,33 @@ int GetBRcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_n
     return Nentry;
 }
 
-void GetBRUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* Signal_hist) { // get shape sys histogram from txt file
+void GetBRUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* Signal_hist_MXs1, TH1D* Signal_hist_MXs2, TH1D* Signal_hist_MXs3) { // get shape sys histogram from txt file
     FILE* fp;
     fp = fopen(dirname, "r");
 
-    double weight_sys[RarityBins * 3] = { 0.0 };
-    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    double weight_sys[RarityBins * 5] = { 0.0 };
+    for (int i = 0; i < RarityBins * 5; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
     fclose(fp);
 
-    for (int i = 0; i < RarityBins * 3; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
+    for (int i = 0; i < RarityBins * 5; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
 
     for (int i = 0; i < RarityBins; i++) CHG_hist->SetBinContent(i + 1, weight_sys[i]);
     for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
-    for (int i = 0; i < RarityBins; i++) Signal_hist->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs1->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs2->SetBinContent(i + 1, weight_sys[3 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs3->SetBinContent(i + 1, weight_sys[4 * RarityBins + i]);
 }
 
-int GetfractioncorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists) { // get shape sys histogram from txt file
+int GetFragmentationcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist_MXs1, TH1D* Signal_nominal_hist_MXs2, TH1D* Signal_nominal_hist_MXs3, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists_MXs1, TH1D*** Signal_hists_MXs2, TH1D*** Signal_hists_MXs3) { // get shape sys histogram from txt file
     int Nentry = 0; // number of eigen values/vectors
     double eigen_value = 0; // eigen value
-    double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+    double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
 
     FILE* fp;
     fp = fopen(dirname, "r");
     while (true) {
         if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-        for (int i = 0; i < RarityBins * 3; i++) {
+        for (int i = 0; i < RarityBins * 5; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
         Nentry++;
@@ -1508,102 +1662,43 @@ int GetfractioncorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D*
 
     *CHG_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
     *MIX_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
-    *Signal_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
-
-    for (int i = 0; i < Nentry; i++) {
-        (*CHG_hists)[i] = new TH1D(("CHG_fraction_correlated" + std::to_string(i) + "_p").c_str(), ("CHG_fraction_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
-        (*MIX_hists)[i] = new TH1D(("MIX_fraction_correlated" + std::to_string(i) + "_p").c_str(), ("MIX_fraction_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
-        (*Signal_hists)[i] = new TH1D(("Signal_fraction_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_fraction_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
-    }
-
-    for (int i = Nentry; i < 2 * Nentry; i++) {
-        (*CHG_hists)[i] = new TH1D(("CHG_fraction_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_fraction_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-        (*MIX_hists)[i] = new TH1D(("MIX_fraction_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("MIX_fraction_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-        (*Signal_hists)[i] = new TH1D(("Signal_fraction_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_fraction_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-    }
-
-    fp = fopen(dirname, "r");
-    for (int i = 0; i < Nentry; i++) {
-        fscanf(fp, "%lf\n", &eigen_value);
-        for (int j = 0; j < RarityBins * 3; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
-
-        for (int k = 0; k < RarityBins; k++) {
-            (*CHG_hists)[i]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
-            (*MIX_hists)[i]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 1 * RarityBins]));
-            (*Signal_hists)[i]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
-
-            (*CHG_hists)[i + Nentry]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 0 * RarityBins]));
-            (*MIX_hists)[i + Nentry]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 1 * RarityBins]));
-            (*Signal_hists)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
-        }
-
-    }
-
-    fclose(fp);
-
-    return Nentry;
-}
-
-void GetfractionUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* Signal_hist) { // get shape sys histogram from txt file
-    FILE* fp;
-    fp = fopen(dirname, "r");
-
-    double weight_sys[RarityBins * 3] = { 0.0 };
-    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
-    fclose(fp);
-
-    for (int i = 0; i < RarityBins * 3; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
-
-    for (int i = 0; i < RarityBins; i++) CHG_hist->SetBinContent(i + 1, weight_sys[i]);
-    for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
-    for (int i = 0; i < RarityBins; i++) Signal_hist->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
-}
-
-int GetFragmentationcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists) { // get shape sys histogram from txt file
-    int Nentry = 0; // number of eigen values/vectors
-    double eigen_value = 0; // eigen value
-    double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
-
-    FILE* fp;
-    fp = fopen(dirname, "r");
-    while (true) {
-        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-        for (int i = 0; i < RarityBins * 3; i++) {
-            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
-        }
-        Nentry++;
-    }
-    fclose(fp);
-
-    *CHG_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
-    *MIX_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
-    *Signal_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs1 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs2 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs3 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
 
     for (int i = 0; i < Nentry; i++) {
         (*CHG_hists)[i] = new TH1D(("CHG_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), ("CHG_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
         (*MIX_hists)[i] = new TH1D(("MIX_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), ("MIX_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
-        (*Signal_hists)[i] = new TH1D(("Signal_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs1_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs2_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     for (int i = Nentry; i < 2 * Nentry; i++) {
         (*CHG_hists)[i] = new TH1D(("CHG_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
         (*MIX_hists)[i] = new TH1D(("MIX_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("MIX_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-        (*Signal_hists)[i] = new TH1D(("Signal_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs1_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs2_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     fp = fopen(dirname, "r");
     for (int i = 0; i < Nentry; i++) {
         fscanf(fp, "%lf\n", &eigen_value);
-        for (int j = 0; j < RarityBins * 3; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
+        for (int j = 0; j < RarityBins * 5; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
 
         for (int k = 0; k < RarityBins; k++) {
             (*CHG_hists)[i]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
             (*MIX_hists)[i]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 1 * RarityBins]));
-            (*Signal_hists)[i]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs1)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs2)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 3 * RarityBins]));
+            (*Signal_hists_MXs3)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 4 * RarityBins]));
 
             (*CHG_hists)[i + Nentry]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 0 * RarityBins]));
             (*MIX_hists)[i + Nentry]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 1 * RarityBins]));
-            (*Signal_hists)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs1)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*Signal_hists_MXs2)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 3 * RarityBins]));
+            (*Signal_hists_MXs3)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 4 * RarityBins]));
         }
 
     }
@@ -1613,31 +1708,33 @@ int GetFragmentationcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, 
     return Nentry;
 }
 
-void GetFragmentationUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* Signal_hist) { // get shape sys histogram from txt file
+void GetFragmentationUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* Signal_hist_MXs1, TH1D* Signal_hist_MXs2, TH1D* Signal_hist_MXs3) { // get shape sys histogram from txt file
     FILE* fp;
     fp = fopen(dirname, "r");
 
-    double weight_sys[RarityBins * 3] = { 0.0 };
-    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    double weight_sys[RarityBins * 5] = { 0.0 };
+    for (int i = 0; i < RarityBins * 5; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
     fclose(fp);
 
-    for (int i = 0; i < RarityBins * 3; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
+    for (int i = 0; i < RarityBins * 5; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
 
     for (int i = 0; i < RarityBins; i++) CHG_hist->SetBinContent(i + 1, weight_sys[i]);
     for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
-    for (int i = 0; i < RarityBins; i++) Signal_hist->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs1->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs2->SetBinContent(i + 1, weight_sys[3 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs3->SetBinContent(i + 1, weight_sys[4 * RarityBins + i]);
 }
 
-int Getpi0correlatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* UUBAR_nominal_hist, TH1D* DDBAR_nominal_hist, TH1D* SSBAR_nominal_hist, TH1D* CHARM_nominal_hist, TH1D* SIGNAL_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** UUBAR_hists, TH1D*** DDBAR_hists, TH1D*** SSBAR_hists, TH1D*** CHARM_hists, TH1D*** SIGNAL_hists) { // get shape sys histogram from txt file
+int Getpi0correlatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* UUBAR_nominal_hist, TH1D* DDBAR_nominal_hist, TH1D* SSBAR_nominal_hist, TH1D* CHARM_nominal_hist, TH1D* Signal_nominal_hist_MXs1, TH1D* Signal_nominal_hist_MXs2, TH1D* Signal_nominal_hist_MXs3, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** UUBAR_hists, TH1D*** DDBAR_hists, TH1D*** SSBAR_hists, TH1D*** CHARM_hists, TH1D*** Signal_hists_MXs1, TH1D*** Signal_hists_MXs2, TH1D*** Signal_hists_MXs3) { // get shape sys histogram from txt file
     int Nentry = 0; // number of eigen values/vectors
     double eigen_value = 0; // eigen value
-    double weight_sys[RarityBins * 7] = { 0.0 }; // eigen vector
+    double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
 
     FILE* fp;
     fp = fopen(dirname, "r");
     while (true) {
         if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-        for (int i = 0; i < RarityBins * 7; i++) {
+        for (int i = 0; i < RarityBins * 9; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
         Nentry++;
@@ -1650,7 +1747,9 @@ int Getpi0correlatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
     *DDBAR_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
     *SSBAR_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
     *CHARM_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
-    *SIGNAL_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs1 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs2 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs3 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
 
     for (int i = 0; i < Nentry; i++) {
         (*CHG_hists)[i] = new TH1D(("CHG_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("CHG_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
@@ -1659,7 +1758,9 @@ int Getpi0correlatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
         (*DDBAR_hists)[i] = new TH1D(("DDBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("DDBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
         (*SSBAR_hists)[i] = new TH1D(("SSBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("SSBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
         (*CHARM_hists)[i] = new TH1D(("CHARM_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("CHARM_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
-        (*SIGNAL_hists)[i] = new TH1D(("Signal_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs1_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs2_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs3_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     for (int i = Nentry; i < 2 * Nentry; i++) {
@@ -1669,13 +1770,15 @@ int Getpi0correlatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
         (*DDBAR_hists)[i] = new TH1D(("DDBAR_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("DDBAR_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
         (*SSBAR_hists)[i] = new TH1D(("SSBAR_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("SSBAR_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
         (*CHARM_hists)[i] = new TH1D(("CHARM_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHARM_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-        (*SIGNAL_hists)[i] = new TH1D(("Signal_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs1_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs2_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs3_pi0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     fp = fopen(dirname, "r");
     for (int i = 0; i < Nentry; i++) {
         fscanf(fp, "%lf\n", &eigen_value);
-        for (int j = 0; j < RarityBins * 7; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
+        for (int j = 0; j < RarityBins * 9; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
 
         for (int k = 0; k < RarityBins; k++) {
             (*CHG_hists)[i]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
@@ -1684,7 +1787,9 @@ int Getpi0correlatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
             (*DDBAR_hists)[i]->SetBinContent(k + 1, DDBAR_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 3 * RarityBins]));
             (*SSBAR_hists)[i]->SetBinContent(k + 1, SSBAR_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 4 * RarityBins]));
             (*CHARM_hists)[i]->SetBinContent(k + 1, CHARM_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 5 * RarityBins]));
-            (*SIGNAL_hists)[i]->SetBinContent(k + 1, SIGNAL_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs1)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs2)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 7 * RarityBins]));
+            (*Signal_hists_MXs3)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 8 * RarityBins]));
 
             (*CHG_hists)[i + Nentry]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 0 * RarityBins]));
             (*MIX_hists)[i + Nentry]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 1 * RarityBins]));
@@ -1692,7 +1797,9 @@ int Getpi0correlatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
             (*DDBAR_hists)[i + Nentry]->SetBinContent(k + 1, DDBAR_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 3 * RarityBins]));
             (*SSBAR_hists)[i + Nentry]->SetBinContent(k + 1, SSBAR_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 4 * RarityBins]));
             (*CHARM_hists)[i + Nentry]->SetBinContent(k + 1, CHARM_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 5 * RarityBins]));
-            (*SIGNAL_hists)[i + Nentry]->SetBinContent(k + 1, SIGNAL_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs1)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs2)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 7 * RarityBins]));
+            (*Signal_hists_MXs3)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 8 * RarityBins]));
         }
 
     }
@@ -1702,15 +1809,15 @@ int Getpi0correlatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_
     return Nentry;
 }
 
-void Getpi0UncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* UUBAR_hist, TH1D* DDBAR_hist, TH1D* SSBAR_hist, TH1D* CHARM_hist, TH1D* SIGNAL_hist) { // get shape sys histogram from txt file
+void Getpi0UncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* UUBAR_hist, TH1D* DDBAR_hist, TH1D* SSBAR_hist, TH1D* CHARM_hist, TH1D* Signal_hist_MXs1, TH1D* Signal_hist_MXs2, TH1D* Signal_hist_MXs3) { // get shape sys histogram from txt file
     FILE* fp;
     fp = fopen(dirname, "r");
 
-    double weight_sys[RarityBins * 7] = { 0.0 };
-    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    double weight_sys[RarityBins * 9] = { 0.0 };
+    for (int i = 0; i < RarityBins * 9; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
     fclose(fp);
 
-    for (int i = 0; i < RarityBins * 7; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
+    for (int i = 0; i < RarityBins * 9; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
 
     for (int i = 0; i < RarityBins; i++) CHG_hist->SetBinContent(i + 1, weight_sys[i]);
     for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
@@ -1718,10 +1825,12 @@ void Getpi0UncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist,
     for (int i = 0; i < RarityBins; i++) DDBAR_hist->SetBinContent(i + 1, weight_sys[3 * RarityBins + i]);
     for (int i = 0; i < RarityBins; i++) SSBAR_hist->SetBinContent(i + 1, weight_sys[4 * RarityBins + i]);
     for (int i = 0; i < RarityBins; i++) CHARM_hist->SetBinContent(i + 1, weight_sys[5 * RarityBins + i]);
-    for (int i = 0; i < RarityBins; i++) SIGNAL_hist->SetBinContent(i + 1, weight_sys[6 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs1->SetBinContent(i + 1, weight_sys[6 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs2->SetBinContent(i + 1, weight_sys[7 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs3->SetBinContent(i + 1, weight_sys[8 * RarityBins + i]);
 }
 
-void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7], double Correction_factor_BR[7], const char* type, int charge, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get Kff uncertainty PDF with appropriate correction
+void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7], double Correction_factor_BR[7], const char* type, int charge, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // get Kff uncertainty PDF with appropriate correction
     // Be careful! You should combine this function with `GetNominalPDFs` function!
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
@@ -1749,8 +1858,8 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
     */
     const double LinearCoefficients[3][3] = {
         {0.000898287544607,   0.199871550874459,   0.979821696141969},
-        {0.061817247836003,   0.977937066768286, - 0.199543782941545},
-        {0.998087080844888, - 0.060749128320321,   0.011477040509285}
+        {0.061817247836003,   0.977937066768286,  -0.199543782941545},
+        {0.998087080844888,  -0.060749128320321,   0.011477040509285}
     };
     const double Lambdas[7][3] = {
         { 0.0,                0.0,                0.0              },
@@ -1930,6 +2039,33 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
             tree_Btag->GetEntry(j);
             tree_Xs->GetEntry(j);
 
+            // select the specific true MXs region
+            // sanity check
+            if ((m_k > 0.0) && (m_k < 2.0)) {}
+            else { // mass is NaN. try to find true mass region by file name
+                if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) m_k = 0.4868;
+                else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) m_k = 0.8916;
+                else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) m_k = 1.5;
+                else {
+                    printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                    exit(1);
+                }
+            }
+
+            if (true_MXs_region == 0) {}
+            else if (true_MXs_region == 1) {
+                if ((m_k > 0.0) && (m_k < 0.6)) {}
+                else continue;
+            }
+            else if (true_MXs_region == 2) {
+                if ((m_k > 0.6) && (m_k < 1.0)) {}
+                else continue;
+            }
+            else if (true_MXs_region == 3) {
+                if ((m_k > 1.0) && (m_k < 2.0)) {}
+                else continue;
+            }
+
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -2057,7 +2193,7 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
     return;
 }
 
-double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hist[19], double Correction_factor_BR[19], const char* type, int charge, double weight_var = 1.0) { // get Kstarff uncertainty PDF with appropriate correction
+double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hist[19], double Correction_factor_BR[19], const char* type, int charge, double weight_var = 1.0, int true_MXs_region = 0) { // get Kstarff uncertainty PDF with appropriate correction
     // Be careful! You should combine this function with `GetNominalPDFs` function!
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
@@ -2285,6 +2421,33 @@ double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hi
             tree_Btag->GetEntry(j);
             tree_Xs->GetEntry(j);
 
+            // select the specific true MXs region
+            // sanity check
+            if ((m_k > 0.0) && (m_k < 2.0)) {}
+            else { // mass is NaN. try to find true mass region by file name
+                if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) m_k = 0.4868;
+                else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) m_k = 0.8916;
+                else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) m_k = 1.5;
+                else {
+                    printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                    exit(1);
+                }
+            }
+
+            if (true_MXs_region == 0) {}
+            else if (true_MXs_region == 1) {
+                if ((m_k > 0.0) && (m_k < 0.6)) {}
+                else continue;
+            }
+            else if (true_MXs_region == 2) {
+                if ((m_k > 0.6) && (m_k < 1.0)) {}
+                else continue;
+            }
+            else if (true_MXs_region == 3) {
+                if ((m_k > 1.0) && (m_k < 2.0)) {}
+                else continue;
+            }
+
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -2454,7 +2617,7 @@ double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hi
     return Nevt;
 }
 
-double GetNevtWithBDTc(const char* dirname, const char* included_string, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get the number of event after BDTc correction
+double GetNevtWithBDTc(const char* dirname, const char* included_string, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // get the number of event after BDTc correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -2468,6 +2631,11 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
     else if (strcmp(type, "Continuum") == 0) {}
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -2544,7 +2712,7 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -2572,7 +2740,7 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -2649,7 +2817,40 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -2723,7 +2924,7 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
     return Nevt;
 }
 
-double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get BDTc PDF with appropriate correction
+double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // get BDTc PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -2737,6 +2938,11 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
     else if (strcmp(type, "Continuum") == 0) {}
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -2813,7 +3019,7 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -2841,7 +3047,7 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -2918,7 +3124,40 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -3003,7 +3242,7 @@ void GetNegativeChangePDFs(TH1D* nominal_hist, TH1D* positive_hist, TH1D* negati
     }
 }
 
-double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsIthigh, bool IsItXsu, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // apply correction for mb weight files
+double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsIthigh, bool IsItXsu, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // apply correction for mb weight files
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -3021,6 +3260,11 @@ double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, c
     }
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -3096,7 +3340,7 @@ double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, c
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -3124,7 +3368,7 @@ double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, c
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -3201,7 +3445,40 @@ double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, c
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -3278,7 +3555,7 @@ double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, c
     return Nevt;
 }
 
-double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsIthigh, bool IsItXsu, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // apply correction for pf weight files
+double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsIthigh, bool IsItXsu, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // apply correction for pf weight files
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -3296,6 +3573,11 @@ double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, c
     }
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -3372,7 +3654,7 @@ double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, c
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -3400,7 +3682,7 @@ double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, c
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -3475,7 +3757,38 @@ double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, c
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = MXs;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -3552,7 +3865,7 @@ double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, c
     return Nevt;
 }
 
-double GetTransitionPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsIthigh, bool IsItXsu, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // apply correction for transition weight files
+double GetTransitionPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsIthigh, bool IsItXsu, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // apply correction for transition weight files
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -3566,6 +3879,11 @@ double GetTransitionPDFs(const char* dirname, const char* included_string, TH1D*
     else if (strcmp(type, "Continuum") == 0) {}
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -3641,7 +3959,7 @@ double GetTransitionPDFs(const char* dirname, const char* included_string, TH1D*
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -3669,7 +3987,7 @@ double GetTransitionPDFs(const char* dirname, const char* included_string, TH1D*
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -3744,7 +4062,40 @@ double GetTransitionPDFs(const char* dirname, const char* included_string, TH1D*
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -3821,7 +4172,7 @@ double GetTransitionPDFs(const char* dirname, const char* included_string, TH1D*
     return Nevt;
 }
 
-double GetKstardeltaPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItXsu, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // apply correction for pf weight files
+double GetKstardeltaPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItXsu, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // apply correction for pf weight files
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -3837,6 +4188,11 @@ double GetKstardeltaPDFs(const char* dirname, const char* included_string, TH1D*
     }
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -3934,7 +4290,7 @@ double GetKstardeltaPDFs(const char* dirname, const char* included_string, TH1D*
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu")) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
@@ -3969,6 +4325,37 @@ double GetKstardeltaPDFs(const char* dirname, const char* included_string, TH1D*
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = MXs;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -4041,7 +4428,7 @@ double GetKstardeltaPDFs(const char* dirname, const char* included_string, TH1D*
     return Nevt;
 }
 
-double GetXnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with uncertainties on all BR(B->X n nbar) decay
+double GetXnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // get nominal PDF with uncertainties on all BR(B->X n nbar) decay
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -4055,6 +4442,11 @@ double GetXnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist
     else if (strcmp(type, "Continuum") == 0) {}
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -4130,7 +4522,7 @@ double GetXnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -4158,7 +4550,7 @@ double GetXnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -4248,7 +4640,40 @@ double GetXnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -4324,16 +4749,16 @@ double GetXnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist
     return Nevt;
 }
 
-int GetmultiplicitycorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* UUBAR_nominal_hist, TH1D* DDBAR_nominal_hist, TH1D* SSBAR_nominal_hist, TH1D* CHARM_nominal_hist, TH1D* SIGNAL_nominal_hist, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** UUBAR_hists, TH1D*** DDBAR_hists, TH1D*** SSBAR_hists, TH1D*** CHARM_hists, TH1D*** SIGNAL_hists) { // get shape sys histogram from txt file
+int GetmultiplicitycorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* UUBAR_nominal_hist, TH1D* DDBAR_nominal_hist, TH1D* SSBAR_nominal_hist, TH1D* CHARM_nominal_hist, TH1D* Signal_nominal_hist_MXs1, TH1D* Signal_nominal_hist_MXs2, TH1D* Signal_nominal_hist_MXs3, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** UUBAR_hists, TH1D*** DDBAR_hists, TH1D*** SSBAR_hists, TH1D*** CHARM_hists, TH1D*** Signal_hists_MXs1, TH1D*** Signal_hists_MXs2, TH1D*** Signal_hists_MXs3) { // get shape sys histogram from txt file
     int Nentry = 0; // number of eigen values/vectors
     double eigen_value = 0; // eigen value
-    double weight_sys[RarityBins * 7] = { 0.0 }; // eigen vector
+    double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
 
     FILE* fp;
     fp = fopen(dirname, "r");
     while (true) {
         if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-        for (int i = 0; i < RarityBins * 7; i++) {
+        for (int i = 0; i < RarityBins * 9; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
         Nentry++;
@@ -4346,7 +4771,9 @@ int GetmultiplicitycorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, T
     *DDBAR_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
     *SSBAR_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
     *CHARM_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
-    *SIGNAL_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs1 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs2 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs3 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
 
     for (int i = 0; i < Nentry; i++) {
         (*CHG_hists)[i] = new TH1D(("CHG_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), ("CHG_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
@@ -4355,7 +4782,9 @@ int GetmultiplicitycorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, T
         (*DDBAR_hists)[i] = new TH1D(("DDBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
         (*SSBAR_hists)[i] = new TH1D(("SSBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
         (*CHARM_hists)[i] = new TH1D(("CHARM_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), ("CHARM_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
-        (*SIGNAL_hists)[i] = new TH1D(("Signal_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     for (int i = Nentry; i < 2 * Nentry; i++) {
@@ -4365,13 +4794,15 @@ int GetmultiplicitycorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, T
         (*DDBAR_hists)[i] = new TH1D(("DDBAR_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("DDBAR_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
         (*SSBAR_hists)[i] = new TH1D(("SSBAR_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("SSBAR_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
         (*CHARM_hists)[i] = new TH1D(("CHARM_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHARM_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
-        (*SIGNAL_hists)[i] = new TH1D(("Signal_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs1_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs2_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs3_multiplicity_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
     fp = fopen(dirname, "r");
     for (int i = 0; i < Nentry; i++) {
         fscanf(fp, "%lf\n", &eigen_value);
-        for (int j = 0; j < RarityBins * 7; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
+        for (int j = 0; j < RarityBins * 9; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
 
         for (int k = 0; k < RarityBins; k++) {
             (*CHG_hists)[i]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
@@ -4380,7 +4811,9 @@ int GetmultiplicitycorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, T
             (*DDBAR_hists)[i]->SetBinContent(k + 1, DDBAR_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 3 * RarityBins]));
             (*SSBAR_hists)[i]->SetBinContent(k + 1, SSBAR_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 4 * RarityBins]));
             (*CHARM_hists)[i]->SetBinContent(k + 1, CHARM_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 5 * RarityBins]));
-            (*SIGNAL_hists)[i]->SetBinContent(k + 1, SIGNAL_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs1)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs2)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 7 * RarityBins]));
+            (*Signal_hists_MXs3)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 8 * RarityBins]));
 
             (*CHG_hists)[i + Nentry]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 0 * RarityBins]));
             (*MIX_hists)[i + Nentry]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 1 * RarityBins]));
@@ -4388,7 +4821,9 @@ int GetmultiplicitycorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, T
             (*DDBAR_hists)[i + Nentry]->SetBinContent(k + 1, DDBAR_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 3 * RarityBins]));
             (*SSBAR_hists)[i + Nentry]->SetBinContent(k + 1, SSBAR_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 4 * RarityBins]));
             (*CHARM_hists)[i + Nentry]->SetBinContent(k + 1, CHARM_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 5 * RarityBins]));
-            (*SIGNAL_hists)[i + Nentry]->SetBinContent(k + 1, SIGNAL_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs1)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs2)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 7 * RarityBins]));
+            (*Signal_hists_MXs3)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 8 * RarityBins]));
         }
 
     }
@@ -4398,15 +4833,15 @@ int GetmultiplicitycorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, T
     return Nentry;
 }
 
-void GetmultiplicityUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* UUBAR_hist, TH1D* DDBAR_hist, TH1D* SSBAR_hist, TH1D* CHARM_hist, TH1D* SIGNAL_hist) { // get shape sys histogram from txt file
+void GetmultiplicityUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* UUBAR_hist, TH1D* DDBAR_hist, TH1D* SSBAR_hist, TH1D* CHARM_hist, TH1D* Signal_hist_MXs1, TH1D* Signal_hist_MXs2, TH1D* Signal_hist_MXs3) { // get shape sys histogram from txt file
     FILE* fp;
     fp = fopen(dirname, "r");
 
-    double weight_sys[RarityBins * 7] = { 0.0 };
-    for (int i = 0; i < RarityBins * 7; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    double weight_sys[RarityBins * 9] = { 0.0 };
+    for (int i = 0; i < RarityBins * 9; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
     fclose(fp);
 
-    for (int i = 0; i < RarityBins * 7; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
+    for (int i = 0; i < RarityBins * 9; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
 
     for (int i = 0; i < RarityBins; i++) CHG_hist->SetBinContent(i + 1, weight_sys[i]);
     for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
@@ -4414,10 +4849,12 @@ void GetmultiplicityUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* 
     for (int i = 0; i < RarityBins; i++) DDBAR_hist->SetBinContent(i + 1, weight_sys[3 * RarityBins + i]);
     for (int i = 0; i < RarityBins; i++) SSBAR_hist->SetBinContent(i + 1, weight_sys[4 * RarityBins + i]);
     for (int i = 0; i < RarityBins; i++) CHARM_hist->SetBinContent(i + 1, weight_sys[5 * RarityBins + i]);
-    for (int i = 0; i < RarityBins; i++) SIGNAL_hist->SetBinContent(i + 1, weight_sys[6 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs1->SetBinContent(i + 1, weight_sys[6 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs2->SetBinContent(i + 1, weight_sys[7 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs3->SetBinContent(i + 1, weight_sys[8 * RarityBins + i]);
 }
 
-double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with uncertainties on B-> [D -> X KL0] anything decays
+double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // get nominal PDF with uncertainties on B-> [D -> X KL0] anything decays
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -4431,6 +4868,11 @@ double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* 
     else if (strcmp(type, "Continuum") == 0) {}
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -4506,7 +4948,7 @@ double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* 
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -4534,7 +4976,7 @@ double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* 
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -4609,7 +5051,40 @@ double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* 
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -4685,7 +5160,7 @@ double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* 
     return Nevt;
 }
 
-double GetBRXKLKLPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with uncertainties on all BR(B->X KL KL) decay
+double GetBRXKLKLPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // get nominal PDF with uncertainties on all BR(B->X KL KL) decay
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -4699,6 +5174,11 @@ double GetBRXKLKLPDFs(const char* dirname, const char* included_string, TH1D* hi
     else if (strcmp(type, "Continuum") == 0) {}
     else {
         printf("[ERROR] unexpected type name\n");
+        exit(1);
+    }
+
+    if ((true_MXs_region != 0) && (strcmp(sample, "SIGNAL") != 0)) {
+        printf("selecting true MXs region only can be done for signal sample\n");
         exit(1);
     }
 
@@ -4774,7 +5254,7 @@ double GetBRXKLKLPDFs(const char* dirname, const char* included_string, TH1D* hi
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         TTree* tree_Xs;
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs = (TTree*)input_file->Get("Xs");
+        if (strcmp(sample, "SIGNAL") == 0) tree_Xs = (TTree*)input_file->Get("Xs");
         else tree_Xs = nullptr;
 
         tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
@@ -4802,7 +5282,7 @@ double GetBRXKLKLPDFs(const char* dirname, const char* included_string, TH1D* hi
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) {
+        if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
@@ -4892,7 +5372,40 @@ double GetBRXKLKLPDFs(const char* dirname, const char* included_string, TH1D* hi
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
-            if ((CorrectionType == "B2Knunu") || (CorrectionType == "B02K0nunu") || (CorrectionType == "B2Xsnunu") || (CorrectionType == "B02Xsnunu")) tree_Xs->GetEntry(j);
+            if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            // select the specific true MXs region
+            if (strcmp(sample, "SIGNAL") == 0) {
+                double MC_MXs = -1;
+                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
+                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                else { // mass is NaN. try to find true mass region by file name
+                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
+                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
+                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
+                    else {
+                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                        exit(1);
+                    }
+                }
+
+                if (true_MXs_region == 0) {}
+                else if (true_MXs_region == 1) {
+                    if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 2) {
+                    if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) {}
+                    else continue;
+                }
+                else if (true_MXs_region == 3) {
+                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    else continue;
+                }
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -5154,14 +5667,8 @@ void ReadSignalModelingFile() {
 
 }
 
-void ClearHist(TH1D* Signal_hist, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* UUBAR_hist, TH1D* DDBAR_hist, TH1D* SSBAR_hist, TH1D* CHARM_hist) {
-    Signal_hist->Reset();
-    CHG_hist->Reset();
-    MIX_hist->Reset();
-    UUBAR_hist->Reset();
-    DDBAR_hist->Reset();
-    SSBAR_hist->Reset();
-    CHARM_hist->Reset();
+void ClearHist(TH1D* hist) {
+    hist->Reset();
 }
 
 void AddSQRTHist(TH1D* output_hist, TH1D* input_hist, int Nbin) {
@@ -5241,6 +5748,24 @@ void SaveSpecificMXsBin(TH1D*& hist, int MXsBin) {
     hist = replace_hist;
 }
 
+void AddPDFs(TH1D* output_hist, TH1D* input_hist) {
+    output_hist->Add(output_hist, input_hist);
+}
+
+void AddPDFsWithRelativeUncertainty(TH1D* output_hist, TH1D* input_hist, TH1D* output_reluncer_hist, TH1D* input_reluncer_hist, int Nbin) {
+    for (int i = 0; i < Nbin; i++) {
+        double temp_1 = output_hist->GetBinContent(i + 1);
+        double temp_2 = input_hist->GetBinContent(i + 1);
+        double temp_3 = output_reluncer_hist->GetBinContent(i + 1);
+        double temp_4 = input_reluncer_hist->GetBinContent(i + 1);
+        double absolute_uncertainty = std::sqrt((temp_1 * temp_3) * (temp_1 * temp_3) + (temp_2 * temp_4) * (temp_2 * temp_4));
+        double relative_uncertainty = absolute_uncertainty / (temp_1 + temp_2);
+        output_reluncer_hist->SetBinContent(i + 1, relative_uncertainty);
+    }
+
+    output_hist->Add(output_hist, input_hist);
+}
+
 int main()
 {
 
@@ -5252,6 +5777,9 @@ int main()
     // Define PDFs for HistFactory
     // nominal PDFs
     TH1D* Signal_nominal = new TH1D("Signal_nominal", "Signal_nominal", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_nominal = new TH1D("Signal_MXs1_nominal", "Signal_MXs1_nominal", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_nominal = new TH1D("Signal_MXs2_nominal", "Signal_MXs2_nominal", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_nominal = new TH1D("Signal_MXs3_nominal", "Signal_MXs3_nominal", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_nominal = new TH1D("CHG_nominal", "CHG_nominal", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_nominal = new TH1D("MIX_nominal", "MIX_nominal", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_nominal = new TH1D("UUBAR_nominal", "UUBAR_nominal", RarityBins, BinMIN, BinMAX);
@@ -5261,6 +5789,9 @@ int main()
 
     // track uncertainty
     TH1D* Signal_track_p = new TH1D("Signal_track_p", "Signal_track_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_track_p = new TH1D("Signal_MXs1_track_p", "Signal_MXs1_track_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_track_p = new TH1D("Signal_MXs2_track_p", "Signal_MXs2_track_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_track_p = new TH1D("Signal_MXs3_track_p", "Signal_MXs3_track_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_track_p = new TH1D("CHG_track_p", "CHG_track_p", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_track_p = new TH1D("MIX_track_p", "MIX_track_p", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_track_p = new TH1D("UUBAR_track_p", "UUBAR_track_p", RarityBins, BinMIN, BinMAX);
@@ -5268,6 +5799,9 @@ int main()
     TH1D* SSBAR_track_p = new TH1D("SSBAR_track_p", "SSBAR_track_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_track_p = new TH1D("CHARM_track_p", "CHARM_track_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_track_m = new TH1D("Signal_track_m", "Signal_track_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_track_m = new TH1D("Signal_MXs1_track_m", "Signal_MXs1_track_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_track_m = new TH1D("Signal_MXs2_track_m", "Signal_MXs2_track_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_track_m = new TH1D("Signal_MXs3_track_m", "Signal_MXs3_track_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_track_m = new TH1D("CHG_track_m", "CHG_track_m", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_track_m = new TH1D("MIX_track_m", "MIX_track_m", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_track_m = new TH1D("UUBAR_track_m", "UUBAR_track_m", RarityBins, BinMIN, BinMAX);
@@ -5277,6 +5811,9 @@ int main()
 
     // KS0 uncertainty
     TH1D* Signal_KS0_p = new TH1D("Signal_KS0_p", "Signal_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_KS0_p = new TH1D("Signal_MXs1_KS0_p", "Signal_MXs1_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_KS0_p = new TH1D("Signal_MXs2_KS0_p", "Signal_MXs2_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_KS0_p = new TH1D("Signal_MXs3_KS0_p", "Signal_MXs3_KS0_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_KS0_p = new TH1D("CHG_KS0_p", "CHG_KS0_p", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_KS0_p = new TH1D("MIX_KS0_p", "MIX_KS0_p", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_KS0_p = new TH1D("UUBAR_KS0_p", "UUBAR_KS0_p", RarityBins, BinMIN, BinMAX);
@@ -5284,6 +5821,9 @@ int main()
     TH1D* SSBAR_KS0_p = new TH1D("SSBAR_KS0_p", "SSBAR_KS0_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_KS0_p = new TH1D("CHARM_KS0_p", "CHARM_KS0_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_KS0_m = new TH1D("Signal_KS0_m", "Signal_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_KS0_m = new TH1D("Signal_MXs1_KS0_m", "Signal_MXs1_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_KS0_m = new TH1D("Signal_MXs2_KS0_m", "Signal_MXs2_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_KS0_m = new TH1D("Signal_MXs3_KS0_m", "Signal_MXs3_KS0_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_KS0_m = new TH1D("CHG_KS0_m", "CHG_KS0_m", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_KS0_m = new TH1D("MIX_KS0_m", "MIX_KS0_m", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_KS0_m = new TH1D("UUBAR_KS0_m", "UUBAR_KS0_m", RarityBins, BinMIN, BinMAX);
@@ -5293,16 +5833,24 @@ int main()
 
     // FEI uncertainty (correlated)
     TH1D** Signal_FEI_correlated;
+    TH1D** Signal_MXs1_FEI_correlated;
+    TH1D** Signal_MXs2_FEI_correlated;
+    TH1D** Signal_MXs3_FEI_correlated;
     TH1D** CHG_FEI_correlated;
     TH1D** MIX_FEI_correlated;
 
     // FEI uncertainty (uncorrelated)
-    TH1D* Signal_FEI_uncorrelated = new TH1D("Signal_FEI_uncorrelated", "Signal_FEI_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_FEI_uncorrelated = new TH1D("Signal_MXs1_FEI_uncorrelated", "Signal_MXs1_FEI_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_FEI_uncorrelated = new TH1D("Signal_MXs2_FEI_uncorrelated", "Signal_MXs2_FEI_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_FEI_uncorrelated = new TH1D("Signal_MXs3_FEI_uncorrelated", "Signal_MXs3_FEI_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_FEI_uncorrelated = new TH1D("CHG_FEI_uncorrelated", "CHG_FEI_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_FEI_uncorrelated = new TH1D("MIX_FEI_uncorrelated", "MIX_FEI_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // Kaon PID uncertainty (correlated)
     TH1D** Signal_KID_correlated;
+    TH1D** Signal_MXs1_KID_correlated;
+    TH1D** Signal_MXs2_KID_correlated;
+    TH1D** Signal_MXs3_KID_correlated;
     TH1D** CHG_KID_correlated;
     TH1D** MIX_KID_correlated;
     TH1D** UUBAR_KID_correlated;
@@ -5311,7 +5859,9 @@ int main()
     TH1D** CHARM_KID_correlated;
 
     // Kaon PID uncertainty (uncorrelated)
-    TH1D* Signal_KID_uncorrelated = new TH1D("Signal_KID_uncorrelated", "Signal_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_KID_uncorrelated = new TH1D("Signal_MXs1_KID_uncorrelated", "Signal_MXs1_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_KID_uncorrelated = new TH1D("Signal_MXs2_KID_uncorrelated", "Signal_MXs2_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_KID_uncorrelated = new TH1D("Signal_MXs3_KID_uncorrelated", "Signal_MXs3_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_KID_uncorrelated = new TH1D("CHG_KID_uncorrelated", "CHG_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_KID_uncorrelated = new TH1D("MIX_KID_uncorrelated", "MIX_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_KID_uncorrelated = new TH1D("UUBAR_KID_uncorrelated", "UUBAR_KID_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -5321,6 +5871,9 @@ int main()
 
     // Pion PID uncertainty (correlated)
     TH1D** Signal_PID_correlated;
+    TH1D** Signal_MXs1_PID_correlated;
+    TH1D** Signal_MXs2_PID_correlated;
+    TH1D** Signal_MXs3_PID_correlated;
     TH1D** CHG_PID_correlated;
     TH1D** MIX_PID_correlated;
     TH1D** UUBAR_PID_correlated;
@@ -5329,7 +5882,9 @@ int main()
     TH1D** CHARM_PID_correlated;
 
     // Pion PID uncertainty (uncorrelated)
-    TH1D* Signal_PID_uncorrelated = new TH1D("Signal_PID_uncorrelated", "Signal_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_PID_uncorrelated = new TH1D("Signal_MXs1_PID_uncorrelated", "Signal_MXs1_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_PID_uncorrelated = new TH1D("Signal_MXs2_PID_uncorrelated", "Signal_MXs2_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_PID_uncorrelated = new TH1D("Signal_MXs3_PID_uncorrelated", "Signal_MXs3_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_PID_uncorrelated = new TH1D("CHG_PID_uncorrelated", "CHG_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_PID_uncorrelated = new TH1D("MIX_PID_uncorrelated", "MIX_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_PID_uncorrelated = new TH1D("UUBAR_PID_uncorrelated", "UUBAR_PID_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -5339,16 +5894,24 @@ int main()
 
     // BB BR uncertainty(correlated)
     TH1D** Signal_BR_correlated;
+    TH1D** Signal_MXs1_BR_correlated;
+    TH1D** Signal_MXs2_BR_correlated;
+    TH1D** Signal_MXs3_BR_correlated;
     TH1D** CHG_BR_correlated;
     TH1D** MIX_BR_correlated;
 
     // BB BR uncertainty (uncorrelated)
-    TH1D* Signal_BR_uncorrelated = new TH1D("Signal_BR_uncorrelated", "Signal_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_BR_uncorrelated = new TH1D("Signal_MXs1_BR_uncorrelated", "Signal_MXs1_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_BR_uncorrelated = new TH1D("Signal_MXs2_BR_uncorrelated", "Signal_MXs2_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_BR_uncorrelated = new TH1D("Signal_MXs3_BR_uncorrelated", "Signal_MXs3_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_BR_uncorrelated = new TH1D("CHG_BR_uncorrelated", "CHG_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BR_uncorrelated = new TH1D("MIX_BR_uncorrelated", "MIX_BR_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // pi0 uncertainty (correlated)
     TH1D** Signal_pi0_correlated;
+    TH1D** Signal_MXs1_pi0_correlated;
+    TH1D** Signal_MXs2_pi0_correlated;
+    TH1D** Signal_MXs3_pi0_correlated;
     TH1D** CHG_pi0_correlated;
     TH1D** MIX_pi0_correlated;
     TH1D** UUBAR_pi0_correlated;
@@ -5357,7 +5920,9 @@ int main()
     TH1D** CHARM_pi0_correlated;
 
     // pi0 uncertainty (uncorrelated)
-    TH1D* Signal_pi0_uncorrelated = new TH1D("Signal_pi0_uncorrelated", "Signal_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_pi0_uncorrelated = new TH1D("Signal_MXs1_pi0_uncorrelated", "Signal_MXs1_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_pi0_uncorrelated = new TH1D("Signal_MXs2_pi0_uncorrelated", "Signal_MXs2_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_pi0_uncorrelated = new TH1D("Signal_MXs3_pi0_uncorrelated", "Signal_MXs3_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_pi0_uncorrelated = new TH1D("CHG_pi0_uncorrelated", "CHG_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_pi0_uncorrelated = new TH1D("MIX_pi0_uncorrelated", "MIX_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_pi0_uncorrelated = new TH1D("UUBAR_pi0_uncorrelated", "UUBAR_pi0_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -5372,6 +5937,18 @@ int main()
     TH1D* Signal_Kff2_m = new TH1D("Signal_Kff2_m", "Signal_Kff2_m", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kff3_p = new TH1D("Signal_Kff3_p", "Signal_Kff3_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kff3_m = new TH1D("Signal_Kff3_m", "Signal_Kff3_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kff1_p = new TH1D("Signal_MXs1_Kff1_p", "Signal_MXs1_Kff1_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kff1_m = new TH1D("Signal_MXs1_Kff1_m", "Signal_MXs1_Kff1_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kff2_p = new TH1D("Signal_MXs1_Kff2_p", "Signal_MXs1_Kff2_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kff2_m = new TH1D("Signal_MXs1_Kff2_m", "Signal_MXs1_Kff2_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kff3_p = new TH1D("Signal_MXs1_Kff3_p", "Signal_MXs1_Kff3_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kff3_m = new TH1D("Signal_MXs1_Kff3_m", "Signal_MXs1_Kff3_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff1_p = new TH1D("Signal_MXs3_Kff1_p", "Signal_MXs3_Kff1_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff1_m = new TH1D("Signal_MXs3_Kff1_m", "Signal_MXs3_Kff1_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff2_p = new TH1D("Signal_MXs3_Kff2_p", "Signal_MXs3_Kff2_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff2_m = new TH1D("Signal_MXs3_Kff2_m", "Signal_MXs3_Kff2_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff3_p = new TH1D("Signal_MXs3_Kff3_p", "Signal_MXs3_Kff3_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff3_m = new TH1D("Signal_MXs3_Kff3_m", "Signal_MXs3_Kff3_m", RarityBins, BinMIN, BinMAX);
 
     // Kstar nu nubar form factor
     TH1D* Signal_Kstarff1_p = new TH1D("Signal_Kstarff1_p", "Signal_Kstarff1_p", RarityBins, BinMIN, BinMAX);
@@ -5392,42 +5969,97 @@ int main()
     TH1D* Signal_Kstarff8_m = new TH1D("Signal_Kstarff8_m", "Signal_Kstarff8_m", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kstarff9_p = new TH1D("Signal_Kstarff9_p", "Signal_Kstarff9_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Kstarff9_m = new TH1D("Signal_Kstarff9_m", "Signal_Kstarff9_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff1_p = new TH1D("Signal_MXs2_Kstarff1_p", "Signal_MXs2_Kstarff1_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff1_m = new TH1D("Signal_MXs2_Kstarff1_m", "Signal_MXs2_Kstarff1_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff2_p = new TH1D("Signal_MXs2_Kstarff2_p", "Signal_MXs2_Kstarff2_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff2_m = new TH1D("Signal_MXs2_Kstarff2_m", "Signal_MXs2_Kstarff2_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff3_p = new TH1D("Signal_MXs2_Kstarff3_p", "Signal_MXs2_Kstarff3_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff3_m = new TH1D("Signal_MXs2_Kstarff3_m", "Signal_MXs2_Kstarff3_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff4_p = new TH1D("Signal_MXs2_Kstarff4_p", "Signal_MXs2_Kstarff4_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff4_m = new TH1D("Signal_MXs2_Kstarff4_m", "Signal_MXs2_Kstarff4_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff5_p = new TH1D("Signal_MXs2_Kstarff5_p", "Signal_MXs2_Kstarff5_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff5_m = new TH1D("Signal_MXs2_Kstarff5_m", "Signal_MXs2_Kstarff5_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff6_p = new TH1D("Signal_MXs2_Kstarff6_p", "Signal_MXs2_Kstarff6_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff6_m = new TH1D("Signal_MXs2_Kstarff6_m", "Signal_MXs2_Kstarff6_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff7_p = new TH1D("Signal_MXs2_Kstarff7_p", "Signal_MXs2_Kstarff7_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff7_m = new TH1D("Signal_MXs2_Kstarff7_m", "Signal_MXs2_Kstarff7_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff8_p = new TH1D("Signal_MXs2_Kstarff8_p", "Signal_MXs2_Kstarff8_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff8_m = new TH1D("Signal_MXs2_Kstarff8_m", "Signal_MXs2_Kstarff8_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff9_p = new TH1D("Signal_MXs2_Kstarff9_p", "Signal_MXs2_Kstarff9_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff9_m = new TH1D("Signal_MXs2_Kstarff9_m", "Signal_MXs2_Kstarff9_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff1_p = new TH1D("Signal_MXs3_Kstarff1_p", "Signal_MXs3_Kstarff1_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff1_m = new TH1D("Signal_MXs3_Kstarff1_m", "Signal_MXs3_Kstarff1_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff2_p = new TH1D("Signal_MXs3_Kstarff2_p", "Signal_MXs3_Kstarff2_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff2_m = new TH1D("Signal_MXs3_Kstarff2_m", "Signal_MXs3_Kstarff2_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff3_p = new TH1D("Signal_MXs3_Kstarff3_p", "Signal_MXs3_Kstarff3_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff3_m = new TH1D("Signal_MXs3_Kstarff3_m", "Signal_MXs3_Kstarff3_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff4_p = new TH1D("Signal_MXs3_Kstarff4_p", "Signal_MXs3_Kstarff4_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff4_m = new TH1D("Signal_MXs3_Kstarff4_m", "Signal_MXs3_Kstarff4_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff5_p = new TH1D("Signal_MXs3_Kstarff5_p", "Signal_MXs3_Kstarff5_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff5_m = new TH1D("Signal_MXs3_Kstarff5_m", "Signal_MXs3_Kstarff5_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff6_p = new TH1D("Signal_MXs3_Kstarff6_p", "Signal_MXs3_Kstarff6_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff6_m = new TH1D("Signal_MXs3_Kstarff6_m", "Signal_MXs3_Kstarff6_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff7_p = new TH1D("Signal_MXs3_Kstarff7_p", "Signal_MXs3_Kstarff7_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff7_m = new TH1D("Signal_MXs3_Kstarff7_m", "Signal_MXs3_Kstarff7_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff8_p = new TH1D("Signal_MXs3_Kstarff8_p", "Signal_MXs3_Kstarff8_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff8_m = new TH1D("Signal_MXs3_Kstarff8_m", "Signal_MXs3_Kstarff8_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff9_p = new TH1D("Signal_MXs3_Kstarff9_p", "Signal_MXs3_Kstarff9_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff9_m = new TH1D("Signal_MXs3_Kstarff9_m", "Signal_MXs3_Kstarff9_m", RarityBins, BinMIN, BinMAX);
 
-    // fraction uncertainty(correlated)
-    TH1D** Signal_fraction_correlated;
-    TH1D** CHG_fraction_correlated;
-    TH1D** MIX_fraction_correlated;
-
-    // fraction uncertainty (uncorrelated)
-    TH1D* Signal_fraction_uncorrelated = new TH1D("Signal_fraction_uncorrelated", "Signal_fraction_uncorrelated", RarityBins, BinMIN, BinMAX);
-    TH1D* CHG_fraction_uncorrelated = new TH1D("CHG_fraction_uncorrelated", "CHG_fraction_uncorrelated", RarityBins, BinMIN, BinMAX);
-    TH1D* MIX_fraction_uncorrelated = new TH1D("MIX_fraction_uncorrelated", "MIX_fraction_uncorrelated", RarityBins, BinMIN, BinMAX);
+    // fraction
+    TH1D* Signal_Kfrac_p = new TH1D("Signal_Kfrac_p", "Signal_Kfrac_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_Kfrac_m = new TH1D("Signal_Kfrac_m", "Signal_Kfrac_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kfrac_p = new TH1D("Signal_MXs1_Kfrac_p", "Signal_MXs1_Kfrac_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kfrac_m = new TH1D("Signal_MXs1_Kfrac_m", "Signal_MXs1_Kfrac_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kfrac_p = new TH1D("Signal_MXs3_Kfrac_p", "Signal_MXs3_Kfrac_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kfrac_m = new TH1D("Signal_MXs3_Kfrac_m", "Signal_MXs3_Kfrac_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_Kstarfrac_p = new TH1D("Signal_Kstarfrac_p", "Signal_Kstarfrac_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_Kstarfrac_m = new TH1D("Signal_Kstarfrac_m", "Signal_Kstarfrac_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarfrac_p = new TH1D("Signal_MXs2_Kstarfrac_p", "Signal_MXs2_Kstarfrac_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarfrac_m = new TH1D("Signal_MXs2_Kstarfrac_m", "Signal_MXs2_Kstarfrac_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarfrac_p = new TH1D("Signal_MXs3_Kstarfrac_p", "Signal_MXs3_Kstarfrac_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarfrac_m = new TH1D("Signal_MXs3_Kstarfrac_m", "Signal_MXs3_Kstarfrac_m", RarityBins, BinMIN, BinMAX);
 
     // fragmentation uncertainty(correlated)
     TH1D** Signal_Fragmentation_correlated;
+    TH1D** Signal_MXs1_Fragmentation_correlated;
+    TH1D** Signal_MXs2_Fragmentation_correlated;
+    TH1D** Signal_MXs3_Fragmentation_correlated;
     TH1D** CHG_Fragmentation_correlated;
     TH1D** MIX_Fragmentation_correlated;
 
     // fragmentation uncertainty (uncorrelated)
-    TH1D* Signal_Fragmentation_uncorrelated = new TH1D("Signal_Fragmentation_uncorrelated", "Signal_Fragmentation_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Fragmentation_uncorrelated = new TH1D("Signal_MXs1_Fragmentation_uncorrelated", "Signal_MXs1_Fragmentation_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Fragmentation_uncorrelated = new TH1D("Signal_MXs2_Fragmentation_uncorrelated", "Signal_MXs2_Fragmentation_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Fragmentation_uncorrelated = new TH1D("Signal_MXs3_Fragmentation_uncorrelated", "Signal_MXs3_Fragmentation_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_Fragmentation_uncorrelated = new TH1D("CHG_Fragmentation_uncorrelated", "CHG_Fragmentation_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_Fragmentation_uncorrelated = new TH1D("MIX_Fragmentation_uncorrelated", "MIX_Fragmentation_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // pf
     TH1D* Signal_pf_p = new TH1D("Signal_pf_p", "Signal_pf_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_pf_p = new TH1D("Signal_MXs3_pf_p", "Signal_MXs3_pf_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_pf_m = new TH1D("Signal_pf_m", "Signal_pf_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_pf_m = new TH1D("Signal_MXs3_pf_m", "Signal_MXs3_pf_m", RarityBins, BinMIN, BinMAX);
 
     // mb
     TH1D* Signal_mb_p = new TH1D("Signal_mb_p", "Signal_mb_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_mb_p = new TH1D("Signal_MXs3_mb_p", "Signal_MXs3_mb_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_mb_m = new TH1D("Signal_mb_m", "Signal_mb_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_mb_m = new TH1D("Signal_MXs3_mb_m", "Signal_MXs3_mb_m", RarityBins, BinMIN, BinMAX);
 
     // transition
     TH1D* Signal_transition_p = new TH1D("Signal_transition_p", "Signal_transition_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_transition_p = new TH1D("Signal_MXs3_transition_p", "Signal_MXs3_transition_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_transition_m = new TH1D("Signal_transition_m", "Signal_transition_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_transition_m = new TH1D("Signal_MXs3_transition_m", "Signal_MXs3_transition_m", RarityBins, BinMIN, BinMAX);
 
     // mK*
     TH1D* Signal_mKstar_p = new TH1D("Signal_mKstar_p", "Signal_mKstar_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_mKstar_p = new TH1D("Signal_MXs2_mKstar_p", "Signal_MXs2_mKstar_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_mKstar_p = new TH1D("Signal_MXs3_mKstar_p", "Signal_MXs3_mKstar_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_mKstar_m = new TH1D("Signal_mKstar_m", "Signal_mKstar_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_mKstar_m = new TH1D("Signal_MXs2_mKstar_m", "Signal_MXs2_mKstar_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_mKstar_m = new TH1D("Signal_MXs3_mKstar_m", "Signal_MXs3_mKstar_m", RarityBins, BinMIN, BinMAX);
 
     // BDTc
     //TH1D* CHG_BDTc_p = new TH1D("CHG_BDTc_p", "CHG_BDTc_p", RarityBins, BinMIN, BinMAX);
@@ -5445,14 +6077,23 @@ int main()
 
     // B2Knn BR
     TH1D* Signal_Xnn_p = new TH1D("Signal_Xnn_p", "Signal_Xnn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Xnn_p = new TH1D("Signal_MXs1_Xnn_p", "Signal_MXs1_Xnn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Xnn_p = new TH1D("Signal_MXs2_Xnn_p", "Signal_MXs2_Xnn_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Xnn_p = new TH1D("Signal_MXs3_Xnn_p", "Signal_MXs3_Xnn_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_Xnn_p = new TH1D("CHG_Xnn_p", "CHG_Xnn_p", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_Xnn_p = new TH1D("MIX_Xnn_p", "MIX_Xnn_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_Xnn_m = new TH1D("Signal_Xnn_m", "Signal_Xnn_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Xnn_m = new TH1D("Signal_MXs1_Xnn_m", "Signal_MXs1_Xnn_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Xnn_m = new TH1D("Signal_MXs2_Xnn_m", "Signal_MXs2_Xnn_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Xnn_m = new TH1D("Signal_MXs3_Xnn_m", "Signal_MXs3_Xnn_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_Xnn_m = new TH1D("CHG_Xnn_m", "CHG_Xnn_m", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_Xnn_m = new TH1D("MIX_Xnn_m", "MIX_Xnn_m", RarityBins, BinMIN, BinMAX);
 
     // multiplicity uncertainty (correlated)
     TH1D** Signal_multiplicity_correlated;
+    TH1D** Signal_MXs1_multiplicity_correlated;
+    TH1D** Signal_MXs2_multiplicity_correlated;
+    TH1D** Signal_MXs3_multiplicity_correlated;
     TH1D** CHG_multiplicity_correlated;
     TH1D** MIX_multiplicity_correlated;
     TH1D** UUBAR_multiplicity_correlated;
@@ -5461,7 +6102,9 @@ int main()
     TH1D** CHARM_multiplicity_correlated;
 
     // multiplicity uncertainty (uncorrelated)
-    TH1D* Signal_multiplicity_uncorrelated = new TH1D("Signal_multiplicity_uncorrelated", "Signal_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_multiplicity_uncorrelated = new TH1D("Signal_MXs1_multiplicity_uncorrelated", "Signal_MXs1_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_multiplicity_uncorrelated = new TH1D("Signal_MXs2_multiplicity_uncorrelated", "Signal_MXs2_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_multiplicity_uncorrelated = new TH1D("Signal_MXs3_multiplicity_uncorrelated", "Signal_MXs3_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_multiplicity_uncorrelated = new TH1D("CHG_multiplicity_uncorrelated", "CHG_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_multiplicity_uncorrelated = new TH1D("MIX_multiplicity_uncorrelated", "MIX_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_multiplicity_uncorrelated = new TH1D("UUBAR_multiplicity_uncorrelated", "UUBAR_multiplicity_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -5471,22 +6114,36 @@ int main()
 
     // B -> [D -> X KL0] anything
     TH1D* Signal_BtoDtoXKL_p = new TH1D("Signal_BtoDtoXKL_p", "Signal_BtoDtoXKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_BtoDtoXKL_p = new TH1D("Signal_MXs1_BtoDtoXKL_p", "Signal_MXs1_BtoDtoXKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_BtoDtoXKL_p = new TH1D("Signal_MXs2_BtoDtoXKL_p", "Signal_MXs2_BtoDtoXKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_BtoDtoXKL_p = new TH1D("Signal_MXs3_BtoDtoXKL_p", "Signal_MXs3_BtoDtoXKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_BtoDtoXKL_p = new TH1D("CHG_BtoDtoXKL_p", "CHG_BtoDtoXKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BtoDtoXKL_p = new TH1D("MIX_BtoDtoXKL_p", "MIX_BtoDtoXKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_BtoDtoXKL_m = new TH1D("Signal_BtoDtoXKL_m", "Signal_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_BtoDtoXKL_m = new TH1D("Signal_MXs1_BtoDtoXKL_m", "Signal_MXs1_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_BtoDtoXKL_m = new TH1D("Signal_MXs2_BtoDtoXKL_m", "Signal_MXs2_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_BtoDtoXKL_m = new TH1D("Signal_MXs3_BtoDtoXKL_m", "Signal_MXs3_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_BtoDtoXKL_m = new TH1D("CHG_BtoDtoXKL_m", "CHG_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BtoDtoXKL_m = new TH1D("MIX_BtoDtoXKL_m", "MIX_BtoDtoXKL_m", RarityBins, BinMIN, BinMAX);
 
     // BR(B -> X KL KL)
     TH1D* Signal_BRBtoXKLKL_p = new TH1D("Signal_BRBtoXKLKL_p", "Signal_BRBtoXKLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_BRBtoXKLKL_p = new TH1D("Signal_MXs1_BRBtoXKLKL_p", "Signal_MXs1_BRBtoXKLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_BRBtoXKLKL_p = new TH1D("Signal_MXs2_BRBtoXKLKL_p", "Signal_MXs2_BRBtoXKLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_BRBtoXKLKL_p = new TH1D("Signal_MXs3_BRBtoXKLKL_p", "Signal_MXs3_BRBtoXKLKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_BRBtoXKLKL_p = new TH1D("CHG_BRBtoXKLKL_p", "CHG_BRBtoXKLKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BRBtoXKLKL_p = new TH1D("MIX_BRBtoXKLKL_p", "MIX_BRBtoXKLKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_BRBtoXKLKL_m = new TH1D("Signal_BRBtoXKLKL_m", "Signal_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_BRBtoXKLKL_m = new TH1D("Signal_MXs1_BRBtoXKLKL_m", "Signal_MXs1_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_BRBtoXKLKL_m = new TH1D("Signal_MXs2_BRBtoXKLKL_m", "Signal_MXs2_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_BRBtoXKLKL_m = new TH1D("Signal_MXs3_BRBtoXKLKL_m", "Signal_MXs3_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_BRBtoXKLKL_m = new TH1D("CHG_BRBtoXKLKL_m", "CHG_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BRBtoXKLKL_m = new TH1D("MIX_BRBtoXKLKL_m", "MIX_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
 
     // all of uncorrelated uncertainties
-    TH1D* Signal_all_uncorrelated = new TH1D("Signal_all_uncorrelated", "Signal_all_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_all_uncorrelated = new TH1D("Signal_MXs1_all_uncorrelated", "Signal_MXs1_all_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_all_uncorrelated = new TH1D("Signal_MXs2_all_uncorrelated", "Signal_MXs2_all_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_all_uncorrelated = new TH1D("Signal_MXs3_all_uncorrelated", "Signal_MXs3_all_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_all_uncorrelated = new TH1D("CHG_all_uncorrelated", "CHG_all_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_all_uncorrelated = new TH1D("MIX_all_uncorrelated", "MIX_all_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_all_uncorrelated = new TH1D("UUBAR_all_uncorrelated", "UUBAR_all_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -5495,7 +6152,9 @@ int main()
     TH1D* CHARM_all_uncorrelated = new TH1D("CHARM_all_uncorrelated", "CHARM_all_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // MC statistical uncertainties
-    TH1D* Signal_MC_stat = new TH1D("Signal_MC_stat", "Signal_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_MC_stat = new TH1D("Signal_MXs1_MC_stat", "Signal_MXs1_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_MC_stat = new TH1D("Signal_MXs2_MC_stat", "Signal_MXs2_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_MC_stat = new TH1D("Signal_MXs3_MC_stat", "Signal_MXs3_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_MC_stat = new TH1D("CHG_MC_stat", "CHG_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_MC_stat = new TH1D("MIX_MC_stat", "MIX_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_MC_stat = new TH1D("UUBAR_MC_stat", "UUBAR_MC_stat", RarityBins, BinMIN, BinMAX);
@@ -5505,6 +6164,9 @@ int main()
 
     // all of uncorrelated uncertainties + MC statistical uncertainties
     TH1D* Signal_all_uncorrelated_MC_stat = new TH1D("Signal_all_uncorrelated_MC_stat", "Signal_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_all_uncorrelated_MC_stat = new TH1D("Signal_MXs1_all_uncorrelated_MC_stat", "Signal_MXs1_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_all_uncorrelated_MC_stat = new TH1D("Signal_MXs2_all_uncorrelated_MC_stat", "Signal_MXs2_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_all_uncorrelated_MC_stat = new TH1D("Signal_MXs3_all_uncorrelated_MC_stat", "Signal_MXs3_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_all_uncorrelated_MC_stat = new TH1D("CHG_all_uncorrelated_MC_stat", "CHG_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_all_uncorrelated_MC_stat = new TH1D("MIX_all_uncorrelated_MC_stat", "MIX_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_all_uncorrelated_MC_stat = new TH1D("UUBAR_all_uncorrelated_MC_stat", "UUBAR_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
@@ -5548,10 +6210,6 @@ int main()
     const char* multiplicity_correlated_info = "./multiplicity_selected.txt";
     const char* multiplicity_uncorrelated_info = "./multiplicity_cov_remain_truncated.txt";
 
-    // for fraction
-    const char* fraction_correlated_info = "./fraction_selected.txt";
-    const char* fraction_uncorrelated_info = "./fraction_cov_remain_truncated.txt";
-
     // for fragmentation
     const char* Fragmentation_correlated_info = "./Fragmentation_selected.txt";
     const char* Fragmentation_uncorrelated_info = "./Fragmentation_cov_remain_truncated.txt";
@@ -5563,235 +6221,414 @@ int main()
     /* ====================================== */
     // Get PDFs
     // get nominal pdfs
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
 
-    double NevtCHGWithoutBDTc = GetNominalPDFs(MC_dirname_CHG, "root", CHG_nominal, "Bplus", "CHG", ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    double NevtMIXWithoutBDTc = GetNominalPDFs(MC_dirname_MIX, "root", MIX_nominal, "Bzero", "MIX", ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    double NevtUUBARWithoutBDTc = GetNominalPDFs(MC_dirname_UUBAR, "root", UUBAR_nominal, "Continuum", "UUBAR", ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    double NevtDDBARWithoutBDTc = GetNominalPDFs(MC_dirname_DDBAR, "root", DDBAR_nominal, "Continuum", "DDBAR", ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    double NevtSSBARWithoutBDTc = GetNominalPDFs(MC_dirname_SSBAR, "root", SSBAR_nominal, "Continuum", "SSBAR", ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    double NevtCHARMWithoutBDTc = GetNominalPDFs(MC_dirname_CHARM, "root", CHARM_nominal, "Continuum", "CHARM", ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
+
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_nominal, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_nominal, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
+
+    double NevtCHGWithoutBDTc = GetNominalPDFs(MC_dirname_CHG, "root", CHG_nominal, "Bplus", "CHG", ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    double NevtMIXWithoutBDTc = GetNominalPDFs(MC_dirname_MIX, "root", MIX_nominal, "Bzero", "MIX", ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+    double NevtUUBARWithoutBDTc = GetNominalPDFs(MC_dirname_UUBAR, "root", UUBAR_nominal, "Continuum", "UUBAR", ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise", 0);
+    double NevtDDBARWithoutBDTc = GetNominalPDFs(MC_dirname_DDBAR, "root", DDBAR_nominal, "Continuum", "DDBAR", ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise", 0);
+    double NevtSSBARWithoutBDTc = GetNominalPDFs(MC_dirname_SSBAR, "root", SSBAR_nominal, "Continuum", "SSBAR", ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
+    double NevtCHARMWithoutBDTc = GetNominalPDFs(MC_dirname_CHARM, "root", CHARM_nominal, "Continuum", "CHARM", ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
 
     // get track uncertainty pdfs
-    GetTrackPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_track_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetTrackPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_track_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetTrackPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_track_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetTrackPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_track_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetTrackPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_track_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetTrackPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_track_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_track_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_track_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_track_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_track_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_track_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_track_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
 
-    GetTrackPDFs(MC_dirname_CHG, "root", CHG_track_p, "Bplus", "CHG", true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetTrackPDFs(MC_dirname_MIX, "root", MIX_track_p, "Bzero", "MIX", true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    GetTrackPDFs(MC_dirname_UUBAR, "root", UUBAR_track_p, "Continuum", "UUBAR", true, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    GetTrackPDFs(MC_dirname_DDBAR, "root", DDBAR_track_p, "Continuum", "DDBAR", true, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    GetTrackPDFs(MC_dirname_SSBAR, "root", SSBAR_track_p, "Continuum", "SSBAR", true, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    GetTrackPDFs(MC_dirname_CHARM, "root", CHARM_track_p, "Continuum", "CHARM", true, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_track_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_track_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_track_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_track_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_track_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_track_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
 
-    GetTrackPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_track_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetTrackPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_track_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetTrackPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_track_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetTrackPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_track_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetTrackPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_track_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetTrackPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_track_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_track_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_track_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_track_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_track_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_track_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_track_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
 
-    GetTrackPDFs(MC_dirname_CHG, "root", CHG_track_m, "Bplus", "CHG", false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetTrackPDFs(MC_dirname_MIX, "root", MIX_track_m, "Bzero", "MIX", false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    GetTrackPDFs(MC_dirname_UUBAR, "root", UUBAR_track_m, "Continuum", "UUBAR", false, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    GetTrackPDFs(MC_dirname_DDBAR, "root", DDBAR_track_m, "Continuum", "DDBAR", false, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    GetTrackPDFs(MC_dirname_SSBAR, "root", SSBAR_track_m, "Continuum", "SSBAR", false, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    GetTrackPDFs(MC_dirname_CHARM, "root", CHARM_track_m, "Continuum", "CHARM", false, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+    GetTrackPDFs(MC_dirname_CHG, "root", CHG_track_p, "Bplus", "CHG", true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    GetTrackPDFs(MC_dirname_MIX, "root", MIX_track_p, "Bzero", "MIX", true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+    GetTrackPDFs(MC_dirname_UUBAR, "root", UUBAR_track_p, "Continuum", "UUBAR", true, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise", 0);
+    GetTrackPDFs(MC_dirname_DDBAR, "root", DDBAR_track_p, "Continuum", "DDBAR", true, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise", 0);
+    GetTrackPDFs(MC_dirname_SSBAR, "root", SSBAR_track_p, "Continuum", "SSBAR", true, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
+    GetTrackPDFs(MC_dirname_CHARM, "root", CHARM_track_p, "Continuum", "CHARM", true, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
+
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_track_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_track_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_track_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_track_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_track_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_track_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
+
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_track_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_track_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_track_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_track_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_track_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_track_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
+
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_track_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_track_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_track_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_track_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_track_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetTrackPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_track_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
+
+    GetTrackPDFs(MC_dirname_CHG, "root", CHG_track_m, "Bplus", "CHG", false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    GetTrackPDFs(MC_dirname_MIX, "root", MIX_track_m, "Bzero", "MIX", false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+    GetTrackPDFs(MC_dirname_UUBAR, "root", UUBAR_track_m, "Continuum", "UUBAR", false, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise", 0);
+    GetTrackPDFs(MC_dirname_DDBAR, "root", DDBAR_track_m, "Continuum", "DDBAR", false, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise", 0);
+    GetTrackPDFs(MC_dirname_SSBAR, "root", SSBAR_track_m, "Continuum", "SSBAR", false, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
+    GetTrackPDFs(MC_dirname_CHARM, "root", CHARM_track_m, "Continuum", "CHARM", false, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
 
     // get KS0 uncertainty pdfs
-    GetKS0PDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_KS0_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetKS0PDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_KS0_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetKS0PDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_KS0_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetKS0PDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_KS0_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetKS0PDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_KS0_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetKS0PDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_KS0_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_KS0_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_KS0_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_KS0_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_KS0_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_KS0_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_KS0_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
 
-    GetKS0PDFs(MC_dirname_CHG, "root", CHG_KS0_p, "Bplus", "CHG", true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetKS0PDFs(MC_dirname_MIX, "root", MIX_KS0_p, "Bzero", "MIX", true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    GetKS0PDFs(MC_dirname_UUBAR, "root", UUBAR_KS0_p, "Continuum", "UUBAR", true, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    GetKS0PDFs(MC_dirname_DDBAR, "root", DDBAR_KS0_p, "Continuum", "DDBAR", true, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    GetKS0PDFs(MC_dirname_SSBAR, "root", SSBAR_KS0_p, "Continuum", "SSBAR", true, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    GetKS0PDFs(MC_dirname_CHARM, "root", CHARM_KS0_p, "Continuum", "CHARM", true, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_KS0_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_KS0_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_KS0_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_KS0_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_KS0_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_KS0_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
 
-    GetKS0PDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_KS0_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetKS0PDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_KS0_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetKS0PDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_KS0_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetKS0PDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_KS0_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetKS0PDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_KS0_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetKS0PDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_KS0_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_KS0_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_KS0_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_KS0_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_KS0_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_KS0_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_KS0_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
 
-    GetKS0PDFs(MC_dirname_CHG, "root", CHG_KS0_m, "Bplus", "CHG", false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetKS0PDFs(MC_dirname_MIX, "root", MIX_KS0_m, "Bzero", "MIX", false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    GetKS0PDFs(MC_dirname_UUBAR, "root", UUBAR_KS0_m, "Continuum", "UUBAR", false, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    GetKS0PDFs(MC_dirname_DDBAR, "root", DDBAR_KS0_m, "Continuum", "DDBAR", false, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    GetKS0PDFs(MC_dirname_SSBAR, "root", SSBAR_KS0_m, "Continuum", "SSBAR", false, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    GetKS0PDFs(MC_dirname_CHARM, "root", CHARM_KS0_m, "Continuum", "CHARM", false, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+    GetKS0PDFs(MC_dirname_CHG, "root", CHG_KS0_p, "Bplus", "CHG", true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    GetKS0PDFs(MC_dirname_MIX, "root", MIX_KS0_p, "Bzero", "MIX", true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+    GetKS0PDFs(MC_dirname_UUBAR, "root", UUBAR_KS0_p, "Continuum", "UUBAR", true, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise", 0);
+    GetKS0PDFs(MC_dirname_DDBAR, "root", DDBAR_KS0_p, "Continuum", "DDBAR", true, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise", 0);
+    GetKS0PDFs(MC_dirname_SSBAR, "root", SSBAR_KS0_p, "Continuum", "SSBAR", true, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
+    GetKS0PDFs(MC_dirname_CHARM, "root", CHARM_KS0_p, "Continuum", "CHARM", true, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
+
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_KS0_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_KS0_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_KS0_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_KS0_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_KS0_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_KS0_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
+
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_KS0_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_KS0_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_KS0_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_KS0_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_KS0_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_KS0_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
+
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_KS0_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_KS0_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_KS0_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_KS0_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_KS0_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetKS0PDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_KS0_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
+
+    GetKS0PDFs(MC_dirname_CHG, "root", CHG_KS0_m, "Bplus", "CHG", false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    GetKS0PDFs(MC_dirname_MIX, "root", MIX_KS0_m, "Bzero", "MIX", false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+    GetKS0PDFs(MC_dirname_UUBAR, "root", UUBAR_KS0_m, "Continuum", "UUBAR", false, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise", 0);
+    GetKS0PDFs(MC_dirname_DDBAR, "root", DDBAR_KS0_m, "Continuum", "DDBAR", false, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise", 0);
+    GetKS0PDFs(MC_dirname_SSBAR, "root", SSBAR_KS0_m, "Continuum", "SSBAR", false, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
+    GetKS0PDFs(MC_dirname_CHARM, "root", CHARM_KS0_m, "Continuum", "CHARM", false, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
 
     // get FEI uncertainty pdfs (correlated)
-    int NPDFs_FEI = GetFEIcorrelatedPDFs(FEI_correlated_info, CHG_nominal, MIX_nominal, Signal_nominal, &CHG_FEI_correlated, &MIX_FEI_correlated, &Signal_FEI_correlated);
+    int NPDFs_FEI = GetFEIcorrelatedPDFs(FEI_correlated_info, CHG_nominal, MIX_nominal, Signal_MXs1_nominal, Signal_MXs2_nominal , Signal_MXs3_nominal, &CHG_FEI_correlated, &MIX_FEI_correlated, &Signal_MXs1_FEI_correlated, &Signal_MXs2_FEI_correlated, &Signal_MXs3_FEI_correlated);
 
     // get FEI uncertainty pdfs (uncorrelated)
-    GetFEIUncorrelatedPDFs(FEI_uncorrelated_info, CHG_FEI_uncorrelated, MIX_FEI_uncorrelated, Signal_FEI_uncorrelated);
+    GetFEIUncorrelatedPDFs(FEI_uncorrelated_info, CHG_FEI_uncorrelated, MIX_FEI_uncorrelated, Signal_MXs1_FEI_uncorrelated, Signal_MXs2_FEI_uncorrelated, Signal_MXs3_FEI_uncorrelated);
 
     // get KID uncertainty pdfs (correlated)
-    int NPDFs_KID = GetPIDcorrelatedPDFs(KID_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_nominal, &CHG_KID_correlated, &MIX_KID_correlated, &UUBAR_KID_correlated, &DDBAR_KID_correlated, &SSBAR_KID_correlated, &CHARM_KID_correlated, &Signal_KID_correlated, true);
-    int NPDFs_PID = GetPIDcorrelatedPDFs(PID_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_nominal, &CHG_PID_correlated, &MIX_PID_correlated, &UUBAR_PID_correlated, &DDBAR_PID_correlated, &SSBAR_PID_correlated, &CHARM_PID_correlated, &Signal_PID_correlated, false);
+    int NPDFs_KID = GetPIDcorrelatedPDFs(KID_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_MXs1_nominal, Signal_MXs2_nominal, Signal_MXs3_nominal, &CHG_KID_correlated, &MIX_KID_correlated, &UUBAR_KID_correlated, &DDBAR_KID_correlated, &SSBAR_KID_correlated, &CHARM_KID_correlated, &Signal_MXs1_KID_correlated, &Signal_MXs2_KID_correlated, &Signal_MXs3_KID_correlated, true);
+    int NPDFs_PID = GetPIDcorrelatedPDFs(PID_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_MXs1_nominal, Signal_MXs2_nominal, Signal_MXs3_nominal, &CHG_PID_correlated, &MIX_PID_correlated, &UUBAR_PID_correlated, &DDBAR_PID_correlated, &SSBAR_PID_correlated, &CHARM_PID_correlated, &Signal_MXs1_PID_correlated, &Signal_MXs2_PID_correlated, &Signal_MXs3_PID_correlated, false);
 
     // get KID uncertainty pdfs (uncorrelated)
-    GetPIDUncorrelatedPDFs(KID_uncorrelated_info, CHG_KID_uncorrelated, MIX_KID_uncorrelated, UUBAR_KID_uncorrelated, DDBAR_KID_uncorrelated, SSBAR_KID_uncorrelated, CHARM_KID_uncorrelated, Signal_KID_uncorrelated);
-    GetPIDUncorrelatedPDFs(PID_uncorrelated_info, CHG_PID_uncorrelated, MIX_PID_uncorrelated, UUBAR_PID_uncorrelated, DDBAR_PID_uncorrelated, SSBAR_PID_uncorrelated, CHARM_PID_uncorrelated, Signal_PID_uncorrelated);
+    GetPIDUncorrelatedPDFs(KID_uncorrelated_info, CHG_KID_uncorrelated, MIX_KID_uncorrelated, UUBAR_KID_uncorrelated, DDBAR_KID_uncorrelated, SSBAR_KID_uncorrelated, CHARM_KID_uncorrelated, Signal_MXs1_KID_uncorrelated, Signal_MXs2_KID_uncorrelated, Signal_MXs3_KID_uncorrelated);
+    GetPIDUncorrelatedPDFs(PID_uncorrelated_info, CHG_PID_uncorrelated, MIX_PID_uncorrelated, UUBAR_PID_uncorrelated, DDBAR_PID_uncorrelated, SSBAR_PID_uncorrelated, CHARM_PID_uncorrelated, Signal_MXs1_PID_uncorrelated, Signal_MXs2_PID_uncorrelated, Signal_MXs3_PID_uncorrelated);
 
     // get BB BR uncertainty pdfs (correlated)
-    int NPDFs_BR = GetBRcorrelatedPDFs(BR_correlated_info, CHG_nominal, MIX_nominal, Signal_nominal, &CHG_BR_correlated, &MIX_BR_correlated, &Signal_BR_correlated);
+    int NPDFs_BR = GetBRcorrelatedPDFs(BR_correlated_info, CHG_nominal, MIX_nominal, Signal_MXs1_nominal, Signal_MXs2_nominal, Signal_MXs3_nominal, &CHG_BR_correlated, &MIX_BR_correlated, &Signal_MXs1_BR_correlated, &Signal_MXs2_BR_correlated, &Signal_MXs3_BR_correlated);
 
     // get BB BR uncertainty pdfs (uncorrelated)
-    GetBRUncorrelatedPDFs(BR_uncorrelated_info, CHG_BR_uncorrelated, MIX_BR_uncorrelated, Signal_BR_uncorrelated);
+    GetBRUncorrelatedPDFs(BR_uncorrelated_info, CHG_BR_uncorrelated, MIX_BR_uncorrelated, Signal_MXs1_BR_uncorrelated, Signal_MXs2_BR_uncorrelated, Signal_MXs3_BR_uncorrelated);
 
     // get pi0 uncertainty pdfs (correlated)
-    int NPDFs_pi0 = Getpi0correlatedPDFs(pi0_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_nominal, &CHG_pi0_correlated, &MIX_pi0_correlated, &UUBAR_pi0_correlated, &DDBAR_pi0_correlated, &SSBAR_pi0_correlated, &CHARM_pi0_correlated, &Signal_pi0_correlated);
+    int NPDFs_pi0 = Getpi0correlatedPDFs(pi0_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_MXs1_nominal, Signal_MXs2_nominal, Signal_MXs3_nominal, &CHG_pi0_correlated, &MIX_pi0_correlated, &UUBAR_pi0_correlated, &DDBAR_pi0_correlated, &SSBAR_pi0_correlated, &CHARM_pi0_correlated, &Signal_MXs1_pi0_correlated, &Signal_MXs2_pi0_correlated, &Signal_MXs3_pi0_correlated);
 
     // get pi0 uncertainty pdfs (uncorrelated)
-    Getpi0UncorrelatedPDFs(pi0_uncorrelated_info, CHG_pi0_uncorrelated, MIX_pi0_uncorrelated, UUBAR_pi0_uncorrelated, DDBAR_pi0_uncorrelated, SSBAR_pi0_uncorrelated, CHARM_pi0_uncorrelated, Signal_pi0_uncorrelated);
+    Getpi0UncorrelatedPDFs(pi0_uncorrelated_info, CHG_pi0_uncorrelated, MIX_pi0_uncorrelated, UUBAR_pi0_uncorrelated, DDBAR_pi0_uncorrelated, SSBAR_pi0_uncorrelated, CHARM_pi0_uncorrelated, Signal_MXs1_pi0_uncorrelated, Signal_MXs2_pi0_uncorrelated, Signal_MXs3_pi0_uncorrelated);
 
     // get Kff uncertainty pdfs
-    TH1D* Signal_Kff_temp = new TH1D("Signal_Kff_temp", "Signal_Kff_temp", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_Kff_array[7] = { Signal_Kff_temp, Signal_Kff1_p, Signal_Kff1_m, Signal_Kff2_p, Signal_Kff2_m, Signal_Kff3_p, Signal_Kff3_m };
+    TH1D* Signal_MXs1_Kff_temp = new TH1D("Signal_MXs1_Kff_temp", "Signal_MXs1_Kff_temp", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_Kff_array[7] = { Signal_MXs1_Kff_temp, Signal_MXs1_Kff1_p, Signal_MXs1_Kff1_m, Signal_MXs1_Kff2_p, Signal_MXs1_Kff2_m, Signal_MXs1_Kff3_p, Signal_MXs1_Kff3_m };
     double Correction_factor_BR_Kplus[7] = { 0.0 };
     double Correction_factor_BR_Kzero[7] = { 0.0 };
 
-    GetKffPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Kff_array, Correction_factor_BR_Kplus, "Bplus", 1, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Kff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+    GetKffPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_Kff_array, Correction_factor_BR_Kplus, "Bplus", 1, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_Kff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
     for (int i = 0; i < 7; i++) {
         const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplus_nunubar - BR_Kplus_nunubar * Correction_factor_BR_Kplus[i]) / BR_Xsu_nonresonant_nunubar;
-        GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Kff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * non_res_Xsu_correction_factor, "B2Xsnunu");
+        GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_Kff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * non_res_Xsu_correction_factor, "B2Xsnunu", 1);
     }
-    GetKffPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Kff_array, Correction_factor_BR_Kzero, "Bzero", 0, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Kff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+    GetKffPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_Kff_array, Correction_factor_BR_Kzero, "Bzero", 0, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_Kff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
     for (int i = 0; i < 7; i++) {
         const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0_nunubar - BR_K0_nunubar * Correction_factor_BR_Kzero[i]) / BR_Xsd_nonresonant_nunubar;
-        GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Kff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * non_res_Xsd_correction_factor, "B02Xsnunu");
+        GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_Kff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * non_res_Xsd_correction_factor, "B02Xsnunu", 1);
+    }
+
+    TH1D* Signal_MXs3_Kff_temp = new TH1D("Signal_MXs3_Kff_temp", "Signal_MXs3_Kff_temp", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kff_array[7] = { Signal_MXs3_Kff_temp, Signal_MXs3_Kff1_p, Signal_MXs3_Kff1_m, Signal_MXs3_Kff2_p, Signal_MXs3_Kff2_m, Signal_MXs3_Kff3_p, Signal_MXs3_Kff3_m };
+    for (int i = 0; i < 7; i++) {
+        Correction_factor_BR_Kplus[i] = 0.0;
+        Correction_factor_BR_Kzero[i] = 0.0;
+    }
+
+    GetKffPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kff_array, Correction_factor_BR_Kplus, "Bplus", 1, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    for (int i = 0; i < 7; i++) {
+        const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplus_nunubar - BR_Kplus_nunubar * Correction_factor_BR_Kplus[i]) / BR_Xsu_nonresonant_nunubar;
+        GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * non_res_Xsu_correction_factor, "B2Xsnunu", 3);
+    }
+    GetKffPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kff_array, Correction_factor_BR_Kzero, "Bzero", 0, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    for (int i = 0; i < 7; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    for (int i = 0; i < 7; i++) {
+        const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0_nunubar - BR_K0_nunubar * Correction_factor_BR_Kzero[i]) / BR_Xsd_nonresonant_nunubar;
+        GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * non_res_Xsd_correction_factor, "B02Xsnunu", 3);
     }
 
     // get Kstar ff uncertainty pdfs
-    TH1D* Signal_Kstarff_temp = new TH1D("Signal_Kstarff_temp", "Signal_Kstarff_temp", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_Kstarff_array[19] = { Signal_Kstarff_temp,
-        Signal_Kstarff1_p, Signal_Kstarff1_m,
-        Signal_Kstarff2_p, Signal_Kstarff2_m,
-        Signal_Kstarff3_p, Signal_Kstarff3_m,
-        Signal_Kstarff4_p, Signal_Kstarff4_m,
-        Signal_Kstarff5_p, Signal_Kstarff5_m,
-        Signal_Kstarff6_p, Signal_Kstarff6_m,
-        Signal_Kstarff7_p, Signal_Kstarff7_m,
-        Signal_Kstarff8_p, Signal_Kstarff8_m,
-        Signal_Kstarff9_p, Signal_Kstarff9_m
+    TH1D* Signal_MXs2_Kstarff_temp = new TH1D("Signal_MXs2_Kstarff_temp", "Signal_MXs2_Kstarff_temp", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_Kstarff_array[19] = { Signal_MXs2_Kstarff_temp,
+        Signal_MXs2_Kstarff1_p, Signal_MXs2_Kstarff1_m,
+        Signal_MXs2_Kstarff2_p, Signal_MXs2_Kstarff2_m,
+        Signal_MXs2_Kstarff3_p, Signal_MXs2_Kstarff3_m,
+        Signal_MXs2_Kstarff4_p, Signal_MXs2_Kstarff4_m,
+        Signal_MXs2_Kstarff5_p, Signal_MXs2_Kstarff5_m,
+        Signal_MXs2_Kstarff6_p, Signal_MXs2_Kstarff6_m,
+        Signal_MXs2_Kstarff7_p, Signal_MXs2_Kstarff7_m,
+        Signal_MXs2_Kstarff8_p, Signal_MXs2_Kstarff8_m,
+        Signal_MXs2_Kstarff9_p, Signal_MXs2_Kstarff9_m
     };
     double Correction_factor_BR_Kstarplus[19] = { 0.0 };
     double Correction_factor_BR_Kstarzero[19] = { 0.0 };
 
-    for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Kstarff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetKstarffPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Kstarff_array, Correction_factor_BR_Kstarplus, "Bplus", 1, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"));
+    for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_Kstarff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetKstarffPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_Kstarff_array, Correction_factor_BR_Kstarplus, "Bplus", 1, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), 2);
     for (int i = 0; i < 19; i++) {
         const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplusstar_nunubar - BR_Kplusstar_nunubar * Correction_factor_BR_Kstarplus[i]) / BR_Xsu_nonresonant_nunubar;
-        GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Kstarff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * non_res_Xsu_correction_factor, "B2Xsnunu");
+        GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_Kstarff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * non_res_Xsu_correction_factor, "B2Xsnunu", 2);
     }
-    for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Kstarff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetKstarffPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Kstarff_array, Correction_factor_BR_Kstarzero, "Bzero", 0, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"));
+    for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_Kstarff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetKstarffPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_Kstarff_array, Correction_factor_BR_Kstarzero, "Bzero", 0, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), 2);
     for (int i = 0; i < 19; i++) {
         const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0star_nunubar - BR_K0star_nunubar * Correction_factor_BR_Kstarzero[i]) / BR_Xsd_nonresonant_nunubar;
-        GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Kstarff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * non_res_Xsd_correction_factor, "B02Xsnunu");
+        GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_Kstarff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * non_res_Xsd_correction_factor, "B02Xsnunu", 2);
     }
 
-    // get fraction uncertainty pdfs (correlated)
-    int NPDFs_fraction = GetfractioncorrelatedPDFs(fraction_correlated_info, CHG_nominal, MIX_nominal, Signal_nominal, &CHG_fraction_correlated, &MIX_fraction_correlated, &Signal_fraction_correlated);
+    TH1D* Signal_MXs3_Kstarff_temp = new TH1D("Signal_MXs3_Kstarff_temp", "Signal_MXs3_Kstarff_temp", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_Kstarff_array[19] = { Signal_MXs3_Kstarff_temp,
+        Signal_MXs3_Kstarff1_p, Signal_MXs3_Kstarff1_m,
+        Signal_MXs3_Kstarff2_p, Signal_MXs3_Kstarff2_m,
+        Signal_MXs3_Kstarff3_p, Signal_MXs3_Kstarff3_m,
+        Signal_MXs3_Kstarff4_p, Signal_MXs3_Kstarff4_m,
+        Signal_MXs3_Kstarff5_p, Signal_MXs3_Kstarff5_m,
+        Signal_MXs3_Kstarff6_p, Signal_MXs3_Kstarff6_m,
+        Signal_MXs3_Kstarff7_p, Signal_MXs3_Kstarff7_m,
+        Signal_MXs3_Kstarff8_p, Signal_MXs3_Kstarff8_m,
+        Signal_MXs3_Kstarff9_p, Signal_MXs3_Kstarff9_m
+    };
+    for (int i = 0; i < 19; i++) {
+        Correction_factor_BR_Kstarplus[i] = 0.0;
+        Correction_factor_BR_Kstarzero[i] = 0.0;
+    }
 
-    // get fraction uncertainty pdfs (uncorrelated)
-    GetfractionUncorrelatedPDFs(fraction_uncorrelated_info, CHG_fraction_uncorrelated, MIX_fraction_uncorrelated, Signal_fraction_uncorrelated);
+    for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kstarff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetKstarffPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kstarff_array, Correction_factor_BR_Kstarplus, "Bplus", 1, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), 3);
+    for (int i = 0; i < 19; i++) {
+        const double non_res_Xsu_correction_factor = (BR_Xsu_nonresonant_nunubar + BR_Kplusstar_nunubar - BR_Kplusstar_nunubar * Correction_factor_BR_Kstarplus[i]) / BR_Xsu_nonresonant_nunubar;
+        GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kstarff_array[i], "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * non_res_Xsu_correction_factor, "B2Xsnunu", 3);
+    }
+    for (int i = 0; i < 19; i++) GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kstarff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetKstarffPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kstarff_array, Correction_factor_BR_Kstarzero, "Bzero", 0, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), 3);
+    for (int i = 0; i < 19; i++) {
+        const double non_res_Xsd_correction_factor = (BR_Xsd_nonresonant_nunubar + BR_K0star_nunubar - BR_K0star_nunubar * Correction_factor_BR_Kstarzero[i]) / BR_Xsd_nonresonant_nunubar;
+        GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kstarff_array[i], "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * non_res_Xsd_correction_factor, "B02Xsnunu", 3);
+    }
+
+    // get fraction uncertainty PDFs
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar + Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_Kfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar + Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_Kfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_Kfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 1);
+
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_Kfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar - Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_Kfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_Kfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar - Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 1);
+
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar + Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar + Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 3);
+
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar - Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar - Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 3);
+
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu") * ((BR_Kplusstar_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_Kstarfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_Kstarfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu") * ((BR_K0star_nunubar + Sigma_BR_K0star_nunubar) / BR_K0star_nunubar), "otherwise", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_Kstarfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 2);
+
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_Kstarfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_Kstarfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu") * ((BR_Kplusstar_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_Kstarfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu") * ((BR_K0star_nunubar - Sigma_BR_K0star_nunubar) / BR_K0star_nunubar), "otherwise", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 2);
+
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu") * ((BR_Kplusstar_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kstarfrac_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kstarfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kstarfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu") * ((BR_K0star_nunubar + Sigma_BR_K0star_nunubar) / BR_K0star_nunubar), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kstarfrac_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 3);
+
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kstarfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kstarfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu") * ((BR_Kplusstar_nunubar - Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kstarfrac_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu") * ((BR_K0star_nunubar - Sigma_BR_K0star_nunubar) / BR_K0star_nunubar), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kstarfrac_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0star_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 3);
 
     // get fragmentation uncertainty pdfs (correlated)
-    int NPDFs_Fragmentation = GetFragmentationcorrelatedPDFs(Fragmentation_correlated_info, CHG_nominal, MIX_nominal, Signal_nominal, &CHG_Fragmentation_correlated, &MIX_Fragmentation_correlated, &Signal_Fragmentation_correlated);
+    int NPDFs_Fragmentation = GetFragmentationcorrelatedPDFs(Fragmentation_correlated_info, CHG_nominal, MIX_nominal, Signal_MXs1_nominal, Signal_MXs2_nominal, Signal_MXs3_nominal, &CHG_Fragmentation_correlated, &MIX_Fragmentation_correlated, &Signal_MXs1_Fragmentation_correlated, &Signal_MXs2_Fragmentation_correlated, &Signal_MXs3_Fragmentation_correlated);
 
     // get fragmentation uncertainty pdfs (uncorrelated)
-    GetFragmentationUncorrelatedPDFs(Fragmentation_uncorrelated_info, CHG_Fragmentation_uncorrelated, MIX_Fragmentation_uncorrelated, Signal_Fragmentation_uncorrelated);
+    GetFragmentationUncorrelatedPDFs(Fragmentation_uncorrelated_info, CHG_Fragmentation_uncorrelated, MIX_Fragmentation_uncorrelated, Signal_MXs1_Fragmentation_uncorrelated, Signal_MXs2_Fragmentation_uncorrelated, Signal_MXs3_Fragmentation_uncorrelated);
 
     // get pf uncertainty pdfs
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_pf_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_pf_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetpfPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_pf_p, "Bplus", "SIGNAL", true, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_pf_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_pf_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetpfPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_pf_p, "Bzero", "SIGNAL", true, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_pf_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_pf_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetpfPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_pf_p, "Bplus", "SIGNAL", true, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_pf_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_pf_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetpfPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_pf_p, "Bzero", "SIGNAL", true, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
 
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_pf_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_pf_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetpfPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_pf_m, "Bplus", "SIGNAL", false, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_pf_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_pf_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetpfPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_pf_m, "Bzero", "SIGNAL", false, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_pf_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_pf_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetpfPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_pf_m, "Bplus", "SIGNAL", false, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_pf_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_pf_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetpfPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_pf_m, "Bzero", "SIGNAL", false, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
 
     // mb
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_mb_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_mb_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetmbPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_mb_p, "Bplus", "SIGNAL", true, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_mb_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_mb_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetmbPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_mb_p, "Bzero", "SIGNAL", true, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_mb_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_mb_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetmbPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_mb_p, "Bplus", "SIGNAL", true, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_mb_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_mb_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetmbPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_mb_p, "Bzero", "SIGNAL", true, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
 
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_mb_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_mb_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetmbPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_mb_m, "Bplus", "SIGNAL", false, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_mb_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_mb_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetmbPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_mb_m, "Bzero", "SIGNAL", false, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_mb_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_mb_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetmbPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_mb_m, "Bplus", "SIGNAL", false, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_mb_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_mb_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetmbPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_mb_m, "Bzero", "SIGNAL", false, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
 
     // transition
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_transition_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_transition_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetTransitionPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_transition_p, "Bplus", "SIGNAL", true, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_transition_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_transition_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetTransitionPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_transition_p, "Bzero", "SIGNAL", true, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_transition_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_transition_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetTransitionPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_transition_p, "Bplus", "SIGNAL", true, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_transition_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_transition_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetTransitionPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_transition_p, "Bzero", "SIGNAL", true, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
 
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_transition_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_transition_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetTransitionPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_transition_m, "Bplus", "SIGNAL", false, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_transition_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_transition_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetTransitionPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_transition_m, "Bzero", "SIGNAL", false, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_transition_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_transition_m, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetTransitionPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_transition_m, "Bplus", "SIGNAL", false, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_transition_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_transition_m, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetTransitionPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_transition_m, "Bzero", "SIGNAL", false, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
 
     // mKstar fixed
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_mKstar_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetKstardeltaPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_mKstar_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_mKstar_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_mKstar_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetKstardeltaPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_mKstar_p, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_mKstar_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_mKstar_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetKstardeltaPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_mKstar_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_mKstar_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_mKstar_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetKstardeltaPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_mKstar_p, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_mKstar_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
 
-    GetNegativeChangePDFs(Signal_nominal, Signal_mKstar_p, Signal_mKstar_m);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_mKstar_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetKstardeltaPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_mKstar_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_mKstar_p, "Bplus", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_mKstar_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetKstardeltaPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_mKstar_p, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_mKstar_p, "Bzero", "SIGNAL", ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
+
+    GetNegativeChangePDFs(Signal_MXs2_nominal, Signal_MXs2_mKstar_p, Signal_MXs2_mKstar_m);
+    GetNegativeChangePDFs(Signal_MXs3_nominal, Signal_MXs3_mKstar_p, Signal_MXs3_mKstar_m);
 
     // get BDTc uncertainty pdfs
-    //double NevtCHGWithBDTc = GetNevtWithBDTc(MC_dirname_CHG, "root", "Bplus", "CHG", ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    //double NevtMIXWithBDTc = GetNevtWithBDTc(MC_dirname_MIX, "root", "Bzero", "MIX", ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    double NevtUUBARWithBDTc = GetNevtWithBDTc(MC_dirname_UUBAR, "root", "Continuum", "UUBAR", ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    double NevtDDBARWithBDTc = GetNevtWithBDTc(MC_dirname_DDBAR, "root", "Continuum", "DDBAR", ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    double NevtSSBARWithBDTc = GetNevtWithBDTc(MC_dirname_SSBAR, "root", "Continuum", "SSBAR", ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    double NevtCHARMWithBDTc = GetNevtWithBDTc(MC_dirname_CHARM, "root", "Continuum", "CHARM", ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+    //double NevtCHGWithBDTc = GetNevtWithBDTc(MC_dirname_CHG, "root", "Bplus", "CHG", ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    //double NevtMIXWithBDTc = GetNevtWithBDTc(MC_dirname_MIX, "root", "Bzero", "MIX", ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+    double NevtUUBARWithBDTc = GetNevtWithBDTc(MC_dirname_UUBAR, "root", "Continuum", "UUBAR", ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise", 0);
+    double NevtDDBARWithBDTc = GetNevtWithBDTc(MC_dirname_DDBAR, "root", "Continuum", "DDBAR", ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise", 0);
+    double NevtSSBARWithBDTc = GetNevtWithBDTc(MC_dirname_SSBAR, "root", "Continuum", "SSBAR", ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
+    double NevtCHARMWithBDTc = GetNevtWithBDTc(MC_dirname_CHARM, "root", "Continuum", "CHARM", ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
 
     double NormFactor = (NevtUUBARWithoutBDTc + NevtDDBARWithoutBDTc + NevtSSBARWithoutBDTc + NevtCHARMWithoutBDTc) / (NevtUUBARWithBDTc + NevtDDBARWithBDTc + NevtSSBARWithBDTc + NevtCHARMWithBDTc);
 
-    //GetBDTcPDFs(MC_dirname_CHG, "root", CHG_BDTc_p, "Bplus", "CHG", ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    //GetBDTcPDFs(MC_dirname_MIX, "root", MIX_BDTc_p, "Bzero", "MIX", ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    double NevtUUBARWithBDTcWithNorm = GetBDTcPDFs(MC_dirname_UUBAR, "root", UUBAR_BDTc_p, "Continuum", "UUBAR", ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR") * NormFactor, "otherwise");
-    double NevtDDBARWithBDTcWithNorm = GetBDTcPDFs(MC_dirname_DDBAR, "root", DDBAR_BDTc_p, "Continuum", "DDBAR", ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR") * NormFactor, "otherwise");
-    double NevtSSBARWithBDTcWithNorm = GetBDTcPDFs(MC_dirname_SSBAR, "root", SSBAR_BDTc_p, "Continuum", "SSBAR", ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR") * NormFactor, "otherwise");
-    double NevtCHARMWithBDTcWithNorm = GetBDTcPDFs(MC_dirname_CHARM, "root", CHARM_BDTc_p, "Continuum", "CHARM", ObtainWeight("CHARM", MCTYPE, "validation", "CHARM") * NormFactor, "otherwise");
+    //GetBDTcPDFs(MC_dirname_CHG, "root", CHG_BDTc_p, "Bplus", "CHG", ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    //GetBDTcPDFs(MC_dirname_MIX, "root", MIX_BDTc_p, "Bzero", "MIX", ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+    double NevtUUBARWithBDTcWithNorm = GetBDTcPDFs(MC_dirname_UUBAR, "root", UUBAR_BDTc_p, "Continuum", "UUBAR", ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR") * NormFactor, "otherwise", 0);
+    double NevtDDBARWithBDTcWithNorm = GetBDTcPDFs(MC_dirname_DDBAR, "root", DDBAR_BDTc_p, "Continuum", "DDBAR", ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR") * NormFactor, "otherwise", 0);
+    double NevtSSBARWithBDTcWithNorm = GetBDTcPDFs(MC_dirname_SSBAR, "root", SSBAR_BDTc_p, "Continuum", "SSBAR", ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR") * NormFactor, "otherwise", 0);
+    double NevtCHARMWithBDTcWithNorm = GetBDTcPDFs(MC_dirname_CHARM, "root", CHARM_BDTc_p, "Continuum", "CHARM", ObtainWeight("CHARM", MCTYPE, "validation", "CHARM") * NormFactor, "otherwise", 0);
 
     //GetNegativeChangePDFs(CHG_nominal, CHG_BDTc_p, CHG_BDTc_m);
     //GetNegativeChangePDFs(MIX_nominal, MIX_BDTc_p, MIX_BDTc_m);
@@ -5806,82 +6643,178 @@ int main()
     }
 
     // B2Xnn BR
-    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Xnn_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Xnn_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Xnn_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Xnn_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Xnn_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Xnn_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_Xnn_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_Xnn_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_Xnn_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_Xnn_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_Xnn_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_Xnn_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
 
-    GetXnnBRPDFs(MC_dirname_CHG, "root", CHG_Xnn_p, "Bplus", "CHG", true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetXnnBRPDFs(MC_dirname_MIX, "root", MIX_Xnn_p, "Bzero", "MIX", true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_Xnn_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_Xnn_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_Xnn_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_Xnn_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_Xnn_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_Xnn_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
 
-    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_Xnn_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_Xnn_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_Xnn_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_Xnn_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_Xnn_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_Xnn_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Xnn_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Xnn_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Xnn_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Xnn_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Xnn_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Xnn_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
 
-    GetXnnBRPDFs(MC_dirname_CHG, "root", CHG_Xnn_m, "Bplus", "CHG", false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetXnnBRPDFs(MC_dirname_MIX, "root", MIX_Xnn_m, "Bzero", "MIX", false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetXnnBRPDFs(MC_dirname_CHG, "root", CHG_Xnn_p, "Bplus", "CHG", true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    GetXnnBRPDFs(MC_dirname_MIX, "root", MIX_Xnn_p, "Bzero", "MIX", true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_Xnn_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_Xnn_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_Xnn_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_Xnn_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_Xnn_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_Xnn_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
+
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_Xnn_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_Xnn_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_Xnn_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_Xnn_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_Xnn_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_Xnn_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
+
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Xnn_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Xnn_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Xnn_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Xnn_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Xnn_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetXnnBRPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Xnn_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
+
+    GetXnnBRPDFs(MC_dirname_CHG, "root", CHG_Xnn_m, "Bplus", "CHG", false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    GetXnnBRPDFs(MC_dirname_MIX, "root", MIX_Xnn_m, "Bzero", "MIX", false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
 
     // get multiplicity uncertainty pdfs (correlated)
-    int NPDFs_multiplicity = GetmultiplicitycorrelatedPDFs(multiplicity_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_nominal, &CHG_multiplicity_correlated, &MIX_multiplicity_correlated, &UUBAR_multiplicity_correlated, &DDBAR_multiplicity_correlated, &SSBAR_multiplicity_correlated, &CHARM_multiplicity_correlated, &Signal_multiplicity_correlated);
+    int NPDFs_multiplicity = GetmultiplicitycorrelatedPDFs(multiplicity_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_MXs1_nominal, Signal_MXs2_nominal, Signal_MXs3_nominal, &CHG_multiplicity_correlated, &MIX_multiplicity_correlated, &UUBAR_multiplicity_correlated, &DDBAR_multiplicity_correlated, &SSBAR_multiplicity_correlated, &CHARM_multiplicity_correlated, &Signal_MXs1_multiplicity_correlated, &Signal_MXs2_multiplicity_correlated, &Signal_MXs3_multiplicity_correlated);
 
     // get multiplicity uncertainty pdfs (uncorrelated)
-    GetmultiplicityUncorrelatedPDFs(multiplicity_uncorrelated_info, CHG_multiplicity_uncorrelated, MIX_multiplicity_uncorrelated, UUBAR_multiplicity_uncorrelated, DDBAR_multiplicity_uncorrelated, SSBAR_multiplicity_uncorrelated, CHARM_multiplicity_uncorrelated, Signal_multiplicity_uncorrelated);
+    GetmultiplicityUncorrelatedPDFs(multiplicity_uncorrelated_info, CHG_multiplicity_uncorrelated, MIX_multiplicity_uncorrelated, UUBAR_multiplicity_uncorrelated, DDBAR_multiplicity_uncorrelated, SSBAR_multiplicity_uncorrelated, CHARM_multiplicity_uncorrelated, Signal_MXs1_multiplicity_uncorrelated, Signal_MXs2_multiplicity_uncorrelated, Signal_MXs3_multiplicity_uncorrelated);
 
     // B -> [D -> X KL0] anything
-    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_BtoDtoXKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_BtoDtoXKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_BtoDtoXKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_BtoDtoXKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_BtoDtoXKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_BtoDtoXKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_BtoDtoXKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_BtoDtoXKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_BtoDtoXKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_BtoDtoXKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_BtoDtoXKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_BtoDtoXKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
 
-    GetBtoDtoXKLPDFs(MC_dirname_CHG, "root", CHG_BtoDtoXKL_p, "Bplus", "CHG", true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetBtoDtoXKLPDFs(MC_dirname_MIX, "root", MIX_BtoDtoXKL_p, "Bzero", "MIX", true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_BtoDtoXKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_BtoDtoXKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_BtoDtoXKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_BtoDtoXKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_BtoDtoXKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_BtoDtoXKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
 
-    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_BtoDtoXKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_BtoDtoXKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_BtoDtoXKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_BtoDtoXKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_BtoDtoXKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_BtoDtoXKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_BtoDtoXKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_BtoDtoXKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_BtoDtoXKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_BtoDtoXKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_BtoDtoXKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_BtoDtoXKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
 
-    GetBtoDtoXKLPDFs(MC_dirname_CHG, "root", CHG_BtoDtoXKL_m, "Bplus", "CHG", false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetBtoDtoXKLPDFs(MC_dirname_MIX, "root", MIX_BtoDtoXKL_m, "Bzero", "MIX", false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetBtoDtoXKLPDFs(MC_dirname_CHG, "root", CHG_BtoDtoXKL_p, "Bplus", "CHG", true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    GetBtoDtoXKLPDFs(MC_dirname_MIX, "root", MIX_BtoDtoXKL_p, "Bzero", "MIX", true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_BtoDtoXKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_BtoDtoXKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_BtoDtoXKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_BtoDtoXKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_BtoDtoXKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_BtoDtoXKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
+
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_BtoDtoXKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_BtoDtoXKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_BtoDtoXKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_BtoDtoXKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_BtoDtoXKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_BtoDtoXKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
+
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_BtoDtoXKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_BtoDtoXKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_BtoDtoXKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_BtoDtoXKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_BtoDtoXKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetBtoDtoXKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_BtoDtoXKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
+
+    GetBtoDtoXKLPDFs(MC_dirname_CHG, "root", CHG_BtoDtoXKL_m, "Bplus", "CHG", false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    GetBtoDtoXKLPDFs(MC_dirname_MIX, "root", MIX_BtoDtoXKL_m, "Bzero", "MIX", false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
 
     // BR(B -> X KL KL)
-    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_BRBtoXKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_BRBtoXKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_BRBtoXKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_BRBtoXKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_BRBtoXKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_BRBtoXKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_BRBtoXKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_BRBtoXKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_BRBtoXKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_BRBtoXKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_BRBtoXKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_BRBtoXKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
 
-    GetBRXKLKLPDFs(MC_dirname_CHG, "root", CHG_BRBtoXKLKL_p, "Bplus", "CHG", true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetBRXKLKLPDFs(MC_dirname_MIX, "root", MIX_BRBtoXKLKL_p, "Bzero", "MIX", true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_BRBtoXKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_BRBtoXKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_BRBtoXKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_BRBtoXKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_BRBtoXKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_BRBtoXKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
 
-    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_BRBtoXKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_BRBtoXKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_BRBtoXKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_BRBtoXKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_BRBtoXKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_BRBtoXKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_BRBtoXKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_BRBtoXKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_BRBtoXKLKL_p, "Bplus", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_BRBtoXKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_BRBtoXKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_BRBtoXKLKL_p, "Bzero", "SIGNAL", true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
 
-    GetBRXKLKLPDFs(MC_dirname_CHG, "root", CHG_BRBtoXKLKL_m, "Bplus", "CHG", false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetBRXKLKLPDFs(MC_dirname_MIX, "root", MIX_BRBtoXKLKL_m, "Bzero", "MIX", false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetBRXKLKLPDFs(MC_dirname_CHG, "root", CHG_BRBtoXKLKL_p, "Bplus", "CHG", true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    GetBRXKLKLPDFs(MC_dirname_MIX, "root", MIX_BRBtoXKLKL_p, "Bzero", "MIX", true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_BRBtoXKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_BRBtoXKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_BRBtoXKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_BRBtoXKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_BRBtoXKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_BRBtoXKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
+
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_BRBtoXKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_BRBtoXKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_BRBtoXKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_BRBtoXKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_BRBtoXKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_BRBtoXKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
+
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_BRBtoXKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_BRBtoXKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_BRBtoXKLKL_m, "Bplus", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_BRBtoXKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_BRBtoXKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetBRXKLKLPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_BRBtoXKLKL_m, "Bzero", "SIGNAL", false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
+
+    GetBRXKLKLPDFs(MC_dirname_CHG, "root", CHG_BRBtoXKLKL_m, "Bplus", "CHG", false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    GetBRXKLKLPDFs(MC_dirname_MIX, "root", MIX_BRBtoXKLKL_m, "Bzero", "MIX", false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
 
     // calculate all uncorrelated pdfs
-    ClearHist(Signal_all_uncorrelated, CHG_all_uncorrelated, MIX_all_uncorrelated, UUBAR_all_uncorrelated, DDBAR_all_uncorrelated, SSBAR_all_uncorrelated, CHARM_all_uncorrelated);
+    ClearHist(Signal_MXs1_all_uncorrelated);
+    ClearHist(Signal_MXs2_all_uncorrelated);
+    ClearHist(Signal_MXs3_all_uncorrelated);
+    ClearHist(CHG_all_uncorrelated);
+    ClearHist(MIX_all_uncorrelated);
+    ClearHist(UUBAR_all_uncorrelated);
+    ClearHist(DDBAR_all_uncorrelated);
+    ClearHist(SSBAR_all_uncorrelated);
+    ClearHist(CHARM_all_uncorrelated);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_FEI_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_FEI_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_FEI_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_FEI_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_FEI_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_FEI_uncorrelated, RarityBins);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_KID_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_KID_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_KID_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_KID_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_KID_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_KID_uncorrelated, RarityBins);
     AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_KID_uncorrelated, RarityBins);
@@ -5889,7 +6822,9 @@ int main()
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_KID_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_KID_uncorrelated, RarityBins);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_PID_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_PID_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_PID_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_PID_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_PID_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_PID_uncorrelated, RarityBins);
     AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_PID_uncorrelated, RarityBins);
@@ -5897,11 +6832,15 @@ int main()
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_PID_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_PID_uncorrelated, RarityBins);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_BR_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_BR_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_BR_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_BR_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_BR_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_BR_uncorrelated, RarityBins);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_pi0_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_pi0_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_pi0_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_pi0_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_pi0_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_pi0_uncorrelated, RarityBins);
     AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_pi0_uncorrelated, RarityBins);
@@ -5909,7 +6848,9 @@ int main()
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_pi0_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_pi0_uncorrelated, RarityBins);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_multiplicity_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_multiplicity_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_multiplicity_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_multiplicity_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_multiplicity_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_multiplicity_uncorrelated, RarityBins);
     AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_multiplicity_uncorrelated, RarityBins);
@@ -5917,16 +6858,16 @@ int main()
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_multiplicity_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_multiplicity_uncorrelated, RarityBins);
 
-    AddSQRTHist(Signal_all_uncorrelated, Signal_fraction_uncorrelated, RarityBins);
-    AddSQRTHist(CHG_all_uncorrelated, CHG_fraction_uncorrelated, RarityBins);
-    AddSQRTHist(MIX_all_uncorrelated, MIX_fraction_uncorrelated, RarityBins);
-
-    AddSQRTHist(Signal_all_uncorrelated, Signal_Fragmentation_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_Fragmentation_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_Fragmentation_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_Fragmentation_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_Fragmentation_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_Fragmentation_uncorrelated, RarityBins);
 
     // calculate MC statistical uncertainties (relative errors)
-    GetMCstatisticalRelativeError(Signal_nominal, Signal_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(Signal_MXs1_nominal, Signal_MXs1_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(Signal_MXs2_nominal, Signal_MXs2_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(Signal_MXs3_nominal, Signal_MXs3_MC_stat, RarityBins);
     GetMCstatisticalRelativeError(CHG_nominal, CHG_MC_stat, RarityBins);
     GetMCstatisticalRelativeError(MIX_nominal, MIX_MC_stat, RarityBins);
     GetMCstatisticalRelativeError(UUBAR_nominal, UUBAR_MC_stat, RarityBins);
@@ -5935,7 +6876,9 @@ int main()
     GetMCstatisticalRelativeError(CHARM_nominal, CHARM_MC_stat, RarityBins);
 
     // all of uncorrelated uncertainties + MC statistical uncertainties
-    AddSQRTHist(Signal_all_uncorrelated_MC_stat, Signal_all_uncorrelated, Signal_MC_stat, RarityBins);
+    AddSQRTHist(Signal_MXs1_all_uncorrelated_MC_stat, Signal_MXs1_all_uncorrelated, Signal_MXs1_MC_stat, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated_MC_stat, Signal_MXs2_all_uncorrelated, Signal_MXs2_MC_stat, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated_MC_stat, Signal_MXs3_all_uncorrelated, Signal_MXs3_MC_stat, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated_MC_stat, CHG_all_uncorrelated, CHG_MC_stat, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated_MC_stat, MIX_all_uncorrelated, MIX_MC_stat, RarityBins);
     AddSQRTHist(UUBAR_all_uncorrelated_MC_stat, UUBAR_all_uncorrelated, UUBAR_MC_stat, RarityBins);
@@ -5992,10 +6935,236 @@ int main()
 
 
     /* ====================================== */
+    // calculate total Signal PDFs
+    AddPDFsWithRelativeUncertainty(Signal_nominal, Signal_MXs1_nominal, Signal_all_uncorrelated_MC_stat, Signal_MXs1_all_uncorrelated_MC_stat, RarityBins);
+    AddPDFsWithRelativeUncertainty(Signal_nominal, Signal_MXs2_nominal, Signal_all_uncorrelated_MC_stat, Signal_MXs2_all_uncorrelated_MC_stat, RarityBins);
+    AddPDFsWithRelativeUncertainty(Signal_nominal, Signal_MXs3_nominal, Signal_all_uncorrelated_MC_stat, Signal_MXs3_all_uncorrelated_MC_stat, RarityBins);
+
+    AddPDFs(Signal_track_p, Signal_MXs1_track_p);
+    AddPDFs(Signal_track_p, Signal_MXs2_track_p);
+    AddPDFs(Signal_track_p, Signal_MXs3_track_p);
+    AddPDFs(Signal_track_m, Signal_MXs1_track_m);
+    AddPDFs(Signal_track_m, Signal_MXs2_track_m);
+    AddPDFs(Signal_track_m, Signal_MXs3_track_m);
+
+    AddPDFs(Signal_KS0_p, Signal_MXs1_KS0_p);
+    AddPDFs(Signal_KS0_p, Signal_MXs2_KS0_p);
+    AddPDFs(Signal_KS0_p, Signal_MXs3_KS0_p);
+    AddPDFs(Signal_KS0_m, Signal_MXs1_KS0_m);
+    AddPDFs(Signal_KS0_m, Signal_MXs2_KS0_m);
+    AddPDFs(Signal_KS0_m, Signal_MXs3_KS0_m);
+
+    Signal_FEI_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_FEI * 2);
+    for (int i = 0; i < NPDFs_FEI; i++) Signal_FEI_correlated[i] = new TH1D(("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_FEI; i < 2 * NPDFs_FEI; i++) Signal_FEI_correlated[i] = new TH1D(("Signal_FEI_correlated" + std::to_string(i - NPDFs_FEI) + "_m").c_str(), ("Signal_FEI_correlated" + std::to_string(i - NPDFs_FEI) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_FEI; i++) {
+        AddPDFs(Signal_FEI_correlated[i], Signal_MXs1_FEI_correlated[i]);
+        AddPDFs(Signal_FEI_correlated[i], Signal_MXs2_FEI_correlated[i]);
+        AddPDFs(Signal_FEI_correlated[i], Signal_MXs3_FEI_correlated[i]);
+    }
+
+    Signal_KID_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_KID * 2);
+    for (int i = 0; i < NPDFs_KID; i++) Signal_KID_correlated[i] = new TH1D(("Signal_KID_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_KID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_KID; i < 2 * NPDFs_KID; i++) Signal_KID_correlated[i] = new TH1D(("Signal_KID_correlated" + std::to_string(i - NPDFs_KID) + "_m").c_str(), ("Signal_KID_correlated" + std::to_string(i - NPDFs_KID) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_KID; i++) {
+        AddPDFs(Signal_KID_correlated[i], Signal_MXs1_KID_correlated[i]);
+        AddPDFs(Signal_KID_correlated[i], Signal_MXs2_KID_correlated[i]);
+        AddPDFs(Signal_KID_correlated[i], Signal_MXs3_KID_correlated[i]);
+    }
+
+    Signal_PID_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_PID * 2);
+    for (int i = 0; i < NPDFs_PID; i++) Signal_PID_correlated[i] = new TH1D(("Signal_PID_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_PID_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_PID; i < 2 * NPDFs_PID; i++) Signal_PID_correlated[i] = new TH1D(("Signal_PID_correlated" + std::to_string(i - NPDFs_PID) + "_m").c_str(), ("Signal_PID_correlated" + std::to_string(i - NPDFs_PID) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_PID; i++) {
+        AddPDFs(Signal_PID_correlated[i], Signal_MXs1_PID_correlated[i]);
+        AddPDFs(Signal_PID_correlated[i], Signal_MXs2_PID_correlated[i]);
+        AddPDFs(Signal_PID_correlated[i], Signal_MXs3_PID_correlated[i]);
+    }
+
+    Signal_BR_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_BR * 2);
+    for (int i = 0; i < NPDFs_BR; i++) Signal_BR_correlated[i] = new TH1D(("Signal_BR_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_BR_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_BR; i < 2 * NPDFs_BR; i++) Signal_BR_correlated[i] = new TH1D(("Signal_BR_correlated" + std::to_string(i - NPDFs_BR) + "_m").c_str(), ("Signal_BR_correlated" + std::to_string(i - NPDFs_BR) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_BR; i++) {
+        AddPDFs(Signal_BR_correlated[i], Signal_MXs1_BR_correlated[i]);
+        AddPDFs(Signal_BR_correlated[i], Signal_MXs2_BR_correlated[i]);
+        AddPDFs(Signal_BR_correlated[i], Signal_MXs3_BR_correlated[i]);
+    }
+
+    Signal_pi0_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_pi0 * 2);
+    for (int i = 0; i < NPDFs_pi0; i++) Signal_pi0_correlated[i] = new TH1D(("Signal_pi0_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_pi0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_pi0; i < 2 * NPDFs_pi0; i++) Signal_pi0_correlated[i] = new TH1D(("Signal_pi0_correlated" + std::to_string(i - NPDFs_pi0) + "_m").c_str(), ("Signal_pi0_correlated" + std::to_string(i - NPDFs_pi0) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_pi0; i++) {
+        AddPDFs(Signal_pi0_correlated[i], Signal_MXs1_pi0_correlated[i]);
+        AddPDFs(Signal_pi0_correlated[i], Signal_MXs2_pi0_correlated[i]);
+        AddPDFs(Signal_pi0_correlated[i], Signal_MXs3_pi0_correlated[i]);
+    }
+
+    AddPDFs(Signal_Kff1_p, Signal_MXs1_Kff1_p);
+    AddPDFs(Signal_Kff1_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kff1_p, Signal_MXs3_Kff1_p);
+    AddPDFs(Signal_Kff1_m, Signal_MXs1_Kff1_m);
+    AddPDFs(Signal_Kff1_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kff1_m, Signal_MXs3_Kff1_m);
+    AddPDFs(Signal_Kff2_p, Signal_MXs1_Kff2_p);
+    AddPDFs(Signal_Kff2_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kff2_p, Signal_MXs3_Kff2_p);
+    AddPDFs(Signal_Kff2_m, Signal_MXs1_Kff2_m);
+    AddPDFs(Signal_Kff2_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kff2_m, Signal_MXs3_Kff2_m);
+    AddPDFs(Signal_Kff3_p, Signal_MXs1_Kff3_p);
+    AddPDFs(Signal_Kff3_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kff3_p, Signal_MXs3_Kff3_p);
+    AddPDFs(Signal_Kff3_m, Signal_MXs1_Kff3_m);
+    AddPDFs(Signal_Kff3_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kff3_m, Signal_MXs3_Kff3_m);
+
+    AddPDFs(Signal_Kstarff1_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff1_p, Signal_MXs2_Kstarff1_p);
+    AddPDFs(Signal_Kstarff1_p, Signal_MXs3_Kstarff1_p);
+    AddPDFs(Signal_Kstarff1_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff1_m, Signal_MXs2_Kstarff1_m);
+    AddPDFs(Signal_Kstarff1_m, Signal_MXs3_Kstarff1_m);
+    AddPDFs(Signal_Kstarff2_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff2_p, Signal_MXs2_Kstarff2_p);
+    AddPDFs(Signal_Kstarff2_p, Signal_MXs3_Kstarff2_p);
+    AddPDFs(Signal_Kstarff2_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff2_m, Signal_MXs2_Kstarff2_m);
+    AddPDFs(Signal_Kstarff2_m, Signal_MXs3_Kstarff2_m);
+    AddPDFs(Signal_Kstarff3_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff3_p, Signal_MXs2_Kstarff3_p);
+    AddPDFs(Signal_Kstarff3_p, Signal_MXs3_Kstarff3_p);
+    AddPDFs(Signal_Kstarff3_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff3_m, Signal_MXs2_Kstarff3_m);
+    AddPDFs(Signal_Kstarff3_m, Signal_MXs3_Kstarff3_m);
+    AddPDFs(Signal_Kstarff4_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff4_p, Signal_MXs2_Kstarff4_p);
+    AddPDFs(Signal_Kstarff4_p, Signal_MXs3_Kstarff4_p);
+    AddPDFs(Signal_Kstarff4_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff4_m, Signal_MXs2_Kstarff4_m);
+    AddPDFs(Signal_Kstarff4_m, Signal_MXs3_Kstarff4_m);
+    AddPDFs(Signal_Kstarff5_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff5_p, Signal_MXs2_Kstarff5_p);
+    AddPDFs(Signal_Kstarff5_p, Signal_MXs3_Kstarff5_p);
+    AddPDFs(Signal_Kstarff5_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff5_m, Signal_MXs2_Kstarff5_m);
+    AddPDFs(Signal_Kstarff5_m, Signal_MXs3_Kstarff5_m);
+    AddPDFs(Signal_Kstarff6_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff6_p, Signal_MXs2_Kstarff6_p);
+    AddPDFs(Signal_Kstarff6_p, Signal_MXs3_Kstarff6_p);
+    AddPDFs(Signal_Kstarff6_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff6_m, Signal_MXs2_Kstarff6_m);
+    AddPDFs(Signal_Kstarff6_m, Signal_MXs3_Kstarff6_m);
+    AddPDFs(Signal_Kstarff7_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff7_p, Signal_MXs2_Kstarff7_p);
+    AddPDFs(Signal_Kstarff7_p, Signal_MXs3_Kstarff7_p);
+    AddPDFs(Signal_Kstarff7_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff7_m, Signal_MXs2_Kstarff7_m);
+    AddPDFs(Signal_Kstarff7_m, Signal_MXs3_Kstarff7_m);
+    AddPDFs(Signal_Kstarff8_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff8_p, Signal_MXs2_Kstarff8_p);
+    AddPDFs(Signal_Kstarff8_p, Signal_MXs3_Kstarff8_p);
+    AddPDFs(Signal_Kstarff8_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff8_m, Signal_MXs2_Kstarff8_m);
+    AddPDFs(Signal_Kstarff8_m, Signal_MXs3_Kstarff8_m);
+    AddPDFs(Signal_Kstarff9_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff9_p, Signal_MXs2_Kstarff9_p);
+    AddPDFs(Signal_Kstarff9_p, Signal_MXs3_Kstarff9_p);
+    AddPDFs(Signal_Kstarff9_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarff9_m, Signal_MXs2_Kstarff9_m);
+    AddPDFs(Signal_Kstarff9_m, Signal_MXs3_Kstarff9_m);
+
+    AddPDFs(Signal_Kfrac_p, Signal_MXs1_Kfrac_p);
+    AddPDFs(Signal_Kfrac_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kfrac_p, Signal_MXs3_Kfrac_p);
+    AddPDFs(Signal_Kfrac_m, Signal_MXs1_Kfrac_m);
+    AddPDFs(Signal_Kfrac_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_Kfrac_m, Signal_MXs3_Kfrac_m);
+
+    AddPDFs(Signal_Kstarfrac_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarfrac_p, Signal_MXs2_Kstarfrac_p);
+    AddPDFs(Signal_Kstarfrac_p, Signal_MXs3_Kstarfrac_p);
+    AddPDFs(Signal_Kstarfrac_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_Kstarfrac_m, Signal_MXs2_Kstarfrac_m);
+    AddPDFs(Signal_Kstarfrac_m, Signal_MXs3_Kstarfrac_m);
+
+    Signal_Fragmentation_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_Fragmentation * 2);
+    for (int i = 0; i < NPDFs_Fragmentation; i++) Signal_Fragmentation_correlated[i] = new TH1D(("Signal_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_Fragmentation; i < 2 * NPDFs_Fragmentation; i++) Signal_Fragmentation_correlated[i] = new TH1D(("Signal_Fragmentation_correlated" + std::to_string(i - NPDFs_Fragmentation) + "_m").c_str(), ("Signal_Fragmentation_correlated" + std::to_string(i - NPDFs_Fragmentation) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_Fragmentation; i++) {
+        AddPDFs(Signal_Fragmentation_correlated[i], Signal_MXs1_nominal);
+        AddPDFs(Signal_Fragmentation_correlated[i], Signal_MXs2_nominal);
+        AddPDFs(Signal_Fragmentation_correlated[i], Signal_MXs3_Fragmentation_correlated[i]);
+    }
+
+    AddPDFs(Signal_pf_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_pf_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_pf_p, Signal_MXs3_pf_p);
+    AddPDFs(Signal_pf_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_pf_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_pf_m, Signal_MXs3_pf_m);
+
+    AddPDFs(Signal_mb_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_mb_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_mb_p, Signal_MXs3_mb_p);
+    AddPDFs(Signal_mb_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_mb_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_mb_m, Signal_MXs3_mb_m);
+
+    AddPDFs(Signal_transition_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_transition_p, Signal_MXs2_nominal);
+    AddPDFs(Signal_transition_p, Signal_MXs3_transition_p);
+    AddPDFs(Signal_transition_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_transition_m, Signal_MXs2_nominal);
+    AddPDFs(Signal_transition_m, Signal_MXs3_transition_m);
+
+    AddPDFs(Signal_mKstar_p, Signal_MXs1_nominal);
+    AddPDFs(Signal_mKstar_p, Signal_MXs2_mKstar_p);
+    AddPDFs(Signal_mKstar_p, Signal_MXs3_mKstar_p);
+    AddPDFs(Signal_mKstar_m, Signal_MXs1_nominal);
+    AddPDFs(Signal_mKstar_m, Signal_MXs2_mKstar_m);
+    AddPDFs(Signal_mKstar_m, Signal_MXs3_mKstar_m);
+
+    AddPDFs(Signal_Xnn_p, Signal_MXs1_Xnn_p);
+    AddPDFs(Signal_Xnn_p, Signal_MXs2_Xnn_p);
+    AddPDFs(Signal_Xnn_p, Signal_MXs3_Xnn_p);
+    AddPDFs(Signal_Xnn_m, Signal_MXs1_Xnn_m);
+    AddPDFs(Signal_Xnn_m, Signal_MXs2_Xnn_m);
+    AddPDFs(Signal_Xnn_m, Signal_MXs3_Xnn_m);
+
+    Signal_multiplicity_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_multiplicity * 2);
+    for (int i = 0; i < NPDFs_multiplicity; i++) Signal_multiplicity_correlated[i] = new TH1D(("Signal_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_multiplicity; i < 2 * NPDFs_multiplicity; i++) Signal_multiplicity_correlated[i] = new TH1D(("Signal_multiplicity_correlated" + std::to_string(i - NPDFs_multiplicity) + "_m").c_str(), ("Signal_multiplicity_correlated" + std::to_string(i - NPDFs_multiplicity) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_multiplicity; i++) {
+        AddPDFs(Signal_multiplicity_correlated[i], Signal_MXs1_multiplicity_correlated[i]);
+        AddPDFs(Signal_multiplicity_correlated[i], Signal_MXs2_multiplicity_correlated[i]);
+        AddPDFs(Signal_multiplicity_correlated[i], Signal_MXs3_multiplicity_correlated[i]);
+    }
+
+    AddPDFs(Signal_BtoDtoXKL_p, Signal_MXs1_BtoDtoXKL_p);
+    AddPDFs(Signal_BtoDtoXKL_p, Signal_MXs2_BtoDtoXKL_p);
+    AddPDFs(Signal_BtoDtoXKL_p, Signal_MXs3_BtoDtoXKL_p);
+    AddPDFs(Signal_BtoDtoXKL_m, Signal_MXs1_BtoDtoXKL_m);
+    AddPDFs(Signal_BtoDtoXKL_m, Signal_MXs2_BtoDtoXKL_m);
+    AddPDFs(Signal_BtoDtoXKL_m, Signal_MXs3_BtoDtoXKL_m);
+
+    AddPDFs(Signal_BRBtoXKLKL_p, Signal_MXs1_BRBtoXKLKL_p);
+    AddPDFs(Signal_BRBtoXKLKL_p, Signal_MXs2_BRBtoXKLKL_p);
+    AddPDFs(Signal_BRBtoXKLKL_p, Signal_MXs3_BRBtoXKLKL_p);
+    AddPDFs(Signal_BRBtoXKLKL_m, Signal_MXs1_BRBtoXKLKL_m);
+    AddPDFs(Signal_BRBtoXKLKL_m, Signal_MXs2_BRBtoXKLKL_m);
+    AddPDFs(Signal_BRBtoXKLKL_m, Signal_MXs3_BRBtoXKLKL_m);
+    /* ====================================== */
+
+
+
+    /* ====================================== */
     // Select specific MXs bin
     const int MXsBin = 1;
 
     SaveSpecificMXsBin(Signal_nominal, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_nominal, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_nominal, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_nominal, MXsBin);
     SaveSpecificMXsBin(CHG_nominal, MXsBin);
     SaveSpecificMXsBin(MIX_nominal, MXsBin);
     SaveSpecificMXsBin(UUBAR_nominal, MXsBin);
@@ -6005,6 +7174,9 @@ int main()
 
     // track uncertainty
     SaveSpecificMXsBin(Signal_track_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_track_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_track_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_track_p, MXsBin);
     SaveSpecificMXsBin(CHG_track_p, MXsBin);
     SaveSpecificMXsBin(MIX_track_p, MXsBin);
     SaveSpecificMXsBin(UUBAR_track_p, MXsBin);
@@ -6012,6 +7184,9 @@ int main()
     SaveSpecificMXsBin(SSBAR_track_p, MXsBin);
     SaveSpecificMXsBin(CHARM_track_p, MXsBin);
     SaveSpecificMXsBin(Signal_track_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_track_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_track_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_track_m, MXsBin);
     SaveSpecificMXsBin(CHG_track_m, MXsBin);
     SaveSpecificMXsBin(MIX_track_m, MXsBin);
     SaveSpecificMXsBin(UUBAR_track_m, MXsBin);
@@ -6021,6 +7196,9 @@ int main()
 
     // KS0 uncertainty
     SaveSpecificMXsBin(Signal_KS0_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_KS0_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_KS0_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_KS0_p, MXsBin);
     SaveSpecificMXsBin(CHG_KS0_p, MXsBin);
     SaveSpecificMXsBin(MIX_KS0_p, MXsBin);
     SaveSpecificMXsBin(UUBAR_KS0_p, MXsBin);
@@ -6028,6 +7206,9 @@ int main()
     SaveSpecificMXsBin(SSBAR_KS0_p, MXsBin);
     SaveSpecificMXsBin(CHARM_KS0_p, MXsBin);
     SaveSpecificMXsBin(Signal_KS0_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_KS0_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_KS0_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_KS0_m, MXsBin);
     SaveSpecificMXsBin(CHG_KS0_m, MXsBin);
     SaveSpecificMXsBin(MIX_KS0_m, MXsBin);
     SaveSpecificMXsBin(UUBAR_KS0_m, MXsBin);
@@ -6038,18 +7219,26 @@ int main()
     // FEI uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_FEI; i++) {
         SaveSpecificMXsBin(Signal_FEI_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs1_FEI_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs2_FEI_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs3_FEI_correlated[i], MXsBin);
         SaveSpecificMXsBin(CHG_FEI_correlated[i], MXsBin);
         SaveSpecificMXsBin(MIX_FEI_correlated[i], MXsBin);
     }
 
     // FEI uncertainty (uncorrelated)
-    SaveSpecificMXsBin(Signal_FEI_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_FEI_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_FEI_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_FEI_uncorrelated, MXsBin);
     SaveSpecificMXsBin(CHG_FEI_uncorrelated, MXsBin);
     SaveSpecificMXsBin(MIX_FEI_uncorrelated, MXsBin);
 
     // Kaon PID uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_KID; i++) {
         SaveSpecificMXsBin(Signal_KID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs1_KID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs2_KID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs3_KID_correlated[i], MXsBin);
         SaveSpecificMXsBin(CHG_KID_correlated[i], MXsBin);
         SaveSpecificMXsBin(MIX_KID_correlated[i], MXsBin);
         SaveSpecificMXsBin(UUBAR_KID_correlated[i], MXsBin);
@@ -6059,7 +7248,9 @@ int main()
     }
 
     // Kaon PID uncertainty (uncorrelated)
-    SaveSpecificMXsBin(Signal_KID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_KID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_KID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_KID_uncorrelated, MXsBin);
     SaveSpecificMXsBin(CHG_KID_uncorrelated, MXsBin);
     SaveSpecificMXsBin(MIX_KID_uncorrelated, MXsBin);
     SaveSpecificMXsBin(UUBAR_KID_uncorrelated, MXsBin);
@@ -6070,6 +7261,9 @@ int main()
     // Pion PID uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_PID; i++) {
         SaveSpecificMXsBin(Signal_PID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs1_PID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs2_PID_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs3_PID_correlated[i], MXsBin);
         SaveSpecificMXsBin(CHG_PID_correlated[i], MXsBin);
         SaveSpecificMXsBin(MIX_PID_correlated[i], MXsBin);
         SaveSpecificMXsBin(UUBAR_PID_correlated[i], MXsBin);
@@ -6079,7 +7273,9 @@ int main()
     }
 
     // Pion PID uncertainty (uncorrelated)
-    SaveSpecificMXsBin(Signal_PID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_PID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_PID_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_PID_uncorrelated, MXsBin);
     SaveSpecificMXsBin(CHG_PID_uncorrelated, MXsBin);
     SaveSpecificMXsBin(MIX_PID_uncorrelated, MXsBin);
     SaveSpecificMXsBin(UUBAR_PID_uncorrelated, MXsBin);
@@ -6090,18 +7286,26 @@ int main()
     // BB BR uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_BR; i++) {
         SaveSpecificMXsBin(Signal_BR_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs1_BR_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs2_BR_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs3_BR_correlated[i], MXsBin);
         SaveSpecificMXsBin(CHG_BR_correlated[i], MXsBin);
         SaveSpecificMXsBin(MIX_BR_correlated[i], MXsBin);
     }
 
     // BB BR uncertainty (uncorrelated)
-    SaveSpecificMXsBin(Signal_BR_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_BR_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_BR_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_BR_uncorrelated, MXsBin);
     SaveSpecificMXsBin(CHG_BR_uncorrelated, MXsBin);
     SaveSpecificMXsBin(MIX_BR_uncorrelated, MXsBin);
 
     // pi0 uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_pi0; i++) {
         SaveSpecificMXsBin(Signal_pi0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs1_pi0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs2_pi0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs3_pi0_correlated[i], MXsBin);
         SaveSpecificMXsBin(CHG_pi0_correlated[i], MXsBin);
         SaveSpecificMXsBin(MIX_pi0_correlated[i], MXsBin);
         SaveSpecificMXsBin(UUBAR_pi0_correlated[i], MXsBin);
@@ -6111,7 +7315,9 @@ int main()
     }
 
     // pi0 uncertainty (uncorrelated)
-    SaveSpecificMXsBin(Signal_pi0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_pi0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_pi0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_pi0_uncorrelated, MXsBin);
     SaveSpecificMXsBin(CHG_pi0_uncorrelated, MXsBin);
     SaveSpecificMXsBin(MIX_pi0_uncorrelated, MXsBin);
     SaveSpecificMXsBin(UUBAR_pi0_uncorrelated, MXsBin);
@@ -6126,6 +7332,18 @@ int main()
     SaveSpecificMXsBin(Signal_Kff2_m, MXsBin);
     SaveSpecificMXsBin(Signal_Kff3_p, MXsBin);
     SaveSpecificMXsBin(Signal_Kff3_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_Kff1_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_Kff1_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_Kff2_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_Kff2_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_Kff3_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_Kff3_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kff1_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kff1_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kff2_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kff2_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kff3_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kff3_m, MXsBin);
 
     // Kstar nu nubar form factor
     SaveSpecificMXsBin(Signal_Kstarff1_p, MXsBin);
@@ -6146,46 +7364,99 @@ int main()
     SaveSpecificMXsBin(Signal_Kstarff8_m, MXsBin);
     SaveSpecificMXsBin(Signal_Kstarff9_p, MXsBin);
     SaveSpecificMXsBin(Signal_Kstarff9_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff1_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff1_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff2_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff2_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff3_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff3_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff4_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff4_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff5_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff5_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff6_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff6_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff7_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff7_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff8_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff8_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff9_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarff9_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff1_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff1_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff2_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff2_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff3_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff3_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff4_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff4_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff5_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff5_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff6_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff6_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff7_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff7_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff8_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff8_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff9_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarff9_m, MXsBin);
 
-    // fraction uncertainty (correlated)
-    for (int i = 0; i < 2 * NPDFs_fraction; i++) {
-        SaveSpecificMXsBin(Signal_fraction_correlated[i], MXsBin);
-        SaveSpecificMXsBin(CHG_fraction_correlated[i], MXsBin);
-        SaveSpecificMXsBin(MIX_fraction_correlated[i], MXsBin);
-    }
-
-    // fraction uncertainty (uncorrelated)
-    SaveSpecificMXsBin(Signal_fraction_uncorrelated, MXsBin);
-    SaveSpecificMXsBin(CHG_fraction_uncorrelated, MXsBin);
-    SaveSpecificMXsBin(MIX_fraction_uncorrelated, MXsBin);
+    // faction
+    SaveSpecificMXsBin(Signal_Kfrac_p, MXsBin);
+    SaveSpecificMXsBin(Signal_Kfrac_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_Kfrac_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_Kfrac_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kfrac_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kfrac_m, MXsBin);
+    SaveSpecificMXsBin(Signal_Kstarfrac_p, MXsBin);
+    SaveSpecificMXsBin(Signal_Kstarfrac_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarfrac_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Kstarfrac_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarfrac_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Kstarfrac_m, MXsBin);
 
     // fragmentation uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_Fragmentation; i++) {
         SaveSpecificMXsBin(Signal_Fragmentation_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs1_Fragmentation_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs2_Fragmentation_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs3_Fragmentation_correlated[i], MXsBin);
         SaveSpecificMXsBin(CHG_Fragmentation_correlated[i], MXsBin);
         SaveSpecificMXsBin(MIX_Fragmentation_correlated[i], MXsBin);
     }
 
     // fragmentation uncertainty (uncorrelated)
-    SaveSpecificMXsBin(Signal_Fragmentation_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_Fragmentation_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Fragmentation_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Fragmentation_uncorrelated, MXsBin);
     SaveSpecificMXsBin(CHG_Fragmentation_uncorrelated, MXsBin);
     SaveSpecificMXsBin(MIX_Fragmentation_uncorrelated, MXsBin);
 
     // pf uncertainty
     SaveSpecificMXsBin(Signal_pf_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_pf_p, MXsBin);
     SaveSpecificMXsBin(Signal_pf_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_pf_m, MXsBin);
 
     // mb uncertainty
     SaveSpecificMXsBin(Signal_mb_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_mb_p, MXsBin);
     SaveSpecificMXsBin(Signal_mb_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_mb_m, MXsBin);
 
     // transition uncertainty
     SaveSpecificMXsBin(Signal_transition_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_transition_p, MXsBin);
     SaveSpecificMXsBin(Signal_transition_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_transition_m, MXsBin);
 
     // fixed mKstar uncertainty
     SaveSpecificMXsBin(Signal_mKstar_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_mKstar_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_mKstar_p, MXsBin);
     SaveSpecificMXsBin(Signal_mKstar_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_mKstar_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_mKstar_m, MXsBin);
 
     // BDTc
     SaveSpecificMXsBin(UUBAR_BDTc_p, MXsBin);
@@ -6199,15 +7470,24 @@ int main()
 
     // B2Knn BR
     SaveSpecificMXsBin(Signal_Xnn_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_Xnn_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Xnn_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Xnn_p, MXsBin);
     SaveSpecificMXsBin(CHG_Xnn_p, MXsBin);
     SaveSpecificMXsBin(MIX_Xnn_p, MXsBin);
     SaveSpecificMXsBin(Signal_Xnn_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_Xnn_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_Xnn_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_Xnn_m, MXsBin);
     SaveSpecificMXsBin(CHG_Xnn_m, MXsBin);
     SaveSpecificMXsBin(MIX_Xnn_m, MXsBin);
 
     // multiplicity uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_multiplicity; i++) {
         SaveSpecificMXsBin(Signal_multiplicity_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs1_multiplicity_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs2_multiplicity_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs3_multiplicity_correlated[i], MXsBin);
         SaveSpecificMXsBin(CHG_multiplicity_correlated[i], MXsBin);
         SaveSpecificMXsBin(MIX_multiplicity_correlated[i], MXsBin);
         SaveSpecificMXsBin(UUBAR_multiplicity_correlated[i], MXsBin);
@@ -6217,7 +7497,9 @@ int main()
     }
 
     // multiplicity uncertainty (uncorrelated)
-    SaveSpecificMXsBin(Signal_multiplicity_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_multiplicity_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_multiplicity_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_multiplicity_uncorrelated, MXsBin);
     SaveSpecificMXsBin(CHG_multiplicity_uncorrelated, MXsBin);
     SaveSpecificMXsBin(MIX_multiplicity_uncorrelated, MXsBin);
     SaveSpecificMXsBin(UUBAR_multiplicity_uncorrelated, MXsBin);
@@ -6227,22 +7509,36 @@ int main()
 
     // B -> [D -> X KL0] anything uncertainties
     SaveSpecificMXsBin(Signal_BtoDtoXKL_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_BtoDtoXKL_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_BtoDtoXKL_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_BtoDtoXKL_p, MXsBin);
     SaveSpecificMXsBin(CHG_BtoDtoXKL_p, MXsBin);
     SaveSpecificMXsBin(MIX_BtoDtoXKL_p, MXsBin);
     SaveSpecificMXsBin(Signal_BtoDtoXKL_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_BtoDtoXKL_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_BtoDtoXKL_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_BtoDtoXKL_m, MXsBin);
     SaveSpecificMXsBin(CHG_BtoDtoXKL_m, MXsBin);
     SaveSpecificMXsBin(MIX_BtoDtoXKL_m, MXsBin);
 
     // BR(B -> X KL KL)
     SaveSpecificMXsBin(Signal_BRBtoXKLKL_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_BRBtoXKLKL_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_BRBtoXKLKL_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_BRBtoXKLKL_p, MXsBin);
     SaveSpecificMXsBin(CHG_BRBtoXKLKL_p, MXsBin);
     SaveSpecificMXsBin(MIX_BRBtoXKLKL_p, MXsBin);
     SaveSpecificMXsBin(Signal_BRBtoXKLKL_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_BRBtoXKLKL_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_BRBtoXKLKL_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_BRBtoXKLKL_m, MXsBin);
     SaveSpecificMXsBin(CHG_BRBtoXKLKL_m, MXsBin);
     SaveSpecificMXsBin(MIX_BRBtoXKLKL_m, MXsBin);
 
     // all uncorrelated uncertainties
-    SaveSpecificMXsBin(Signal_all_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_all_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_all_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_all_uncorrelated, MXsBin);
     SaveSpecificMXsBin(CHG_all_uncorrelated, MXsBin);
     SaveSpecificMXsBin(MIX_all_uncorrelated, MXsBin);
     SaveSpecificMXsBin(UUBAR_all_uncorrelated, MXsBin);
@@ -6251,7 +7547,9 @@ int main()
     SaveSpecificMXsBin(CHARM_all_uncorrelated, MXsBin);
 
     // MC statistical uncertainties
-    SaveSpecificMXsBin(Signal_MC_stat, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_MC_stat, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_MC_stat, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_MC_stat, MXsBin);
     SaveSpecificMXsBin(CHG_MC_stat, MXsBin);
     SaveSpecificMXsBin(MIX_MC_stat, MXsBin);
     SaveSpecificMXsBin(UUBAR_MC_stat, MXsBin);
@@ -6261,6 +7559,9 @@ int main()
 
     // all of uncorrelated uncertainties + MC statistical uncertainties
     SaveSpecificMXsBin(Signal_all_uncorrelated_MC_stat, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_all_uncorrelated_MC_stat, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_all_uncorrelated_MC_stat, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_all_uncorrelated_MC_stat, MXsBin);
     SaveSpecificMXsBin(CHG_all_uncorrelated_MC_stat, MXsBin);
     SaveSpecificMXsBin(MIX_all_uncorrelated_MC_stat, MXsBin);
     SaveSpecificMXsBin(UUBAR_all_uncorrelated_MC_stat, MXsBin);
@@ -6279,6 +7580,9 @@ int main()
     TFile* file = new TFile("PDFandDATA.root", "RECREATE");
 
     Signal_nominal->Write();
+    Signal_MXs1_nominal->Write();
+    Signal_MXs2_nominal->Write();
+    Signal_MXs3_nominal->Write();
     CHG_nominal->Write();
     MIX_nominal->Write();
     UUBAR_nominal->Write();
@@ -6288,6 +7592,9 @@ int main()
 
     // track uncertainty
     Signal_track_p->Write();
+    Signal_MXs1_track_p->Write();
+    Signal_MXs2_track_p->Write();
+    Signal_MXs3_track_p->Write();
     CHG_track_p->Write();
     MIX_track_p->Write();
     UUBAR_track_p->Write();
@@ -6295,6 +7602,9 @@ int main()
     SSBAR_track_p->Write();
     CHARM_track_p->Write();
     Signal_track_m->Write();
+    Signal_MXs1_track_m->Write();
+    Signal_MXs2_track_m->Write();
+    Signal_MXs3_track_m->Write();
     CHG_track_m->Write();
     MIX_track_m->Write();
     UUBAR_track_m->Write();
@@ -6304,6 +7614,9 @@ int main()
 
     // KS0 uncertainty
     Signal_KS0_p->Write();
+    Signal_MXs1_KS0_p->Write();
+    Signal_MXs2_KS0_p->Write();
+    Signal_MXs3_KS0_p->Write();
     CHG_KS0_p->Write();
     MIX_KS0_p->Write();
     UUBAR_KS0_p->Write();
@@ -6311,6 +7624,9 @@ int main()
     SSBAR_KS0_p->Write();
     CHARM_KS0_p->Write();
     Signal_KS0_m->Write();
+    Signal_MXs1_KS0_m->Write();
+    Signal_MXs2_KS0_m->Write();
+    Signal_MXs3_KS0_m->Write();
     CHG_KS0_m->Write();
     MIX_KS0_m->Write();
     UUBAR_KS0_m->Write();
@@ -6321,18 +7637,26 @@ int main()
     // FEI uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_FEI; i++) {
         Signal_FEI_correlated[i]->Write();
+        Signal_MXs1_FEI_correlated[i]->Write();
+        Signal_MXs2_FEI_correlated[i]->Write();
+        Signal_MXs3_FEI_correlated[i]->Write();
         CHG_FEI_correlated[i]->Write();
         MIX_FEI_correlated[i]->Write();
     }
 
     // FEI uncertainty (uncorrelated)
-    Signal_FEI_uncorrelated->Write();
+    Signal_MXs1_FEI_uncorrelated->Write();
+    Signal_MXs2_FEI_uncorrelated->Write();
+    Signal_MXs3_FEI_uncorrelated->Write();
     CHG_FEI_uncorrelated->Write();
     MIX_FEI_uncorrelated->Write();
 
     // Kaon PID uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_KID; i++) {
         Signal_KID_correlated[i]->Write();
+        Signal_MXs1_KID_correlated[i]->Write();
+        Signal_MXs2_KID_correlated[i]->Write();
+        Signal_MXs3_KID_correlated[i]->Write();
         CHG_KID_correlated[i]->Write();
         MIX_KID_correlated[i]->Write();
         UUBAR_KID_correlated[i]->Write();
@@ -6342,7 +7666,9 @@ int main()
     }
 
     // Kaon PID uncertainty (uncorrelated)
-    Signal_KID_uncorrelated->Write();
+    Signal_MXs1_KID_uncorrelated->Write();
+    Signal_MXs2_KID_uncorrelated->Write();
+    Signal_MXs3_KID_uncorrelated->Write();
     CHG_KID_uncorrelated->Write();
     MIX_KID_uncorrelated->Write();
     UUBAR_KID_uncorrelated->Write();
@@ -6353,6 +7679,9 @@ int main()
     // Pion PID uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_PID; i++) {
         Signal_PID_correlated[i]->Write();
+        Signal_MXs1_PID_correlated[i]->Write();
+        Signal_MXs2_PID_correlated[i]->Write();
+        Signal_MXs3_PID_correlated[i]->Write();
         CHG_PID_correlated[i]->Write();
         MIX_PID_correlated[i]->Write();
         UUBAR_PID_correlated[i]->Write();
@@ -6362,7 +7691,9 @@ int main()
     }
 
     // Pion PID uncertainty (uncorrelated)
-    Signal_PID_uncorrelated->Write();
+    Signal_MXs1_PID_uncorrelated->Write();
+    Signal_MXs2_PID_uncorrelated->Write();
+    Signal_MXs3_PID_uncorrelated->Write();
     CHG_PID_uncorrelated->Write();
     MIX_PID_uncorrelated->Write();
     UUBAR_PID_uncorrelated->Write();
@@ -6373,18 +7704,26 @@ int main()
     // BB BR uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_BR; i++) {
         Signal_BR_correlated[i]->Write();
+        Signal_MXs1_BR_correlated[i]->Write();
+        Signal_MXs2_BR_correlated[i]->Write();
+        Signal_MXs3_BR_correlated[i]->Write();
         CHG_BR_correlated[i]->Write();
         MIX_BR_correlated[i]->Write();
     }
 
     // BB BR uncertainty (uncorrelated)
-    Signal_BR_uncorrelated->Write();
+    Signal_MXs1_BR_uncorrelated->Write();
+    Signal_MXs2_BR_uncorrelated->Write();
+    Signal_MXs3_BR_uncorrelated->Write();
     CHG_BR_uncorrelated->Write();
     MIX_BR_uncorrelated->Write();
 
     // pi0 uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_pi0; i++) {
         Signal_pi0_correlated[i]->Write();
+        Signal_MXs1_pi0_correlated[i]->Write();
+        Signal_MXs2_pi0_correlated[i]->Write();
+        Signal_MXs3_pi0_correlated[i]->Write();
         CHG_pi0_correlated[i]->Write();
         MIX_pi0_correlated[i]->Write();
         UUBAR_pi0_correlated[i]->Write();
@@ -6394,7 +7733,9 @@ int main()
     }
 
     // pi0 uncertainty (uncorrelated)
-    Signal_pi0_uncorrelated->Write();
+    Signal_MXs1_pi0_uncorrelated->Write();
+    Signal_MXs2_pi0_uncorrelated->Write();
+    Signal_MXs3_pi0_uncorrelated->Write();
     CHG_pi0_uncorrelated->Write();
     MIX_pi0_uncorrelated->Write();
     UUBAR_pi0_uncorrelated->Write();
@@ -6409,6 +7750,18 @@ int main()
     Signal_Kff2_m->Write();
     Signal_Kff3_p->Write();
     Signal_Kff3_m->Write();
+    Signal_MXs1_Kff1_p->Write();
+    Signal_MXs1_Kff1_m->Write();
+    Signal_MXs1_Kff2_p->Write();
+    Signal_MXs1_Kff2_m->Write();
+    Signal_MXs1_Kff3_p->Write();
+    Signal_MXs1_Kff3_m->Write();
+    Signal_MXs3_Kff1_p->Write();
+    Signal_MXs3_Kff1_m->Write();
+    Signal_MXs3_Kff2_p->Write();
+    Signal_MXs3_Kff2_m->Write();
+    Signal_MXs3_Kff3_p->Write();
+    Signal_MXs3_Kff3_m->Write();
 
     // Kstar nu nubar form factor
     Signal_Kstarff1_p->Write();
@@ -6429,46 +7782,99 @@ int main()
     Signal_Kstarff8_m->Write();
     Signal_Kstarff9_p->Write();
     Signal_Kstarff9_m->Write();
+    Signal_MXs2_Kstarff1_p->Write();
+    Signal_MXs2_Kstarff1_m->Write();
+    Signal_MXs2_Kstarff2_p->Write();
+    Signal_MXs2_Kstarff2_m->Write();
+    Signal_MXs2_Kstarff3_p->Write();
+    Signal_MXs2_Kstarff3_m->Write();
+    Signal_MXs2_Kstarff4_p->Write();
+    Signal_MXs2_Kstarff4_m->Write();
+    Signal_MXs2_Kstarff5_p->Write();
+    Signal_MXs2_Kstarff5_m->Write();
+    Signal_MXs2_Kstarff6_p->Write();
+    Signal_MXs2_Kstarff6_m->Write();
+    Signal_MXs2_Kstarff7_p->Write();
+    Signal_MXs2_Kstarff7_m->Write();
+    Signal_MXs2_Kstarff8_p->Write();
+    Signal_MXs2_Kstarff8_m->Write();
+    Signal_MXs2_Kstarff9_p->Write();
+    Signal_MXs2_Kstarff9_m->Write();
+    Signal_MXs3_Kstarff1_p->Write();
+    Signal_MXs3_Kstarff1_m->Write();
+    Signal_MXs3_Kstarff2_p->Write();
+    Signal_MXs3_Kstarff2_m->Write();
+    Signal_MXs3_Kstarff3_p->Write();
+    Signal_MXs3_Kstarff3_m->Write();
+    Signal_MXs3_Kstarff4_p->Write();
+    Signal_MXs3_Kstarff4_m->Write();
+    Signal_MXs3_Kstarff5_p->Write();
+    Signal_MXs3_Kstarff5_m->Write();
+    Signal_MXs3_Kstarff6_p->Write();
+    Signal_MXs3_Kstarff6_m->Write();
+    Signal_MXs3_Kstarff7_p->Write();
+    Signal_MXs3_Kstarff7_m->Write();
+    Signal_MXs3_Kstarff8_p->Write();
+    Signal_MXs3_Kstarff8_m->Write();
+    Signal_MXs3_Kstarff9_p->Write();
+    Signal_MXs3_Kstarff9_m->Write();
 
-    // fraction uncertainty (correlated)
-    for (int i = 0; i < 2 * NPDFs_fraction; i++) {
-        Signal_fraction_correlated[i]->Write();
-        CHG_fraction_correlated[i]->Write();
-        MIX_fraction_correlated[i]->Write();
-    }
-
-    // fraction uncertainty (uncorrelated)
-    Signal_fraction_uncorrelated->Write();
-    CHG_fraction_uncorrelated->Write();
-    MIX_fraction_uncorrelated->Write();
+    // faction
+    Signal_Kfrac_p->Write();
+    Signal_Kfrac_m->Write();
+    Signal_MXs1_Kfrac_p->Write();
+    Signal_MXs1_Kfrac_m->Write();
+    Signal_MXs3_Kfrac_p->Write();
+    Signal_MXs3_Kfrac_m->Write();
+    Signal_Kstarfrac_p->Write();
+    Signal_Kstarfrac_m->Write();
+    Signal_MXs2_Kstarfrac_p->Write();
+    Signal_MXs2_Kstarfrac_m->Write();
+    Signal_MXs3_Kstarfrac_p->Write();
+    Signal_MXs3_Kstarfrac_m->Write();
 
     // fragmentation uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_Fragmentation; i++) {
         Signal_Fragmentation_correlated[i]->Write();
+        Signal_MXs1_Fragmentation_correlated[i]->Write();
+        Signal_MXs2_Fragmentation_correlated[i]->Write();
+        Signal_MXs3_Fragmentation_correlated[i]->Write();
         CHG_Fragmentation_correlated[i]->Write();
         MIX_Fragmentation_correlated[i]->Write();
     }
 
     // fragmentation uncertainty (uncorrelated)
-    Signal_Fragmentation_uncorrelated->Write();
+    Signal_MXs1_Fragmentation_uncorrelated->Write();
+    Signal_MXs2_Fragmentation_uncorrelated->Write();
+    Signal_MXs3_Fragmentation_uncorrelated->Write();
     CHG_Fragmentation_uncorrelated->Write();
     MIX_Fragmentation_uncorrelated->Write();
 
     // pf uncertainty
     Signal_pf_p->Write();
+    Signal_MXs3_pf_p->Write();
     Signal_pf_m->Write();
+    Signal_MXs3_pf_m->Write();
 
     // mb uncertainty
     Signal_mb_p->Write();
+    Signal_MXs3_mb_p->Write();
     Signal_mb_m->Write();
+    Signal_MXs3_mb_m->Write();
 
     // transition uncertainty
     Signal_transition_p->Write();
+    Signal_MXs3_transition_p->Write();
     Signal_transition_m->Write();
+    Signal_MXs3_transition_m->Write();
 
     // fixed mKstar uncertainty
     Signal_mKstar_p->Write();
+    Signal_MXs2_mKstar_p->Write();
+    Signal_MXs3_mKstar_p->Write();
     Signal_mKstar_m->Write();
+    Signal_MXs2_mKstar_m->Write();
+    Signal_MXs3_mKstar_m->Write();
 
     // BDTc uncertainty
     //CHG_BDTc_p->Write();
@@ -6486,15 +7892,24 @@ int main()
 
     // B2Xnn BR uncertainty
     Signal_Xnn_p->Write();
+    Signal_MXs1_Xnn_p->Write();
+    Signal_MXs2_Xnn_p->Write();
+    Signal_MXs3_Xnn_p->Write();
     CHG_Xnn_p->Write();
     MIX_Xnn_p->Write();
     Signal_Xnn_m->Write();
+    Signal_MXs1_Xnn_m->Write();
+    Signal_MXs2_Xnn_m->Write();
+    Signal_MXs3_Xnn_m->Write();
     CHG_Xnn_m->Write();
     MIX_Xnn_m->Write();
 
     // multiplicity uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_multiplicity; i++) {
         Signal_multiplicity_correlated[i]->Write();
+        Signal_MXs1_multiplicity_correlated[i]->Write();
+        Signal_MXs2_multiplicity_correlated[i]->Write();
+        Signal_MXs3_multiplicity_correlated[i]->Write();
         CHG_multiplicity_correlated[i]->Write();
         MIX_multiplicity_correlated[i]->Write();
         UUBAR_multiplicity_correlated[i]->Write();
@@ -6504,7 +7919,9 @@ int main()
     }
 
     // multiplicity uncertainty (uncorrelated)
-    Signal_multiplicity_uncorrelated->Write();
+    Signal_MXs1_multiplicity_uncorrelated->Write();
+    Signal_MXs2_multiplicity_uncorrelated->Write();
+    Signal_MXs3_multiplicity_uncorrelated->Write();
     CHG_multiplicity_uncorrelated->Write();
     MIX_multiplicity_uncorrelated->Write();
     UUBAR_multiplicity_uncorrelated->Write();
@@ -6514,22 +7931,36 @@ int main()
 
     // B -> [D -> X KL0] anything uncertainties
     Signal_BtoDtoXKL_p->Write();
+    Signal_MXs1_BtoDtoXKL_p->Write();
+    Signal_MXs2_BtoDtoXKL_p->Write();
+    Signal_MXs3_BtoDtoXKL_p->Write();
     CHG_BtoDtoXKL_p->Write();
     MIX_BtoDtoXKL_p->Write();
     Signal_BtoDtoXKL_m->Write();
+    Signal_MXs1_BtoDtoXKL_m->Write();
+    Signal_MXs2_BtoDtoXKL_m->Write();
+    Signal_MXs3_BtoDtoXKL_m->Write();
     CHG_BtoDtoXKL_m->Write();
     MIX_BtoDtoXKL_m->Write();
 
     // BR(B -> X KL KL)
     Signal_BRBtoXKLKL_p->Write();
+    Signal_MXs1_BRBtoXKLKL_p->Write();
+    Signal_MXs2_BRBtoXKLKL_p->Write();
+    Signal_MXs3_BRBtoXKLKL_p->Write();
     CHG_BRBtoXKLKL_p->Write();
     MIX_BRBtoXKLKL_p->Write();
     Signal_BRBtoXKLKL_m->Write();
+    Signal_MXs1_BRBtoXKLKL_m->Write();
+    Signal_MXs2_BRBtoXKLKL_m->Write();
+    Signal_MXs3_BRBtoXKLKL_m->Write();
     CHG_BRBtoXKLKL_m->Write();
     MIX_BRBtoXKLKL_m->Write();
 
     // all uncorrelated uncertainties
-    Signal_all_uncorrelated->Write();
+    Signal_MXs1_all_uncorrelated->Write();
+    Signal_MXs2_all_uncorrelated->Write();
+    Signal_MXs3_all_uncorrelated->Write();
     CHG_all_uncorrelated->Write(); 
     MIX_all_uncorrelated->Write(); 
     UUBAR_all_uncorrelated->Write(); 
@@ -6538,7 +7969,9 @@ int main()
     CHARM_all_uncorrelated->Write();
 
     // MC statistical uncertainties
-    Signal_MC_stat->Write();
+    Signal_MXs1_MC_stat->Write();
+    Signal_MXs2_MC_stat->Write();
+    Signal_MXs3_MC_stat->Write();
     CHG_MC_stat->Write();
     MIX_MC_stat->Write();
     UUBAR_MC_stat->Write();
@@ -6548,6 +7981,9 @@ int main()
 
     // all of uncorrelated uncertainties + MC statistical uncertainties
     Signal_all_uncorrelated_MC_stat->Write();
+    Signal_MXs1_all_uncorrelated_MC_stat->Write();
+    Signal_MXs2_all_uncorrelated_MC_stat->Write();
+    Signal_MXs3_all_uncorrelated_MC_stat->Write();
     CHG_all_uncorrelated_MC_stat->Write();
     MIX_all_uncorrelated_MC_stat->Write();
     UUBAR_all_uncorrelated_MC_stat->Write();

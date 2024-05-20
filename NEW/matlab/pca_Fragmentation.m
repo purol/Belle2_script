@@ -1,8 +1,8 @@
 clear all
 format long
 
-N_total_bins = 22 * 3;
-N_selected_vectors = 22;
+N_total_bins = 20 * 5;
+N_selected_vectors = 20;
 
 % Fragmentation
 FragmentationfileID = fopen('Fragmentation_toys.txt','r');

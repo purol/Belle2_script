@@ -59,13 +59,13 @@ Corrector_Fragmentation corrector_Fragmentation;
 int ReadNFEIEigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+	double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
 
 	FILE* fp;
 	fp = fopen(dirname, "r");
 	while (true) {
 		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 3; i++) {
+		for (int i = 0; i < RarityBins * 5; i++) {
 			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
 		}
 		Nentry++;
@@ -78,13 +78,13 @@ int ReadNFEIEigenVector(const char* dirname) {
 int ReadNPIDEigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 7] = { 0.0 }; // eigen vector
+	double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
 
 	FILE* fp;
 	fp = fopen(dirname, "r");
 	while (true) {
 		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 7; i++) {
+		for (int i = 0; i < RarityBins * 9; i++) {
 			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
 		}
 		Nentry++;
@@ -97,13 +97,13 @@ int ReadNPIDEigenVector(const char* dirname) {
 int ReadNBREigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+	double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
 
 	FILE* fp;
 	fp = fopen(dirname, "r");
 	while (true) {
 		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 3; i++) {
+		for (int i = 0; i < RarityBins * 5; i++) {
 			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
 		}
 		Nentry++;
@@ -116,13 +116,13 @@ int ReadNBREigenVector(const char* dirname) {
 int ReadNpi0EigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 7] = { 0.0 }; // eigen vector
+	double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
 
 	FILE* fp;
 	fp = fopen(dirname, "r");
 	while (true) {
 		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 7; i++) {
+		for (int i = 0; i < RarityBins * 9; i++) {
 			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
 		}
 		Nentry++;
@@ -135,32 +135,13 @@ int ReadNpi0EigenVector(const char* dirname) {
 int ReadMultiplicityInfo(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 7] = { 0.0 }; // eigen vector
+	double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
 
 	FILE* fp;
 	fp = fopen(dirname, "r");
 	while (true) {
 		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 7; i++) {
-			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
-		}
-		Nentry++;
-	}
-	fclose(fp);
-
-	return Nentry;
-}
-
-int ReadNfractionEigenVector(const char* dirname) {
-	int Nentry = 0; // number of eigen values/vectors
-	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
-
-	FILE* fp;
-	fp = fopen(dirname, "r");
-	while (true) {
-		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 3; i++) {
+		for (int i = 0; i < RarityBins * 9; i++) {
 			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
 		}
 		Nentry++;
@@ -173,13 +154,13 @@ int ReadNfractionEigenVector(const char* dirname) {
 int ReadNFragmentationEigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+	double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
 
 	FILE* fp;
 	fp = fopen(dirname, "r");
 	while (true) {
 		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 3; i++) {
+		for (int i = 0; i < RarityBins * 5; i++) {
 			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
 		}
 		Nentry++;
@@ -197,7 +178,6 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	int NEntryBR = ReadNBREigenVector("./BR_selected.txt");
 	int NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
 	int NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
-	int NEntryfraction = ReadNfractionEigenVector("./fraction_selected.txt");
 	int NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
 
 	std::string bin_name = "";
@@ -210,45 +190,102 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	}
 
 	// read signal template
-	/* ================================ SIGNAL ================================ */
-	RooStats::HistFactory::Sample sig_temp(("Signal_nominal_" + bin_name).c_str(), "Signal_nominal", fname);
-	sig_temp.AddHistoSys("track_eff_uncer", "Signal_track_m", fname, "", "Signal_track_p", fname, "");
-	sig_temp.AddHistoSys("KS0_reco_uncer", "Signal_KS0_m", fname, "", "Signal_KS0_p", fname, "");
-	sig_temp.AddHistoSys("BtoDtoXKL_uncer", "Signal_BtoDtoXKL_m", fname, "", "Signal_BtoDtoXKL_p", fname, "");
-	sig_temp.AddHistoSys("BRBtoXKLKL_uncer", "Signal_BRBtoXKLKL_m", fname, "", "Signal_BRBtoXKLKL_p", fname, "");
-	sig_temp.AddHistoSys("Xnn_BR_uncer", "Signal_Xnn_m", fname, "", "Signal_Xnn_p", fname, "");
-	for (int i = 0; i < NEntryMultiplicity; i++) sig_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryFEI; i++) sig_temp.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryKID; i++) sig_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("Signal_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryPID; i++) sig_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("Signal_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryBR; i++) sig_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntrypi0; i++) sig_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("Signal_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	sig_temp.AddHistoSys("Kff1_uncer", "Signal_Kff1_m", fname, "", "Signal_Kff1_p", fname, "");
-	sig_temp.AddHistoSys("Kff2_uncer", "Signal_Kff2_m", fname, "", "Signal_Kff2_p", fname, "");
-	sig_temp.AddHistoSys("Kff3_uncer", "Signal_Kff3_m", fname, "", "Signal_Kff3_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff1_uncer", "Signal_Kstarff1_m", fname, "", "Signal_Kstarff1_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff2_uncer", "Signal_Kstarff2_m", fname, "", "Signal_Kstarff2_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff3_uncer", "Signal_Kstarff3_m", fname, "", "Signal_Kstarff3_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff4_uncer", "Signal_Kstarff4_m", fname, "", "Signal_Kstarff4_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff5_uncer", "Signal_Kstarff5_m", fname, "", "Signal_Kstarff5_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff6_uncer", "Signal_Kstarff6_m", fname, "", "Signal_Kstarff6_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff7_uncer", "Signal_Kstarff7_m", fname, "", "Signal_Kstarff7_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff8_uncer", "Signal_Kstarff8_m", fname, "", "Signal_Kstarff8_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname, "", "Signal_Kstarff9_p", fname, "");
-	sig_temp.AddHistoSys("Kstarff9_uncer", "Signal_Kstarff9_m", fname, "", "Signal_Kstarff9_p", fname, "");
-	for (int i = 0; i < NEntryfraction; i++) sig_temp.AddHistoSys(("fraction" + std::to_string(i) + "_uncer").c_str(), ("Signal_fraction_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_fraction_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryFragmentation; i++) sig_temp.AddHistoSys(("Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), ("Signal_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	sig_temp.AddHistoSys("pf_uncer", "Signal_pf_m", fname, "", "Signal_pf_p", fname, "");
-	sig_temp.AddHistoSys("mb_uncer", "Signal_mb_m", fname, "", "Signal_mb_p", fname, "");
-	sig_temp.AddHistoSys("transition_uncer", "Signal_transition_m", fname, "", "Signal_transition_p", fname, "");
-	sig_temp.AddHistoSys("mKstar_uncer", "Signal_mKstar_m", fname, "", "Signal_mKstar_p", fname, "");
-	sig_temp.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL, true);
-	sig_temp.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
-	sig_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
-	sig_temp.ActivateStatError("Signal_all_uncorrelated_MC_stat", fname, "");
-	sig_temp.SetNormalizeByTheory(kFALSE);
-	sig_temp.AddNormFactor(("mu_" + bin_name).c_str(), expmu, -100.0, 100.0);
-	channel->AddSample(sig_temp);
+	/* ================================ SIGNAL with true MXs1 ================================ */
+	RooStats::HistFactory::Sample sig_temp_MXs1(("Signal_MXs1_nominal_" + bin_name).c_str(), "Signal_MXs1_nominal", fname);
+	sig_temp_MXs1.AddHistoSys("track_eff_uncer", "Signal_MXs1_track_m", fname, "", "Signal_MXs1_track_p", fname, "");
+	sig_temp_MXs1.AddHistoSys("KS0_reco_uncer", "Signal_MXs1_KS0_m", fname, "", "Signal_MXs1_KS0_p", fname, "");
+	sig_temp_MXs1.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs1_BtoDtoXKL_m", fname, "", "Signal_MXs1_BtoDtoXKL_p", fname, "");
+	sig_temp_MXs1.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs1_BRBtoXKLKL_m", fname, "", "Signal_MXs1_BRBtoXKLKL_p", fname, "");
+	sig_temp_MXs1.AddHistoSys("Xnn_BR_uncer", "Signal_MXs1_Xnn_m", fname, "", "Signal_MXs1_Xnn_p", fname, "");
+	for (int i = 0; i < NEntryMultiplicity; i++) sig_temp_MXs1.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryFEI; i++) sig_temp_MXs1.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryKID; i++) sig_temp_MXs1.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryBR; i++) sig_temp_MXs1.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	sig_temp_MXs1.AddHistoSys("Kff1_uncer", "Signal_MXs1_Kff1_m", fname, "", "Signal_MXs1_Kff1_p", fname, "");
+	sig_temp_MXs1.AddHistoSys("Kff2_uncer", "Signal_MXs1_Kff2_m", fname, "", "Signal_MXs1_Kff2_p", fname, "");
+	sig_temp_MXs1.AddHistoSys("Kff3_uncer", "Signal_MXs1_Kff3_m", fname, "", "Signal_MXs1_Kff3_p", fname, "");
+	sig_temp_MXs1.AddHistoSys("Kfrac_uncer", "Signal_MXs1_Kfrac_m", fname, "", "Signal_MXs1_Kfrac_p", fname, "");
+	if (MXs_bin == 1) sig_temp_MXs1.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL, true);
+	if (MXs_bin == 1) sig_temp_MXs1.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
+	sig_temp_MXs1.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
+	sig_temp_MXs1.ActivateStatError("Signal_MXs1_all_uncorrelated_MC_stat", fname, "");
+	sig_temp_MXs1.SetNormalizeByTheory(kFALSE);
+	sig_temp_MXs1.AddNormFactor("mu_MXs1", expmu, -100.0, 100.0);
+	channel->AddSample(sig_temp_MXs1);
+
+	/* ================================ SIGNAL with true MXs2 ================================ */
+	RooStats::HistFactory::Sample sig_temp_MXs2(("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_nominal", fname);
+	sig_temp_MXs2.AddHistoSys("track_eff_uncer", "Signal_MXs2_track_m", fname, "", "Signal_MXs2_track_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("KS0_reco_uncer", "Signal_MXs2_KS0_m", fname, "", "Signal_MXs2_KS0_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs2_BtoDtoXKL_m", fname, "", "Signal_MXs2_BtoDtoXKL_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs2_BRBtoXKLKL_m", fname, "", "Signal_MXs2_BRBtoXKLKL_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("Xnn_BR_uncer", "Signal_MXs2_Xnn_m", fname, "", "Signal_MXs2_Xnn_p", fname, "");
+	for (int i = 0; i < NEntryMultiplicity; i++) sig_temp_MXs2.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryFEI; i++) sig_temp_MXs2.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryKID; i++) sig_temp_MXs2.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryPID; i++) sig_temp_MXs2.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryBR; i++) sig_temp_MXs2.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntrypi0; i++) sig_temp_MXs2.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff1_uncer", "Signal_MXs2_Kstarff1_m", fname, "", "Signal_MXs2_Kstarff1_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff2_uncer", "Signal_MXs2_Kstarff2_m", fname, "", "Signal_MXs2_Kstarff2_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff3_uncer", "Signal_MXs2_Kstarff3_m", fname, "", "Signal_MXs2_Kstarff3_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff4_uncer", "Signal_MXs2_Kstarff4_m", fname, "", "Signal_MXs2_Kstarff4_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff5_uncer", "Signal_MXs2_Kstarff5_m", fname, "", "Signal_MXs2_Kstarff5_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff6_uncer", "Signal_MXs2_Kstarff6_m", fname, "", "Signal_MXs2_Kstarff6_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff7_uncer", "Signal_MXs2_Kstarff7_m", fname, "", "Signal_MXs2_Kstarff7_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff8_uncer", "Signal_MXs2_Kstarff8_m", fname, "", "Signal_MXs2_Kstarff8_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff9_uncer", "Signal_MXs2_Kstarff9_m", fname, "", "Signal_MXs2_Kstarff9_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("Kstarff9_uncer", "Signal_MXs2_Kstarff9_m", fname, "", "Signal_MXs2_Kstarff9_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("Kstarfrac_uncer", "Signal_MXs2_Kstarfrac_m", fname, "", "Signal_MXs2_Kstarfrac_p", fname, "");
+	// sig_temp_MXs2.AddHistoSys("mKstar_uncer", "Signal_MXs2_mKstar_m", fname, "", "Signal_MXs2_mKstar_p", fname, "");
+	if (MXs_bin == 2) sig_temp_MXs2.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL, true);
+	if (MXs_bin == 2) sig_temp_MXs2.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
+	sig_temp_MXs2.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
+	sig_temp_MXs2.ActivateStatError("Signal_MXs2_all_uncorrelated_MC_stat", fname, "");
+	sig_temp_MXs2.SetNormalizeByTheory(kFALSE);
+	sig_temp_MXs2.AddNormFactor("mu_MXs2", expmu, -100.0, 100.0);
+	channel->AddSample(sig_temp_MXs2);
+
+	/* ================================ SIGNAL with true MXs3 ================================ */
+	RooStats::HistFactory::Sample sig_temp_MXs3(("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_nominal", fname);
+	sig_temp_MXs3.AddHistoSys("track_eff_uncer", "Signal_MXs3_track_m", fname, "", "Signal_MXs3_track_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("KS0_reco_uncer", "Signal_MXs3_KS0_m", fname, "", "Signal_MXs3_KS0_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs3_BtoDtoXKL_m", fname, "", "Signal_MXs3_BtoDtoXKL_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs3_BRBtoXKLKL_m", fname, "", "Signal_MXs3_BRBtoXKLKL_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Xnn_BR_uncer", "Signal_MXs3_Xnn_m", fname, "", "Signal_MXs3_Xnn_p", fname, "");
+	for (int i = 0; i < NEntryMultiplicity; i++) sig_temp_MXs3.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryFEI; i++) sig_temp_MXs3.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryKID; i++) sig_temp_MXs3.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryPID; i++) sig_temp_MXs3.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryBR; i++) sig_temp_MXs3.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntrypi0; i++) sig_temp_MXs3.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	sig_temp_MXs3.AddHistoSys("Kff1_uncer", "Signal_MXs3_Kff1_m", fname, "", "Signal_MXs3_Kff1_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kff2_uncer", "Signal_MXs3_Kff2_m", fname, "", "Signal_MXs3_Kff2_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kff3_uncer", "Signal_MXs3_Kff3_m", fname, "", "Signal_MXs3_Kff3_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff1_uncer", "Signal_MXs3_Kstarff1_m", fname, "", "Signal_MXs3_Kstarff1_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff2_uncer", "Signal_MXs3_Kstarff2_m", fname, "", "Signal_MXs3_Kstarff2_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff3_uncer", "Signal_MXs3_Kstarff3_m", fname, "", "Signal_MXs3_Kstarff3_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff4_uncer", "Signal_MXs3_Kstarff4_m", fname, "", "Signal_MXs3_Kstarff4_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff5_uncer", "Signal_MXs3_Kstarff5_m", fname, "", "Signal_MXs3_Kstarff5_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff6_uncer", "Signal_MXs3_Kstarff6_m", fname, "", "Signal_MXs3_Kstarff6_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff7_uncer", "Signal_MXs3_Kstarff7_m", fname, "", "Signal_MXs3_Kstarff7_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff8_uncer", "Signal_MXs3_Kstarff8_m", fname, "", "Signal_MXs3_Kstarff8_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff9_uncer", "Signal_MXs3_Kstarff9_m", fname, "", "Signal_MXs3_Kstarff9_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kstarff9_uncer", "Signal_MXs3_Kstarff9_m", fname, "", "Signal_MXs3_Kstarff9_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kfrac_uncer", "Signal_MXs3_Kfrac_m", fname, "", "Signal_MXs3_Kfrac_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("Kstarfrac_uncer", "Signal_MXs3_Kstarfrac_m", fname, "", "Signal_MXs3_Kstarfrac_p", fname, "");
+	for (int i = 0; i < NEntryFragmentation; i++) sig_temp_MXs3.AddHistoSys(("Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	sig_temp_MXs3.AddHistoSys("pf_uncer", "Signal_MXs3_pf_m", fname, "", "Signal_MXs3_pf_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("mb_uncer", "Signal_MXs3_mb_m", fname, "", "Signal_MXs3_mb_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("transition_uncer", "Signal_MXs3_transition_m", fname, "", "Signal_MXs3_transition_p", fname, "");
+	// sig_temp_MXs3.AddHistoSys("mKstar_uncer", "Signal_MXs3_mKstar_m", fname, "", "Signal_MXs3_mKstar_p", fname, "");
+	if (MXs_bin == 3) sig_temp_MXs3.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL, true);
+	if (MXs_bin == 3) sig_temp_MXs3.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
+	sig_temp_MXs3.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
+	sig_temp_MXs3.ActivateStatError("Signal_MXs3_all_uncorrelated_MC_stat", fname, "");
+	sig_temp_MXs3.SetNormalizeByTheory(kFALSE);
+	sig_temp_MXs3.AddNormFactor("mu_MXs3", expmu, -100.0, 100.0);
+	channel->AddSample(sig_temp_MXs3);
 
 	// read background template
 	/* ================================ CHG ================================ */
@@ -362,7 +399,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ CHARM ================================ */
 }
 
-int WorkSpace_indep_norm() {
+int WorkSpace() {
 
 	const double expmu = 1.0;
 	const char* fname = "PDFandDATA_nominal.root";
@@ -395,9 +432,9 @@ int WorkSpace_indep_norm() {
 	channel_MXs3.SetData("total_DATA", fname_MXs3);
 
 	// get MC
-	AddSample(&channel_MXs1, fname_MXs1, 1, expmu);
-	AddSample(&channel_MXs2, fname_MXs2, 2, expmu);
-	AddSample(&channel_MXs3, fname_MXs3, 3, expmu);
+	AddSample(&channel_MXs1, fname_MXs1, 1, expmu, 1.1652, 0.1105, 1.0062, 0.0381);
+	AddSample(&channel_MXs2, fname_MXs2, 2, expmu, 0.8544, 0.2287, 1.1006, 0.0742);
+	AddSample(&channel_MXs3, fname_MXs3, 3, expmu, 0.7892, 0.1311, 0.9391, 0.1513);
 
 	// add channel to measurement
 	meas.AddChannel(channel_MXs1);

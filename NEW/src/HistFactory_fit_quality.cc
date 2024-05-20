@@ -300,7 +300,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
             *x_val_MXs1 = binCenter; // set x value
 
             for (unsigned int j = 0; j < Sample_names.size(); j++) {
-                if (std::strstr(Sample_names.at(j).c_str(), "MXs1") == nullptr) continue; // skip non-MXs1
+                if (std::strstr(Sample_names.at(j).c_str(), "channel_MXs1") == nullptr) continue; // skip non-MXs1
 
                 RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
                 Nevt = Nevt + temp_func->getValV();
@@ -326,7 +326,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
             *x_val_MXs2 = binCenter; // set x value
 
             for (unsigned int j = 0; j < Sample_names.size(); j++) {
-                if (std::strstr(Sample_names.at(j).c_str(), "MXs2") == nullptr) continue; // skip non-MXs2
+                if (std::strstr(Sample_names.at(j).c_str(), "channel_MXs2") == nullptr) continue; // skip non-MXs2
 
                 RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
                 Nevt = Nevt + temp_func->getValV();
@@ -352,7 +352,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
             *x_val_MXs3 = binCenter; // set x value
 
             for (unsigned int j = 0; j < Sample_names.size(); j++) {
-                if (std::strstr(Sample_names.at(j).c_str(), "MXs3") == nullptr) continue; // skip non-MXs3
+                if (std::strstr(Sample_names.at(j).c_str(), "channel_MXs3") == nullptr) continue; // skip non-MXs3
 
                 RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
                 Nevt = Nevt + temp_func->getValV();
@@ -457,15 +457,6 @@ void FitToData(RooWorkspace* w, double eps) {
     RooAbsReal* nll;
     RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps);
 
-    // get expected num of evts for PDFs
-    double Signal_Nevts = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
-    double CHG_Nevts = GetNumEvts(w, "CHG_MX1") + GetNumEvts(w, "CHG_MX2") + GetNumEvts(w, "CHG_MX3");
-    double MIX_Nevts = GetNumEvts(w, "MIX_MX1") + GetNumEvts(w, "MIX_MX2") + GetNumEvts(w, "MIX_MX3");
-    double UUBAR_Nevts = GetNumEvts(w, "UUBAR_MX1") + GetNumEvts(w, "UUBAR_MX2") + GetNumEvts(w, "UUBAR_MX3");
-    double DDBAR_Nevts = GetNumEvts(w, "DDBAR_MX1") + GetNumEvts(w, "DDBAR_MX2") + GetNumEvts(w, "DDBAR_MX3");
-    double SSBAR_Nevts = GetNumEvts(w, "SSBAR_MX1") + GetNumEvts(w, "SSBAR_MX2") + GetNumEvts(w, "SSBAR_MX3");
-    double CHARM_Nevts = GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
-
     // draw
     // GetPlotTemplate(w, data);
 
@@ -488,7 +479,6 @@ void FitToData(RooWorkspace* w, double eps) {
 
     w->loadSnapshot("ParamValues");
 
-    delete canvas;
     delete fitres;
 }
 
@@ -562,19 +552,9 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
                 // get Category and data
                 RooCategory* idx = (RooCategory*)obs->find("channelCat");
 
-                // get expected num of evts for PDFs
-                double Signal_Nevts = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
-                double CHG_Nevts = GetNumEvts(w, "CHG_MX1") + GetNumEvts(w, "CHG_MX2") + GetNumEvts(w, "CHG_MX3");
-                double MIX_Nevts = GetNumEvts(w, "MIX_MX1") + GetNumEvts(w, "MIX_MX2") + GetNumEvts(w, "MIX_MX3");
-                double UUBAR_Nevts = GetNumEvts(w, "UUBAR_MX1") + GetNumEvts(w, "UUBAR_MX2") + GetNumEvts(w, "UUBAR_MX3");
-                double DDBAR_Nevts = GetNumEvts(w, "DDBAR_MX1") + GetNumEvts(w, "DDBAR_MX2") + GetNumEvts(w, "DDBAR_MX3");
-                double SSBAR_Nevts = GetNumEvts(w, "SSBAR_MX1") + GetNumEvts(w, "SSBAR_MX2") + GetNumEvts(w, "SSBAR_MX3");
-                double CHARM_Nevts = GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
-
                 // draw
                 // GetPlotTemplate(w, data);
 
-                delete canvas;
 
             }
         }
