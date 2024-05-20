@@ -117,7 +117,7 @@ void ReadLinearityRootFile_pull(){
     gStyle->SetStatX(0.6);  gStyle->SetStatY(0.9);
     TCanvas* c = new TCanvas("Linearity test canvas", "", 800, 800);
     TGraphErrors* gr = new TGraphErrors(LT_number, Inputmu, outputmu, Inputmuerror, outputmuerror);
-    gr->SetMarkerStyle(21); gr->SetTitle(";input #mu;pull of #mu");
+    gr->SetMarkerStyle(21); gr->SetTitle(";input #mu;mean of pull");
     gr->Fit("pol1"); gr->Draw("AP");
     c->SaveAs("Linearity_MXs3_test_pull.png");
 

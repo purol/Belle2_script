@@ -209,14 +209,7 @@ int main() {
     //RooRealVar* alpha = w->var("nom_gamma_stat_channel_bin_0");
     //printf("%lf", alpha->getValV());
 
-    // Lets tell roofit the right names for our histogram variables //
-    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-    RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
-    x->SetTitle("FBDT output");
-    x->setUnit("");
-
     // get Category and data
-    RooCategory* idx = (RooCategory*)obs->find("channelCat");
     //RooAbsData* data = (RooAbsData*)w->data("obsData");
     RooDataSet* data = (RooDataSet*)w->data("asimovData");
 
