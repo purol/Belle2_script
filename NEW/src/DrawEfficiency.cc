@@ -129,7 +129,7 @@ void FillSIGNAL(const char* dirname, const char* included_string, const char* ty
         TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
         TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
-        tree_Xs = (TTree*)input_file->Get("Xs");
+        TTree* tree_Xs = (TTree*)input_file->Get("Xs");
 
         tree_upsilon->SetBranchAddress("__experiment__", &__experiment__);
         tree_upsilon->SetBranchAddress("__run__", &__run__);
@@ -229,7 +229,7 @@ void ReadDecayInfo(const char* dirname, const char* included_string, const char*
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
         printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
 
-        tree_Xs = (TTree*)input_file->Get("Xs");
+        TTree* tree_Xs = (TTree*)input_file->Get("Xs");
 
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
@@ -407,24 +407,26 @@ int main(int argc, char* argv[]) {
     BKG_selection_efficiency->SetMarkerColor(4);
     BKG_selection_efficiency->SetMarkerStyle(21);
 
+    TPaveText* pt;
+
     // draw SIGNAL preselection + selection efficiency
     SIGNAL_pre_and_selection_efficiency_true->Draw("AP");
-    TPaveText* pt = new TPaveText(0.135, 0.88, 0.4, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for preselection + selection"); pt->Draw();
+    pt = new TPaveText(0.135, 0.88, 0.4, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for preselection + selection"); pt->Draw();
     c_temp->SaveAs("Signal_eff_all.png");
 
     // draw SIGNAL FBDT efficiency
     SIGNAL_FBDT_efficiency->Draw("AP");
-    TPaveText* pt = new TPaveText(0.135, 0.88, 0.4, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for FBDT"); pt->Draw();
+    pt = new TPaveText(0.135, 0.88, 0.4, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for FBDT"); pt->Draw();
     c_temp->SaveAs("Signal_FBDT.png");
 
     // draw BKG FBDT efficiency
     BKG_FBDT_efficiency->Draw("AP");
-    TPaveText* pt = new TPaveText(0.135, 0.88, 0.4, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("(1 - rejection rate) for FBDT"); pt->Draw();
+    pt = new TPaveText(0.135, 0.88, 0.4, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("(1 - rejection rate) for FBDT"); pt->Draw();
     c_temp->SaveAs("Background_FBDT.png");
 
     // draw BKG 1 - (rejection)
     BKG_selection_efficiency->Draw("AP");
-    TPaveText* pt = new TPaveText(0.135, 0.88, 0.4, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("(1 - rejection rate) for selection"); pt->Draw();
+    pt = new TPaveText(0.135, 0.88, 0.4, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("(1 - rejection rate) for selection"); pt->Draw();
     c_temp->SaveAs("Background_eff_reco.png");
 
     return 0;
