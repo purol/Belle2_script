@@ -391,41 +391,45 @@ int main(int argc, char* argv[]) {
     SIGNAL_pre_and_selection_efficiency_true->SetLineWidth(2);
     SIGNAL_pre_and_selection_efficiency_true->SetMarkerColor(4);
     SIGNAL_pre_and_selection_efficiency_true->SetMarkerStyle(21);
+    SIGNAL_pre_and_selection_efficiency_true->SetStats(false);
 
     SIGNAL_FBDT_efficiency->SetMarkerSize(0.0);
     SIGNAL_FBDT_efficiency->SetLineWidth(2);
     SIGNAL_FBDT_efficiency->SetMarkerColor(4);
     SIGNAL_FBDT_efficiency->SetMarkerStyle(21);
+    SIGNAL_pre_and_selection_efficiency_true->SetStats(false);
 
     BKG_FBDT_efficiency->SetMarkerSize(0.0);
     BKG_FBDT_efficiency->SetLineWidth(2);
     BKG_FBDT_efficiency->SetMarkerColor(4);
     BKG_FBDT_efficiency->SetMarkerStyle(21);
+    SIGNAL_pre_and_selection_efficiency_true->SetStats(false);
 
     BKG_selection_efficiency->SetMarkerSize(0.0);
     BKG_selection_efficiency->SetLineWidth(2);
     BKG_selection_efficiency->SetMarkerColor(4);
     BKG_selection_efficiency->SetMarkerStyle(21);
+    SIGNAL_pre_and_selection_efficiency_true->SetStats(false);
 
     TPaveText* pt;
 
     // draw SIGNAL preselection + selection efficiency
-    SIGNAL_pre_and_selection_efficiency_true->Draw("PE2");
+    SIGNAL_pre_and_selection_efficiency_true->Draw("P");
     pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for preselection + selection"); pt->Draw();
     c_temp->SaveAs("Signal_eff_all.png");
 
     // draw SIGNAL FBDT efficiency
-    SIGNAL_FBDT_efficiency->Draw("PE2");
+    SIGNAL_FBDT_efficiency->Draw("P");
     pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for FBDT"); pt->Draw();
     c_temp->SaveAs("Signal_FBDT.png");
 
     // draw BKG FBDT efficiency
-    BKG_FBDT_efficiency->Draw("PE2");
+    BKG_FBDT_efficiency->Draw("P");
     pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("(1 - rejection rate) for FBDT"); pt->Draw();
     c_temp->SaveAs("Background_FBDT.png");
 
     // draw BKG 1 - (rejection)
-    BKG_selection_efficiency->Draw("PE2");
+    BKG_selection_efficiency->Draw("P");
     pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("(1 - rejection rate) for selection"); pt->Draw();
     c_temp->SaveAs("Background_eff_reco.png");
 
