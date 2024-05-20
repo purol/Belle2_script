@@ -404,7 +404,7 @@ int main(int argc, char* argv[]) {
 
     for (int i = 0; i < Nbin_MXs_reco; i++) {
         for (int j = 0; j < Nbin_MXs_true; j++) {
-            printf("%lf ", Nevt_matrix[Nbin_MXs_reco - i][j] / Nevt_matrix[j][j]);
+            printf("%lf ", Nevt_matrix[i][j] / Nevt_matrix[j][j]);
         }
         printf("\n");
     }
