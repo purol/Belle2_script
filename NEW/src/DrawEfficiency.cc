@@ -46,6 +46,7 @@ TH1D* Nevt_SIGNAL_after_selection_true = new TH1D("Nevt_SIGNAL_after_selection_t
 TH1D* SIGNAL_pre_and_selection_efficiency_true = new TH1D("SIGNAL_pre_and_selection_efficiency_true", ";M_{X_{s}}^{true} [GeV/c^{2}];Efficiency", 9, 0.45, 3.0);
 TH1D* SIGNAL_selection_efficiency = new TH1D("SIGNAL_selection_efficiency", ";M_{X_{s}}^{reco} [GeV/c^{2}];Efficiency", 9, 0.45, 3.0);
 TH1D* SIGNAL_FBDT_efficiency = new TH1D("SIGNAL_FBDT_efficiency", ";M_{X_{s}}^{reco} [GeV/c^{2}];FBDT Efficiency", 9, 0.45, 3.0);
+TH1D* SIGNAL_FBDT_efficiency_true = new TH1D("SIGNAL_FBDT_efficiency_true", ";M_{X_{s}}^{true} [GeV/c^{2}];FBDT Efficiency", 9, 0.45, 3.0);
 
 TH1D* BKG_selection_efficiency = new TH1D("BKG_selection_efficiency", ";M_{X_{s}}^{reco} [GeV/c^{2}];1 - (rejection rate)", 9, 0.45, 3.0);
 TH1D* BKG_FBDT_efficiency = new TH1D("BKG_FBDT_efficiency", ";M_{X_{s}}^{reco} [GeV/c^{2}];FBDT 1 - (rejection rate)", 9, 0.45, 3.0);
@@ -383,6 +384,8 @@ int main(int argc, char* argv[]) {
     BKG_selection_efficiency->Divide(Nevt_BKG_after_selection, Ncandidate_BKG_after_preselection, 1.0, 1.0, "B");
     BKG_FBDT_efficiency->Divide(Nevt_BKG_after_selection, Nevt_BKG_before_FBDT_cut, 1.0, 1.0, "B");
 
+    SIGNAL_FBDT_efficiency_true->Divide(Nevt_SIGNAL_after_selection_true, Nevt_SIGNAL_before_FBDT_cut_true, 1.0, 1.0, "B");
+
     // define TCanvas
     TCanvas* c_temp = new TCanvas("c", "", 1200, 1000);
 
@@ -413,15 +416,25 @@ int main(int argc, char* argv[]) {
 
     TPaveText* pt;
 
-    // draw SIGNAL preselection + selection efficiency
+    // draw SIGNAL preselection + selection efficiency true
     SIGNAL_pre_and_selection_efficiency_true->Draw("P");
     pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for preselection + selection"); pt->Draw();
-    c_temp->SaveAs("Signal_eff_all.png");
+    c_temp->SaveAs("Efficiency.png");
 
-    // draw SIGNAL FBDT efficiency
+    // draw SIGNAL FBDT efficiency reco
     SIGNAL_FBDT_efficiency->Draw("P");
     pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for FBDT"); pt->Draw();
-    c_temp->SaveAs("Signal_FBDT.png");
+    c_temp->SaveAs("Signal_FBDT_reco.png");
+
+    // draw SIGNAL FBDT efficiency true
+    SIGNAL_FBDT_efficiency_true->Draw("P");
+    pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for FBDT"); pt->Draw();
+    c_temp->SaveAs("FBDT_Efficiency.png");
+
+    // draw SIGNAL efficiency reco
+    SIGNAL_selection_efficiency->Draw("P");
+    pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for selection"); pt->Draw();
+    c_temp->SaveAs("Signal_eff_reco.png");
 
     // draw BKG FBDT efficiency
     BKG_FBDT_efficiency->Draw("P");
