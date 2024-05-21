@@ -116,6 +116,8 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
     double nDptoXKL = -1;
     double nD0toXKL = -1;
 
+    double Bsig_M = -1;
+
     std::vector<string> names;
     load_files(dirname, &names, included_string);
 
@@ -146,6 +148,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
         tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
+        tree_Bsig->SetBranchAddress("Bsig_M", &Bsig_M);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
