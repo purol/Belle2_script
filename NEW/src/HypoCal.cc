@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdio.h>
+#include <random>
 
 #include "TRandom3.h"
 #include "TCanvas.h"
@@ -59,6 +60,9 @@ using std::string;
 using std::to_string;
 using std::cout;
 using std::endl;
+
+std::random_device rd;
+std::default_random_engine generator(rd());
 
 # define NToys 100
 
@@ -158,6 +162,8 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, 
 }
 
 int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index, argv[3]: calculator type, argv[4]: eps
+
+	RooRandom::randomGenerator()->SetSeed(rd());
 
 	::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit2", "Minimize"); // default: Minuit Migrad
 	::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
