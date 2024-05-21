@@ -372,7 +372,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ CHARM ================================ */
 }
 
-int WorkSpace() {
+int WorkSpace_Knunu() {
 
 	const double expmu = 1.0;
 	const char* fname_MXs1 = "PDFandDATA_MXs1.root";
