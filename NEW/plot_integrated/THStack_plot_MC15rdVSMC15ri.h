@@ -18,6 +18,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "ObtainWeight.h"
 #include "correctors.h"
 #include "base.h"
+#include "template.h"
 
 int Nvar_num = -1;
 
