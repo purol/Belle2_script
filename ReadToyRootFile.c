@@ -32,10 +32,13 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
 
 void ReadToyRootFile(){
 
-    TH1F* ToyMCmu = new TH1F("ToyMCmu", ";#mu;Toys", 40, -20, 25);
-    TH1F* ToyMCmuerror = new TH1F("ToyMCmuerror", ";error of #mu;Toys", 50, 1, 7);
-    TH1F* ToyMCmuHIerror = new TH1F("ToyMCmuHIerror", ";error of #mu;Toys", 50, 5, 15);
-    TH1F* ToyMCmuLOerror = new TH1F("ToyMCmuLOerror", ";error of #mu;Toys", 50, -15, -5);
+    RooRealVar mu_pull_roorealvar("mu_pull", ";pull of #mu;Toys", -4.0, 4.0);
+    RooDataSet mu_pull_RooDataSet("mu_pull_RooDataSet", "mu_pull_RooDataSet", RooArgSet(mu_pull_roorealvar));
+
+    TH1F* ToyMCmu = new TH1F("ToyMCmu", ";#mu;Toys", 40, -35, 40);
+    TH1F* ToyMCmuerror = new TH1F("ToyMCmuerror", ";error of #mu;Toys", 50, 6, 18);
+    TH1F* ToyMCmuHIerror = new TH1F("ToyMCmuHIerror", ";error of #mu;Toys", 50, 6, 18);
+    TH1F* ToyMCmuLOerror = new TH1F("ToyMCmuLOerror", ";error of #mu;Toys", 50, -18, -6);
     TH1F* ToyMCmupull = new TH1F("ToyMCmupull", ";pull of #mu;Toys", 40, -4, 4);
 
     ToyMCmu->SetMarkerStyle(kFullCircle);
@@ -92,15 +95,39 @@ void ReadToyRootFile(){
             ToyMCmuerror->Fill(temp_mu_error);
             ToyMCmuHIerror->Fill(temp_mu_HIerror);
             ToyMCmuLOerror->Fill(temp_mu_LOerror);
-            if (temp_mu_true >= temp_mu_fitting) ToyMCmupull->Fill((temp_mu_true - temp_mu_fitting) / temp_mu_HIerror);
-            else ToyMCmupull->Fill((temp_mu_fitting - temp_mu_true) / temp_mu_LOerror);
+            if (temp_mu_true >= temp_mu_fitting) {
+                ToyMCmupull->Fill((temp_mu_true - temp_mu_fitting) / temp_mu_HIerror);
+                mu_pull_roorealvar = (temp_mu_true - temp_mu_fitting) / temp_mu_HIerror;
+                mu_pull_RooDataSet.add(RooArgSet(mu_pull_roorealvar));
+            }
+            else {
+                ToyMCmupull->Fill((temp_mu_fitting - temp_mu_true) / temp_mu_LOerror);
+                mu_pull_roorealvar = (temp_mu_fitting - temp_mu_true) / temp_mu_LOerror;
+                mu_pull_RooDataSet.add(RooArgSet(mu_pull_roorealvar));
+            }
         }
         input_file->Close();
     }
 
+    RooRealVar gausmean("mean", "", 0.0, -4.0, 4.0);
+    RooRealVar gauswidth("sigma", "", 1.0, 0.7, 1.3);
+    RooGaussian gauss("gauss", "gauss", mu_pull_roorealvar, gausmean, gauswidth);
+    RooRealVar nentry("nentry", "number of entries", 10000, 9500, 10500);
+    RooExtendPdf egauss("egauss", "extended gauss", gauss, nentry);
+    egauss.fitTo(mu_pull_RooDataSet, RooFit::Save());
+
+    RooPlot* muframe = mu_pull_roorealvar.frame(RooFit::Bins(40), RooFit::Title(" "));
+    mu_pull_RooDataSet.plotOn(muframe);
+    egauss.plotOn(muframe, RooFit::LineColor(kRed));
+    egauss.paramOn(muframe, RooFit::Layout(0.6, 0.9, 0.9)); muframe->getAttText()->SetTextSize(0.03);
+
+    TCanvas* c = new TCanvas("mu_gauss_fit", "mu_gauss_fit", 800, 800);
+    muframe->Draw(); c->SaveAs("TOYMC_mu_MXs3_pull_unbinned.png");
+    delete c;
+
     gStyle->SetOptFit(11);
 
-    TCanvas* c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
+    c = new TCanvas("canvas_ToyMC_study", "", 800, 800);
     ToyMCmu->Draw("PE1");
     c->SaveAs("TOYMC_mu_MXs3.png");
     delete c;
