@@ -164,9 +164,9 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-TH1D* SIGNAL_Nevt = new TH1D("signal", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of events", 9, 0.45, 3.0);
-TH1D* SIGNAL_Ncandidates = new TH1D("signal", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of candidates", 9, 0.45, 3.0);
-TH1D* SIGNAL_multiplicity = new TH1D("signal", ";M_{X_{s}}^{true} [GeV/c^{2}];multiplicity", 9, 0.45, 3.0);
+TH1D* SIGNAL_Nevt = new TH1D("SIGNAL_Nevt", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of events", 9, 0.45, 3.0);
+TH1D* SIGNAL_Ncandidates = new TH1D("SIGNAL_Ncandidates", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of candidates", 9, 0.45, 3.0);
+TH1D* SIGNAL_multiplicity = new TH1D("SIGNAL_multiplicity", ";M_{X_{s}}^{true} [GeV/c^{2}];multiplicity", 9, 0.45, 3.0);
 
 void LetsFill(const char* dirname, TH1D* hist_Nevt, TH1D* hist_Ncandidate, const char* included_string, bool IsItBplus, double weight = 1) {
 
@@ -246,7 +246,7 @@ void LetsFill(const char* dirname, TH1D* hist_Nevt, TH1D* hist_Ncandidate, const
 
 }
 
-void THStack_multiplicity() {
+void THStack_multiplicity_vs_MXstrue() {
 
     const char* Knunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/before_Dveto_cut";
     const char* Kstarnunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/before_Dveto_cut";
