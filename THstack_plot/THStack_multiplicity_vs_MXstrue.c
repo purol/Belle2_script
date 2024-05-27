@@ -215,6 +215,7 @@ void LetsFill(const char* dirname, TH1D* hist_Nevt, TH1D* hist_Ncandidate, const
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+            tree_Xs->GetEntry(j);
 
             if (IsItBplus) MC_MXs = Mxs_Bc_MC;
             else MC_MXs = Mxs_B0_MC;
