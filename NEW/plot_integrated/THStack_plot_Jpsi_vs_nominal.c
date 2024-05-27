@@ -51,7 +51,7 @@ void GetSignalMC(const char* Nominal_MC_SIGNAL_validation_dirname, TH1D*** signa
 
         double min = *min_element(temp_v.begin(), temp_v.end());
         double max = *max_element(temp_v.begin(), temp_v.end());
-        int bins = 100;
+        int bins = 30;
 
         if (hasEnding(variable_names.at(k), std::string("dr"))) { // exceptions
             max = 0.2;
@@ -155,7 +155,7 @@ void GetSignalMC(const char* Nominal_MC_SIGNAL_validation_dirname, TH1D*** signa
             bins = RarityBins;
         }
 
-        (*signal_hist)[k] = new TH1D("signal", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        (*signal_hist)[k] = new TH1D("B #rightarrow X_{s} #nu#bar{#nu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
     }
 
     int index = std::find(variable_names.begin(), variable_names.end(), std::string("log_{10}SignalProbability")) - variable_names.begin();
@@ -635,7 +635,7 @@ void THStack_plot_Jpsi_vs_nominal() {
         eemumu_hist[k] = new TH1D("e#bar{e}#mu#bar{#mu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         llXX_hist[k] = new TH1D("\ell#bar{\ell}XX", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         hhISR_hist[k] = new TH1D("hhISR", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        signal_hist[k] = new TH1D("signal", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        signal_hist[k] = new TH1D("B #rightarrow X_{s} J/#psi", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;data/MC", bins, min, max);
@@ -781,7 +781,7 @@ void THStack_plot_Jpsi_vs_nominal() {
 
         Stack[k]->Draw("pfc Hist");
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
-        signal_hist_nominal[k]->SetFillStyle(3004); signal_hist_nominal[k]->SetLineColor(kBlue); signal_hist_nominal[k]->SetFillColor(kBlue); signal_hist_nominal[k]->Draw("HistSAME");
+        signal_hist_nominal[k]->SetFillStyle(3004); signal_hist_nominal[k]->SetLineColor(kRed); signal_hist_nominal[k]->SetFillColor(kRed); signal_hist_nominal[k]->Draw("HistSAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP");
         TLegend* legend = pad1->BuildLegend(0.9, 0.9, 0.7, 0.7);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
