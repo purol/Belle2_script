@@ -21,6 +21,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 std::vector<double> common_min;
 std::vector<double> common_max;
+std::vector<double> common_bins;
 
 void GetSignalMC(const char* Nominal_MC_SIGNAL_validation_dirname, TH1D*** signal_hist, std::vector<std::string> variable_names, std::vector<std::string> branch_names) {
 
@@ -53,7 +54,7 @@ void GetSignalMC(const char* Nominal_MC_SIGNAL_validation_dirname, TH1D*** signa
 
         double min = common_min.at(k);
         double max = common_max.at(k);
-        int bins = 30;
+        int bins = common_bins.at(k);
 
         (*signal_hist)[k] = new TH1D("B #rightarrow X_{s} #nu#bar{#nu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
     }
@@ -521,6 +522,7 @@ void THStack_plot_Jpsi_vs_nominal() {
 
         common_min.push_back(min);
         common_max.push_back(max);
+        common_bins.push_back(bins);
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";" + variable_names.at(k) + ";number of candidates").c_str());
         charged_hist[k] = new TH1D("charged", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
