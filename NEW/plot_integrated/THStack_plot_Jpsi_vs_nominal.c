@@ -708,6 +708,8 @@ void THStack_plot_Jpsi_vs_nominal() {
         Ratio_Nevt_MXs3->Divide(data_Nevt_MXs3, MC_Nevt_MXs3);
     }
 
+    MC_one_bin->Reset(); MC_Nevt_MXs1->Reset(); MC_Nevt_MXs2->Reset(); MC_Nevt_MXs3->Reset();
+    LetsCountMC(Nominal_MC_SIGNAL_validation_dirname, "SIGNAL");
     TH1D** signal_hist;
     GetSignalMC(Nominal_MC_SIGNAL_validation_dirname, &signal_hist, variable_names, branch_names);
 
@@ -739,7 +741,7 @@ void THStack_plot_Jpsi_vs_nominal() {
             ssbar_hist[k]->Scale(CAL);
             ccbar_hist[k]->Scale(CAL);
 
-            signal_hist->Scale();
+            signal_hist->Scale(data_one_bin->GetBinContent(1) / MC_one_bin->GetBinContent(1));
         }
 
         Stack[k]->Add(charged_hist[k]);
@@ -786,7 +788,7 @@ void THStack_plot_Jpsi_vs_nominal() {
             TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB");
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
-            pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL) + ", Data= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
+            pt->AddText("B #rightarrow X_{s} J/#psi MC and B #rightarrow X_{s} #nu #bar{#nu} MC are scaled to B #rightarrow X_{s} J/#psi data");
             pt->Draw();
 
         }
@@ -794,7 +796,7 @@ void THStack_plot_Jpsi_vs_nominal() {
             TPaveText* pt = new TPaveText(0.135, 0.88, 0.9, 1.0, "NDC NB");
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
-            pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + std::to_string(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs3->GetBinContent(1)) + ", TotalData= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
+            pt->AddText("B #rightarrow X_{s} J/#psi MC and B #rightarrow X_{s} #nu #bar{#nu} MC are scaled to B #rightarrow X_{s} J/#psi data at each M_{X_{s}} region");
             pt->Draw();
         }
 
@@ -819,24 +821,24 @@ void THStack_plot_Jpsi_vs_nominal() {
     if (NormalizeAtEachMXs == false) {
         double MC_sum = 0;
         for (int i = 0; i < (int)Jpsi_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
-        printf("data num: %ld\n", Jpsi_data_values[0].size());
-        printf("MC num with calibration: %lf\n", MC_sum);
-        printf("MC with calibration: %lf +- %lf\n", MC_one_bin->GetBinContent(1), MC_one_bin->GetBinError(1));
-        printf("data with calibration: %lf +- %lf\n", data_one_bin->GetBinContent(1), data_one_bin->GetBinError(1));
-        printf("data/MC with calibration: %lf +- %lf\n", Ratio_one_bin->GetBinContent(1), Ratio_one_bin->GetBinError(1));
+        printf("Xs Jpsi data num: %ld\n", Jpsi_data_values[0].size());
+        printf("Xs Jpsi MC num with calibration: %lf\n", MC_sum);
+        printf("Xs nu nubar MC with calibration: %lf +- %lf\n", MC_one_bin->GetBinContent(1), MC_one_bin->GetBinError(1));
+        printf("Xs Jpsi data with calibration: %lf +- %lf\n", data_one_bin->GetBinContent(1), data_one_bin->GetBinError(1));
+        printf("(Xs Jpsi data)/(Xs Jpsi MC) with calibration: %lf +- %lf\n", Ratio_one_bin->GetBinContent(1), Ratio_one_bin->GetBinError(1));
     }
     else {
-        printf("data num in 1st region: %lf +- %lf\n", data_Nevt_MXs1->GetBinContent(1), data_Nevt_MXs1->GetBinError(1));
-        printf("data num in 2nd region: %lf +- %lf\n", data_Nevt_MXs2->GetBinContent(1), data_Nevt_MXs2->GetBinError(1));
-        printf("data num in 3rd region: %lf +- %lf\n", data_Nevt_MXs3->GetBinContent(1), data_Nevt_MXs3->GetBinError(1));
+        printf("Xs Jpsi data num in 1st region: %lf +- %lf\n", data_Nevt_MXs1->GetBinContent(1), data_Nevt_MXs1->GetBinError(1));
+        printf("Xs Jpsi data num in 2nd region: %lf +- %lf\n", data_Nevt_MXs2->GetBinContent(1), data_Nevt_MXs2->GetBinError(1));
+        printf("Xs Jpsi data num in 3rd region: %lf +- %lf\n", data_Nevt_MXs3->GetBinContent(1), data_Nevt_MXs3->GetBinError(1));
 
-        printf("MC num in 1st region: %lf +- %lf\n", MC_Nevt_MXs1->GetBinContent(1), MC_Nevt_MXs1->GetBinError(1));
-        printf("MC num in 2nd region: %lf +- %lf\n", MC_Nevt_MXs2->GetBinContent(1), MC_Nevt_MXs2->GetBinError(1));
-        printf("MC num in 3rd region: %lf +- %lf\n", MC_Nevt_MXs3->GetBinContent(1), MC_Nevt_MXs3->GetBinError(1));
+        printf("Xs nu nubar MC num in 1st region: %lf +- %lf\n", MC_Nevt_MXs1->GetBinContent(1), MC_Nevt_MXs1->GetBinError(1));
+        printf("Xs nu nubar MC num in 2nd region: %lf +- %lf\n", MC_Nevt_MXs2->GetBinContent(1), MC_Nevt_MXs2->GetBinError(1));
+        printf("Xs nu nubar MC num in 3rd region: %lf +- %lf\n", MC_Nevt_MXs3->GetBinContent(1), MC_Nevt_MXs3->GetBinError(1));
 
-        printf("data/MC in 1st region: %lf +- %lf\n", Ratio_Nevt_MXs1->GetBinContent(1), Ratio_Nevt_MXs1->GetBinError(1));
-        printf("data/MC in 2nd region: %lf +- %lf\n", Ratio_Nevt_MXs2->GetBinContent(1), Ratio_Nevt_MXs2->GetBinError(1));
-        printf("data/MC in 3rd region: %lf +- %lf\n", Ratio_Nevt_MXs3->GetBinContent(1), Ratio_Nevt_MXs3->GetBinError(1));
+        printf("(Xs Jpsi data)/(Xs Jpsi MC) in 1st region: %lf +- %lf\n", Ratio_Nevt_MXs1->GetBinContent(1), Ratio_Nevt_MXs1->GetBinError(1));
+        printf("(Xs Jpsi data)/(Xs Jpsi MC) in 2nd region: %lf +- %lf\n", Ratio_Nevt_MXs2->GetBinContent(1), Ratio_Nevt_MXs2->GetBinError(1));
+        printf("(Xs Jpsi data)/(Xs Jpsi MC) in 3rd region: %lf +- %lf\n", Ratio_Nevt_MXs3->GetBinContent(1), Ratio_Nevt_MXs3->GetBinError(1));
     }
 
     // free
@@ -879,6 +881,8 @@ void THStack_plot_Jpsi_vs_nominal() {
         delete stat_error_hist[k];
         delete data_hist[k];
         delete Ratio_hist[k];
+
+        delete signal_hist[k];
     }
 
     free(Stack);
@@ -900,6 +904,8 @@ void THStack_plot_Jpsi_vs_nominal() {
     free(stat_error_hist);
     free(data_hist);
     free(Ratio_hist);
+
+    free(signal_hist);
 
     delete MC_one_bin;
     delete data_one_bin;
