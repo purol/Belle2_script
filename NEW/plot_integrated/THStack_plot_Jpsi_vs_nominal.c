@@ -741,7 +741,7 @@ void THStack_plot_Jpsi_vs_nominal() {
             ssbar_hist[k]->Scale(CAL);
             ccbar_hist[k]->Scale(CAL);
 
-            signal_hist_nominal->Scale(data_one_bin->GetBinContent(1) / MC_one_bin->GetBinContent(1));
+            signal_hist_nominal[k]->Scale(data_one_bin->GetBinContent(1) / MC_one_bin->GetBinContent(1));
         }
 
         Stack[k]->Add(charged_hist[k]);
