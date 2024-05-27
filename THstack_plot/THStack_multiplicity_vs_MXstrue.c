@@ -164,9 +164,12 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-TH1D* SIGNAL_Nevt = new TH1D("SIGNAL_Nevt", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of events", 5, 0.45, 3.0);
-TH1D* SIGNAL_Ncandidates = new TH1D("SIGNAL_Ncandidates", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of candidates", 5, 0.45, 3.0);
-TH1D* SIGNAL_multiplicity = new TH1D("SIGNAL_multiplicity", ";M_{X_{s}}^{true} [GeV/c^{2}];multiplicity", 5, 0.45, 3.0);
+const int NBins = 3;
+double edges[NBins + 1] = { 0.0, 0.6, 1.0, 5.3 };
+
+TH1D* SIGNAL_Nevt = new TH1D("SIGNAL_Nevt", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of events", NBins, edges);
+TH1D* SIGNAL_Ncandidates = new TH1D("SIGNAL_Ncandidates", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of candidates", NBins, edges));
+TH1D* SIGNAL_multiplicity = new TH1D("SIGNAL_multiplicity", ";M_{X_{s}}^{true} [GeV/c^{2}];multiplicity", NBins, edges));
 
 void LetsFill(const char* dirname, TH1D* hist_Nevt, TH1D* hist_Ncandidate, const char* included_string, bool IsItBplus, double weight = 1) {
 
@@ -277,7 +280,7 @@ void THStack_multiplicity_vs_MXstrue() {
 
     c_temp->SaveAs("Plot_multiplicity_vs_MXstrue.png");
 
-    for (int i = 0; i < 5; i++) printf("%lf ", SIGNAL_multiplicity->GetBinContent(i + 1));
+    for (int i = 0; i < NBins; i++) printf("%lf ", SIGNAL_multiplicity->GetBinContent(i + 1));
 
 //    free(line);
 //    gPad->BuildLegend();
