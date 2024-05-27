@@ -276,6 +276,8 @@ void THStack_multiplicity_vs_MXstrue() {
 
     c_temp->SaveAs("Plot_multiplicity_vs_MXstrue.png");
 
+    for (int i = 0; i < 5; i++) printf("%lf ", SIGNAL_multiplicity->GetBinContent(i + 1));
+
 //    free(line);
 //    gPad->BuildLegend();
 //    c_temp->SaveAs("Plot_with_legend.png");
