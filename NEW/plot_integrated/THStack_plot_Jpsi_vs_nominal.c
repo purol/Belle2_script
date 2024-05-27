@@ -19,6 +19,9 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "THStack_plot.h"
 #include "template.h"
 
+std::vector<double> common_min;
+std::vector<double> common_max;
+
 void GetSignalMC(const char* Nominal_MC_SIGNAL_validation_dirname, TH1D*** signal_hist, std::vector<std::string> variable_names, std::vector<std::string> branch_names) {
 
     std::vector<double>* Nominal_MC_values = new std::vector<double>[Nvar_num];
@@ -48,112 +51,9 @@ void GetSignalMC(const char* Nominal_MC_SIGNAL_validation_dirname, TH1D*** signa
         std::vector<double> temp_v;
         temp_v.insert(temp_v.end(), signal_values[k].begin(), signal_values[k].end());
 
-
-        double min = *min_element(temp_v.begin(), temp_v.end());
-        double max = *max_element(temp_v.begin(), temp_v.end());
+        double min = common_min.at(k);
+        double max = common_max.at(k);
         int bins = 30;
-
-        if (hasEnding(variable_names.at(k), std::string("dr"))) { // exceptions
-            max = 0.2;
-            min = 0.0;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("dz"))) {
-            max = 0.2;
-            min = -0.2;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("Bsig_M"))) {
-            max = 2.0;
-            min = 0.0;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("chiProb"))) {
-            max = 1.0;
-            min = 0.0;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("harmonicMomentThrust1"))) {
-            max = 0.6;
-            min = -0.6;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("harmonicMomentThrust2"))) {
-            max = 1.0;
-            min = 0.0;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("harmonicMomentThrust3"))) {
-            max = 1.0;
-            min = -1.0;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("harmonicMomentThrust4"))) {
-            max = 1.0;
-            min = -0.5;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("missingMomentumOfEvent"))) {
-            max = 5.0;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("missingEnergyOfEventCMS"))) {
-            min = -1.5;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("Btag_extraInfo_SignalProbability"))) {
-            max = 0;
-            min = -3;
-            variable_names.at(k) = std::string("log_{10}SignalProbability");
-        }
-        else if (hasEnding(variable_names.at(k), std::string("Btag_thrustOm"))) {
-            min = 0.5;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("foxWolframR1"))) {
-            max = 0.25;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("foxWolframR3"))) {
-            max = 0.4;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("missingMass2OfEvent"))) {
-            min = -20.0;
-            max = 40.0;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("visibleEnergyOfEventCMS"))) {
-            max = 15.0;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("Btag_KSFWVariables_hoo4"))) {
-            max = 0.08;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("Bsig_KSFWVariables_et"))) {
-            max = 10;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("Bsig_KSFWVariables_hso24"))) {
-            max = 0.2;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op0"))) {
-            min = 7.0;
-            max = 33.0;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op1"))) {
-            min = 0.0;
-            max = 40.0;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op2"))) {
-            min = -1.5;
-            max = 0.1;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op3"))) {
-            min = -0.4;
-            max = 0.1;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op4"))) {
-            min = -0.6;
-            max = 0.1;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("MsquaredBsig_op7"))) {
-            min = 0.0;
-            max = 15.0;
-        }
-        else if ((variable_names.at(k).find("Bsig_daughter_0_extraInfo_D") != std::string::npos) && (variable_names.at(k).find("_M") != std::string::npos)) {
-            min = 0.6;
-            max = 2.1;
-        }
-        else if (hasEnding(variable_names.at(k), std::string("FBDT_index"))) {
-            min = 0.0;
-            max = RarityBins;
-            bins = RarityBins;
-        }
 
         (*signal_hist)[k] = new TH1D("B #rightarrow X_{s} #nu#bar{#nu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
     }
@@ -619,6 +519,8 @@ void THStack_plot_Jpsi_vs_nominal() {
             bins = RarityBins;
         }
 
+        common_min.push_back(min);
+        common_max.push_back(max);
 
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";" + variable_names.at(k) + ";number of candidates").c_str());
         charged_hist[k] = new TH1D("charged", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
