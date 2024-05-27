@@ -10,6 +10,7 @@
 #include "TH3.h"
 #include "TLatex.h"
 #include "TLine.h"
+#include "TFile.h"
 
 #include "RooChi2Var.h"
 #include "RooAbsData.h"
@@ -18,7 +19,7 @@
 #include "RooGaussian.h"
 #include "RooRealVar.h"
 #include "RooMCStudy.h"
-#include "RooMinuit.h"
+//#include "RooMinuit.h"
 #include "RooCategory.h"
 #include "RooHistPdf.h"
 #include "RooSimultaneous.h"
@@ -37,7 +38,7 @@
 
 #include "RooStats/HistFactory/FlexibleInterpVar.h"
 #include "RooStats/HistFactory/PiecewiseInterpolation.h"
-#include "RooStats/HistFactory/HistFactorySimultaneous.h"
+//#include "RooStats/HistFactory/HistFactorySimultaneous.h"
 #include "RooStats/HistFactory/Channel.h"
 #include "RooStats/HistFactory/MakeModelAndMeasurementsFast.h"
 #include "RooStats/HistFactory/Measurement.h"
