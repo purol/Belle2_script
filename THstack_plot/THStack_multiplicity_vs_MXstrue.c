@@ -168,8 +168,8 @@ const int NBins = 3;
 double edges[NBins + 1] = { 0.0, 0.6, 1.0, 5.3 };
 
 TH1D* SIGNAL_Nevt = new TH1D("SIGNAL_Nevt", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of events", NBins, edges);
-TH1D* SIGNAL_Ncandidates = new TH1D("SIGNAL_Ncandidates", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of candidates", NBins, edges));
-TH1D* SIGNAL_multiplicity = new TH1D("SIGNAL_multiplicity", ";M_{X_{s}}^{true} [GeV/c^{2}];multiplicity", NBins, edges));
+TH1D* SIGNAL_Ncandidates = new TH1D("SIGNAL_Ncandidates", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of candidates", NBins, edges);
+TH1D* SIGNAL_multiplicity = new TH1D("SIGNAL_multiplicity", ";M_{X_{s}}^{true} [GeV/c^{2}];multiplicity", NBins, edges);
 
 void LetsFill(const char* dirname, TH1D* hist_Nevt, TH1D* hist_Ncandidate, const char* included_string, bool IsItBplus, double weight = 1) {
 
