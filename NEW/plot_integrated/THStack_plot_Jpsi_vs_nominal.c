@@ -783,7 +783,7 @@ void THStack_plot_Jpsi_vs_nominal() {
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         signal_hist_nominal[k]->SetFillStyle(3004); signal_hist_nominal[k]->SetLineColor(kRed); signal_hist_nominal[k]->SetFillColor(kRed); signal_hist_nominal[k]->Draw("HistSAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP");
-        TLegend* legend = pad1->BuildLegend(0.9, 0.9, 0.7, 0.7);
+        TLegend* legend = pad1->BuildLegend(1.0, 1.0, 0.7, 0.7);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
         if (NormalizeAtEachMXs == false) {
             TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB");
