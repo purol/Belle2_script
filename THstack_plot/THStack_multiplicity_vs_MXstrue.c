@@ -164,9 +164,9 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-TH1D* SIGNAL_Nevt = new TH1D("SIGNAL_Nevt", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of events", 9, 0.45, 3.0);
-TH1D* SIGNAL_Ncandidates = new TH1D("SIGNAL_Ncandidates", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of candidates", 9, 0.45, 3.0);
-TH1D* SIGNAL_multiplicity = new TH1D("SIGNAL_multiplicity", ";M_{X_{s}}^{true} [GeV/c^{2}];multiplicity", 9, 0.45, 3.0);
+TH1D* SIGNAL_Nevt = new TH1D("SIGNAL_Nevt", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of events", 5, 0.45, 3.0);
+TH1D* SIGNAL_Ncandidates = new TH1D("SIGNAL_Ncandidates", ";M_{X_{s}}^{true} [GeV/c^{2}];the number of candidates", 5, 0.45, 3.0);
+TH1D* SIGNAL_multiplicity = new TH1D("SIGNAL_multiplicity", ";M_{X_{s}}^{true} [GeV/c^{2}];multiplicity", 5, 0.45, 3.0);
 
 void LetsFill(const char* dirname, TH1D* hist_Nevt, TH1D* hist_Ncandidate, const char* included_string, bool IsItBplus, double weight = 1) {
 
