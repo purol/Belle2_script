@@ -274,33 +274,35 @@ void LetsFill(const char* dirname, double Ncandidates[3][3], const char* include
         }
 
         // read final entry
-        double Signal_Probability_MAX = -1;
-        int BCS_index = -1;
-        for (int k = 0; k < Signal_Probabilities.size(); k++) {
-            if (Signal_Probabilities.at(k) > Signal_Probability_MAX) {
-                Signal_Probability_MAX = Signal_Probabilities.at(k);
-                BCS_index = k;
+        if (tree_upsilon->GetEntries() != 0) {
+            double Signal_Probability_MAX = -1;
+            int BCS_index = -1;
+            for (int k = 0; k < Signal_Probabilities.size(); k++) {
+                if (Signal_Probabilities.at(k) > Signal_Probability_MAX) {
+                    Signal_Probability_MAX = Signal_Probabilities.at(k);
+                    BCS_index = k;
+                }
             }
+            double MXs_reco_BCS = MXs_recos.at(BCS_index);
+            int MXs_BCS_index = -1;
+            if ((MXs_reco_BCS > 0) && (MXs_reco_BCS < 0.6)) MXs_BCS_index = 0;
+            else if ((MXs_reco_BCS > 0.6) && (MXs_reco_BCS < 1.0)) MXs_BCS_index = 1;
+            else MXs_BCS_index = 2;
+
+            for (int k = 0; k < MXs_recos.size(); k++) {
+                double MXs_reco = MXs_recos.at(k);
+                int MXs_index = -1;
+                if ((MXs_reco > 0) && (MXs_reco < 0.6)) MXs_index = 0;
+                else if ((MXs_reco > 0.6) && (MXs_reco < 1.0)) MXs_index = 1;
+                else MXs_index = 2;
+
+                Ncandidates[MXs_index][MXs_BCS_index] = Ncandidates[MXs_index][MXs_BCS_index] + weight;
+            }
+
+            // clean vectors
+            MXs_recos.clear();
+            Signal_Probabilities.clear();
         }
-        double MXs_reco_BCS = MXs_recos.at(BCS_index);
-        int MXs_BCS_index = -1;
-        if ((MXs_reco_BCS > 0) && (MXs_reco_BCS < 0.6)) MXs_BCS_index = 0;
-        else if ((MXs_reco_BCS > 0.6) && (MXs_reco_BCS < 1.0)) MXs_BCS_index = 1;
-        else MXs_BCS_index = 2;
-
-        for (int k = 0; k < MXs_recos.size(); k++) {
-            double MXs_reco = MXs_recos.at(k);
-            int MXs_index = -1;
-            if ((MXs_reco > 0) && (MXs_reco < 0.6)) MXs_index = 0;
-            else if ((MXs_reco > 0.6) && (MXs_reco < 1.0)) MXs_index = 1;
-            else MXs_index = 2;
-
-            Ncandidates[MXs_index][MXs_BCS_index] = Ncandidates[MXs_index][MXs_BCS_index] + weight;
-        }
-
-        // clean vectors
-        MXs_recos.clear();
-        Signal_Probabilities.clear();
 
         input_file->Close();
 
