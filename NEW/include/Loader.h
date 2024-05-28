@@ -294,6 +294,12 @@ private:
     int current_N_event;
     int current_N_candidate;
 
+    std::vector<double> N_events_mu1;
+    std::vector<double> N_events_mu2;
+    std::vector<double> N_events_mu3;
+    std::vector<std::string> titles_PrintInformationAboutMXs;
+    int current_N_PrintInformationAboutMXs;
+
     std::vector<int> experiment_indices;
     std::vector<int> run_indices;
     std::vector<unsigned int> event_indices;
@@ -385,6 +391,7 @@ public:
     void DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear);
     void PrintInformation(std::string title, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
+    void PrintInformationAboutMXs(std::string title, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
     void PrintVariablebin(std::string title, Loader::Variable variable, int variable_index, int Nbin, double Var_hist_min, double Var_hist_max, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value);
     void Cut(Loader::Variable variable_1, int i_1, Loader::Arithmetic ari, Loader::Variable variable_2, int i_2, Loader::Inequality inq, double value);
@@ -419,6 +426,7 @@ Loader::Loader() {
     current_TH2F = 0;
     current_N_event = 0;
     current_N_candidate = 0;
+    current_N_PrintInformationAboutMXs = 0;
     current_file = 0;
     current_N_experiment_index = 0;
     current_Var_hists = 0;
@@ -457,6 +465,7 @@ void Loader::initialize() {
     current_TH2F = 0;
     current_N_event = 0;
     current_N_candidate = 0;
+    current_N_PrintInformationAboutMXs = 0;
     current_file = 0;
     current_N_experiment_index = 0;
     current_Var_hists = 0;
@@ -1601,6 +1610,119 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
     current_N_candidate++;
 }
 
+void Loader::PrintInformationAboutMXs(std::string title, std::string filename, const char* MC_version, const char* category) {
+    typedef struct labels {
+        int __experiment__;
+        int __run__;
+        unsigned int __event__;
+        int __ncandidates__;
+    } Labels;
+    std::vector<Labels> label_list;
+
+    if (!DoesItHaveXsBranch) {
+        printf("[PrintInformationAboutMXs] There is no Xs branch\n");
+        exit(1);
+    }
+
+    if (N_events_mu1.size() == current_N_PrintInformationAboutMXs && N_events_mu2.size() == current_N_PrintInformationAboutMXs && N_events_mu3.size() == current_N_PrintInformationAboutMXs) { // allocate new int
+        N_events_mu1.push_back(0);
+        N_events_mu2.push_back(0);
+        N_events_mu3.push_back(0);
+        titles_PrintInformationAboutMXs.push_back(title);
+    }
+    else if (N_events_mu1.size() > current_N_PrintInformationAboutMXs && N_events_mu2.size() > current_N_PrintInformationAboutMXs && N_events_mu3.size() > current_N_PrintInformationAboutMXs) { // use what I have
+    }
+    else { // error
+        printf("ERROR! 028\n");
+        exit(1);
+    }
+
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
+    while (!temp_queue.empty()) {
+        Data temp = temp_queue.front();
+        temp_queue.pop();
+
+        bool overlap = false;
+        for (unsigned int i = 0; i < label_list.size(); i++) {
+            if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) {
+                overlap = true;
+            }
+        }
+        if (overlap == false) {
+            // get MXs
+            double MC_MXs = -1;
+
+            if (filename.find("B2") != std::string::npos) MC_MXs = temp.Decay_syst_ff[index_MXs_Bc];
+            else if (filename.find("B02") != std::string::npos) MC_MXs = temp.Decay_syst_ff[index_MXs_B0];
+
+            // sanity check
+            if (MC_MXs > 0.0) {}
+            else { // mass is NaN. try to find true mass region by file name
+                if ((filename.find("B2Knunu") != std::string::npos) || (filename.find("B02K0nunu") != std::string::npos)) MC_MXs = 0.4868;
+                else if ((filename.find("B2Kstarnunu") != std::string::npos) || (filename.find("B02Kstar0nunu") != std::string::npos)) MC_MXs = 0.8916;
+                else if ((filename.find("B2Xsnunu") != std::string::npos) || (filename.find("B02Xsnunu") != std::string::npos)) MC_MXs = 1.5;
+                else {
+                    printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                    exit(1);
+                }
+            }
+
+            // Number of event
+            if (filename.find("B2Knunu") != std::string::npos) {
+                double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
+                if((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_weight;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_weight;
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_weight;
+            }
+            else if (filename.find("B2Kstarnunu") != std::string::npos) {
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+            }
+            else if (filename.find("B2Xsnunu") != std::string::npos) {
+                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_fragmentation;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_fragmentation;
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_fragmentation;
+            }
+            else if (filename.find("B02K0nunu") != std::string::npos) {
+                double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_weight;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_weight;
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_weight;
+            }
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) {
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+            }
+            else if (filename.find("B02Xsnunu") != std::string::npos) {
+                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_fragmentation;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_fragmentation;
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_fragmentation;
+            }
+            else { 
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+            }
+
+            Labels temp_Labels;
+            temp_Labels.__experiment__ = temp.__experiment__;
+            temp_Labels.__run__ = temp.__run__;
+            temp_Labels.__event__ = temp.__event__;
+            temp_Labels.__ncandidates__ = temp.__ncandidates__;
+
+        }
+
+        TotalData.push(temp);
+    }
+
+    current_N_PrintInformationAboutMXs++;
+}
+
 void Loader::PrintVariablebin(std::string title, Loader::Variable variable, int variable_index, int Nbin, double Var_hist_min, double Var_hist_max, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode) {
 
     if (Var_hists.size() == current_Var_hists) { // allocate new int
@@ -2141,6 +2263,13 @@ void Loader::End() {
         printf("Number of candidate: %lf\n", N_candidates.at(i));
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %lf\n", j, N_candidates_modes[j].at(i));
         if (AllOfThemHaveXsBranch) for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i));
+    }
+
+    for (int i = 0; i < N_events_mu1.size(); i++) {
+        printf("%s\n", titles_PrintInformationAboutMXs.at(i).c_str());
+        printf("Number of event at first region: %lf\n", N_events_mu1.at(i));
+        printf("Number of event at second region: %lf\n", N_events_mu2.at(i));
+        printf("Number of event at third region: %lf\n", N_events_mu3.at(i));
     }
 
     for (int i = 0; i < Var_hists.size(); i++) {
