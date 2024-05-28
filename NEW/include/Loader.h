@@ -1715,6 +1715,7 @@ void Loader::PrintInformationAboutMXs(std::string title, std::string filename, c
             temp_Labels.__event__ = temp.__event__;
             temp_Labels.__ncandidates__ = temp.__ncandidates__;
 
+            label_list.push_back(temp_Labels);
         }
 
         TotalData.push(temp);
