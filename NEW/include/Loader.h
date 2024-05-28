@@ -163,8 +163,7 @@ public:
     {
         Upsilon = 0,
         Bsig,
-        Btag,
-        Decay_syst_ff
+        Btag
     };
     enum Inequality
     {
@@ -1630,10 +1629,6 @@ void Loader::PrintVariablebin(std::string title, Loader::Variable variable, int 
         if (variable == Loader::Upsilon) temp_value = temp.Upsilon_info[variable_index];
         else if (variable == Loader::Bsig) temp_value = temp.Bsig_info[variable_index];
         else if (variable == Loader::Btag) temp_value = temp.Btag_info[variable_index];
-        else if ((variable == Loader::Decay_syst_ff) && (DoesItHaveXsBranch)) temp_value = temp.Decay_syst_ff[variable_index];
-        else if ((variable == Loader::Decay_syst_ff) && (!DoesItHaveXsBranch)) {
-            printf("[PrintVariablebin] Decay_syst_ff option can be used only when there is Xs branch\n");
-        }
         else {
             printf("ERROR! 030\n");
             exit(1);
