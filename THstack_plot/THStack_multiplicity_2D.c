@@ -274,7 +274,7 @@ void LetsFill(const char* dirname, double Ncandidates[3][3], const char* include
         }
 
         // read final entry
-        if (tree_upsilon->GetEntries() != 0) {
+        if (Signal_Probabilities.size() != 0) {
             double Signal_Probability_MAX = -1;
             int BCS_index = -1;
             for (int k = 0; k < Signal_Probabilities.size(); k++) {

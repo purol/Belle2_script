@@ -304,7 +304,7 @@ void LetsFill(const char* dirname, TH1D* hist, const char* included_string, doub
         }
 
         // read the final entry
-        if (tree_upsilon->GetEntries() != 0) hist->Fill(Ncandidates, weight);
+        if (Ncandidates != 0) hist->Fill(Ncandidates, weight);
 
         input_file->Close();
 
