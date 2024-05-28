@@ -391,7 +391,7 @@ public:
     void DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear);
     void PrintInformation(std::string title, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
-    void PrintInformationAboutMXs(std::string title, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
+    void PrintInformationAboutMXs(std::string title, std::string filename, const char* MC_version, const char* category);
     void PrintVariablebin(std::string title, Loader::Variable variable, int variable_index, int Nbin, double Var_hist_min, double Var_hist_max, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value);
     void Cut(Loader::Variable variable_1, int i_1, Loader::Arithmetic ari, Loader::Variable variable_2, int i_2, Loader::Inequality inq, double value);
