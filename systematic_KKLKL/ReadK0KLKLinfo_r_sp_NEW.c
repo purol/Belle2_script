@@ -531,7 +531,9 @@ void FillHist() {
     for (int i = 0; i < NBin; i++) {
         for (int j = 0; j < NBin; j++) {
             N_evt->SetBinContent(i + 1, j + 1, 0.0);
+            N_evt_another->SetBinContent(i + 1, j + 1, 0.0);
             Prob->SetBinContent(i + 1, j + 1, 0.0);
+            Prob_PHSP_another->SetBinContent(i + 1, j + 1, 0.0);
             Prob_PHSP->SetBinContent(i + 1, j + 1, 0.0);
             Prob_phi->SetBinContent(i + 1, j + 1, 0.0);
         }
