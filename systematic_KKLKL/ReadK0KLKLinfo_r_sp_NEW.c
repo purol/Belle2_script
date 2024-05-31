@@ -86,12 +86,15 @@ typedef struct info {
 // global variable
 
 std::vector<Information> Infos_PHSP;
+std::vector<Information> Infos_PHSP_another;
 std::vector<Information> Infos_phi;
 
 TH2D* N_evt = new TH2D("N_evt", ";s_{max};s_{min}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
 TH2D* Prob_PHSP = new TH2D("Prob_PHSP", ";s_{max};s_{min}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
-TH2D* Prob_phi = new TH2D("Prob_phi", ";s_{max};s_{min}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
+TH2D* Prob_PHSP_another = new TH2D("Prob_PHSP_another", ";max M_{K_{s}^{0}K_{s}^{0}};min M_{K_{s}^{0}K_{s}^{0}}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
+
+TH2D* Prob_phi = new TH2D("Prob_phi", ";max M_{K_{s}^{0}K_{s}^{0}};min M_{K_{s}^{0}K_{s}^{0}}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
 TH2D* Prob = new TH2D("Prob", ";s_{max};s_{min}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
@@ -563,8 +566,21 @@ void FillHist() {
 
     }
 
+    for (size_t i = 0; i < Infos_PHSP_another.size(); i++) {
+        double smax_ = Infos_PHSP_another.at(i).smax;
+        double smin_ = Infos_PHSP_another.at(i).smin;
+        double smed_ = Infos_PHSP_another.at(i).smed;
+
+        int GLobalBin = 0;
+
+        // find Bin index
+        GLobalBin = Prob_PHSP_another->FindBin(smax_, smin_);
+        Prob_PHSP_another->SetBinContent(GLobalBin, Prob_PHSP_another->GetBinContent(GLobalBin) + 1.0);
+    }
+
     Prob_PHSP->Scale(1.0 / Prob_PHSP->Integral());
     Prob_phi->Scale(1.0 / Prob_phi->Integral());
+    Prob_PHSP_another->Scale(1.0 / Prob_PHSP_another->Integral());
 }
 
 void FillInfo(const char* dirname, std::vector<Information>* Infos) {
@@ -627,6 +643,65 @@ void FillInfo(const char* dirname, std::vector<Information>* Infos) {
     }
 }
 
+void FillInfo_phi(const char* dirname, std::vector<Information>* Infos) {
+    std::vector<std::string> names;
+    load_files(dirname, &names);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        // Get Data
+        TTree* tree_info = (TTree*)input_file->Get("info");
+
+        int __experiment__;
+        int __run__;
+        unsigned int __event__;
+        int __candidate__;
+        int __ncandidates__;
+
+        double m = -1;
+
+        double m12;
+        double m13;
+        double m23;
+
+        // get event_info
+        tree_info->SetBranchAddress("__experiment__", &__experiment__);
+        tree_info->SetBranchAddress("__run__", &__run__);
+        tree_info->SetBranchAddress("__event__", &__event__);
+        tree_info->SetBranchAddress("__candidate__", &__candidate__);
+        tree_info->SetBranchAddress("__ncandidates__", &__ncandidates__);
+
+        tree_info->SetBranchAddress("daughterInvariantMass__bo0__cm__sp1__bc", &m12);
+        tree_info->SetBranchAddress("daughterInvariantMass__bo0__cm__sp2__bc", &m13);
+        tree_info->SetBranchAddress("daughterInvariantMass__bo1__cm__sp2__bc", &m23);
+
+        printf("%lld entries...\n", tree_info->GetEntries());
+        for (unsigned int j = 0; j < tree_info->GetEntries(); j++) { // Fill
+
+            tree_info->GetEntry(j);
+
+            double s12_ = m12 * m12;
+            double s13_ = m13 * m13;
+            double s23_ = m23 * m23;
+
+            // use another definition because one of particle is KS0
+            double smax = std::max(s12_, s13_);
+            double smin = std::min(s12_, s13_);
+            double smed = s23_;
+
+            // just makeshift
+            Information temp_info = { smax, smin, smed };
+
+            Infos->push_back(temp_info);
+
+        }
+        input_file->Close();
+    }
+}
+
 void GetWeights() {
     FILE* fp;
 
@@ -668,7 +743,8 @@ int main(){
     const char* dirname_phi = "/home/belle2/junewoo/storage_ghi/20240531_B02phiKL_generator_level_info/output";
 
     FillInfo(dirname_PHSP, &Infos_PHSP);
-    FillInfo(dirname_phi, &Infos_phi);
+    FillInfo_phi(dirname_PHSP, &Infos_PHSP_another);
+    FillInfo_phi(dirname_phi, &Infos_phi);
     FillHist();
     GetZeros();
 
@@ -678,6 +754,7 @@ int main(){
 
     DrawDalitz(Prob, "model_K0KLKL.png");
     DrawDalitz(Prob_PHSP, "Prob_PHSP.png");
+    DrawDalitz(Prob_PHSP_another, "Prob_PHSP_another.png");
     DrawDalitz(Prob_phi, "Prob_phi.png");
 
     Draw1DPlots();
