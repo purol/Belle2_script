@@ -34,6 +34,7 @@ Corrector_Multiplicity corrector_Multiplicity_MC15ri("./multiplicity_weight_MC15
 Corrector_Multiplicity corrector_Multiplicity_MC15rd("./multiplicity_weight_MC15rd.txt");
 Corrector_KpKLKL corrector_KpKLKL;
 Corrector_KSKLKL corrector_KSKLKL;
+Corrector_phiKL corrector_phiKL;
 Corrector_KstarKLKL corrector_KstarKLKL;
 Corrector_XsKLKL corrector_XsKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
@@ -345,7 +346,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
             double Correction_KpKLKL = corrector_KpKLKL.GetCorrectionFactorAtGeneric(s13_KpKLKL, s23_KpKLKL, nB2KpKLKL_all_KpKLKL, nB2KpKLKL_NR_KpKLKL);
 
             // B0 --> KS0 KL0 KL0 correction factor
-            double Correction_KSKLKL = corrector_KSKLKL.GetCorrectionFactorAtGeneric(std::max(std::max(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), std::min(std::min(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), nB2KSKLKL_all_KSKLKL, nB2KSKLKL_NR_KSKLKL);
+            double Correction_KSKLKL = corrector_KSKLKL.GetCorrectionFactorAtGeneric(std::max(std::max(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), std::min(std::min(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), nB2KSKLKL_all_KSKLKL, nB2KSKLKL_NR_KSKLKL) + corrector_phiKL.GetCorrectionFactorAtGeneric(std::max(s13_KSKLKL, s12_KSKLKL), std::min(s13_KSKLKL, s12_KSKLKL), nB2KSKLKL_all_KSKLKL, nB2KSKLKL_NR_KSKLKL);
 
             // B --> K* KL KL correction factor
             double Correction_KstarKLKL = corrector_KstarKLKL.GetCorrectionFactorAtGeneric(XKLKL_E_1st, XKLKL_px_1st, XKLKL_py_1st, XKLKL_pz_1st, XKLKL_E_2nd, XKLKL_px_2nd, XKLKL_py_2nd, XKLKL_pz_2nd, nB2KstarKLKL + nB02KstarKLKL);
