@@ -90,11 +90,12 @@ std::vector<Information> Infos_PHSP_another;
 std::vector<Information> Infos_phi;
 
 TH2D* N_evt = new TH2D("N_evt", ";s_{max};s_{min}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
+TH2D* N_evt_another = new TH2D("N_evt_another", ";max M_{K_{s}^{0}K_{L}^{0}};min M_{K_{s}^{0}K_{L}^{0}}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
 TH2D* Prob_PHSP = new TH2D("Prob_PHSP", ";s_{max};s_{min}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
-TH2D* Prob_PHSP_another = new TH2D("Prob_PHSP_another", ";max M_{K_{s}^{0}K_{s}^{0}};min M_{K_{s}^{0}K_{s}^{0}}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
+TH2D* Prob_PHSP_another = new TH2D("Prob_PHSP_another", ";max M_{K_{s}^{0}K_{L}^{0}};min M_{K_{s}^{0}K_{L}^{0}}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
-TH2D* Prob_phi = new TH2D("Prob_phi", ";max M_{K_{s}^{0}K_{s}^{0}};min M_{K_{s}^{0}K_{s}^{0}}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
+TH2D* Prob_phi = new TH2D("Prob_phi", ";max M_{K_{s}^{0}K_{L}^{0}};min M_{K_{s}^{0}K_{L}^{0}}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
 TH2D* Prob = new TH2D("Prob", ";s_{max};s_{min}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
@@ -574,6 +575,10 @@ void FillHist() {
         int GLobalBin = 0;
 
         // find Bin index
+        GLobalBin = N_evt_another->FindBin(smax_, smin_);
+        N_evt_another->SetBinContent(GLobalBin, N_evt_another->GetBinContent(GLobalBin) + 1.0);
+
+        // find Bin index
         GLobalBin = Prob_PHSP_another->FindBin(smax_, smin_);
         Prob_PHSP_another->SetBinContent(GLobalBin, Prob_PHSP_another->GetBinContent(GLobalBin) + 1.0);
     }
@@ -722,6 +727,32 @@ void GetWeights() {
 
             int GLobalBin_Nevt = N_evt->FindBin(smax, smin);
             double Nevt = N_evt->GetBinContent(GLobalBin_Nevt);
+
+            if (Nevt < MyEPSILON) fprintf(fp, "%lf %lf %lf\n", smax, smin, 0.0);
+            else fprintf(fp, "%lf %lf %lf\n", smax, smin, model_val / PHSP_val);
+        }
+    }
+
+    fclose(fp);
+
+    // print weight for B0 -> phi(->KS0 KL0) KL0
+    fp = fopen("phiKL_weight.txt", "w");
+
+    fprintf(fp, "smax: %d %lf %lf\n", NBin, smax_min, smax_max);
+    fprintf(fp, "smin: %d %lf %lf\n", NBin, smin_min, smin_max);
+    for (int i = 0; i < NBin; i++) {
+        for (int j = 0; j < NBin; j++) {
+            double smax = (i + 0.5) * (smax_max - smax_min) / NBin + smax_min;
+            double smin = (j + 0.5) * (smin_max - smin_min) / NBin + smin_min;
+
+            int GLobalBin_PHSP = Prob_PHSP_another->FindBin(smax, smin);
+            double PHSP_val = Prob_PHSP_another->GetBinContent(GLobalBin_PHSP);
+
+            int GLobalBin_model = Prob_phi->FindBin(smax, smin);
+            double model_val = Prob_phi->GetBinContent(GLobalBin_model);
+
+            int GLobalBin_Nevt = N_evt_another->FindBin(smax, smin);
+            double Nevt = N_evt_another->GetBinContent(GLobalBin_Nevt);
 
             if (Nevt < MyEPSILON) fprintf(fp, "%lf %lf %lf\n", smax, smin, 0.0);
             else fprintf(fp, "%lf %lf %lf\n", smax, smin, model_val / PHSP_val);
