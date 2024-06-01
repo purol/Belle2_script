@@ -23,6 +23,8 @@ void THStack_plot_offres() {
 
     NormalizeAtEachMXs = true;
 
+    bool BDTc_correction = false;
+
     Nevt nevt_UUBAR = { 0.0, 0.0 };
     Nevt nevt_DDBAR = { 0.0, 0.0 };
     Nevt nevt_SSBAR = { 0.0, 0.0 };
@@ -34,13 +36,6 @@ void THStack_plot_offres() {
     const char* Offres_MC_CHARM_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_off/CHARM_analysis/validation_v004/final_output";
     const char* Offres_data_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_data_off/SIGNAL_analysis/validation_v004/final_output";
 
-    // Count event to normalize at each MXs region
-    LetsCountMC(Offres_MC_UUBAR_dirname, "UUBAR", 0, (0.25 / Scale_UUBAR_validation_MC15rd));
-    LetsCountMC(Offres_MC_DDBAR_dirname, "DDBAR", 0, (0.25 / Scale_DDBAR_validation_MC15rd));
-    LetsCountMC(Offres_MC_SSBAR_dirname, "SSBAR", 0, (0.25 / Scale_SSBAR_validation_MC15rd));
-    LetsCountMC(Offres_MC_CHARM_dirname, "CHARM", 0, (0.25 / Scale_CHARM_validation_MC15rd));
-    LetsCountdata(Offres_data_dirname);
-
     NevtCount_ri(Offres_MC_UUBAR_dirname, "UUBAR", &nevt_UUBAR);
     NevtCount_ri(Offres_MC_DDBAR_dirname, "DDBAR", &nevt_DDBAR);
     NevtCount_ri(Offres_MC_SSBAR_dirname, "SSBAR", &nevt_SSBAR);
@@ -50,6 +45,23 @@ void THStack_plot_offres() {
     double NormFactor_DDBAR = nevt_DDBAR.NevtwithoutCorrection / nevt_DDBAR.NevtwithCorrection;
     double NormFactor_SSBAR = nevt_SSBAR.NevtwithoutCorrection / nevt_SSBAR.NevtwithCorrection;
     double NormFactor_CHARM = nevt_CHARM.NevtwithoutCorrection / nevt_CHARM.NevtwithCorrection;
+    double NormFactor = (nevt_UUBAR.NevtwithoutCorrection + nevt_DDBAR.NevtwithoutCorrection + nevt_SSBAR.NevtwithoutCorrection + nevt_CHARM.NevtwithoutCorrection)
+        / (nevt_UUBAR.NevtwithCorrection + nevt_DDBAR.NevtwithCorrection + nevt_SSBAR.NevtwithCorrection + nevt_CHARM.NevtwithCorrection);
+
+    // Count event to normalize at each MXs region
+    if (BDTc_correction) {
+        LetsCountMC_correction(Offres_MC_UUBAR_dirname, "UUBAR", NormFactor, 0, (0.25 / Scale_UUBAR_validation_MC15rd));
+        LetsCountMC_correction(Offres_MC_DDBAR_dirname, "DDBAR", NormFactor, 0, (0.25 / Scale_DDBAR_validation_MC15rd));
+        LetsCountMC_correction(Offres_MC_SSBAR_dirname, "SSBAR", NormFactor, 0, (0.25 / Scale_SSBAR_validation_MC15rd));
+        LetsCountMC_correction(Offres_MC_CHARM_dirname, "CHARM", NormFactor, 0, (0.25 / Scale_CHARM_validation_MC15rd));
+    }
+    else {
+        LetsCountMC(Offres_MC_UUBAR_dirname, "UUBAR", 0, (0.25 / Scale_UUBAR_validation_MC15rd));
+        LetsCountMC(Offres_MC_DDBAR_dirname, "DDBAR", 0, (0.25 / Scale_DDBAR_validation_MC15rd));
+        LetsCountMC(Offres_MC_SSBAR_dirname, "SSBAR", 0, (0.25 / Scale_SSBAR_validation_MC15rd));
+        LetsCountMC(Offres_MC_CHARM_dirname, "CHARM", 0, (0.25 / Scale_CHARM_validation_MC15rd));
+    }
+    LetsCountdata(Offres_data_dirname);
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
@@ -248,16 +260,18 @@ void THStack_plot_offres() {
     std::vector<double> llXX_weights;
     std::vector<double> hhISR_weights;
 
-    /*
-    LetsFillMC_correction(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR, 0, (0.25 / Scale_UUBAR_validation_MC15rd));
-    LetsFillMC_correction(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR, 0, (0.25 / Scale_DDBAR_validation_MC15rd));
-    LetsFillMC_correction(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR, 0, (0.25 / Scale_SSBAR_validation_MC15rd));
-    LetsFillMC_correction(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM", NormFactor_CHARM, 0, (0.25 / Scale_CHARM_validation_MC15rd));
-    */
-    LetsFillMC(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR", 0, (0.25 / Scale_UUBAR_validation_MC15rd));
-    LetsFillMC(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR", 0, (0.25 / Scale_DDBAR_validation_MC15rd));
-    LetsFillMC(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR", 0, (0.25 / Scale_SSBAR_validation_MC15rd));
-    LetsFillMC(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM", 0, (0.25 / Scale_CHARM_validation_MC15rd));
+    if (BDTc_correction) {
+        LetsFillMC_correction(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR", NormFactor, 0, (0.25 / Scale_UUBAR_validation_MC15rd));
+        LetsFillMC_correction(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR", NormFactor, 0, (0.25 / Scale_DDBAR_validation_MC15rd));
+        LetsFillMC_correction(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR", NormFactor, 0, (0.25 / Scale_SSBAR_validation_MC15rd));
+        LetsFillMC_correction(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM", NormFactor, 0, (0.25 / Scale_CHARM_validation_MC15rd));
+    }
+    else {
+        LetsFillMC(Offres_MC_UUBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "UUBAR", 0, (0.25 / Scale_UUBAR_validation_MC15rd));
+        LetsFillMC(Offres_MC_DDBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "DDBAR", 0, (0.25 / Scale_DDBAR_validation_MC15rd));
+        LetsFillMC(Offres_MC_SSBAR_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "SSBAR", 0, (0.25 / Scale_SSBAR_validation_MC15rd));
+        LetsFillMC(Offres_MC_CHARM_dirname, variable_names, branch_names, Offres_MC_values, &Offres_MC_numbering, &weights, "CHARM", 0, (0.25 / Scale_CHARM_validation_MC15rd));
+    }
     LetsFilldata(Offres_data_dirname, variable_names, branch_names, Offres_data_values);
 
     // sort variables
