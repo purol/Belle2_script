@@ -2203,7 +2203,7 @@ Corrector_phiKL::Corrector_phiKL() :
 
 double Corrector_phiKL::GetCorrectionFactorAtGeneric(double smax, double smin, double nB2KSKLKL_all, double nB2KSKLKL_NR) {
 
-    if (nB2KSKLKL_all < N_EPSILON) return 1.0; // no correction needed
+    if (nB2KSKLKL_all < N_EPSILON) return 0.0; // no correction needed. because of `Corrector_KSKLKL`, set to be 0
     if (nB2KSKLKL_all - nB2KSKLKL_NR > N_EPSILON) return 0.0; // remove B0 --> KS0 [X --> KL0 KL0]
     if (nB2KSKLKL_all < 0 || nB2KSKLKL_NR < 0) {
         printf("[Corrector_phiKL] number of decay is smaller than 0!\n");
