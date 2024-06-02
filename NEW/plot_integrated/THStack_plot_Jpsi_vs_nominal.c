@@ -673,6 +673,8 @@ void THStack_plot_Jpsi_vs_nominal() {
         pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
         pad1->SetGridx(); pad1->Draw(); pad1->cd();
 
+        gStyle->SetErrorX(0.0);
+        gStyle->SetEndErrorSize(0.0);
         gStyle->SetPalette(kPastel);
 
         Float_t ymax_1 = Stack[k]->GetMaximum();
@@ -687,7 +689,7 @@ void THStack_plot_Jpsi_vs_nominal() {
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         signal_hist_nominal[k]->SetFillStyle(3004); signal_hist_nominal[k]->SetLineColor(kRed); signal_hist_nominal[k]->SetFillColor(kRed); signal_hist_nominal[k]->Draw("HistSAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP");
-        TLegend* legend = pad1->BuildLegend(1.0, 0.9, 0.7, 0.6);
+        TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
         if (NormalizeAtEachMXs == false) {
             TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB");

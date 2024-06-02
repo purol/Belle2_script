@@ -636,6 +636,8 @@ void THStack_plot_comparison_background() {
         pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
         pad1->SetGridx(); pad1->Draw(); pad1->cd();
 
+        gStyle->SetErrorX(0.0);
+        gStyle->SetEndErrorSize(0.0);
         gStyle->SetPalette(kPastel);
 
         Float_t ymax_1 = MC15rd_hist[k]->GetMaximum();
@@ -651,7 +653,7 @@ void THStack_plot_comparison_background() {
 
         MC15rd_hist[k]->SetFillColor(4); MC15rd_hist[k]->SetLineColor(4); MC15rd_hist[k]->SetLineWidth(1); MC15rd_hist[k]->SetFillStyle(3002); MC15rd_hist[k]->Draw("e1 Hist");
         MC15ri_hist[k]->SetFillColor(2); MC15ri_hist[k]->SetLineColor(2); MC15ri_hist[k]->SetLineWidth(1); MC15ri_hist[k]->SetFillStyle(3003); MC15ri_hist[k]->Draw("e1 Hist SAME");
-        TLegend* legend = pad1->BuildLegend(0.9, 0.9, 0.7, 0.7);
+        TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
         TPaveText* pt = new TPaveText(0.135, 0.88, 0.6, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC15ri scaled to MC15rd, MC15rd/MC15ri= " + std::to_string(CAL_MC15ri/ CAL_MC15rd)).c_str()); pt->Draw();
 

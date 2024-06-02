@@ -576,6 +576,8 @@ void THStack_plot_charge_sideband() {
         if((variable_names.at(k).find("MVA") != std::string::npos) && (ChargeSideband_MC_values[k].size() > 10000)) pad1->SetLogy(1);
         else pad1->SetLogy(0);
 
+        gStyle->SetErrorX(0.0);
+        gStyle->SetEndErrorSize(0.0);
         gStyle->SetPalette(kPastel);
 
         Float_t ymax_1 = Stack[k]->GetMaximum();
@@ -589,7 +591,7 @@ void THStack_plot_charge_sideband() {
         Stack[k]->Draw("pfc Hist");
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP");
-        TLegend* legend = pad1->BuildLegend(0.9, 0.9, 0.7, 0.7);
+        TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
         TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str()); pt->Draw();
 
