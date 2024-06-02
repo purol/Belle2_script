@@ -582,21 +582,21 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
 
 void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
 
-    THStack* Stack = new THStack("Stack", ";FBDT index;number of event");
-    TH1D* charged_hist = new TH1D("charged", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* mixed_hist = new TH1D("mixed", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* uubar_hist = new TH1D("u#bar{u}", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* ddbar_hist = new TH1D("d#bar{d}", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* ssbar_hist = new TH1D("s#bar{s}", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* ccbar_hist = new TH1D("c#bar{c}", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* SIGNAL_hist = new TH1D("SIGNAL", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* all_hist = new TH1D("all", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
+    THStack* Stack = new THStack("Stack", ";bin index;number of event");
+    TH1D* charged_hist = new TH1D("charged", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* mixed_hist = new TH1D("mixed", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* uubar_hist = new TH1D("u#bar{u}", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* ddbar_hist = new TH1D("d#bar{d}", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* ssbar_hist = new TH1D("s#bar{s}", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* ccbar_hist = new TH1D("c#bar{c}", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* SIGNAL_hist = new TH1D("SIGNAL", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
+    TH1D* all_hist = new TH1D("all", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
     TH1D* data_hist = nullptr;
     if (data != nullptr) {
-        data_hist = new TH1D("data", ";FBDT index;number of event", RarityBins, BinMIN, BinMAX);
+        data_hist = new TH1D("data", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
         data_hist->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
     }
-    TH1D* Ratio_hist = new TH1D("Ratio", ";FBDT index;data/MC", RarityBins, BinMIN, BinMAX);
+    TH1D* Ratio_hist = new TH1D("Ratio", ";bin index;data/MC", RarityBins, BinMIN, BinMAX);
 
     // fill histogram
     for (int i = 0; i < Sample_names.size(); i++) {
@@ -704,12 +704,12 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
     line_12->Draw(); line_23->Draw();
 
     // write MXs bin text
-    TPaveText* pt_1 = new TPaveText(0.1, 0.9, 0.8 / 3.0 + 0.1, 1.0, "NDC NB");
-    pt_1->SetFillStyle(0); pt_1->SetLineWidth(0); pt_1->AddText("0.0 < M_{X_{s}} < 0.6 GeV/c^{2}"); pt_1->Draw();
-    TPaveText* pt_2 = new TPaveText(0.8 / 3.0, 0.9, 2.0 * 0.8 / 3.0 + 0.1, 1.0, "NDC NB");
-    pt_2->SetFillStyle(0); pt_2->SetLineWidth(0); pt_2->AddText("0.6 < M_{X_{s}} < 1.0 GeV/c^{2}"); pt_2->Draw();
-    TPaveText* pt_3 = new TPaveText(2.0 * 0.8 / 3.0, 0.9, 3.0 * 0.8 / 3.0 + 0.1, 1.0, "NDC NB");
-    pt_3->SetFillStyle(0); pt_3->SetLineWidth(0); pt_3->AddText("1.0 GeV/c^{2} < M_{X_{s}}"); pt_3->Draw();
+    TPaveText* pt_1 = new TPaveText(0.14, 0.9, 0.8 / 3.0 + 0.14, 1.0, "NDC NB");
+    pt_1->SetTextSize(0.04); pt_1->SetFillStyle(0); pt_1->SetLineWidth(0); pt_1->AddText("0.0 < M_{X_{s}} < 0.6 GeV/c^{2}"); pt_1->Draw();
+    TPaveText* pt_2 = new TPaveText(0.8 / 3.0 + 0.14, 0.9, 2.0 * 0.8 / 3.0 + 0.14, 1.0, "NDC NB");
+    pt_2->SetTextSize(0.04); pt_2->SetFillStyle(0); pt_2->SetLineWidth(0); pt_2->AddText("0.6 < M_{X_{s}} < 1.0 GeV/c^{2}"); pt_2->Draw();
+    TPaveText* pt_3 = new TPaveText(2.0 * 0.8 / 3.0 + 0.1, 0.9, 3.0 * 0.8 / 3.0 + 0.1, 1.0, "NDC NB");
+    pt_3->SetTextSize(0.04); pt_3->SetFillStyle(0); pt_3->SetLineWidth(0); pt_3->AddText("1.0 GeV/c^{2} < M_{X_{s}}"); pt_3->Draw();
 
     c_temp->cd();
     TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->Draw(); pad2->cd();
