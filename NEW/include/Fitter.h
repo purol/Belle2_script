@@ -702,6 +702,14 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
     line_23->SetLineColor(kBlack); line_23->SetLineStyle(2); line_23->SetLineWidth(3);
     line_12->Draw(); line_23->Draw();
 
+    // write MXs bin text
+    TPaveText* pt_1 = new TPaveText(0.1, 0.9, 0.8 / 3.0 + 0.1, 1.0, "NDC NB");
+    pt_1->SetFillStyle(0); pt_1->SetLineWidth(0); pt_1->AddText("0.0 < M_{X_{s}} < 0.6 GeV/c^{2}"); pt_1->Draw();
+    TPaveText* pt_2 = new TPaveText(0.8 / 3.0, 0.9, 2.0 * 0.8 / 3.0 + 0.1, 1.0, "NDC NB");
+    pt_2->SetFillStyle(0); pt_2->SetLineWidth(0); pt_2->AddText("0.6 < M_{X_{s}} < 1.0 GeV/c^{2}"); pt_2->Draw();
+    TPaveText* pt_3 = new TPaveText(2.0 * 0.8 / 3.0, 0.9, 3.0 * 0.8 / 3.0 + 0.1, 1.0, "NDC NB");
+    pt_3->SetFillStyle(0); pt_3->SetLineWidth(0); pt_3->AddText("1.0 GeV/c^{2} < M_{X_{s}}"); pt_3->Draw();
+
     c_temp->cd();
     TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->Draw(); pad2->cd();
     Ratio_hist->SetMinimum(0.5); Ratio_hist->SetMaximum(1.5); Ratio_hist->SetLineWidth(2);
