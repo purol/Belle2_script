@@ -678,7 +678,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
 
     TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
     pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
-    pad1->SetGridx(); pad1->Draw(); pad1->cd();
+    pad1->Draw(); pad1->cd();
 
     gStyle->SetErrorX(0.0);
     gStyle->SetEndErrorSize(0.0);
@@ -694,8 +694,16 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
     TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
     legend->SetFillStyle(0); legend->SetLineWidth(0);
 
+    // vertical line to separate MXs region
+    c_temp->Update();
+    TLine* line_12 = new TLine((double)RarityBins_MX1, pad1->GetUymin(), (double)RarityBins_MX1, pad1->GetUymax());
+    line_12->SetLineColor(kBlack); line_12->SetLineStyle(2); line_12->SetLineWidth(3);
+    TLine* line_23 = new TLine((double)RarityBins_MX1 + RarityBins_MX2, pad1->GetUymin(), (double)RarityBins_MX1 + RarityBins_MX2, pad1->GetUymax());
+    line_23->SetLineColor(kBlack); line_23->SetLineStyle(2); line_23->SetLineWidth(3);
+    line_12->Draw(); line_23->Draw();
+
     c_temp->cd();
-    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->Draw(); pad2->cd();
     Ratio_hist->SetMinimum(0.5); Ratio_hist->SetMaximum(1.5); Ratio_hist->SetLineWidth(2);
     Ratio_hist->GetYaxis()->SetTitleSize(0.08); Ratio_hist->GetYaxis()->SetTitleOffset(0.5);
     Ratio_hist->GetXaxis()->SetLabelSize(0.08); Ratio_hist->GetYaxis()->SetLabelSize(0.08);
@@ -704,6 +712,14 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
     line->SetLineColor(kRed);
     line->SetLineStyle(1); line->SetLineWidth(3);
     line->Draw();
+
+    // vertical line to separate MXs region
+    c_temp->Update();
+    TLine* line_12_pad2 = new TLine((double)RarityBins_MX1, pad2->GetUymin(), (double)RarityBins_MX1, pad2->GetUymax());
+    line_12_pad2->SetLineColor(kBlack); line_12_pad2->SetLineStyle(2); line_12_pad2->SetLineWidth(3);
+    TLine* line_23_pad2 = new TLine((double)RarityBins_MX1 + RarityBins_MX2, pad2->GetUymin(), (double)RarityBins_MX1 + RarityBins_MX2, pad2->GetUymax());
+    line_23_pad2->SetLineColor(kBlack); line_23_pad2->SetLineStyle(2); line_23_pad2->SetLineWidth(3);
+    line_12_pad2->Draw(); line_23_pad2->Draw();
 
     c_temp->SetBottomMargin(0.0);
     c_temp->SaveAs("hist_data_plot.png");
@@ -724,6 +740,14 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
         delete data_hist;
     }
     delete Ratio_hist;
+
+    delete line;
+
+    delete line_12;
+    delete line_23;
+
+    delete line_12_pad2;
+    delete line_23_pad2;
 }
 
 void ObtainNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll) {
