@@ -13,6 +13,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # include <algorithm>
 # include <float.h>
+# include "TPaveText.h"
 
 #include "constants.h"
 #include "base.h"
