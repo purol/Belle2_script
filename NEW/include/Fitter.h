@@ -11,6 +11,7 @@
 # include "TStyle.h"
 # include "TLine.h"
 # include "TColor.h"
+# include "TPaveText.h"
 
 using namespace RooFit;
 using namespace RooStats;
