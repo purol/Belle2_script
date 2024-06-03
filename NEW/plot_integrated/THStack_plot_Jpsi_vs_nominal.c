@@ -256,7 +256,7 @@ void THStack_plot_Jpsi_vs_nominal() {
     variable_names.push_back("MsquaredBsig_op4"); branch_names.push_back("Upsilon");
     variable_names.push_back("MsquaredBsig_op7"); branch_names.push_back("Upsilon");
     variable_names.push_back("MVA_BB"); branch_names.push_back("Upsilon");
-    variable_names.push_back("FBDT_index"); branch_names.push_back("Upsilon");
+    variable_names.push_back("bin index"); branch_names.push_back("Upsilon");
 
     Nvar_num = static_cast<int>(variable_names.size());
 
@@ -514,7 +514,7 @@ void THStack_plot_Jpsi_vs_nominal() {
             min = 0.6;
             max = 2.1;
         }
-        else if (hasEnding(variable_names.at(k), std::string("FBDT_index"))) {
+        else if (hasEnding(variable_names.at(k), std::string("bin index"))) {
             min = 0.0;
             max = RarityBins;
             bins = RarityBins;

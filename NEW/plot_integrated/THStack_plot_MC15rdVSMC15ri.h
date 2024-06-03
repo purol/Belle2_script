@@ -133,7 +133,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
-            if (variable_names.at(k).find("FBDT_index") != std::string::npos) continue;
+            if (variable_names.at(k).find("bin index") != std::string::npos) continue;
 
             if (branch_names.at(k) == std::string("Upsilon")) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -218,7 +218,7 @@ void LetsFill_ri(const char* dirname, std::vector<std::string> variable_names, s
             tree_Btag->GetEntry(j);
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
-                if (variable_names.at(k).find("FBDT_index") != std::string::npos) {
+                if (variable_names.at(k).find("bin index") != std::string::npos) {
                     auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                     int index_FBDT_raw = std::distance(variable_names.begin(), it);
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));

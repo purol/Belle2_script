@@ -196,7 +196,7 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
         if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
-            if (variable_names.at(k).find("FBDT_index") != std::string::npos) continue;
+            if (variable_names.at(k).find("bin index") != std::string::npos) continue;
 
             if (branch_names.at(k) == std::string("Upsilon")) {
                 if(variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -294,7 +294,7 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
             }
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
-                if (variable_names.at(k).find("FBDT_index") != std::string::npos) {
+                if (variable_names.at(k).find("bin index") != std::string::npos) {
                     auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                     int index_FBDT_raw = std::distance(variable_names.begin(), it);
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
@@ -455,7 +455,7 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
-            if (variable_names.at(k).find("FBDT_index") != std::string::npos) continue;
+            if (variable_names.at(k).find("bin index") != std::string::npos) continue;
 
             if (branch_names.at(k) == std::string("Upsilon")) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -489,7 +489,7 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
             }
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
-                if (variable_names.at(k).find("FBDT_index") != std::string::npos) {
+                if (variable_names.at(k).find("bin index") != std::string::npos) {
                     auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                     int index_FBDT_raw = std::distance(variable_names.begin(), it);
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
@@ -542,7 +542,7 @@ void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_n
         TTree* tree_Btag = (TTree*)input_file->Get("Btag");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
-            if (variable_names.at(k).find("FBDT_index") != std::string::npos) continue;
+            if (variable_names.at(k).find("bin index") != std::string::npos) continue;
 
             if (branch_names.at(k) == std::string("Upsilon")) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -579,7 +579,7 @@ void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_n
             }
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
-                if (variable_names.at(k).find("FBDT_index") != std::string::npos) {
+                if (variable_names.at(k).find("bin index") != std::string::npos) {
                     auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                     int index_FBDT_raw = std::distance(variable_names.begin(), it);
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
@@ -755,7 +755,7 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
         if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
-            if (variable_names.at(k).find("FBDT_index") != std::string::npos) continue;
+            if (variable_names.at(k).find("bin index") != std::string::npos) continue;
 
             if (branch_names.at(k) == std::string("Upsilon")) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -857,7 +857,7 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
             BDTc_correction = BDTcToWeight(BDTc) * NormFactor;
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
-                if (variable_names.at(k).find("FBDT_index") != std::string::npos) {
+                if (variable_names.at(k).find("bin index") != std::string::npos) {
                     auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                     int index_FBDT_raw = std::distance(variable_names.begin(), it);
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
@@ -1098,7 +1098,7 @@ void LetsFillMC_ESide(const char* dirname, std::vector<std::string> variable_nam
         if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
-            if (variable_names.at(k).find("FBDT_index") != std::string::npos) continue;
+            if (variable_names.at(k).find("bin index") != std::string::npos) continue;
 
             if (branch_names.at(k) == std::string("Upsilon")) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -1196,7 +1196,7 @@ void LetsFillMC_ESide(const char* dirname, std::vector<std::string> variable_nam
             }
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
-                if (variable_names.at(k).find("FBDT_index") != std::string::npos) {
+                if (variable_names.at(k).find("bin index") != std::string::npos) {
                     auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                     int index_FBDT_raw = std::distance(variable_names.begin(), it);
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
@@ -1434,7 +1434,7 @@ void LetsFillMC_MUSide(const char* dirname, std::vector<std::string> variable_na
         if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
-            if (variable_names.at(k).find("FBDT_index") != std::string::npos) continue;
+            if (variable_names.at(k).find("bin index") != std::string::npos) continue;
 
             if (branch_names.at(k) == std::string("Upsilon")) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -1532,7 +1532,7 @@ void LetsFillMC_MUSide(const char* dirname, std::vector<std::string> variable_na
             }
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
-                if (variable_names.at(k).find("FBDT_index") != std::string::npos) {
+                if (variable_names.at(k).find("bin index") != std::string::npos) {
                     auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                     int index_FBDT_raw = std::distance(variable_names.begin(), it);
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
