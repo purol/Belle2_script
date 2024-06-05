@@ -81,6 +81,8 @@ gbasf2_Zanmu.py
 gbasf2_Komano.py -> (BUGFIX on B->XKSKS match) -> gbasf2_Komano_BUGFIX.py -> (remove stdpi0s from Dveto) -> gbasf2_Komano_BUGFIX2.py
 -> (add # of B->Kstar KL KL decay, run ppbar and KSKS MC reconstruction when it is ppbar and KSKS analysis) ->
 gbasf2_Luize.py
+-> (bug fix on B0 -> KS0 KL0 KL0 counter) ->
+gbasf2_Newton.py
 
 plan
 - Emiss + Pmiss
