@@ -635,7 +635,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
                     else continue;
                 }
                 else if (true_MXs_region == 3) {
-                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    if (MC_MXs > 1.0) {}
                     else continue;
                 }
             }
@@ -956,7 +956,7 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
                     else continue;
                 }
                 else if (true_MXs_region == 3) {
-                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    if (MC_MXs > 1.0) {}
                     else continue;
                 }
             }
@@ -1285,7 +1285,7 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
                     else continue;
                 }
                 else if (true_MXs_region == 3) {
-                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    if (MC_MXs > 1.0) {}
                     else continue;
                 }
             }
@@ -2872,7 +2872,7 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
                     else continue;
                 }
                 else if (true_MXs_region == 3) {
-                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    if (MC_MXs > 1.0) {}
                     else continue;
                 }
             }
@@ -3183,7 +3183,7 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
                     else continue;
                 }
                 else if (true_MXs_region == 3) {
-                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    if (MC_MXs > 1.0) {}
                     else continue;
                 }
             }
@@ -3508,7 +3508,7 @@ double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, c
                     else continue;
                 }
                 else if (true_MXs_region == 3) {
-                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    if (MC_MXs > 1.0) {}
                     else continue;
                 }
             }
@@ -3822,7 +3822,7 @@ double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, c
                     else continue;
                 }
                 else if (true_MXs_region == 3) {
-                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    if (MC_MXs > 1.0) {}
                     else continue;
                 }
             }
@@ -4133,7 +4133,7 @@ double GetTransitionPDFs(const char* dirname, const char* included_string, TH1D*
                     else continue;
                 }
                 else if (true_MXs_region == 3) {
-                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    if (MC_MXs > 1.0) {}
                     else continue;
                 }
             }
@@ -4397,7 +4397,7 @@ double GetKstardeltaPDFs(const char* dirname, const char* included_string, TH1D*
                     else continue;
                 }
                 else if (true_MXs_region == 3) {
-                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    if (MC_MXs > 1.0) {}
                     else continue;
                 }
             }
@@ -4719,7 +4719,7 @@ double GetXnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist
                     else continue;
                 }
                 else if (true_MXs_region == 3) {
-                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    if (MC_MXs > 1.0) {}
                     else continue;
                 }
             }
@@ -5134,7 +5134,7 @@ double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* 
                     else continue;
                 }
                 else if (true_MXs_region == 3) {
-                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    if (MC_MXs > 1.0) {}
                     else continue;
                 }
             }
@@ -5459,7 +5459,7 @@ double GetBRXKLKLPDFs(const char* dirname, const char* included_string, TH1D* hi
                     else continue;
                 }
                 else if (true_MXs_region == 3) {
-                    if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) {}
+                    if (MC_MXs > 1.0) {}
                     else continue;
                 }
             }
