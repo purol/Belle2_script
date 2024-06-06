@@ -391,7 +391,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
                 else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
@@ -404,7 +404,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
 
                 if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) ArrayBinID = 6;
                 else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) ArrayBinID = 7;
-                else if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) ArrayBinID = 8;
+                else if (MC_MXs > 1.0) ArrayBinID = 8;
             }
 
             int BinIndex = (int)std::floor(ReturnBinIndex(MVA_var, Bsig_M));
@@ -716,7 +716,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
                 else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
@@ -729,7 +729,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
 
                 if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) ArrayBinID = 6;
                 else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) ArrayBinID = 7;
-                else if ((MC_MXs > 1.0) && (MC_MXs < 2.0)) ArrayBinID = 8;
+                else if (MC_MXs > 1.0) ArrayBinID = 8;
             }
 
             int BinIndex = (int)std::floor(ReturnBinIndex(MVA_var, Bsig_M));

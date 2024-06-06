@@ -610,7 +610,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
                 else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
@@ -927,7 +927,7 @@ double GetTrackPDFs(const char* dirname, const char* included_string, TH1D* hist
                 else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
@@ -1252,7 +1252,7 @@ double GetKS0PDFs(const char* dirname, const char* included_string, TH1D* hist, 
                 else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
@@ -2827,7 +2827,7 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
                 else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
@@ -3134,7 +3134,7 @@ double GetBDTcPDFs(const char* dirname, const char* included_string, TH1D* hist,
                 else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
@@ -3455,7 +3455,7 @@ double GetmbPDFs(const char* dirname, const char* included_string, TH1D* hist, c
                 else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
@@ -3765,7 +3765,7 @@ double GetpfPDFs(const char* dirname, const char* included_string, TH1D* hist, c
                 double MC_MXs = MXs;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
@@ -4072,7 +4072,7 @@ double GetTransitionPDFs(const char* dirname, const char* included_string, TH1D*
                 else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
@@ -4332,7 +4332,7 @@ double GetKstardeltaPDFs(const char* dirname, const char* included_string, TH1D*
                 double MC_MXs = MXs;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
@@ -4650,7 +4650,7 @@ double GetXnnBRPDFs(const char* dirname, const char* included_string, TH1D* hist
                 else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
@@ -5061,7 +5061,7 @@ double GetBtoDtoXKLPDFs(const char* dirname, const char* included_string, TH1D* 
                 else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
@@ -5382,7 +5382,7 @@ double GetBRXKLKLPDFs(const char* dirname, const char* included_string, TH1D* hi
                 else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
 
                 // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 2.0)) {}
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
                 else { // mass is NaN. try to find true mass region by file name
                     if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
                     else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
