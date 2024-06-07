@@ -66,7 +66,7 @@ enum PDFtype { // reco level
     BRBtoDtoXKLDOWN,
     BRXKLKLUP,
     BRXKLKLDOWN
-}
+};
 
 Corrector corrector;
 Corrector_FEI corrector_FEI;
