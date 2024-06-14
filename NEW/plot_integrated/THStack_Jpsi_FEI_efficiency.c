@@ -408,7 +408,7 @@ void LetsFillKonlydata(const char* dirname, const char* included_string = "root"
 
 }
 
-void THStack_Jpsi_FBDT_efficiency() {
+void THStack_Jpsi_FEI_efficiency() {
 
 
     // dirnames
