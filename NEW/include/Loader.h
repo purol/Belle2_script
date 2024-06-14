@@ -417,6 +417,7 @@ public:
     void SelectDecayModeOf(Loader::DecayMode decaymode);
     void RejectDecayModeOf(Loader::DecayMode decaymode);
     void BeamEnergyCorrectionFromDeltaE(int index_pBcms, int index_EBcms, int index_Mbc, int index_deltaE, double targetEbeamstar, bool IsItBtag);
+    void BeamEnergyCorrectionFromDeltaE_RC(int index_pBcms, int index_EBcms, int index_Mbc, int index_deltaE, double targetEbeamstar, bool IsItBtag);
 };
 
 Loader::Loader() {
@@ -5006,6 +5007,28 @@ void Loader::BeamEnergyCorrectionFromDeltaE(int index_pBcms, int index_EBcms, in
             double Ebeamstar = temp_data.Bsig_info[index_EBcms] - temp_data.Bsig_info[index_deltaE]; // EBstar - deltaE
             temp_data.Bsig_info[index_Mbc] = std::sqrt(targetEbeamstar * targetEbeamstar - targetEbeamstar * targetEbeamstar * temp_data.Bsig_info[index_pBcms] * temp_data.Bsig_info[index_pBcms] / (Ebeamstar * Ebeamstar)); // correct Mbc
             temp_data.Bsig_info[index_deltaE] = (targetEbeamstar / Ebeamstar) * temp_data.Bsig_info[index_EBcms] - targetEbeamstar; // correct deltaE
+        }
+
+        temp_queue.push(temp_data);
+    }
+    TotalData.swap(temp_queue);
+}
+
+void Loader::BeamEnergyCorrectionFromDeltaE_RC(int index_pBcms, int index_EBcms, int index_Mbc, int index_deltaE, double targetEbeamstar, bool IsItBtag) {
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+
+        if (IsItBtag) {
+            double Ebeamstar = temp_data.Btag_info[index_EBcms] - temp_data.Btag_info[index_deltaE]; // EBstar - deltaE
+            temp_data.Btag_info[index_Mbc] = temp_data.Btag_info[index_Mbc] + Ebeamstar; // correct Mbc
+            temp_data.Btag_info[index_deltaE] = temp_data.Btag_info[index_deltaE]; // keep deltaE
+        }
+        else {
+            double Ebeamstar = temp_data.Bsig_info[index_EBcms] - temp_data.Bsig_info[index_deltaE]; // EBstar - deltaE
+            temp_data.Bsig_info[index_Mbc] = temp_data.Bsig_info[index_Mbc] + Ebeamstar; // correct Mbc
+            temp_data.Bsig_info[index_deltaE] = temp_data.Bsig_info[index_deltaE]; // keep deltaE
         }
 
         temp_queue.push(temp_data);
