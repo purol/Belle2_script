@@ -474,11 +474,11 @@ void THStack_Jpsi_FEI_efficiency() {
     printf("==========================\n");
 
     printf("=== data/MC for Bplus ===\n");
-    printf("all channel: %lf +- %lf\n", i, ratio_onebin_Bplus->GetBinContent(1), ratio_onebin_Bplus->GetBinError(1));
+    printf("all channel: %lf +- %lf\n", ratio_onebin_Bplus->GetBinContent(1), ratio_onebin_Bplus->GetBinError(1));
     printf("==========================\n");
 
     printf("=== data/MC for Bzero ===\n");
-    printf("all channel: %lf +- %lf\n", i, ratio_onebin_Bzero->GetBinContent(1), ratio_onebin_Bzero->GetBinError(1));
+    printf("all channel: %lf +- %lf\n", ratio_onebin_Bzero->GetBinContent(1), ratio_onebin_Bzero->GetBinError(1));
     printf("==========================\n");
 
 }
