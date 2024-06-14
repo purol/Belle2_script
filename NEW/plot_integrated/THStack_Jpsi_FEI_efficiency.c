@@ -12,6 +12,8 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 */
 
 # define MCTYPE "MC15rd"
+
+double CAL = 1.0; // must be 1.0
 # define CAL_qq 1.0
 
 # include <algorithm>
