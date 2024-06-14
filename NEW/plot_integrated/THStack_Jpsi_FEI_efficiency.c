@@ -17,8 +17,25 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # include <algorithm>
 # include <float.h>
 
-# include "constants.h"
-# include "base.h"
+#include "constants.h"
+#include "ObtainWeight.h"
+#include "correctors.h"
+#include "base.h"
+
+Corrector_FEI corrector_FEI;
+Corrector_PID corrector_PID;
+Corrector_pi0 corrector_pi0;
+Corrector_FakePID corrector_FakePID;
+Corrector_Knn corrector_Knn;
+Corrector_Xsnn corrector_Xsnn;
+Corrector_Multiplicity corrector_Multiplicity;
+Corrector_KpKLKL corrector_KpKLKL;
+Corrector_KSKLKL corrector_KSKLKL;
+Corrector_phiKL corrector_phiKL;
+Corrector_KstarKLKL corrector_KstarKLKL;
+Corrector_XsKLKL corrector_XsKLKL;
+Corrector_BtoDtoXKL corrector_BtoDtoXKL;
+Corrector_LID corrector_LID;
 
 TH1D* Nevt_MC_Bplus = new TH1D("Nevt_MC_Bplus", "Nevt_MC_Bplus", 36, 0, 36);
 TH1D* Nevt_MC_Bzero = new TH1D("Nevt_MC_Bzero", "Nevt_MC_Bzero", 32, 0, 32);
