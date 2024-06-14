@@ -45,6 +45,12 @@ TH1D* Nevt_MC_Bzero = new TH1D("Nevt_MC_Bzero", "Nevt_MC_Bzero", 32, 0, 32);
 TH1D* Nevt_data_Bplus = new TH1D("Nevt_data_Bplus", "Nevt_data_Bplus", 36, 0, 36);
 TH1D* Nevt_data_Bzero = new TH1D("Nevt_data_Bzero", "Nevt_data_Bzero", 32, 0, 32);
 
+TH1D* onebin_MC_Bplus = new TH1D("onebin_MC_Bplus", "onebin_MC_Bplus", 1, 0, 1);
+TH1D* onebin_MC_Bzero = new TH1D("onebin_MC_Bzero", "onebin_MC_Bzero", 1, 0, 1);
+
+TH1D* onebin_data_Bplus = new TH1D("onebin_data_Bplus", "onebin_data_Bplus", 1, 0, 1);
+TH1D* onebin_data_Bzero = new TH1D("onebin_data_Bzero", "onebin_data_Bzero", 1, 0, 1);
+
 TH1D* ratio_Bplus = new TH1D("ratio_Bplus", "ratio_Bplus", 36, 0, 36);
 TH1D* ratio_Bzero = new TH1D("ratio_Bzero", "ratio_Bzero", 32, 0, 32);
 
@@ -335,9 +341,11 @@ void LetsFillKonlyMC(const char* dirname, std::string SampleName, int option = 0
 
             if ((Upsilon_ID > -0.5) && (Upsilon_ID < 0.5)) {
                 Nevt_MC_Bplus->Fill(Btag_ID + 0.5, weights);
+                onebin_MC_Bplus->Fill(0.5, weights);
             }
             else {
                 Nevt_MC_Bzero->Fill(Btag_ID + 0.5, weights);
+                onebin_MC_Bzero->Fill(0.5, weights);
             }
 
         }
@@ -396,9 +404,11 @@ void LetsFillKonlydata(const char* dirname, const char* included_string = "root"
 
             if ((Upsilon_ID > -0.5) && (Upsilon_ID < 0.5)) {
                 Nevt_data_Bplus->Fill(Btag_ID + 0.5, 1.0);
+                onebin_data_Bplus->Fill(0.5, 1.0);
             }
             else {
                 Nevt_data_Bzero->Fill(Btag_ID + 0.5, 1.0);
+                onebin_data_Bzero->Fill(0.5, 1.0);
             }
 
         }
