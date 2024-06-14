@@ -473,6 +473,24 @@ void THStack_Jpsi_FEI_efficiency() {
     for (int i = 0; i < 32; i++) printf("channel %d: %lf +- %lf\n", i, ratio_Bzero->GetBinContent(i + 1), ratio_Bzero->GetBinError(i + 1));
     printf("==========================\n");
 
+
+
+    printf("=== Nevt MC for Bplus ===\n");
+    printf("all channel: %lf +- %lf\n", onebin_MC_Bplus->GetBinContent(1), onebin_MC_Bplus->GetBinError(1));
+    printf("=========================\n");
+
+    printf("=== Nevt MC for Bzero ===\n");
+    printf("all channel: %lf +- %lf\n", onebin_MC_Bzero->GetBinContent(1), onebin_MC_Bzero->GetBinError(1));
+    printf("=========================\n");
+
+    printf("=== Nevt data for Bplus ===\n");
+    printf("all channel: %lf +- %lf\n", onebin_data_Bplus->GetBinContent(1), onebin_data_Bplus->GetBinError(1));
+    printf("===========================\n");
+
+    printf("=== Nevt data for Bzero ===\n");
+    printf("all channel: %lf +- %lf\n", onebin_data_Bzero->GetBinContent(1), onebin_data_Bzero->GetBinError(1));
+    printf("===========================\n");
+
     printf("=== data/MC for Bplus ===\n");
     printf("all channel: %lf +- %lf\n", ratio_onebin_Bplus->GetBinContent(1), ratio_onebin_Bplus->GetBinError(1));
     printf("==========================\n");
