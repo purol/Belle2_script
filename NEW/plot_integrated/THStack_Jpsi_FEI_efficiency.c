@@ -54,6 +54,9 @@ TH1D* onebin_data_Bzero = new TH1D("onebin_data_Bzero", "onebin_data_Bzero", 1, 
 TH1D* ratio_Bplus = new TH1D("ratio_Bplus", "ratio_Bplus", 36, 0, 36);
 TH1D* ratio_Bzero = new TH1D("ratio_Bzero", "ratio_Bzero", 32, 0, 32);
 
+TH1D* ratio_onebin_Bplus = new TH1D("ratio_onebin_Bplus", "ratio_Bplus", 1, 0, 1);
+TH1D* ratio_onebin_Bzero = new TH1D("ratio_onebin_Bzero", "ratio_Bzero", 1, 0, 1);
+
 void LetsFillKonlyMC(const char* dirname, std::string SampleName, int option = 0, double additional_weight = 1.0) {
     /*
     SampleName for Knn
@@ -443,6 +446,9 @@ void THStack_Jpsi_FEI_efficiency() {
     for (int i = 0; i < 36; i++) ratio_Bplus->Divide(Nevt_data_Bplus, Nevt_MC_Bplus);
     for (int i = 0; i < 32; i++) ratio_Bzero->Divide(Nevt_data_Bzero, Nevt_MC_Bzero);
 
+    ratio_onebin_Bplus->Divide(onebin_data_Bplus, onebin_MC_Bplus);
+    ratio_onebin_Bzero->Divide(onebin_data_Bzero, onebin_MC_Bzero);
+
     printf("=== Nevt MC for Bplus ===\n");
     for (int i = 0; i < 36; i++) printf("channel %d: %lf +- %lf\n", i, Nevt_MC_Bplus->GetBinContent(i + 1), Nevt_MC_Bplus->GetBinError(i + 1));
     printf("=========================\n");
@@ -467,5 +473,12 @@ void THStack_Jpsi_FEI_efficiency() {
     for (int i = 0; i < 32; i++) printf("channel %d: %lf +- %lf\n", i, ratio_Bzero->GetBinContent(i + 1), ratio_Bzero->GetBinError(i + 1));
     printf("==========================\n");
 
+    printf("=== data/MC for Bplus ===\n");
+    printf("all channel: %lf +- %lf\n", i, ratio_onebin_Bplus->GetBinContent(i + 1), ratio_onebin_Bplus->GetBinError(i + 1));
+    printf("==========================\n");
+
+    printf("=== data/MC for Bzero ===\n");
+    printf("all channel: %lf +- %lf\n", i, ratio_onebin_Bzero->GetBinContent(i + 1), ratio_onebin_Bzero->GetBinError(i + 1));
+    printf("==========================\n");
 
 }
