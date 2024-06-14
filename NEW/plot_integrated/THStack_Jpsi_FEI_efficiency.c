@@ -395,10 +395,10 @@ void LetsFillKonlydata(const char* dirname, const char* included_string = "root"
             }
 
             if ((Upsilon_ID > -0.5) && (Upsilon_ID < 0.5)) {
-                Nevt_data_Bplus->Fill(Btag_ID + 0.5, weights);
+                Nevt_data_Bplus->Fill(Btag_ID + 0.5, 1.0);
             }
             else {
-                Nevt_data_Bzero->Fill(Btag_ID + 0.5, weights);
+                Nevt_data_Bzero->Fill(Btag_ID + 0.5, 1.0);
             }
 
         }
