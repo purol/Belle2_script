@@ -506,8 +506,8 @@ void THStack_Jpsi_FEI_efficiency() {
     ratio_onebin_Bplus->Divide(onebin_data_Bplus, onebin_MC_Bplus);
     ratio_onebin_Bzero->Divide(onebin_data_Bzero, onebin_MC_Bzero);
 
-    ratio_Bplus_compare->Divide(Nevt_MC_Bplus_compare, Nevt_data_Bplus_compare);
-    ratio_Bzero_compare->Divide(Nevt_MC_Bzero_compare, Nevt_data_Bzero_compare);
+    ratio_Bplus_compare->Divide(Nevt_data_Bplus_compare, Nevt_MC_Bplus_compare);
+    ratio_Bzero_compare->Divide(Nevt_data_Bzero_compare, Nevt_MC_Bzero_compare);
 
     printf("=== Nevt MC for Bplus ===\n");
     for (int i = 0; i < 36; i++) printf("channel %d: %lf +- %lf\n", i, Nevt_MC_Bplus->GetBinContent(i + 1), Nevt_MC_Bplus->GetBinError(i + 1));
