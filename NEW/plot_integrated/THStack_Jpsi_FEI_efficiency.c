@@ -45,17 +45,28 @@ TH1D* Nevt_MC_Bzero = new TH1D("Nevt_MC_Bzero", "Nevt_MC_Bzero", 32, 0, 32);
 TH1D* Nevt_data_Bplus = new TH1D("Nevt_data_Bplus", "Nevt_data_Bplus", 36, 0, 36);
 TH1D* Nevt_data_Bzero = new TH1D("Nevt_data_Bzero", "Nevt_data_Bzero", 32, 0, 32);
 
+TH1D* ratio_Bplus = new TH1D("ratio_Bplus", "ratio_Bplus", 36, 0, 36);
+TH1D* ratio_Bzero = new TH1D("ratio_Bzero", "ratio_Bzero", 32, 0, 32);
+
+
 TH1D* onebin_MC_Bplus = new TH1D("onebin_MC_Bplus", "onebin_MC_Bplus", 1, 0, 1);
 TH1D* onebin_MC_Bzero = new TH1D("onebin_MC_Bzero", "onebin_MC_Bzero", 1, 0, 1);
 
 TH1D* onebin_data_Bplus = new TH1D("onebin_data_Bplus", "onebin_data_Bplus", 1, 0, 1);
 TH1D* onebin_data_Bzero = new TH1D("onebin_data_Bzero", "onebin_data_Bzero", 1, 0, 1);
 
-TH1D* ratio_Bplus = new TH1D("ratio_Bplus", "ratio_Bplus", 36, 0, 36);
-TH1D* ratio_Bzero = new TH1D("ratio_Bzero", "ratio_Bzero", 32, 0, 32);
-
 TH1D* ratio_onebin_Bplus = new TH1D("ratio_onebin_Bplus", "ratio_Bplus", 1, 0, 1);
 TH1D* ratio_onebin_Bzero = new TH1D("ratio_onebin_Bzero", "ratio_Bzero", 1, 0, 1);
+
+
+TH1D* Nevt_MC_Bplus_compare = new TH1D("Nevt_MC_Bplus_compare", "Nevt_MC_Bplus_compare", 12, 0, 12);
+TH1D* Nevt_MC_Bzero_compare = new TH1D("Nevt_MC_Bzero_compare", "Nevt_MC_Bzero_compare", 11, 0, 11);
+
+TH1D* Nevt_data_Bplus_compare = new TH1D("Nevt_data_Bplus_compare", "Nevt_data_Bplus_compare", 12, 0, 12);
+TH1D* Nevt_data_Bzero_compare = new TH1D("Nevt_data_Bzero_compare", "Nevt_data_Bzero_compare", 11, 0, 11);
+
+TH1D* ratio_Bplus_compare = new TH1D("ratio_Bplus_compare", "ratio_Bplus_compare", 12, 0, 12);
+TH1D* ratio_Bzero_compare = new TH1D("ratio_Bzero_compare", "ratio_Bzero_compare", 11, 0, 11);
 
 void LetsFillKonlyMC(const char* dirname, std::string SampleName, int option = 0, double additional_weight = 1.0) {
     /*
@@ -345,10 +356,33 @@ void LetsFillKonlyMC(const char* dirname, std::string SampleName, int option = 0
             if ((Upsilon_ID > -0.5) && (Upsilon_ID < 0.5)) {
                 Nevt_MC_Bplus->Fill(Btag_ID + 0.5, weights);
                 onebin_MC_Bplus->Fill(0.5, weights);
+                if (std::abs(Btag_ID - 0.0) < MyEPSILON) Nevt_MC_Bplus_compare->Fill(0.5, weights);
+                else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Nevt_MC_Bplus_compare->Fill(1.5, weights);
+                else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Nevt_MC_Bplus_compare->Fill(2.5, weights);
+                else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Nevt_MC_Bplus_compare->Fill(3.5, weights);
+                else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Nevt_MC_Bplus_compare->Fill(4.5, weights);
+                else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Nevt_MC_Bplus_compare->Fill(5.5, weights);
+                else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Nevt_MC_Bplus_compare->Fill(6.5, weights);
+                else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Nevt_MC_Bplus_compare->Fill(7.5, weights);
+                else if (std::abs(Btag_ID - 23.0) < MyEPSILON) Nevt_MC_Bplus_compare->Fill(8.5, weights);
+                else if (std::abs(Btag_ID - 24.0) < MyEPSILON) Nevt_MC_Bplus_compare->Fill(9.5, weights);
+                else if (std::abs(Btag_ID - 30.0) < MyEPSILON) Nevt_MC_Bplus_compare->Fill(10.5, weights);
+                else Nevt_MC_Bplus_compare->Fill(11.5, weights);
             }
             else {
                 Nevt_MC_Bzero->Fill(Btag_ID + 0.5, weights);
                 onebin_MC_Bzero->Fill(0.5, weights);
+                if (std::abs(Btag_ID - 0.0) < MyEPSILON) Nevt_MC_Bzero_compare->Fill(0.5, weights);
+                else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Nevt_MC_Bzero_compare->Fill(1.5, weights);
+                else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Nevt_MC_Bzero_compare->Fill(2.5, weights);
+                else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Nevt_MC_Bzero_compare->Fill(3.5, weights);
+                else if (std::abs(Btag_ID - 5.0) < MyEPSILON) Nevt_MC_Bzero_compare->Fill(4.5, weights);
+                else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Nevt_MC_Bzero_compare->Fill(5.5, weights);
+                else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Nevt_MC_Bzero_compare->Fill(6.5, weights);
+                else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Nevt_MC_Bzero_compare->Fill(7.5, weights);
+                else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Nevt_MC_Bzero_compare->Fill(8.5, weights);
+                else if (std::abs(Btag_ID - 26.0) < MyEPSILON) Nevt_MC_Bzero_compare->Fill(9.5, weights);
+                else Nevt_MC_Bzero_compare->Fill(10.5, weights);
             }
 
         }
@@ -408,10 +442,33 @@ void LetsFillKonlydata(const char* dirname, const char* included_string = "root"
             if ((Upsilon_ID > -0.5) && (Upsilon_ID < 0.5)) {
                 Nevt_data_Bplus->Fill(Btag_ID + 0.5, 1.0);
                 onebin_data_Bplus->Fill(0.5, 1.0);
+                if (std::abs(Btag_ID - 0.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(0.5, weights);
+                else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(1.5, weights);
+                else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(2.5, weights);
+                else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(3.5, weights);
+                else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(4.5, weights);
+                else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(5.5, weights);
+                else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(6.5, weights);
+                else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(7.5, weights);
+                else if (std::abs(Btag_ID - 23.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(8.5, weights);
+                else if (std::abs(Btag_ID - 24.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(9.5, weights);
+                else if (std::abs(Btag_ID - 30.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(10.5, weights);
+                else Nevt_data_Bplus_compare->Fill(11.5, weights);
             }
             else {
                 Nevt_data_Bzero->Fill(Btag_ID + 0.5, 1.0);
                 onebin_data_Bzero->Fill(0.5, 1.0);
+                if (std::abs(Btag_ID - 0.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(0.5, weights);
+                else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(1.5, weights);
+                else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(2.5, weights);
+                else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(3.5, weights);
+                else if (std::abs(Btag_ID - 5.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(4.5, weights);
+                else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(5.5, weights);
+                else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(6.5, weights);
+                else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(7.5, weights);
+                else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(8.5, weights);
+                else if (std::abs(Btag_ID - 26.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(9.5, weights);
+                else Nevt_data_Bzero_compare->Fill(10.5, weights);
             }
 
         }
@@ -448,6 +505,9 @@ void THStack_Jpsi_FEI_efficiency() {
 
     ratio_onebin_Bplus->Divide(onebin_data_Bplus, onebin_MC_Bplus);
     ratio_onebin_Bzero->Divide(onebin_data_Bzero, onebin_MC_Bzero);
+
+    ratio_Bplus_compare->Divide(Nevt_MC_Bplus_compare, Nevt_data_Bplus_compare);
+    ratio_Bzero_compare->Divide(Nevt_MC_Bzero_compare, Nevt_data_Bzero_compare);
 
     printf("=== Nevt MC for Bplus ===\n");
     for (int i = 0; i < 36; i++) printf("channel %d: %lf +- %lf\n", i, Nevt_MC_Bplus->GetBinContent(i + 1), Nevt_MC_Bplus->GetBinError(i + 1));
@@ -499,4 +559,28 @@ void THStack_Jpsi_FEI_efficiency() {
     printf("all channel: %lf +- %lf\n", ratio_onebin_Bzero->GetBinContent(1), ratio_onebin_Bzero->GetBinError(1));
     printf("==========================\n");
 
+
+    printf("=== Nevt MC for Bplus ===\n");
+    for (int i = 0; i < 12; i++) printf("category %d: %lf +- %lf\n", i, Nevt_MC_Bplus_compare->GetBinContent(i + 1), Nevt_MC_Bplus_compare->GetBinError(i + 1));
+    printf("=========================\n");
+
+    printf("=== Nevt MC for Bzero ===\n");
+    for (int i = 0; i < 11; i++) printf("category %d: %lf +- %lf\n", i, Nevt_MC_Bzero_compare->GetBinContent(i + 1), Nevt_MC_Bzero_compare->GetBinError(i + 1));
+    printf("=========================\n");
+
+    printf("=== Nevt data for Bplus ===\n");
+    for (int i = 0; i < 12; i++) printf("category %d: %lf +- %lf\n", i, Nevt_data_Bplus_compare->GetBinContent(i + 1), Nevt_data_Bplus_compare->GetBinError(i + 1));
+    printf("===========================\n");
+
+    printf("=== Nevt data for Bzero ===\n");
+    for (int i = 0; i < 11; i++) printf("category %d: %lf +- %lf\n", i, Nevt_data_Bzero_compare->GetBinContent(i + 1), Nevt_data_Bzero_compare->GetBinError(i + 1));
+    printf("===========================\n");
+
+    printf("=== data/MC for Bplus ===\n");
+    for (int i = 0; i < 12; i++) printf("category %d: %lf +- %lf\n", i, ratio_Bplus_compare->GetBinContent(i + 1), ratio_Bplus_compare->GetBinError(i + 1));
+    printf("==========================\n");
+
+    printf("=== data/MC for Bzero ===\n");
+    for (int i = 0; i < 11; i++) printf("category %d: %lf +- %lf\n", i, ratio_Bzero_compare->GetBinContent(i + 1), ratio_Bzero_compare->GetBinError(i + 1));
+    printf("==========================\n");
 }
