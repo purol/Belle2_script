@@ -442,33 +442,33 @@ void LetsFillKonlydata(const char* dirname, const char* included_string = "root"
             if ((Upsilon_ID > -0.5) && (Upsilon_ID < 0.5)) {
                 Nevt_data_Bplus->Fill(Btag_ID + 0.5, 1.0);
                 onebin_data_Bplus->Fill(0.5, 1.0);
-                if (std::abs(Btag_ID - 0.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(0.5, weights);
-                else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(1.5, weights);
-                else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(2.5, weights);
-                else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(3.5, weights);
-                else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(4.5, weights);
-                else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(5.5, weights);
-                else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(6.5, weights);
-                else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(7.5, weights);
-                else if (std::abs(Btag_ID - 23.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(8.5, weights);
-                else if (std::abs(Btag_ID - 24.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(9.5, weights);
-                else if (std::abs(Btag_ID - 30.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(10.5, weights);
-                else Nevt_data_Bplus_compare->Fill(11.5, weights);
+                if (std::abs(Btag_ID - 0.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(0.5, 1.0);
+                else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(1.5, 1.0);
+                else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(2.5, 1.0);
+                else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(3.5, 1.0);
+                else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(4.5, 1.0);
+                else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(5.5, 1.0);
+                else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(6.5, 1.0);
+                else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(7.5, 1.0);
+                else if (std::abs(Btag_ID - 23.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(8.5, 1.0);
+                else if (std::abs(Btag_ID - 24.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(9.5, 1.0);
+                else if (std::abs(Btag_ID - 30.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(10.5, 1.0);
+                else Nevt_data_Bplus_compare->Fill(11.5, 1.0);
             }
             else {
                 Nevt_data_Bzero->Fill(Btag_ID + 0.5, 1.0);
                 onebin_data_Bzero->Fill(0.5, 1.0);
-                if (std::abs(Btag_ID - 0.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(0.5, weights);
-                else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(1.5, weights);
-                else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(2.5, weights);
-                else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(3.5, weights);
-                else if (std::abs(Btag_ID - 5.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(4.5, weights);
-                else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(5.5, weights);
-                else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(6.5, weights);
-                else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(7.5, weights);
-                else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(8.5, weights);
-                else if (std::abs(Btag_ID - 26.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(9.5, weights);
-                else Nevt_data_Bzero_compare->Fill(10.5, weights);
+                if (std::abs(Btag_ID - 0.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(0.5, 1.0);
+                else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(1.5, 1.0);
+                else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(2.5, 1.0);
+                else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(3.5, 1.0);
+                else if (std::abs(Btag_ID - 5.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(4.5, 1.0);
+                else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(5.5, 1.0);
+                else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(6.5, 1.0);
+                else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(7.5, 1.0);
+                else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(8.5, 1.0);
+                else if (std::abs(Btag_ID - 26.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(9.5, 1.0);
+                else Nevt_data_Bzero_compare->Fill(10.5, 1.0);
             }
 
         }
