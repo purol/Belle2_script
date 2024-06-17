@@ -14,6 +14,7 @@
 #include <numeric>
 #include "TFile.h"
 #include "TTree.h"
+#include "TLegend.h"
 #include "TSystemDirectory.h"
 #include "TSystemFile.h"
 #include "RooGenericPdf.h"
