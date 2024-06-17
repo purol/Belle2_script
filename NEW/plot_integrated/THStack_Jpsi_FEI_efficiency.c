@@ -68,6 +68,16 @@ TH1D* Nevt_data_Bzero_compare = new TH1D("Nevt_data_Bzero_compare", "Nevt_data_B
 TH1D* ratio_Bplus_compare = new TH1D("ratio_Bplus_compare", "ratio_Bplus_compare", 12, 0, 12);
 TH1D* ratio_Bzero_compare = new TH1D("ratio_Bzero_compare", "ratio_Bzero_compare", 11, 0, 11);
 
+
+TH1D* Nevt_MC_Bplus_My = new TH1D("Nevt_MC_Bplus_My", "Nevt_MC_Bplus_My", 3, 0, 3);
+TH1D* Nevt_MC_Bzero_My = new TH1D("Nevt_MC_Bzero_My", "Nevt_MC_Bzero_My", 1, 0, 1);
+
+TH1D* Nevt_data_Bplus_My = new TH1D("Nevt_data_Bplus_My", "Nevt_data_Bplus_My", 3, 0, 3);
+TH1D* Nevt_data_Bzero_My = new TH1D("Nevt_data_Bzero_My", "Nevt_data_Bzero_My", 1, 0, 1);
+
+TH1D* ratio_Bplus_My = new TH1D("ratio_Bplus_My", "ratio_Bplus_My", 3, 0, 3);
+TH1D* ratio_Bzero_My = new TH1D("ratio_Bzero_My", "ratio_Bzero_My", 1, 0, 1);
+
 void LetsFillKonlyMC(const char* dirname, std::string SampleName, int option = 0, double additional_weight = 1.0) {
     /*
     SampleName for Knn
@@ -372,6 +382,18 @@ void LetsFillKonlyMC(const char* dirname, std::string SampleName, int option = 0
                 else if (std::abs(Btag_ID - 24.0) < MyEPSILON) Nevt_MC_Bplus_compare->Fill(9.5, weights);
                 else if (std::abs(Btag_ID - 30.0) < MyEPSILON) Nevt_MC_Bplus_compare->Fill(10.5, weights);
                 else Nevt_MC_Bplus_compare->Fill(11.5, weights);
+                if (std::abs(Btag_ID - 0.0) < MyEPSILON) Nevt_MC_Bplus_My->Fill(0.5, weights);
+                else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Nevt_MC_Bplus_My->Fill(0.5, weights);
+                else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Nevt_MC_Bplus_My->Fill(0.5, weights);
+                else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Nevt_MC_Bplus_My->Fill(0.5, weights);
+                else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Nevt_MC_Bplus_My->Fill(1.5, weights);
+                else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Nevt_MC_Bplus_My->Fill(1.5, weights);
+                else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Nevt_MC_Bplus_My->Fill(1.5, weights);
+                else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Nevt_MC_Bplus_My->Fill(1.5, weights);
+                else if (std::abs(Btag_ID - 23.0) < MyEPSILON) Nevt_MC_Bplus_My->Fill(2.5, weights);
+                else if (std::abs(Btag_ID - 24.0) < MyEPSILON) Nevt_MC_Bplus_My->Fill(2.5, weights);
+                else if (std::abs(Btag_ID - 30.0) < MyEPSILON) Nevt_MC_Bplus_My->Fill(2.5, weights);
+                else Nevt_MC_Bplus_My->Fill(2.5, weights);
             }
             else {
                 Nevt_MC_Bzero->Fill(Btag_ID + 0.5, weights);
@@ -387,6 +409,7 @@ void LetsFillKonlyMC(const char* dirname, std::string SampleName, int option = 0
                 else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Nevt_MC_Bzero_compare->Fill(8.5, weights);
                 else if (std::abs(Btag_ID - 26.0) < MyEPSILON) Nevt_MC_Bzero_compare->Fill(9.5, weights);
                 else Nevt_MC_Bzero_compare->Fill(10.5, weights);
+                Nevt_MC_Bzero_My->Fill(0.5, weights);
             }
 
         }
@@ -458,6 +481,18 @@ void LetsFillKonlydata(const char* dirname, const char* included_string = "root"
                 else if (std::abs(Btag_ID - 24.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(9.5, 1.0);
                 else if (std::abs(Btag_ID - 30.0) < MyEPSILON) Nevt_data_Bplus_compare->Fill(10.5, 1.0);
                 else Nevt_data_Bplus_compare->Fill(11.5, 1.0);
+                if (std::abs(Btag_ID - 0.0) < MyEPSILON) Nevt_data_Bplus_My->Fill(0.5, 1.0);
+                else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Nevt_data_Bplus_My->Fill(0.5, 1.0);
+                else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Nevt_data_Bplus_My->Fill(0.5, 1.0);
+                else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Nevt_data_Bplus_My->Fill(0.5, 1.0);
+                else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Nevt_data_Bplus_My->Fill(1.5, 1.0);
+                else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Nevt_data_Bplus_My->Fill(1.5, 1.0);
+                else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Nevt_data_Bplus_My->Fill(1.5, 1.0);
+                else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Nevt_data_Bplus_My->Fill(1.5, 1.0);
+                else if (std::abs(Btag_ID - 23.0) < MyEPSILON) Nevt_data_Bplus_My->Fill(2.5, 1.0);
+                else if (std::abs(Btag_ID - 24.0) < MyEPSILON) Nevt_data_Bplus_My->Fill(2.5, 1.0);
+                else if (std::abs(Btag_ID - 30.0) < MyEPSILON) Nevt_data_Bplus_My->Fill(2.5, 1.0);
+                else Nevt_data_Bplus_My->Fill(2.5, 1.0);
             }
             else {
                 Nevt_data_Bzero->Fill(Btag_ID + 0.5, 1.0);
@@ -473,6 +508,7 @@ void LetsFillKonlydata(const char* dirname, const char* included_string = "root"
                 else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(8.5, 1.0);
                 else if (std::abs(Btag_ID - 26.0) < MyEPSILON) Nevt_data_Bzero_compare->Fill(9.5, 1.0);
                 else Nevt_data_Bzero_compare->Fill(10.5, 1.0);
+                Nevt_data_Bzero_My->Fill(0.5, 1.0);
             }
 
         }
@@ -512,6 +548,9 @@ void THStack_Jpsi_FEI_efficiency() {
 
     ratio_Bplus_compare->Divide(Nevt_data_Bplus_compare, Nevt_MC_Bplus_compare);
     ratio_Bzero_compare->Divide(Nevt_data_Bzero_compare, Nevt_MC_Bzero_compare);
+
+    ratio_Bplus_My->Divide(Nevt_data_Bplus_My, Nevt_MC_Bplus_My);
+    ratio_Bzero_My->Divide(Nevt_data_Bzero_My, Nevt_MC_Bzero_My);
 
     printf("=== Nevt MC for Bplus ===\n");
     for (int i = 0; i < 36; i++) printf("channel %d: %lf +- %lf\n", i, Nevt_MC_Bplus->GetBinContent(i + 1), Nevt_MC_Bplus->GetBinError(i + 1));
@@ -565,7 +604,7 @@ void THStack_Jpsi_FEI_efficiency() {
 
 
     printf("=== Nevt MC for Bplus ===\n");
-    for (int i = 0; i < 12; i++) printf("category %d: %lf +- %lf\n", i, Nevt_MC_Bplus_compare->GetBinContent(i + 1), Nevt_MC_Bplus_compare->GetBinError(i + 1));
+    for (int i = 0; i < 12; i++) printf("category %d: %lf +- %lf\n", i, Nevt_data_Bplus_My->GetBinContent(i + 1), Nevt_data_Bplus_My->GetBinError(i + 1));
     printf("=========================\n");
 
     printf("=== Nevt MC for Bzero ===\n");
@@ -586,5 +625,30 @@ void THStack_Jpsi_FEI_efficiency() {
 
     printf("=== data/MC for Bzero ===\n");
     for (int i = 0; i < 11; i++) printf("category %d: %lf +- %lf\n", i, ratio_Bzero_compare->GetBinContent(i + 1), ratio_Bzero_compare->GetBinError(i + 1));
+    printf("==========================\n");
+
+
+    printf("=== Nevt MC for Bplus ===\n");
+    for (int i = 0; i < 3; i++) printf("My category %d: %lf +- %lf\n", i, Nevt_MC_Bplus_compare->GetBinContent(i + 1), Nevt_MC_Bplus_compare->GetBinError(i + 1));
+    printf("=========================\n");
+
+    printf("=== Nevt MC for Bzero ===\n");
+    for (int i = 0; i < 1; i++) printf("My category %d: %lf +- %lf\n", i, Nevt_data_Bzero_My->GetBinContent(i + 1), Nevt_data_Bzero_My->GetBinError(i + 1));
+    printf("=========================\n");
+
+    printf("=== Nevt data for Bplus ===\n");
+    for (int i = 0; i < 3; i++) printf("My category %d: %lf +- %lf\n", i, Nevt_MC_Bplus_My->GetBinContent(i + 1), Nevt_MC_Bplus_My->GetBinError(i + 1));
+    printf("===========================\n");
+
+    printf("=== Nevt data for Bzero ===\n");
+    for (int i = 0; i < 1; i++) printf("My category %d: %lf +- %lf\n", i, Nevt_MC_Bzero_My->GetBinContent(i + 1), Nevt_MC_Bzero_My->GetBinError(i + 1));
+    printf("===========================\n");
+
+    printf("=== data/MC for Bplus ===\n");
+    for (int i = 0; i < 3; i++) printf("My category %d: %lf +- %lf\n", i, ratio_Bplus_My->GetBinContent(i + 1), ratio_Bplus_My->GetBinError(i + 1));
+    printf("==========================\n");
+
+    printf("=== data/MC for Bzero ===\n");
+    for (int i = 0; i < 1; i++) printf("My category %d: %lf +- %lf\n", i, ratio_Bzero_My->GetBinContent(i + 1), ratio_Bzero_My->GetBinError(i + 1));
     printf("==========================\n");
 }
