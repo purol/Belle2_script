@@ -1780,7 +1780,6 @@ int main()
     /* ====================================== */
     // Draw Hist
     Signal_ratio->SetLineColor(kBlack); Signal_ratio->SetMarkerStyle(21); Signal_ratio->Sumw2(); Signal_ratio->SetStats(0);
-    Signal_ratio->Divide(MC15rd_hist[k], MC15ri_hist[k]);
 
     TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
