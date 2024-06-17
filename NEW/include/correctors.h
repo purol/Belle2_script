@@ -2100,8 +2100,9 @@ public:
 Corrector_KSKLKL::Corrector_KSKLKL() :
     N_EPSILON(0.01),
     // This value excludes B0 -> phi(-> KS0 KL0) KL0 resonance.
-    // according to eq (28) in https://arxiv.org/pdf/hep-ph/0509155, BR(B0 -> KS0 KS0 KS0) = 3 * BR(B0 ->KS0 KS0 KL0)
-    // according to PDG, BR(B0 -> KS0 KS0 KS0) = 0.000006. Therefore, BR(B0 ->KS0 KS0 KL0) = 0.000002, without phi resonance
+    // according to eq (28) in https://arxiv.org/pdf/hep-ph/0509155, BR(B0 -> KS0 KS0 KS0) = 3 * BR(B0 ->KS0 KL0 KL0), without phi resonance
+    // according to PDG, BR(B0 -> KS0 KS0 KS0) = 0.000006. Therefore, BR(B0 ->KS0 KL0 KL0) = 0.000002, without phi resonance
+    // in decfile, 0.000048000   K0  anti-K0  K0. Therefore, BR(B0->KS0 KL0 KL0) = 0.000018 in decfile.
     BR_KSKLKL_all_PDG(0.000002),
     BR_KSKLKL_NR_evtpdl(0.000018),
     BR_RelativeUncertainty_KSKLKL_all_PDG(0.5 / 6.0)
@@ -2169,57 +2170,22 @@ private:
 
 public:
     Corrector_phiKL();
-    double GetCorrectionFactorAtGeneric(double smax, double smin, double nB2KSKLKL_all, double nB2KSKLKL_NR);
+    double GetCorrectionFactorAtGeneric(double nB02phiKL0);
 };
 
 Corrector_phiKL::Corrector_phiKL() :
     N_EPSILON(0.01),
     // This class gives a correction factor to produce B0 -> phi(-> KS0 KL0) KL0 resonance from B0 -> KS0 KL0 KL0 NR
-    BR_phiKL_all_PDG(0.00000365),
-    BR_KSKLKL_NR_evtpdl(0.000018),
+    BR_B02phiKL_PDG(0.0000073 * 0.5), // In PDG, BR(B0 -> phi K0) = 0.0000073
+    BR_B02phiKL_evtpdl(0.0000043), // In decfile, BR(B0 -> phi KL0) = 0.0000043
     BR_RelativeUncertainty_phiKL_all_PDG(0.7 / 7.3)
-{
-    printf("[Corrector_phiKL] try to read phiKL correction files...\n");
+{ }
 
-    FILE* fp;
+double Corrector_phiKL::GetCorrectionFactorAtGeneric(double nB02phiKL0) {
 
-    // read phiKL weights
-    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/KSKLKL/phiKL_weight.txt", "r");
-    fscanf(fp, "smax: %d %lf %lf\n", &smax_NBin, &smax_min, &smax_max);
-    fscanf(fp, "smin: %d %lf %lf\n", &smin_NBin, &smin_min, &smin_max);
-    weights_KSKLKL = new TH2D("KSKLKL_weights_for_phiKL", ";;", smax_NBin, smax_min, smax_max, smin_NBin, smin_min, smin_max);
-    for (int i = 0; i < smax_NBin; i++) {
-        for (int j = 0; j < smin_NBin; j++) {
-            double smax;
-            double smin;
-            double weight;
-            fscanf(fp, "%lf %lf %lf\n", &smax, &smin, &weight);
-            weights_KSKLKL->Fill(smax, smin, weight);
-        }
-    }
-    fclose(fp);
+    if (nB02phiKL0 < N_EPSILON) return 1.0; // no correction needed.
 
-}
-
-double Corrector_phiKL::GetCorrectionFactorAtGeneric(double smax, double smin, double nB2KSKLKL_all, double nB2KSKLKL_NR) {
-
-    if (nB2KSKLKL_all < N_EPSILON) return 0.0; // no correction needed. because of `Corrector_KSKLKL`, set to be 0
-    if (nB2KSKLKL_all - nB2KSKLKL_NR > N_EPSILON) return 0.0; // remove B0 --> KS0 [X --> KL0 KL0]
-    if (nB2KSKLKL_all < 0 || nB2KSKLKL_NR < 0) {
-        printf("[Corrector_phiKL] number of decay is smaller than 0!\n");
-        exit(1);
-    }
-
-    // check smax and smin
-    double smax_ = std::max(smax, smin);
-    double smin_ = std::min(smax, smin);
-
-    double Correction = 1;
-
-    int GLobalBin_weight = weights_KSKLKL->FindBin(smax_, smin_);
-    Correction = weights_KSKLKL->GetBinContent(GLobalBin_weight) * (BR_phiKL_all_PDG / BR_KSKLKL_NR_evtpdl);
-
-    return Correction;
+    return (BR_B02phiKL_PDG / BR_B02phiKL_evtpdl);
 }
 
 class Corrector_KstarKLKL {
