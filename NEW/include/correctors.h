@@ -2164,8 +2164,8 @@ private:
     TH2D* weights_KSKLKL;
 
     const double N_EPSILON;
-    const double BR_phiKL_all_PDG;
-    const double BR_KSKLKL_NR_evtpdl;
+    const double BR_B02phiKL_PDG;
+    const double BR_B02phiKL_evtpdl;
     const double BR_RelativeUncertainty_phiKL_all_PDG;
 
 public:
