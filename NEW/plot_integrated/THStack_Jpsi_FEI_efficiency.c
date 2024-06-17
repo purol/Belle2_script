@@ -604,7 +604,7 @@ void THStack_Jpsi_FEI_efficiency() {
 
 
     printf("=== Nevt MC for Bplus ===\n");
-    for (int i = 0; i < 12; i++) printf("category %d: %lf +- %lf\n", i, Nevt_data_Bplus_My->GetBinContent(i + 1), Nevt_data_Bplus_My->GetBinError(i + 1));
+    for (int i = 0; i < 12; i++) printf("category %d: %lf +- %lf\n", i, Nevt_MC_Bplus_compare->GetBinContent(i + 1), Nevt_MC_Bplus_compare->GetBinError(i + 1));
     printf("=========================\n");
 
     printf("=== Nevt MC for Bzero ===\n");
@@ -629,7 +629,7 @@ void THStack_Jpsi_FEI_efficiency() {
 
 
     printf("=== Nevt MC for Bplus ===\n");
-    for (int i = 0; i < 3; i++) printf("My category %d: %lf +- %lf\n", i, Nevt_MC_Bplus_compare->GetBinContent(i + 1), Nevt_MC_Bplus_compare->GetBinError(i + 1));
+    for (int i = 0; i < 3; i++) printf("My category %d: %lf +- %lf\n", i, Nevt_MC_Bplus_My->GetBinContent(i + 1), Nevt_MC_Bplus_My->GetBinError(i + 1));
     printf("=========================\n");
 
     printf("=== Nevt MC for Bzero ===\n");
