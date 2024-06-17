@@ -268,6 +268,7 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
     theTree->SetBranchAddress("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
     theTree->SetBranchAddress("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
     theTree->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_phi__bc", &temp_UpsilonDataToTree[187]);
+    theTree->SetBranchAddress("extraInfo__boNgammav200_KL0__bc", &temp_UpsilonDataToTree[188]);
 
     // get Bsig_info
     theTree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -699,6 +700,7 @@ void ApplicationEachFile(const char* filename, const char* BB_weightfile_path, c
     temp_tree->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
     temp_tree->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
     temp_tree->Branch("nParticlesInList__boB0__clKSKLKL_phi__bc", &temp_UpsilonDataToTree[187]);
+    temp_tree->Branch("extraInfo__boNgammav200_KL0__bc", &temp_UpsilonDataToTree[188]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);

@@ -86,7 +86,7 @@ typedef struct data {
     // 172: avg_1st_KL0_XKLKL_E, 173: avg_1st_KL0_XKLKL_px, 174: avg_1st_KL0_XKLKL_py, 175: avg_1st_KL0_XKLKL_pz
     // 176: avg_2nd_KL0_XKLKL_E, 177: avg_2nd_KL0_XKLKL_px, 178: avg_2nd_KL0_XKLKL_py, 179: avg_2nd_KL0_XKLKL_pz
     // 180: nKS0_XKLKL, 181: avg_KS0_XKLKL_E, 182: avg_KS0_XKLKL_px, 183: avg_KS0_XKLKL_py, 184: avg_KS0_XKLKL_pz
-    // 185: nB2KstarKLKL, 186: nB02KstarKLKL, 187: nB02phiKL
+    // 185: nB2KstarKLKL, 186: nB02KstarKLKL, 187: nB02phiKL, 188: nGamma from KL0
 
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
@@ -785,6 +785,7 @@ void Loader::GetData(TFile* input_file) {
     else {
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_phi__bc", &temp.Upsilon_info[187]);
     }
+    tree_upsilon->SetBranchAddress("extraInfo__boNgammav200_KL0__bc", &temp.Upsilon_info[188]);
 
     // get Bsig_info
     tree_Bsig->SetBranchAddress("Bsig_E", &temp.Bsig_info[0]);
@@ -2681,6 +2682,7 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &UpsilonDataToTree[185]);
         tree_upsilon->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &UpsilonDataToTree[186]);
         tree_upsilon->Branch("nParticlesInList__boB0__clKSKLKL_phi__bc", &UpsilonDataToTree[187]);
+        tree_upsilon->Branch("extraInfo__boNgammav200_KL0__bc", &UpsilonDataToTree[188]);
 
         // get Bsig_info
         tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
@@ -3246,6 +3248,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
     temp_tree_upsilon->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
     temp_tree_upsilon->Branch("nParticlesInList__boB0__clKSKLKL_phi__bc", &temp_UpsilonDataToTree[187]);
+    temp_tree_upsilon->Branch("extraInfo__boNgammav200_KL0__bc", &temp_UpsilonDataToTree[188]);
 
     // get Bsig_info
     temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -3797,6 +3800,7 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
     temp_tree->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
     temp_tree->Branch("nParticlesInList__boB0__clKSKLKL_phi__bc", &temp_UpsilonDataToTree[187]);
+    temp_tree->Branch("extraInfo__boNgammav200_KL0__bc", &temp_UpsilonDataToTree[188]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);

@@ -300,6 +300,7 @@ int main(int argc, char* argv[]){
             temp_tree->SetBranchAddress("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
             temp_tree->SetBranchAddress("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
             temp_tree->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_phi__bc", &temp_UpsilonDataToTree[187]);
+            temp_tree->SetBranchAddress("extraInfo__boNgammav200_KL0__bc", &temp_UpsilonDataToTree[188]);
 
             // get Bsig_info
             temp_tree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -760,6 +761,7 @@ int main(int argc, char* argv[]){
             temp_tree_upsilon->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
             temp_tree_upsilon->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
             temp_tree_upsilon->Branch("nParticlesInList__boB0__clKSKLKL_phi__bc", &temp_UpsilonDataToTree[187]);
+            temp_tree_upsilon->Branch("extraInfo__boNgammav200_KL0__bc", &temp_UpsilonDataToTree[188]);
 
             // get Bsig_info
             temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
