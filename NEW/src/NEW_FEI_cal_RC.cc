@@ -1803,7 +1803,6 @@ int main()
     Signal_NEW->SetFillColor(2); Signal_NEW->SetLineColor(2); Signal_NEW->SetLineWidth(1); Signal_NEW->SetFillStyle(3003); Signal_NEW->Draw("e1 Hist SAME");
     TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
     legend->SetFillStyle(0); legend->SetLineWidth(0);
-    TPaveText* pt = new TPaveText(0.135, 0.88, 0.6, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC15ri scaled to MC15rd, MC15rd/MC15ri= " + std::to_string(CAL_MC15ri / CAL_MC15rd)).c_str()); pt->Draw();
 
     c_temp->cd();
     TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
