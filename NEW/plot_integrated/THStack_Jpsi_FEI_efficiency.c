@@ -633,15 +633,15 @@ void THStack_Jpsi_FEI_efficiency() {
     printf("=========================\n");
 
     printf("=== Nevt MC for Bzero ===\n");
-    for (int i = 0; i < 1; i++) printf("My category %d: %lf +- %lf\n", i, Nevt_data_Bzero_My->GetBinContent(i + 1), Nevt_data_Bzero_My->GetBinError(i + 1));
+    for (int i = 0; i < 1; i++) printf("My category %d: %lf +- %lf\n", i, Nevt_MC_Bzero_My->GetBinContent(i + 1), Nevt_MC_Bzero_My->GetBinError(i + 1));
     printf("=========================\n");
 
     printf("=== Nevt data for Bplus ===\n");
-    for (int i = 0; i < 3; i++) printf("My category %d: %lf +- %lf\n", i, Nevt_MC_Bplus_My->GetBinContent(i + 1), Nevt_MC_Bplus_My->GetBinError(i + 1));
+    for (int i = 0; i < 3; i++) printf("My category %d: %lf +- %lf\n", i, Nevt_data_Bplus_My->GetBinContent(i + 1), Nevt_data_Bplus_My->GetBinError(i + 1));
     printf("===========================\n");
 
     printf("=== Nevt data for Bzero ===\n");
-    for (int i = 0; i < 1; i++) printf("My category %d: %lf +- %lf\n", i, Nevt_MC_Bzero_My->GetBinContent(i + 1), Nevt_MC_Bzero_My->GetBinError(i + 1));
+    for (int i = 0; i < 1; i++) printf("My category %d: %lf +- %lf\n", i, Nevt_data_Bzero_My->GetBinContent(i + 1), Nevt_data_Bzero_My->GetBinError(i + 1));
     printf("===========================\n");
 
     printf("=== data/MC for Bplus ===\n");
