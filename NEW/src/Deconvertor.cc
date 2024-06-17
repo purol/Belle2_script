@@ -299,6 +299,7 @@ int main(int argc, char* argv[]){
             temp_tree->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[184]);
             temp_tree->SetBranchAddress("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
             temp_tree->SetBranchAddress("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
+            temp_tree->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_phi__bc", &temp_UpsilonDataToTree[187]);
 
             // get Bsig_info
             temp_tree->SetBranchAddress("Bsig_E", &temp_BsigDataToTree[0]);
@@ -758,6 +759,7 @@ int main(int argc, char* argv[]){
             temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[184]);
             temp_tree_upsilon->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
             temp_tree_upsilon->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
+            temp_tree_upsilon->Branch("nParticlesInList__boB0__clKSKLKL_phi__bc", &temp_UpsilonDataToTree[187]);
 
             // get Bsig_info
             temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
