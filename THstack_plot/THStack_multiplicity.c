@@ -320,7 +320,7 @@ void THStack_multiplicity() {
     const char* K0nunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/before_Dveto_cut";
     const char* K0starnunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/before_Dveto_cut";
     const char* Xsdnunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/before_Dveto_cut";
-    const char* CHG_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD/CHG_analysis/validation_v004/before_Dveto_cut/Merge";
+    const char* CHG_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD/CHG_analysis/validation_v004/before_Dveto_cut";
     const char* MIX_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/MIX_analysis/validation_v004/before_Dveto_cut";
     const char* UUBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/UUBAR_analysis/validation_v004/before_Dveto_cut";
     const char* DDBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/DDBAR_analysis/validation_v004/before_Dveto_cut";
