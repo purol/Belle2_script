@@ -1,7 +1,7 @@
 // last update: 2021-10-13
 // for Belle2 data
 
-# define Nentry 500
+# define Nentry 50
 # define MIN_invM 1.876
 # define MAX_invM 4.8
 
@@ -33,6 +33,7 @@ void ReadK0nnFiles_r_sp(){
 
     load_files(dirname, &names);
 
+    TH1D* weight_hist = new TH1D("K0nn weight", ";weight;", 50, 0.0, 10.0);
     TH1D* Plot = new TH1D("M", ";M [GeV/c^{2}]; evt", Nentry, MIN_invM, MAX_invM);
 
     for(unsigned int i = 0; i<names.size(); i++) {
@@ -131,7 +132,7 @@ void ReadK0nnFiles_r_sp(){
 
     TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
     TLegend *legend = new TLegend(0.6, 0.7, 0.9, 0.9);
-    legend->AddEntry(Plot,"Phase space","f");
+    legend->AddEntry(Plot,"MC","f");
     legend->AddEntry(gr,"[Phys. Lett. B 659 (2008) 80-86]","lpfe");
     legend->SetFillStyle(0);
     legend->SetLineWidth(0);
@@ -155,7 +156,11 @@ void ReadK0nnFiles_r_sp(){
         else weight = 0;
 
         fprintf(fp, "%lf\n", weight);
+        weight_hist->Fill(weight);
     }
 
     fclose(fp);
+
+    weight_hist->Draw("Hist");
+    c_temp->SaveAs("weights_K0nn.png");
 }
