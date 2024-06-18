@@ -413,6 +413,7 @@ public:
     void PrintFOM(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
     void PrintFOM1D(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
     void MVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
+    void MVACutBelow(double OBB, double Oqq, Loader::MassRegion massRegion);
     void CountMCEvent(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
     void SelectDecayModeOf(Loader::DecayMode decaymode);
     void RejectDecayModeOf(Loader::DecayMode decaymode);
@@ -4886,6 +4887,56 @@ void Loader::MVACut(double OBB, double Oqq, Loader::MassRegion massRegion) {
             if (temp_data.Bsig_info[6] < 1.0) temp_queue.push(temp_data);
             else {
                 if (temp_data.MVA_BB > OBB && temp_data.MVA_Continuum > Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else {
+            printf("[Loader::MVACut] undefined mass region\n");
+            exit(1);
+        }
+
+    }
+    TotalData.swap(temp_queue);
+}
+
+void Loader::MVACutBelow(double OBB, double Oqq, Loader::MassRegion massRegion) {
+    if (DoesItHaveMVAOutput == false) {
+        printf("ERROR! MVACut is called when the data does not have MVA output\n");
+        exit(1);
+    }
+
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+
+        if (massRegion == Loader::SmallMass) {
+            if (temp_data.Bsig_info[6] > 1.1) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB < OBB && temp_data.MVA_Continuum < Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else if (massRegion == Loader::LargeMass) {
+            if (temp_data.Bsig_info[6] < 1.1) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB < OBB && temp_data.MVA_Continuum < Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else if (massRegion == Loader::KaonMass) {
+            if (temp_data.Bsig_info[6] > 0.6) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB < OBB && temp_data.MVA_Continuum < Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else if (massRegion == Loader::KstarMass) {
+            if ((temp_data.Bsig_info[6] < 0.6) || (temp_data.Bsig_info[6] > 1.0)) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB < OBB && temp_data.MVA_Continuum < Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else if (massRegion == Loader::XsMass) {
+            if (temp_data.Bsig_info[6] < 1.0) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB < OBB && temp_data.MVA_Continuum < Oqq) temp_queue.push(temp_data);
             }
         }
         else {

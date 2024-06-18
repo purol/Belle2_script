@@ -75,9 +75,12 @@ int main(int argc, char* argv[]) {
         std::string file_without_extension = names.at(i).substr(0, p);
 
         loader.PrintInformation(std::string("========== inital =========="), names.at(i), argv[3], MCTYPE, argv[5], true);
-        loader.MVACut(0.86, -1.0, Loader::KaonMass);
-        loader.MVACut(0.86, -1.0, Loader::KstarMass);
-        loader.MVACut(0.86, -1.0, Loader::XsMass);
+        loader.MVACut(0.8, -1.0, Loader::KaonMass);
+        loader.MVACut(0.8, -1.0, Loader::KstarMass);
+        loader.MVACut(0.8, -1.0, Loader::XsMass);
+        loader.MVACutBelow(0.86, -1.0, Loader::KaonMass);
+        loader.MVACutBelow(0.86, -1.0, Loader::KstarMass);
+        loader.MVACutBelow(0.86, -1.0, Loader::XsMass);
         loader.PrintInformation(std::string("========== MVA CUT =========="), names.at(i), argv[3], MCTYPE, argv[5], true);
 
         loader.PrintSeparateRootFile(std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut/" + file_without_extension + std::string("_after_MVA_cut.root"));
