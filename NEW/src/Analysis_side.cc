@@ -61,7 +61,8 @@ int main(int argc, char* argv[]) {
 
         loader.PrintSeparateRootFile(std::string(argv[3]) + "/before_Mbc_cut/" + file_without_extension + std::string("_before_Mbc_cut.root"));
         loader.Cut(Loader::Btag, 1, Loader::larger_than, 5.235);
-        loader.PrintInformation(std::string("========== Mbc > 5.235 =========="), names.at(i), argv[4], argv[5], argv[6], true);
+        loader.Cut(Loader::Btag, 1, Loader::smaller_than, 5.26);
+        loader.PrintInformation(std::string("========== 5.26 > Mbc > 5.235 =========="), names.at(i), argv[4], argv[5], argv[6], true);
         //loader.DrawTH2F("MbcVSdeltaE_after_Mbc_strict_cut", ";Mbc of B_{tag} [GeV];#DeltaE of B_{tag} [GeV]", 100, 5.24, 5.3, 100, -0.2, 0.2, Loader::Btag, 1, Loader::Btag, 2);
 
         loader.PrintSeparateRootFile(std::string(argv[3]) + "/before_delE_cut/" + file_without_extension + std::string("_before_delE_cut.root"));
