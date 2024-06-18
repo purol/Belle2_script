@@ -410,6 +410,7 @@ void THStack_multiplicity() {
 
     TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.7, 0.7);
     legend->SetFillStyle(0); legend->SetLineWidth(0);
+    legend->Draw();
 
     c_temp->SaveAs("Plot_multiplicity.png");
 
