@@ -17,6 +17,7 @@
 #include "TCanvas.h"
 #include "constants.h"
 #include "correctors.h"
+#include "ObtainWeight.h"
 
 # define Nstep 20
 # define stepstart 0.8

@@ -1709,23 +1709,22 @@ private:
 
 public:
     Corrector_Knn();
-    double GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
-    double GetCorrectionFactorAtGeneric(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
+    double GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn, std::string fname, const char* MC_version);
 };
 
 Corrector_Knn::Corrector_Knn() :
     DECAY_DEC_BR_Knn(0.0000057),
     new_BR_K0pp(0.00000266),
-    Nraw_initial_Knn(1000000.0),
+    Nraw_initial_Knn(200000.0),
     DECAY_DEC_BR_Kstarnn(0.0000057),
     new_BR_K0starpp(0.00000124),
-    Nraw_initial_Kstarnn(1000000.0),
+    Nraw_initial_Kstarnn(200000.0),
     DECAY_DEC_BR_K0nn(0.000002),
     new_BR_Kpp(0.0000059),
-    Nraw_initial_K0nn(1000000.0),
+    Nraw_initial_K0nn(200000.0),
     DECAY_DEC_BR_K0starnn(0.0000056),
     new_BR_Kstarpp(0.0000036),
-    Nraw_initial_K0starnn(1000000.0),
+    Nraw_initial_K0starnn(200000.0),
     N_EPSILON(0.01),
     CUTOFF(50.0),
     tau_Bp(1.6384), // ps
@@ -1796,7 +1795,18 @@ Corrector_Knn::Corrector_Knn() :
     Nscale_initial_K0starnn = (2.0 * N_BB_LS1 * (1.0 / (fpm_f0 + 1.0)) * new_BR_K0starnn);
 }
 
-double Corrector_Knn::GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
+double Corrector_Knn::GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn, std::string fname, const char* MC_version) {
+    // It remove B->K(*)nn decay from generic MC
+    // It weight and correct Mnn distribution for special MC
+    // However, we do not put special MC15ri.
+
+    if ((N_Knn > N_EPSILON) || (N_Kstarnn > N_EPSILON) || (N_K0nn > N_EPSILON) || (N_K0starnn > N_EPSILON)) { // there is B-->K(*)nnbar decay
+        if (fname.find("B2Knn_flat") != std::string::npos) {} // it is B+ --> K+ n nbar special MC
+        else if (fname.find("B2Kstarnn_flat") != std::string::npos) {} // it is B+ --> K*+ n nbar special MC
+        else if (fname.find("B02K0nn_flat") != std::string::npos) {} // it is B0 --> K0 n nbar special MC
+        else if (fname.find("B02K0nn_flat") != std::string::npos) {} // it is B0 --> K0 n nbar special MC
+        else return 0.0; // it is generic MC!
+    }
 
     double Correction_Knn = 1;
     double Correction_Kstarnn = 1;
@@ -1833,48 +1843,6 @@ double Corrector_Knn::GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, 
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_K0starnn) Bin = STEP_K0starnn;
         Correction_K0starnn = std::pow((Nscale_initial_K0starnn / Nraw_initial_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * invM correction
-    }
-
-    return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
-}
-
-double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
-
-    double Correction_Knn = 1;
-    double Correction_Kstarnn = 1;
-    double Correction_K0nn = 1;
-    double Correction_K0starnn = 1;
-
-    if (N_Knn < N_EPSILON) Correction_Knn = 1;
-    else {
-        int Bin = weights_Knn->FindBin(invM_Knn);
-        if (Bin < 1) Bin = 1;
-        else if (Bin > STEP_Knn) Bin = STEP_Knn;
-        Correction_Knn = std::pow((new_BR_Knn / DECAY_DEC_BR_Knn) * weights_Knn->GetBinContent(Bin), N_Knn); // BR correction * invM correction
-    }
-
-    if (N_Kstarnn < N_EPSILON) Correction_Kstarnn = 1;
-    else {
-        int Bin = weights_Kstarnn->FindBin(invM_Kstarnn);
-        if (Bin < 1) Bin = 1;
-        else if (Bin > STEP_Kstarnn) Bin = STEP_Kstarnn;
-        Correction_Kstarnn = std::pow((new_BR_Kstarnn / DECAY_DEC_BR_Kstarnn) * weights_Kstarnn->GetBinContent(Bin), N_Kstarnn); // BR correction * invM correction
-    }
-
-    if (N_K0nn < N_EPSILON) Correction_K0nn = 1;
-    else {
-        int Bin = weights_K0nn->FindBin(invM_K0nn);
-        if (Bin < 1) Bin = 1;
-        else if (Bin > STEP_K0nn) Bin = STEP_K0nn;
-        Correction_K0nn = std::pow((new_BR_K0nn / DECAY_DEC_BR_K0nn) * weights_K0nn->GetBinContent(Bin), N_K0nn); // BR correction * invM correction
-    }
-
-    if (N_K0starnn < N_EPSILON) Correction_K0starnn = 1;
-    else {
-        int Bin = weights_K0starnn->FindBin(invM_K0starnn);
-        if (Bin < 1) Bin = 1;
-        else if (Bin > STEP_K0starnn) Bin = STEP_K0starnn;
-        Correction_K0starnn = std::pow((new_BR_K0starnn / DECAY_DEC_BR_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * invM correction
     }
 
     return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
