@@ -35,6 +35,9 @@
 #include "base.h"
 #include "ObtainWeight.h"
 #include "MyFBDT.h"
+#include "correctors.h"
+
+Corrector_Knn corrector_Knn;
 
 char* MCTYPE;
 
@@ -149,42 +152,42 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(CHG_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, ObtainWeight("CHG", MCTYPE, "train", std::string("")), "otherwise");
+            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, ObtainWeight("CHG", MCTYPE, "train", std::string("")) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(MIX_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, ObtainWeight("MIX", MCTYPE, "train", std::string("")), "otherwise");
+            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, ObtainWeight("MIX", MCTYPE, "train", std::string("")) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(UUBAR_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, ObtainWeight("UUBAR", MCTYPE, "train", std::string("")), "otherwise");
+            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, ObtainWeight("UUBAR", MCTYPE, "train", std::string("")) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(DDBAR_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, ObtainWeight("DDBAR", MCTYPE, "train", std::string("")), "otherwise");
+            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, ObtainWeight("DDBAR", MCTYPE, "train", std::string("")) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(SSBAR_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, ObtainWeight("SSBAR", MCTYPE, "train", std::string("")), "otherwise");
+            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, ObtainWeight("SSBAR", MCTYPE, "train", std::string("")) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(CHARM_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, ObtainWeight("CHARM", MCTYPE, "train", std::string("")), "otherwise");
+            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars, &IsSignal, &weight, false, MCTYPE, ObtainWeight("CHARM", MCTYPE, "train", std::string("")) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
 
@@ -260,42 +263,42 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(CHG_input_test.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHG_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("CHG", MCTYPE, "test", std::string("")), "otherwise");
+            FillVariables((CHG_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("CHG", MCTYPE, "test", std::string(""))* corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(MIX_input_test.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((MIX_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("MIX", MCTYPE, "test", std::string("")), "otherwise");
+            FillVariables((MIX_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("MIX", MCTYPE, "test", std::string(""))* corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(UUBAR_input_test.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((UUBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("UUBAR", MCTYPE, "test", std::string("")), "otherwise");
+            FillVariables((UUBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("UUBAR", MCTYPE, "test", std::string(""))* corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(DDBAR_input_test.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((DDBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("DDBAR", MCTYPE, "test", std::string("")), "otherwise");
+            FillVariables((DDBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("DDBAR", MCTYPE, "test", std::string(""))* corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(SSBAR_input_test.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SSBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("SSBAR", MCTYPE, "test", std::string("")), "otherwise");
+            FillVariables((SSBAR_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("SSBAR", MCTYPE, "test", std::string("")) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(CHARM_input_test.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHARM_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("CHARM", MCTYPE, "test", std::string("")), "otherwise");
+            FillVariables((CHARM_input_test + std::string("/") + names.at(i)).c_str(), input_vars2, &IsSignal2, &weight2, false, MCTYPE, ObtainWeight("CHARM", MCTYPE, "test", std::string("")) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
 
@@ -374,42 +377,42 @@ int main(int argc, char* argv[])
         std::vector<std::string> names;
         load_files(CHG_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, MCTYPE, ObtainWeight("CHG", MCTYPE, "train", std::string("")), "otherwise");
+            FillVariables((CHG_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, MCTYPE, ObtainWeight("CHG", MCTYPE, "train", std::string(""))* corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(MIX_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, MCTYPE, ObtainWeight("MIX", MCTYPE, "train", std::string("")), "otherwise");
+            FillVariables((MIX_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, MCTYPE, ObtainWeight("MIX", MCTYPE, "train", std::string(""))* corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(UUBAR_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, MCTYPE, ObtainWeight("UUBAR", MCTYPE, "train", std::string("")), "otherwise");
+            FillVariables((UUBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, MCTYPE, ObtainWeight("UUBAR", MCTYPE, "train", std::string(""))* corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(DDBAR_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, MCTYPE, ObtainWeight("DDBAR", MCTYPE, "train", std::string("")), "otherwise");
+            FillVariables((DDBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, MCTYPE, ObtainWeight("DDBAR", MCTYPE, "train", std::string(""))* corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(SSBAR_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, MCTYPE, ObtainWeight("SSBAR", MCTYPE, "train", std::string("")), "otherwise");
+            FillVariables((SSBAR_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, MCTYPE, ObtainWeight("SSBAR", MCTYPE, "train", std::string(""))* corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
     {
         std::vector<std::string> names;
         load_files(CHARM_input_train.c_str(), &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, MCTYPE, ObtainWeight("CHARM", MCTYPE, "train", std::string("")), "otherwise");
+            FillVariables((CHARM_input_train + std::string("/") + names.at(i)).c_str(), input_vars3, &IsSignal3, &weight3, false, MCTYPE, ObtainWeight("CHARM", MCTYPE, "train", std::string("")) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false), "otherwise");
         }
     }
 

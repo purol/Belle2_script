@@ -17,6 +17,7 @@
 #include "TPaveText.h"
 
 Corrector corrector;
+Corrector_Knn corrector_Knn;
 Corrector_Fragmentation corrector_Fragmentation;
 
 # define MCTYPE "MC15rd"
@@ -86,9 +87,11 @@ void FillBKG(const char* dirname, const char* included_string, TH1D* hist, doubl
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            hist->Fill(Bsig_M, weight_var);
+            double total_weight = weight_var * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false);
 
-            Nevt = Nevt + weight_var;
+            hist->Fill(Bsig_M, total_weight);
+
+            Nevt = Nevt + total_weight;
 
         }
         input_file->Close();
@@ -194,10 +197,10 @@ void FillSIGNAL(const char* dirname, const char* included_string, const char* ty
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
-            hist_reco->Fill(Bsig_M, weight_var);
-            hist_true->Fill(Mxs_MC, weight_var);
+            hist_reco->Fill(Bsig_M, total_weight);
+            hist_true->Fill(Mxs_MC, total_weight);
 
-            Nevt = Nevt + weight_var;
+            Nevt = Nevt + total_weight;
 
         }
         input_file->Close();
@@ -285,9 +288,9 @@ void ReadDecayInfo(const char* dirname, const char* included_string, const char*
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
-            hist_true->Fill(Mxs_MC, weight_var);
+            hist_true->Fill(Mxs_MC, total_weight);
 
-            Nevt = Nevt + weight_var;
+            Nevt = Nevt + total_weight;
 
         }
         input_file->Close();

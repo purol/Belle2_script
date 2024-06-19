@@ -39,6 +39,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "constants.h"
 #include "base.h"
 #include "ObtainWeight.h"
+#include "correctors.h"
 
 /*
 when you add new variables:
@@ -121,7 +122,7 @@ void CountNum(double* Nevt, std::string filename, const char* type, const char* 
                     printf("SIGNAL type is not available in this code!\n");
                     exit(1);
                 }
-                else (*Nevt) = (*Nevt) + ObtainWeight(type, MC_version, category, filename);
+                else (*Nevt) = (*Nevt) + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
             }
             Labels temp_Labels;
             temp_Labels.__experiment__ = temp.__experiment__;
