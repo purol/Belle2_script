@@ -242,7 +242,7 @@ int main() {
     Drawpull(w, iter);
 
     // define frame
-    RooPlot* x_frame = x->frame(Title("fit result"));
+    // RooPlot* x_frame = x->frame(Title("fit result"));
 
     // draw
     // GetPlotTemplate(w, data);
