@@ -5088,12 +5088,12 @@ void Loader::BeamEnergyCorrectionFromDeltaE_RC(int index_pBcms, int index_EBcms,
 
         if (IsItBtag) {
             double Ebeamstar = temp_data.Btag_info[index_EBcms] - temp_data.Btag_info[index_deltaE]; // EBstar - deltaE
-            temp_data.Btag_info[index_Mbc] = temp_data.Btag_info[index_Mbc] + Ebeamstar; // correct Mbc
+            temp_data.Btag_info[index_Mbc] = temp_data.Btag_info[index_Mbc] + (targetEbeamstar - Ebeamstar); // correct Mbc
             temp_data.Btag_info[index_deltaE] = temp_data.Btag_info[index_deltaE]; // keep deltaE
         }
         else {
             double Ebeamstar = temp_data.Bsig_info[index_EBcms] - temp_data.Bsig_info[index_deltaE]; // EBstar - deltaE
-            temp_data.Bsig_info[index_Mbc] = temp_data.Bsig_info[index_Mbc] + Ebeamstar; // correct Mbc
+            temp_data.Bsig_info[index_Mbc] = temp_data.Bsig_info[index_Mbc] + (targetEbeamstar - Ebeamstar); // correct Mbc
             temp_data.Bsig_info[index_deltaE] = temp_data.Bsig_info[index_deltaE]; // keep deltaE
         }
 
