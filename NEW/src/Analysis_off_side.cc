@@ -9,7 +9,6 @@
 
 #include "constants.h"
 #include "base.h"
-#include "ObtainWeight.h"
 #include "Loader.h"
 
 /*

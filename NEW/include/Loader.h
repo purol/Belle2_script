@@ -17,12 +17,14 @@
 #include "TCanvas.h"
 #include "constants.h"
 #include "correctors.h"
+#include "ObtainWeight.h"
 
 # define Nstep 20
 # define stepstart 0.8
 # define stepend 1.0
 
 Corrector corrector;
+Corrector_Knn corrector_Knn;
 Corrector_Fragmentation corrector_Fragmentation;
 
 typedef struct data {
@@ -1487,7 +1489,7 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
                     }
                     else { N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename); }
                 }
-                else N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename);
+                else N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
             }
             Labels temp_Labels;
             temp_Labels.__experiment__ = temp.__experiment__;
@@ -1606,8 +1608,8 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
                 }
             }
             else {
-                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
-                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
+                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
+                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
             }
 
         }
@@ -1790,7 +1792,7 @@ void Loader::PrintVariablebin(std::string title, Loader::Variable variable, int 
                 }
                 else { Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename)); }
             }
-            else Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename));
+            else Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false));
         }
 
         TotalData.push(temp);
@@ -4749,7 +4751,7 @@ void Loader::PrintFOM(std::string filename, const char* type, const char* MC_ver
                                 double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                                 EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                             }
-                            else { EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename); }
+                            else { EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false); }
                         }
                         Labels temp_Labels;
                         temp_Labels.__experiment__ = temp.__experiment__;
@@ -4828,7 +4830,7 @@ void Loader::PrintFOM1D(std::string filename, const char* type, const char* MC_v
                             double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                             EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                         }
-                        else EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
+                        else EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
                     }
                     Labels temp_Labels;
                     temp_Labels.__experiment__ = temp.__experiment__;

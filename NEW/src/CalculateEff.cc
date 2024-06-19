@@ -127,11 +127,11 @@ void ReadDecayInfo(const char* dirname, const char* included_string, const char*
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
-            if ((Mxs_MC > 0.0) && (Mxs_MC < 0.6)) Nevt_initial_1st = Nevt_initial_1st + weight_var;
-            else if ((Mxs_MC > 0.6) && (Mxs_MC < 1.0)) Nevt_initial_2nd = Nevt_initial_2nd + weight_var;
-            else if (Mxs_MC > 1.0) Nevt_initial_3rd = Nevt_initial_3rd + weight_var;
+            if ((Mxs_MC > 0.0) && (Mxs_MC < 0.6)) Nevt_initial_1st = Nevt_initial_1st + total_weight;
+            else if ((Mxs_MC > 0.6) && (Mxs_MC < 1.0)) Nevt_initial_2nd = Nevt_initial_2nd + total_weight;
+            else if (Mxs_MC > 1.0) Nevt_initial_3rd = Nevt_initial_3rd + total_weight;
 
-            Nevt = Nevt + weight_var;
+            Nevt = Nevt + total_weight;
 
         }
         input_file->Close();
@@ -395,7 +395,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             }
 
             // Knn correction factor
-            double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            double Correction_Knn = corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn, names.at(i), MCTYPE, true);
 
             // Xsnn correction factor
             double Correction_Xnn = corrector_Xsnn.GetCorrectionFactorAtGeneric(invM_Xnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn, N_Xplusnn + N_Xzeronn);

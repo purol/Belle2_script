@@ -6,6 +6,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "constants.h"
+#include "ObtainWeight.h"
 
 # define FEI_cal_Bc_num 12
 # define FEI_cal_B0_num 11
@@ -1709,23 +1710,23 @@ private:
 
 public:
     Corrector_Knn();
-    double GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
-    double GetCorrectionFactorAtGeneric(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
+    double GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn, std::string fname, const char* MC_version, bool OnSpecial);
+    double GetCorrectionFactorCancelOutObtainWeight(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn, std::string fname, const char* MC_version, bool OnSpecial);
 };
 
 Corrector_Knn::Corrector_Knn() :
     DECAY_DEC_BR_Knn(0.0000057),
     new_BR_K0pp(0.00000266),
-    Nraw_initial_Knn(1000000.0),
+    Nraw_initial_Knn(200000.0),
     DECAY_DEC_BR_Kstarnn(0.0000057),
     new_BR_K0starpp(0.00000124),
-    Nraw_initial_Kstarnn(1000000.0),
+    Nraw_initial_Kstarnn(200000.0),
     DECAY_DEC_BR_K0nn(0.000002),
     new_BR_Kpp(0.0000059),
-    Nraw_initial_K0nn(1000000.0),
+    Nraw_initial_K0nn(200000.0),
     DECAY_DEC_BR_K0starnn(0.0000056),
     new_BR_Kstarpp(0.0000036),
-    Nraw_initial_K0starnn(1000000.0),
+    Nraw_initial_K0starnn(200000.0),
     N_EPSILON(0.01),
     CUTOFF(50.0),
     tau_Bp(1.6384), // ps
@@ -1796,7 +1797,52 @@ Corrector_Knn::Corrector_Knn() :
     Nscale_initial_K0starnn = (2.0 * N_BB_LS1 * (1.0 / (fpm_f0 + 1.0)) * new_BR_K0starnn);
 }
 
-double Corrector_Knn::GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
+double Corrector_Knn::GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn, std::string fname, const char* MC_version, bool OnSpecial) {
+    // It remove B->K(*)nn decay from generic MC
+    // - MC_version
+    // MC15ri: We do not put special MC15ri. We apply 0 weight for special, apply 1 weight for remaining
+    // MC15rd: We put special MC15rd.
+    // - OnSpecial
+    // false: we turn off special and turn on generic. apply 1 when if it is generic B->K(*)nn. apply 0 when it is special
+    // true: we turn off generic and turn on special. apply 0 when if it is generic B->K(*)nn. apply proper correction when it is special
+
+    if (strcmp(MC_version, "MC15ri") == 0) {
+        // there is no special MC for MC15ri. Just apply 0.0 if there is special MC. Otherwise, apply 1.0
+        if (fname.find("B2Knn_flat") != std::string::npos) return 0.0; // it is B+ --> K+ n nbar special MC
+        else if (fname.find("B2Kstarnn_flat") != std::string::npos) return 0.0; // it is B+ --> K*+ n nbar special MC
+        else if (fname.find("B02K0nn_flat") != std::string::npos) return 0.0; // it is B0 --> K0 n nbar special MC
+        else if (fname.find("B02K0nn_flat") != std::string::npos) return 0.0; // it is B0 --> K0 n nbar special MC
+        else return 1.0; // it is generic MC!
+    }
+    else if (strcmp(MC_version, "MC15rd") == 0) {
+        // there IS special MC for MC15rd. 
+        if (OnSpecial == false) { // we turn off special MC and turn on generic MC
+            if (fname.find("B2Knn_flat") != std::string::npos) return 0.0; // it is B+ --> K+ n nbar special MC
+            else if (fname.find("B2Kstarnn_flat") != std::string::npos) return 0.0; // it is B+ --> K*+ n nbar special MC
+            else if (fname.find("B02K0nn_flat") != std::string::npos) return 0.0; // it is B0 --> K0 n nbar special MC
+            else if (fname.find("B02K0nn_flat") != std::string::npos) return 0.0; // it is B0 --> K0 n nbar special MC
+            else return 1.0; // it is generic MC!
+        }
+        else { // we turn off special MC and turn on generic MC
+            if (fname.find("B2Knn_flat") != std::string::npos) {} // it is B+ --> K+ n nbar special MC
+            else if (fname.find("B2Kstarnn_flat") != std::string::npos) {} // it is B+ --> K*+ n nbar special MC
+            else if (fname.find("B02K0nn_flat") != std::string::npos) {} // it is B0 --> K0 n nbar special MC
+            else if (fname.find("B02K0nn_flat") != std::string::npos) {} // it is B0 --> K0 n nbar special MC
+            else { // it is generic MC!
+                if ((N_Knn < N_EPSILON) && (N_Kstarnn < N_EPSILON) && (N_K0nn < N_EPSILON) && (N_K0starnn < N_EPSILON)) return 1.0; // it is generic MC and there is no B->K(*)nn decay
+                else return 0.0; // it is generic MC and there IS B->K(*)nn decay
+            }
+        }
+    }
+    else {
+        printf("[corrector Knn] unexpected MC version\n");
+        exit(1);
+    }
+
+    // at this point. the following combination is alive:
+    // MC_version == MC15rd
+    // OnSpecial == true
+    // file is special MC for B->K(*)nn
 
     double Correction_Knn = 1;
     double Correction_Kstarnn = 1;
@@ -1838,7 +1884,54 @@ double Corrector_Knn::GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, 
     return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
 }
 
-double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
+double Corrector_Knn::GetCorrectionFactorCancelOutObtainWeight(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn, std::string fname, const char* MC_version, bool OnSpecial) {
+    // It remove B->K(*)nn decay from generic MC
+    // - MC_version
+    // MC15ri: We do not put special MC15ri. We apply 0 weight for special, apply 1 weight for remaining
+    // MC15rd: We put special MC15rd.
+    // - OnSpecial
+    // false: we turn off special and turn on generic. apply 1 when if it is generic B->K(*)nn. apply 0 when it is special
+    // true: we turn off generic and turn on special. apply 0 when if it is generic B->K(*)nn. apply proper correction when it is special
+
+    // this function cancel out the effect of ObtainWeight
+
+    if (strcmp(MC_version, "MC15ri") == 0) {
+        // there is no special MC for MC15ri. Just apply 0.0 if there is special MC. Otherwise, apply 1.0
+        if (fname.find("B2Knn_flat") != std::string::npos) return 0.0; // it is B+ --> K+ n nbar special MC
+        else if (fname.find("B2Kstarnn_flat") != std::string::npos) return 0.0; // it is B+ --> K*+ n nbar special MC
+        else if (fname.find("B02K0nn_flat") != std::string::npos) return 0.0; // it is B0 --> K0 n nbar special MC
+        else if (fname.find("B02K0starnn_flat") != std::string::npos) return 0.0; // it is B0 --> K*0 n nbar special MC
+        else return 1.0; // it is generic MC!
+    }
+    else if (strcmp(MC_version, "MC15rd") == 0) {
+        // there IS special MC for MC15rd. 
+        if (OnSpecial == false) { // we turn off special MC and turn on generic MC
+            if (fname.find("B2Knn_flat") != std::string::npos) return 0.0; // it is B+ --> K+ n nbar special MC
+            else if (fname.find("B2Kstarnn_flat") != std::string::npos) return 0.0; // it is B+ --> K*+ n nbar special MC
+            else if (fname.find("B02K0nn_flat") != std::string::npos) return 0.0; // it is B0 --> K0 n nbar special MC
+            else if (fname.find("B02K0starnn_flat") != std::string::npos) return 0.0; // it is B0 --> K*0 n nbar special MC
+            else return 1.0; // it is generic MC!
+        }
+        else { // we turn off special MC and turn on generic MC
+            if (fname.find("B2Knn_flat") != std::string::npos) {} // it is B+ --> K+ n nbar special MC
+            else if (fname.find("B2Kstarnn_flat") != std::string::npos) {} // it is B+ --> K*+ n nbar special MC
+            else if (fname.find("B02K0nn_flat") != std::string::npos) {} // it is B0 --> K0 n nbar special MC
+            else if (fname.find("B02K0starnn_flat") != std::string::npos) {} // it is B0 --> K*0 n nbar special MC
+            else { // it is generic MC!
+                if ((N_Knn < N_EPSILON) && (N_Kstarnn < N_EPSILON) && (N_K0nn < N_EPSILON) && (N_K0starnn < N_EPSILON)) return 1.0; // it is generic MC and there is no B->K(*)nn decay
+                else return 0.0; // it is generic MC and there IS B->K(*)nn decay
+            }
+        }
+    }
+    else {
+        printf("[corrector Knn] unexpected MC version\n");
+        exit(1);
+    }
+
+    // at this point. the following combination is alive:
+    // MC_version == MC15rd
+    // OnSpecial == true
+    // file is special MC for B->K(*)nn
 
     double Correction_Knn = 1;
     double Correction_Kstarnn = 1;
@@ -1850,7 +1943,7 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
         int Bin = weights_Knn->FindBin(invM_Knn);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_Knn) Bin = STEP_Knn;
-        Correction_Knn = std::pow((new_BR_Knn / DECAY_DEC_BR_Knn) * weights_Knn->GetBinContent(Bin), N_Knn); // BR correction * invM correction
+        Correction_Knn = std::pow((Nscale_initial_Knn / Nraw_initial_Knn) * weights_Knn->GetBinContent(Bin), N_Knn); // BR correction * invM correction
     }
 
     if (N_Kstarnn < N_EPSILON) Correction_Kstarnn = 1;
@@ -1858,7 +1951,7 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
         int Bin = weights_Kstarnn->FindBin(invM_Kstarnn);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_Kstarnn) Bin = STEP_Kstarnn;
-        Correction_Kstarnn = std::pow((new_BR_Kstarnn / DECAY_DEC_BR_Kstarnn) * weights_Kstarnn->GetBinContent(Bin), N_Kstarnn); // BR correction * invM correction
+        Correction_Kstarnn = std::pow((Nscale_initial_Kstarnn / Nraw_initial_Kstarnn) * weights_Kstarnn->GetBinContent(Bin), N_Kstarnn); // BR correction * invM correction
     }
 
     if (N_K0nn < N_EPSILON) Correction_K0nn = 1;
@@ -1866,7 +1959,7 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
         int Bin = weights_K0nn->FindBin(invM_K0nn);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_K0nn) Bin = STEP_K0nn;
-        Correction_K0nn = std::pow((new_BR_K0nn / DECAY_DEC_BR_K0nn) * weights_K0nn->GetBinContent(Bin), N_K0nn); // BR correction * invM correction
+        Correction_K0nn = std::pow((Nscale_initial_K0nn / Nraw_initial_K0nn) * weights_K0nn->GetBinContent(Bin), N_K0nn); // BR correction * invM correction
     }
 
     if (N_K0starnn < N_EPSILON) Correction_K0starnn = 1;
@@ -1874,10 +1967,20 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
         int Bin = weights_K0starnn->FindBin(invM_K0starnn);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_K0starnn) Bin = STEP_K0starnn;
-        Correction_K0starnn = std::pow((new_BR_K0starnn / DECAY_DEC_BR_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * invM correction
+        Correction_K0starnn = std::pow((Nscale_initial_K0starnn / Nraw_initial_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * invM correction
     }
 
-    return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
+    // cancel out ObtainWeight
+    // we know that this sample is MC15rd & validation
+    double weight_ri = 1.0;
+    if ((fname.find("B2Knn_flat") != std::string::npos) || (fname.find("B2Kstarnn_flat") != std::string::npos)) weight_ri = ObtainWeight("CHG", "MC15rd", "validation", fname); // it is charged B sample
+    else if((fname.find("B02K0nn_flat") != std::string::npos) || (fname.find("B02K0starnn_flat") != std::string::npos)) weight_ri = ObtainWeight("MIX", "MC15rd", "validation", fname); // it is neutral B sample
+    else {
+        printf("[GetCorrectionFactorCancelOutObtainWeight] something wrong when try to find weight_ri");
+        exit(1);
+    }
+
+    return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn / weight_ri;
 }
 
 class Corrector_Xsnn {
