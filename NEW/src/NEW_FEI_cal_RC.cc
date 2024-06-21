@@ -1796,8 +1796,6 @@ int main()
     pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
     pad1->SetGridx(); pad1->Draw(); pad1->cd();
 
-    gStyle->SetErrorX(0.0);
-    gStyle->SetEndErrorSize(0.0);
     gStyle->SetPalette(kPastel);
 
     Float_t ymax_1 = Signal_NEW->GetMaximum();

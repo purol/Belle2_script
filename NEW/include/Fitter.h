@@ -681,8 +681,6 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
     pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
     pad1->Draw(); pad1->cd();
 
-    gStyle->SetErrorX(0.0);
-    gStyle->SetEndErrorSize(0.0);
     gStyle->SetPalette(kPastel);
 
     Stack->Draw("pfc Hist");
@@ -690,7 +688,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
         data_hist->SetLineWidth(2);
         data_hist->SetLineColor(kBlack);
         data_hist->SetMarkerStyle(8);
-        data_hist->Draw("SAME eP");
+        data_hist->Draw("SAME eP EX0");
     }
     TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
     legend->SetFillStyle(0); legend->SetLineWidth(0);
