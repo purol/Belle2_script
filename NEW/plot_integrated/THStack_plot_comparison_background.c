@@ -250,18 +250,18 @@ void THStack_plot_comparison_background() {
     double CAL_MC15ri = 1.0;
     double CAL_MC15rd = 1.0;
 
-    LetsFill_ri(MC15ri_CHG_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHG", "MC15ri", "test", CAL_MC15ri, 1.0, "root");
-    LetsFill_ri(MC15ri_MIX_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "MIX", "MC15ri", "test", CAL_MC15ri, 1.0, "root");
-    LetsFill_ri(MC15ri_UUBAR_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "UUBAR", "MC15ri", "test", CAL_MC15ri, 1.0, "root");
-    LetsFill_ri(MC15ri_DDBAR_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "DDBAR", "MC15ri", "test", CAL_MC15ri, 1.0, "root");
-    LetsFill_ri(MC15ri_SSBAR_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "SSBAR", "MC15ri", "test", CAL_MC15ri, 1.0, "root");
-    LetsFill_ri(MC15ri_CHARM_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHARM", "MC15ri", "test", CAL_MC15ri, 1.0, "root");
-    LetsFill_ri(MC15rd_CHG_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHG", "MC15rd", "validation", CAL_MC15rd, 1.0, "root");
-    LetsFill_ri(MC15rd_MIX_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "MIX", "MC15rd", "validation", CAL_MC15rd, 1.0, "root");
-    LetsFill_ri(MC15rd_UUBAR_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "UUBAR", "MC15rd", "validation", CAL_MC15rd, 1.0, "root");
-    LetsFill_ri(MC15rd_DDBAR_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "DDBAR", "MC15rd", "validation", CAL_MC15rd, 1.0, "root");
-    LetsFill_ri(MC15rd_SSBAR_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "SSBAR", "MC15rd", "validation", CAL_MC15rd, 1.0, "root");
-    LetsFill_ri(MC15rd_CHARM_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHARM", "MC15rd", "validation", CAL_MC15rd, 1.0, "root");
+    LetsFill_ri(MC15ri_CHG_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHG", "MC15ri", "test", CAL_MC15ri, 1.0, 1.0, 1.0, "root");
+    LetsFill_ri(MC15ri_MIX_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "MIX", "MC15ri", "test", CAL_MC15ri, 1.0, 1.0, 1.0, "root");
+    LetsFill_ri(MC15ri_UUBAR_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "UUBAR", "MC15ri", "test", CAL_MC15ri, 1.0, 1.0, 1.0, "root");
+    LetsFill_ri(MC15ri_DDBAR_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "DDBAR", "MC15ri", "test", CAL_MC15ri, 1.0, 1.0, 1.0, "root");
+    LetsFill_ri(MC15ri_SSBAR_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "SSBAR", "MC15ri", "test", CAL_MC15ri, 1.0, 1.0, 1.0, "root");
+    LetsFill_ri(MC15ri_CHARM_test_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHARM", "MC15ri", "test", CAL_MC15ri, 1.0, 1.0, 1.0, "root");
+    LetsFill_ri(MC15rd_CHG_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHG", "MC15rd", "validation", CAL_MC15rd, 1.0, 1.0, 1.0, "root");
+    LetsFill_ri(MC15rd_MIX_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "MIX", "MC15rd", "validation", CAL_MC15rd, 1.0, 1.0, 1.0, "root");
+    LetsFill_ri(MC15rd_UUBAR_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "UUBAR", "MC15rd", "validation", CAL_MC15rd, 1.0, 1.0, 1.0, "root");
+    LetsFill_ri(MC15rd_DDBAR_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "DDBAR", "MC15rd", "validation", CAL_MC15rd, 1.0, 1.0, 1.0, "root");
+    LetsFill_ri(MC15rd_SSBAR_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "SSBAR", "MC15rd", "validation", CAL_MC15rd, 1.0, 1.0, 1.0, "root");
+    LetsFill_ri(MC15rd_CHARM_validation_dirname, variable_names, branch_names, MC_values, &MC_numbering, &weights, "CHARM", "MC15rd", "validation", CAL_MC15rd, 1.0, 1.0, 1.0, "root");
 
     // sort variables
     for (int k = 0; k < (int)MC_numbering.size(); k++) {

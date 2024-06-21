@@ -14,7 +14,9 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 # define MCTYPE "MC15rd"
 
 double CAL = 1.0; // must be 1.0
-# define CAL_qq 1.0
+# define CAL_qq_K 1.0
+# define CAL_qq_Kstar 1.0
+# define CAL_qq_Xs 1.0
 
 # include <algorithm>
 # include <float.h>
@@ -279,19 +281,27 @@ void LetsFillKonlyMC(const char* dirname, std::string SampleName, int option = 0
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "UUBAR") {
-                FEI_calibration_factor = CAL_qq;
+                if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) FEI_calibration_factor = CAL_qq_K;
+                else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) FEI_calibration_factor = CAL_qq_Kstar;
+                else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) FEI_calibration_factor = CAL_qq_Xs;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "DDBAR") {
-                FEI_calibration_factor = CAL_qq;
+                if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) FEI_calibration_factor = CAL_qq_K;
+                else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) FEI_calibration_factor = CAL_qq_Kstar;
+                else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) FEI_calibration_factor = CAL_qq_Xs;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "SSBAR") {
-                FEI_calibration_factor = CAL_qq;
+                if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) FEI_calibration_factor = CAL_qq_K;
+                else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) FEI_calibration_factor = CAL_qq_Kstar;
+                else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) FEI_calibration_factor = CAL_qq_Xs;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "CHARM") {
-                FEI_calibration_factor = CAL_qq;
+                if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) FEI_calibration_factor = CAL_qq_K;
+                else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) FEI_calibration_factor = CAL_qq_Kstar;
+                else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) FEI_calibration_factor = CAL_qq_Xs;
                 weight_ri = ObtainWeight(SampleName.c_str(), MCTYPE, "validation", names.at(i));
             }
             else if (SampleName == "SIGNAL") {

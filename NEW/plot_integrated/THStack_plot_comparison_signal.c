@@ -199,18 +199,18 @@ void THStack_plot_comparison_signal() {
     double CAL_MC15ri = 1.0;
     double CAL_MC15rd = 1.0;
 
-    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, "B2Knunu");
-    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, "B2Kstarnunu");
-    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, "B2Xsnunu");
-    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, "B02K0nunu");
-    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, "B02Kstar0nunu");
-    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, "B02Xsnunu");
-    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, "B2Knunu");
-    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, "B2Kstarnunu");
-    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, "B2Xsnunu");
-    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, "B02K0nunu");
-    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, "B02Kstar0nunu");
-    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, "B02Xsnunu");
+    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, 1.0, 1.0, "B2Knunu");
+    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, 1.0, 1.0, "B2Kstarnunu");
+    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, 1.0, 1.0, "B2Xsnunu");
+    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, 1.0, 1.0, "B02K0nunu");
+    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, 1.0, 1.0, "B02Kstar0nunu");
+    LetsFill_ri(MC15ri_signal_test_dirname, variable_names, branch_names, MC15ri_values, &MC_numbering, &MC15ri_weights, "SIGNAL", "MC15ri", "test", CAL_MC15ri, 1.0, 1.0, 1.0, "B02Xsnunu");
+    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, 1.0, 1.0, "B2Knunu");
+    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, 1.0, 1.0, "B2Kstarnunu");
+    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, 1.0, 1.0, "B2Xsnunu");
+    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, 1.0, 1.0, "B02K0nunu");
+    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, 1.0, 1.0, "B02Kstar0nunu");
+    LetsFill_ri(MC15rd_signal_validation_dirname, variable_names, branch_names, MC15rd_values, &MC_numbering, &MC15rd_weights, "SIGNAL", "MC15rd", "validation", CAL_MC15rd, 1.0, 1.0, 1.0, "B02Xsnunu");
 
     THStack** Stack = (THStack**)malloc(sizeof(THStack*) * Nvar_num);
     TH1D** MC15ri_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
