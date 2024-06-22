@@ -548,6 +548,7 @@ void THStack_plot_E_sideband() {
         ddbar_hist[k]->Scale(CAL);
         ssbar_hist[k]->Scale(CAL);
         ccbar_hist[k]->Scale(CAL);
+        stat_error_hist[k]->Scale(CAL);
 
         Stack[k]->Add(charged_hist[k]);
         Stack[k]->Add(mixed_hist[k]);

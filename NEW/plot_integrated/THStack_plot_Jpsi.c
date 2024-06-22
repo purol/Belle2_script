@@ -583,6 +583,7 @@ void THStack_plot_Jpsi() {
             ddbar_hist[k]->Scale(CAL);
             ssbar_hist[k]->Scale(CAL);
             ccbar_hist[k]->Scale(CAL);
+            stat_error_hist[k]->Scale(CAL);
         }
 
         Stack[k]->Add(charged_hist[k]);
