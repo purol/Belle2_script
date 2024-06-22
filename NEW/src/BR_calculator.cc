@@ -215,7 +215,13 @@ void ReadEvtFile() {
     fclose(fp_SIGNAL_Evt);
 }
 
-double GetBRRelativeUncertainty(int experiment, int run, unsigned int event, int candidate, int ncandidates) {
+double GetBRRelativeUncertainty(int experiment, int run, unsigned int event, int candidate, int ncandidates, std::string fname) {
+
+    if (fname.find("B2Knn_flat") != std::string::npos) return 1.0; // it is B+ --> K+ n nbar special MC. We do not fluctuate it
+    else if (fname.find("B2Kstarnn_flat") != std::string::npos) return 1.0; // it is B+ --> K*+ n nbar special MC. We do not fluctuate it
+    else if (fname.find("B02K0nn_flat") != std::string::npos) return 1.0; // it is B0 --> K0 n nbar special MC. We do not fluctuate it
+    else if (fname.find("B02K0nn_flat") != std::string::npos) return 1.0; // it is B0 --> K0 n nbar special MC. We do not fluctuate it
+
     int temp_Evt_DMID1 = -100;
     int temp_Evt_DMID2 = -100;
 
@@ -849,7 +855,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
             double Correction_BtoDtoXKL = 1.0;
             if ((strcmp(sample, "CHG") == 0) || (strcmp(sample, "MIX") == 0) || (strcmp(sample, "SIGNAL") == 0)) Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            double Correction_BR = GetBRRelativeUncertainty(__experiment__, __run__, __event__, __candidate__, __ncandidates__);
+            double Correction_BR = GetBRRelativeUncertainty(__experiment__, __run__, __event__, __candidate__, __ncandidates__, names.at(i));
 
             double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * Correction_BR;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
