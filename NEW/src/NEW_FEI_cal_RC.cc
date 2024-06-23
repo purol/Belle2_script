@@ -973,8 +973,8 @@ double GetPDFs_NEW_FEI(const char* dirname, const char* included_string, TH1D* h
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
         tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
+        tree_Btag->SetBranchAddress("Btag_isSignal", &Btag_isSignal);
         tree_Bsig->SetBranchAddress("Bsig_M", &Bsig_M);
-        tree_Bsig->SetBranchAddress("Btag_isSignal", &Btag_isSignal);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKmisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[1][i_PID]);
