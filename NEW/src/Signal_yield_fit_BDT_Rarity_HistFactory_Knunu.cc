@@ -890,7 +890,7 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
                             else if (std::abs(Btag_ID - 30.0) < MyEPSILON) New_Correction_FEI = 0.130498;
                             else New_Correction_FEI = 0.130498;
                         }
-                        else if (strcmp(type, "Bzero") == 0) Correction_FEI = 1.198734;
+                        else if (strcmp(type, "Bzero") == 0) New_Correction_FEI = 1.198734;
 
                         // we also need to cancel out the previous FEI correction factor
                         total_weight = total_weight * (New_Correction_FEI / Correction_FEI);
