@@ -65,7 +65,9 @@ enum PDFtype { // reco level
     BRBtoDtoXKLUP,
     BRBtoDtoXKLDOWN,
     BRXKLKLUP,
-    BRXKLKLDOWN
+    BRXKLKLDOWN,
+    EffKLECLUP,
+    EffKLECLDOWN
 };
 
 Corrector corrector;
@@ -471,6 +473,7 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
     double N_Xzeronn = 0;
 
     double Ngamma_v200 = -1;
+    double Ngamma_v200_KL = -1;
 
     double s13_KpKLKL = -1;
     double s23_KpKLKL = -1;
@@ -602,6 +605,7 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clXnn__bc", &invM_Xnn);
 
         tree_upsilon->SetBranchAddress("extraInfo__boNgammav200__bc", &Ngamma_v200);
+        tree_upsilon->SetBranchAddress("extraInfo__boNgammav200_KL0__bc", &Ngamma_v200_KL);
 
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s13_KpKLKL);
         tree_upsilon->SetBranchAddress("averageValueInList__boB__pl__clKpKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &s23_KpKLKL);
@@ -852,6 +856,16 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
                     XKLKL_correction = 0.0;
                 }
                 total_weight = total_weight * XKLKL_correction;
+            }
+            else if (pdftype == PDFtype::EffKLECLUP) {
+                double ECLKL_correction = 1.0;
+                if (Ngamma_v200_KL > 0.5) ECLKL_correction = (1 + 0.17);
+                total_weight = total_weight * ECLKL_correction;
+                }
+            else if (pdftype == PDFtype::EffKLECLDOWN) {
+                double ECLKL_correction = 1.0;
+                if (Ngamma_v200_KL > 0.5) ECLKL_correction = (1 - 0.17);
+                total_weight = total_weight * ECLKL_correction;
             }
             else {
                 printf("Undefined pdf type!\n");
@@ -3240,6 +3254,20 @@ int main()
     TH1D* CHG_BRBtoXKLKL_m = new TH1D("CHG_BRBtoXKLKL_m", "CHG_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_BRBtoXKLKL_m = new TH1D("MIX_BRBtoXKLKL_m", "MIX_BRBtoXKLKL_m", RarityBins, BinMIN, BinMAX);
 
+    // efficiency for ECL cluster from KL0
+    TH1D* Signal_EffECLKL_p = new TH1D("Signal_EffECLKL_p", "Signal_EffECLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_EffECLKL_p = new TH1D("Signal_MXs1_EffECLKL_p", "Signal_MXs1_EffECLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_EffECLKL_p = new TH1D("Signal_MXs2_EffECLKL_p", "Signal_MXs2_EffECLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_EffECLKL_p = new TH1D("Signal_MXs3_EffECLKL_p", "Signal_MXs3_EffECLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_EffECLKL_p = new TH1D("CHG_EffECLKL_p", "CHG_EffECLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_EffECLKL_p = new TH1D("MIX_EffECLKL_p", "MIX_EffECLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_EffECLKL_m = new TH1D("Signal_EffECLKL_m", "Signal_EffECLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_EffECLKL_m = new TH1D("Signal_MXs1_EffECLKL_m", "Signal_MXs1_EffECLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_EffECLKL_m = new TH1D("Signal_MXs2_EffECLKL_m", "Signal_MXs2_EffECLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_EffECLKL_m = new TH1D("Signal_MXs3_EffECLKL_m", "Signal_MXs3_EffECLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_EffECLKL_m = new TH1D("CHG_EffECLKL_m", "CHG_EffECLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_EffECLKL_m = new TH1D("MIX_EffECLKL_m", "MIX_EffECLKL_m", RarityBins, BinMIN, BinMAX);
+
     // all of uncorrelated uncertainties
     TH1D* Signal_MXs1_all_uncorrelated = new TH1D("Signal_MXs1_all_uncorrelated", "Signal_MXs1_all_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_MXs2_all_uncorrelated = new TH1D("Signal_MXs2_all_uncorrelated", "Signal_MXs2_all_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -3895,6 +3923,55 @@ int main()
     GetPDFs(MC_dirname_CHG, "root", CHG_BRBtoXKLKL_m, "Bplus", "CHG", PDFtype::BRXKLKLDOWN, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
     GetPDFs(MC_dirname_MIX, "root", MIX_BRBtoXKLKL_m, "Bzero", "MIX", PDFtype::BRXKLKLDOWN, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
 
+    // efficiency for ECL cluster from KL0
+    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_EffECLKL_p, "Bplus", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_EffECLKL_p, "Bplus", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_EffECLKL_p, "Bplus", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_EffECLKL_p, "Bzero", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_EffECLKL_p, "Bzero", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_EffECLKL_p, "Bzero", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
+
+    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_EffECLKL_p, "Bplus", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_EffECLKL_p, "Bplus", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_EffECLKL_p, "Bplus", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_EffECLKL_p, "Bzero", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_EffECLKL_p, "Bzero", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_EffECLKL_p, "Bzero", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
+
+    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_EffECLKL_p, "Bplus", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_EffECLKL_p, "Bplus", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_EffECLKL_p, "Bplus", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_EffECLKL_p, "Bzero", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_EffECLKL_p, "Bzero", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_EffECLKL_p, "Bzero", "SIGNAL", PDFtype::EffKLECLUP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
+
+    GetPDFs(MC_dirname_CHG, "root", CHG_EffECLKL_p, "Bplus", "CHG", PDFtype::EffKLECLUP, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    GetPDFs(MC_dirname_MIX, "root", MIX_EffECLKL_p, "Bzero", "MIX", PDFtype::EffKLECLUP, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+
+    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_EffECLKL_m, "Bplus", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_EffECLKL_m, "Bplus", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_EffECLKL_m, "Bplus", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_EffECLKL_m, "Bzero", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_EffECLKL_m, "Bzero", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_EffECLKL_m, "Bzero", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
+
+    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_EffECLKL_m, "Bplus", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_EffECLKL_m, "Bplus", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_EffECLKL_m, "Bplus", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_EffECLKL_m, "Bzero", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_EffECLKL_m, "Bzero", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_EffECLKL_m, "Bzero", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
+
+    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_EffECLKL_m, "Bplus", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_EffECLKL_m, "Bplus", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_EffECLKL_m, "Bplus", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_EffECLKL_m, "Bzero", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_EffECLKL_m, "Bzero", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_EffECLKL_m, "Bzero", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
+
+    GetPDFs(MC_dirname_CHG, "root", CHG_EffECLKL_m, "Bplus", "CHG", PDFtype::EffKLECLDOWN, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    GetPDFs(MC_dirname_MIX, "root", MIX_EffECLKL_m, "Bzero", "MIX", PDFtype::EffKLECLDOWN, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+
     // calculate all uncorrelated pdfs
     ClearHist(Signal_MXs1_all_uncorrelated);
     ClearHist(Signal_MXs2_all_uncorrelated);
@@ -4253,6 +4330,13 @@ int main()
     AddPDFs(Signal_BRBtoXKLKL_m, Signal_MXs1_BRBtoXKLKL_m);
     AddPDFs(Signal_BRBtoXKLKL_m, Signal_MXs2_BRBtoXKLKL_m);
     AddPDFs(Signal_BRBtoXKLKL_m, Signal_MXs3_BRBtoXKLKL_m);
+
+    AddPDFs(Signal_EffECLKL_p, Signal_MXs1_EffECLKL_p);
+    AddPDFs(Signal_EffECLKL_p, Signal_MXs2_EffECLKL_p);
+    AddPDFs(Signal_EffECLKL_p, Signal_MXs3_EffECLKL_p);
+    AddPDFs(Signal_EffECLKL_m, Signal_MXs1_EffECLKL_m);
+    AddPDFs(Signal_EffECLKL_m, Signal_MXs2_EffECLKL_m);
+    AddPDFs(Signal_EffECLKL_m, Signal_MXs3_EffECLKL_m);
     /* ====================================== */
 
 
@@ -4634,6 +4718,20 @@ int main()
     SaveSpecificMXsBin(Signal_MXs3_BRBtoXKLKL_m, MXsBin);
     SaveSpecificMXsBin(CHG_BRBtoXKLKL_m, MXsBin);
     SaveSpecificMXsBin(MIX_BRBtoXKLKL_m, MXsBin);
+
+    // efficiency for ECL cluster from KL0
+    SaveSpecificMXsBin(Signal_EffECLKL_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_EffECLKL_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_EffECLKL_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_EffECLKL_p, MXsBin);
+    SaveSpecificMXsBin(CHG_EffECLKL_p, MXsBin);
+    SaveSpecificMXsBin(MIX_EffECLKL_p, MXsBin);
+    SaveSpecificMXsBin(Signal_EffECLKL_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_EffECLKL_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_EffECLKL_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_EffECLKL_m, MXsBin);
+    SaveSpecificMXsBin(CHG_EffECLKL_m, MXsBin);
+    SaveSpecificMXsBin(MIX_EffECLKL_m, MXsBin);
 
     // all uncorrelated uncertainties
     SaveSpecificMXsBin(Signal_MXs1_all_uncorrelated, MXsBin);
@@ -5056,6 +5154,20 @@ int main()
     Signal_MXs3_BRBtoXKLKL_m->Write();
     CHG_BRBtoXKLKL_m->Write();
     MIX_BRBtoXKLKL_m->Write();
+
+    // efficiency for ECL cluster from KL0
+    Signal_EffECLKL_p->Write();
+    Signal_MXs1_EffECLKL_p->Write();
+    Signal_MXs2_EffECLKL_p->Write();
+    Signal_MXs3_EffECLKL_p->Write();
+    CHG_EffECLKL_p->Write();
+    MIX_EffECLKL_p->Write();
+    Signal_EffECLKL_m->Write();
+    Signal_MXs1_EffECLKL_m->Write();
+    Signal_MXs2_EffECLKL_m->Write();
+    Signal_MXs3_EffECLKL_m->Write();
+    CHG_EffECLKL_m->Write();
+    MIX_EffECLKL_m->Write();
 
     // all uncorrelated uncertainties
     Signal_MXs1_all_uncorrelated->Write();
