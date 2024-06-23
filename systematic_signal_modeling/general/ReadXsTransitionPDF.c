@@ -516,6 +516,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
     double s12_KSKLKL = -1;
     double nB2KSKLKL_all_KSKLKL = -1;
     double nB2KSKLKL_NR_KSKLKL = -1;
+    double nB02KLphi2KSKL = -1;
 
     double nDptoXKL = -1;
     double nD0toXKL = -1;
