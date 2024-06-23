@@ -220,7 +220,7 @@ double GetBRRelativeUncertainty(int experiment, int run, unsigned int event, int
     if (fname.find("B2Knn_flat") != std::string::npos) return 1.0; // it is B+ --> K+ n nbar special MC. We do not fluctuate it
     else if (fname.find("B2Kstarnn_flat") != std::string::npos) return 1.0; // it is B+ --> K*+ n nbar special MC. We do not fluctuate it
     else if (fname.find("B02K0nn_flat") != std::string::npos) return 1.0; // it is B0 --> K0 n nbar special MC. We do not fluctuate it
-    else if (fname.find("B02K0nn_flat") != std::string::npos) return 1.0; // it is B0 --> K0 n nbar special MC. We do not fluctuate it
+    else if (fname.find("B02K0starnn_flat") != std::string::npos) return 1.0; // it is B0 --> K0 n nbar special MC. We do not fluctuate it
 
     int temp_Evt_DMID1 = -100;
     int temp_Evt_DMID2 = -100;
