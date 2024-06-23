@@ -76,6 +76,7 @@ typedef struct Options
     bool BBBR;
     bool BRBtoXKLKL;
     bool EffECLKL;
+    bool NEWFEICAL;
     bool BRXnn;
     bool BRDKL0;
     bool uncorrelated;
@@ -231,6 +232,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     options_->BBBR = false;
     options_->BRBtoXKLKL = false;
     options_->EffECLKL = false;
+    options_->NEWFEICAL = false;
     options_->BRXnn = false;
     options_->BRDKL0 = false;
     options_->uncorrelated = false;
@@ -260,6 +262,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
         options_->BBBR = true;
         options_->BRBtoXKLKL = true;
         options_->EffECLKL = true;
+        options_->NEWFEICAL = true;
         options_->BRXnn = true;
         options_->BRDKL0 = true;
         options_->uncorrelated = true;
@@ -289,6 +292,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     else if (std::string(tested_param) == std::string("BBBR")) options_->BBBR = true;
     else if (std::string(tested_param) == std::string("BRBtoXKLKL")) options_->BRBtoXKLKL = true;
     else if (std::string(tested_param) == std::string("EffECLKL")) options_->EffECLKL = true;
+    else if (std::string(tested_param) == std::string("NEWFEICAL")) options_->NEWFEICAL = true;
     else if (std::string(tested_param) == std::string("BRXnn")) options_->BRXnn = true;
     else if (std::string(tested_param) == std::string("BtoDtoXKL")) options_->BRDKL0 = true;
     else if (std::string(tested_param) == std::string("uncorrelated")) options_->uncorrelated = true;
@@ -439,6 +443,9 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // efficiency for ECL cluster from KL0
     if (options_->EffECLKL) w->var("EffECLKL_uncer")->setConstant(options_->EffECLKL);
+
+    // New FEI CAL
+    if (options_->NEWFEICAL) w->var("NEWFEICAL_uncer")->setConstant(options_->NEWFEICAL);
 
     // B->Xnn BR
     if (options_->BRXnn) w->var("alpha_Xnn_BR_uncer")->setConstant(options_->BRXnn);
