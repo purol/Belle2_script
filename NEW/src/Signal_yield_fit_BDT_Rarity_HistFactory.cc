@@ -3245,12 +3245,20 @@ int main()
     TH1D* Signal_MXs3_EffECLKL_p = new TH1D("Signal_MXs3_EffECLKL_p", "Signal_MXs3_EffECLKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_EffECLKL_p = new TH1D("CHG_EffECLKL_p", "CHG_EffECLKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_EffECLKL_p = new TH1D("MIX_EffECLKL_p", "MIX_EffECLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_EffECLKL_p = new TH1D("UUBAR_EffECLKL_p", "UUBAR_EffECLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_EffECLKL_p = new TH1D("DDBAR_EffECLKL_p", "DDBAR_EffECLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_EffECLKL_p = new TH1D("SSBAR_EffECLKL_p", "SSBAR_EffECLKL_p", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_EffECLKL_p = new TH1D("CHARM_EffECLKL_p", "CHARM_EffECLKL_p", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_EffECLKL_m = new TH1D("Signal_EffECLKL_m", "Signal_EffECLKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_MXs1_EffECLKL_m = new TH1D("Signal_MXs1_EffECLKL_m", "Signal_MXs1_EffECLKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_MXs2_EffECLKL_m = new TH1D("Signal_MXs2_EffECLKL_m", "Signal_MXs2_EffECLKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_MXs3_EffECLKL_m = new TH1D("Signal_MXs3_EffECLKL_m", "Signal_MXs3_EffECLKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_EffECLKL_m = new TH1D("CHG_EffECLKL_m", "CHG_EffECLKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_EffECLKL_m = new TH1D("MIX_EffECLKL_m", "MIX_EffECLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_EffECLKL_m = new TH1D("UUBAR_EffECLKL_m", "UUBAR_EffECLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_EffECLKL_m = new TH1D("DDBAR_EffECLKL_m", "DDBAR_EffECLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_EffECLKL_m = new TH1D("SSBAR_EffECLKL_m", "SSBAR_EffECLKL_m", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_EffECLKL_m = new TH1D("CHARM_EffECLKL_m", "CHARM_EffECLKL_m", RarityBins, BinMIN, BinMAX);
 
     // all of uncorrelated uncertainties
     TH1D* Signal_MXs1_all_uncorrelated = new TH1D("Signal_MXs1_all_uncorrelated", "Signal_MXs1_all_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -3931,6 +3939,10 @@ int main()
 
     GetPDFs(MC_dirname_CHG, "root", CHG_EffECLKL_p, "Bplus", "CHG", PDFtype::EffKLECLUP, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
     GetPDFs(MC_dirname_MIX, "root", MIX_EffECLKL_p, "Bzero", "MIX", PDFtype::EffKLECLUP, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+    GetPDFs(MC_dirname_UUBAR, "root", UUBAR_EffECLKL_p, "Continuum", "UUBAR", PDFtype::EffKLECLUP, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise", 0);
+    GetPDFs(MC_dirname_DDBAR, "root", DDBAR_EffECLKL_p, "Continuum", "DDBAR", PDFtype::EffKLECLUP, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise", 0);
+    GetPDFs(MC_dirname_SSBAR, "root", SSBAR_EffECLKL_p, "Continuum", "SSBAR", PDFtype::EffKLECLUP, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
+    GetPDFs(MC_dirname_CHARM, "root", CHARM_EffECLKL_p, "Continuum", "CHARM", PDFtype::EffKLECLUP, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
 
     GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_EffECLKL_m, "Bplus", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
     GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_EffECLKL_m, "Bplus", "SIGNAL", PDFtype::EffKLECLDOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
@@ -3955,6 +3967,10 @@ int main()
 
     GetPDFs(MC_dirname_CHG, "root", CHG_EffECLKL_m, "Bplus", "CHG", PDFtype::EffKLECLDOWN, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
     GetPDFs(MC_dirname_MIX, "root", MIX_EffECLKL_m, "Bzero", "MIX", PDFtype::EffKLECLDOWN, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+    GetPDFs(MC_dirname_UUBAR, "root", UUBAR_EffECLKL_m, "Continuum", "UUBAR", PDFtype::EffKLECLDOWN, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise", 0);
+    GetPDFs(MC_dirname_DDBAR, "root", DDBAR_EffECLKL_m, "Continuum", "DDBAR", PDFtype::EffKLECLDOWN, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise", 0);
+    GetPDFs(MC_dirname_SSBAR, "root", SSBAR_EffECLKL_m, "Continuum", "SSBAR", PDFtype::EffKLECLDOWN, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
+    GetPDFs(MC_dirname_CHARM, "root", CHARM_EffECLKL_m, "Continuum", "CHARM", PDFtype::EffKLECLDOWN, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
 
     // calculate all uncorrelated pdfs
     ClearHist(Signal_MXs1_all_uncorrelated);
@@ -4710,12 +4726,20 @@ int main()
     SaveSpecificMXsBin(Signal_MXs3_EffECLKL_p, MXsBin);
     SaveSpecificMXsBin(CHG_EffECLKL_p, MXsBin);
     SaveSpecificMXsBin(MIX_EffECLKL_p, MXsBin);
+    SaveSpecificMXsBin(UUBAR_EffECLKL_p, MXsBin);
+    SaveSpecificMXsBin(DDBAR_EffECLKL_p, MXsBin);
+    SaveSpecificMXsBin(SSBAR_EffECLKL_p, MXsBin);
+    SaveSpecificMXsBin(CHARM_EffECLKL_p, MXsBin);
     SaveSpecificMXsBin(Signal_EffECLKL_m, MXsBin);
     SaveSpecificMXsBin(Signal_MXs1_EffECLKL_m, MXsBin);
     SaveSpecificMXsBin(Signal_MXs2_EffECLKL_m, MXsBin);
     SaveSpecificMXsBin(Signal_MXs3_EffECLKL_m, MXsBin);
     SaveSpecificMXsBin(CHG_EffECLKL_m, MXsBin);
     SaveSpecificMXsBin(MIX_EffECLKL_m, MXsBin);
+    SaveSpecificMXsBin(UUBAR_EffECLKL_m, MXsBin);
+    SaveSpecificMXsBin(DDBAR_EffECLKL_m, MXsBin);
+    SaveSpecificMXsBin(SSBAR_EffECLKL_m, MXsBin);
+    SaveSpecificMXsBin(CHARM_EffECLKL_m, MXsBin);
 
     // all uncorrelated uncertainties
     SaveSpecificMXsBin(Signal_MXs1_all_uncorrelated, MXsBin);
@@ -5146,12 +5170,20 @@ int main()
     Signal_MXs3_EffECLKL_p->Write();
     CHG_EffECLKL_p->Write();
     MIX_EffECLKL_p->Write();
+    UUBAR_EffECLKL_p->Write();
+    DDBAR_EffECLKL_p->Write();
+    SSBAR_EffECLKL_p->Write();
+    CHARM_EffECLKL_p->Write();
     Signal_EffECLKL_m->Write();
     Signal_MXs1_EffECLKL_m->Write();
     Signal_MXs2_EffECLKL_m->Write();
     Signal_MXs3_EffECLKL_m->Write();
     CHG_EffECLKL_m->Write();
     MIX_EffECLKL_m->Write();
+    UUBAR_EffECLKL_m->Write();
+    DDBAR_EffECLKL_m->Write();
+    SSBAR_EffECLKL_m->Write();
+    CHARM_EffECLKL_m->Write();
 
     // all uncorrelated uncertainties
     Signal_MXs1_all_uncorrelated->Write();

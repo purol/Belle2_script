@@ -75,6 +75,7 @@ typedef struct Options
     bool BBcounting;
     bool BBBR;
     bool BRBtoXKLKL;
+    bool EffECLKL;
     bool BRXnn;
     bool BRDKL0;
     bool uncorrelated;
@@ -229,6 +230,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     options_->BBcounting = false;
     options_->BBBR = false;
     options_->BRBtoXKLKL = false;
+    options_->EffECLKL = false;
     options_->BRXnn = false;
     options_->BRDKL0 = false;
     options_->uncorrelated = false;
@@ -257,6 +259,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
         options_->BBcounting = true;
         options_->BBBR = true;
         options_->BRBtoXKLKL = true;
+        options_->EffECLKL = true;
         options_->BRXnn = true;
         options_->BRDKL0 = true;
         options_->uncorrelated = true;
@@ -285,6 +288,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     else if (std::string(tested_param) == std::string("BBcounting")) options_->BBcounting = true;
     else if (std::string(tested_param) == std::string("BBBR")) options_->BBBR = true;
     else if (std::string(tested_param) == std::string("BRBtoXKLKL")) options_->BRBtoXKLKL = true;
+    else if (std::string(tested_param) == std::string("EffECLKL")) options_->EffECLKL = true;
     else if (std::string(tested_param) == std::string("BRXnn")) options_->BRXnn = true;
     else if (std::string(tested_param) == std::string("BtoDtoXKL")) options_->BRDKL0 = true;
     else if (std::string(tested_param) == std::string("uncorrelated")) options_->uncorrelated = true;
@@ -432,6 +436,9 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // B->K KL KL BR
     if (options_->BRBtoXKLKL) w->var("alpha_BRBtoXKLKL_uncer")->setConstant(options_->BRBtoXKLKL);
+
+    // efficiency for ECL cluster from KL0
+    if (options_->EffECLKL) w->var("EffECLKL_uncer")->setConstant(options_->EffECLKL);
 
     // B->Xnn BR
     if (options_->BRXnn) w->var("alpha_Xnn_BR_uncer")->setConstant(options_->BRXnn);

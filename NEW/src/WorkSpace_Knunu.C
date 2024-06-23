@@ -195,6 +195,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp_MXs1.AddHistoSys("track_eff_uncer", "Signal_MXs1_track_m", fname, "", "Signal_MXs1_track_p", fname, "");
 	sig_temp_MXs1.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs1_BtoDtoXKL_m", fname, "", "Signal_MXs1_BtoDtoXKL_p", fname, "");
 	sig_temp_MXs1.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs1_BRBtoXKLKL_m", fname, "", "Signal_MXs1_BRBtoXKLKL_p", fname, "");
+	sig_temp_MXs1.AddHistoSys("EffECLKL_uncer", "Signal_MXs1_EffECLKL_m", fname, "", "Signal_MXs1_EffECLKL_p", fname, "");
 	sig_temp_MXs1.AddHistoSys("Xnn_BR_uncer", "Signal_MXs1_Xnn_m", fname, "", "Signal_MXs1_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) sig_temp_MXs1.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFEI; i++) sig_temp_MXs1.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -217,6 +218,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp_MXs2.AddHistoSys("track_eff_uncer", "Signal_MXs2_track_m", fname, "", "Signal_MXs2_track_p", fname, "");
 	sig_temp_MXs2.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs2_BtoDtoXKL_m", fname, "", "Signal_MXs2_BtoDtoXKL_p", fname, "");
 	sig_temp_MXs2.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs2_BRBtoXKLKL_m", fname, "", "Signal_MXs2_BRBtoXKLKL_p", fname, "");
+	sig_temp_MXs2.AddHistoSys("EffECLKL_uncer", "Signal_MXs2_EffECLKL_m", fname, "", "Signal_MXs2_EffECLKL_p", fname, "");
 	sig_temp_MXs2.AddHistoSys("Xnn_BR_uncer", "Signal_MXs2_Xnn_m", fname, "", "Signal_MXs2_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) sig_temp_MXs2.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFEI; i++) sig_temp_MXs2.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -246,6 +248,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp_MXs3.AddHistoSys("track_eff_uncer", "Signal_MXs3_track_m", fname, "", "Signal_MXs3_track_p", fname, "");
 	sig_temp_MXs3.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs3_BtoDtoXKL_m", fname, "", "Signal_MXs3_BtoDtoXKL_p", fname, "");
 	sig_temp_MXs3.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs3_BRBtoXKLKL_m", fname, "", "Signal_MXs3_BRBtoXKLKL_p", fname, "");
+	sig_temp_MXs3.AddHistoSys("EffECLKL_uncer", "Signal_MXs3_EffECLKL_m", fname, "", "Signal_MXs3_EffECLKL_p", fname, "");
 	sig_temp_MXs3.AddHistoSys("Xnn_BR_uncer", "Signal_MXs3_Xnn_m", fname, "", "Signal_MXs3_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) sig_temp_MXs3.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFEI; i++) sig_temp_MXs3.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -284,6 +287,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	CHG_temp.AddHistoSys("track_eff_uncer", "CHG_track_m", fname, "", "CHG_track_p", fname, "");
 	CHG_temp.AddHistoSys("BtoDtoXKL_uncer", "CHG_BtoDtoXKL_m", fname, "", "CHG_BtoDtoXKL_p", fname, "");
 	CHG_temp.AddHistoSys("BRBtoXKLKL_uncer", "CHG_BRBtoXKLKL_m", fname, "", "CHG_BRBtoXKLKL_p", fname, "");
+	CHG_temp.AddHistoSys("EffECLKL_uncer", "CHG_EffECLKL_m", fname, "", "CHG_EffECLKL_p", fname, "");
 	CHG_temp.AddHistoSys("Xnn_BR_uncer", "CHG_Xnn_m", fname, "", "CHG_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) CHG_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("CHG_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFEI; i++) CHG_temp.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("CHG_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -302,6 +306,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	MIX_temp.AddHistoSys("track_eff_uncer", "MIX_track_m", fname, "", "MIX_track_p", fname, "");
 	MIX_temp.AddHistoSys("BtoDtoXKL_uncer", "MIX_BtoDtoXKL_m", fname, "", "MIX_BtoDtoXKL_p", fname, "");
 	MIX_temp.AddHistoSys("BRBtoXKLKL_uncer", "MIX_BRBtoXKLKL_m", fname, "", "MIX_BRBtoXKLKL_p", fname, "");
+	MIX_temp.AddHistoSys("EffECLKL_uncer", "MIX_EffECLKL_m", fname, "", "MIX_EffECLKL_p", fname, "");
 	MIX_temp.AddHistoSys("Xnn_BR_uncer", "MIX_Xnn_m", fname, "", "MIX_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) MIX_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("MIX_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFEI; i++) MIX_temp.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("MIX_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -318,6 +323,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ UUBAR ================================ */
 	RooStats::HistFactory::Sample UUBAR_temp(("UUBAR_nominal_" + bin_name).c_str(), "UUBAR_nominal", fname);
 	UUBAR_temp.AddHistoSys("track_eff_uncer", "UUBAR_track_m", fname, "", "UUBAR_track_p", fname, "");
+	UUBAR_temp.AddHistoSys("EffECLKL_uncer", "UUBAR_EffECLKL_m", fname, "", "UUBAR_EffECLKL_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) UUBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryKID; i++) UUBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	UUBAR_temp.AddHistoSys("BDTc_shape_qq", "UUBAR_BDTc_m", fname, "", "UUBAR_BDTc_p", fname, "");
@@ -332,6 +338,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ DDBAR ================================ */
 	RooStats::HistFactory::Sample DDBAR_temp(("DDBAR_nominal_" + bin_name).c_str(), "DDBAR_nominal", fname);
 	DDBAR_temp.AddHistoSys("track_eff_uncer", "DDBAR_track_m", fname, "", "DDBAR_track_p", fname, "");
+	DDBAR_temp.AddHistoSys("EffECLKL_uncer", "DDBAR_EffECLKL_m", fname, "", "DDBAR_EffECLKL_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) DDBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryKID; i++) DDBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	DDBAR_temp.AddHistoSys("BDTc_shape_qq", "DDBAR_BDTc_m", fname, "", "DDBAR_BDTc_p", fname, "");
@@ -346,6 +353,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ SSBAR ================================ */
 	RooStats::HistFactory::Sample SSBAR_temp(("SSBAR_nominal_" + bin_name).c_str(), "SSBAR_nominal", fname);
 	SSBAR_temp.AddHistoSys("track_eff_uncer", "SSBAR_track_m", fname, "", "SSBAR_track_p", fname, "");
+	SSBAR_temp.AddHistoSys("EffECLKL_uncer", "SSBAR_EffECLKL_m", fname, "", "SSBAR_EffECLKL_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) SSBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryKID; i++) SSBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	SSBAR_temp.AddHistoSys("BDTc_shape_qq", "SSBAR_BDTc_m", fname, "", "SSBAR_BDTc_p", fname, "");
@@ -360,6 +368,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ CHARM ================================ */
 	RooStats::HistFactory::Sample CHARM_temp(("CHARM_nominal_" + bin_name).c_str(), "CHARM_nominal", fname);
 	CHARM_temp.AddHistoSys("track_eff_uncer", "CHARM_track_m", fname, "", "CHARM_track_p", fname, "");
+	CHARM_temp.AddHistoSys("EffECLKL_uncer", "CHARM_EffECLKL_m", fname, "", "CHARM_EffECLKL_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) CHARM_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("CHARM_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryKID; i++) CHARM_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("CHARM_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	CHARM_temp.AddHistoSys("BDTc_shape_qq", "CHARM_BDTc_m", fname, "", "CHARM_BDTc_p", fname, "");
