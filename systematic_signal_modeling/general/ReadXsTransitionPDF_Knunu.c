@@ -55,6 +55,7 @@ Corrector_Xsnn corrector_Xsnn;
 Corrector_Multiplicity corrector_Multiplicity;
 Corrector_KpKLKL corrector_KpKLKL;
 Corrector_KSKLKL corrector_KSKLKL;
+Corrector_phiKL corrector_phiKL;
 Corrector_KstarKLKL corrector_KstarKLKL;
 Corrector_XsKLKL corrector_XsKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
@@ -629,6 +630,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
         tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &s12_KSKLKL);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_all__bc", &nB2KSKLKL_all_KSKLKL);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_NR__bc", &nB2KSKLKL_NR_KSKLKL);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_phi__bc", &nB02KLphi2KSKL);
 
         tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &nDptoXKL);
         tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &nD0toXKL);
@@ -675,7 +677,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             }
 
             // Knn correction factor
-            double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            double Correction_Knn = corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn, names.at(i), MCTYPE, false);
 
             // Multiplicity correction factor
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
@@ -684,7 +686,9 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             double Correction_KpKLKL = corrector_KpKLKL.GetCorrectionFactorAtGeneric(s13_KpKLKL, s23_KpKLKL, nB2KpKLKL_all_KpKLKL, nB2KpKLKL_NR_KpKLKL);
 
             // B0 --> KS0 KL0 KL0 correction factor
-            double Correction_KSKLKL = corrector_KSKLKL.GetCorrectionFactorAtGeneric(std::max(std::max(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), std::min(std::min(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), nB2KSKLKL_all_KSKLKL, nB2KSKLKL_NR_KSKLKL);
+            double Correction_KSKLKL = 1.0;
+            if (nB02KLphi2KSKL < MyEPSILON) Correction_KSKLKL = corrector_KSKLKL.GetCorrectionFactorAtGeneric(std::max(std::max(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), std::min(std::min(s13_KSKLKL, s23_KSKLKL), s12_KSKLKL), nB2KSKLKL_all_KSKLKL, nB2KSKLKL_NR_KSKLKL);
+            else Correction_KSKLKL = corrector_phiKL.GetCorrectionFactorAtGeneric(nB02KLphi2KSKL);
 
             // B-> [D -> KL0 X] anything correction factor
             double Correction_BtoDtoXKL = 1.0;
