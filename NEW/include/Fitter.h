@@ -442,10 +442,10 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->BRBtoXKLKL) w->var("alpha_BRBtoXKLKL_uncer")->setConstant(options_->BRBtoXKLKL);
 
     // efficiency for ECL cluster from KL0
-    if (options_->EffECLKL) w->var("EffECLKL_uncer")->setConstant(options_->EffECLKL);
+    if (options_->EffECLKL) w->var("alpha_EffECLKL_uncer")->setConstant(options_->EffECLKL);
 
     // New FEI CAL
-    if (options_->NEWFEICAL) w->var("NEWFEICAL_uncer")->setConstant(options_->NEWFEICAL);
+    if (options_->NEWFEICAL) w->var("alpha_NEWFEICAL_uncer")->setConstant(options_->NEWFEICAL);
 
     // B->Xnn BR
     if (options_->BRXnn) w->var("alpha_Xnn_BR_uncer")->setConstant(options_->BRXnn);
