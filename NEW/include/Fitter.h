@@ -405,7 +405,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->Fragmentation) for (int i = 0; i < options_->NEntryFragmentation; i++) w->var(("alpha_Xs_fragmentation" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->Fragmentation);
 
     // mKstar
-    if (options_->mKstar) w->var("alpha_mKstar_uncer")->setConstant(options_->mKstar);
+    //if (options_->mKstar) w->var("alpha_mKstar_uncer")->setConstant(options_->mKstar);
 
     // background normalization
     if (options_->BKGNorm) {
