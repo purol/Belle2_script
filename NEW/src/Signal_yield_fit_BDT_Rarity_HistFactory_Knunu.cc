@@ -2845,6 +2845,25 @@ void GetMCstatisticalRelativeError(TH1D* nominal_hist, TH1D * MCstat_hist, int N
     }
 }
 
+void GetRelativeError(const char* fname, TH1D* relative_error_hist, int Nbin) {
+    int Nentry = -1;
+
+    FILE* fp;
+    fp = fopen(fname, "r");
+    fscanf(fp, "%d\n", &Nentry);
+    if (Nentry != Nbin) {
+        printf("[GetRelativeError] Nbin and Nentry are different\n");
+        exit(1);
+    }
+    for (int i = 0; i < Nentry; i++) {
+        double weight = 0;
+        fscanf(fp, "%lf\n", &weight);
+        weight = std::abs(1.0 - weight);
+        relative_error_hist->SetBinContent(i + 1, weight);
+    }
+    fclose(fp);
+}
+
 void SaveSpecificMXsBin(TH1D*& hist, int MXsBin) {
 
     TH1D* replace_hist;
@@ -3338,6 +3357,17 @@ int main()
     TH1D* SSBAR_MC_stat = new TH1D("SSBAR_MC_stat", "SSBAR_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_MC_stat = new TH1D("CHARM_MC_stat", "CHARM_MC_stat", RarityBins, BinMIN, BinMAX);
 
+    // additional relative uncertainty
+    TH1D* Signal_MXs1_rel_uncer = new TH1D("Signal_MXs1_rel_uncer", "Signal_MXs1_rel_uncer", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_rel_uncer = new TH1D("Signal_MXs2_rel_uncer", "Signal_MXs2_rel_uncer", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_rel_uncer = new TH1D("Signal_MXs3_rel_uncer", "Signal_MXs3_rel_uncer", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_rel_uncer = new TH1D("CHG_rel_uncer", "CHG_rel_uncer", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_rel_uncer = new TH1D("MIX_rel_uncer", "MIX_rel_uncer", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_rel_uncer = new TH1D("UUBAR_rel_uncer", "UUBAR_rel_uncer", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_rel_uncer = new TH1D("DDBAR_rel_uncer", "DDBAR_rel_uncer", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_rel_uncer = new TH1D("SSBAR_rel_uncer", "SSBAR_rel_uncer", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_rel_uncer = new TH1D("CHARM_rel_uncer", "CHARM_rel_uncer", RarityBins, BinMIN, BinMAX);
+
     // all of uncorrelated uncertainties + MC statistical uncertainties
     TH1D* Signal_all_uncorrelated_MC_stat = new TH1D("Signal_all_uncorrelated_MC_stat", "Signal_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_MXs1_all_uncorrelated_MC_stat = new TH1D("Signal_MXs1_all_uncorrelated_MC_stat", "Signal_MXs1_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
@@ -3389,6 +3419,9 @@ int main()
     // for fragmentation
     const char* Fragmentation_correlated_info = "./Fragmentation_selected.txt";
     const char* Fragmentation_uncorrelated_info = "./Fragmentation_cov_remain_truncated.txt";
+
+    // for additional relative uncertainty
+    const char* relative_uncertainty_file = "./dataMCratio_sideband.txt";
 
     /* ====================================== */
 
@@ -4134,6 +4167,27 @@ int main()
     GetMCstatisticalRelativeError(SSBAR_nominal, SSBAR_MC_stat, RarityBins);
     GetMCstatisticalRelativeError(CHARM_nominal, CHARM_MC_stat, RarityBins);
 
+    // read additional relative uncertainty 
+    GetRelativeError(relative_uncertainty_file, Signal_MXs1_rel_uncer, RarityBins);
+    GetRelativeError(relative_uncertainty_file, Signal_MXs2_rel_uncer, RarityBins);
+    GetRelativeError(relative_uncertainty_file, Signal_MXs3_rel_uncer, RarityBins);
+    GetRelativeError(relative_uncertainty_file, CHG_rel_uncer, RarityBins);
+    GetRelativeError(relative_uncertainty_file, MIX_rel_uncer, RarityBins);
+    GetRelativeError(relative_uncertainty_file, UUBAR_rel_uncer, RarityBins);
+    GetRelativeError(relative_uncertainty_file, DDBAR_rel_uncer, RarityBins);
+    GetRelativeError(relative_uncertainty_file, SSBAR_rel_uncer, RarityBins);
+    GetRelativeError(relative_uncertainty_file, CHARM_rel_uncer, RarityBins);
+
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_rel_uncer, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_rel_uncer, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_rel_uncer, RarityBins);
+    AddSQRTHist(CHG_all_uncorrelated, CHG_rel_uncer, RarityBins);
+    AddSQRTHist(MIX_all_uncorrelated, MIX_rel_uncer, RarityBins);
+    AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_rel_uncer, RarityBins);
+    AddSQRTHist(DDBAR_all_uncorrelated, DDBAR_rel_uncer, RarityBins);
+    AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_rel_uncer, RarityBins);
+    AddSQRTHist(CHARM_all_uncorrelated, CHARM_rel_uncer, RarityBins);
+
     // all of uncorrelated uncertainties + MC statistical uncertainties
     AddSQRTHist(Signal_MXs1_all_uncorrelated_MC_stat, Signal_MXs1_all_uncorrelated, Signal_MXs1_MC_stat, RarityBins);
     AddSQRTHist(Signal_MXs2_all_uncorrelated_MC_stat, Signal_MXs2_all_uncorrelated, Signal_MXs2_MC_stat, RarityBins);
@@ -4855,6 +4909,17 @@ int main()
     SaveSpecificMXsBin(SSBAR_MC_stat, MXsBin);
     SaveSpecificMXsBin(CHARM_MC_stat, MXsBin);
 
+    // additional relative uncertainty
+    SaveSpecificMXsBin(Signal_MXs1_rel_uncer, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_rel_uncer, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_rel_uncer, MXsBin);
+    SaveSpecificMXsBin(CHG_rel_uncer, MXsBin);
+    SaveSpecificMXsBin(MIX_rel_uncer, MXsBin);
+    SaveSpecificMXsBin(UUBAR_rel_uncer, MXsBin);
+    SaveSpecificMXsBin(DDBAR_rel_uncer, MXsBin);
+    SaveSpecificMXsBin(SSBAR_rel_uncer, MXsBin);
+    SaveSpecificMXsBin(CHARM_rel_uncer, MXsBin);
+
     // all of uncorrelated uncertainties + MC statistical uncertainties
     SaveSpecificMXsBin(Signal_all_uncorrelated_MC_stat, MXsBin);
     SaveSpecificMXsBin(Signal_MXs1_all_uncorrelated_MC_stat, MXsBin);
@@ -5308,6 +5373,17 @@ int main()
     DDBAR_MC_stat->Write();
     SSBAR_MC_stat->Write();
     CHARM_MC_stat->Write();
+
+    // additional relative uncertainty
+    Signal_MXs1_rel_uncer->Write();
+    Signal_MXs2_rel_uncer->Write();
+    Signal_MXs3_rel_uncer->Write();
+    CHG_rel_uncer->Write();
+    MIX_rel_uncer->Write();
+    UUBAR_rel_uncer->Write();
+    DDBAR_rel_uncer->Write();
+    SSBAR_rel_uncer->Write();
+    CHARM_rel_uncer->Write();
 
     // all of uncorrelated uncertainties + MC statistical uncertainties
     Signal_all_uncorrelated_MC_stat->Write();
