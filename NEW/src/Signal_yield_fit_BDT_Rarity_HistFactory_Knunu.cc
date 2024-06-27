@@ -4205,17 +4205,6 @@ int main()
     AddSQRTHist(CHG_all_uncorrelated, CHG_Fragmentation_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_Fragmentation_uncorrelated, RarityBins);
 
-    // calculate MC statistical uncertainties (relative errors)
-    GetMCstatisticalRelativeError(Signal_MXs1_nominal, Signal_MXs1_MC_stat, RarityBins);
-    GetMCstatisticalRelativeError(Signal_MXs2_nominal, Signal_MXs2_MC_stat, RarityBins);
-    GetMCstatisticalRelativeError(Signal_MXs3_nominal, Signal_MXs3_MC_stat, RarityBins);
-    GetMCstatisticalRelativeError(CHG_nominal, CHG_MC_stat, RarityBins);
-    GetMCstatisticalRelativeError(MIX_nominal, MIX_MC_stat, RarityBins);
-    GetMCstatisticalRelativeError(UUBAR_nominal, UUBAR_MC_stat, RarityBins);
-    GetMCstatisticalRelativeError(DDBAR_nominal, DDBAR_MC_stat, RarityBins);
-    GetMCstatisticalRelativeError(SSBAR_nominal, SSBAR_MC_stat, RarityBins);
-    GetMCstatisticalRelativeError(CHARM_nominal, CHARM_MC_stat, RarityBins);
-
     // read additional relative uncertainty 
     GetRelativeError(relative_uncertainty_file, Signal_MXs1_rel_uncer, RarityBins);
     GetRelativeError(relative_uncertainty_file, Signal_MXs2_rel_uncer, RarityBins);
@@ -4236,6 +4225,17 @@ int main()
     AddSQRTHist(DDBAR_all_uncorrelated, DDBAR_rel_uncer, RarityBins);
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_rel_uncer, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_rel_uncer, RarityBins);
+
+    // calculate MC statistical uncertainties (relative errors)
+    GetMCstatisticalRelativeError(Signal_MXs1_nominal, Signal_MXs1_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(Signal_MXs2_nominal, Signal_MXs2_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(Signal_MXs3_nominal, Signal_MXs3_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(CHG_nominal, CHG_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(MIX_nominal, MIX_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(UUBAR_nominal, UUBAR_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(DDBAR_nominal, DDBAR_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(SSBAR_nominal, SSBAR_MC_stat, RarityBins);
+    GetMCstatisticalRelativeError(CHARM_nominal, CHARM_MC_stat, RarityBins);
 
     // all of uncorrelated uncertainties + MC statistical uncertainties
     AddSQRTHist(Signal_MXs1_all_uncorrelated_MC_stat, Signal_MXs1_all_uncorrelated, Signal_MXs1_MC_stat, RarityBins);
