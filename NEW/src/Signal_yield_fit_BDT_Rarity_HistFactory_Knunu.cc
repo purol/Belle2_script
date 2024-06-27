@@ -2864,6 +2864,52 @@ void GetRelativeError(const char* fname, TH1D* relative_error_hist, int Nbin) {
     fclose(fp);
 }
 
+void CalculateEntireRelativeUncertainty(TH1D* entire_rel_error,
+    TH1D* signal_MXs1_nominal, TH1D* signal_MXs1_rel_error,
+    TH1D* signal_MXs2_nominal, TH1D* signal_MXs2_rel_error, 
+    TH1D* signal_MXs3_nominal, TH1D* signal_MXs3_rel_error, 
+    TH1D* CHG_nominal, TH1D* CHG_rel_error,
+    TH1D* MIX_nominal, TH1D* MIX_rel_error,
+    TH1D* UUBAR_nominal, TH1D* UUBAR_rel_error,
+    TH1D* DDBAR_nominal, TH1D* DDBAR_rel_error,
+    TH1D* SSBAR_nominal, TH1D* SSBAR_rel_error,
+    TH1D* CHARM_nominal, TH1D* CHARM_rel_error, int Nbin) {
+    for (int i = 0; i < Nbin; i++) {
+        double signal_MXs1_error = signal_MXs1_nominal->GetBinContent(i + 1) * signal_MXs1_rel_error->GetBinContent(i + 1);
+        double signal_MXs2_error = signal_MXs2_nominal->GetBinContent(i + 1) * signal_MXs2_rel_error->GetBinContent(i + 1);
+        double signal_MXs3_error = signal_MXs3_nominal->GetBinContent(i + 1) * signal_MXs3_rel_error->GetBinContent(i + 1);
+        double CHG_error = CHG_nominal->GetBinContent(i + 1) * CHG_rel_error->GetBinContent(i + 1);
+        double MIX_error = MIX_nominal->GetBinContent(i + 1) * MIX_rel_error->GetBinContent(i + 1);
+        double UUBAR_error = UUBAR_nominal->GetBinContent(i + 1) * UUBAR_rel_error->GetBinContent(i + 1);
+        double DDBAR_error = DDBAR_nominal->GetBinContent(i + 1) * DDBAR_rel_error->GetBinContent(i + 1);
+        double SSBAR_error = SSBAR_nominal->GetBinContent(i + 1) * SSBAR_rel_error->GetBinContent(i + 1);
+        double CHARM_error = CHARM_nominal->GetBinContent(i + 1) * CHARM_rel_error->GetBinContent(i + 1);
+
+        double signal_MXs1_val = signal_MXs1_nominal->GetBinContent(i + 1);
+        double signal_MXs2_val = signal_MXs2_nominal->GetBinContent(i + 1);
+        double signal_MXs3_val = signal_MXs3_nominal->GetBinContent(i + 1);
+        double CHG_val = CHG_nominal->GetBinContent(i + 1);
+        double MIX_val = MIX_nominal->GetBinContent(i + 1);
+        double UUBAR_val = UUBAR_nominal->GetBinContent(i + 1);
+        double DDBAR_val = DDBAR_nominal->GetBinContent(i + 1);
+        double SSBAR_val = SSBAR_nominal->GetBinContent(i + 1);
+        double CHARM_val = CHARM_nominal->GetBinContent(i + 1);
+
+        entire_rel_error->SetBinContent(i + 1,
+            std::sqrt(signal_MXs1_error * signal_MXs1_error +
+                signal_MXs2_error * signal_MXs2_error +
+                signal_MXs3_error * signal_MXs3_error +
+                CHG_error * CHG_error +
+                MIX_error * MIX_error +
+                UUBAR_error * UUBAR_error +
+                DDBAR_error * DDBAR_error +
+                SSBAR_error * SSBAR_error +
+                CHARM_error * CHARM_error) / 
+            (signal_MXs1_val + signal_MXs2_val + signal_MXs3_val + CHG_val + MIX_val + UUBAR_val + DDBAR_val + SSBAR_val + CHARM_val)
+        );
+    }
+}
+
 void SaveSpecificMXsBin(TH1D*& hist, int MXsBin) {
 
     TH1D* replace_hist;
@@ -3379,6 +3425,9 @@ int main()
     TH1D* DDBAR_all_uncorrelated_MC_stat = new TH1D("DDBAR_all_uncorrelated_MC_stat", "DDBAR_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* SSBAR_all_uncorrelated_MC_stat = new TH1D("SSBAR_all_uncorrelated_MC_stat", "SSBAR_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_all_uncorrelated_MC_stat = new TH1D("CHARM_all_uncorrelated_MC_stat", "CHARM_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
+
+    // all of uncorrelated uncertainties + MC statistical uncertainties for entire sample
+    TH1D* entire_all_uncorrelated_MC_stat = new TH1D("entire_all_uncorrelated_MC_stat", "entire_all_uncorrelated_MC_stat", RarityBins, BinMIN, BinMAX);
     /* ====================================== */
 
 
@@ -4198,6 +4247,18 @@ int main()
     AddSQRTHist(DDBAR_all_uncorrelated_MC_stat, DDBAR_all_uncorrelated, DDBAR_MC_stat, RarityBins);
     AddSQRTHist(SSBAR_all_uncorrelated_MC_stat, SSBAR_all_uncorrelated, SSBAR_MC_stat, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated_MC_stat, CHARM_all_uncorrelated, CHARM_MC_stat, RarityBins);
+
+    // calculate the entire relative uncertainty
+    CalculateEntireRelativeUncertainty(entire_all_uncorrelated_MC_stat,
+        Signal_MXs1_nominal, Signal_MXs1_all_uncorrelated_MC_stat,
+        Signal_MXs2_nominal, Signal_MXs2_all_uncorrelated_MC_stat,
+        Signal_MXs3_nominal, Signal_MXs3_all_uncorrelated_MC_stat,
+        CHG_nominal, CHG_all_uncorrelated_MC_stat,
+        MIX_nominal, MIX_all_uncorrelated_MC_stat,
+        UUBAR_nominal, UUBAR_all_uncorrelated_MC_stat,
+        DDBAR_nominal, DDBAR_all_uncorrelated_MC_stat,
+        SSBAR_nominal, SSBAR_all_uncorrelated_MC_stat,
+        CHARM_nominal, CHARM_all_uncorrelated_MC_stat, RarityBins);
     /* ====================================== */
 
 
@@ -4932,6 +4993,9 @@ int main()
     SaveSpecificMXsBin(SSBAR_all_uncorrelated_MC_stat, MXsBin);
     SaveSpecificMXsBin(CHARM_all_uncorrelated_MC_stat, MXsBin);
 
+    // the entire relative uncertainty
+    SaveSpecificMXsBin(entire_all_uncorrelated_MC_stat, MXsBin);
+
     // data
     SaveSpecificMXsBin(total_DATA, MXsBin);
     /* ====================================== */
@@ -5396,6 +5460,9 @@ int main()
     DDBAR_all_uncorrelated_MC_stat->Write();
     SSBAR_all_uncorrelated_MC_stat->Write();
     CHARM_all_uncorrelated_MC_stat->Write();
+
+    // the entire relative uncertainty
+    entire_all_uncorrelated_MC_stat->Write();
 
     total_DATA->Write();
 
