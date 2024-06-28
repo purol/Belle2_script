@@ -423,7 +423,7 @@ int WorkSpace() {
 	const char* fname_MXs3 = "PDFandDATA_MXs3.root";
 
 	RooStats::HistFactory::Measurement meas("my_measurement", "my measurement");
-	meas.SetOutputFilePrefix("results/my_measurement");
+	meas.SetOutputFilePrefix("PDFandDATA/my_measurement");
 	meas.SetExportOnly(kTRUE);
 
 	// setting measurement
@@ -463,7 +463,7 @@ int WorkSpace() {
 	w->Print();
 	w->writeToFile("PDFandDATA_workspace.root");
 
-	meas.PrintXML("PDFandDATA.xml");
+	meas.PrintXML("PDFandDATA");
 
 	return 0;
 }

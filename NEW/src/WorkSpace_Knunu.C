@@ -390,7 +390,7 @@ int WorkSpace_Knunu() {
 	const char* fname_MXs1 = "PDFandDATA_MXs1.root";
 
 	RooStats::HistFactory::Measurement meas("my_measurement", "my measurement");
-	meas.SetOutputFilePrefix("results/my_measurement");
+	meas.SetOutputFilePrefix("PDFandDATA/my_measurement");
 	meas.SetExportOnly(kTRUE);
 
 	// setting measurement
@@ -418,7 +418,7 @@ int WorkSpace_Knunu() {
 	w->Print();
 	w->writeToFile("PDFandDATA_workspace.root");
 
-	meas.PrintXML("PDFandDATA.xml");
+	meas.PrintXML("PDFandDATA");
 
 	return 0;
 }
