@@ -418,5 +418,7 @@ int WorkSpace_Knunu() {
 	w->Print();
 	w->writeToFile("PDFandDATA_workspace.root");
 
+	meas.PrintXML("PDFandDATA.xml");
+
 	return 0;
 }
