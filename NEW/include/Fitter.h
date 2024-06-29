@@ -542,7 +542,7 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
 
 }
 
-RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0) {
+RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true) {
     // what we have done
     w->loadSnapshot("ParamValues");
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
@@ -583,9 +583,11 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
     // this causes a memory leak
     minim.optimizeConst(2);
     minim.migrad();
-    minim.minos(RooArgSet(*w->var("mu_MXs1")));
-    minim.minos(RooArgSet(*w->var("mu_MXs2")));
-    minim.minos(RooArgSet(*w->var("mu_MXs3")));
+    if (Minos) {
+        minim.minos(RooArgSet(*w->var("mu_MXs1")));
+        minim.minos(RooArgSet(*w->var("mu_MXs2")));
+        minim.minos(RooArgSet(*w->var("mu_MXs3")));
+    }
 
     // fit!
     int status;
