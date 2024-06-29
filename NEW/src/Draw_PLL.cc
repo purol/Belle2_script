@@ -111,7 +111,8 @@ int main(int argc, char* argv[]) {
     //double eps = ::ROOT::Math::MinimizerOptions::DefaultTolerance();
     double eps = 0.001;
     RooAbsReal* nll;
-    RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps);
+    RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps, false);
+    w->saveSnapshot("GlobalMinimumParamValues", *params, true);
 
     // get PLL value
     RooPlot* mu_frame;
@@ -121,22 +122,31 @@ int main(int argc, char* argv[]) {
     if (std::string(argv[1]) == std::string("mu_MXs1")) {
         RooRealVar* mu_MXs1 = w->var("mu_MXs1");
         mu_frame = mu_MXs1->frame();
+        w->loadSnapshot("GlobalMinimumParamValues");
         RooAbsReal* pll = nll->createProfile(*mu_MXs1);
         mu_MXs1->setVal(set_value);
+        mu_MXs1->setConstant(true);
+        MyMinimizeNLLReuse(w, data, &nll, eps, false);
         PLL_value = pll->getVal();
     }
     else if (std::string(argv[1]) == std::string("mu_MXs2")) {
         RooRealVar* mu_MXs2 = w->var("mu_MXs2");
         mu_frame = mu_MXs2->frame();
+        w->loadSnapshot("GlobalMinimumParamValues");
         RooAbsReal* pll = nll->createProfile(*mu_MXs2);
         mu_MXs2->setVal(set_value);
+        mu_MXs2->setConstant(true);
+        MyMinimizeNLLReuse(w, data, &nll, eps, false);
         PLL_value = pll->getVal();
     }
     else if (std::string(argv[1]) == std::string("mu_MXs3")) {
         RooRealVar* mu_MXs3 = w->var("mu_MXs3");
         mu_frame = mu_MXs3->frame();
+        w->loadSnapshot("GlobalMinimumParamValues");
         RooAbsReal* pll = nll->createProfile(*mu_MXs3);
         mu_MXs3->setVal(set_value);
+        mu_MXs3->setConstant(true);
+        MyMinimizeNLLReuse(w, data, &nll, eps, false);
         PLL_value = pll->getVal();
     }
     else {
