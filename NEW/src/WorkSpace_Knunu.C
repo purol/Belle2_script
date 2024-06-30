@@ -17,7 +17,7 @@
 #include "RooGaussian.h"
 #include "RooRealVar.h"
 #include "RooMCStudy.h"
-#include "RooMinuit.h"
+//#include "RooMinuit.h"
 #include "RooCategory.h"
 #include "RooHistPdf.h"
 #include "RooSimultaneous.h"
@@ -36,13 +36,14 @@
 
 #include "RooStats/HistFactory/FlexibleInterpVar.h"
 #include "RooStats/HistFactory/PiecewiseInterpolation.h"
-#include "RooStats/HistFactory/HistFactorySimultaneous.h"
+//#include "RooStats/HistFactory/HistFactorySimultaneous.h"
 #include "RooStats/HistFactory/Channel.h"
 #include "RooStats/HistFactory/MakeModelAndMeasurementsFast.h"
 #include "RooStats/HistFactory/Measurement.h"
 #include "RooStats/HistFactory/ParamHistFunc.h"
 #include "RooStats/HistFactory/HistFactoryModelUtils.h"
 #include "RooStats/HistFactory/RooBarlowBeestonLL.h"
+#include "RooStats/HistFactory/Sample.h"
 
 #include "template.h"
 #include "correctors.h"
@@ -206,7 +207,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp_MXs1.AddHistoSys("Kff2_uncer", "Signal_MXs1_Kff2_m", fname, "", "Signal_MXs1_Kff2_p", fname, "");
 	sig_temp_MXs1.AddHistoSys("Kff3_uncer", "Signal_MXs1_Kff3_m", fname, "", "Signal_MXs1_Kff3_p", fname, "");
 	sig_temp_MXs1.AddHistoSys("Kfrac_uncer", "Signal_MXs1_Kfrac_m", fname, "", "Signal_MXs1_Kfrac_p", fname, "");
-	if (MXs_bin == 1) sig_temp_MXs1.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL, true);
+	if (MXs_bin == 1) sig_temp_MXs1.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL);
 	if (MXs_bin == 1) sig_temp_MXs1.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
 	sig_temp_MXs1.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	sig_temp_MXs1.ActivateStatError("Signal_MXs1_all_uncorrelated_MC_stat", fname, "");
@@ -238,7 +239,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp_MXs2.AddHistoSys("Kstarff9_uncer", "Signal_MXs2_Kstarff9_m", fname, "", "Signal_MXs2_Kstarff9_p", fname, "");
 	sig_temp_MXs2.AddHistoSys("Kstarfrac_uncer", "Signal_MXs2_Kstarfrac_m", fname, "", "Signal_MXs2_Kstarfrac_p", fname, "");
 	// sig_temp_MXs2.AddHistoSys("mKstar_uncer", "Signal_MXs2_mKstar_m", fname, "", "Signal_MXs2_mKstar_p", fname, "");
-	if (MXs_bin == 2) sig_temp_MXs2.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL, true);
+	if (MXs_bin == 2) sig_temp_MXs2.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL);
 	if (MXs_bin == 2) sig_temp_MXs2.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
 	sig_temp_MXs2.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	sig_temp_MXs2.ActivateStatError("Signal_MXs2_all_uncorrelated_MC_stat", fname, "");
@@ -277,7 +278,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp_MXs3.AddHistoSys("mb_uncer", "Signal_MXs3_mb_m", fname, "", "Signal_MXs3_mb_p", fname, "");
 	sig_temp_MXs3.AddHistoSys("transition_uncer", "Signal_MXs3_transition_m", fname, "", "Signal_MXs3_transition_p", fname, "");
 	// sig_temp_MXs3.AddHistoSys("mKstar_uncer", "Signal_MXs3_mKstar_m", fname, "", "Signal_MXs3_mKstar_p", fname, "");
-	if (MXs_bin == 3) sig_temp_MXs3.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL, true);
+	if (MXs_bin == 3) sig_temp_MXs3.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL);
 	if (MXs_bin == 3) sig_temp_MXs3.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
 	sig_temp_MXs3.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	sig_temp_MXs3.ActivateStatError("Signal_MXs3_all_uncorrelated_MC_stat", fname, "");
@@ -330,7 +331,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	for (int i = 0; i < NEntryMultiplicity; i++) UUBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryKID; i++) UUBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	UUBAR_temp.AddHistoSys("BDTc_shape_qq", "UUBAR_BDTc_m", fname, "", "UUBAR_BDTc_p", fname, "");
-	UUBAR_temp.AddNormFactor(("qq_CAL_UUBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL, true);
+	UUBAR_temp.AddNormFactor(("qq_CAL_UUBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	//UUBAR_temp.AddOverallSys(("qq_CAL_UUBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	UUBAR_temp.AddOverallSys(("mu_UUBAR_" + bin_name).c_str(), 1.0 - std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
 	UUBAR_temp.ActivateStatError("UUBAR_all_uncorrelated_MC_stat", fname, "");
@@ -345,7 +346,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	for (int i = 0; i < NEntryMultiplicity; i++) DDBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryKID; i++) DDBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	DDBAR_temp.AddHistoSys("BDTc_shape_qq", "DDBAR_BDTc_m", fname, "", "DDBAR_BDTc_p", fname, "");
-	DDBAR_temp.AddNormFactor(("qq_CAL_DDBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL, true);
+	DDBAR_temp.AddNormFactor(("qq_CAL_DDBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	//DDBAR_temp.AddOverallSys(("qq_CAL_DDBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	DDBAR_temp.AddOverallSys(("mu_DDBAR_" + bin_name).c_str(), 1.0 - std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
 	DDBAR_temp.ActivateStatError("DDBAR_all_uncorrelated_MC_stat", fname, "");
@@ -360,7 +361,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	for (int i = 0; i < NEntryMultiplicity; i++) SSBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryKID; i++) SSBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	SSBAR_temp.AddHistoSys("BDTc_shape_qq", "SSBAR_BDTc_m", fname, "", "SSBAR_BDTc_p", fname, "");
-	SSBAR_temp.AddNormFactor(("qq_CAL_SSBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL, true);
+	SSBAR_temp.AddNormFactor(("qq_CAL_SSBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	//SSBAR_temp.AddOverallSys(("qq_CAL_SSBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	SSBAR_temp.AddOverallSys(("mu_SSBAR_" + bin_name).c_str(), 1.0 - std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
 	SSBAR_temp.ActivateStatError("SSBAR_all_uncorrelated_MC_stat", fname, "");
@@ -375,7 +376,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	for (int i = 0; i < NEntryMultiplicity; i++) CHARM_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("CHARM_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryKID; i++) CHARM_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("CHARM_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	CHARM_temp.AddHistoSys("BDTc_shape_qq", "CHARM_BDTc_m", fname, "", "CHARM_BDTc_p", fname, "");
-	CHARM_temp.AddNormFactor(("qq_CAL_CHARM_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL, true);
+	CHARM_temp.AddNormFactor(("qq_CAL_CHARM_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	//CHARM_temp.AddOverallSys(("qq_CAL_CHARM_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	CHARM_temp.AddOverallSys(("mu_CHARM_" + bin_name).c_str(), 1.0 - std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
 	CHARM_temp.ActivateStatError("CHARM_all_uncorrelated_MC_stat", fname, "");
@@ -397,6 +398,27 @@ int WorkSpace_Knunu() {
 	meas.SetPOI("mu_MXs1");
 	meas.SetLumi(1.0);
 	meas.AddConstantParam("Lumi");
+
+	// set constant parameters
+	meas.AddConstantParam("FBDT_efficiency_CAL_MXs1");
+	meas.AddConstantParam("FBDT_efficiency_CAL_MXs2");
+	meas.AddConstantParam("FBDT_efficiency_CAL_MXs3");
+
+	meas.AddConstantParam("qq_CAL_UUBAR_MXs1");
+	meas.AddConstantParam("qq_CAL_UUBAR_MXs2");
+	meas.AddConstantParam("qq_CAL_UUBAR_MXs3");
+
+	meas.AddConstantParam("qq_CAL_DDBAR_MXs1");
+	meas.AddConstantParam("qq_CAL_DDBAR_MXs2");
+	meas.AddConstantParam("qq_CAL_DDBAR_MXs3");
+
+	meas.AddConstantParam("qq_CAL_SSBAR_MXs1");
+	meas.AddConstantParam("qq_CAL_SSBAR_MXs2");
+	meas.AddConstantParam("qq_CAL_SSBAR_MXs3");
+
+	meas.AddConstantParam("qq_CAL_CHARM_MXs1");
+	meas.AddConstantParam("qq_CAL_CHARM_MXs2");
+	meas.AddConstantParam("qq_CAL_CHARM_MXs3");
 
 	// define channels
 	HistFactory::Channel channel_MXs1("channel_MXs1");
