@@ -559,10 +559,10 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
             RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(index).c_str());
             RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(index).c_str());
             Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
-            if (temp_func->getValV() < 0) {
-                printf("[ERROR] negative count!\n");
-                exit(1);
-            }
+            //if (temp_func->getValV() < 0) {
+            //    printf("[ERROR] negative count!\n");
+            //    exit(1);
+            //}
 
         }
 

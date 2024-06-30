@@ -307,7 +307,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
                 RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
                 RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
                 Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
-                if (temp_func->getValV() < 0) {
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
                     printf("[ERROR] negative count!\n");
                     exit(1);
                 }
@@ -334,7 +334,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
                 RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
                 RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
                 Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
-                if (temp_func->getValV() < 0) {
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
                     printf("[ERROR] negative count!\n");
                     exit(1);
                 }
@@ -361,7 +361,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
                 RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
                 RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
                 Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
-                if (temp_func->getValV() < 0) {
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
                     printf("[ERROR] negative count!\n");
                     exit(1);
                 }
