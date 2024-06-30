@@ -301,11 +301,12 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
 
             *x_val_MXs1 = binCenter; // set x value
 
-            for (unsigned int j = 0; j < Sample_names.size(); j++) {
-                if (std::strstr(Sample_names.at(j).c_str(), "channel_MXs1") == nullptr) continue; // skip non-MXs1
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs1") == nullptr) continue; // skip non-MXs1
 
-                RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
-                Nevt = Nevt + temp_func->getValV();
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
                 if (temp_func->getValV() < 0) {
                     printf("[ERROR] negative count!\n");
                     exit(1);
@@ -327,11 +328,12 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
 
             *x_val_MXs2 = binCenter; // set x value
 
-            for (unsigned int j = 0; j < Sample_names.size(); j++) {
-                if (std::strstr(Sample_names.at(j).c_str(), "channel_MXs2") == nullptr) continue; // skip non-MXs2
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs2") == nullptr) continue; // skip non-MXs2
 
-                RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
-                Nevt = Nevt + temp_func->getValV();
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
                 if (temp_func->getValV() < 0) {
                     printf("[ERROR] negative count!\n");
                     exit(1);
@@ -353,11 +355,12 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
 
             *x_val_MXs3 = binCenter; // set x value
 
-            for (unsigned int j = 0; j < Sample_names.size(); j++) {
-                if (std::strstr(Sample_names.at(j).c_str(), "channel_MXs3") == nullptr) continue; // skip non-MXs3
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs3") == nullptr) continue; // skip non-MXs3
 
-                RooAbsReal* temp_func = w->function(Sample_names.at(j).c_str());
-                Nevt = Nevt + temp_func->getValV();
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
                 if (temp_func->getValV() < 0) {
                     printf("[ERROR] negative count!\n");
                     exit(1);

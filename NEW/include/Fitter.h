@@ -19,34 +19,64 @@ using namespace HistFactory;
 
 Corrector_Fragmentation corrector_Fragmentation;
 
-std::vector<std::string> Sample_names = {
-    "L_x_Signal_MXs1_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
-    "L_x_Signal_MXs2_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
-    "L_x_Signal_MXs3_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
-    "L_x_Signal_MXs1_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
-    "L_x_Signal_MXs2_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
-    "L_x_Signal_MXs3_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
-    "L_x_Signal_MXs1_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
-    "L_x_Signal_MXs2_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
-    "L_x_Signal_MXs3_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
-    "L_x_CHG_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
-    "L_x_CHG_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
-    "L_x_CHG_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
-    "L_x_MIX_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
-    "L_x_MIX_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
-    "L_x_MIX_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
-    "L_x_UUBAR_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
-    "L_x_UUBAR_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
-    "L_x_UUBAR_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
-    "L_x_DDBAR_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
-    "L_x_DDBAR_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
-    "L_x_DDBAR_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
-    "L_x_SSBAR_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
-    "L_x_SSBAR_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
-    "L_x_SSBAR_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert",
-    "L_x_CHARM_nominal_MXs1_channel_MXs1_overallSyst_x_StatUncert",
-    "L_x_CHARM_nominal_MXs2_channel_MXs2_overallSyst_x_StatUncert",
-    "L_x_CHARM_nominal_MXs3_channel_MXs3_overallSyst_x_StatUncert"
+std::vector<std::string> scaleFactors_pdf_names = {
+    "Signal_MXs1_nominal_MXs1_channel_MXs1_scaleFactors",
+    "Signal_MXs2_nominal_MXs1_channel_MXs1_scaleFactors",
+    "Signal_MXs3_nominal_MXs1_channel_MXs1_scaleFactors",
+    "Signal_MXs1_nominal_MXs2_channel_MXs2_scaleFactors",
+    "Signal_MXs2_nominal_MXs2_channel_MXs2_scaleFactors",
+    "Signal_MXs3_nominal_MXs2_channel_MXs2_scaleFactors",
+    "Signal_MXs1_nominal_MXs3_channel_MXs3_scaleFactors",
+    "Signal_MXs2_nominal_MXs3_channel_MXs3_scaleFactors",
+    "Signal_MXs3_nominal_MXs3_channel_MXs3_scaleFactors",
+    "CHG_nominal_MXs1_channel_MXs1_scaleFactors",
+    "CHG_nominal_MXs2_channel_MXs2_scaleFactors",
+    "CHG_nominal_MXs3_channel_MXs3_scaleFactors",
+    "MIX_nominal_MXs1_channel_MXs1_scaleFactors",
+    "MIX_nominal_MXs2_channel_MXs2_scaleFactors",
+    "MIX_nominal_MXs3_channel_MXs3_scaleFactors",
+    "UUBAR_nominal_MXs1_channel_MXs1_scaleFactors",
+    "UUBAR_nominal_MXs2_channel_MXs2_scaleFactors",
+    "UUBAR_nominal_MXs3_channel_MXs3_scaleFactors",
+    "DDBAR_nominal_MXs1_channel_MXs1_scaleFactors",
+    "DDBAR_nominal_MXs2_channel_MXs2_scaleFactors",
+    "DDBAR_nominal_MXs3_channel_MXs3_scaleFactors",
+    "SSBAR_nominal_MXs1_channel_MXs1_scaleFactors",
+    "SSBAR_nominal_MXs2_channel_MXs2_scaleFactors",
+    "SSBAR_nominal_MXs3_channel_MXs3_scaleFactors",
+    "CHARM_nominal_MXs1_channel_MXs1_scaleFactors",
+    "CHARM_nominal_MXs2_channel_MXs2_scaleFactors",
+    "CHARM_nominal_MXs3_channel_MXs3_scaleFactors"
+};
+
+std::vector<std::string> shapes_pdf_names = {
+    "Signal_MXs1_nominal_MXs1_channel_MXs1_shapes",
+    "Signal_MXs2_nominal_MXs1_channel_MXs1_shapes",
+    "Signal_MXs3_nominal_MXs1_channel_MXs1_shapes",
+    "Signal_MXs1_nominal_MXs2_channel_MXs2_shapes",
+    "Signal_MXs2_nominal_MXs2_channel_MXs2_shapes",
+    "Signal_MXs3_nominal_MXs2_channel_MXs2_shapes",
+    "Signal_MXs1_nominal_MXs3_channel_MXs3_shapes",
+    "Signal_MXs2_nominal_MXs3_channel_MXs3_shapes",
+    "Signal_MXs3_nominal_MXs3_channel_MXs3_shapes",
+    "CHG_nominal_MXs1_channel_MXs1_shapes",
+    "CHG_nominal_MXs2_channel_MXs2_shapes",
+    "CHG_nominal_MXs3_channel_MXs3_shapes",
+    "MIX_nominal_MXs1_channel_MXs1_shapes",
+    "MIX_nominal_MXs2_channel_MXs2_shapes",
+    "MIX_nominal_MXs3_channel_MXs3_shapes",
+    "UUBAR_nominal_MXs1_channel_MXs1_shapes",
+    "UUBAR_nominal_MXs2_channel_MXs2_shapes",
+    "UUBAR_nominal_MXs3_channel_MXs3_shapes",
+    "DDBAR_nominal_MXs1_channel_MXs1_shapes",
+    "DDBAR_nominal_MXs2_channel_MXs2_shapes",
+    "DDBAR_nominal_MXs3_channel_MXs3_shapes",
+    "SSBAR_nominal_MXs1_channel_MXs1_shapes",
+    "SSBAR_nominal_MXs2_channel_MXs2_shapes",
+    "SSBAR_nominal_MXs3_channel_MXs3_shapes",
+    "CHARM_nominal_MXs1_channel_MXs1_shapes",
+    "CHARM_nominal_MXs2_channel_MXs2_shapes",
+    "CHARM_nominal_MXs3_channel_MXs3_shapes"
 };
 
 typedef struct Options
@@ -526,8 +556,9 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
 
             *x_val = binCenter; // set x value
 
-            RooAbsReal* temp_func = w->function(Sample_names.at(index).c_str());
-            Nevt = Nevt + temp_func->getValV();
+            RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(index).c_str());
+            RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(index).c_str());
+            Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
             if (temp_func->getValV() < 0) {
                 printf("[ERROR] negative count!\n");
                 exit(1);
@@ -656,12 +687,12 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
     TH1D* Ratio_hist = new TH1D("Ratio", ";bin index;data/MC", RarityBins, BinMIN, BinMAX);
 
     // fill histogram
-    for (int i = 0; i < Sample_names.size(); i++) {
+    for (int i = 0; i < scaleFactors_pdf_names.size(); i++) {
 
         RooRealVar* x_val;
-        if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs1") != nullptr) x_val = w->var("obs_x_channel_MXs1");
-        else if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs2") != nullptr) x_val = w->var("obs_x_channel_MXs2");
-        else if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs3") != nullptr) x_val = w->var("obs_x_channel_MXs3");
+        if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs1") != nullptr) x_val = w->var("obs_x_channel_MXs1");
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs2") != nullptr) x_val = w->var("obs_x_channel_MXs2");
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs3") != nullptr) x_val = w->var("obs_x_channel_MXs3");
         else {
             printf("[ERROR] unexpected sample type!\n");
             exit(1);
@@ -671,13 +702,13 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
         const double oldVal = x_val->getVal();
 
         TH1D* temp_hist;
-        if (std::strstr(Sample_names.at(i).c_str(), "Signal") != nullptr) temp_hist = SIGNAL_hist;
-        else if (std::strstr(Sample_names.at(i).c_str(), "CHG") != nullptr) temp_hist = charged_hist;
-        else if (std::strstr(Sample_names.at(i).c_str(), "MIX") != nullptr) temp_hist = mixed_hist;
-        else if (std::strstr(Sample_names.at(i).c_str(), "UUBAR") != nullptr) temp_hist = uubar_hist;
-        else if (std::strstr(Sample_names.at(i).c_str(), "DDBAR") != nullptr) temp_hist = ddbar_hist;
-        else if (std::strstr(Sample_names.at(i).c_str(), "SSBAR") != nullptr) temp_hist = ssbar_hist;
-        else if (std::strstr(Sample_names.at(i).c_str(), "CHARM") != nullptr) temp_hist = ccbar_hist;
+        if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "Signal") != nullptr) temp_hist = SIGNAL_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHG") != nullptr) temp_hist = charged_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "MIX") != nullptr) temp_hist = mixed_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "UUBAR") != nullptr) temp_hist = uubar_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "DDBAR") != nullptr) temp_hist = ddbar_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "SSBAR") != nullptr) temp_hist = ssbar_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHARM") != nullptr) temp_hist = ccbar_hist;
         else {
             printf("[ERROR] unexpected sample type!\n");
             exit(1);
@@ -689,13 +720,14 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
 
             *x_val = binCenter; // set x value
 
-            RooAbsReal* temp_func = w->function(Sample_names.at(i).c_str());
-            double Nevt = temp_func->getValV();
+            RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(i).c_str());
+            RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(i).c_str());
+            double Nevt = (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
 
             int index = -1;
-            if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs1") != nullptr) index = iBin + 1;
-            else if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs2") != nullptr) index = iBin + RarityBins_MX1 + 1;
-            else if (std::strstr(Sample_names.at(i).c_str(), "channel_MXs3") != nullptr) index = iBin + RarityBins_MX1 + RarityBins_MX2 + 1;
+            if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs1") != nullptr) index = iBin + 1;
+            else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs2") != nullptr) index = iBin + RarityBins_MX1 + 1;
+            else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs3") != nullptr) index = iBin + RarityBins_MX1 + RarityBins_MX2 + 1;
             else {
                 printf("[ERROR] unexpected sample type!\n");
                 exit(1);
