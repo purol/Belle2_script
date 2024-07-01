@@ -4534,6 +4534,13 @@ int main()
     AddPDFs(Signal_EffECLKL_m, Signal_MXs1_EffECLKL_m);
     AddPDFs(Signal_EffECLKL_m, Signal_MXs2_EffECLKL_m);
     AddPDFs(Signal_EffECLKL_m, Signal_MXs3_EffECLKL_m);
+
+    AddPDFs(Signal_NEWFEICAL_p, Signal_MXs1_NEWFEICAL_p);
+    AddPDFs(Signal_NEWFEICAL_p, Signal_MXs2_NEWFEICAL_p);
+    AddPDFs(Signal_NEWFEICAL_p, Signal_MXs3_NEWFEICAL_p);
+    AddPDFs(Signal_NEWFEICAL_m, Signal_MXs1_NEWFEICAL_m);
+    AddPDFs(Signal_NEWFEICAL_m, Signal_MXs2_NEWFEICAL_m);
+    AddPDFs(Signal_NEWFEICAL_m, Signal_MXs3_NEWFEICAL_m);
     /* ====================================== */
 
 
