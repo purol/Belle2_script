@@ -669,7 +669,7 @@ RooFitResult* MyMinimizeNLLReuse(RooWorkspace* w, RooDataSet* data, RooAbsReal**
     return minim.save();
 }
 
-RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0) {
+RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true) {
     // what we have done
     w->loadSnapshot("ParamValues");
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
@@ -710,6 +710,11 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
     // this causes a memory leak
     minim.optimizeConst(2);
     minim.migrad();
+    if (Minos) {
+        minim.minos(RooArgSet(*w->var("mu_MXs1")));
+        minim.minos(RooArgSet(*w->var("mu_MXs2")));
+        minim.minos(RooArgSet(*w->var("mu_MXs3")));
+    }
 
     // fit!
     int status;
@@ -776,7 +781,7 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
     MyMinim.setStrategy(fStrategy);
     MyMinim.setEvalErrorWall(config.useEvalErrorWall);
     MyMinim.setEps(fTolerance);
-    MyMinim.setPrintLevel(level);
+    MyMinim.setPrintLevel(level - 1);
     // this causes a memory leak
     MyMinim.optimizeConst(2);
     MyMinim.migrad();
@@ -906,11 +911,13 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
         double previous_mu = mu_MXs1.at(i);
         double current_mu = mu_MXs1.at(i + 1);
         if ((previous_profile_likelihood > 0.5) && (current_profile_likelihood < 0.5)) { // we just passed -1 sigma point
-            double minus_sigma = (0.5 - current_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood); // it is negative value
+            double mu_nominal_minus_sigma = current_mu - (0.5 - current_profile_likelihood) * (current_mu - previous_mu) / (previous_profile_likelihood - current_profile_likelihood);
+            double minus_sigma = mu_nominal_minus_sigma - Global_mu_MXs1; // it is negative value
             My_mu_MXs1_LO_error = minus_sigma;
         }
         else if ((previous_profile_likelihood < 0.5) && (current_profile_likelihood > 0.5)) { // we just passed +1 sigma point
-            double plus_sigma = (0.5 - previous_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood); // it is positive value
+            double mu_nominal_plus_sigma = previous_mu + (0.5 - previous_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood);
+            double plus_sigma = mu_nominal_plus_sigma - Global_mu_MXs1; // it is positive value
             My_mu_MXs1_HI_error = plus_sigma;
         }
     }
@@ -921,11 +928,13 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
         double previous_mu = mu_MXs2.at(i);
         double current_mu = mu_MXs2.at(i + 1);
         if ((previous_profile_likelihood > 0.5) && (current_profile_likelihood < 0.5)) { // we just passed -1 sigma point
-            double minus_sigma = (0.5 - current_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood); // it is negative value
+            double mu_nominal_minus_sigma = current_mu - (0.5 - current_profile_likelihood) * (current_mu - previous_mu) / (previous_profile_likelihood - current_profile_likelihood);
+            double minus_sigma = mu_nominal_minus_sigma - Global_mu_MXs2; // it is negative value
             My_mu_MXs2_LO_error = minus_sigma;
         }
         else if ((previous_profile_likelihood < 0.5) && (current_profile_likelihood > 0.5)) { // we just passed +1 sigma point
-            double plus_sigma = (0.5 - previous_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood); // it is positive value
+            double mu_nominal_plus_sigma = previous_mu + (0.5 - previous_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood);
+            double plus_sigma = mu_nominal_plus_sigma - Global_mu_MXs2; // it is positive value
             My_mu_MXs2_HI_error = plus_sigma;
         }
     }
@@ -936,11 +945,13 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
         double previous_mu = mu_MXs3.at(i);
         double current_mu = mu_MXs3.at(i + 1);
         if ((previous_profile_likelihood > 0.5) && (current_profile_likelihood < 0.5)) { // we just passed -1 sigma point
-            double minus_sigma = (0.5 - current_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood); // it is negative value
+            double mu_nominal_minus_sigma = current_mu - (0.5 - current_profile_likelihood) * (current_mu - previous_mu) / (previous_profile_likelihood - current_profile_likelihood);
+            double minus_sigma = mu_nominal_minus_sigma - Global_mu_MXs3; // it is negative value
             My_mu_MXs3_LO_error = minus_sigma;
         }
         else if ((previous_profile_likelihood < 0.5) && (current_profile_likelihood > 0.5)) { // we just passed +1 sigma point
-            double plus_sigma = (0.5 - previous_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood); // it is positive value
+            double mu_nominal_plus_sigma = previous_mu + (0.5 - previous_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood);
+            double plus_sigma = mu_nominal_plus_sigma - Global_mu_MXs3; // it is positive value
             My_mu_MXs3_HI_error = plus_sigma;
         }
     }
