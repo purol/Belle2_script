@@ -900,7 +900,7 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
     double My_mu_MXs2_LO_error = -100;
     double My_mu_MXs3_LO_error = -100;
 
-    for (int i = 0; i < mu_MXs1.size(); i++) {
+    for (int i = 0; i < mu_MXs1.size() - 1; i++) {
         double previous_profile_likelihood = MinusLogLikelihood_MXs1.at(i) - Global_MinusLogLikelihood;
         double current_profile_likelihood = MinusLogLikelihood_MXs1.at(i + 1) - Global_MinusLogLikelihood;
         double previous_mu = mu_MXs1.at(i);
@@ -915,7 +915,7 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
         }
     }
 
-    for (int i = 0; i < mu_MXs2.size(); i++) {
+    for (int i = 0; i < mu_MXs2.size() - 1; i++) {
         double previous_profile_likelihood = MinusLogLikelihood_MXs2.at(i) - Global_MinusLogLikelihood;
         double current_profile_likelihood = MinusLogLikelihood_MXs2.at(i + 1) - Global_MinusLogLikelihood;
         double previous_mu = mu_MXs2.at(i);
@@ -930,7 +930,7 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
         }
     }
 
-    for (int i = 0; i < mu_MXs3.size(); i++) {
+    for (int i = 0; i < mu_MXs3.size() - 1; i++) {
         double previous_profile_likelihood = MinusLogLikelihood_MXs3.at(i) - Global_MinusLogLikelihood;
         double current_profile_likelihood = MinusLogLikelihood_MXs3.at(i + 1) - Global_MinusLogLikelihood;
         double previous_mu = mu_MXs3.at(i);
