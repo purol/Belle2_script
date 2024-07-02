@@ -112,6 +112,12 @@ int main(int argc, char* argv[]) {
     double eps = 0.001;
     RooAbsReal* nll;
     RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps, false);
+
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+    std::unique_ptr<RooArgSet> params{model->getParameters(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3))};
+
     w->saveSnapshot("GlobalMinimumParamValues", *params, true);
 
     // get PLL value

@@ -2,6 +2,7 @@
 #define FITTER_H
 
 # include <vector>
+# include <deque>
 # include <string>
 # include "RooFitResult.h"
 # include "template.h"
@@ -664,6 +665,297 @@ RooFitResult* MyMinimizeNLLReuse(RooWorkspace* w, RooDataSet* data, RooAbsReal**
     // fit!
     int status;
     status = minim.minimize(minimizer, algorithm);
+
+    return minim.save();
+}
+
+RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0) {
+    // what we have done
+    w->loadSnapshot("ParamValues");
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    // get nll
+    RooArgSet* allParams = model->getParameters(*data);
+    RooStats::RemoveConstantParameters(allParams);
+    RooArgSet fGlobalObs = *mc->GetGlobalObservables();
+    RooArgSet fConditionalObs;
+    Bool_t fLOffset = RooStats::IsNLLOffset();
+    (*nll) = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
+
+    // minimizer option
+    TString fMinimizer = ::ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str();
+    TString minimizer = fMinimizer;
+
+    TString algorithm = ::ROOT::Math::MinimizerOptions::DefaultMinimizerAlgo();
+
+    Int_t fStrategy = ::ROOT::Math::MinimizerOptions::DefaultStrategy();
+
+    Double_t fTolerance;
+    if (tolerance < 0) fTolerance = TMath::Max(1., ::ROOT::Math::MinimizerOptions::DefaultTolerance());
+    else fTolerance = tolerance;
+
+    Int_t fPrintLevel = ::ROOT::Math::MinimizerOptions::DefaultPrintLevel();
+    //LM: RooMinimizer.setPrintLevel has +1 offset - so subtract  here -1 + an extra -1
+    int level = (fPrintLevel == 0) ? -1 : fPrintLevel - 2;
+
+
+    // follow what ProfileLikelihoodTestStat.cxx does
+    const auto& config = RooStats::GetGlobalRooStatsConfig();
+    RooMinimizer minim(*(*nll));
+    minim.setStrategy(fStrategy);
+    minim.setEvalErrorWall(config.useEvalErrorWall);
+    minim.setEps(fTolerance);
+    minim.setPrintLevel(level);
+    // this causes a memory leak
+    minim.optimizeConst(2);
+    minim.migrad();
+
+    // fit!
+    int status;
+    status = minim.minimize(minimizer, algorithm);
+
+    // save snapshot at global minimum
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+    std::unique_ptr<RooArgSet> params{model->getParameters(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3))};
+    w->saveSnapshot("GlobalMinimumParamValues", *params, true);
+    w->saveSnapshot("CurrentMinimumParamValues_MXs1", *params, true);
+    w->saveSnapshot("CurrentMinimumParamValues_MXs2", *params, true);
+    w->saveSnapshot("CurrentMinimumParamValues_MXs3", *params, true);
+
+    // get global minimum
+    double Global_mu_MXs1 = -100;
+    double Global_mu_MXs2 = -100;
+    double Global_mu_MXs3 = -100;
+    double mu_MXs1_HI_error = -100;
+    double mu_MXs2_HI_error = -100;
+    double mu_MXs3_HI_error = -100;
+    double mu_MXs1_LO_error = -100;
+    double mu_MXs2_LO_error = -100;
+    double mu_MXs3_LO_error = -100;
+    double Global_MinusLogLikelihood = (*nll)->getVal();
+    RooFitResult* fitres = minim.save();
+    RooArgSet fitargs = fitres->floatParsFinal();
+    TIterator* iter(fitargs.createIterator());
+    for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        if (name == std::string("mu_MXs1")) {
+            Global_mu_MXs1 = rrv->getVal();
+            mu_MXs1_HI_error = rrv->getAsymErrorHi();
+            mu_MXs1_LO_error = rrv->getAsymErrorLo();
+        }
+        else if (name == std::string("mu_MXs2")) {
+            Global_mu_MXs2 = rrv->getVal();
+            mu_MXs2_HI_error = rrv->getAsymErrorHi();
+            mu_MXs2_LO_error = rrv->getAsymErrorLo();
+        }
+        else if (name == std::string("mu_MXs3")) {
+            Global_mu_MXs3 = rrv->getVal();
+            mu_MXs3_HI_error = rrv->getAsymErrorHi();
+            mu_MXs3_LO_error = rrv->getAsymErrorLo();
+        }
+    }
+
+    // vector to save mu
+    std::deque<double> mu_MXs1; mu_MXs1.push_back(Global_mu_MXs1);
+    std::deque<double> mu_MXs2; mu_MXs2.push_back(Global_mu_MXs2);
+    std::deque<double> mu_MXs3; mu_MXs3.push_back(Global_mu_MXs3);
+
+    // vector to save -log(L)
+    std::deque<double> MinusLogLikelihood_MXs1; MinusLogLikelihood_MXs1.push_back(Global_MinusLogLikelihood);
+    std::deque<double> MinusLogLikelihood_MXs2; MinusLogLikelihood_MXs2.push_back(Global_MinusLogLikelihood);
+    std::deque<double> MinusLogLikelihood_MXs3; MinusLogLikelihood_MXs3.push_back(Global_MinusLogLikelihood);
+
+    double delta = 0.1;
+
+    // re-define minimizer to remove MINOS option
+    RooMinimizer MyMinim(*(*nll));
+    MyMinim.setStrategy(fStrategy);
+    MyMinim.setEvalErrorWall(config.useEvalErrorWall);
+    MyMinim.setEps(fTolerance);
+    MyMinim.setPrintLevel(level);
+    // this causes a memory leak
+    MyMinim.optimizeConst(2);
+    MyMinim.migrad();
+
+    // get asym error for mu_MXs1
+    for (int i = 1; i < 15; i++) {
+        w->loadSnapshot("CurrentMinimumParamValues_MXs1");
+        w->var("mu_MXs1")->setVal(Global_mu_MXs1 + i * delta * mu_MXs1_HI_error);
+        mu_MXs1->setConstant(true);
+
+        // fit with fixed mu
+        MyMinim.minimize(minimizer, algorithm);
+
+        // save snapshot
+        w->saveSnapshot("CurrentMinimumParamValues_MXs1", *params, true);
+
+        // save result
+        mu_MXs1.push_back(Global_mu_MXs1 + i * delta * mu_MXs1_HI_error);
+        MinusLogLikelihood_MXs1.push_back((*nll)->getVal());
+    }
+    w->loadSnapshot("GlobalMinimumParamValues");
+    w->saveSnapshot("CurrentMinimumParamValues_MXs1", *params, true);
+
+    for (int i = 1; i < 15; i++) {
+        w->loadSnapshot("CurrentMinimumParamValues_MXs1");
+        w->var("mu_MXs1")->setVal(Global_mu_MXs1 + i * delta * mu_MXs1_LO_error);
+        mu_MXs1->setConstant(true);
+
+        // fit with fixed mu
+        MyMinim.minimize(minimizer, algorithm);
+
+        // save snapshot
+        w->saveSnapshot("CurrentMinimumParamValues_MXs1", *params, true);
+
+        // save result
+        mu_MXs1.push_front(Global_mu_MXs1 + i * delta * mu_MXs1_LO_error);
+        MinusLogLikelihood_MXs1.push_front((*nll)->getVal());
+    }
+    w->loadSnapshot("GlobalMinimumParamValues");
+    w->saveSnapshot("CurrentMinimumParamValues_MXs1", *params, true);
+
+    // get asym error for mu_MXs2
+    for (int i = 1; i < 15; i++) {
+        w->loadSnapshot("CurrentMinimumParamValues_MXs2");
+        w->var("mu_MXs2")->setVal(Global_mu_MXs2 + i * delta * mu_MXs2_HI_error);
+        mu_MXs2->setConstant(true);
+
+        // fit with fixed mu
+        MyMinim.minimize(minimizer, algorithm);
+
+        // save snapshot
+        w->saveSnapshot("CurrentMinimumParamValues_MXs2", *params, true);
+
+        // save result
+        mu_MXs2.push_back(Global_mu_MXs2 + i * delta * mu_MXs2_HI_error);
+        MinusLogLikelihood_MXs2.push_back((*nll)->getVal());
+    }
+    w->loadSnapshot("GlobalMinimumParamValues");
+    w->saveSnapshot("CurrentMinimumParamValues_MXs2", *params, true);
+
+    for (int i = 1; i < 15; i++) {
+        w->loadSnapshot("CurrentMinimumParamValues_MXs2");
+        w->var("mu_MXs2")->setVal(Global_mu_MXs2 + i * delta * mu_MXs2_LO_error);
+        mu_MXs2->setConstant(true);
+
+        // fit with fixed mu
+        MyMinim.minimize(minimizer, algorithm);
+
+        // save snapshot
+        w->saveSnapshot("CurrentMinimumParamValues_MXs2", *params, true);
+
+        // save result
+        mu_MXs2.push_front(Global_mu_MXs2 + i * delta * mu_MXs2_LO_error);
+        MinusLogLikelihood_MXs2.push_front((*nll)->getVal());
+    }
+    w->loadSnapshot("GlobalMinimumParamValues");
+    w->saveSnapshot("CurrentMinimumParamValues_MXs2", *params, true);
+
+    // get asym error for mu_MXs3
+    for (int i = 1; i < 15; i++) {
+        w->loadSnapshot("CurrentMinimumParamValues_MXs3");
+        w->var("mu_MXs3")->setVal(Global_mu_MXs3 + i * delta * mu_MXs3_HI_error);
+        mu_MXs3->setConstant(true);
+
+        // fit with fixed mu
+        MyMinim.minimize(minimizer, algorithm);
+
+        // save snapshot
+        w->saveSnapshot("CurrentMinimumParamValues_MXs3", *params, true);
+
+        // save result
+        mu_MXs3.push_back(Global_mu_MXs3 + i * delta * mu_MXs3_HI_error);
+        MinusLogLikelihood_MXs3.push_back((*nll)->getVal());
+    }
+    w->loadSnapshot("GlobalMinimumParamValues");
+    w->saveSnapshot("CurrentMinimumParamValues_MXs3", *params, true);
+
+    for (int i = 1; i < 15; i++) {
+        w->loadSnapshot("CurrentMinimumParamValues_MXs3");
+        w->var("mu_MXs3")->setVal(Global_mu_MXs3 + i * delta * mu_MXs3_LO_error);
+        mu_MXs3->setConstant(true);
+
+        // fit with fixed mu
+        MyMinim.minimize(minimizer, algorithm);
+
+        // save snapshot
+        w->saveSnapshot("CurrentMinimumParamValues_MXs3", *params, true);
+
+        // save result
+        mu_MXs3.push_front(Global_mu_MXs3 + i * delta * mu_MXs3_LO_error);
+        MinusLogLikelihood_MXs3.push_front((*nll)->getVal());
+    }
+    w->loadSnapshot("GlobalMinimumParamValues");
+    w->saveSnapshot("CurrentMinimumParamValues_MXs3", *params, true);
+
+    // calculate asym error
+    double My_mu_MXs1_HI_error = -100;
+    double My_mu_MXs2_HI_error = -100;
+    double My_mu_MXs3_HI_error = -100;
+    double My_mu_MXs1_LO_error = -100;
+    double My_mu_MXs2_LO_error = -100;
+    double My_mu_MXs3_LO_error = -100;
+
+    for (int i = 0; i < mu_MXs1.size(); i++) {
+        double previous_profile_likelihood = MinusLogLikelihood_MXs1.at(i) - Global_MinusLogLikelihood;
+        double current_profile_likelihood = MinusLogLikelihood_MXs1.at(i + 1) - Global_MinusLogLikelihood;
+        double previous_mu = mu_MXs1.at(i);
+        double current_mu = mu_MXs1.at(i + 1);
+        if ((previous_profile_likelihood > 0.5) && (current_profile_likelihood < 0.5)) { // we just passed -1 sigma point
+            double minus_sigma = (0.5 - current_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood); // it is negative value
+            My_mu_MXs1_LO_error = minus_sigma;
+        }
+        else if ((previous_profile_likelihood < 0.5) && (current_profile_likelihood > 0.5)) { // we just passed +1 sigma point
+            double plus_sigma = (0.5 - previous_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood); // it is positive value
+            My_mu_MXs1_HI_error = plus_sigma;
+        }
+    }
+
+    for (int i = 0; i < mu_MXs2.size(); i++) {
+        double previous_profile_likelihood = MinusLogLikelihood_MXs2.at(i) - Global_MinusLogLikelihood;
+        double current_profile_likelihood = MinusLogLikelihood_MXs2.at(i + 1) - Global_MinusLogLikelihood;
+        double previous_mu = mu_MXs2.at(i);
+        double current_mu = mu_MXs2.at(i + 1);
+        if ((previous_profile_likelihood > 0.5) && (current_profile_likelihood < 0.5)) { // we just passed -1 sigma point
+            double minus_sigma = (0.5 - current_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood); // it is negative value
+            My_mu_MXs2_LO_error = minus_sigma;
+        }
+        else if ((previous_profile_likelihood < 0.5) && (current_profile_likelihood > 0.5)) { // we just passed +1 sigma point
+            double plus_sigma = (0.5 - previous_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood); // it is positive value
+            My_mu_MXs2_HI_error = plus_sigma;
+        }
+    }
+
+    for (int i = 0; i < mu_MXs3.size(); i++) {
+        double previous_profile_likelihood = MinusLogLikelihood_MXs3.at(i) - Global_MinusLogLikelihood;
+        double current_profile_likelihood = MinusLogLikelihood_MXs3.at(i + 1) - Global_MinusLogLikelihood;
+        double previous_mu = mu_MXs3.at(i);
+        double current_mu = mu_MXs3.at(i + 1);
+        if ((previous_profile_likelihood > 0.5) && (current_profile_likelihood < 0.5)) { // we just passed -1 sigma point
+            double minus_sigma = (0.5 - current_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood); // it is negative value
+            My_mu_MXs3_LO_error = minus_sigma;
+        }
+        else if ((previous_profile_likelihood < 0.5) && (current_profile_likelihood > 0.5)) { // we just passed +1 sigma point
+            double plus_sigma = (0.5 - previous_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood); // it is positive value
+            My_mu_MXs3_HI_error = plus_sigma;
+        }
+    }
+
+    printf("=======================================\n");
+    printf("Let's compare MINOS and homemade error\n");
+    printf("MINOS:\n");
+    printf("mu MXs1: %lf %lf\n", mu_MXs1_HI_error, mu_MXs1_LO_error);
+    printf("mu MXs2: %lf %lf\n", mu_MXs2_HI_error, mu_MXs2_LO_error);
+    printf("mu MXs3: %lf %lf\n", mu_MXs3_HI_error, mu_MXs3_LO_error);
+    printf("homemade:\n");
+    printf("mu MXs1: %lf %lf\n", My_mu_MXs1_HI_error, My_mu_MXs1_LO_error);
+    printf("mu MXs2: %lf %lf\n", My_mu_MXs2_HI_error, My_mu_MXs2_LO_error);
+    printf("mu MXs3: %lf %lf\n", My_mu_MXs3_HI_error, My_mu_MXs3_LO_error);
+    printf("=======================================\n");
 
     return minim.save();
 }
