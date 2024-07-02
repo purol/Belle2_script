@@ -376,6 +376,108 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
 
 }
 
+double DoNotSetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double injected_mu) {
+
+    double Nevt = 0.0;
+
+    w->loadSnapshot("ParamValues");
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+
+    w->var("mu_MXs1")->setVal(injected_mu);
+    w->var("mu_MXs2")->setVal(injected_mu);
+    w->var("mu_MXs3")->setVal(injected_mu);
+
+    /* ================================ cal Nexpected ================================*/
+    {
+        RooAbsBinning const& binning = x_val_MXs1->getBinning();
+        const double oldVal = x_val_MXs1->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs1 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs1") == nullptr) continue; // skip non-MXs1
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs1 = oldVal;
+    }
+
+    {
+        RooAbsBinning const& binning = x_val_MXs2->getBinning();
+        const double oldVal = x_val_MXs2->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs2 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs2") == nullptr) continue; // skip non-MXs2
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs2 = oldVal;
+    }
+
+    {
+        RooAbsBinning const& binning = x_val_MXs3->getBinning();
+        const double oldVal = x_val_MXs3->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs3 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs3") == nullptr) continue; // skip non-MXs3
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs3 = oldVal;
+    }
+
+    return Nevt;
+
+}
+
 void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, int indicator = 0){
 
         ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
