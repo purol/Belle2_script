@@ -785,7 +785,7 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
     for (int i = 1; i < 15; i++) {
         w->loadSnapshot("CurrentMinimumParamValues_MXs1");
         w->var("mu_MXs1")->setVal(Global_mu_MXs1 + i * delta * mu_MXs1_HI_error);
-        mu_MXs1->setConstant(true);
+        w->var("mu_MXs1")->setConstant(true);
 
         // fit with fixed mu
         MyMinim.minimize(minimizer, algorithm);
@@ -803,7 +803,7 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
     for (int i = 1; i < 15; i++) {
         w->loadSnapshot("CurrentMinimumParamValues_MXs1");
         w->var("mu_MXs1")->setVal(Global_mu_MXs1 + i * delta * mu_MXs1_LO_error);
-        mu_MXs1->setConstant(true);
+        w->var("mu_MXs1")->setConstant(true);
 
         // fit with fixed mu
         MyMinim.minimize(minimizer, algorithm);
@@ -822,7 +822,7 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
     for (int i = 1; i < 15; i++) {
         w->loadSnapshot("CurrentMinimumParamValues_MXs2");
         w->var("mu_MXs2")->setVal(Global_mu_MXs2 + i * delta * mu_MXs2_HI_error);
-        mu_MXs2->setConstant(true);
+        w->var("mu_MXs2")->setConstant(true);
 
         // fit with fixed mu
         MyMinim.minimize(minimizer, algorithm);
@@ -840,7 +840,7 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
     for (int i = 1; i < 15; i++) {
         w->loadSnapshot("CurrentMinimumParamValues_MXs2");
         w->var("mu_MXs2")->setVal(Global_mu_MXs2 + i * delta * mu_MXs2_LO_error);
-        mu_MXs2->setConstant(true);
+        w->var("mu_MXs2")->setConstant(true);
 
         // fit with fixed mu
         MyMinim.minimize(minimizer, algorithm);
@@ -859,7 +859,7 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
     for (int i = 1; i < 15; i++) {
         w->loadSnapshot("CurrentMinimumParamValues_MXs3");
         w->var("mu_MXs3")->setVal(Global_mu_MXs3 + i * delta * mu_MXs3_HI_error);
-        mu_MXs3->setConstant(true);
+        w->var("mu_MXs3")->setConstant(true);
 
         // fit with fixed mu
         MyMinim.minimize(minimizer, algorithm);
@@ -877,7 +877,7 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
     for (int i = 1; i < 15; i++) {
         w->loadSnapshot("CurrentMinimumParamValues_MXs3");
         w->var("mu_MXs3")->setVal(Global_mu_MXs3 + i * delta * mu_MXs3_LO_error);
-        mu_MXs3->setConstant(true);
+        w->var("mu_MXs3")->setConstant(true);
 
         // fit with fixed mu
         MyMinim.minimize(minimizer, algorithm);
