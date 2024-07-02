@@ -955,6 +955,15 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
     printf("mu MXs1: %lf %lf\n", My_mu_MXs1_HI_error, My_mu_MXs1_LO_error);
     printf("mu MXs2: %lf %lf\n", My_mu_MXs2_HI_error, My_mu_MXs2_LO_error);
     printf("mu MXs3: %lf %lf\n", My_mu_MXs3_HI_error, My_mu_MXs3_LO_error);
+    printf("-Log(L) scan:\n");
+    printf("mu MXs1: ");
+    for(int i = 0; i < MinusLogLikelihood_MXs1.size() - 1; i++) printf("%lf ", MinusLogLikelihood_MXs1.at(i));
+    printf("\n");
+    printf("mu MXs2: ");
+    for (int i = 0; i < MinusLogLikelihood_MXs2.size() - 1; i++) printf("%lf ", MinusLogLikelihood_MXs2.at(i));
+    printf("\n");
+    printf("mu MXs3: ");
+    for (int i = 0; i < MinusLogLikelihood_MXs3.size() - 1; i++) printf("%lf ", MinusLogLikelihood_MXs3.at(i));
     printf("=======================================\n");
 
     return minim.save();
