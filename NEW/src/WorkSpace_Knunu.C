@@ -47,6 +47,7 @@
 
 #include "template.h"
 #include "correctors.h"
+#include "constants.h"
 
 using namespace RooFit;
 using namespace RooStats;
@@ -171,6 +172,42 @@ int ReadNFragmentationEigenVector(const char* dirname) {
 	return Nentry;
 }
 
+bool IsThereAnyChange(const char* fname, const char* nominal_hist_name, const char* hist_m_name, const_char* hist_p_name) {
+	TFile* file = new TFile(fname);
+	file->cd();
+
+	TH1D* nominal_hist = (TH1D*)file->Get(nominal_hist_name);
+	TH1D* hist_m = (TH1D*)file->Get(hist_m_name);
+	TH1D* hist_p = (TH1D*)file->Get(hist_p_name);
+
+	bool ThereIsChange = false;
+	for (int i = 0; i < RarityBins; i++) {
+		double nominal_value = nominal_hist->GetBinContent(i + 1);
+		double m_value = hist_m->GetBinContent(i + 1);
+		double p_value = hist_p->GetBinContent(i + 1);
+
+		if (std::abs(m_value - nominal_value) < MyEPSILON) ThereIsChange = false;
+		else {
+			ThereIsChange = true;
+			break;
+		}
+
+		if (std::abs(p_value - nominal_value) < MyEPSILON) ThereIsChange = false;
+		else {
+			ThereIsChange = true;
+			break;
+		}
+	}
+
+	file->Close();
+
+	if (ThereIsChange == false) {
+		printf("[IsThereAnyChange] There is not difference among %s, %s, and %s in %s\n", nominal_hist_name, hist_m_name, hist_p_name, fname);
+	}
+
+	return ThereIsChange;
+}
+
 void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, const double expmu, double qq_CAL, double qq_CAL_relativeuncer, double FBDT_CAL, double FBDT_CAL_relativeuncer, double bkg_norm_relativeuncer) {
 
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
@@ -193,20 +230,20 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	// read signal template
 	/* ================================ SIGNAL with true MXs1 ================================ */
 	RooStats::HistFactory::Sample sig_temp_MXs1(("Signal_MXs1_nominal_" + bin_name).c_str(), "Signal_MXs1_nominal", fname);
-	sig_temp_MXs1.AddHistoSys("track_eff_uncer", "Signal_MXs1_track_m", fname, "", "Signal_MXs1_track_p", fname, "");
-	sig_temp_MXs1.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs1_BtoDtoXKL_m", fname, "", "Signal_MXs1_BtoDtoXKL_p", fname, "");
-	sig_temp_MXs1.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs1_BRBtoXKLKL_m", fname, "", "Signal_MXs1_BRBtoXKLKL_p", fname, "");
-	sig_temp_MXs1.AddHistoSys("EffECLKL_uncer", "Signal_MXs1_EffECLKL_m", fname, "", "Signal_MXs1_EffECLKL_p", fname, "");
-	sig_temp_MXs1.AddHistoSys("NEWFEICAL_uncer", "Signal_MXs1_NEWFEICAL_m", fname, "", "Signal_MXs1_NEWFEICAL_p", fname, "");
-	sig_temp_MXs1.AddHistoSys("Xnn_BR_uncer", "Signal_MXs1_Xnn_m", fname, "", "Signal_MXs1_Xnn_p", fname, "");
-	for (int i = 0; i < NEntryMultiplicity; i++) sig_temp_MXs1.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryFEI; i++) sig_temp_MXs1.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryKID; i++) sig_temp_MXs1.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryBR; i++) sig_temp_MXs1.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	sig_temp_MXs1.AddHistoSys("Kff1_uncer", "Signal_MXs1_Kff1_m", fname, "", "Signal_MXs1_Kff1_p", fname, "");
-	sig_temp_MXs1.AddHistoSys("Kff2_uncer", "Signal_MXs1_Kff2_m", fname, "", "Signal_MXs1_Kff2_p", fname, "");
-	sig_temp_MXs1.AddHistoSys("Kff3_uncer", "Signal_MXs1_Kff3_m", fname, "", "Signal_MXs1_Kff3_p", fname, "");
-	sig_temp_MXs1.AddHistoSys("Kfrac_uncer", "Signal_MXs1_Kfrac_m", fname, "", "Signal_MXs1_Kfrac_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), "Signal_MXs1_track_m", "Signal_MXs1_track_p")) sig_temp_MXs1.AddHistoSys("track_eff_uncer", "Signal_MXs1_track_m", fname, "", "Signal_MXs1_track_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), "Signal_MXs1_BtoDtoXKL_m", "Signal_MXs1_BtoDtoXKL_p")) sig_temp_MXs1.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs1_BtoDtoXKL_m", fname, "", "Signal_MXs1_BtoDtoXKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), "Signal_MXs1_BRBtoXKLKL_m", "Signal_MXs1_BRBtoXKLKL_p")) sig_temp_MXs1.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs1_BRBtoXKLKL_m", fname, "", "Signal_MXs1_BRBtoXKLKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), "Signal_MXs1_EffECLKL_m", "Signal_MXs1_EffECLKL_p")) sig_temp_MXs1.AddHistoSys("EffECLKL_uncer", "Signal_MXs1_EffECLKL_m", fname, "", "Signal_MXs1_EffECLKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), "Signal_MXs1_NEWFEICAL_m", "Signal_MXs1_NEWFEICAL_p")) sig_temp_MXs1.AddHistoSys("NEWFEICAL_uncer", "Signal_MXs1_NEWFEICAL_m", fname, "", "Signal_MXs1_NEWFEICAL_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), "Signal_MXs1_Xnn_m", "Signal_MXs1_Xnn_p")) sig_temp_MXs1.AddHistoSys("Xnn_BR_uncer", "Signal_MXs1_Xnn_m", fname, "", "Signal_MXs1_Xnn_p", fname, "");
+	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs1.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryFEI; i++) if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs1.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryKID; i++) if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), ("Signal_MXs1_KID_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs1_KID_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs1.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryBR; i++) if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), ("Signal_MXs1_BR_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs1_BR_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs1.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), "Signal_MXs1_Kff1_m", "Signal_MXs1_Kff1_p")) sig_temp_MXs1.AddHistoSys("Kff1_uncer", "Signal_MXs1_Kff1_m", fname, "", "Signal_MXs1_Kff1_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), "Signal_MXs1_Kff2_m", "Signal_MXs1_Kff2_p")) sig_temp_MXs1.AddHistoSys("Kff2_uncer", "Signal_MXs1_Kff2_m", fname, "", "Signal_MXs1_Kff2_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), "Signal_MXs1_Kff3_m", "Signal_MXs1_Kff3_p")) sig_temp_MXs1.AddHistoSys("Kff3_uncer", "Signal_MXs1_Kff3_m", fname, "", "Signal_MXs1_Kff3_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs1_nominal_" + bin_name).c_str(), "Signal_MXs1_Kfrac_m", "Signal_MXs1_Kfrac_p")) sig_temp_MXs1.AddHistoSys("Kfrac_uncer", "Signal_MXs1_Kfrac_m", fname, "", "Signal_MXs1_Kfrac_p", fname, "");
 	if (MXs_bin == 1) sig_temp_MXs1.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL);
 	if (MXs_bin == 1) sig_temp_MXs1.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
 	sig_temp_MXs1.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
@@ -217,27 +254,26 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 
 	/* ================================ SIGNAL with true MXs2 ================================ */
 	RooStats::HistFactory::Sample sig_temp_MXs2(("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_nominal", fname);
-	sig_temp_MXs2.AddHistoSys("track_eff_uncer", "Signal_MXs2_track_m", fname, "", "Signal_MXs2_track_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs2_BtoDtoXKL_m", fname, "", "Signal_MXs2_BtoDtoXKL_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs2_BRBtoXKLKL_m", fname, "", "Signal_MXs2_BRBtoXKLKL_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("EffECLKL_uncer", "Signal_MXs2_EffECLKL_m", fname, "", "Signal_MXs2_EffECLKL_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("NEWFEICAL_uncer", "Signal_MXs2_NEWFEICAL_m", fname, "", "Signal_MXs2_NEWFEICAL_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("Xnn_BR_uncer", "Signal_MXs2_Xnn_m", fname, "", "Signal_MXs2_Xnn_p", fname, "");
-	for (int i = 0; i < NEntryMultiplicity; i++) sig_temp_MXs2.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryFEI; i++) sig_temp_MXs2.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryKID; i++) sig_temp_MXs2.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryBR; i++) sig_temp_MXs2.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	sig_temp_MXs2.AddHistoSys("Kstarff1_uncer", "Signal_MXs2_Kstarff1_m", fname, "", "Signal_MXs2_Kstarff1_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("Kstarff2_uncer", "Signal_MXs2_Kstarff2_m", fname, "", "Signal_MXs2_Kstarff2_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("Kstarff3_uncer", "Signal_MXs2_Kstarff3_m", fname, "", "Signal_MXs2_Kstarff3_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("Kstarff4_uncer", "Signal_MXs2_Kstarff4_m", fname, "", "Signal_MXs2_Kstarff4_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("Kstarff5_uncer", "Signal_MXs2_Kstarff5_m", fname, "", "Signal_MXs2_Kstarff5_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("Kstarff6_uncer", "Signal_MXs2_Kstarff6_m", fname, "", "Signal_MXs2_Kstarff6_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("Kstarff7_uncer", "Signal_MXs2_Kstarff7_m", fname, "", "Signal_MXs2_Kstarff7_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("Kstarff8_uncer", "Signal_MXs2_Kstarff8_m", fname, "", "Signal_MXs2_Kstarff8_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("Kstarff9_uncer", "Signal_MXs2_Kstarff9_m", fname, "", "Signal_MXs2_Kstarff9_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("Kstarff9_uncer", "Signal_MXs2_Kstarff9_m", fname, "", "Signal_MXs2_Kstarff9_p", fname, "");
-	sig_temp_MXs2.AddHistoSys("Kstarfrac_uncer", "Signal_MXs2_Kstarfrac_m", fname, "", "Signal_MXs2_Kstarfrac_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_track_m", "Signal_MXs2_track_p")) sig_temp_MXs2.AddHistoSys("track_eff_uncer", "Signal_MXs2_track_m", fname, "", "Signal_MXs2_track_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_BtoDtoXKL_m", "Signal_MXs2_BtoDtoXKL_p")) sig_temp_MXs2.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs2_BtoDtoXKL_m", fname, "", "Signal_MXs2_BtoDtoXKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_BRBtoXKLKL_m", "Signal_MXs2_BRBtoXKLKL_p")) sig_temp_MXs2.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs2_BRBtoXKLKL_m", fname, "", "Signal_MXs2_BRBtoXKLKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_EffECLKL_m", "Signal_MXs2_EffECLKL_p")) sig_temp_MXs2.AddHistoSys("EffECLKL_uncer", "Signal_MXs2_EffECLKL_m", fname, "", "Signal_MXs2_EffECLKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_NEWFEICAL_m", "Signal_MXs2_NEWFEICAL_p")) sig_temp_MXs2.AddHistoSys("NEWFEICAL_uncer", "Signal_MXs2_NEWFEICAL_m", fname, "", "Signal_MXs2_NEWFEICAL_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_Xnn_m", "Signal_MXs2_Xnn_p")) sig_temp_MXs2.AddHistoSys("Xnn_BR_uncer", "Signal_MXs2_Xnn_m", fname, "", "Signal_MXs2_Xnn_p", fname, "");
+	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs2.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryFEI; i++) if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs2.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryKID; i++) if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), ("Signal_MXs2_KID_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs2_KID_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs2.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryBR; i++) if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), ("Signal_MXs2_BR_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs2_BR_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs2.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_Kstarff1_m", "Signal_MXs2_Kstarff1_p")) sig_temp_MXs2.AddHistoSys("Kstarff1_uncer", "Signal_MXs2_Kstarff1_m", fname, "", "Signal_MXs2_Kstarff1_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_Kstarff2_m", "Signal_MXs2_Kstarff2_p")) sig_temp_MXs2.AddHistoSys("Kstarff2_uncer", "Signal_MXs2_Kstarff2_m", fname, "", "Signal_MXs2_Kstarff2_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_Kstarff3_m", "Signal_MXs2_Kstarff3_p")) sig_temp_MXs2.AddHistoSys("Kstarff3_uncer", "Signal_MXs2_Kstarff3_m", fname, "", "Signal_MXs2_Kstarff3_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_Kstarff4_m", "Signal_MXs2_Kstarff4_p")) sig_temp_MXs2.AddHistoSys("Kstarff4_uncer", "Signal_MXs2_Kstarff4_m", fname, "", "Signal_MXs2_Kstarff4_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_Kstarff5_m", "Signal_MXs2_Kstarff5_p")) sig_temp_MXs2.AddHistoSys("Kstarff5_uncer", "Signal_MXs2_Kstarff5_m", fname, "", "Signal_MXs2_Kstarff5_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_Kstarff6_m", "Signal_MXs2_Kstarff6_p")) sig_temp_MXs2.AddHistoSys("Kstarff6_uncer", "Signal_MXs2_Kstarff6_m", fname, "", "Signal_MXs2_Kstarff6_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_Kstarff7_m", "Signal_MXs2_Kstarff7_p")) sig_temp_MXs2.AddHistoSys("Kstarff7_uncer", "Signal_MXs2_Kstarff7_m", fname, "", "Signal_MXs2_Kstarff7_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_Kstarff8_m", "Signal_MXs2_Kstarff8_p")) sig_temp_MXs2.AddHistoSys("Kstarff8_uncer", "Signal_MXs2_Kstarff8_m", fname, "", "Signal_MXs2_Kstarff8_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_Kstarff9_m", "Signal_MXs2_Kstarff9_p")) sig_temp_MXs2.AddHistoSys("Kstarff9_uncer", "Signal_MXs2_Kstarff9_m", fname, "", "Signal_MXs2_Kstarff9_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_Kstarfrac_m", "Signal_MXs2_Kstarfrac_p")) sig_temp_MXs2.AddHistoSys("Kstarfrac_uncer", "Signal_MXs2_Kstarfrac_m", fname, "", "Signal_MXs2_Kstarfrac_p", fname, "");
 	// sig_temp_MXs2.AddHistoSys("mKstar_uncer", "Signal_MXs2_mKstar_m", fname, "", "Signal_MXs2_mKstar_p", fname, "");
 	if (MXs_bin == 2) sig_temp_MXs2.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL);
 	if (MXs_bin == 2) sig_temp_MXs2.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
@@ -248,35 +284,34 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 
 	/* ================================ SIGNAL with true MXs3 ================================ */
 	RooStats::HistFactory::Sample sig_temp_MXs3(("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_nominal", fname);
-	sig_temp_MXs3.AddHistoSys("track_eff_uncer", "Signal_MXs3_track_m", fname, "", "Signal_MXs3_track_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs3_BtoDtoXKL_m", fname, "", "Signal_MXs3_BtoDtoXKL_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs3_BRBtoXKLKL_m", fname, "", "Signal_MXs3_BRBtoXKLKL_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("EffECLKL_uncer", "Signal_MXs3_EffECLKL_m", fname, "", "Signal_MXs3_EffECLKL_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("NEWFEICAL_uncer", "Signal_MXs3_NEWFEICAL_m", fname, "", "Signal_MXs3_NEWFEICAL_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Xnn_BR_uncer", "Signal_MXs3_Xnn_m", fname, "", "Signal_MXs3_Xnn_p", fname, "");
-	for (int i = 0; i < NEntryMultiplicity; i++) sig_temp_MXs3.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryFEI; i++) sig_temp_MXs3.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryKID; i++) sig_temp_MXs3.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryBR; i++) sig_temp_MXs3.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	sig_temp_MXs3.AddHistoSys("Kff1_uncer", "Signal_MXs3_Kff1_m", fname, "", "Signal_MXs3_Kff1_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kff2_uncer", "Signal_MXs3_Kff2_m", fname, "", "Signal_MXs3_Kff2_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kff3_uncer", "Signal_MXs3_Kff3_m", fname, "", "Signal_MXs3_Kff3_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kstarff1_uncer", "Signal_MXs3_Kstarff1_m", fname, "", "Signal_MXs3_Kstarff1_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kstarff2_uncer", "Signal_MXs3_Kstarff2_m", fname, "", "Signal_MXs3_Kstarff2_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kstarff3_uncer", "Signal_MXs3_Kstarff3_m", fname, "", "Signal_MXs3_Kstarff3_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kstarff4_uncer", "Signal_MXs3_Kstarff4_m", fname, "", "Signal_MXs3_Kstarff4_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kstarff5_uncer", "Signal_MXs3_Kstarff5_m", fname, "", "Signal_MXs3_Kstarff5_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kstarff6_uncer", "Signal_MXs3_Kstarff6_m", fname, "", "Signal_MXs3_Kstarff6_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kstarff7_uncer", "Signal_MXs3_Kstarff7_m", fname, "", "Signal_MXs3_Kstarff7_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kstarff8_uncer", "Signal_MXs3_Kstarff8_m", fname, "", "Signal_MXs3_Kstarff8_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kstarff9_uncer", "Signal_MXs3_Kstarff9_m", fname, "", "Signal_MXs3_Kstarff9_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kstarff9_uncer", "Signal_MXs3_Kstarff9_m", fname, "", "Signal_MXs3_Kstarff9_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kfrac_uncer", "Signal_MXs3_Kfrac_m", fname, "", "Signal_MXs3_Kfrac_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("Kstarfrac_uncer", "Signal_MXs3_Kstarfrac_m", fname, "", "Signal_MXs3_Kstarfrac_p", fname, "");
-	for (int i = 0; i < NEntryFragmentation; i++) sig_temp_MXs3.AddHistoSys(("Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	sig_temp_MXs3.AddHistoSys("pf_uncer", "Signal_MXs3_pf_m", fname, "", "Signal_MXs3_pf_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("mb_uncer", "Signal_MXs3_mb_m", fname, "", "Signal_MXs3_mb_p", fname, "");
-	sig_temp_MXs3.AddHistoSys("transition_uncer", "Signal_MXs3_transition_m", fname, "", "Signal_MXs3_transition_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_track_m", "Signal_MXs3_track_p")) sig_temp_MXs3.AddHistoSys("track_eff_uncer", "Signal_MXs3_track_m", fname, "", "Signal_MXs3_track_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_BtoDtoXKL_m", "Signal_MXs3_BtoDtoXKL_p")) sig_temp_MXs3.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs3_BtoDtoXKL_m", fname, "", "Signal_MXs3_BtoDtoXKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_BRBtoXKLKL_m", "Signal_MXs3_BRBtoXKLKL_p")) sig_temp_MXs3.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs3_BRBtoXKLKL_m", fname, "", "Signal_MXs3_BRBtoXKLKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_EffECLKL_m", "Signal_MXs3_EffECLKL_p")) sig_temp_MXs3.AddHistoSys("EffECLKL_uncer", "Signal_MXs3_EffECLKL_m", fname, "", "Signal_MXs3_EffECLKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_NEWFEICAL_m", "Signal_MXs3_NEWFEICAL_p")) sig_temp_MXs3.AddHistoSys("NEWFEICAL_uncer", "Signal_MXs3_NEWFEICAL_m", fname, "", "Signal_MXs3_NEWFEICAL_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Xnn_m", "Signal_MXs3_Xnn_p")) sig_temp_MXs3.AddHistoSys("Xnn_BR_uncer", "Signal_MXs3_Xnn_m", fname, "", "Signal_MXs3_Xnn_p", fname, "");
+	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs3.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryFEI; i++) if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs3.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryKID; i++) if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), ("Signal_MXs3_KID_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs3_KID_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs3.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryBR; i++) if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), ("Signal_MXs3_BR_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs3_BR_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs3.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kff1_m", "Signal_MXs3_Kff1_p")) sig_temp_MXs3.AddHistoSys("Kff1_uncer", "Signal_MXs3_Kff1_m", fname, "", "Signal_MXs3_Kff1_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kff2_m", "Signal_MXs3_Kff2_p")) sig_temp_MXs3.AddHistoSys("Kff2_uncer", "Signal_MXs3_Kff2_m", fname, "", "Signal_MXs3_Kff2_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kff3_m", "Signal_MXs3_Kff3_p")) sig_temp_MXs3.AddHistoSys("Kff3_uncer", "Signal_MXs3_Kff3_m", fname, "", "Signal_MXs3_Kff3_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kstarff1_m", "Signal_MXs3_Kstarff1_p")) sig_temp_MXs3.AddHistoSys("Kstarff1_uncer", "Signal_MXs3_Kstarff1_m", fname, "", "Signal_MXs3_Kstarff1_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kstarff2_m", "Signal_MXs3_Kstarff2_p")) sig_temp_MXs3.AddHistoSys("Kstarff2_uncer", "Signal_MXs3_Kstarff2_m", fname, "", "Signal_MXs3_Kstarff2_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kstarff3_m", "Signal_MXs3_Kstarff3_p")) sig_temp_MXs3.AddHistoSys("Kstarff3_uncer", "Signal_MXs3_Kstarff3_m", fname, "", "Signal_MXs3_Kstarff3_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kstarff4_m", "Signal_MXs3_Kstarff4_p")) sig_temp_MXs3.AddHistoSys("Kstarff4_uncer", "Signal_MXs3_Kstarff4_m", fname, "", "Signal_MXs3_Kstarff4_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kstarff5_m", "Signal_MXs3_Kstarff5_p")) sig_temp_MXs3.AddHistoSys("Kstarff5_uncer", "Signal_MXs3_Kstarff5_m", fname, "", "Signal_MXs3_Kstarff5_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kstarff6_m", "Signal_MXs3_Kstarff6_p")) sig_temp_MXs3.AddHistoSys("Kstarff6_uncer", "Signal_MXs3_Kstarff6_m", fname, "", "Signal_MXs3_Kstarff6_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kstarff7_m", "Signal_MXs3_Kstarff7_p")) sig_temp_MXs3.AddHistoSys("Kstarff7_uncer", "Signal_MXs3_Kstarff7_m", fname, "", "Signal_MXs3_Kstarff7_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kstarff8_m", "Signal_MXs3_Kstarff8_p")) sig_temp_MXs3.AddHistoSys("Kstarff8_uncer", "Signal_MXs3_Kstarff8_m", fname, "", "Signal_MXs3_Kstarff8_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kstarff9_m", "Signal_MXs3_Kstarff9_p")) sig_temp_MXs3.AddHistoSys("Kstarff9_uncer", "Signal_MXs3_Kstarff9_m", fname, "", "Signal_MXs3_Kstarff9_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kfrac_m", "Signal_MXs3_Kfrac_p")) sig_temp_MXs3.AddHistoSys("Kfrac_uncer", "Signal_MXs3_Kfrac_m", fname, "", "Signal_MXs3_Kfrac_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_Kstarfrac_m", "Signal_MXs3_Kstarfrac_p")) sig_temp_MXs3.AddHistoSys("Kstarfrac_uncer", "Signal_MXs3_Kstarfrac_m", fname, "", "Signal_MXs3_Kstarfrac_p", fname, "");
+	for (int i = 0; i < NEntryFragmentation; i++) if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs3.AddHistoSys(("Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_pf_m", "Signal_MXs3_pf_p")) sig_temp_MXs3.AddHistoSys("pf_uncer", "Signal_MXs3_pf_m", fname, "", "Signal_MXs3_pf_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_mb_m", "Signal_MXs3_mb_p")) sig_temp_MXs3.AddHistoSys("mb_uncer", "Signal_MXs3_mb_m", fname, "", "Signal_MXs3_mb_p", fname, "");
+	if (IsThereAnyChange(fname, ("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_transition_m", "Signal_MXs3_transition_p")) sig_temp_MXs3.AddHistoSys("transition_uncer", "Signal_MXs3_transition_m", fname, "", "Signal_MXs3_transition_p", fname, "");
 	// sig_temp_MXs3.AddHistoSys("mKstar_uncer", "Signal_MXs3_mKstar_m", fname, "", "Signal_MXs3_mKstar_p", fname, "");
 	if (MXs_bin == 3) sig_temp_MXs3.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL);
 	if (MXs_bin == 3) sig_temp_MXs3.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
@@ -288,15 +323,15 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	// read background template
 	/* ================================ CHG ================================ */
 	RooStats::HistFactory::Sample CHG_temp(("CHG_nominal_" + bin_name).c_str(), "CHG_nominal", fname);
-	CHG_temp.AddHistoSys("track_eff_uncer", "CHG_track_m", fname, "", "CHG_track_p", fname, "");
-	CHG_temp.AddHistoSys("BtoDtoXKL_uncer", "CHG_BtoDtoXKL_m", fname, "", "CHG_BtoDtoXKL_p", fname, "");
-	CHG_temp.AddHistoSys("BRBtoXKLKL_uncer", "CHG_BRBtoXKLKL_m", fname, "", "CHG_BRBtoXKLKL_p", fname, "");
-	CHG_temp.AddHistoSys("EffECLKL_uncer", "CHG_EffECLKL_m", fname, "", "CHG_EffECLKL_p", fname, "");
-	CHG_temp.AddHistoSys("Xnn_BR_uncer", "CHG_Xnn_m", fname, "", "CHG_Xnn_p", fname, "");
-	for (int i = 0; i < NEntryMultiplicity; i++) CHG_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("CHG_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryFEI; i++) CHG_temp.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("CHG_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryKID; i++) CHG_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("CHG_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryBR; i++) CHG_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("CHG_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	if (IsThereAnyChange(fname, ("CHG_nominal_" + bin_name).c_str(), "CHG_track_m", "CHG_track_p")) CHG_temp.AddHistoSys("track_eff_uncer", "CHG_track_m", fname, "", "CHG_track_p", fname, "");
+	if (IsThereAnyChange(fname, ("CHG_nominal_" + bin_name).c_str(), "CHG_BtoDtoXKL_m", "CHG_BtoDtoXKL_p")) CHG_temp.AddHistoSys("BtoDtoXKL_uncer", "CHG_BtoDtoXKL_m", fname, "", "CHG_BtoDtoXKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("CHG_nominal_" + bin_name).c_str(), "CHG_BRBtoXKLKL_m", "CHG_BRBtoXKLKL_p")) CHG_temp.AddHistoSys("BRBtoXKLKL_uncer", "CHG_BRBtoXKLKL_m", fname, "", "CHG_BRBtoXKLKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("CHG_nominal_" + bin_name).c_str(), "CHG_EffECLKL_m", "CHG_EffECLKL_p")) CHG_temp.AddHistoSys("EffECLKL_uncer", "CHG_EffECLKL_m", fname, "", "CHG_EffECLKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("CHG_nominal_" + bin_name).c_str(), "CHG_Xnn_m", "CHG_Xnn_p")) CHG_temp.AddHistoSys("Xnn_BR_uncer", "CHG_Xnn_m", fname, "", "CHG_Xnn_p", fname, "");
+	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, ("CHG_nominal_" + bin_name).c_str(), ("CHG_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("CHG_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) CHG_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("CHG_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryFEI; i++) if (IsThereAnyChange(fname, ("CHG_nominal_" + bin_name).c_str(), ("CHG_FEI_correlated" + std::to_string(i) + "_m").c_str(), ("CHG_FEI_correlated" + std::to_string(i) + "_p").c_str())) CHG_temp.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("CHG_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryKID; i++) if (IsThereAnyChange(fname, ("CHG_nominal_" + bin_name).c_str(), ("CHG_KID_correlated" + std::to_string(i) + "_m").c_str(), ("CHG_KID_correlated" + std::to_string(i) + "_p").c_str())) CHG_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("CHG_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryBR; i++) if (IsThereAnyChange(fname, ("CHG_nominal_" + bin_name).c_str(), ("CHG_BR_correlated" + std::to_string(i) + "_m").c_str(), ("CHG_BR_correlated" + std::to_string(i) + "_p").c_str())) CHG_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("CHG_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	//CHG_temp.AddHistoSys("BDTc_shape_BB", "CHG_BDTc_m", fname, "", "CHG_BDTc_p", fname, "");
 	CHG_temp.AddOverallSys(("mu_CHG_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	CHG_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
@@ -307,15 +342,15 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 
 	/* ================================ MIX ================================ */
 	RooStats::HistFactory::Sample MIX_temp(("MIX_nominal_" + bin_name).c_str(), "MIX_nominal", fname);
-	MIX_temp.AddHistoSys("track_eff_uncer", "MIX_track_m", fname, "", "MIX_track_p", fname, "");
-	MIX_temp.AddHistoSys("BtoDtoXKL_uncer", "MIX_BtoDtoXKL_m", fname, "", "MIX_BtoDtoXKL_p", fname, "");
-	MIX_temp.AddHistoSys("BRBtoXKLKL_uncer", "MIX_BRBtoXKLKL_m", fname, "", "MIX_BRBtoXKLKL_p", fname, "");
-	MIX_temp.AddHistoSys("EffECLKL_uncer", "MIX_EffECLKL_m", fname, "", "MIX_EffECLKL_p", fname, "");
-	MIX_temp.AddHistoSys("Xnn_BR_uncer", "MIX_Xnn_m", fname, "", "MIX_Xnn_p", fname, "");
-	for (int i = 0; i < NEntryMultiplicity; i++) MIX_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("MIX_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryFEI; i++) MIX_temp.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("MIX_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryKID; i++) MIX_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("MIX_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryBR; i++) MIX_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("MIX_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	if (IsThereAnyChange(fname, ("MIX_nominal_" + bin_name).c_str(), "MIX_track_m", "MIX_track_p")) MIX_temp.AddHistoSys("track_eff_uncer", "MIX_track_m", fname, "", "MIX_track_p", fname, "");
+	if (IsThereAnyChange(fname, ("MIX_nominal_" + bin_name).c_str(), "MIX_BtoDtoXKL_m", "MIX_BtoDtoXKL_p")) MIX_temp.AddHistoSys("BtoDtoXKL_uncer", "MIX_BtoDtoXKL_m", fname, "", "MIX_BtoDtoXKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("MIX_nominal_" + bin_name).c_str(), "MIX_BRBtoXKLKL_m", "MIX_BRBtoXKLKL_p")) MIX_temp.AddHistoSys("BRBtoXKLKL_uncer", "MIX_BRBtoXKLKL_m", fname, "", "MIX_BRBtoXKLKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("MIX_nominal_" + bin_name).c_str(), "MIX_EffECLKL_m", "MIX_EffECLKL_p")) MIX_temp.AddHistoSys("EffECLKL_uncer", "MIX_EffECLKL_m", fname, "", "MIX_EffECLKL_p", fname, "");
+	if (IsThereAnyChange(fname, ("MIX_nominal_" + bin_name).c_str(), "MIX_Xnn_m", "MIX_Xnn_p")) MIX_temp.AddHistoSys("Xnn_BR_uncer", "MIX_Xnn_m", fname, "", "MIX_Xnn_p", fname, "");
+	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, ("MIX_nominal_" + bin_name).c_str(), ("MIX_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("MIX_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) MIX_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("MIX_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryFEI; i++) if (IsThereAnyChange(fname, ("MIX_nominal_" + bin_name).c_str(), ("MIX_FEI_correlated" + std::to_string(i) + "_m").c_str(), ("MIX_FEI_correlated" + std::to_string(i) + "_p").c_str())) MIX_temp.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("MIX_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryKID; i++) if (IsThereAnyChange(fname, ("MIX_nominal_" + bin_name).c_str(), ("MIX_KID_correlated" + std::to_string(i) + "_m").c_str(), ("MIX_KID_correlated" + std::to_string(i) + "_p").c_str())) MIX_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("MIX_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryBR; i++) if (IsThereAnyChange(fname, ("MIX_nominal_" + bin_name).c_str(), ("MIX_BR_correlated" + std::to_string(i) + "_m").c_str(), ("MIX_BR_correlated" + std::to_string(i) + "_p").c_str())) MIX_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("MIX_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	//MIX_temp.AddHistoSys("BDTc_shape_BB", "MIX_BDTc_m", fname, "", "MIX_BDTc_p", fname, "");
 	MIX_temp.AddOverallSys(("mu_MIX_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	MIX_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
@@ -326,11 +361,11 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 
 	/* ================================ UUBAR ================================ */
 	RooStats::HistFactory::Sample UUBAR_temp(("UUBAR_nominal_" + bin_name).c_str(), "UUBAR_nominal", fname);
-	UUBAR_temp.AddHistoSys("track_eff_uncer", "UUBAR_track_m", fname, "", "UUBAR_track_p", fname, "");
-	UUBAR_temp.AddHistoSys("EffECLKL_uncer", "UUBAR_EffECLKL_m", fname, "", "UUBAR_EffECLKL_p", fname, "");
-	for (int i = 0; i < NEntryMultiplicity; i++) UUBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryKID; i++) UUBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	UUBAR_temp.AddHistoSys("BDTc_shape_qq", "UUBAR_BDTc_m", fname, "", "UUBAR_BDTc_p", fname, "");
+	if (IsThereAnyChange(fname, ("UUBAR_nominal_" + bin_name).c_str(), "UUBAR_track_m", "UUBAR_track_p")) UUBAR_temp.AddHistoSys("track_eff_uncer", "UUBAR_track_m", fname, "", "UUBAR_track_p", fname, "");
+	if (IsThereAnyChange(fname, ("UUBAR_nominal_" + bin_name).c_str(), "UUBAR_EffECLKL_m", "UUBAR_EffECLKL_p")) UUBAR_temp.AddHistoSys("EffECLKL_uncer", "UUBAR_EffECLKL_m", fname, "", "UUBAR_EffECLKL_p", fname, "");
+	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, ("UUBAR_nominal_" + bin_name).c_str(), ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) UUBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryKID; i++) if (IsThereAnyChange(fname, ("UUBAR_nominal_" + bin_name).c_str(), ("UUBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), ("UUBAR_KID_correlated" + std::to_string(i) + "_p").c_str())) UUBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	if (IsThereAnyChange(fname, ("UUBAR_nominal_" + bin_name).c_str(), "UUBAR_BDTc_m", "UUBAR_BDTc_p")) UUBAR_temp.AddHistoSys("BDTc_shape_qq", "UUBAR_BDTc_m", fname, "", "UUBAR_BDTc_p", fname, "");
 	UUBAR_temp.AddNormFactor(("qq_CAL_UUBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	//UUBAR_temp.AddOverallSys(("qq_CAL_UUBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	UUBAR_temp.AddOverallSys(("mu_UUBAR_" + bin_name).c_str(), 1.0 - std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
@@ -341,11 +376,11 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 
 	/* ================================ DDBAR ================================ */
 	RooStats::HistFactory::Sample DDBAR_temp(("DDBAR_nominal_" + bin_name).c_str(), "DDBAR_nominal", fname);
-	DDBAR_temp.AddHistoSys("track_eff_uncer", "DDBAR_track_m", fname, "", "DDBAR_track_p", fname, "");
-	DDBAR_temp.AddHistoSys("EffECLKL_uncer", "DDBAR_EffECLKL_m", fname, "", "DDBAR_EffECLKL_p", fname, "");
-	for (int i = 0; i < NEntryMultiplicity; i++) DDBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryKID; i++) DDBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	DDBAR_temp.AddHistoSys("BDTc_shape_qq", "DDBAR_BDTc_m", fname, "", "DDBAR_BDTc_p", fname, "");
+	if (IsThereAnyChange(fname, ("DDBAR_nominal_" + bin_name).c_str(), "DDBAR_track_m", "DDBAR_track_p")) DDBAR_temp.AddHistoSys("track_eff_uncer", "DDBAR_track_m", fname, "", "DDBAR_track_p", fname, "");
+	if (IsThereAnyChange(fname, ("DDBAR_nominal_" + bin_name).c_str(), "DDBAR_EffECLKL_m", "DDBAR_EffECLKL_p")) DDBAR_temp.AddHistoSys("EffECLKL_uncer", "DDBAR_EffECLKL_m", fname, "", "DDBAR_EffECLKL_p", fname, "");
+	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, ("DDBAR_nominal_" + bin_name).c_str(), ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) DDBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryKID; i++) if (IsThereAnyChange(fname, ("DDBAR_nominal_" + bin_name).c_str(), ("DDBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), ("DDBAR_KID_correlated" + std::to_string(i) + "_p").c_str())) DDBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	if (IsThereAnyChange(fname, ("DDBAR_nominal_" + bin_name).c_str(), "DDBAR_BDTc_m", "DDBAR_BDTc_p")) DDBAR_temp.AddHistoSys("BDTc_shape_qq", "DDBAR_BDTc_m", fname, "", "DDBAR_BDTc_p", fname, "");
 	DDBAR_temp.AddNormFactor(("qq_CAL_DDBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	//DDBAR_temp.AddOverallSys(("qq_CAL_DDBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	DDBAR_temp.AddOverallSys(("mu_DDBAR_" + bin_name).c_str(), 1.0 - std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
@@ -356,11 +391,11 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 
 	/* ================================ SSBAR ================================ */
 	RooStats::HistFactory::Sample SSBAR_temp(("SSBAR_nominal_" + bin_name).c_str(), "SSBAR_nominal", fname);
-	SSBAR_temp.AddHistoSys("track_eff_uncer", "SSBAR_track_m", fname, "", "SSBAR_track_p", fname, "");
-	SSBAR_temp.AddHistoSys("EffECLKL_uncer", "SSBAR_EffECLKL_m", fname, "", "SSBAR_EffECLKL_p", fname, "");
-	for (int i = 0; i < NEntryMultiplicity; i++) SSBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryKID; i++) SSBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	SSBAR_temp.AddHistoSys("BDTc_shape_qq", "SSBAR_BDTc_m", fname, "", "SSBAR_BDTc_p", fname, "");
+	if (IsThereAnyChange(fname, ("SSBAR_nominal_" + bin_name).c_str(), "SSBAR_track_m", "SSBAR_track_p")) SSBAR_temp.AddHistoSys("track_eff_uncer", "SSBAR_track_m", fname, "", "SSBAR_track_p", fname, "");
+	if (IsThereAnyChange(fname, ("SSBAR_nominal_" + bin_name).c_str(), "SSBAR_EffECLKL_m", "SSBAR_EffECLKL_p")) SSBAR_temp.AddHistoSys("EffECLKL_uncer", "SSBAR_EffECLKL_m", fname, "", "SSBAR_EffECLKL_p", fname, "");
+	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, ("SSBAR_nominal_" + bin_name).c_str(), ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) SSBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryKID; i++) if (IsThereAnyChange(fname, ("SSBAR_nominal_" + bin_name).c_str(), ("SSBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), ("SSBAR_KID_correlated" + std::to_string(i) + "_p").c_str())) SSBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	if (IsThereAnyChange(fname, ("SSBAR_nominal_" + bin_name).c_str(), "SSBAR_BDTc_m", "SSBAR_BDTc_p")) SSBAR_temp.AddHistoSys("BDTc_shape_qq", "SSBAR_BDTc_m", fname, "", "SSBAR_BDTc_p", fname, "");
 	SSBAR_temp.AddNormFactor(("qq_CAL_SSBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	//SSBAR_temp.AddOverallSys(("qq_CAL_SSBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	SSBAR_temp.AddOverallSys(("mu_SSBAR_" + bin_name).c_str(), 1.0 - std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
@@ -371,11 +406,11 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 
 	/* ================================ CHARM ================================ */
 	RooStats::HistFactory::Sample CHARM_temp(("CHARM_nominal_" + bin_name).c_str(), "CHARM_nominal", fname);
-	CHARM_temp.AddHistoSys("track_eff_uncer", "CHARM_track_m", fname, "", "CHARM_track_p", fname, "");
-	CHARM_temp.AddHistoSys("EffECLKL_uncer", "CHARM_EffECLKL_m", fname, "", "CHARM_EffECLKL_p", fname, "");
-	for (int i = 0; i < NEntryMultiplicity; i++) CHARM_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("CHARM_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	for (int i = 0; i < NEntryKID; i++) CHARM_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("CHARM_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
-	CHARM_temp.AddHistoSys("BDTc_shape_qq", "CHARM_BDTc_m", fname, "", "CHARM_BDTc_p", fname, "");
+	if (IsThereAnyChange(fname, ("CHARM_nominal_" + bin_name).c_str(), "CHARM_track_m", "CHARM_track_p")) CHARM_temp.AddHistoSys("track_eff_uncer", "CHARM_track_m", fname, "", "CHARM_track_p", fname, "");
+	if (IsThereAnyChange(fname, ("CHARM_nominal_" + bin_name).c_str(), "CHARM_EffECLKL_m", "CHARM_EffECLKL_p")) CHARM_temp.AddHistoSys("EffECLKL_uncer", "CHARM_EffECLKL_m", fname, "", "CHARM_EffECLKL_p", fname, "");
+	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, ("CHARM_nominal_" + bin_name).c_str(), ("CHARM_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("CHARM_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) CHARM_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("CHARM_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int i = 0; i < NEntryKID; i++) if (IsThereAnyChange(fname, ("CHARM_nominal_" + bin_name).c_str(), ("CHARM_KID_correlated" + std::to_string(i) + "_m").c_str(), ("CHARM_KID_correlated" + std::to_string(i) + "_p").c_str())) CHARM_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("CHARM_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	if (IsThereAnyChange(fname, ("CHARM_nominal_" + bin_name).c_str(), "CHARM_BDTc_m", "CHARM_BDTc_p")) CHARM_temp.AddHistoSys("BDTc_shape_qq", "CHARM_BDTc_m", fname, "", "CHARM_BDTc_p", fname, "");
 	CHARM_temp.AddNormFactor(("qq_CAL_CHARM_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	//CHARM_temp.AddOverallSys(("qq_CAL_CHARM_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	CHARM_temp.AddOverallSys(("mu_CHARM_" + bin_name).c_str(), 1.0 - std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
