@@ -1,4 +1,4 @@
-void load_files(const char* dirname, std::vector<string>* names) {
+avoid load_files(const char* dirname, std::vector<string>* names) {
     TSystemDirectory dir(dirname, dirname);
     TList* files = dir.GetListOfFiles();
     if (files) {
@@ -64,6 +64,10 @@ void ReadToyRootFile(){
     std::vector<string> names;
     const char* dirname = "./";
     load_files(dirname, &names, "TOY_result");
+
+    // calculate median mu
+    std::vector<double> mu_fitting;
+    double median_mu = -1;
     for (unsigned int i = 0; i < names.size(); i++) {
 
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
@@ -78,8 +82,6 @@ void ReadToyRootFile(){
         int temp_covQual = -1;
         int temp_status = -1;
         double temp_edm = -1;
-
-        std::vector<double> mu_fitting;
 
         temp_tree->SetBranchAddress("mu_MXs3_true", &temp_mu_true);
         temp_tree->SetBranchAddress("mu_MXs3_value", &temp_mu_fitting);
@@ -96,10 +98,36 @@ void ReadToyRootFile(){
             mu_fitting.push_back(temp_mu_fitting);
         }
 
-        // get median
-        std::sort(mu_fitting.begin(), mu_fitting.end());
-        size_t size = mu_fitting.size();
-        double median_mu = mu_fitting[size / 2];
+        input_file->Close();
+    }
+    std::sort(mu_fitting.begin(), mu_fitting.end());
+    size_t size = mu_fitting.size();
+    double median_mu = mu_fitting[size / 2];
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        TTree* temp_tree = (TTree*)input_file->Get("TOY_result");
+
+        double temp_mu_true = -1;
+        double temp_mu_fitting = -1;
+        double temp_mu_error = -1;
+        double temp_mu_HIerror = -1;
+        double temp_mu_LOerror = -1;
+
+        int temp_covQual = -1;
+        int temp_status = -1;
+        double temp_edm = -1;
+
+        temp_tree->SetBranchAddress("mu_MXs3_true", &temp_mu_true);
+        temp_tree->SetBranchAddress("mu_MXs3_value", &temp_mu_fitting);
+        temp_tree->SetBranchAddress("mu_MXs3_error", &temp_mu_error);
+        temp_tree->SetBranchAddress("mu_MXs3_HIerror", &temp_mu_HIerror);
+        temp_tree->SetBranchAddress("mu_MXs3_LOerror", &temp_mu_LOerror);
+
+        temp_tree->SetBranchAddress("covQual", &temp_covQual);
+        temp_tree->SetBranchAddress("status", &temp_status);
+        temp_tree->SetBranchAddress("edm", &temp_edm);
 
         for (unsigned int j = 0; j < temp_tree->GetEntries(); j++) { // Fill
             temp_tree->GetEntry(j);
