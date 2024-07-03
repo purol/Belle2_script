@@ -171,7 +171,7 @@ int ReadNFragmentationEigenVector(const char* dirname) {
 	return Nentry;
 }
 
-void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, const double expmu, double qq_CAL, double qq_CAL_relativeuncer, double FBDT_CAL, double FBDT_CAL_relativeuncer) {
+void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, const double expmu, double qq_CAL, double qq_CAL_relativeuncer, double FBDT_CAL, double FBDT_CAL_relativeuncer, double bkg_norm_relativeuncer) {
 
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
 	int NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
@@ -298,7 +298,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	for (int i = 0; i < NEntryKID; i++) CHG_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("CHG_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryBR; i++) CHG_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("CHG_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	//CHG_temp.AddHistoSys("BDTc_shape_BB", "CHG_BDTc_m", fname, "", "CHG_BDTc_p", fname, "");
-	CHG_temp.AddOverallSys(("mu_CHG_" + bin_name).c_str(), 0.7, 1.3);
+	CHG_temp.AddOverallSys(("mu_CHG_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	CHG_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	CHG_temp.ActivateStatError("CHG_all_uncorrelated_MC_stat", fname, "");
 	CHG_temp.SetNormalizeByTheory(kFALSE);
@@ -317,7 +317,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	for (int i = 0; i < NEntryKID; i++) MIX_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("MIX_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryBR; i++) MIX_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("MIX_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	//MIX_temp.AddHistoSys("BDTc_shape_BB", "MIX_BDTc_m", fname, "", "MIX_BDTc_p", fname, "");
-	MIX_temp.AddOverallSys(("mu_MIX_" + bin_name).c_str(), 0.7, 1.3);
+	MIX_temp.AddOverallSys(("mu_MIX_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	MIX_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	MIX_temp.ActivateStatError("MIX_all_uncorrelated_MC_stat", fname, "");
 	MIX_temp.SetNormalizeByTheory(kFALSE);
@@ -333,7 +333,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	UUBAR_temp.AddHistoSys("BDTc_shape_qq", "UUBAR_BDTc_m", fname, "", "UUBAR_BDTc_p", fname, "");
 	UUBAR_temp.AddNormFactor(("qq_CAL_UUBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	//UUBAR_temp.AddOverallSys(("qq_CAL_UUBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
-	UUBAR_temp.AddOverallSys(("mu_UUBAR_" + bin_name).c_str(), 1.0 - std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
+	UUBAR_temp.AddOverallSys(("mu_UUBAR_" + bin_name).c_str(), 1.0 - std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
 	UUBAR_temp.ActivateStatError("UUBAR_all_uncorrelated_MC_stat", fname, "");
 	UUBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel->AddSample(UUBAR_temp);
@@ -348,7 +348,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	DDBAR_temp.AddHistoSys("BDTc_shape_qq", "DDBAR_BDTc_m", fname, "", "DDBAR_BDTc_p", fname, "");
 	DDBAR_temp.AddNormFactor(("qq_CAL_DDBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	//DDBAR_temp.AddOverallSys(("qq_CAL_DDBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
-	DDBAR_temp.AddOverallSys(("mu_DDBAR_" + bin_name).c_str(), 1.0 - std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
+	DDBAR_temp.AddOverallSys(("mu_DDBAR_" + bin_name).c_str(), 1.0 - std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
 	DDBAR_temp.ActivateStatError("DDBAR_all_uncorrelated_MC_stat", fname, "");
 	DDBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel->AddSample(DDBAR_temp);
@@ -363,7 +363,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	SSBAR_temp.AddHistoSys("BDTc_shape_qq", "SSBAR_BDTc_m", fname, "", "SSBAR_BDTc_p", fname, "");
 	SSBAR_temp.AddNormFactor(("qq_CAL_SSBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	//SSBAR_temp.AddOverallSys(("qq_CAL_SSBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
-	SSBAR_temp.AddOverallSys(("mu_SSBAR_" + bin_name).c_str(), 1.0 - std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
+	SSBAR_temp.AddOverallSys(("mu_SSBAR_" + bin_name).c_str(), 1.0 - std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
 	SSBAR_temp.ActivateStatError("SSBAR_all_uncorrelated_MC_stat", fname, "");
 	SSBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel->AddSample(SSBAR_temp);
@@ -378,7 +378,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	CHARM_temp.AddHistoSys("BDTc_shape_qq", "CHARM_BDTc_m", fname, "", "CHARM_BDTc_p", fname, "");
 	CHARM_temp.AddNormFactor(("qq_CAL_CHARM_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	//CHARM_temp.AddOverallSys(("qq_CAL_CHARM_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
-	CHARM_temp.AddOverallSys(("mu_CHARM_" + bin_name).c_str(), 1.0 - std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(0.3 * 0.3 + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
+	CHARM_temp.AddOverallSys(("mu_CHARM_" + bin_name).c_str(), 1.0 - std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
 	CHARM_temp.ActivateStatError("CHARM_all_uncorrelated_MC_stat", fname, "");
 	CHARM_temp.SetNormalizeByTheory(kFALSE);
 	channel->AddSample(CHARM_temp);
@@ -428,7 +428,7 @@ int WorkSpace_Knunu() {
 	channel_MXs1.SetData("total_DATA", fname_MXs1);
 
 	// get MC
-	AddSample(&channel_MXs1, fname_MXs1, 1, expmu, 1.1652, 0.1105, 1.0062, 0.0381);
+	AddSample(&channel_MXs1, fname_MXs1, 1, expmu, 1.1652, 0.1105, 1.0062, 0.0381, 0.2);
 
 	// add channel to measurement
 	meas.AddChannel(channel_MXs1);
