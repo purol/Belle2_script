@@ -1,4 +1,4 @@
-avoid load_files(const char* dirname, std::vector<string>* names) {
+void load_files(const char* dirname, std::vector<string>* names) {
     TSystemDirectory dir(dirname, dirname);
     TList* files = dir.GetListOfFiles();
     if (files) {
@@ -102,7 +102,7 @@ void ReadToyRootFile(){
     }
     std::sort(mu_fitting.begin(), mu_fitting.end());
     size_t size = mu_fitting.size();
-    double median_mu = mu_fitting[size / 2];
+    median_mu = mu_fitting[size / 2];
 
     for (unsigned int i = 0; i < names.size(); i++) {
 
