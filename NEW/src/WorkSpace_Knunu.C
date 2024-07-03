@@ -172,7 +172,7 @@ int ReadNFragmentationEigenVector(const char* dirname) {
 	return Nentry;
 }
 
-bool IsThereAnyChange(const char* fname, const char* nominal_hist_name, const char* hist_m_name, const_char* hist_p_name) {
+bool IsThereAnyChange(const char* fname, const char* nominal_hist_name, const char* hist_m_name, const char* hist_p_name) {
 	TFile* file = new TFile(fname);
 	file->cd();
 
