@@ -79,6 +79,8 @@ void ReadToyRootFile(){
         int temp_status = -1;
         double temp_edm = -1;
 
+        std::vector<double> mu_fitting;
+
         temp_tree->SetBranchAddress("mu_MXs3_true", &temp_mu_true);
         temp_tree->SetBranchAddress("mu_MXs3_value", &temp_mu_fitting);
         temp_tree->SetBranchAddress("mu_MXs3_error", &temp_mu_error);
@@ -91,18 +93,28 @@ void ReadToyRootFile(){
 
         for (unsigned int j = 0; j < temp_tree->GetEntries(); j++) { // Fill
             temp_tree->GetEntry(j);
+            mu_fitting.push_back(temp_mu_fitting);
+        }
+
+        // get median
+        std::sort(mu_fitting.begin(), mu_fitting.end());
+        size_t size = mu_fitting.size();
+        double median_mu = mu_fitting[size / 2];
+
+        for (unsigned int j = 0; j < temp_tree->GetEntries(); j++) { // Fill
+            temp_tree->GetEntry(j);
             ToyMCmu->Fill(temp_mu_fitting);
             ToyMCmuerror->Fill(temp_mu_error);
             ToyMCmuHIerror->Fill(temp_mu_HIerror);
             ToyMCmuLOerror->Fill(temp_mu_LOerror);
-            if (temp_mu_true >= temp_mu_fitting) {
-                ToyMCmupull->Fill((temp_mu_true - temp_mu_fitting) / temp_mu_HIerror);
-                mu_pull_roorealvar = (temp_mu_true - temp_mu_fitting) / temp_mu_HIerror;
+            if (median_mu >= temp_mu_fitting) {
+                ToyMCmupull->Fill((median_mu - temp_mu_fitting) / temp_mu_HIerror);
+                mu_pull_roorealvar = (median_mu - temp_mu_fitting) / temp_mu_HIerror;
                 mu_pull_RooDataSet.add(RooArgSet(mu_pull_roorealvar));
             }
             else {
-                ToyMCmupull->Fill((temp_mu_fitting - temp_mu_true) / temp_mu_LOerror);
-                mu_pull_roorealvar = (temp_mu_fitting - temp_mu_true) / temp_mu_LOerror;
+                ToyMCmupull->Fill((temp_mu_fitting - median_mu) / temp_mu_LOerror);
+                mu_pull_roorealvar = (temp_mu_fitting - median_mu) / temp_mu_LOerror;
                 mu_pull_RooDataSet.add(RooArgSet(mu_pull_roorealvar));
             }
         }
