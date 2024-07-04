@@ -3404,9 +3404,6 @@ int main()
     TH1D* CHARM_MC_stat = new TH1D("CHARM_MC_stat", "CHARM_MC_stat", RarityBins, BinMIN, BinMAX);
 
     // additional relative uncertainty
-    TH1D* Signal_MXs1_rel_uncer = new TH1D("Signal_MXs1_rel_uncer", "Signal_MXs1_rel_uncer", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs2_rel_uncer = new TH1D("Signal_MXs2_rel_uncer", "Signal_MXs2_rel_uncer", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs3_rel_uncer = new TH1D("Signal_MXs3_rel_uncer", "Signal_MXs3_rel_uncer", RarityBins, BinMIN, BinMAX);
     TH1D* CHG_rel_uncer = new TH1D("CHG_rel_uncer", "CHG_rel_uncer", RarityBins, BinMIN, BinMAX);
     TH1D* MIX_rel_uncer = new TH1D("MIX_rel_uncer", "MIX_rel_uncer", RarityBins, BinMIN, BinMAX);
     TH1D* UUBAR_rel_uncer = new TH1D("UUBAR_rel_uncer", "UUBAR_rel_uncer", RarityBins, BinMIN, BinMAX);
@@ -4206,9 +4203,6 @@ int main()
     AddSQRTHist(MIX_all_uncorrelated, MIX_Fragmentation_uncorrelated, RarityBins);
 
     // read additional relative uncertainty 
-    GetRelativeError(relative_uncertainty_file, Signal_MXs1_rel_uncer, RarityBins);
-    GetRelativeError(relative_uncertainty_file, Signal_MXs2_rel_uncer, RarityBins);
-    GetRelativeError(relative_uncertainty_file, Signal_MXs3_rel_uncer, RarityBins);
     GetRelativeError(relative_uncertainty_file, CHG_rel_uncer, RarityBins);
     GetRelativeError(relative_uncertainty_file, MIX_rel_uncer, RarityBins);
     GetRelativeError(relative_uncertainty_file, UUBAR_rel_uncer, RarityBins);
@@ -4216,9 +4210,6 @@ int main()
     GetRelativeError(relative_uncertainty_file, SSBAR_rel_uncer, RarityBins);
     GetRelativeError(relative_uncertainty_file, CHARM_rel_uncer, RarityBins);
 
-    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_rel_uncer, RarityBins);
-    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_rel_uncer, RarityBins);
-    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_rel_uncer, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_rel_uncer, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_rel_uncer, RarityBins);
     AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_rel_uncer, RarityBins);
@@ -4978,9 +4969,6 @@ int main()
     SaveSpecificMXsBin(CHARM_MC_stat, MXsBin);
 
     // additional relative uncertainty
-    SaveSpecificMXsBin(Signal_MXs1_rel_uncer, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs2_rel_uncer, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs3_rel_uncer, MXsBin);
     SaveSpecificMXsBin(CHG_rel_uncer, MXsBin);
     SaveSpecificMXsBin(MIX_rel_uncer, MXsBin);
     SaveSpecificMXsBin(UUBAR_rel_uncer, MXsBin);
@@ -5446,9 +5434,6 @@ int main()
     CHARM_MC_stat->Write();
 
     // additional relative uncertainty
-    Signal_MXs1_rel_uncer->Write();
-    Signal_MXs2_rel_uncer->Write();
-    Signal_MXs3_rel_uncer->Write();
     CHG_rel_uncer->Write();
     MIX_rel_uncer->Write();
     UUBAR_rel_uncer->Write();
