@@ -4194,13 +4194,6 @@ int main()
     GetRelativeError(relative_uncertainty_file, SSBAR_rel_uncer, RarityBins);
     GetRelativeError(relative_uncertainty_file, CHARM_rel_uncer, RarityBins);
 
-    AddSQRTHist(CHG_all_uncorrelated, CHG_rel_uncer, RarityBins);
-    AddSQRTHist(MIX_all_uncorrelated, MIX_rel_uncer, RarityBins);
-    AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_rel_uncer, RarityBins);
-    AddSQRTHist(DDBAR_all_uncorrelated, DDBAR_rel_uncer, RarityBins);
-    AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_rel_uncer, RarityBins);
-    AddSQRTHist(CHARM_all_uncorrelated, CHARM_rel_uncer, RarityBins);
-
     // calculate MC statistical uncertainties (relative errors)
     GetMCstatisticalRelativeError(Signal_MXs1_nominal, Signal_MXs1_MC_stat, RarityBins);
     GetMCstatisticalRelativeError(Signal_MXs2_nominal, Signal_MXs2_MC_stat, RarityBins);
