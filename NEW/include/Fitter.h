@@ -110,6 +110,7 @@ typedef struct Options
     bool NEWFEICAL;
     bool BRXnn;
     bool BRDKL0;
+    bool dataMC;
     bool uncorrelated;
 
     int NEntryFEI;
@@ -266,6 +267,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     options_->NEWFEICAL = false;
     options_->BRXnn = false;
     options_->BRDKL0 = false;
+    options_->dataMC = false;
     options_->uncorrelated = false;
 
     if (std::string(tested_param) == std::string("all")) {
@@ -296,6 +298,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
         options_->NEWFEICAL = true;
         options_->BRXnn = true;
         options_->BRDKL0 = true;
+        options_->dataMC = true;
         options_->uncorrelated = true;
     }
     else if (std::string(tested_param) == std::string("none")) {}
@@ -326,6 +329,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     else if (std::string(tested_param) == std::string("NEWFEICAL")) options_->NEWFEICAL = true;
     else if (std::string(tested_param) == std::string("BRXnn")) options_->BRXnn = true;
     else if (std::string(tested_param) == std::string("BtoDtoXKL")) options_->BRDKL0 = true;
+    else if (std::string(tested_param) == std::string("dataMC")) options_->dataMC = true;
     else if (std::string(tested_param) == std::string("uncorrelated")) options_->uncorrelated = true;
     else {
         printf("inappropriate parameter name\n");
@@ -483,6 +487,34 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // B->(D->X KL0) + anything
     if (options_->BRDKL0) w->var("alpha_BtoDtoXKL_uncer")->setConstant(options_->BRDKL0);
+
+    // data MC discrepancy
+    if (options_->dataMC) {
+        for (int i = 0; i < RarityBins_MX1; i++) {
+            w->var(("gamma_CHG_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_MIX_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_UUBAR_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_DDBAR_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_SSBAR_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_CHARM_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+        }
+        for (int i = 0; i < RarityBins_MX2; i++) {
+            w->var(("gamma_CHG_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_MIX_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_UUBAR_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_DDBAR_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_SSBAR_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_CHARM_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+        }
+        for (int i = 0; i < RarityBins_MX3; i++) {
+            w->var(("gamma_CHG_additional_uncorr_uncerMXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_MIX_additional_uncorr_uncerMXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_UUBAR_additional_uncorr_uncerMXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_DDBAR_additional_uncorr_uncerMXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_SSBAR_additional_uncorr_uncerMXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_CHARM_additional_uncorr_uncerMXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+        }
+    }
 
     // save snapshot
     w->saveSnapshot("ParamValues", *params, true);

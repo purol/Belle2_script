@@ -336,6 +336,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	CHG_temp.AddOverallSys(("mu_CHG_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	CHG_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	CHG_temp.ActivateStatError("CHG_all_uncorrelated_MC_stat", fname, "");
+	CHG_temp.AddShapeSys(("CHG_additional_uncorr_uncer" + bin_name).c_str(), RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_rel_uncer", fname, "");
 	CHG_temp.SetNormalizeByTheory(kFALSE);
 	channel->AddSample(CHG_temp);
 	/* ================================ CHG ================================ */
@@ -355,6 +356,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	MIX_temp.AddOverallSys(("mu_MIX_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	MIX_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	MIX_temp.ActivateStatError("MIX_all_uncorrelated_MC_stat", fname, "");
+	MIX_temp.AddShapeSys(("MIX_additional_uncorr_uncer" + bin_name).c_str(), RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_rel_uncer", fname, "");
 	MIX_temp.SetNormalizeByTheory(kFALSE);
 	channel->AddSample(MIX_temp);
 	/* ================================ MIX ================================ */
@@ -370,6 +372,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	//UUBAR_temp.AddOverallSys(("qq_CAL_UUBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	UUBAR_temp.AddOverallSys(("mu_UUBAR_" + bin_name).c_str(), 1.0 - std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
 	UUBAR_temp.ActivateStatError("UUBAR_all_uncorrelated_MC_stat", fname, "");
+	UUBAR_temp.AddShapeSys(("UUBAR_additional_uncorr_uncer" + bin_name).c_str(), RooStats::HistFactory::Constraint::Type::Gaussian, "UUBAR_rel_uncer", fname, "");
 	UUBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel->AddSample(UUBAR_temp);
 	/* ================================ UUBAR ================================ */
@@ -385,6 +388,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	//DDBAR_temp.AddOverallSys(("qq_CAL_DDBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	DDBAR_temp.AddOverallSys(("mu_DDBAR_" + bin_name).c_str(), 1.0 - std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
 	DDBAR_temp.ActivateStatError("DDBAR_all_uncorrelated_MC_stat", fname, "");
+	DDBAR_temp.AddShapeSys(("DDBAR_additional_uncorr_uncer" + bin_name).c_str(), RooStats::HistFactory::Constraint::Type::Gaussian, "DDBAR_rel_uncer", fname, "");
 	DDBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel->AddSample(DDBAR_temp);
 	/* ================================ DDBAR ================================ */
@@ -400,6 +404,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	//SSBAR_temp.AddOverallSys(("qq_CAL_SSBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	SSBAR_temp.AddOverallSys(("mu_SSBAR_" + bin_name).c_str(), 1.0 - std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
 	SSBAR_temp.ActivateStatError("SSBAR_all_uncorrelated_MC_stat", fname, "");
+	SSBAR_temp.AddShapeSys(("SSBAR_additional_uncorr_uncer" + bin_name).c_str(), RooStats::HistFactory::Constraint::Type::Gaussian, "SSBAR_rel_uncer", fname, "");
 	SSBAR_temp.SetNormalizeByTheory(kFALSE);
 	channel->AddSample(SSBAR_temp);
 	/* ================================ SSBAR ================================ */
@@ -415,6 +420,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	//CHARM_temp.AddOverallSys(("qq_CAL_CHARM_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	CHARM_temp.AddOverallSys(("mu_CHARM_" + bin_name).c_str(), 1.0 - std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer), 1.0 + std::sqrt(bkg_norm_relativeuncer * bkg_norm_relativeuncer + qq_CAL_relativeuncer * qq_CAL_relativeuncer));
 	CHARM_temp.ActivateStatError("CHARM_all_uncorrelated_MC_stat", fname, "");
+	CHARM_temp.AddShapeSys(("CHARM_additional_uncorr_uncer" + bin_name).c_str(), RooStats::HistFactory::Constraint::Type::Gaussian, "CHARM_rel_uncer", fname, "");
 	CHARM_temp.SetNormalizeByTheory(kFALSE);
 	channel->AddSample(CHARM_temp);
 	/* ================================ CHARM ================================ */
