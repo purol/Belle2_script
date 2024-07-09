@@ -511,7 +511,7 @@ int WorkSpace() {
 
 	// get MC
 	AddSample(&channel_MXs1, fname_MXs1, 1, expmu, 1.2106, 0.1072, 1.0225, 0.0356, 0.2);
-	AddSample(&channel_MXs2, fname_MXs2, 2, expmu, 0.7653, 0.2375, 1.0646, 0.0787, 0.1);
+	AddSample(&channel_MXs2, fname_MXs2, 2, expmu, 0.7653, 0.2375, 1.0646, 0.0787, 0.2);
 	AddSample(&channel_MXs3, fname_MXs3, 3, expmu, 0.7189, 0.1352, 0.9453, 0.1515, 0.2);
 
 	// add channel to measurement
