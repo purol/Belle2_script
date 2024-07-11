@@ -1170,6 +1170,13 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
     c_temp->SetBottomMargin(0.0);
     c_temp->SaveAs("hist_data_plot.png");
 
+    // print values
+    printf("data:\n");
+    for (int i = 0; i < RarityBins; i++) printf("%lf +- %lf", data_hist->GetBinContent(i + 1), data_hist->GetBinError(i + 1));
+    printf("\nMC:\n");
+    for (int i = 0; i < RarityBins; i++) printf("%lf +- %lf", all_hist->GetBinContent(i + 1), all_hist->GetBinError(i + 1));
+    printf("\n");
+
     // delete
     delete c_temp;
 
