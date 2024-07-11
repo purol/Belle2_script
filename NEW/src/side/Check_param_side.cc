@@ -203,8 +203,8 @@ int main() {
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
     OPTIONS* options = (OPTIONS*)malloc(sizeof(OPTIONS));
-    Initialize_options(options, "none");
-    FixParameters(w, options);
+    //Initialize_options(options, "none");
+    //FixParameters(w, options);
 
     // test
     //RooRealVar* alpha = w->var("nom_gamma_stat_channel_bin_0");
