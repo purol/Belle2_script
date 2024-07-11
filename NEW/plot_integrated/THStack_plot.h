@@ -3432,17 +3432,15 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
 
 }
 
-void PrintDataMCRatio(THStack* MC_stack, TH1D* data_hist, const char* fname = "dataMCratio.txt") {
-
-    TH1D* MC_hist = (TH1D*)MC_stack->GetStack()->Last();
+void PrintDataMCRatio(THStack* MC_stack, TH1D* data_hist, TH1D* ratio_hist, const char* fname = "dataMCratio.txt") {
 
     FILE* fp = fopen(fname, "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { 
-        double correction_factor = 1.0;
-        if (MC_hist->GetBinContent(i + 1) > MyEPSILON) correction_factor = data_hist->GetBinContent(i + 1) / MC_hist->GetBinContent(i + 1);
-        else correction_factor = 1.0;
-        fprintf(fp, "%lf\n", correction_factor);
+        double relative_uncertainty = 1.0;
+        if (ratio_hist->GetBinContent(i + 1) > MyEPSILON) relative_uncertainty = ratio_hist->GetBinError(i + 1) / ratio_hist->GetBinContent(i + 1);
+        else relative_uncertainty = 1.0;
+        fprintf(fp, "%lf\n", relative_uncertainty);
     }
     fclose(fp);
 }

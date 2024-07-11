@@ -628,7 +628,7 @@ void THStack_plot_sideband() {
         c_temp->SaveAs((variable_names.at(k) + "_sideband.png").c_str());
 
         // print data/MC if it is bin-index
-        if (variable_names.at(k) == "bin index") PrintDataMCRatio(Stack[k], data_hist[k], "dataMCratio_sideband.txt");
+        if (variable_names.at(k) == "bin index") PrintDataMCRatio(Stack[k], data_hist[k], Ratio_hist[k], "dataMCratio_sideband.txt");
 
         delete c_temp;
     }
