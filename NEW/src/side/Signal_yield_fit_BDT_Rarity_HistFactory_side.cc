@@ -1256,16 +1256,6 @@ int GetFragmentationcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, 
     double eigen_value = 0; // eigen value
     double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
 
-    FILE* fp;
-    fp = fopen(dirname, "r");
-    while (true) {
-        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-        for (int i = 0; i < RarityBins * 5; i++) {
-            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
-        }
-        Nentry++;
-    }
-    fclose(fp);
 
     *CHG_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
     *MIX_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
@@ -1289,10 +1279,7 @@ int GetFragmentationcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, 
         (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
-    fp = fopen(dirname, "r");
     for (int i = 0; i < Nentry; i++) {
-        fscanf(fp, "%lf\n", &eigen_value);
-        for (int j = 0; j < RarityBins * 5; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
 
         for (int k = 0; k < RarityBins; k++) {
             (*CHG_hists)[i]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
@@ -1309,8 +1296,6 @@ int GetFragmentationcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, 
         }
 
     }
-
-    fclose(fp);
 
     return Nentry;
 }
@@ -2667,9 +2652,9 @@ double ReadWeightHist(TH1D* hist, double value) {
 
 void ReadSignalModelingFile() {
 
-    int Nentry = 0;
-    double RangeMIN = -1;
-    double RangeMAX = -1;
+    int Nentry = 1;
+    double RangeMIN = BinMIN;
+    double RangeMAX = BinMAX;
 
     // Xsu_Hmb
     Xsu_Hmb_weight = new TH1D("Xsu_Hmb_weight", ";;", Nentry, RangeMIN, RangeMAX);
