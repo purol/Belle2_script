@@ -1068,6 +1068,10 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
 
             RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(i).c_str());
             RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(i).c_str());
+            if ((temp_func_scaleFactors == nullptr) || (temp_func_shapes == nullptr)) {
+                printf("[WARNING] cannot find %s or %s. Just skip.\n", scaleFactors_pdf_names.at(i).c_str(), shapes_pdf_names.at(i).c_str());
+                break;
+            }
             double Nevt = (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
 
             int index = -1;
