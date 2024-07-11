@@ -421,6 +421,59 @@ double BDTcToWeight(double BDTc) {
 
 }
 
+double GetDataPDF(const char* dirname, const char* included_string, TH1D* hist, double weight_var = 1.0) { // get data PDF
+
+    float MVA_var = 0;
+
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double Btag_ID = -1;
+
+    double Bsig_M = -1;
+
+    std::vector<string> names;
+    load_files(dirname, &names, included_string);
+
+    double Nevt = 0;
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
+        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_var); // MVA
+
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
+        tree_Bsig->SetBranchAddress("Bsig_M", &Bsig_M);
+
+        printf("%lld entries...\n", tree_upsilon->GetEntries());
+        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
+            tree_upsilon->GetEntry(j);
+            tree_Bsig->GetEntry(j);
+            tree_Btag->GetEntry(j);
+
+            // select B+ --> K+ nu nubar reconstruction only
+            if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
+            else continue;
+
+            double total_weight = weight_var;
+
+            Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
+
+        }
+        input_file->Close();
+
+    }
+    printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
+    return Nevt;
+}
+
 double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, const char* type, const char* sample, PDFtype pdftype, double weight_var = 1.0, std::string CorrectionType = "otherwise", int true_MXs_region = 0) { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
@@ -4249,19 +4302,7 @@ int main()
 
     /* ====================================== */
     // define path for Data
-    const char* DATA_dirname_Knunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
-    const char* DATA_dirname_Kstarnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Kstarnunu";
-    const char* DATA_dirname_Xsununu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Xsnunu";
-    const char* DATA_dirname_K0nunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0nunu";
-    const char* DATA_dirname_K0starnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02K0starnunu";
-    const char* DATA_dirname_Xsdnunu = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B02Xsnunu";
-
-    const char* DATA_dirname_CHG = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHG_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_MIX = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/MIX_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_UUBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/UUBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_DDBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/DDBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_SSBAR = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SSBAR_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
-    const char* DATA_dirname_CHARM = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/CHARM_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge";
+    const char* DATA_dirname = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
     /* ====================================== */
 
 
@@ -4275,19 +4316,7 @@ int main()
 
     /* ====================================== */
     // Save data
-    GetPDFs(DATA_dirname_Knunu, "root", total_DATA, "Bplus", "DATA", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"));
-    GetPDFs(DATA_dirname_Kstarnunu, "root", total_DATA, "Bplus", "DATA", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"));
-    GetPDFs(DATA_dirname_Xsununu, "root", total_DATA, "Bplus", "DATA", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"));
-    GetPDFs(DATA_dirname_K0nunu, "root", total_DATA, "Bzero", "DATA", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"));
-    GetPDFs(DATA_dirname_K0starnunu, "root", total_DATA, "Bzero", "DATA", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"));
-    GetPDFs(DATA_dirname_Xsdnunu, "root", total_DATA, "Bzero", "DATA", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"));
-
-    GetPDFs(DATA_dirname_CHG, "root", total_DATA, "Bplus", "DATA", PDFtype::nominal, 1.0);
-    GetPDFs(DATA_dirname_MIX, "root", total_DATA, "Bzero", "DATA", PDFtype::nominal, 1.0);
-    GetPDFs(DATA_dirname_UUBAR, "root", total_DATA, "Continuum", "DATA", PDFtype::nominal, 1.0);
-    GetPDFs(DATA_dirname_DDBAR, "root", total_DATA, "Continuum", "DATA", PDFtype::nominal, 1.0);
-    GetPDFs(DATA_dirname_SSBAR, "root", total_DATA, "Continuum", "DATA", PDFtype::nominal, 1.0);
-    GetPDFs(DATA_dirname_CHARM, "root", total_DATA, "Continuum", "DATA", PDFtype::nominal, 1.0);
+    GetDataPDF(DATA_dirname, "root", total_DATA, 1.0);
     /* ====================================== */
 
 
