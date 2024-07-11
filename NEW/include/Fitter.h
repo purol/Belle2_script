@@ -1016,6 +1016,14 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
 
 void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
 
+    bool Allchargednull = true;
+    bool Allmixednull = true;
+    bool Alluubarnull = true;
+    bool Allddbarnull = true;
+    bool Allssbarnull = true;
+    bool Allccbarnull = true;
+    bool AllSIGANLnull = true;
+
     THStack* Stack = new THStack("Stack", ";bin index;number of event");
     TH1D* charged_hist = new TH1D("charged", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
     TH1D* mixed_hist = new TH1D("mixed", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
@@ -1072,6 +1080,15 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
                 printf("[WARNING] cannot find %s or %s. Just skip.\n", scaleFactors_pdf_names.at(i).c_str(), shapes_pdf_names.at(i).c_str());
                 break;
             }
+            else {
+                if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "Signal") != nullptr) AllSIGANLnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHG") != nullptr) Allchargednull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "MIX") != nullptr) Allmixednull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "UUBAR") != nullptr) Alluubarnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "DDBAR") != nullptr) Allddbarnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "SSBAR") != nullptr) Allssbarnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHARM") != nullptr) Allccbarnull = false;
+            }
             double Nevt = (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
 
             int index = -1;
@@ -1101,13 +1118,13 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
     }
 
     // fill stack
-    Stack->Add(charged_hist);
-    Stack->Add(mixed_hist);
-    Stack->Add(uubar_hist);
-    Stack->Add(ddbar_hist);
-    Stack->Add(ssbar_hist);
-    Stack->Add(ccbar_hist);
-    Stack->Add(SIGNAL_hist);
+    if (Allchargednull == false) Stack->Add(charged_hist);
+    if (Allmixednull == false) Stack->Add(mixed_hist);
+    if (Alluubarnull == false) Stack->Add(uubar_hist);
+    if (Allddbarnull == false) Stack->Add(ddbar_hist);
+    if (Allssbarnull == false) Stack->Add(ssbar_hist);
+    if (Allccbarnull == false) Stack->Add(ccbar_hist);
+    if (AllSIGANLnull == false) Stack->Add(SIGNAL_hist);
 
     // fill ratio
     Ratio_hist->SetLineColor(kBlack); Ratio_hist->SetMarkerStyle(21); Ratio_hist->Sumw2(); Ratio_hist->SetStats(0);
