@@ -1301,12 +1301,8 @@ int GetFragmentationcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, 
 }
 
 void GetFragmentationUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* Signal_hist_MXs1, TH1D* Signal_hist_MXs2, TH1D* Signal_hist_MXs3) { // get shape sys histogram from txt file
-    FILE* fp;
-    fp = fopen(dirname, "r");
 
     double weight_sys[RarityBins * 5] = { 0.0 };
-    for (int i = 0; i < RarityBins * 5; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
-    fclose(fp);
 
     for (int i = 0; i < RarityBins * 5; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
 
