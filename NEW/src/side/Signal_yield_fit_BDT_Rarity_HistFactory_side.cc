@@ -457,10 +457,6 @@ double GetDataPDF(const char* dirname, const char* included_string, TH1D* hist, 
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            // select B+ --> K+ nu nubar reconstruction only
-            if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
-            else continue;
-
             double total_weight = weight_var;
 
             Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
@@ -2669,6 +2665,56 @@ double ReadWeightHist(TH1D* hist, double value) {
     return hist->GetBinContent(Bin);
 }
 
+void ReadSignalModelingFile() {
+
+    int Nentry = 0;
+    double RangeMIN = -1;
+    double RangeMAX = -1;
+
+    // Xsu_Hmb
+    Xsu_Hmb_weight = new TH1D("Xsu_Hmb_weight", ";;", Nentry, RangeMIN, RangeMAX);
+
+    // Xsu_Lmb_weight
+    Xsu_Lmb_weight = new TH1D("Xsu_Lmb_weight", ";;", Nentry, RangeMIN, RangeMAX);
+
+    // Xsu_Hpf_weight
+    Xsu_Hpf_weight = new TH1D("Xsu_Hpf_weight", ";;", Nentry, RangeMIN, RangeMAX);
+
+    // Xsu_Lpf_weight
+    Xsu_Lpf_weight = new TH1D("Xsu_Lpf_weight", ";;", Nentry, RangeMIN, RangeMAX);
+
+    // Xsu_Htransition_weight
+    Xsu_Htransition_weight = new TH1D("Xsu_Htransition_weight", ";;", Nentry, BinMIN, BinMAX);
+
+    // Xsu_Ltransition_weight
+    Xsu_Ltransition_weight = new TH1D("Xsu_Ltransition_weight", ";;", Nentry, BinMIN, BinMAX);
+
+    // Xsd_Hmb
+    Xsd_Hmb_weight = new TH1D("Xsd_Hmb_weight", ";;", Nentry, RangeMIN, RangeMAX);
+
+    // Xsd_Lmb_weight
+    Xsd_Lmb_weight = new TH1D("Xsd_Lmb_weight", ";;", Nentry, RangeMIN, RangeMAX);
+
+    // Xsd_Hpf_weight
+    Xsd_Hpf_weight = new TH1D("Xsd_Hpf_weight", ";;", Nentry, RangeMIN, RangeMAX);
+
+    // Xsd_Lpf_weight
+    Xsd_Lpf_weight = new TH1D("Xsd_Lpf_weight", ";;", Nentry, RangeMIN, RangeMAX);
+
+    // Xsd_Htransition_weight
+    Xsd_Htransition_weight = new TH1D("Xsd_Htransition_weight", ";;", Nentry, BinMIN, BinMAX);
+
+    // Xsd_Ltransition_weight
+    Xsd_Ltransition_weight = new TH1D("Xsd_Ltransition_weight", ";;", Nentry, BinMIN, BinMAX);
+
+    // Kstar_delta_weight
+    Kstar_delta_weight = new TH1D("Kstar_delta_weight", ";;", Nentry, RangeMIN, RangeMAX);
+
+    // K0star_delta_weight
+    K0star_delta_weight = new TH1D("K0star_delta_weight", ";;", Nentry, RangeMIN, RangeMAX);
+
+}
+
 void ClearHist(TH1D* hist) {
     hist->Reset();
 }
@@ -2835,6 +2881,10 @@ void AddPDFsWithRelativeUncertainty(TH1D* output_hist, TH1D* input_hist, TH1D* o
 
 int main()
 {
+
+    ReadSignalModelingFile();
+
+
 
     /* ====================================== */
     // Define PDFs for HistFactory
