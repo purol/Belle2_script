@@ -1189,9 +1189,9 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
 
     // print values
     printf("data:\n");
-    for (int i = 0; i < RarityBins; i++) printf("%lf +- %lf", data_hist->GetBinContent(i + 1), data_hist->GetBinError(i + 1));
+    for (int i = 0; i < RarityBins; i++) printf("%lf +- %lf\n", data_hist->GetBinContent(i + 1), data_hist->GetBinError(i + 1));
     printf("\nMC:\n");
-    for (int i = 0; i < RarityBins; i++) printf("%lf +- %lf", all_hist->GetBinContent(i + 1), all_hist->GetBinError(i + 1));
+    for (int i = 0; i < RarityBins; i++) printf("%lf +- %lf\n", all_hist->GetBinContent(i + 1), all_hist->GetBinError(i + 1));
     printf("\n");
 
     // delete
