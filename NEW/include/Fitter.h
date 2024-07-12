@@ -490,6 +490,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // data MC discrepancy
     if (options_->dataMC) {
+        /*
         for (int i = 0; i < RarityBins_MX1; i++) {
             w->var(("gamma_CHG_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
             w->var(("gamma_MIX_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
@@ -498,7 +499,6 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
             w->var(("gamma_SSBAR_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
             w->var(("gamma_CHARM_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
         }
-        /*
         for (int i = 0; i < RarityBins_MX2; i++) {
             w->var(("gamma_CHG_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
             w->var(("gamma_MIX_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
