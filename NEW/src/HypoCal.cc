@@ -49,6 +49,7 @@
 
 #include "RooStats/HybridCalculator.h"
 #include "RooStats/FrequentistCalculator.h"
+#include "RooStats/AsymptoticCalculator.h"
 #include "RooStats/HypoTestInverter.h"
 #include "RooStats/HypoTestInverterPlot.h"
 
