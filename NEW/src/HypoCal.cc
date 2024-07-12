@@ -273,9 +273,36 @@ int main(int argc, char* argv[]) { // argv[1]: mu value to test, argv[2]: index,
 		result->Write();
 		file->Close();
 	}
+	else if (std::string(argv[3]) == "asym") {
+		RooStats::AsymptoticCalculator AsymCalc(*data, *bModel, *sbModel);
+		RooStats::ProfileLikelihoodTestStat* plr = new RooStats::ProfileLikelihoodTestStat(*sbModel->GetPdf());
+		plr->SetOneSided(true);
+		plr->SetMinimizer("Minuit2");
+		plr->SetStrategy(1);
+		plr->SetLOffset(true);
+		plr->SetTolerance(eps);
+
+		RooStats::HypoTestInverter inverter(AsymCalc);
+		//inverter.SetConfidenceLevel(0.90);
+		inverter.UseCLs(true);
+		inverter.SetVerbose(false);
+		inverter.SetFixedScan(1, std::stof(argv[1]), std::stof(argv[1])); // set number of points , xmin and xmax
+
+		TStopwatch sw;
+		sw.Start();
+
+		RooStats::HypoTestInverterResult* result = inverter.GetInterval();
+
+		sw.Stop();
+		printf("consumed time: %lf (s)\n", sw.RealTime());
+
+		TFile* file = new TFile(("Hypotestinverter_asym_" + std::string(argv[1]) + "_" + std::string(argv[2]) + ".root").c_str(), "RECREATE");
+		result->Write();
+		file->Close();
+	}
 	else {
 		printf("improper calculator type!\n");
-		printf("usage: HypoCal {mu} {index} {freq|hyb}\n");
+		printf("usage: HypoCal {mu} {index} {freq|hyb|asym}\n");
 		exit(1);
 	}
 
