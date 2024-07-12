@@ -10,6 +10,8 @@
 #include "TIterator.h"
 #include "TH3.h"
 #include "TLatex.h"
+#include "TFile.h"
+#include "TTree.h"
 
 #include "RooChi2Var.h"
 #include "RooAbsData.h"
