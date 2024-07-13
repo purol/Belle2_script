@@ -478,6 +478,177 @@ double DoNotSetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, do
 
 }
 
+std::vector<double> GetPoissonError(RooWorkspace* w) {
+    std::vector<double> Nevts;
+    std::vector<double> errors;
+
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+
+    {
+        RooAbsBinning const& binning = x_val_MXs1->getBinning();
+        const double oldVal = x_val_MXs1->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double Nevt = 0.0;
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs1 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs1") == nullptr) continue; // skip non-MXs1
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+            }
+            Nevts.push_back(Nevt);
+        }
+
+        *x_val_MXs1 = oldVal;
+    }
+
+    {
+        RooAbsBinning const& binning = x_val_MXs2->getBinning();
+        const double oldVal = x_val_MXs2->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double Nevt = 0.0;
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs2 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs2") == nullptr) continue; // skip non-MXs2
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+            }
+            Nevts.push_back(Nevt);
+        }
+
+        *x_val_MXs2 = oldVal;
+    }
+
+    {
+        RooAbsBinning const& binning = x_val_MXs3->getBinning();
+        const double oldVal = x_val_MXs3->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double Nevt = 0.0;
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs3 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs3") == nullptr) continue; // skip non-MXs3
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+            }
+            Nevts.push_back(Nevt);
+        }
+
+        *x_val_MXs3 = oldVal;
+    }
+
+    // get poisson fluctuation
+    for (int i = 0; i < Nevts.size(); i++) {
+        std::poisson_distribution<int> distribution((int) floor(Nevts.at(i) + 0.5));
+        errors.push_back((double)(distribution(generator) - (int)floor(Nevts.at(i) + 0.5)));
+    }
+
+    return errors;
+}
+
+std::vector<double> GetNevts(RooWorkspace* w) {
+    std::vector<double> Nevts;
+
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+
+    {
+        RooAbsBinning const& binning = x_val_MXs1->getBinning();
+        const double oldVal = x_val_MXs1->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double Nevt = 0.0;
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs1 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs1") == nullptr) continue; // skip non-MXs1
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+            }
+            Nevts.push_back(Nevt);
+        }
+
+        *x_val_MXs1 = oldVal;
+    }
+
+    {
+        RooAbsBinning const& binning = x_val_MXs2->getBinning();
+        const double oldVal = x_val_MXs2->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double Nevt = 0.0;
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs2 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs2") == nullptr) continue; // skip non-MXs2
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+            }
+            Nevts.push_back(Nevt);
+        }
+
+        *x_val_MXs2 = oldVal;
+    }
+
+    {
+        RooAbsBinning const& binning = x_val_MXs3->getBinning();
+        const double oldVal = x_val_MXs3->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double Nevt = 0.0;
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs3 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs3") == nullptr) continue; // skip non-MXs3
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+            }
+            Nevts.push_back(Nevt);
+        }
+
+        *x_val_MXs3 = oldVal;
+    }
+
+    return Nevts;
+}
+
 void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, int indicator = 0){
 
         ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
@@ -510,6 +681,75 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
             delete fitres;
 
         }
+}
+
+void MyToyMCRCStudy(RooWorkspace* w, std::vector<std::string>* names, double eps, int indicator = 0) {
+    // based on Makus-san's comment, get Poisson fluctuation first, then fluctuate nuisance parameters
+
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+    RooCategory* channelCat = (RooCategory*)(&model->indexCat());
+
+    for (int i = 0; i < Toy_iter_num; i++) { // Do Toy MC study
+
+        // get poisson error with nominal configuration
+        w->loadSnapshot("ParamValues");
+        std::vector<double> PoissonError = GetPoissonError(w);
+
+        double Nevt_total = SetParamsForToy(w, names, 1.0);
+        std::vector<double> Nevts = GetNevts(w);
+
+        filesaver.GetTrueValues(w, names);
+
+        // generate RooDataSet
+        w->loadSnapshot("ParamValues");
+        RooDataSet* genData = new RooDataSet("DataSet", "", RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat));
+        for (int j = 0; j < RarityBins_MX1; j++) {
+            // channel 1
+            x_val_MXs1->setVal(0.5 + j);
+            x_val_MXs2->setVal(0.5);
+            x_val_MXs3->setVal(0.5);
+            channelCat->setLabel("channel_MXs1");
+            genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nevts.at(j) + PoissonError.at(j));
+        }
+        for (int j = 0; j < RarityBins_MX2; j++) {
+            // channel 2
+            x_val_MXs1->setVal(RarityBins_MX1 - 0.5);
+            x_val_MXs2->setVal(0.5 + j);
+            x_val_MXs3->setVal(0.5);
+            channelCat->setLabel("channel_MXs2");
+            genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nevts.at(j + RarityBins_MX1) + PoissonError.at(j + RarityBins_MX1));
+        }
+        for (int j = 0; j < RarityBins_MX3; j++) {
+            // channel 2
+            x_val_MXs1->setVal(RarityBins_MX1 - 0.5);
+            x_val_MXs2->setVal(RarityBins_MX2 - 0.5);
+            x_val_MXs3->setVal(0.5 + j);
+            channelCat->setLabel("channel_MXs3");
+            genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nevts.at(j + RarityBins_MX1 + RarityBins_MX2) + PoissonError.at(j + RarityBins_MX1 + RarityBins_MX2));
+        }
+
+        w->loadSnapshot("ParamValues");
+        //RooFitResult* fitres = model->fitTo(*genData, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
+        RooAbsReal* nll;
+        RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
+
+        delete genData;
+
+        if (MyDEBUG) Debug(w, fitres, genData);
+
+        filesaver.GetFittingValues(fitres, names);
+        filesaver.GetFittingStatus(fitres);
+        filesaver.WriteIntoBranch();
+
+        delete fitres;
+
+    }
 }
 
 void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu_injected, double eps, int indicator = 0) {
@@ -695,7 +935,7 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::string> param_names;
     
-    if (std::string(argv[1]) == std::string("ToyMC")) {  // main ToyMC
+    if ((std::string(argv[1]) == std::string("ToyMC")) || (std::string(argv[1]) == std::string("ToyMCRC"))) {  // main ToyMC|ToyMCRC
         if (argc == 5) {
             injected_mu = -1;
             eps = std::atof(argv[2]);
@@ -703,7 +943,7 @@ int main(int argc, char* argv[]) {
             Toy_iter_num = std::atoi(argv[4]);
         }
         else {
-            printf("Toy MC requires 4 arguments {eps} {indicator} {Num of sample}\n");
+            printf("Toy MC(RC) requires 4 arguments {eps} {indicator} {Num of sample}\n");
             exit(1);
         }
     }
@@ -733,7 +973,7 @@ int main(int argc, char* argv[]) {
         }
     }
     else {
-        printf("first argument should be {ToyMC|LinearityTest|nuisance}\n");
+        printf("first argument should be {ToyMC|LinearityTest|nuisance|ToyMCRC}\n");
         exit(1);
     }
 
@@ -745,7 +985,7 @@ int main(int argc, char* argv[]) {
 
     RooWorkspace* w = (RooWorkspace*)f->Get("combined");
 
-    if (std::string(argv[1]) == std::string("ToyMC")) {
+    if ((std::string(argv[1]) == std::string("ToyMC")) || (std::string(argv[1]) == std::string("ToyMCRC"))) {
         ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
         RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
@@ -784,6 +1024,10 @@ int main(int argc, char* argv[]) {
     if (std::string(argv[1]) == std::string("ToyMC")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
         MyToyMCStudy(w, &param_names, eps, indicator);
+    }
+    else if (std::string(argv[1]) == std::string("ToyMCRC")) {
+        filesaver.OpenFile(true, &param_names, injected_mu, indicator);
+        MyToyMCRCStudy(w, &param_names, eps, indicator);
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) {
         filesaver.OpenFile(false, &param_names, injected_mu, indicator);
