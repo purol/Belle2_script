@@ -694,6 +694,7 @@ void MyToyMCRCStudy(RooWorkspace* w, std::vector<std::string>* names, double eps
     RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
     RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
     RooCategory* channelCat = (RooCategory*)(&model->indexCat());
+    RooRealVar* weight_ = new RooRealVar("weight_", "", 0.0, 1000.0);
 
     for (int i = 0; i < Toy_iter_num; i++) { // Do Toy MC study
 
@@ -708,7 +709,7 @@ void MyToyMCRCStudy(RooWorkspace* w, std::vector<std::string>* names, double eps
 
         // generate RooDataSet
         w->loadSnapshot("ParamValues");
-        RooDataSet* genData = new RooDataSet("hmaster", "hmaster", RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat));
+        RooDataSet* genData = new RooDataSet("hmaster", "hmaster", RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat, *weight_), weight_->GetName());
         for (int j = 0; j < RarityBins_MX1; j++) {
             // channel 1
             x_val_MXs1->setVal(0.5 + j);
