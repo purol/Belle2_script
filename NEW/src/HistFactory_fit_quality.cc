@@ -708,7 +708,7 @@ void MyToyMCRCStudy(RooWorkspace* w, std::vector<std::string>* names, double eps
 
         // generate RooDataSet
         w->loadSnapshot("ParamValues");
-        RooDataSet* genData = new RooDataSet("DataSet", "", RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat));
+        RooDataSet* genData = new RooDataSet("hmaster", "hmaster", RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat));
         for (int j = 0; j < RarityBins_MX1; j++) {
             // channel 1
             x_val_MXs1->setVal(0.5 + j);
