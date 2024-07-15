@@ -181,6 +181,7 @@ int main(int argc, char* argv[]) {
 				RooStats::HypoTestInverterResult* result_temp = (RooStats::HypoTestInverterResult*)file->Get("result_mu_MXs1");
 				result->Add(*result_temp);
 			}
+			file->Close();
 		}
 
 		// print result
