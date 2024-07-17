@@ -855,19 +855,23 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
                 total_weight = total_weight * pf_correction;
             }
             else if (pdftype == PDFtype::TransitionXsuUP) {
-                double Transition_correction = ReadWeightHist(Xsu_Htransition_weight, MVA_var);
+                double bin_index = ReturnBinIndex(MVA_var, Bsig_M);
+                double Transition_correction = ReadWeightHist(Xsu_Htransition_weight, bin_index);
                 total_weight = total_weight * Transition_correction;
             }
             else if (pdftype == PDFtype::TransitionXsuDOWN) {
-                double Transition_correction = ReadWeightHist(Xsu_Ltransition_weight, MVA_var);
+                double bin_index = ReturnBinIndex(MVA_var, Bsig_M);
+                double Transition_correction = ReadWeightHist(Xsu_Ltransition_weight, bin_index);
                 total_weight = total_weight * Transition_correction;
             }
             else if (pdftype == PDFtype::TransitionXsdUP) {
-                double Transition_correction = ReadWeightHist(Xsd_Htransition_weight, MVA_var);
+                double bin_index = ReturnBinIndex(MVA_var, Bsig_M);
+                double Transition_correction = ReadWeightHist(Xsd_Htransition_weight, bin_index);
                 total_weight = total_weight * Transition_correction;
             }
             else if (pdftype == PDFtype::TransitionXsdDOWN) {
-                double Transition_correction = ReadWeightHist(Xsd_Ltransition_weight, MVA_var);
+                double bin_index = ReturnBinIndex(MVA_var, Bsig_M);
+                double Transition_correction = ReadWeightHist(Xsd_Ltransition_weight, bin_index);
                 total_weight = total_weight * Transition_correction;
             }
             else if (pdftype == PDFtype::KstardeltaKstarplus) {
