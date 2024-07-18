@@ -2705,7 +2705,10 @@ double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double M
         double TotalNevtAtMxsBinWithMissing = Total_Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin] + Nevt_Nominal_missing_before_Xsgamma_MC15[TargetMxsBin];
         double TargetNevtAtMxsBin;
         if (TargetCategory == N_Category_gamma) TargetNevtAtMxsBin = Nevt_Nominal_missing_before_Xsgamma_MC15[TargetMxsBin]; // if it is missing mode
-        else TargetNevtAtMxsBin = Total_Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin] * (Fragmentation_Xsgamma[TargetMxsBin][TargetCategory] * 0.01);
+        else {
+            if ((TargetMxsBin != 0) && (TargetMxsBin != (N_Bin_gamma - 1))) TargetNevtAtMxsBin = Total_Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin] * (Fragmentation_Xsgamma[TargetMxsBin][TargetCategory] * 0.01); // if target MXsbin is within [1.15, 2.4], there is fragmentation data from Xs J/psi analysis
+            else TargetNevtAtMxsBin = Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin][TargetCategory]; // otherwise, we just use MC fragmentation
+        }
         double TotalNevtAtMxsBinWithMissingWithoutTargetCategory = TotalNevtAtMxsBinWithMissing - TargetNevtAtMxsBin;
 
         if (Category == TargetCategory) { // it is target category

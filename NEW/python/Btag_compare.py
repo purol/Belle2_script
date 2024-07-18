@@ -9,7 +9,7 @@ def plot_and_save_data(x, y1, yerr1, y2, yerr2, filename, y1_label, y2_label, ti
     trans1 = ax.transData + ScaledTranslation(-5/72, 0, fig.dpi_scale_trans)
     trans2 = ax.transData + ScaledTranslation(+5/72, 0, fig.dpi_scale_trans)
     er1 = ax.errorbar(x, y1, yerr=yerr1, marker="o", linestyle="none", transform=trans1, label=y1_label)
-    er2 = ax.errorbar(x, y2, yerr=yerr2, marker="o", linestyle="none", transform=trans2, label=y2_label)
+    er2 = ax.errorbar(x, y2, yerr=yerr2, marker="v", linestyle="none", transform=trans2, label=y2_label)
 
     # Rotate the x-axis labels by 45 degrees
     ax.set_xticks(x)
@@ -46,8 +46,8 @@ x = [r'$\bar{D}^{0}\pi^{+}$', \
      r'$\bar{D}^{0*}\pi^{+}\pi^{0}$', \
      r'$\bar{D}^{0*}\pi^{+}\pi^{+}\pi^{-}$', \
      r'$\bar{D}^{0*}\pi^{+}\pi^{+}\pi^{-}\pi^{0}$', \
-     r'$\bar{D}^{-}\pi^{+}\pi^{+}$', \
-     r'$\bar{D}^{-}\pi^{+}\pi^{+}\pi^{0}$', \
+     r'$D^{-}\pi^{+}\pi^{+}$', \
+     r'$D^{-}\pi^{+}\pi^{+}\pi^{0}$', \
      r'$\Lambda_{c}^{-}p\pi^{+}\pi^{-}\pi^{+}$', \
      'rest']
 
