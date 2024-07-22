@@ -80,7 +80,7 @@ TH1D* Nevt_data_Bzero_My = new TH1D("Nevt_data_Bzero_My", "Nevt_data_Bzero_My", 
 TH1D* ratio_Bplus_My = new TH1D("ratio_Bplus_My", "ratio_Bplus_My", 3, 0, 3);
 TH1D* ratio_Bzero_My = new TH1D("ratio_Bzero_My", "ratio_Bzero_My", 1, 0, 1);
 
-void LetsFillKonlyMC(const char* dirname, std::string SampleName, int option = 0, double additional_weight = 1.0) {
+void LetsFillKonlyMC(const char* dirname, std::string SampleName, int option = 0, double additional_weight = 1.0, bool IncludeKstar = false) {
     /*
     SampleName for Knn
     CHG
@@ -259,9 +259,16 @@ void LetsFillKonlyMC(const char* dirname, std::string SampleName, int option = 0
             tree_Btag->GetEntry(j);
             if (SampleName == "SIGNAL") tree_Xs->GetEntry(j);
 
-            // select B->K Jpsi only
-            if ((Bsig_ID > -0.5) && (Bsig_ID < 0.5)) {}
-            else continue;
+            if (IncludeKstar == false) {
+                // select B->K Jpsi only
+                if ((Bsig_ID > -0.5) && (Bsig_ID < 0.5)) {}
+                else continue;
+            }
+            else {
+                // select B->k(*) Jpsi only
+                if ((Bsig_ID > -0.5) && (Bsig_ID < 2.5) && (Bsig_M < 1.0)) {}
+                else continue;
+            }
 
             if (option == 1 && Upsilon_ID != 0) continue;
             else if (option == 2 && Upsilon_ID != 1) continue;
@@ -429,7 +436,7 @@ void LetsFillKonlyMC(const char* dirname, std::string SampleName, int option = 0
 
 }
 
-void LetsFillKonlydata(const char* dirname, const char* included_string = "root", int option = 0) {
+void LetsFillKonlydata(const char* dirname, const char* included_string = "root", int option = 0, , bool IncludeKstar = false) {
     /*
     option 0: select all Btag
     option 1: select Btag+
@@ -464,9 +471,16 @@ void LetsFillKonlydata(const char* dirname, const char* included_string = "root"
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            // select B->K Jpsi only
-            if ((Bsig_ID > -0.5) && (Bsig_ID < 0.5)) {}
-            else continue;
+            if (IncludeKstar == false) {
+                // select B->K Jpsi only
+                if ((Bsig_ID > -0.5) && (Bsig_ID < 0.5)) {}
+                else continue;
+            }
+            else {
+                // select B->k(*) Jpsi only
+                if ((Bsig_ID > -0.5) && (Bsig_ID < 2.5) && (Bsig_M < 1.0)) {}
+                else continue;
+            }
 
             if (option == 1 && Upsilon_ID != 0) continue;
             else if (option == 2 && Upsilon_ID != 1) continue;
