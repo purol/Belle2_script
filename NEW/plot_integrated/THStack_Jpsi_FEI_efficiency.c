@@ -436,7 +436,7 @@ void LetsFillKonlyMC(const char* dirname, std::string SampleName, int option = 0
 
 }
 
-void LetsFillKonlydata(const char* dirname, const char* included_string = "root", int option = 0, , bool IncludeKstar = false) {
+void LetsFillKonlydata(const char* dirname, const char* included_string = "root", int option = 0, bool IncludeKstar = false) {
     /*
     option 0: select all Btag
     option 1: select Btag+
