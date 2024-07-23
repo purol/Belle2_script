@@ -3780,33 +3780,108 @@ int main()
     }
 
     // get fraction uncertainty PDFs
-    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_Kfrac_p, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar + Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu", 1);
+    for (int i = 0; i < 7; i++) {
+        if (Correction_factor_BR_Kplus[i] < MyEPSILON) {
+            printf("Correction_factor_BR_Kplus is equal to zero. Maybe you forgot to initialize it.\n");
+            exit(1);
+        }
+    }
+    double Positive_relative_uncertainty_BR_Kplus[3] = { 0.0 };
+    double Negative_relative_uncertainty_BR_Kplus[3] = { 0.0 };
+    if ((Correction_factor_BR_Kplus[1] > 1.0) && (Correction_factor_BR_Kplus[2] < 1.0)) {
+        Positive_relative_uncertainty_BR_Kplus[0] = Correction_factor_BR_Kplus[1] - 1.0;
+        Negative_relative_uncertainty_BR_Kplus[0] = 1.0 - Correction_factor_BR_Kplus[2];
+    }
+    else if ((Correction_factor_BR_Kplus[1] < 1.0) && (Correction_factor_BR_Kplus[2] > 1.0)) {
+        Positive_relative_uncertainty_BR_Kplus[0] = 1.0 - Correction_factor_BR_Kplus[1];
+        Negative_relative_uncertainty_BR_Kplus[0] = Correction_factor_BR_Kplus[2] - 1.0;
+    }
+    else {
+        printf("Correction_factor_BR_Kplus[1]: %lf\n", Correction_factor_BR_Kplus[1]);
+        printf("Correction_factor_BR_Kplus[2]: %lf\n", Correction_factor_BR_Kplus[2]);
+        printf("one should be larger than 1.0 and the other should be smaller than 1.0");
+        exit(1);
+    }
+    if ((Correction_factor_BR_Kplus[3] > 1.0) && (Correction_factor_BR_Kplus[4] < 1.0)) {
+        Positive_relative_uncertainty_BR_Kplus[1] = Correction_factor_BR_Kplus[3] - 1.0;
+        Negative_relative_uncertainty_BR_Kplus[1] = 1.0 - Correction_factor_BR_Kplus[4];
+    }
+    else if ((Correction_factor_BR_Kplus[3] < 1.0) && (Correction_factor_BR_Kplus[4] > 1.0)) {
+        Positive_relative_uncertainty_BR_Kplus[1] = 1.0 - Correction_factor_BR_Kplus[3];
+        Negative_relative_uncertainty_BR_Kplus[1] = Correction_factor_BR_Kplus[4] - 1.0;
+    }
+    else {
+        printf("Correction_factor_BR_Kplus[3]: %lf\n", Correction_factor_BR_Kplus[3]);
+        printf("Correction_factor_BR_Kplus[4]: %lf\n", Correction_factor_BR_Kplus[4]);
+        printf("one should be larger than 1.0 and the other should be smaller than 1.0");
+        exit(1);
+    }
+    if ((Correction_factor_BR_Kplus[5] > 1.0) && (Correction_factor_BR_Kplus[6] < 1.0)) {
+        Positive_relative_uncertainty_BR_Kplus[2] = Correction_factor_BR_Kplus[5] - 1.0;
+        Negative_relative_uncertainty_BR_Kplus[2] = 1.0 - Correction_factor_BR_Kplus[6];
+    }
+    else if ((Correction_factor_BR_Kplus[5] < 1.0) && (Correction_factor_BR_Kplus[6] > 1.0)) {
+        Positive_relative_uncertainty_BR_Kplus[2] = 1.0 - Correction_factor_BR_Kplus[5];
+        Negative_relative_uncertainty_BR_Kplus[2] = Correction_factor_BR_Kplus[6] - 1.0;
+    }
+    else {
+        printf("Correction_factor_BR_Kplus[5]: %lf\n", Correction_factor_BR_Kplus[5]);
+        printf("Correction_factor_BR_Kplus[6]: %lf\n", Correction_factor_BR_Kplus[6]);
+        printf("one should be larger than 1.0 and the other should be smaller than 1.0");
+        exit(1);
+    }
+    double total_relative_uncertainty_BR_Kplus = Sigma_BR_Kplus_nunubar / BR_Kplus_nunubar;
+    double total_parameter_positive_relative_uncertainty_BR_Kplus = std::sqrt(
+        total_relative_uncertainty_BR_Kplus * total_relative_uncertainty_BR_Kplus
+        - Positive_relative_uncertainty_BR_Kplus[0] * Positive_relative_uncertainty_BR_Kplus[0]
+        - Positive_relative_uncertainty_BR_Kplus[1] * Positive_relative_uncertainty_BR_Kplus[1]
+        - Positive_relative_uncertainty_BR_Kplus[2] * Positive_relative_uncertainty_BR_Kplus[2]
+    );
+    double total_parameter_negative_relative_uncertainty_BR_Kplus = std::sqrt(
+        total_relative_uncertainty_BR_Kplus * total_relative_uncertainty_BR_Kplus
+        - Negative_relative_uncertainty_BR_Kplus[0] * Negative_relative_uncertainty_BR_Kplus[0]
+        - Negative_relative_uncertainty_BR_Kplus[1] * Negative_relative_uncertainty_BR_Kplus[1]
+        - Negative_relative_uncertainty_BR_Kplus[2] * Negative_relative_uncertainty_BR_Kplus[2]
+    );
+    printf("total relative uncertainty: %lf\n", total_relative_uncertainty_BR_Kplus);
+    printf("total positive parameter relative uncertainty: %lf\n", total_parameter_positive_relative_uncertainty_BR_Kplus);
+    printf("total negative parameter relative uncertainty: %lf\n", total_parameter_negative_relative_uncertainty_BR_Kplus);
+    if ((total_parameter_positive_relative_uncertainty_BR_Kplus < 0) || (total_parameter_negative_relative_uncertainty_BR_Kplus < 0)) {
+        printf("total parameter relative uncertainy is negative\n");
+        exit(1);
+    }
+    double Sigma_BR_Kplus_nunubar_parameter_positive = BR_Kplus_nunubar * total_parameter_positive_relative_uncertainty_BR_Kplus;
+    double Sigma_BR_Kplus_nunubar_parameter_negative = BR_Kplus_nunubar * total_parameter_negative_relative_uncertainty_BR_Kplus;
+    double Sigma_BR_K0_nunubar_parameter_positive = BR_K0_nunubar * total_parameter_positive_relative_uncertainty_BR_Kplus;
+    double Sigma_BR_K0_nunubar_parameter_negative = BR_K0_nunubar * total_parameter_negative_relative_uncertainty_BR_Kplus;
+
+    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_Kfrac_p, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar + Sigma_BR_Kplus_nunubar_parameter_positive) / BR_Kplus_nunubar), "B2Knunu", 1);
     GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_Kfrac_p, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_Kfrac_p, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_Kfrac_p, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar + Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_Kfrac_p, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplus_nunubar_parameter_positive) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_Kfrac_p, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar + Sigma_BR_K0_nunubar_parameter_positive) / BR_K0_nunubar), "B02K0nunu", 1);
     GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_Kfrac_p, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_Kfrac_p, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_Kfrac_p, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0_nunubar_parameter_positive) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 1);
 
-    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_Kfrac_m, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar - Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_Kfrac_m, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar - Sigma_BR_Kplus_nunubar_parameter_negative) / BR_Kplus_nunubar), "B2Knunu", 1);
     GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_Kfrac_m, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_Kfrac_m, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_Kfrac_m, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar - Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_Kfrac_m, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplus_nunubar_parameter_negative) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_Kfrac_m, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar - Sigma_BR_K0_nunubar_parameter_negative) / BR_K0_nunubar), "B02K0nunu", 1);
     GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_Kfrac_m, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_Kfrac_m, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_Kfrac_m, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0_nunubar_parameter_negative) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 1);
 
-    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kfrac_p, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar + Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kfrac_p, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar + Sigma_BR_Kplus_nunubar_parameter_positive) / BR_Kplus_nunubar), "B2Knunu", 3);
     GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kfrac_p, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kfrac_p, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kfrac_p, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar + Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kfrac_p, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar - Sigma_BR_Kplus_nunubar_parameter_positive) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kfrac_p, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar + Sigma_BR_K0_nunubar_parameter_positive) / BR_K0_nunubar), "B02K0nunu", 3);
     GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kfrac_p, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kfrac_p, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kfrac_p, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar - Sigma_BR_K0_nunubar_parameter_positive) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 3);
 
-    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kfrac_m, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar - Sigma_BR_Kplus_nunubar) / BR_Kplus_nunubar), "B2Knunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_Kfrac_m, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu") * ((BR_Kplus_nunubar - Sigma_BR_Kplus_nunubar_parameter_negative) / BR_Kplus_nunubar), "B2Knunu", 3);
     GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_Kfrac_m, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kfrac_m, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplus_nunubar) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kfrac_m, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar - Sigma_BR_K0_nunubar) / BR_K0_nunubar), "B02K0nunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_Kfrac_m, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu") * ((BR_Xsu_nonresonant_nunubar + Sigma_BR_Kplus_nunubar_parameter_negative) / BR_Xsu_nonresonant_nunubar), "B2Xsnunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_Kfrac_m, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu") * ((BR_K0_nunubar - Sigma_BR_K0_nunubar_parameter_negative) / BR_K0_nunubar), "B02K0nunu", 3);
     GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_Kfrac_m, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kfrac_m, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0_nunubar) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_Kfrac_m, "Bzero", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu") * ((BR_Xsd_nonresonant_nunubar + Sigma_BR_K0_nunubar_parameter_negative) / BR_Xsd_nonresonant_nunubar), "B02Xsnunu", 3);
 
     GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_Kstarfrac_p, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
     GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_Kstarfrac_p, "Bplus", "SIGNAL", PDFtype::nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu") * ((BR_Kplusstar_nunubar + Sigma_BR_Kplusstar_nunubar) / BR_Kplusstar_nunubar), "otherwise", 2);
