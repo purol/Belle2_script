@@ -363,12 +363,12 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->FEI) for (int i = 0; i < options_->NEntryFEI; i++) w->var(("alpha_FEI" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->FEI);
 
     // qqbar normalization
-    //if (options_->qqbar) {
-    //    w->var("alpha_qq_CAL_UUBAR_uncer")->setConstant(options_->qqbar);
-    //    w->var("alpha_qq_CAL_DDBAR_uncer")->setConstant(options_->qqbar);
-    //    w->var("alpha_qq_CAL_SSBAR_uncer")->setConstant(options_->qqbar);
-    //    w->var("alpha_qq_CAL_CHARM_uncer")->setConstant(options_->qqbar);
-    //}
+    if (options_->qqbar) {
+        w->var("alpha_qq_CAL_UUBAR_uncer")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_DDBAR_uncer")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_SSBAR_uncer")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_CHARM_uncer")->setConstant(options_->qqbar);
+    }
 
     // photon multiplicity correction
     if (options_->multiplicity) for (int i = 0; i < options_->NEntryMultiplicity; i++) w->var(("alpha_multiplicity" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->multiplicity);
