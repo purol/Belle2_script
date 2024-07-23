@@ -1654,7 +1654,7 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
 
             // select the specific true MXs region
             // sanity check
-            if ((m_k > 0.0) && (m_k < 2.0)) {}
+            if ((m_k > 0.0) && (m_k < 6.0)) {}
             else { // mass is NaN. try to find true mass region by file name
                 if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) m_k = 0.4868;
                 else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) m_k = 0.8916;
@@ -1675,7 +1675,7 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
                 else continue;
             }
             else if (true_MXs_region == 3) {
-                if ((m_k > 1.0) && (m_k < 2.0)) {}
+                if (m_k > 1.0) {}
                 else continue;
             }
 
@@ -2040,7 +2040,7 @@ double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hi
 
             // select the specific true MXs region
             // sanity check
-            if ((m_k > 0.0) && (m_k < 2.0)) {}
+            if ((m_k > 0.0) && (m_k < 6.0)) {}
             else { // mass is NaN. try to find true mass region by file name
                 if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) m_k = 0.4868;
                 else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) m_k = 0.8916;
@@ -2061,7 +2061,7 @@ double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hi
                 else continue;
             }
             else if (true_MXs_region == 3) {
-                if ((m_k > 1.0) && (m_k < 2.0)) {}
+                if (m_k > 1.0) {}
                 else continue;
             }
 
