@@ -153,25 +153,6 @@ int ReadMultiplicityInfo(const char* dirname) {
 	return Nentry;
 }
 
-int ReadNFragmentationEigenVector(const char* dirname) {
-	int Nentry = 0; // number of eigen values/vectors
-	double eigen_value = 0; // eigen value
-	double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
-
-	FILE* fp;
-	fp = fopen(dirname, "r");
-	while (true) {
-		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-		for (int i = 0; i < RarityBins * 5; i++) {
-			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
-		}
-		Nentry++;
-	}
-	fclose(fp);
-
-	return Nentry;
-}
-
 bool IsThereAnyChange(const char* fname, const char* nominal_hist_name, const char* hist_m_name, const char* hist_p_name) {
 	TFile* file = new TFile(fname);
 	file->cd();
@@ -217,7 +198,6 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	int NEntryBR = ReadNBREigenVector("./BR_selected.txt");
 	int NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
 	int NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
-	int NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
 
 	std::string bin_name = "";
 	if (MXs_bin == 1) bin_name = std::string("MXs1");
@@ -319,7 +299,17 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_Kstarff9_m", "Signal_MXs3_Kstarff9_p")) sig_temp_MXs3.AddHistoSys("Kstarff9_uncer", "Signal_MXs3_Kstarff9_m", fname, "", "Signal_MXs3_Kstarff9_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_Kfrac_m", "Signal_MXs3_Kfrac_p")) sig_temp_MXs3.AddHistoSys("Kfrac_uncer", "Signal_MXs3_Kfrac_m", fname, "", "Signal_MXs3_Kfrac_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_Kstarfrac_m", "Signal_MXs3_Kstarfrac_p")) sig_temp_MXs3.AddHistoSys("Kstarfrac_uncer", "Signal_MXs3_Kstarfrac_m", fname, "", "Signal_MXs3_Kstarfrac_p", fname, "");
-	for (int i = 0; i < NEntryFragmentation; i++) if (IsThereAnyChange(fname, "Signal_MXs3_nominal", ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs3.AddHistoSys(("Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	for (int MxsBin = 0; MxsBin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); MxsBin++) {
+		for (int Category = 0; Category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); Category++) {
+			std::string fragmentation_plus_name = std::string("Signal_MXs3_Xs_frag_decay_") + std::to_string(MxsBin) + std::string("_") + std::to_string(Category) + std::string("_p");
+			std::string fragmentation_minus_name = std::string("Signal_MXs3_Xs_frag_decay_") + std::to_string(MxsBin) + std::string("_") + std::to_string(Category) + std::string("_m");
+			if (IsThereAnyChange(fname, "Signal_MXs3_nominal", fragmentation_minus_name.c_str(), fragmentation_plus_name.c_str())) {
+				int temp_index = MxsBin * corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma) + Category;
+				std::string uncertainty_name = "Xs_fragmentation" + std::to_string(temp_index) + "_uncer";
+				sig_temp_MXs3.AddHistoSys(uncertainty_name.c_str(), fragmentation_minus_name.c_str(), fname, "", fragmentation_plus_name.c_str(), fname, "");
+			}
+		}
+	}
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_pf_m", "Signal_MXs3_pf_p")) sig_temp_MXs3.AddHistoSys("pf_uncer", "Signal_MXs3_pf_m", fname, "", "Signal_MXs3_pf_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_mb_m", "Signal_MXs3_mb_p")) sig_temp_MXs3.AddHistoSys("mb_uncer", "Signal_MXs3_mb_m", fname, "", "Signal_MXs3_mb_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_transition_m", "Signal_MXs3_transition_p")) sig_temp_MXs3.AddHistoSys("transition_uncer", "Signal_MXs3_transition_m", fname, "", "Signal_MXs3_transition_p", fname, "");
