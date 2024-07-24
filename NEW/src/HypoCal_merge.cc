@@ -51,6 +51,8 @@
 #include "RooStats/HypoTestInverter.h"
 #include "RooStats/HypoTestInverterPlot.h"
 
+#include "RooStats/SamplingDistPlot.h"
+
 #include "base.h"
 
 using namespace RooFit;
@@ -164,10 +166,10 @@ void PrintTestStat(RooStats::HypoTestInverterResult* result, std::string mu_stri
 	SamplingDistPlot* pl = plot->MakeTestStatPlot(0);
 	pl->Draw();
 
-	c->SaveAs("TestStat_" + mu_string + ".png");
+	c->SaveAs(("TestStat_" + mu_string + ".png").c_str());
 
-	delete c;
 	delete plot;
+	delete c;
 
 }
 
@@ -204,9 +206,8 @@ int main(int argc, char* argv[]) {
 			GetObservedCLs(result, mu_string.c_str(), 0);
 			GetObservedCLs(result, mu_string.c_str(), 1);
 			GetObservedCLs(result, mu_string.c_str(), 2);
+			PrintTestStat(result, mu_string);
 		}
-
-		PrintTestStat(result, mu_string);
 
 		mu = mu + 0.1;
 	}
