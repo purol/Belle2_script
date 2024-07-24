@@ -157,6 +157,20 @@ void GetObservedCLs(RooStats::HypoTestInverterResult* fResults, const char* mu, 
 	}
 }
 
+void PrintTestStat(RooStats::HypoTestInverterResult* result, std::string mu_string) {
+	TCanvas* c = new TCanvas("c", "c", 696, 472);
+
+	HypoTestInverterPlot* plot = new HypoTestInverterPlot("plot", "plot", result);
+	SamplingDistPlot* pl = plot->MakeTestStatPlot(0);
+	pl->Draw();
+
+	c->SaveAs("TestStat_" + mu_string + ".png");
+
+	delete c;
+	delete plot;
+
+}
+
 int main(int argc, char* argv[]) {
 
 	const double mu_max = 10.0;
@@ -191,6 +205,8 @@ int main(int argc, char* argv[]) {
 			GetObservedCLs(result, mu_string.c_str(), 1);
 			GetObservedCLs(result, mu_string.c_str(), 2);
 		}
+
+		PrintTestStat(result, mu_string);
 
 		mu = mu + 0.1;
 	}
