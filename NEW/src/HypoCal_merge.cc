@@ -164,6 +164,7 @@ void PrintTestStat(RooStats::HypoTestInverterResult* result, std::string mu_stri
 
 	HypoTestInverterPlot* plot = new HypoTestInverterPlot("plot", "plot", result);
 	SamplingDistPlot* pl = plot->MakeTestStatPlot(0);
+	pl->SetLogYaxis(true);
 	pl->Draw();
 
 	c->SaveAs(("TestStat_" + mu_string + ".png").c_str());
