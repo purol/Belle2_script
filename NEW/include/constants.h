@@ -172,12 +172,16 @@
 # define Xsd_frag_decay29 10.9
 # define Xsd_frag_decay30 871.0
 
-// uncertainty of BR from parametric reason
+// uncertainty of BR. K: from all reason. Kstar: from parametric reason
 # define Sigma_BR_Kplus_nunubar 0.000000402
 # define Sigma_BR_K0star_nunubar 0.00000050
 # define Sigma_BR_K0_nunubar (Sigma_BR_Kplus_nunubar*TB0/TBp)
 # define Sigma_BR_Kplusstar_nunubar (Sigma_BR_K0star_nunubar*TBp/TB0)
 # define Sigma_BR_Xs_nunubar 0.000003
+
+// relative uncertainty of BR for K from parameteric reason
+# define Sigma_BR_Knunubar_parameter_rel_positive 0.056548
+# define Sigma_BR_Knunubar_parameter_rel_negative 0.057471
 
 // scale factor for systematic MC sample
 # define N_K0star_nunubar_syst 10000000.0
