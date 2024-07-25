@@ -4269,13 +4269,13 @@ int main()
     }
 
     for (int dmIndex = 0; dmIndex < NBRdmID(); dmIndex++) {
-        GetBBBRPDFs(MC_dirname_CHG, "root", name_CHG_BR.at(dmIndex), "Bplus", "CHG", GetBRdmID(dmIndex), true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
-        GetBBBRPDFs(MC_dirname_CHG, "root", name_CHG_BR.at(dmIndex + NBRdmID()), "Bplus", "CHG", GetBRdmID(dmIndex), false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+        GetBBBRPDFs(MC_dirname_CHG, "root", CHG_BRs.at(dmIndex), "Bplus", "CHG", GetBRdmID(dmIndex), true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+        GetBBBRPDFs(MC_dirname_CHG, "root", CHG_BRs.at(dmIndex + NBRdmID()), "Bplus", "CHG", GetBRdmID(dmIndex), false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
     }
 
     for (int dmIndex = 0; dmIndex < NBRdmID(); dmIndex++) {
-        GetBBBRPDFs(MC_dirname_MIX, "root", name_MIX_BR.at(dmIndex), "Bplus", "MIX", GetBRdmID(dmIndex), true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
-        GetBBBRPDFs(MC_dirname_MIX, "root", name_MIX_BR.at(dmIndex + NBRdmID()), "Bplus", "MIX", GetBRdmID(dmIndex), false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+        GetBBBRPDFs(MC_dirname_MIX, "root", MIX_BRs.at(dmIndex), "Bplus", "MIX", GetBRdmID(dmIndex), true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+        GetBBBRPDFs(MC_dirname_MIX, "root", MIX_BRs.at(dmIndex + NBRdmID()), "Bplus", "MIX", GetBRdmID(dmIndex), false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
     }
 
     // get pi0 uncertainty pdfs (correlated)
@@ -5441,8 +5441,8 @@ int main()
         SaveSpecificMXsBin(Signal_MXs1_BRs.at(dmIndex), MXsBin);
         SaveSpecificMXsBin(Signal_MXs2_BRs.at(dmIndex), MXsBin);
         SaveSpecificMXsBin(Signal_MXs3_BRs.at(dmIndex), MXsBin);
-        SaveSpecificMXsBin(name_CHG_BR.at(dmIndex), MXsBin);
-        SaveSpecificMXsBin(name_MIX_BR.at(dmIndex), MXsBin);
+        SaveSpecificMXsBin(CHG_BRs.at(dmIndex), MXsBin);
+        SaveSpecificMXsBin(MIX_BRs.at(dmIndex), MXsBin);
     }
 
     // pi0 uncertainty (correlated)
@@ -5895,8 +5895,8 @@ int main()
         Signal_MXs1_BRs.at(dmIndex)->Write();
         Signal_MXs2_BRs.at(dmIndex)->Write();
         Signal_MXs3_BRs.at(dmIndex)->Write();
-        name_CHG_BR.at(dmIndex)->Write();
-        name_MIX_BR.at(dmIndex)->Write();
+        CHG_BRs.at(dmIndex)->Write();
+        MIX_BRs.at(dmIndex)->Write();
     }
 
     // pi0 uncertainty (correlated)
