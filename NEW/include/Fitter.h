@@ -13,6 +13,7 @@
 # include "TLine.h"
 # include "TColor.h"
 # include "TPaveText.h"
+#include "systematic.h"
 
 using namespace RooFit;
 using namespace RooStats;
@@ -152,25 +153,6 @@ int ReadNPIDEigenVector(const char* dirname) {
     while (true) {
         if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
         for (int i = 0; i < RarityBins * 9; i++) {
-            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
-        }
-        Nentry++;
-    }
-    fclose(fp);
-
-    return Nentry;
-}
-
-int ReadNBREigenVector(const char* dirname) {
-    int Nentry = 0; // number of eigen values/vectors
-    double eigen_value = 0; // eigen value
-    double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
-
-    FILE* fp;
-    fp = fopen(dirname, "r");
-    while (true) {
-        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
-        for (int i = 0; i < RarityBins * 5; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
         Nentry++;
@@ -320,7 +302,6 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     options_->NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
     options_->NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
     options_->NEntryPID = ReadNPIDEigenVector("./PID_selected.txt");
-    options_->NEntryBR = ReadNBREigenVector("./BR_selected.txt");
     options_->NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
     options_->NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
 }
@@ -458,7 +439,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->BBcounting) w->var("alpha_BB_counting_uncer")->setConstant(options_->BBcounting);
 
     // BB BR
-    if (options_->BBBR) for (int i = 0; i < options_->NEntryBR; i++) w->var(("alpha_BBBR" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->BBBR);
+    if (options_->BBBR) for (int i = 0; i < NBRdmID(); i++) w->var(("alpha_BBBR" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->BBBR);
 
     // B->K KL KL BR
     if (options_->BRBtoXKLKL) w->var("alpha_BRBtoXKLKL_uncer")->setConstant(options_->BRBtoXKLKL);
