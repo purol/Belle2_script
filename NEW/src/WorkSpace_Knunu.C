@@ -223,7 +223,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_Kff1_m", "Signal_MXs1_Kff1_p")) sig_temp_MXs1.AddHistoSys("Kff1_uncer", "Signal_MXs1_Kff1_m", fname, "", "Signal_MXs1_Kff1_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_Kff2_m", "Signal_MXs1_Kff2_p")) sig_temp_MXs1.AddHistoSys("Kff2_uncer", "Signal_MXs1_Kff2_m", fname, "", "Signal_MXs1_Kff2_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_Kff3_m", "Signal_MXs1_Kff3_p")) sig_temp_MXs1.AddHistoSys("Kff3_uncer", "Signal_MXs1_Kff3_m", fname, "", "Signal_MXs1_Kff3_p", fname, "");
-	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_Kfrac_m", "Signal_MXs1_Kfrac_p")) sig_temp_MXs1.AddHistoSys("Kfrac_uncer", "Signal_MXs1_Kfrac_m", fname, "", "Signal_MXs1_Kfrac_p", fname, "");
+	sig_temp_MXs1.AddOverallSys("Kfrac_uncer", 1.0 - Sigma_BR_Knunubar_parameter_rel_negative, 1.0 + Sigma_BR_Knunubar_parameter_rel_positive);
 	if (MXs_bin == 1) sig_temp_MXs1.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL);
 	if (MXs_bin == 1) sig_temp_MXs1.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
 	sig_temp_MXs1.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
@@ -253,7 +253,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_Kstarff7_m", "Signal_MXs2_Kstarff7_p")) sig_temp_MXs2.AddHistoSys("Kstarff7_uncer", "Signal_MXs2_Kstarff7_m", fname, "", "Signal_MXs2_Kstarff7_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_Kstarff8_m", "Signal_MXs2_Kstarff8_p")) sig_temp_MXs2.AddHistoSys("Kstarff8_uncer", "Signal_MXs2_Kstarff8_m", fname, "", "Signal_MXs2_Kstarff8_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_Kstarff9_m", "Signal_MXs2_Kstarff9_p")) sig_temp_MXs2.AddHistoSys("Kstarff9_uncer", "Signal_MXs2_Kstarff9_m", fname, "", "Signal_MXs2_Kstarff9_p", fname, "");
-	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_Kstarfrac_m", "Signal_MXs2_Kstarfrac_p")) sig_temp_MXs2.AddHistoSys("Kstarfrac_uncer", "Signal_MXs2_Kstarfrac_m", fname, "", "Signal_MXs2_Kstarfrac_p", fname, "");
+	sig_temp_MXs2.AddOverallSys("Kstarfrac_uncer", 1.0 - (Sigma_BR_K0star_nunubar / BR_K0star_nunubar), 1.0 + (Sigma_BR_K0star_nunubar / BR_K0star_nunubar));
 	// sig_temp_MXs2.AddHistoSys("mKstar_uncer", "Signal_MXs2_mKstar_m", fname, "", "Signal_MXs2_mKstar_p", fname, "");
 	if (MXs_bin == 2) sig_temp_MXs2.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL);
 	if (MXs_bin == 2) sig_temp_MXs2.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
