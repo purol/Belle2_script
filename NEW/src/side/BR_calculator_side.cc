@@ -890,7 +890,7 @@ void FluctuateBBBR() {
 
         if (std::abs(BRuncertainty.RelativeUncertainty.at(i)) < MyEPSILON) Correction_BR = 1.0;
         else {
-            std::lognormal_distribution<double> BR_distribution(0.0, BRuncertainty.RelativeUncertainty.at(i));
+            std::normal_distribution<double> BR_distribution(1.0, BRuncertainty.RelativeUncertainty.at(i));
             Correction_BR = BR_distribution(generator);
         }
 
