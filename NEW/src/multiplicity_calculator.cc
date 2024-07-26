@@ -760,7 +760,7 @@ void FluctuateMultiplicityCorrection() {
         double relative_uncertainty = std::abs(weights_Ngamma_uncer->GetBinContent(i_multiplicity + 1) - 1.0);
 
         if (relative_uncertainty > MyEPSILON) {
-            std::lognormal_distribution<double> multiplicity_correction_distribution(0.0, relative_uncertainty);
+            std::normal_distribution<double> multiplicity_correction_distribution(1.0, relative_uncertainty);
             multiplicity_correction_fluctuation_uncer->SetBinContent(i_multiplicity + 1, multiplicity_correction_distribution(generator));
         }
         else {
