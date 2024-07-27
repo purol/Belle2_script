@@ -16,6 +16,16 @@ fclose(KIDfileID);
 
 [Kaoncoeff,Kaonlatent] = pcacov(CovKaonID);
 
+total_variance_sum = 0.0;
+selected_variance_sum = 0.0;
+for j = 1:N_total_bins
+    total_variance_sum = total_variance_sum + Kaonlatent(j);
+end
+for j = 1:N_selected_vectors
+    selected_variance_sum = selected_variance_sum + Kaonlatent(j);
+end
+selected_variance_sum / total_variance_sum
+
 % print covariance all
 KIDfileID_w = fopen('KID_cov_all.txt','w');
 for i = 1:N_total_bins
@@ -108,6 +118,16 @@ CorrPionID = corrcov(CovPionID);
 fclose(PIDfileID);
 
 [Pioncoeff,Pionlatent] = pcacov(CovPionID);
+
+total_variance_sum = 0.0;
+selected_variance_sum = 0.0;
+for j = 1:N_total_bins
+    total_variance_sum = total_variance_sum + Pionlatent(j);
+end
+for j = 1:N_selected_vectors
+    selected_variance_sum = selected_variance_sum + Pionlatent(j);
+end
+selected_variance_sum / total_variance_sum
 
 % print covariance all
 PIDfileID_w = fopen('PID_cov_all.txt','w');

@@ -16,6 +16,16 @@ fclose(BRfileID);
 
 [BRcoeff,BRlatent] = pcacov(CovBR);
 
+total_variance_sum = 0.0;
+selected_variance_sum = 0.0;
+for j = 1:N_total_bins
+    total_variance_sum = total_variance_sum + BRlatent(j);
+end
+for j = 1:N_selected_vectors
+    selected_variance_sum = selected_variance_sum + BRlatent(j);
+end
+selected_variance_sum / total_variance_sum
+
 % print covariance all
 BRfileID_w = fopen('BR_cov_all.txt','w');
 for i = 1:N_total_bins

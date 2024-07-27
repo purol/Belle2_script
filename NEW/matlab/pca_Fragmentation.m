@@ -18,6 +18,16 @@ fclose(FragmentationfileID);
 
 [Fragmentationcoeff,Fragmentationlatent] = pcacov(CovFragmentation);
 
+total_variance_sum = 0.0;
+selected_variance_sum = 0.0;
+for j = 1:N_total_bins
+    total_variance_sum = total_variance_sum + Fragmentationlatent(j);
+end
+for j = 1:N_selected_vectors
+    selected_variance_sum = selected_variance_sum + Fragmentationlatent(j);
+end
+selected_variance_sum / total_variance_sum
+
 % print covariance all
 FragmentationfileID_w = fopen('Fragmentation_cov_all.txt','w');
 for i = 1:N_total_bins

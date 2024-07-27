@@ -16,6 +16,16 @@ fclose(FEIfileID);
 
 [FEIcoeff,FEIlatent] = pcacov(CovFEI);
 
+total_variance_sum = 0.0;
+selected_variance_sum = 0.0;
+for j = 1:N_total_bins
+    total_variance_sum = total_variance_sum + FEIlatent(j);
+end
+for j = 1:N_selected_vectors
+    selected_variance_sum = selected_variance_sum + FEIlatent(j);
+end
+selected_variance_sum / total_variance_sum
+
 % print covariance all
 FEIfileID_w = fopen('FEI_cov_all.txt','w');
 for i = 1:N_total_bins
