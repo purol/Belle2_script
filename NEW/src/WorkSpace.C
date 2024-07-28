@@ -70,6 +70,19 @@ void ModifyPiecewiseInterpolationForAll(RooWorkspace* ws, int code) {
 	}
 }
 
+void ModifyPiecewiseInterpolation(RooWorkspace* ws, const char* name, int code) {
+	RooArgSet funcs = ws->allFunctions();
+	TIter it = funcs.createIterator();
+	TObject* tempObj = nullptr;
+	while ((tempObj = it.Next())) {
+		PiecewiseInterpolation* piec = dynamic_cast<PiecewiseInterpolation*>(tempObj);
+		if (piec) {
+			RooRealVar* alpha = w->var(name)
+			piec->setInterpCode(*alpha, code);
+		}
+	}
+}
+
 void ModifyFlexibleInterpolationForAll(RooWorkspace* ws, int code) {
 	RooArgSet funcs = ws->allFunctions();
 	TIter it = funcs.createIterator();
@@ -78,6 +91,19 @@ void ModifyFlexibleInterpolationForAll(RooWorkspace* ws, int code) {
 		FlexibleInterpVar* flex = dynamic_cast<FlexibleInterpVar*>(tempObj);
 		if (flex) {
 			flex->setAllInterpCodes(code);
+		}
+	}
+}
+
+void ModifyFlexibleInterpolation(RooWorkspace* ws, const char* name, int code) {
+	RooArgSet funcs = ws->allFunctions();
+	TIter it = funcs.createIterator();
+	TObject* tempObj = nullptr;
+	while ((tempObj = it.Next())) {
+		FlexibleInterpVar* flex = dynamic_cast<FlexibleInterpVar*>(tempObj);
+		if (flex) {
+			RooRealVar* alpha = w->var(name)
+			flex->setAllInterpCodes(*alpha, code);
 		}
 	}
 }
