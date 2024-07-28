@@ -77,7 +77,7 @@ void ModifyPiecewiseInterpolation(RooWorkspace* ws, const char* name, int code) 
 	while ((tempObj = it.Next())) {
 		PiecewiseInterpolation* piec = dynamic_cast<PiecewiseInterpolation*>(tempObj);
 		if (piec) {
-			RooRealVar* alpha = w->var(name);
+			RooRealVar* alpha = ws->var(name);
 			piec->setInterpCode(*alpha, code);
 		}
 	}
@@ -102,8 +102,8 @@ void ModifyFlexibleInterpolation(RooWorkspace* ws, const char* name, int code) {
 	while ((tempObj = it.Next())) {
 		FlexibleInterpVar* flex = dynamic_cast<FlexibleInterpVar*>(tempObj);
 		if (flex) {
-			RooRealVar* alpha = w->var(name);
-			flex->setAllInterpCodes(*alpha, code);
+			RooRealVar* alpha = ws->var(name);
+			flex->setInterpCode(*alpha, code);
 		}
 	}
 }
