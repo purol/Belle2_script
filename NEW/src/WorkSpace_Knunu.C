@@ -497,6 +497,8 @@ int WorkSpace_Knunu() {
 	const double expmu = 1.0;
 	const char* fname_MXs1 = "PDFandDATA_MXs1.root";
 
+	int NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
+
 	RooStats::HistFactory::Measurement meas("my_measurement", "my measurement");
 	meas.SetOutputFilePrefix("PDFandDATA/my_measurement");
 	meas.SetExportOnly(kTRUE);

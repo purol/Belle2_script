@@ -530,6 +530,8 @@ int WorkSpace() {
 	const char* fname_MXs2 = "PDFandDATA_MXs2.root";
 	const char* fname_MXs3 = "PDFandDATA_MXs3.root";
 
+	int NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
+
 	RooStats::HistFactory::Measurement meas("my_measurement", "my measurement");
 	meas.SetOutputFilePrefix("PDFandDATA/my_measurement");
 	meas.SetExportOnly(kTRUE);
