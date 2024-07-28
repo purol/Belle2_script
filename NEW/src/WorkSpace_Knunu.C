@@ -58,6 +58,30 @@ using std::to_string;
 
 Corrector_Fragmentation corrector_Fragmentation;
 
+void ModifyPiecewiseInterpolationForAll(RooWorkspace* ws, int code) {
+	RooArgSet funcs = ws->allFunctions();
+	TIter it = funcs.createIterator();
+	TObject* tempObj = nullptr;
+	while ((tempObj = it.Next())) {
+		PiecewiseInterpolation* piec = dynamic_cast<PiecewiseInterpolation*>(tempObj);
+		if (piec) {
+			piec->setAllInterpCodes(code);
+		}
+	}
+}
+
+void ModifyFlexibleInterpolationForAll(RooWorkspace* ws, int code) {
+	RooArgSet funcs = ws->allFunctions();
+	TIter it = funcs.createIterator();
+	TObject* tempObj = nullptr;
+	while ((tempObj = it.Next())) {
+		FlexibleInterpVar* flex = dynamic_cast<FlexibleInterpVar*>(tempObj);
+		if (flex) {
+			flex->setAllInterpCodes(code);
+		}
+	}
+}
+
 int ReadNFEIEigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
