@@ -77,7 +77,7 @@ void ModifyPiecewiseInterpolation(RooWorkspace* ws, const char* name, int code) 
 	while ((tempObj = it.Next())) {
 		PiecewiseInterpolation* piec = dynamic_cast<PiecewiseInterpolation*>(tempObj);
 		if (piec) {
-			RooRealVar* alpha = w->var(name)
+			RooRealVar* alpha = w->var(name);
 			piec->setInterpCode(*alpha, code);
 		}
 	}
@@ -102,8 +102,24 @@ void ModifyFlexibleInterpolation(RooWorkspace* ws, const char* name, int code) {
 	while ((tempObj = it.Next())) {
 		FlexibleInterpVar* flex = dynamic_cast<FlexibleInterpVar*>(tempObj);
 		if (flex) {
-			RooRealVar* alpha = w->var(name)
+			RooRealVar* alpha = w->var(name);
 			flex->setAllInterpCodes(*alpha, code);
+		}
+	}
+}
+
+void CheckInterpolation(RooWorkspace* ws) {
+	RooArgSet funcs = ws->allFunctions();
+	TIter it = funcs.createIterator();
+	TObject* tempObj = 0;
+	while ((tempObj = it.Next())) {
+		FlexibleInterpVar* flex = dynamic_cast<FlexibleInterpVar*>(tempObj);
+		if (flex) {
+			flex->printAllInterpCodes();
+		}
+		PiecewiseInterpolation* piec = dynamic_cast<PiecewiseInterpolation*>(tempObj);
+		if (piec) {
+			piec->printAllInterpCodes();
 		}
 	}
 }
@@ -563,7 +579,11 @@ int WorkSpace() {
 	RooWorkspace* w;
 	w = RooStats::HistFactory::MakeModelAndMeasurementFast(meas);
 
+	// change interpolation option for large uncertainty. otherwise it makes a kink.
+	ModifyPiecewiseInterpolation(w, "alpha_transition_uncer", 5);
+
 	w->Print();
+	CheckInterpolation(w);
 	w->writeToFile("PDFandDATA_workspace.root");
 
 	meas.PrintXML("PDFandDATA");
