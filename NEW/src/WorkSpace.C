@@ -591,14 +591,6 @@ int WorkSpace() {
 	RooWorkspace* w;
 	w = RooStats::HistFactory::MakeModelAndMeasurementFast(meas);
 
-	// change interpolation option for large uncertainty. otherwise it makes a kink.
-	ModifyPiecewiseInterpolation(w, "alpha_transition_uncer", 5);
-	for (int i = 0; i < NEntryFragmentation; i++) {
-		if (IsThereAnyChange(fname, "Signal_MXs3_nominal", ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_p").c_str())) {
-			ModifyPiecewiseInterpolation(w, ("alpha_Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), 5);
-		}
-	}
-
 	w->Print();
 	CheckInterpolation(w);
 	w->writeToFile("PDFandDATA_workspace.root");
