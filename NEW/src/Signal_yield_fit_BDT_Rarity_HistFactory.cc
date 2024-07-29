@@ -39,6 +39,9 @@ using std::to_string;
 
 # define Knunu_only false
 
+// {nominal|MXs1|MXs2|MXs3}
+const std::string recon_MXs_bin = "MXs1";
+
 enum PDFtype { // reco level
     nominal = 0,
     trackUP,
@@ -2559,7 +2562,7 @@ void GetNegativeChangePDFs(TH1D* nominal_hist, TH1D* positive_hist, TH1D* negati
     }
 }
 
-void GetNormalizedPDF(TH1D* nominal_hist, TH1D* deviated_hist) {
+void GetNormalizedPDF(TH1D* nominal_hist, TH1D* deviated_hist, std::string recon_MXs_bin_) {
     double total_nominal_value = 0.0;
     double total_deviated_value = 0.0;
 
@@ -2571,6 +2574,11 @@ void GetNormalizedPDF(TH1D* nominal_hist, TH1D* deviated_hist) {
     total_deviated_value->Scale(total_nominal_value / total_deviated_value);
 
     printf("the histogram %s is scaled by %lf\n", total_deviated_value->GetName(), (total_nominal_value / total_deviated_value));
+
+    FILE* fp;
+    fp = fopen(("Scale_" + std::string(total_deviated_value->GetName()) + "_" + recon_MXs_bin_ + ".txt").c_str(), "w");
+    fprintf("%lf", (total_nominal_value / total_deviated_value));
+    fclose(fp);
 
 }
 
@@ -4581,8 +4589,8 @@ int main()
     AddPDFs(Signal_transition_m, Signal_MXs3_transition_m);
 
     // addition of transition PDFs is done. Let's normalize them
-    GetNormalizedPDF(Signal_MXs3_nominal, Signal_MXs3_transition_p);
-    GetNormalizedPDF(Signal_MXs3_nominal, Signal_MXs3_transition_m);
+    GetNormalizedPDF(Signal_MXs3_nominal, Signal_MXs3_transition_p, recon_MXs_bin);
+    GetNormalizedPDF(Signal_MXs3_nominal, Signal_MXs3_transition_m, recon_MXs_bin);
 
     AddPDFs(Signal_mKstar_p, Signal_MXs1_nominal);
     AddPDFs(Signal_mKstar_p, Signal_MXs2_mKstar_p);
@@ -4640,7 +4648,15 @@ int main()
 
     /* ====================================== */
     // Select specific MXs bin
-    const int MXsBin = 1;
+    int MXsBin = 0;
+    if (recon_MXs_bin == "nominal") MXsBin = 0;
+    else if (recon_MXs_bin == "MXs1") MXsBin = 1;
+    else if (recon_MXs_bin == "MXs2") MXsBin = 2;
+    else if (recon_MXs_bin == "MXs3") MXsBin = 3;
+    else {
+        printf("unexpected recon_MXs_bin\n");
+        exit(1);
+    }
 
     SaveSpecificMXsBin(Signal_nominal, MXsBin);
     SaveSpecificMXsBin(Signal_MXs1_nominal, MXsBin);
@@ -5101,7 +5117,7 @@ int main()
 
     /* ====================================== */
     // Save histograms
-    TFile* file = new TFile("PDFandDATA.root", "RECREATE");
+    TFile* file = new TFile(("PDFandDATA_" + recon_MXs_bin + ".root"),c_str(), "RECREATE");
 
     Signal_nominal->Write();
     Signal_MXs1_nominal->Write();

@@ -388,7 +388,10 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	for (int i = 0; i < NEntryFragmentation; i++) if (IsThereAnyChange(fname, "Signal_MXs3_nominal", ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs3.AddHistoSys(("Xs_fragmentation" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_Fragmentation_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_pf_m", "Signal_MXs3_pf_p")) sig_temp_MXs3.AddHistoSys("pf_uncer", "Signal_MXs3_pf_m", fname, "", "Signal_MXs3_pf_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_mb_m", "Signal_MXs3_mb_p")) sig_temp_MXs3.AddHistoSys("mb_uncer", "Signal_MXs3_mb_m", fname, "", "Signal_MXs3_mb_p", fname, "");
-	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_transition_m", "Signal_MXs3_transition_p")) sig_temp_MXs3.AddHistoSys("transition_uncer", "Signal_MXs3_transition_m", fname, "", "Signal_MXs3_transition_p", fname, "");
+	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_transition_m", "Signal_MXs3_transition_p")) {
+		sig_temp_MXs3.AddHistoSys("transition_uncer", "Signal_MXs3_transition_m", fname, "", "Signal_MXs3_transition_p", fname, "");
+		sig_temp_MXs3.AddOverallSys("transition_uncer", 0.9, 1,1);
+	}
 	// sig_temp_MXs3.AddHistoSys("mKstar_uncer", "Signal_MXs3_mKstar_m", fname, "", "Signal_MXs3_mKstar_p", fname, "");
 	if (MXs_bin == 3) sig_temp_MXs3.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL);
 	if (MXs_bin == 3) sig_temp_MXs3.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
