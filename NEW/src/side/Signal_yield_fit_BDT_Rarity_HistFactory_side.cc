@@ -2552,13 +2552,13 @@ void GetNormalizedPDF(TH1D* nominal_hist, TH1D* deviated_hist, std::string recon
 
     if (total_deviated_value < MyEPSILON) return;
 
-    total_deviated_value->Scale(total_nominal_value / total_deviated_value);
+    deviated_hist->Scale(total_nominal_value / total_deviated_value);
 
-    printf("the histogram %s is scaled by %lf\n", total_deviated_value->GetName(), (total_nominal_value / total_deviated_value));
+    printf("the histogram %s is scaled by %lf\n", deviated_hist->GetName(), (total_nominal_value / total_deviated_value));
 
     FILE* fp;
-    fp = fopen(("Scale_" + std::string(total_deviated_value->GetName()) + "_" + recon_MXs_bin_ + ".txt").c_str(), "w");
-    fprintf("%lf", (total_nominal_value / total_deviated_value));
+    fp = fopen(("Scale_" + std::string(deviated_hist->GetName()) + "_" + recon_MXs_bin_ + ".txt").c_str(), "w");
+    fprintf(fp, "%lf", (total_nominal_value / total_deviated_value));
     fclose(fp);
 
 }
@@ -4883,7 +4883,7 @@ int main()
 
     /* ====================================== */
     // Save histograms
-    TFile* file = new TFile(("PDFandDATA_" + recon_MXs_bin + ".root"), c_str(), "RECREATE");
+    TFile* file = new TFile(("PDFandDATA_" + recon_MXs_bin + ".root").c_str(), "RECREATE");
 
     Signal_nominal->Write();
     Signal_MXs1_nominal->Write();

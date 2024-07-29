@@ -389,13 +389,13 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 		if (MXs_bin == 1) fp = fopen("Scale_Signal_MXs3_transition_p_MXs1.txt", "r");
 		else if (MXs_bin == 2) fp = fopen("Scale_Signal_MXs3_transition_p_MXs2.txt", "r");
 		else if (MXs_bin == 3) fp = fopen("Scale_Signal_MXs3_transition_p_MXs3.txt", "r");
-		fscanf("%lf", scale_p);
+		fscanf(fp, "%lf", scale_p);
 		fclose(fp);
 
 		if (MXs_bin == 1) fp = fopen("Scale_Signal_MXs3_transition_m_MXs1.txt", "r");
 		else if (MXs_bin == 2) fp = fopen("Scale_Signal_MXs3_transition_m_MXs2.txt", "r");
 		else if (MXs_bin == 3) fp = fopen("Scale_Signal_MXs3_transition_m_MXs3.txt", "r");
-		fscanf("%lf", scale_m);
+		fscanf(fp, "%lf", scale_m);
 		fclose(fp);
 
 		if (scale_p < MyEPSILON) scale_p = 1.0;
