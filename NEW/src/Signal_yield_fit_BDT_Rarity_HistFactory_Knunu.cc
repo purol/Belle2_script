@@ -2572,9 +2572,26 @@ void GetNegativeChangePDFs(TH1D* nominal_hist, TH1D* positive_hist, TH1D* negati
         double nominal_value = nominal_hist->GetBinContent(i + 1);
         double positive_value = positive_hist->GetBinContent(i + 1);
         double deviation = positive_value - nominal_value;
+        double relative_error = positive_hist->GetBinError(i + 1) / positive_hist->GetBinContent(i + 1);
 
         negative_hist->SetBinContent(i + 1, nominal_value - deviation);
+        negative_hist->SetBinError(i + 1, (nominal_value - deviation) * relative_error);
     }
+}
+
+void GetNormalizedPDF(TH1D* nominal_hist, TH1D* deviated_hist) {
+    double total_nominal_value = 0.0;
+    double total_deviated_value = 0.0;
+
+    for (int i = 0; i < RarityBins; i++) total_nominal_value = total_nominal_value + nominal_hist->GetBinContent(i + 1);
+    for (int i = 0; i < RarityBins; i++) total_deviated_value = total_deviated_value + deviated_hist->GetBinContent(i + 1);
+
+    if (total_deviated_value < MyEPSILON) return;
+
+    total_deviated_value->Scale(total_nominal_value / total_deviated_value);
+
+    printf("the histogram %s is scaled by %lf\n", total_deviated_value->GetName(), (total_nominal_value / total_deviated_value));
+
 }
 
 int GetmultiplicitycorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* UUBAR_nominal_hist, TH1D* DDBAR_nominal_hist, TH1D* SSBAR_nominal_hist, TH1D* CHARM_nominal_hist, TH1D* Signal_nominal_hist_MXs1, TH1D* Signal_nominal_hist_MXs2, TH1D* Signal_nominal_hist_MXs3, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** UUBAR_hists, TH1D*** DDBAR_hists, TH1D*** SSBAR_hists, TH1D*** CHARM_hists, TH1D*** Signal_hists_MXs1, TH1D*** Signal_hists_MXs2, TH1D*** Signal_hists_MXs3) { // get shape sys histogram from txt file
@@ -4582,6 +4599,10 @@ int main()
     AddPDFs(Signal_transition_m, Signal_MXs1_nominal);
     AddPDFs(Signal_transition_m, Signal_MXs2_nominal);
     AddPDFs(Signal_transition_m, Signal_MXs3_transition_m);
+
+    // addition of transition PDFs is done. Let's normalize them
+    GetNormalizedPDF(Signal_MXs3_nominal, Signal_MXs3_transition_p);
+    GetNormalizedPDF(Signal_MXs3_nominal, Signal_MXs3_transition_m);
 
     AddPDFs(Signal_mKstar_p, Signal_MXs1_nominal);
     AddPDFs(Signal_mKstar_p, Signal_MXs2_mKstar_p);
