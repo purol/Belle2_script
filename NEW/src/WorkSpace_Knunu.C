@@ -378,8 +378,32 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_pf_m", "Signal_MXs3_pf_p")) sig_temp_MXs3.AddHistoSys("pf_uncer", "Signal_MXs3_pf_m", fname, "", "Signal_MXs3_pf_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_mb_m", "Signal_MXs3_mb_p")) sig_temp_MXs3.AddHistoSys("mb_uncer", "Signal_MXs3_mb_m", fname, "", "Signal_MXs3_mb_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_transition_m", "Signal_MXs3_transition_p")) {
+		// read shape change
 		sig_temp_MXs3.AddHistoSys("transition_uncer", "Signal_MXs3_transition_m", fname, "", "Signal_MXs3_transition_p", fname, "");
-		sig_temp_MXs3.AddOverallSys("transition_uncer", 0.9, 1, 1);
+
+		// read overall norm change
+		double scale_p = 1.0;
+		double scale_m = 1.0;
+		FILE* fp;
+
+		if (MXs_bin == 1) fp = fopen("Scale_Signal_MXs3_transition_p_MXs1.txt", "r");
+		else if (MXs_bin == 2) fp = fopen("Scale_Signal_MXs3_transition_p_MXs2.txt", "r");
+		else if (MXs_bin == 3) fp = fopen("Scale_Signal_MXs3_transition_p_MXs3.txt", "r");
+		fscanf("%lf", scale_p);
+		fclose(fp);
+
+		if (MXs_bin == 1) fp = fopen("Scale_Signal_MXs3_transition_m_MXs1.txt", "r");
+		else if (MXs_bin == 2) fp = fopen("Scale_Signal_MXs3_transition_m_MXs2.txt", "r");
+		else if (MXs_bin == 3) fp = fopen("Scale_Signal_MXs3_transition_m_MXs3.txt", "r");
+		fscanf("%lf", scale_m);
+		fclose(fp);
+
+		if (scale_p < MyEPSILON) scale_p = 1.0;
+		if (scale_m < MyEPSILON) scale_m = 1.0;
+
+		sig_temp_MXs3.AddOverallSys("transition_uncer", 1.0 / scale_m, 1.0 / scale_p);
+
+		printf("OverallSys %lf and %lf are assigned\n", scale_m, scale_p);
 	}
 	// sig_temp_MXs3.AddHistoSys("mKstar_uncer", "Signal_MXs3_mKstar_m", fname, "", "Signal_MXs3_mKstar_p", fname, "");
 	if (MXs_bin == 3) sig_temp_MXs3.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL);
