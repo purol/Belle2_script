@@ -40,10 +40,10 @@ def print_ratio(y1, yerr1, y2, filename):
 
 x = ['category 1','category 2','category 3']
 
-y1 = [60.402884, 24.411513, 22.988884] # for B->K J/psi MC
-yerr1 = [3.756246, 2.396014, 2.324258]
+y1 = [78.342511, 32.405429, 30.395329] # for B->K(*) J/psi MC
+yerr1 = [4.277783, 2.761032, 2.678736]
 
-y2 = [46, 16, 3] # for data
-yerr2 = [6.782330, 4, 1.732051]
+y2 = [69, 19, 7] # for data
+yerr2 = [8.306624, 4.358899, 2.645751]
 
-plot_and_save_data(x, y1, yerr1, y2, yerr2, "Number_of_event_comparison_My", r'$B \rightarrow K J/\psi$ MC', r'$B \rightarrow K J/\psi$ data', r'')
+plot_and_save_data(x, y1, yerr1, y2, yerr2, "Number_of_event_comparison_My", r'$B \rightarrow K^{(*)} J/\psi$ MC', r'$B \rightarrow K^{(*)} J/\psi$ data', r'')
