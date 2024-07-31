@@ -71,12 +71,12 @@ int template_draw() {
 	signal_hist->GetYaxis()->SetRangeUser(0., 2.3);
 	signal_hist->SetFillColor(kBlue + 1);
 	signal_hist->SetLineWidth(0);
-	signal_hist->GetXaxis()->SetTitle("transformed FBDT output");
+	signal_hist->GetXaxis()->SetTitle("bin index");
 	signal_hist->GetYaxis()->SetTitle("number of events");
 	signal_hist->Draw("hist");
 	c_temp->SaveAs("signal_hist.png");
 
-	THStack* Stack = new THStack("thstack", ";FBDT output;number of events");
+	THStack* Stack = new THStack("thstack", ";bin index;number of events");
 
 	chg_hist->SetFillColor(kRed + 1);
 	chg_hist->SetLineWidth(0);
