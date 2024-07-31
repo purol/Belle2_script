@@ -385,10 +385,18 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // qqbar normalization
     if (options_->qqbar) {
-        w->var("alpha_qq_CAL_UUBAR_uncer")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_DDBAR_uncer")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_SSBAR_uncer")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_CHARM_uncer")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_UUBAR_uncer_MXs1")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_UUBAR_uncer_MXs2")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_UUBAR_uncer_MXs3")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_DDBAR_uncer_MXs1")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_DDBAR_uncer_MXs2")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_DDBAR_uncer_MXs3")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_SSBAR_uncer_MXs1")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_SSBAR_uncer_MXs2")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_SSBAR_uncer_MXs3")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_CHARM_uncer_MXs1")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_CHARM_uncer_MXs2")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_CHARM_uncer_MXs3")->setConstant(options_->qqbar);
     }
 
     // photon multiplicity correction
