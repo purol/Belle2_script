@@ -49,6 +49,22 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # define MCTYPE "MC15rd"
 
+Corrector corrector;
+Corrector_FEI corrector_FEI;
+Corrector_PID corrector_PID;
+Corrector_pi0 corrector_pi0;
+Corrector_FakePID corrector_FakePID;
+Corrector_Knn corrector_Knn;
+Corrector_Xsnn corrector_Xsnn;
+Corrector_Multiplicity corrector_Multiplicity;
+Corrector_KpKLKL corrector_KpKLKL;
+Corrector_KSKLKL corrector_KSKLKL;
+Corrector_phiKL corrector_phiKL;
+Corrector_KstarKLKL corrector_KstarKLKL;
+Corrector_XsKLKL corrector_XsKLKL;
+Corrector_BtoDtoXKL corrector_BtoDtoXKL;
+Corrector_Fragmentation corrector_Fragmentation;
+
 /* ====================================== */
 
 double LetsCount_ri(const char* dirname, const char* included_string, double* Ncounts, const char* type, const char* sample, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // modified GetPDFs
@@ -271,12 +287,6 @@ double LetsCount_ri(const char* dirname, const char* included_string, double* Nc
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
-
-            if (KnunuOnly) {
-                // select B+ --> K+ nu nubar reconstruction only
-                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
-                else continue;
-            }
 
             // select the specific true MXs region
             if (strcmp(sample, "SIGNAL") == 0) {
