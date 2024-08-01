@@ -470,10 +470,8 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
     if (strcmp(sample_type, "Signal_MX1") == 0) {
         indices.push_back(0);
     }
-    else if (strcmp(sample_type, "Signal_MX2") == 0) {
+    else if (strcmp(sample_type, "Xs_MX1") == 0) {
         indices.push_back(1);
-    }
-    else if (strcmp(sample_type, "Signal_MX3") == 0) {
         indices.push_back(2);
     }
     else if (strcmp(sample_type, "CHG_MX1") == 0) indices.push_back(3);
