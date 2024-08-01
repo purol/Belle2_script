@@ -37,7 +37,7 @@ using namespace RooFit;
 using std::string;
 using std::to_string;
 
-# define Knunu_only false
+const bool KnunuOnly = false;
 
 // {nominal|MXs1|MXs2|MXs3}
 const std::string recon_MXs_bin = "MXs1";
@@ -460,6 +460,12 @@ double GetDataPDF(const char* dirname, const char* included_string, TH1D* hist, 
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
+            if (KnunuOnly) {
+                // select B+ --> K+ nu nubar reconstruction only
+                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
+                else continue;
+            }
+
             double total_weight = weight_var;
 
             Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
@@ -698,6 +704,12 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            if (KnunuOnly) {
+                // select B+ --> K+ nu nubar reconstruction only
+                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
+                else continue;
+            }
 
             // select the specific true MXs region
             if (strcmp(sample, "SIGNAL") == 0) {
@@ -1655,6 +1667,12 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
             tree_Btag->GetEntry(j);
             tree_Xs->GetEntry(j);
 
+            if (KnunuOnly) {
+                // select B+ --> K+ nu nubar reconstruction only
+                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
+                else continue;
+            }
+
             // select the specific true MXs region
             // sanity check
             if ((m_k > 0.0) && (m_k < 6.0)) {}
@@ -2040,6 +2058,12 @@ double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hi
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             tree_Xs->GetEntry(j);
+
+            if (KnunuOnly) {
+                // select B+ --> K+ nu nubar reconstruction only
+                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
+                else continue;
+            }
 
             // select the specific true MXs region
             // sanity check
@@ -2442,6 +2466,12 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            if (KnunuOnly) {
+                // select B+ --> K+ nu nubar reconstruction only
+                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
+                else continue;
+            }
 
             // select the specific true MXs region
             if (strcmp(sample, "SIGNAL") == 0) {

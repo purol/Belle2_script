@@ -58,6 +58,8 @@ Corrector_Fragmentation corrector_Fragmentation;
 
 # define MCTYPE "MC15rd"
 
+const bool KnunuOnly = false;
+
 double pi0_correction_fluctuation_stat_uncer[N_pi0_syst] = { 0.0 }; // it is additive!
 double pi0_correction_fluctuation_sys_uncer1[N_pi0_syst] = { 0.0 }; // it is additive!
 double pi0_correction_fluctuation_sys_uncer2[N_pi0_syst] = { 0.0 }; // it is additive!
@@ -291,6 +293,12 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            if (KnunuOnly) {
+                // select B+ --> K+ nu nubar reconstruction only
+                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
+                else continue;
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -618,6 +626,12 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            if (KnunuOnly) {
+                // select B+ --> K+ nu nubar reconstruction only
+                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
+                else continue;
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
