@@ -197,6 +197,10 @@ void FillSIGNAL(const char* dirname, const char* included_string, const char* ty
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
+            if (std::isnan(total_weight)) {
+                total_weight = weight_var;
+            }
+
             hist_reco->Fill(Bsig_M, total_weight);
             hist_true->Fill(Mxs_MC, total_weight);
 
@@ -305,31 +309,31 @@ void ReadDecayInfo(const char* dirname, const char* included_string, const char*
 int main(int argc, char* argv[]) {
     // function to calculate efficiency as a function of MXs
 
-    const char* dirname_CHG_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v000/before_Mbc_cut";
-    const char* dirname_MIX_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v000/before_Mbc_cut";
-    const char* dirname_UUBAR_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_v000/before_Mbc_cut";
-    const char* dirname_DDBAR_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_v000/before_Mbc_cut";
-    const char* dirname_SSBAR_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_v000/before_Mbc_cut";
-    const char* dirname_CHARM_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_v000/before_Mbc_cut";
+    const char* dirname_CHG_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v008/before_Mbc_cut";
+    const char* dirname_MIX_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v008/before_Mbc_cut";
+    const char* dirname_UUBAR_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_v008/before_Mbc_cut";
+    const char* dirname_DDBAR_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_v008/before_Mbc_cut";
+    const char* dirname_SSBAR_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_v008/before_Mbc_cut";
+    const char* dirname_CHARM_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_v008/before_Mbc_cut";
 
-    const char* dirname_CHG_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v003/final_output";
-    const char* dirname_MIX_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v003/final_output";
-    const char* dirname_UUBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_v003/final_output";
-    const char* dirname_DDBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_v003/final_output";
-    const char* dirname_SSBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_v003/final_output";
-    const char* dirname_CHARM_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_v003/final_output";
+    const char* dirname_CHG_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v008/final_output";
+    const char* dirname_MIX_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v008/final_output";
+    const char* dirname_UUBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_v008/final_output";
+    const char* dirname_DDBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_v008/final_output";
+    const char* dirname_SSBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_v008/final_output";
+    const char* dirname_CHARM_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_v008/final_output";
 
-    const char* dirname_CHG_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_MIX_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_UUBAR_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_DDBAR_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_SSBAR_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_CHARM_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_CHG_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_MIX_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_UUBAR_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_DDBAR_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_SSBAR_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_CHARM_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
 
     const char* dirname_SIGNAL_initial = "/home/belle2/junewoo/storage_ghi/20220929_SIGNAL_decayInfo_again/small";
-    const char* dirname_SIGNAL_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v000/before_Mbc_cut";
-    const char* dirname_SIGNAL_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v003/final_output";
-    const char* dirname_SIGNAL_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v003/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_SIGNAL_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/before_Mbc_cut";
+    const char* dirname_SIGNAL_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/final_output";
+    const char* dirname_SIGNAL_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
 
     FillBKG(dirname_CHG_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("CHG", MCTYPE, "validation", "CHG"));
     FillBKG(dirname_MIX_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("MIX", MCTYPE, "validation", "MIX"));
