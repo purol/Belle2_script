@@ -51,6 +51,8 @@ double Nevt_final_1st = 0.0;
 double Nevt_final_2nd = 0.0;
 double Nevt_final_3rd = 0.0;
 
+double Nevt_nan = 0.0;
+
 void ReadDecayInfo(const char* dirname, const char* included_string, const char* type, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     if (strcmp(type, "Bplus") == 0) {}
     else if (strcmp(type, "Bzero") == 0) {}
@@ -126,6 +128,11 @@ void ReadDecayInfo(const char* dirname, const char* included_string, const char*
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+
+            if (std::isnan(total_weight)) {
+                total_weight = weight_var;
+                Nevt_nan = Nevt_nan + total_weight;
+            }
 
             if ((Mxs_MC > 0.0) && (Mxs_MC < 0.6)) Nevt_initial_1st = Nevt_initial_1st + total_weight;
             else if ((Mxs_MC > 0.6) && (Mxs_MC < 1.0)) Nevt_initial_2nd = Nevt_initial_2nd + total_weight;
@@ -484,6 +491,8 @@ int main(int argc, char* argv[]) {
     ReadDecayInfo(dirname_SIGNAL_initial, "B02K0nunu", "Bzero", Scale_K0_here, "B02K0nunu");
     ReadDecayInfo(dirname_SIGNAL_initial, "B02Kstar0nunu", "Bzero", Scale_K0star_here, "otherwise");
     ReadDecayInfo(dirname_SIGNAL_initial, "B02Xsnunu", "Bzero", Scale_Xsd_nonresonant_here, "B02Xsnunu");
+
+    printf("Nevt nan: %lf\n", Nevt_nan);
 
     printf("Nevt initial 1st: %lf\n", Nevt_initial_1st);
     printf("Nevt initial 2nd: %lf\n", Nevt_initial_2nd);
