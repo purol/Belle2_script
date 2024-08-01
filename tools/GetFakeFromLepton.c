@@ -144,6 +144,15 @@ double LetsCount_ri(const char* dirname, const char* included_string, double* Nc
     double nDptoXKL = -1;
     double nD0toXKL = -1;
 
+    double nKaonfromK = 0;
+    double nKaonformpi = 0;
+    double nKaonfrome = 0;
+    double nKaonfrommu = 0;
+    double nPionfrompi = 0;
+    double nPionfromK = 0;
+    double nPionfrome = 0;
+    double nPionfrommu = 0;
+
     double Bsig_M = -1;
 
     double Btag_isSignal = -1;
