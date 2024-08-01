@@ -197,10 +197,6 @@ void FillSIGNAL(const char* dirname, const char* included_string, const char* ty
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
-            if (std::isnan(total_weight)) {
-                total_weight = weight_var;
-            }
-
             hist_reco->Fill(Bsig_M, total_weight);
             hist_true->Fill(Mxs_MC, total_weight);
 
@@ -291,6 +287,10 @@ void ReadDecayInfo(const char* dirname, const char* included_string, const char*
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+
+            if (std::isnan(total_weight)) {
+                total_weight = weight_var;
+            }
 
             hist_true->Fill(Mxs_MC, total_weight);
 
