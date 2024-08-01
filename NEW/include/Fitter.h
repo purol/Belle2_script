@@ -627,7 +627,8 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
     RooStats::RemoveConstantParameters(allParams);
     RooArgSet fGlobalObs = *mc->GetGlobalObservables();
     RooArgSet fConditionalObs;
-    Bool_t fLOffset = RooStats::IsNLLOffset();
+    //Bool_t fLOffset = RooStats::IsNLLOffset();
+    std::string fLOffset = "bin";
     (*nll) = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
 
     // minimizer option
@@ -722,7 +723,8 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
     RooStats::RemoveConstantParameters(allParams);
     RooArgSet fGlobalObs = *mc->GetGlobalObservables();
     RooArgSet fConditionalObs;
-    Bool_t fLOffset = RooStats::IsNLLOffset();
+    //Bool_t fLOffset = RooStats::IsNLLOffset();
+    std::string fLOffset = "bin";
     (*nll) = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
 
     // minimizer option
@@ -1238,7 +1240,8 @@ void ObtainNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll) {
     RooStats::RemoveConstantParameters(allParams);
     RooArgSet fGlobalObs = *mc->GetGlobalObservables();
     RooArgSet fConditionalObs;
-    Bool_t fLOffset = RooStats::IsNLLOffset();
+    //Bool_t fLOffset = RooStats::IsNLLOffset();
+    std::string fLOffset = "bin";
     (*nll) = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
 }
 
