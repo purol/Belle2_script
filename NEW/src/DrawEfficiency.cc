@@ -388,6 +388,7 @@ int main(int argc, char* argv[]) {
     BKG_FBDT_efficiency->Divide(Nevt_BKG_after_selection, Nevt_BKG_before_FBDT_cut, 1.0, 1.0, "B");
 
     SIGNAL_FBDT_efficiency_true->Divide(Nevt_SIGNAL_after_selection_true, Nevt_SIGNAL_before_FBDT_cut_true, 1.0, 1.0, "B");
+    SIGNAL_FBDT_efficiency_true->SetStats(false);
 
     // define TCanvas
     TCanvas* c_temp = new TCanvas("c", "", 1200, 1000);
