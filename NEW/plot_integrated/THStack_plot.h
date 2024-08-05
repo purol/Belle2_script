@@ -3449,13 +3449,13 @@ void Printchi2(THStack* MC_stack, TH1D* data_hist) {
 
     TH1* temp = (TH1*) MC_stack->GetStack()->Last();
 
-    if (MC_stack->GetNbinsX() != data_hist->GetNbinsX()) {
+    if (temp->GetNbinsX() != data_hist->GetNbinsX()) {
         printf("[Printchi2] Nbin is different\n");
         exit(1);
     }
 
     double chi2 = 0.0;
-    for (int i = 0; i < MC_stack->GetNbinsX(); i++) {
+    for (int i = 0; i < temp->GetNbinsX(); i++) {
         double MC_value = temp->GetBinContent(i + 1);
         double data_value = data_hist->GetBinContent(i + 1);
         double data_error = data_hist->GetBinError(i + 1);
