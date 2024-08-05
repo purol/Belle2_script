@@ -3444,3 +3444,27 @@ void PrintDataMCRatio(THStack* MC_stack, TH1D* data_hist, TH1D* ratio_hist, cons
     }
     fclose(fp);
 }
+
+void Printchi2(THStack* MC_stack, TH1D* data_hist) {
+
+    TH1* temp = (TH1*) MC_stack->GetStack()->Last();
+
+    if (MC_stack->GetNbinsX() != data_hist->GetNbinsX()) {
+        printf("[Printchi2] Nbin is different\n");
+        exit(1);
+    }
+
+    double chi2 = 0.0;
+    for (int i = 0; i < MC_stack->GetNbinsX(); i++) {
+        double MC_value = temp->GetBinContent(i + 1);
+        double data_value = data_hist->GetBinContent(i + 1);
+        double data_error = data_hist->GetBinError(i + 1);
+
+        chi2 = chi2 + ((MC_value - data_value) * (MC_value - data_value) / data_error);
+    }
+
+    printf("chi2: %lf\n", chi2);
+
+    delete temp;
+
+}

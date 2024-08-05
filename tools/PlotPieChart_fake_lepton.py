@@ -11,13 +11,13 @@ def autopct_format(values):
     return my_format
 
 Category = [
-r"$\pi$ from $\pi$",
-r"$\pi$ from $K$",
-r"$\pi$ from $e$", 
-r"$\pi$ from $\mu$"]
+r"$K$ from $K$",
+r"$K$ from $\pi$",
+r"$K$ from $e$", 
+r"$K$ from $\mu$"]
 
 TotalN = 238.166698
-values = [1953.103406, 20.422871, 26.050392, 99.612054]
+values = [19.877855, 0.309685, 0.000117, 0.004484]
 #values.append(TotalN - sum(values))
 
 plt.rcParams['figure.figsize'] = [10,10]
