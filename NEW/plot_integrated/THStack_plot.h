@@ -3469,3 +3469,29 @@ void Printchi2(THStack* MC_stack, TH1D* data_hist) {
     delete temp;
 
 }
+
+void PrintDataMC(THStack* MC_stack, TH1D* data_hist) {
+
+    TH1* temp = (TH1*)MC_stack->GetStack()->Last();
+
+    if (temp->GetNbinsX() != data_hist->GetNbinsX()) {
+        printf("[PrintDataMC] Nbin is different\n");
+        exit(1);
+    }
+
+    printf("===== MC =====\n");
+    for (int i = 0; i < temp->GetNbinsX(); i++) {
+        double MC_value = temp->GetBinContent(i + 1);
+        double MC_error = temp->GetBinError(i + 1);
+        printf("%d th bin: %lf +- %lf\n", i, MC_value, MC_error);
+    }
+    printf("===== data =====\n");
+    for (int i = 0; i < data_hist->GetNbinsX(); i++) {
+        double data_value = data_hist->GetBinContent(i + 1);
+        double data_error = data_hist->GetBinError(i + 1);
+        printf("%d th bin: %lf +- %lf\n", i, data_value, data_error);
+    }
+
+    delete temp;
+
+}

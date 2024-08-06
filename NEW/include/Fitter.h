@@ -1149,6 +1149,14 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
 
     gStyle->SetPalette(kPastel);
 
+    Float_t ymax_1 = Stack->GetMaximum();
+    Float_t ymax_2 = data_hist->GetMaximum();
+    double real_max = 0;
+    if (ymax_1 > ymax_2) real_max = ymax_1;
+    else real_max = ymax_2;
+
+    Stack->SetMaximum(real_max * 1.1);
+
     Stack->Draw("pfc Hist");
     if (data != nullptr) {
         data_hist->SetLineWidth(2);
