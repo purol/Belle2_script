@@ -219,6 +219,25 @@ int ReadMultiplicityInfo(const char* dirname) {
 	return Nentry;
 }
 
+int ReadNFragmentationEigenVector(const char* dirname) {
+	int Nentry = 0; // number of eigen values/vectors
+	double eigen_value = 0; // eigen value
+	double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
+
+	FILE* fp;
+	fp = fopen(dirname, "r");
+	while (true) {
+		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+		for (int i = 0; i < RarityBins * 5; i++) {
+			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+		}
+		Nentry++;
+	}
+	fclose(fp);
+
+	return Nentry;
+}
+
 bool IsThereAnyChange(const char* fname, const char* nominal_hist_name, const char* hist_m_name, const char* hist_p_name) {
 	TFile* file = new TFile(fname);
 	file->cd();
