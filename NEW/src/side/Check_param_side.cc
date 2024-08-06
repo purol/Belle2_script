@@ -213,6 +213,7 @@ int main() {
     // get Category and data
     //RooAbsData* data = (RooAbsData*)w->data("obsData");
     RooDataSet* data = (RooDataSet*)w->data("asimovData");
+    GetPlotTemplate(w, data, "prefit.png");
 
     // fit
     //RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
@@ -245,7 +246,7 @@ int main() {
     // RooPlot* x_frame = x->frame(Title("fit result"));
 
     // draw
-    GetPlotTemplate(w, data);
+    GetPlotTemplate(w, data, "postfit.png");
 
     // draw profile likelihood
     /*

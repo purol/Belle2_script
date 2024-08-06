@@ -1024,7 +1024,7 @@ RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooA
     return minim.save();
 }
 
-void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
+void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * plot_name = "hist_data_plot.png") {
 
     bool Allchargednull = true;
     bool Allmixednull = true;
@@ -1195,7 +1195,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr) {
     line_12_pad2->Draw(); line_23_pad2->Draw();
 
     c_temp->SetBottomMargin(0.0);
-    c_temp->SaveAs("hist_data_plot.png");
+    c_temp->SaveAs(plot_name);
 
     // print values
     printf("data:\n");
