@@ -1155,7 +1155,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     if (ymax_1 > ymax_2) real_max = ymax_1;
     else real_max = ymax_2;
 
-    Stack->SetMaximum(real_max * 1.2);
+    Stack->SetMaximum(real_max * 1.3);
 
     Stack->Draw("pfc Hist"); Stack->GetXaxis()->SetLabelSize(0.0); Stack->GetXaxis()->SetTitleSize(0.0);
     if (data != nullptr) {
@@ -1186,7 +1186,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     // write Belle text
     TPaveText* pt_belle = new TPaveText(0.16, 0.83, 0.4, 0.88, "NDC NB");
     pt_belle->SetTextSize(0.035); pt_belle->SetFillStyle(0); pt_belle->SetLineWidth(0); pt_belle->SetTextAlign(11); pt_belle->AddText("Belle II"); pt_belle->Draw();
-    TPaveText* pt_lumi = new TPaveText(0.16, 0.77, 0.4, 0.82, "NDC NB");
+    TPaveText* pt_lumi = new TPaveText(0.16, 0.76, 0.4, 0.81, "NDC NB");
     pt_lumi->SetTextSize(0.035); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("#int L dt = 361.7 fb^{-1}"); pt_lumi->Draw();
 
     c_temp->cd();
