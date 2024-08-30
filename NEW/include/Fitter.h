@@ -1144,7 +1144,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
     TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
-    pad1->SetBottomMargin(0.02); pad1->SetLeftMargin(0.15);
+    pad1->SetBottomMargin(0.01); pad1->SetLeftMargin(0.15);
     pad1->Draw(); pad1->cd();
 
     gStyle->SetPalette(kPastel);
@@ -1157,8 +1157,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
 
     Stack->SetMaximum(real_max * 1.1);
 
-    Stack->GetXaxis()->SetLabelSize(0.0); Stack->GetXaxis()->SetTitleSize(0.0);
-    Stack->Draw("pfc Hist");
+    Stack->Draw("pfc Hist"); Stack->GetXaxis()->SetLabelSize(0.0); Stack->GetXaxis()->SetTitleSize(0.0);
     if (data != nullptr) {
         data_hist->SetLineWidth(2);
         data_hist->SetLineColor(kBlack);
@@ -1178,14 +1177,14 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
 
     // write MXs bin text
     TPaveText* pt_1 = new TPaveText(0.14, 0.9, 0.8 / 3.0 + 0.14, 1.0, "NDC NB");
-    pt_1->SetTextSize(0.04); pt_1->SetFillStyle(0); pt_1->SetLineWidth(0); pt_1->AddText("0.0 < M_{X_{s}}^{reco} < 0.6 GeV/c^{2}"); pt_1->Draw();
+    pt_1->SetTextSize(0.035); pt_1->SetFillStyle(0); pt_1->SetLineWidth(0); pt_1->AddText("0.0 < M_{X_{s}}^{reco} < 0.6 GeV/c^{2}"); pt_1->Draw();
     TPaveText* pt_2 = new TPaveText(0.8 / 3.0 + 0.14, 0.9, 2.0 * 0.8 / 3.0 + 0.14, 1.0, "NDC NB");
-    pt_2->SetTextSize(0.04); pt_2->SetFillStyle(0); pt_2->SetLineWidth(0); pt_2->AddText("0.6 < M_{X_{s}}^{reco} < 1.0 GeV/c^{2}"); pt_2->Draw();
+    pt_2->SetTextSize(0.035); pt_2->SetFillStyle(0); pt_2->SetLineWidth(0); pt_2->AddText("0.6 < M_{X_{s}}^{reco} < 1.0 GeV/c^{2}"); pt_2->Draw();
     TPaveText* pt_3 = new TPaveText(2.0 * 0.8 / 3.0 + 0.1, 0.9, 3.0 * 0.8 / 3.0 + 0.1, 1.0, "NDC NB");
-    pt_3->SetTextSize(0.04); pt_3->SetFillStyle(0); pt_3->SetLineWidth(0); pt_3->AddText("1.0 GeV/c^{2} < M_{X_{s}}^{reco}"); pt_3->Draw();
+    pt_3->SetTextSize(0.035); pt_3->SetFillStyle(0); pt_3->SetLineWidth(0); pt_3->AddText("1.0 GeV/c^{2} < M_{X_{s}}^{reco}"); pt_3->Draw();
 
     c_temp->cd();
-    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.2); pad2->SetLeftMargin(0.15); pad2->SetTopMargin(0.2); pad2->Draw(); pad2->cd();
+    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.2); pad2->SetLeftMargin(0.15); pad2->SetTopMargin(0.1); pad2->Draw(); pad2->cd();
     Ratio_hist->SetMinimum(0.5); Ratio_hist->SetMaximum(1.5); Ratio_hist->SetLineWidth(2);
     Ratio_hist->GetYaxis()->SetTitleSize(0.08); Ratio_hist->GetYaxis()->SetTitleOffset(0.5); Ratio_hist->GetYaxis()->SetLabelSize(0.08);
     Ratio_hist->GetXaxis()->SetLabelSize(0.08); Ratio_hist->GetXaxis()->SetTitleSize(0.08);
