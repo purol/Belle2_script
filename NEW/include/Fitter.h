@@ -1143,7 +1143,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     // draw plot
     TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
-    TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
+    TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
     pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
     pad1->Draw(); pad1->cd();
 
@@ -1184,10 +1184,10 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     pt_3->SetTextSize(0.04); pt_3->SetFillStyle(0); pt_3->SetLineWidth(0); pt_3->AddText("1.0 GeV/c^{2} < M_{X_{s}}^{reco}"); pt_3->Draw();
 
     c_temp->cd();
-    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->Draw(); pad2->cd();
+    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.2); pad2->SetLeftMargin(0.15); pad2->Draw(); pad2->cd();
     Ratio_hist->SetMinimum(0.5); Ratio_hist->SetMaximum(1.5); Ratio_hist->SetLineWidth(2);
-    Ratio_hist->GetYaxis()->SetTitleSize(0.08); Ratio_hist->GetYaxis()->SetTitleOffset(0.5);
-    Ratio_hist->GetXaxis()->SetLabelSize(0.08); Ratio_hist->GetYaxis()->SetLabelSize(0.08);
+    Ratio_hist->GetYaxis()->SetTitleSize(0.08); Ratio_hist->GetYaxis()->SetTitleOffset(0.5); Ratio_hist->GetYaxis()->SetLabelSize(0.08);
+    Ratio_hist->GetXaxis()->SetLabelSize(0.08); RatioorPull->GetXaxis()->SetTitleSize(0.08);
     Ratio_hist->Draw("e0p");
     TLine* line = new TLine(Ratio_hist->GetXaxis()->GetXmin(), 1.0, Ratio_hist->GetXaxis()->GetXmax(), 1.0);
     line->SetLineColor(kRed);
