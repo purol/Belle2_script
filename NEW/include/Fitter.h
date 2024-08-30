@@ -1034,18 +1034,18 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     bool Allccbarnull = true;
     bool AllSIGANLnull = true;
 
-    THStack* Stack = new THStack("Stack", ";bin index;number of event");
-    TH1D* charged_hist = new TH1D("charged", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* mixed_hist = new TH1D("mixed", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* uubar_hist = new TH1D("u#bar{u}", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* ddbar_hist = new TH1D("d#bar{d}", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* ssbar_hist = new TH1D("s#bar{s}", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* ccbar_hist = new TH1D("c#bar{c}", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* SIGNAL_hist = new TH1D("SIGNAL", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
-    TH1D* all_hist = new TH1D("all", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
+    THStack* Stack = new THStack("Stack", ";bin index;Events");
+    TH1D* charged_hist = new TH1D("charged", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* mixed_hist = new TH1D("mixed", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* uubar_hist = new TH1D("u#bar{u}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* ddbar_hist = new TH1D("d#bar{d}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* ssbar_hist = new TH1D("s#bar{s}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* ccbar_hist = new TH1D("c#bar{c}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* SIGNAL_hist = new TH1D("SIGNAL", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* all_hist = new TH1D("all", ";bin index;Events", RarityBins, BinMIN, BinMAX);
     TH1D* data_hist = nullptr;
     if (data != nullptr) {
-        data_hist = new TH1D("data", ";bin index;number of event", RarityBins, BinMIN, BinMAX);
+        data_hist = new TH1D("data", ";bin index;Events", RarityBins, BinMIN, BinMAX);
         data_hist->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
     }
     TH1D* Ratio_hist = new TH1D("Ratio", ";bin index;data/MC", RarityBins, BinMIN, BinMAX);
@@ -1182,6 +1182,13 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     pt_2->SetTextSize(0.035); pt_2->SetFillStyle(0); pt_2->SetLineWidth(0); pt_2->AddText("0.6 < M_{X_{s}}^{reco} < 1.0 GeV/c^{2}"); pt_2->Draw();
     TPaveText* pt_3 = new TPaveText(2.0 * 0.8 / 3.0 + 0.1, 0.9, 3.0 * 0.8 / 3.0 + 0.1, 1.0, "NDC NB");
     pt_3->SetTextSize(0.035); pt_3->SetFillStyle(0); pt_3->SetLineWidth(0); pt_3->AddText("1.0 GeV/c^{2} < M_{X_{s}}^{reco}"); pt_3->Draw();
+
+    // write Belle text
+    TPaveText* pt_belle = new TPaveText(0.05, 0.75, 0.4, 1.0, "NDC NB");
+    pt_belle->SetTextSize(0.035); pt_belle->SetFillStyle(0); pt_belle->SetLineWidth(0);
+    pt_belle->AddText("Belle II");
+    pt_belle->AddText("#int #mathcal{L} dt = 361.7 fb^{-1}");
+    pt_belle->Draw();
 
     c_temp->cd();
     TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.2); pad2->SetLeftMargin(0.15); pad2->SetTopMargin(0.05); pad2->Draw(); pad2->cd();
