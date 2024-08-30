@@ -1184,9 +1184,9 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     pt_3->SetTextSize(0.035); pt_3->SetFillStyle(0); pt_3->SetLineWidth(0); pt_3->AddText("1.0 GeV/c^{2} < M_{X_{s}}^{reco}"); pt_3->Draw();
 
     // write Belle text
-    TPaveText* pt_belle = new TPaveText(0.13, 0.83, 0.4, 0.88, "NDC NB");
+    TPaveText* pt_belle = new TPaveText(0.16, 0.83, 0.4, 0.88, "NDC NB");
     pt_belle->SetTextSize(0.035); pt_belle->SetFillStyle(0); pt_belle->SetLineWidth(0); pt_belle->SetTextAlign(11); pt_belle->AddText("Belle II"); pt_belle->Draw();
-    TPaveText* pt_lumi = new TPaveText(0.13, 0.77, 0.4, 0.82, "NDC NB");
+    TPaveText* pt_lumi = new TPaveText(0.16, 0.77, 0.4, 0.82, "NDC NB");
     pt_lumi->SetTextSize(0.035); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("#int L dt = 361.7 fb^{-1}"); pt_lumi->Draw();
 
     c_temp->cd();
