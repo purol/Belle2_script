@@ -292,7 +292,6 @@ void AddEmptySample(HistFactory::Channel* channel, int MXs_bin) {
 	TH1D* temp_hist;
 	if (MXs_bin == 1) {
 		temp_hist = new TH1D("empty_hist", "empty_hist", RarityBins_MX1, 0, RarityBins_MX1);
-		temp_data = new TH1D("empty_hist", "empty_hist", RarityBins_MX1, 0, RarityBins_MX1);
 		for (int i = 0; i < RarityBins_MX1; i++) {
 			temp_hist->SetBinError(i + 1, 0);
 			temp_hist->SetBinContent(i + 1, 0);
@@ -318,6 +317,9 @@ void AddEmptySample(HistFactory::Channel* channel, int MXs_bin) {
 	}
 	temp_hist->Write();
 	input_file->Close();
+
+	// point data
+	channel->SetData("empty_hist", empty_file_name);
 
 	// read signal template
 	/* ================================ SIGNAL with true MXs1 ================================ */
@@ -382,6 +384,9 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 		printf("inappropritate bin\n");
 		exit(1);
 	}
+
+	// point data
+	channel->SetData("total_DATA", fname);
 
 	// read background template
 	/* ================================ CHG ================================ */
@@ -544,11 +549,6 @@ int WorkSpace_side() {
 
 	HistFactory::Channel channel_MXs3("channel_MXs3");
 	channel_MXs3.SetStatErrorConfig(1e-5, "Gaussian");
-
-	// point data
-	channel_MXs1.SetData("total_DATA", fname_MXs1);
-	channel_MXs2.SetData("total_DATA", fname_MXs2);
-	channel_MXs3.SetData("total_DATA", fname_MXs3);
 
 	// get MC
 	AddSample(&channel_MXs1, fname_MXs1, 1, expmu, 1.0436, 0.0886, 0.2);
