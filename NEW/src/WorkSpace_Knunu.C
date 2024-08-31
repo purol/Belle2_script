@@ -274,6 +274,96 @@ bool IsThereAnyChange(const char* fname, const char* nominal_hist_name, const ch
 	return ThereIsChange;
 }
 
+void AddEmptySample(HistFactory::Channel* channel, int MXs_bin) {
+	// MXs_bin: reco bin
+
+	std::string bin_name = "";
+	if (MXs_bin == 1) bin_name = std::string("MXs1");
+	else if (MXs_bin == 2) bin_name = std::string("MXs2");
+	else if (MXs_bin == 3) bin_name = std::string("MXs3");
+	else {
+		printf("inappropritate bin\n");
+		exit(1);
+	}
+
+	// make empty root file
+	const char* empty_file_name = "empty_file.root";
+	TFile* input_file = new TFile(empty_file_name, "RECREATE");
+	TH1D* temp_hist;
+	if (MXs_bin == 1) {
+		temp_hist = new TH1D("empty_hist", "empty_hist", RarityBins_MX1, 0, RarityBins_MX1);
+		temp_data = new TH1D("empty_hist", "empty_hist", RarityBins_MX1, 0, RarityBins_MX1);
+		for (int i = 0; i < RarityBins_MX1; i++) {
+			temp_hist->SetBinError(i + 1, 0);
+			temp_hist->SetBinContent(i + 1, 0);
+		}
+	}
+	else if (MXs_bin == 2) {
+		temp_hist = new TH1D("empty_hist", "empty_hist", RarityBins_MX2, 0, RarityBins_MX2);
+		for (int i = 0; i < RarityBins_MX2; i++) {
+			temp_hist->SetBinError(i + 1, 0);
+			temp_hist->SetBinContent(i + 1, 0);
+		}
+	}
+	else if (MXs_bin == 3) {
+		temp_hist = new TH1D("empty_hist", "empty_hist", RarityBins_MX3, 0, RarityBins_MX3);
+		for (int i = 0; i < RarityBins_MX3; i++) {
+			temp_hist->SetBinError(i + 1, 0);
+			temp_hist->SetBinContent(i + 1, 0);
+		}
+	}
+	else {
+		printf("inappropritate bin\n");
+		exit(1);
+	}
+	temp_hist->Write();
+	input_file->Close();
+
+	// read signal template
+	/* ================================ SIGNAL with true MXs1 ================================ */
+	RooStats::HistFactory::Sample sig_temp_MXs1(("Signal_MXs1_nominal_" + bin_name).c_str(), "empty_hist", empty_file_name);
+	channel->AddSample(sig_temp_MXs1);
+
+	/* ================================ SIGNAL with true MXs2 ================================ */
+	RooStats::HistFactory::Sample sig_temp_MXs2(("Signal_MXs2_nominal_" + bin_name).c_str(), "empty_hist", empty_file_name);
+	channel->AddSample(sig_temp_MXs2);
+
+	/* ================================ SIGNAL with true MXs3 ================================ */
+	RooStats::HistFactory::Sample sig_temp_MXs3(("Signal_MXs3_nominal_" + bin_name).c_str(), "empty_hist", empty_file_name);
+	channel->AddSample(sig_temp_MXs3);
+
+	// read background template
+	/* ================================ CHG ================================ */
+	RooStats::HistFactory::Sample CHG_temp(("CHG_nominal_" + bin_name).c_str(), "empty_hist", empty_file_name);
+	channel->AddSample(CHG_temp);
+	/* ================================ CHG ================================ */
+
+	/* ================================ MIX ================================ */
+	RooStats::HistFactory::Sample MIX_temp(("MIX_nominal_" + bin_name).c_str(), "empty_hist", empty_file_name);
+	channel->AddSample(MIX_temp);
+	/* ================================ MIX ================================ */
+
+	/* ================================ UUBAR ================================ */
+	RooStats::HistFactory::Sample UUBAR_temp(("UUBAR_nominal_" + bin_name).c_str(), "empty_hist", empty_file_name);
+	channel->AddSample(UUBAR_temp);
+	/* ================================ UUBAR ================================ */
+
+	/* ================================ DDBAR ================================ */
+	RooStats::HistFactory::Sample DDBAR_temp(("DDBAR_nominal_" + bin_name).c_str(), "empty_hist", empty_file_name);
+	channel->AddSample(DDBAR_temp);
+	/* ================================ DDBAR ================================ */
+
+	/* ================================ SSBAR ================================ */
+	RooStats::HistFactory::Sample SSBAR_temp(("SSBAR_nominal_" + bin_name).c_str(), "empty_hist", empty_file_name);
+	channel->AddSample(SSBAR_temp);
+	/* ================================ SSBAR ================================ */
+
+	/* ================================ CHARM ================================ */
+	RooStats::HistFactory::Sample CHARM_temp(("CHARM_nominal_" + bin_name).c_str(), "empty_hist", empty_file_name);
+	channel->AddSample(CHARM_temp);
+	/* ================================ CHARM ================================ */
+}
+
 void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, const double expmu, double qq_CAL, double qq_CAL_relativeuncer, double FBDT_CAL, double FBDT_CAL_relativeuncer, double bkg_norm_relativeuncer) {
 
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
@@ -527,7 +617,7 @@ int WorkSpace_Knunu() {
 	int NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
 
 	RooStats::HistFactory::Measurement meas("my_measurement", "my measurement");
-	meas.SetOutputFilePrefix("PDFandDATA/my_measurement");
+	meas.SetOutputFilePrefix("PDFandDATA_MXs1/my_measurement");
 	meas.SetExportOnly(kTRUE);
 
 	// setting measurement
@@ -575,9 +665,9 @@ int WorkSpace_Knunu() {
 
 	w->Print();
 	CheckInterpolation(w);
-	w->writeToFile("PDFandDATA_workspace.root");
+	w->writeToFile("PDFandDATA_workspace_MXs1.root");
 
-	meas.PrintXML("PDFandDATA");
+	meas.PrintXML("PDFandDATA_MXs1");
 
 	return 0;
 }
