@@ -1176,11 +1176,11 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     line_12->Draw(); line_23->Draw();
 
     // write MXs bin text
-    TPaveText* pt_1 = new TPaveText(0.14, 0.9, 0.25 + 0.14, 1.0, "NDC NB");
+    TPaveText* pt_1 = new TPaveText(0.14, 0.85, 0.25 + 0.14, 1.0, "NDC NB");
     pt_1->SetTextSize(0.035); pt_1->SetFillStyle(0); pt_1->SetLineWidth(0); pt_1->SetTextAlign(11); pt_1->AddText("0.0 < M_{X_{s}}^{reco} < 0.6 GeV/c^{2}"); pt_1->Draw();
-    TPaveText* pt_2 = new TPaveText(0.25 + 0.14, 0.9, 2.0 * 0.25 + 0.14, 1.0, "NDC NB");
+    TPaveText* pt_2 = new TPaveText(0.25 + 0.14, 0.85, 2.0 * 0.25 + 0.14, 1.0, "NDC NB");
     pt_2->SetTextSize(0.035); pt_2->SetFillStyle(0); pt_2->SetLineWidth(0); pt_2->SetTextAlign(11); pt_2->AddText("0.6 < M_{X_{s}}^{reco} < 1.0 GeV/c^{2}"); pt_2->Draw();
-    TPaveText* pt_3 = new TPaveText(2.0 * 0.25 + 0.14, 0.9, 3.0 * 0.25 + 0.14, 1.0, "NDC NB");
+    TPaveText* pt_3 = new TPaveText(2.0 * 0.25 + 0.14, 0.85, 3.0 * 0.25 + 0.14, 1.0, "NDC NB");
     pt_3->SetTextSize(0.035); pt_3->SetFillStyle(0); pt_3->SetLineWidth(0); pt_3->SetTextAlign(11); pt_3->AddText("1.0 < M_{X_{s}}^{reco} < 2.0 GeV/c^{2}"); pt_3->Draw();
 
     // write Belle text
