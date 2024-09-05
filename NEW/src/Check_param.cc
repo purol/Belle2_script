@@ -204,6 +204,8 @@ int main() {
 
     OPTIONS* options = (OPTIONS*)malloc(sizeof(OPTIONS));
     Initialize_options(options, "none");
+
+    w->loadSnapshot("NominalParamValues");
     FixParameters(w, options);
 
     // test

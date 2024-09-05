@@ -315,8 +315,6 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
-    w->loadSnapshot("NominalParamValues");
-
     RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
     std::unique_ptr<RooArgSet> params{model->getParameters(RooArgSet(*x_val_MXs1))};
 

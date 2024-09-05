@@ -769,6 +769,8 @@ int main(int argc, char* argv[]) {
     else if (std::string(argv[1]) == std::string("nuisance")) {
         OPTIONS* options = (OPTIONS*)malloc(sizeof(OPTIONS));
         Initialize_options(options, fixed_param.c_str());
+
+        w->loadSnapshot("NominalParamValues");
         FixParameters(w, options);
     }
 

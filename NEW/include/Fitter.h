@@ -351,8 +351,6 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
-    w->loadSnapshot("NominalParamValues");
-
     RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
     RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
     RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
