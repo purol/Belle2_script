@@ -360,7 +360,11 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->track) w->var("alpha_track_eff_uncer")->setConstant(options_->track);
 
     // PID
-    if (options_->PID) for (int i = 0; i < options_->NEntryPID; i++) w->var(("alpha_PID" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->PID);
+    if (options_->PID) for (int i = 0; i < options_->NEntryPID; i++) {
+        if (w->var(("alpha_PID" + std::to_string(i) + "_uncer").c_str())) {
+            w->var(("alpha_PID" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->PID);
+        }
+    }
 
     // KID
     if (options_->KID) for (int i = 0; i < options_->NEntryKID; i++) w->var(("alpha_KID" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->KID);
@@ -369,13 +373,17 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->KS0) w->var("alpha_KS0_reco_uncer")->setConstant(options_->KS0);
 
     // pi0
-    if (options_->pi0) for (int i = 0; i < options_->NEntrypi0; i++) w->var(("alpha_pi0" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->pi0);
+    if (options_->pi0) for (int i = 0; i < options_->NEntrypi0; i++) {
+        if (w->var(("alpha_pi0" + std::to_string(i) + "_uncer").c_str())) {
+            w->var(("alpha_pi0" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->pi0);
+        }
+    }
 
     // FBDT efficiency
     if (options_->FBDT) {
         w->var("alpha_FBDT_efficiency_uncer_MXs1")->setConstant(options_->FBDT);
-        w->var("alpha_FBDT_efficiency_uncer_MXs2")->setConstant(options_->FBDT);
-        w->var("alpha_FBDT_efficiency_uncer_MXs3")->setConstant(options_->FBDT);
+        if(w->var("alpha_FBDT_efficiency_uncer_MXs2")) w->var("alpha_FBDT_efficiency_uncer_MXs2")->setConstant(options_->FBDT);
+        if(w->var("alpha_FBDT_efficiency_uncer_MXs3")) w->var("alpha_FBDT_efficiency_uncer_MXs3")->setConstant(options_->FBDT);
     }
 
     // FEI
@@ -384,17 +392,17 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     // qqbar normalization
     if (options_->qqbar) {
         w->var("alpha_qq_CAL_UUBAR_uncer_MXs1")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_UUBAR_uncer_MXs2")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_UUBAR_uncer_MXs3")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_UUBAR_uncer_MXs2")) w->var("alpha_qq_CAL_UUBAR_uncer_MXs2")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_UUBAR_uncer_MXs3")) w->var("alpha_qq_CAL_UUBAR_uncer_MXs3")->setConstant(options_->qqbar);
         w->var("alpha_qq_CAL_DDBAR_uncer_MXs1")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_DDBAR_uncer_MXs2")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_DDBAR_uncer_MXs3")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_DDBAR_uncer_MXs2")) w->var("alpha_qq_CAL_DDBAR_uncer_MXs2")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_DDBAR_uncer_MXs3")) w->var("alpha_qq_CAL_DDBAR_uncer_MXs3")->setConstant(options_->qqbar);
         w->var("alpha_qq_CAL_SSBAR_uncer_MXs1")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_SSBAR_uncer_MXs2")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_SSBAR_uncer_MXs3")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_SSBAR_uncer_MXs2")) w->var("alpha_qq_CAL_SSBAR_uncer_MXs2")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_SSBAR_uncer_MXs3")) w->var("alpha_qq_CAL_SSBAR_uncer_MXs3")->setConstant(options_->qqbar);
         w->var("alpha_qq_CAL_CHARM_uncer_MXs1")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_CHARM_uncer_MXs2")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_CHARM_uncer_MXs3")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_CHARM_uncer_MXs2")) w->var("alpha_qq_CAL_CHARM_uncer_MXs2")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_CHARM_uncer_MXs3")) w->var("alpha_qq_CAL_CHARM_uncer_MXs3")->setConstant(options_->qqbar);
     }
 
     // photon multiplicity correction
@@ -438,8 +446,8 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     // MC statistics
     if (options_->MCstat) {
         for (int i = 0; i < RarityBins_MX1; i++) w->var(("gamma_stat_channel_MXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
-        for (int i = 0; i < RarityBins_MX2; i++) w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
-        for (int i = 0; i < RarityBins_MX3; i++) w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+        for (int i = 0; i < RarityBins_MX2; i++) if(w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())) w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+        for (int i = 0; i < RarityBins_MX3; i++) if(w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())) w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
     }
 
     // Fragmentation
@@ -451,23 +459,23 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     // background normalization
     if (options_->BKGNorm) {
         w->var("alpha_mu_CHG_MXs1")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_CHG_MXs2")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_CHG_MXs3")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_CHG_MXs2")) w->var("alpha_mu_CHG_MXs2")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_CHG_MXs3"))w->var("alpha_mu_CHG_MXs3")->setConstant(options_->BKGNorm);
         w->var("alpha_mu_MIX_MXs1")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_MIX_MXs2")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_MIX_MXs3")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_MIX_MXs2"))w->var("alpha_mu_MIX_MXs2")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_MIX_MXs3")) w->var("alpha_mu_MIX_MXs3")->setConstant(options_->BKGNorm);
         w->var("alpha_mu_UUBAR_MXs1")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_UUBAR_MXs2")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_UUBAR_MXs3")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_UUBAR_MXs2")) w->var("alpha_mu_UUBAR_MXs2")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_UUBAR_MXs3")) w->var("alpha_mu_UUBAR_MXs3")->setConstant(options_->BKGNorm);
         w->var("alpha_mu_DDBAR_MXs1")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_DDBAR_MXs2")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_DDBAR_MXs3")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_DDBAR_MXs2")) w->var("alpha_mu_DDBAR_MXs2")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_DDBAR_MXs3")) w->var("alpha_mu_DDBAR_MXs3")->setConstant(options_->BKGNorm);
         w->var("alpha_mu_SSBAR_MXs1")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_SSBAR_MXs2")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_SSBAR_MXs3")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_SSBAR_MXs2")) w->var("alpha_mu_SSBAR_MXs2")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_SSBAR_MXs3")) w->var("alpha_mu_SSBAR_MXs3")->setConstant(options_->BKGNorm);
         w->var("alpha_mu_CHARM_MXs1")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_CHARM_MXs2")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_CHARM_MXs3")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_CHARM_MXs2")) w->var("alpha_mu_CHARM_MXs2")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_CHARM_MXs3")) w->var("alpha_mu_CHARM_MXs3")->setConstant(options_->BKGNorm);
     }
 
     // BDTc
