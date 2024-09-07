@@ -830,39 +830,81 @@ void FitToData(RooWorkspace* w, double eps) {
     delete fitres;
 }
 
-void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, double eps) {
+void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, double eps, RooDataSet* data) {
 
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
     RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-    RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+    RooCategory* channelCat = (RooCategory*)(&model->indexCat());
+    RooRealVar* weight_ = new RooRealVar("weight_", "", 0.0, 1000.0);
 
-    // construct PDfs from data
-    RooDataSet* data = (RooDataSet*)w->data("asimovData");
-    TH1D* HistData = (TH1D*)data->createHistogram("HistData", *x, Binning(RarityBins, BinMIN, BinMAX));
-    RooDataHist DataHist("DataHist", "DataHist", *x, HistData);
-    RooHistPdf dataPDF("dataPDF", "dataPDF", RooArgSet(*x, model->indexCat()), DataHist);
-
-    // get total number of event in data
-    double Nevt_data = 0;
-    int Nevt_data_int = 0;
-    for (int i = 0; i < RarityBins; i++) Nevt_data = Nevt_data + HistData->GetBinContent(i + 1);
-    Nevt_data_int = (int)std::round(Nevt_data);
-
-    
     for (int i = 0; i < Toy_iter_num; i++) { // Do Toy MC study
 
+        // get nominal configuration
         w->loadSnapshot("ParamValues");
-
         filesaver.GetTrueValues(w, names);
 
-        RooDataSet* genData = dataPDF.generate(RooArgSet(*x, model->indexCat()), Nevt_data_int, false, true, "", false, true);
+        // generate RooDataSet
+        w->loadSnapshot("ParamValues");
+        RooDataSet* genData = new RooDataSet("hmaster", "hmaster", RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat, *weight_), weight_->GetName());
+        for (int j = 0; j < RarityBins_MX1; j++) {
+            // channel 1
+            x_val_MXs1->setVal(0.5 + j);
+            x_val_MXs2->setVal(0.5);
+            x_val_MXs3->setVal(0.5);
+            channelCat->setLabel("channel_MXs1");
+
+            // load data
+            data->get(j);
+
+            // generate data with Poisson fluctuation
+            std::poisson_distribution<int> distribution((int)floor(data->weight() + 0.5));
+            int Nentry_with_fluctuation = distribution(generator);
+            genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nentry_with_fluctuation);
+        }
+        for (int j = 0; j < RarityBins_MX2; j++) {
+            // channel 2
+            x_val_MXs1->setVal(RarityBins_MX1 - 0.5);
+            x_val_MXs2->setVal(0.5 + j);
+            x_val_MXs3->setVal(0.5);
+            channelCat->setLabel("channel_MXs2");
+
+            // load data
+            data->get(RarityBins_MX1 + j);
+
+            // generate data with Poisson fluctuation
+            std::poisson_distribution<int> distribution((int)floor(data->weight() + 0.5));
+            int Nentry_with_fluctuation = distribution(generator);
+            genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nentry_with_fluctuation);
+        }
+        for (int j = 0; j < RarityBins_MX3; j++) {
+            // channel 3
+            x_val_MXs1->setVal(RarityBins_MX1 - 0.5);
+            x_val_MXs2->setVal(RarityBins_MX2 - 0.5);
+            x_val_MXs3->setVal(0.5 + j);
+            channelCat->setLabel("channel_MXs3");
+
+            // load data
+            data->get(RarityBins_MX1 + RarityBins_MX2 + j);
+
+            // generate data with Poisson fluctuation
+            std::poisson_distribution<int> distribution((int)floor(data->weight() + 0.5));
+            int Nentry_with_fluctuation = distribution(generator);
+            genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nentry_with_fluctuation);
+        }
 
         w->loadSnapshot("ParamValues");
         //RooFitResult* fitres = model->fitTo(*genData, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
         RooAbsReal* nll;
         RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
+
+        delete genData;
+
+        if (MyDEBUG) Debug(w, fitres, genData);
 
         filesaver.GetFittingValues(fitres, names);
         filesaver.GetFittingStatus(fitres);
@@ -871,7 +913,6 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
         delete fitres;
 
     }
-    
 }
 
 void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
