@@ -122,7 +122,7 @@ void LetsFill(const char* dirname, TH1D* hist, const char* included_string, doub
 
 }
 
-void THStack_Mxs() {
+void THStack_Mxs_preselection() {
 
     const char* Knunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/SIGNAL/validation";
     const char* Kstarnunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/SIGNAL/validation";
