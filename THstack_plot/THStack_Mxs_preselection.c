@@ -65,19 +65,23 @@ void LetsFill(const char* dirname, TH1D* hist, double weight = 1) {
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
         printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
 
-        TTree* tree_upsilon = (TTree*)input_file->Get("Upsilon");
-        TTree* tree_Bsig = (TTree*)input_file->Get("Bsig");
-        TTree* tree_Btag = (TTree*)input_file->Get("Btag");
+        TTree* tree_Xsu = (TTree*)input_file->Get("Xsu_preselection");
+        TTree* tree_Xsd = (TTree*)input_file->Get("Xsd_preselection");
 
-        tree_Bsig->SetBranchAddress("Bsig_M", &var);
-
-        printf("%lld entries...\n", tree_upsilon->GetEntries());
-        for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
-            tree_upsilon->GetEntry(j);
-            tree_Bsig->GetEntry(j);
-            tree_Btag->GetEntry(j);
+        tree_Xsu->SetBranchAddress("M", &var);
+        printf("%lld entries...\n", tree_Xsu->GetEntries());
+        for (unsigned int j = 0; j < tree_Xsu->GetEntries(); j++) { // Fill
+            tree_Xsu->GetEntry(j);
             hist->Fill(var, weight);
         }
+
+        tree_Xsd->SetBranchAddress("M", &var);
+        printf("%lld entries...\n", tree_Xsd->GetEntries());
+        for (unsigned int j = 0; j < tree_Xsd->GetEntries(); j++) { // Fill
+            tree_Xsd->GetEntry(j);
+            hist->Fill(var, weight);
+        }
+
         input_file->Close();
 
     }
