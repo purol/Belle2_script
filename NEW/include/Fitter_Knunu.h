@@ -1182,7 +1182,8 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
         pull_two_sigma->GetXaxis()->SetBinLabel(i + 1, names.at(i).c_str());
     }
     pull_two_sigma->SetStats(false);
-    pull_two_sigma->GetYaxis()->SetTitle("(#hat{#theta}-#theta)/#Delta#theta");
+    if (type == 0) pull_two_sigma->GetYaxis()->SetTitle("(#hat{#theta}-#theta)/#Delta#theta");
+    else if (type == 1) pull_two_sigma->GetYaxis()->SetTitle("(#hat{#theta}-#theta)/#sigma");
     pull_two_sigma->GetYaxis()->SetTitleOffset(1.4);
     pull_two_sigma->GetXaxis()->LabelsOption("v");
 
