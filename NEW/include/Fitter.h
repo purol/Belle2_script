@@ -1285,6 +1285,8 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
         exit(1);
     }
 
+    RooArgSet* nominal_argset = w->getSnapshot("NominalParamValues");
+
     std::vector<double> pulls;
     std::vector<double> pull_errors;
     std::vector<std::string> names;
@@ -1303,6 +1305,8 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
         std::cout << "+-" << err << std::endl;
 
         if (name.find("alpha") != std::string::npos) {
+            RooRealVar* nominal_var = nominal_argset->find(name.c_str());
+            printf("[test] %s, %lf +- %lf, %lf +- %lf\n", name.c_str(), val, err, nominal_var->getValV(), nominal_var->errorVar()->getValV());
             if (type == 0) {
                 pulls.push_back((val - 0.0) / 1.0);
                 pull_errors.push_back(err / 1.0);
@@ -1315,6 +1319,8 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
             }
         }
         else if (name.find("gamma_stat") != std::string::npos) {
+            RooRealVar* nominal_var = nominal_argset->find(name.c_str());
+            printf("[test] %s, %lf +- %lf, %lf +- %lf\n", name.c_str(), val, err, nominal_var->getValV(), nominal_var->errorVar()->getValV());
 
             /* poisson */
             //RooRealVar* norm = w->var(("nom_" + names->at(i)).c_str());
@@ -1338,6 +1344,8 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
             }
         }
         else if ((name.find("gamma") != std::string::npos) && (name.find("uncorr") != std::string::npos)) {
+            RooRealVar* nominal_var = nominal_argset->find(name.c_str());
+            printf("[test] %s, %lf +- %lf, %lf +- %lf\n", name.c_str(), val, err, nominal_var->getValV(), nominal_var->errorVar()->getValV());
 
             RooRealVar* variable = w->var(name.c_str());
             RooErrorVar* err_variable = variable->errorVar();

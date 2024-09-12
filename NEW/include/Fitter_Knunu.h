@@ -1070,6 +1070,8 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
         exit(1);
     }
 
+    RooArgSet* nominal_argset = w->getSnapshot("NominalParamValues");
+
     std::vector<double> pulls;
     std::vector<double> pull_errors;
     std::vector<std::string> names;
