@@ -1050,7 +1050,25 @@ void ObtainNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll) {
     (*nll) = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
 }
 
-void Drawpull(RooWorkspace* w, TIterator* iter) {
+void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
+    /*
+    * type = 0:
+    * center = (postfit_value - prefit_value) / prefit_error
+    * error = postfit_error / prefit_error
+    * 
+    * type = 1:
+    * center = (postfit_value - prefit_value) / sqrt(prefit_error^2 - postfit_error^2)
+    * error = 1
+    * https://arxiv.org/abs/0911.0884
+    */
+
+    if (type == 0) {}
+    else if (type == 1) {}
+    else {
+        printf("[Drawpull] type should be {0|1}\n");
+        exit(1);
+    }
+
     std::vector<double> pulls;
     std::vector<double> pull_errors;
     std::vector<std::string> names;
@@ -1069,9 +1087,16 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
         std::cout << "+-" << err << std::endl;
 
         if (name.find("alpha") != std::string::npos) {
-            pulls.push_back((val - 0.0) / 1.0);
-            pull_errors.push_back(err / 1.0);
-            names.push_back(name);
+            if (type == 0) {
+                pulls.push_back((val - 0.0) / 1.0);
+                pull_errors.push_back(err / 1.0);
+                names.push_back(name);
+            }
+            else if (type == 1) {
+                pulls.push_back((val - 0.0) / std::sqrt(1.0 * 1.0 - err * err));
+                pull_errors.push_back(1.0);
+                names.push_back(name);
+            }
         }
         else if (name.find("gamma_stat") != std::string::npos) {
 
@@ -1085,9 +1110,16 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
             RooErrorVar* err_variable = variable->errorVar();
             double width = err_variable->getValV();
 
-            pulls.push_back((val - 1.0) / width);
-            pull_errors.push_back(err / width);
-            names.push_back(name);
+            if (type == 0) {
+                pulls.push_back((val - 1.0) / width);
+                pull_errors.push_back(err / width);
+                names.push_back(name);
+            }
+            else if (type == 1) {
+                pulls.push_back((val - 1.0) / std::sqrt(width * width - err * err));
+                pull_errors.push_back(1.0);
+                names.push_back(name);
+            }
         }
         else if ((name.find("gamma") != std::string::npos) && (name.find("uncorr") != std::string::npos)) {
 
@@ -1095,9 +1127,16 @@ void Drawpull(RooWorkspace* w, TIterator* iter) {
             RooErrorVar* err_variable = variable->errorVar();
             double width = err_variable->getValV();
 
-            pulls.push_back((val - 1.0) / width);
-            pull_errors.push_back(err / width);
-            names.push_back(name);
+            if (type == 0) {
+                pulls.push_back((val - 1.0) / width);
+                pull_errors.push_back(err / width);
+                names.push_back(name);
+            }
+            else if (type == 1) {
+                pulls.push_back((val - 1.0) / std::sqrt(1.0 * 1.0 - err * err));
+                pull_errors.push_back(1.0);
+                names.push_back(name);
+            }
 
         }
     }
