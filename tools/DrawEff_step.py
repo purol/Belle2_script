@@ -3,12 +3,12 @@ import matplotlib.pyplot as plt
 from matplotlib.transforms import ScaledTranslation
 import math
 
-Scale_CHG_validation_MC15rd = (0.361673/1.458959)
-Scale_MIX_validation_MC15rd = (0.361673/1.458959)
-Scale_UUBAR_validation_MC15rd = (0.361673/1.458959)
-Scale_DDBAR_validation_MC15rd = (0.361673/1.458959)
-Scale_SSBAR_validation_MC15rd = (0.361673/1.458959)
-Scale_CHARM_validation_MC15rd = (0.361673/1.458959)
+Scale_CHG_validation_MC15rd = (0.36449/1.458959)
+Scale_MIX_validation_MC15rd = (0.36449/1.458959)
+Scale_UUBAR_validation_MC15rd = (0.36449/1.458959)
+Scale_DDBAR_validation_MC15rd = (0.36449/1.458959)
+Scale_SSBAR_validation_MC15rd = (0.36449/1.458959)
+Scale_CHARM_validation_MC15rd = (0.36449/1.458959)
 
 def calculate_efficiency(data_total, data_pass, efficiency, efficiency_err):
     for N_total, N_pass in zip(data_total, data_pass):

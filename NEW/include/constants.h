@@ -104,25 +104,26 @@
 # define N_SSBAR_train 31001866.0
 # define N_CHARM_train 174901296.0
 
-// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb), until LS1
+// untile LS1, integrated luminosity is 364.49/fb
+// https://arxiv.org/abs/2407.00965
 # define Scale_CHG_train ((N_BB_LS1* (fpm_f0/(fpm_f0+1.0))) / (2.8 * N_BpBp_1invab * (N_CHG_train / (N_CHG_train + N_CHG_test)) ))
 # define Scale_MIX_train ((N_BB_LS1* (1.0/(fpm_f0+1.0))) / (2.8 * N_B0B0_1invab * (N_MIX_train / (N_MIX_train + N_MIX_test)) ))
-# define Scale_UUBAR_train (0.361673/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
-# define Scale_DDBAR_train (0.361673/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
-# define Scale_SSBAR_train (0.361673/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
-# define Scale_CHARM_train (0.361673/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_UUBAR_train (0.36449/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_train (0.36449/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_train (0.36449/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_train (0.36449/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
 # define Scale_CHG_test ((N_BB_LS1* (fpm_f0/(fpm_f0+1.0))) / (2.8 * N_BpBp_1invab * (N_CHG_test / (N_CHG_train + N_CHG_test)) ))
 # define Scale_MIX_test ((N_BB_LS1* (1.0/(fpm_f0+1.0))) / (2.8 * N_B0B0_1invab * (N_MIX_test / (N_MIX_train + N_MIX_test)) ))
-# define Scale_UUBAR_test (0.361673/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
-# define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
-# define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
-# define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_UUBAR_test (0.36449/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_test (0.36449/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_test (0.36449/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_test (0.36449/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
 # define Scale_CHG_validation ((N_BB_LS1* (fpm_f0/(fpm_f0+1.0))) / (2.8 * N_BpBp_1invab))
 # define Scale_MIX_validation ((N_BB_LS1* (1.0/(fpm_f0+1.0))) / (2.8 * N_B0B0_1invab))
-# define Scale_UUBAR_validation (0.361673)
-# define Scale_DDBAR_validation (0.361673)
-# define Scale_SSBAR_validation (0.361673)
-# define Scale_CHARM_validation (0.361673)
+# define Scale_UUBAR_validation (0.36449)
+# define Scale_DDBAR_validation (0.36449)
+# define Scale_SSBAR_validation (0.36449)
+# define Scale_CHARM_validation (0.36449)
 
 // BKG MC sample number for MC15rd
 # define N_CHG_validation_MC15rd 785108449.0 // 1458.959/fb
@@ -132,12 +133,12 @@
 # define N_SSBAR_validation_MC15rd 526874294.0 // 1458.959/fb
 # define N_CHARM_validation_MC15rd 1889822323.0 // 1458.959/fb
 
-# define Scale_CHG_validation_MC15rd (0.361673/1.458959)
-# define Scale_MIX_validation_MC15rd (0.361673/1.458959)
-# define Scale_UUBAR_validation_MC15rd (0.361673/1.458959)
-# define Scale_DDBAR_validation_MC15rd (0.361673/1.458959)
-# define Scale_SSBAR_validation_MC15rd (0.361673/1.458959)
-# define Scale_CHARM_validation_MC15rd (0.361673/1.458959)
+# define Scale_CHG_validation_MC15rd (0.36449/1.458959)
+# define Scale_MIX_validation_MC15rd (0.36449/1.458959)
+# define Scale_UUBAR_validation_MC15rd (0.36449/1.458959)
+# define Scale_DDBAR_validation_MC15rd (0.36449/1.458959)
+# define Scale_SSBAR_validation_MC15rd (0.36449/1.458959)
+# define Scale_CHARM_validation_MC15rd (0.36449/1.458959)
 
 // the number of Xs decay
 # define Xsu_frag_decay1 531.4

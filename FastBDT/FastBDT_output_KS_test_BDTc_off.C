@@ -13,71 +13,7 @@
 
 using namespace RooFit ;
 
-// arXiv:1409.4557v2
-# define TB0 1.5195 // (Table. 1)
-# define TBp 1.6384 // (Table. 1)
-# define BR_Kplus_nunubar 0.00000398 // (eq. 10)
-# define BR_K0star_nunubar 0.00000919 // (eq. 11)
-# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15)
-# define BR_Kplusstar_nunubar (BR_K0star_nunubar*TBp/TB0) // under (eq. 15)
-# define BR_Xs_nunubar 0.000029 // (eq. 23)
-# define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
-# define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
-
-// https://confluence.desy.de/pages/viewpage.action?pageId=107054222
-# define N_BpBp_1invab 565400000.0
-# define N_B0B0_1invab 534600000.0
-
-# define N_Kplus_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplus_nunubar)
-# define N_Kplusstar_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Kplusstar_nunubar)
-# define N_Xsu_nonresonant_nunubar_1invab (2.0 * N_BpBp_1invab * BR_Xsu_nonresonant_nunubar)
-# define N_K0_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0_nunubar)
-# define N_K0star_nunubar_1invab (2.0 * N_B0B0_1invab * BR_K0star_nunubar)
-# define N_Xsd_nunubar_1invab (2.0 * N_B0B0_1invab * BR_Xsd_nonresonant_nunubar)
-
-// my MC sample number
-# define N_Kplus_nunubar 10000000.0
-# define N_K0_nunubar 10000000.0
-# define N_Kplusstar_nunubar 10000000.0
-# define N_K0star_nunubar 10000000.0
-# define N_Xsu_nonresonant_nunubar 50000000.0
-# define N_Xsd_nonresonant_nunubar 50000000.0
-
-// scale factor for each MC sample
-# define Scale_Kplus (N_Kplus_nunubar_1invab/N_Kplus_nunubar)
-# define Scale_Kplusstar (N_Kplusstar_nunubar_1invab/N_Kplusstar_nunubar)
-# define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_1invab/N_Xsu_nonresonant_nunubar)
-# define Scale_K0 (N_K0_nunubar_1invab/N_K0_nunubar)
-# define Scale_K0star (N_K0star_nunubar_1invab/N_K0star_nunubar)
-# define Scale_Xsd_nonresonant (N_Xsd_nunubar_1invab/N_Xsd_nonresonant_nunubar)
-
-// BKG MC sample number (2.8/ab for BB, 1.0/ab for qq)
-# define N_CHG_test 135437652.0
-# define N_MIX_test 104176964.0
-# define N_UUBAR_test 106465323.0
-# define N_DDBAR_test 25669347.0
-# define N_SSBAR_test 20666484.0
-# define N_CHARM_test 116381155.0
-# define N_CHG_train 156250364.0
-# define N_MIX_train 120553880.0
-# define N_UUBAR_train 159685667.0
-# define N_DDBAR_train 38563469.0
-# define N_SSBAR_train 31004176.0
-# define N_CHARM_train 174628991.0
-
-// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb), until LS1
-# define Scale_CHG_train ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab * (N_CHG_train / (N_CHG_train + N_CHG_test)) ))
-# define Scale_MIX_train ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab * (N_MIX_train / (N_MIX_train + N_MIX_test)) ))
-# define Scale_UUBAR_train (0.361673/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
-# define Scale_DDBAR_train (0.361673/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
-# define Scale_SSBAR_train (0.361673/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
-# define Scale_CHARM_train (0.361673/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
-# define Scale_CHG_test ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab * (N_CHG_test / (N_CHG_train + N_CHG_test)) ))
-# define Scale_MIX_test ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab * (N_MIX_test / (N_MIX_train + N_MIX_test)) ))
-# define Scale_UUBAR_test (0.361673/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
-# define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
-# define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
-# define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
+#include "constants.h"
 
 void load_files(const char* dirname, std::vector<string>* names) {
     TSystemDirectory dir(dirname, dirname);
@@ -218,28 +154,28 @@ void FastBDT_output_KS_test_BDTc_off()
         std::vector<string> names;
         load_files(side_MC_UUBAR_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_UUBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, Scale_UUBAR_train * (0.0361697 / 0.361673));
+            LetsFill((side_MC_UUBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, Scale_UUBAR_train * (0.0361697 / 0.36449));
         }
     }
     {
         std::vector<string> names;
         load_files(side_MC_DDBAR_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_DDBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, Scale_DDBAR_train * (0.0361697 / 0.361673));
+            LetsFill((side_MC_DDBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, Scale_DDBAR_train * (0.0361697 / 0.36449));
         }
     }
     {
         std::vector<string> names;
         load_files(side_MC_SSBAR_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_SSBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, Scale_SSBAR_train * (0.0361697 / 0.361673));
+            LetsFill((side_MC_SSBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, Scale_SSBAR_train * (0.0361697 / 0.36449));
         }
     }
     {
         std::vector<string> names;
         load_files(side_MC_CHARM_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_CHARM_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, Scale_CHARM_train * (0.0361697 / 0.361673));
+            LetsFill((side_MC_CHARM_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, Scale_CHARM_train * (0.0361697 / 0.36449));
         }
     }
 
@@ -256,28 +192,28 @@ void FastBDT_output_KS_test_BDTc_off()
         std::vector<string> names;
         load_files(side_MC_UUBAR_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_UUBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, Scale_UUBAR_test * (0.0061593 / 0.361673));
+            LetsFill((side_MC_UUBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, Scale_UUBAR_test * (0.0061593 / 0.36449));
         }
     }
     {
         std::vector<string> names;
         load_files(side_MC_DDBAR_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_DDBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, Scale_DDBAR_test * (0.0061593 / 0.361673));
+            LetsFill((side_MC_DDBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, Scale_DDBAR_test * (0.0061593 / 0.36449));
         }
     }
     {
         std::vector<string> names;
         load_files(side_MC_SSBAR_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_SSBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, Scale_SSBAR_test * (0.0061593 / 0.361673));
+            LetsFill((side_MC_SSBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, Scale_SSBAR_test * (0.0061593 / 0.36449));
         }
     }
     {
         std::vector<string> names;
         load_files(side_MC_CHARM_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_CHARM_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, Scale_CHARM_test * (0.0061593 / 0.361673));
+            LetsFill((side_MC_CHARM_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, Scale_CHARM_test * (0.0061593 / 0.36449));
         }
     }
 
@@ -291,28 +227,28 @@ void FastBDT_output_KS_test_BDTc_off()
         std::vector<string> names;
         load_files(side_MC_UUBAR_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_UUBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, Scale_UUBAR_train * (0.0361697 / 0.361673), NormFactorForTrain);
+            LetsFillwithCorrection((side_MC_UUBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, Scale_UUBAR_train * (0.0361697 / 0.36449), NormFactorForTrain);
         }
     }
     {
         std::vector<string> names;
         load_files(side_MC_DDBAR_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_DDBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, Scale_DDBAR_train* (0.0361697 / 0.361673), NormFactorForTrain);
+            LetsFillwithCorrection((side_MC_DDBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, Scale_DDBAR_train* (0.0361697 / 0.36449), NormFactorForTrain);
         }
     }
     {
         std::vector<string> names;
         load_files(side_MC_SSBAR_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_SSBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, Scale_SSBAR_train* (0.0361697 / 0.361673), NormFactorForTrain);
+            LetsFillwithCorrection((side_MC_SSBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, Scale_SSBAR_train* (0.0361697 / 0.36449), NormFactorForTrain);
         }
     }
     {
         std::vector<string> names;
         load_files(side_MC_CHARM_train, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_CHARM_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, Scale_CHARM_train* (0.0361697 / 0.361673), NormFactorForTrain);
+            LetsFillwithCorrection((side_MC_CHARM_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, Scale_CHARM_train* (0.0361697 / 0.36449), NormFactorForTrain);
         }
     }
 
@@ -322,28 +258,28 @@ void FastBDT_output_KS_test_BDTc_off()
         std::vector<string> names;
         load_files(side_MC_UUBAR_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_UUBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, Scale_UUBAR_test* (0.0061593 / 0.361673), NormFactorForTest);
+            LetsFillwithCorrection((side_MC_UUBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, Scale_UUBAR_test* (0.0061593 / 0.36449), NormFactorForTest);
         }
     }
     {
         std::vector<string> names;
         load_files(side_MC_DDBAR_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_DDBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, Scale_DDBAR_test* (0.0061593 / 0.361673), NormFactorForTest);
+            LetsFillwithCorrection((side_MC_DDBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, Scale_DDBAR_test* (0.0061593 / 0.36449), NormFactorForTest);
         }
     }
     {
         std::vector<string> names;
         load_files(side_MC_SSBAR_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_SSBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, Scale_SSBAR_test* (0.0061593 / 0.361673), NormFactorForTest);
+            LetsFillwithCorrection((side_MC_SSBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, Scale_SSBAR_test* (0.0061593 / 0.36449), NormFactorForTest);
         }
     }
     {
         std::vector<string> names;
         load_files(side_MC_CHARM_test, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_CHARM_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, Scale_CHARM_test* (0.0061593 / 0.361673), NormFactorForTest);
+            LetsFillwithCorrection((side_MC_CHARM_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, Scale_CHARM_test* (0.0061593 / 0.36449), NormFactorForTest);
         }
     }
 
