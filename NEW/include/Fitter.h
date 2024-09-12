@@ -1285,7 +1285,7 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
         exit(1);
     }
 
-    RooArgSet* nominal_argset = w->getSnapshot("NominalParamValues");
+    const RooArgSet* nominal_argset = w->getSnapshot("NominalParamValues");
 
     std::vector<double> pulls;
     std::vector<double> pull_errors;
@@ -1305,22 +1305,21 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
         std::cout << "+-" << err << std::endl;
 
         if (name.find("alpha") != std::string::npos) {
-            RooRealVar* nominal_var = nominal_argset->find(name.c_str());
-            printf("[test] %s, %lf +- %lf, %lf +- %lf\n", name.c_str(), val, err, nominal_var->getValV(), nominal_var->errorVar()->getValV());
+            RooRealVar* nominal_var = (RooRealVar*)nominal_argset->find(name.c_str());
+
             if (type == 0) {
-                pulls.push_back((val - 0.0) / 1.0);
-                pull_errors.push_back(err / 1.0);
+                pulls.push_back((val - nominal_var->getValV()) / nominal_var->errorVar()->getValV());
+                pull_errors.push_back(err / nominal_var->errorVar()->getValV());
                 names.push_back(name);
             }
             else if (type == 1) {
-                pulls.push_back((val - 0.0) / std::sqrt(1.0 * 1.0 - err * err));
+                pulls.push_back((val - nominal_var->getValV()) / std::sqrt(nominal_var->errorVar()->getValV() * nominal_var->errorVar()->getValV() - err * err));
                 pull_errors.push_back(1.0);
                 names.push_back(name);
             }
         }
         else if (name.find("gamma_stat") != std::string::npos) {
-            RooRealVar* nominal_var = nominal_argset->find(name.c_str());
-            printf("[test] %s, %lf +- %lf, %lf +- %lf\n", name.c_str(), val, err, nominal_var->getValV(), nominal_var->errorVar()->getValV());
+            RooRealVar* nominal_var = (RooRealVar*)nominal_argset->find(name.c_str());
 
             /* poisson */
             //RooRealVar* norm = w->var(("nom_" + names->at(i)).c_str());
@@ -1328,36 +1327,27 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
             //w->var(names->at(i).c_str())->setVal(distribution(generator) / norm->getValV());
 
             /* gaussian */
-            RooRealVar* variable = w->var(name.c_str());
-            RooErrorVar* err_variable = variable->errorVar();
-            double width = err_variable->getValV();
-
             if (type == 0) {
-                pulls.push_back((val - 1.0) / width);
-                pull_errors.push_back(err / width);
+                pulls.push_back((val - nominal_var->getValV()) / nominal_var->errorVar()->getValV());
+                pull_errors.push_back(err / nominal_var->errorVar()->getValV());
                 names.push_back(name);
             }
             else if (type == 1) {
-                pulls.push_back((val - 1.0) / std::sqrt(width * width - err * err));
+                pulls.push_back((val - nominal_var->getValV()) / std::sqrt(nominal_var->errorVar()->getValV() * nominal_var->errorVar()->getValV() - err * err));
                 pull_errors.push_back(1.0);
                 names.push_back(name);
             }
         }
         else if ((name.find("gamma") != std::string::npos) && (name.find("uncorr") != std::string::npos)) {
-            RooRealVar* nominal_var = nominal_argset->find(name.c_str());
-            printf("[test] %s, %lf +- %lf, %lf +- %lf\n", name.c_str(), val, err, nominal_var->getValV(), nominal_var->errorVar()->getValV());
-
-            RooRealVar* variable = w->var(name.c_str());
-            RooErrorVar* err_variable = variable->errorVar();
-            double width = err_variable->getValV();
+            RooRealVar* nominal_var = (RooRealVar*) nominal_argset->find(name.c_str());
 
             if (type == 0) {
-                pulls.push_back((val - 1.0) / width);
+                pulls.push_back((val - nominal_var->getValV()) / nominal_var->errorVar()->getValV());
                 pull_errors.push_back(err / width);
                 names.push_back(name);
             }
             else if (type == 1) {
-                pulls.push_back((val - 1.0) / std::sqrt(1.0 * 1.0 - err * err));
+                pulls.push_back((val - nominal_var->getValV()) / std::sqrt(nominal_var->errorVar()->getValV() * nominal_var->errorVar()->getValV() - err * err));
                 pull_errors.push_back(1.0);
                 names.push_back(name);
             }
