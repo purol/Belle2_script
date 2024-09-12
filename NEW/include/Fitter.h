@@ -13,6 +13,7 @@
 # include "TLine.h"
 # include "TColor.h"
 # include "TPaveText.h"
+# include "RooErrorVar.h"
 
 using namespace RooFit;
 using namespace RooStats;
