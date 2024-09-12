@@ -1265,4 +1265,116 @@ void ObtainNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll) {
     (*nll) = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
 }
 
+void Drawpull(RooWorkspace* w, TIterator* iter) {
+    std::vector<double> pulls;
+    std::vector<double> pull_errors;
+    std::vector<std::string> names;
+
+    for (TObject* Tobj = iter->Next(); Tobj != 0; Tobj = iter->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(Tobj);
+        std::string name = rrv->GetName();
+        double val = rrv->getVal();
+        double err = rrv->getError();
+
+        std::cout.width(25);
+        std::cout << name;
+        std::cout.width(15);
+        std::cout << val;
+        std::cout.width(5);
+        std::cout << "+-" << err << std::endl;
+
+        if (name.find("alpha") != std::string::npos) {
+            pulls.push_back((val - 0.0) / 1.0);
+            pull_errors.push_back(err / 1.0);
+            names.push_back(name);
+        }
+        else if (name.find("gamma_stat") != std::string::npos) {
+
+            /* poisson */
+            //RooRealVar* norm = w->var(("nom_" + names->at(i)).c_str());
+            //std::poisson_distribution<> distribution(norm->getValV());
+            //w->var(names->at(i).c_str())->setVal(distribution(generator) / norm->getValV());
+
+            /* gaussian */
+            RooRealVar* variable = w->var(name.c_str());
+            RooErrorVar* err_variable = variable->errorVar();
+            double width = err_variable->getValV();
+
+            pulls.push_back((val - 1.0) / width);
+            pull_errors.push_back(err / width);
+            names.push_back(name);
+        }
+        else if ((name.find("gamma") != std::string::npos) && (name.find("uncorr") != std::string::npos)) {
+
+            RooRealVar* variable = w->var(name.c_str());
+            RooErrorVar* err_variable = variable->errorVar();
+            double width = err_variable->getValV();
+
+            pulls.push_back((val - 1.0) / width);
+            pull_errors.push_back(err / width);
+            names.push_back(name);
+
+        }
+    }
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+        std::cout << names.at(i) << " " << pulls.at(i) << "+-" << pull_errors.at(i) << std::endl;
+    }
+
+    // draw pull
+    int size_pull = pulls.size();
+
+    TH1D* pull_ht = new TH1D("pull data hist", "pull of parameters;;", size_pull, 0, size_pull);
+    for (int i = 0; i < size_pull; i++) {
+        pull_ht->SetBinContent(i + 1, pulls.at(i));
+        pull_ht->SetBinError(i + 1, pull_errors.at(i));
+    }
+    pull_ht->SetLineWidth(2.0);
+    pull_ht->SetMarkerColor(1);
+    pull_ht->SetMarkerStyle(21);
+    pull_ht->SetLineColor(1);
+    char** label_name = (char**)malloc(sizeof(char*) * size_pull);
+    for (int i = 0; i < size_pull; i++) {
+        label_name[i] = (char*)malloc(sizeof(char) * names.at(i).size() + 1);
+        memcpy(label_name[i], names.at(i).c_str(), names.at(i).size() + 1);
+    }
+
+    TH1D* pull_one_sigma = new TH1D("1sig hist", "1sig;;", size_pull, 0.0, size_pull);
+    for (int i = 0; i < size_pull; i++) {
+        pull_one_sigma->SetBinContent(i + 1, 0.0);
+        pull_one_sigma->SetBinError(i + 1, 1.0);
+    }
+    pull_one_sigma->SetFillColor(kGreen);
+    pull_one_sigma->SetFillStyle(1001);
+
+    TH1D* pull_two_sigma = new TH1D("2sig hist", "2sig;;", size_pull, 0.0, size_pull);
+    for (int i = 0; i < size_pull; i++) {
+        pull_two_sigma->SetBinContent(i + 1, 0.0);
+        pull_two_sigma->SetBinError(i + 1, 2.0);
+    }
+    pull_two_sigma->SetFillColor(kYellow);
+    pull_two_sigma->SetFillStyle(1001);
+    for (int i = 0; i < size_pull; i++) {
+        pull_two_sigma->GetXaxis()->SetBinLabel(i + 1, names.at(i).c_str());
+    }
+    pull_two_sigma->SetStats(false);
+    pull_two_sigma->GetYaxis()->SetTitle("(#hat{#theta}-#theta)/#Delta#theta");
+    pull_two_sigma->GetYaxis()->SetTitleOffset(1.4);
+    pull_two_sigma->GetXaxis()->LabelsOption("v");
+
+    TLine* line = new TLine(0.0, 0.0, size_pull, 0.0);
+    line->SetLineColor(kBlack);
+    line->SetLineStyle(2); line->SetLineWidth(1);
+
+    TCanvas* cpull = new TCanvas("pull_Plot", "pull Plot", 2200, 800); cpull->SetBottomMargin(0.3);
+    pull_two_sigma->Draw("E2");
+    pull_one_sigma->Draw("E2 same");
+    pull_ht->Draw("e1 same");
+    line->Draw();
+
+    cpull->SaveAs("param_pull.png");
+
+    delete cpull;
+}
+
 #endif 
