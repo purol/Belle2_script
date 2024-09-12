@@ -1128,7 +1128,7 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
 
             if (type == 0) {
                 pulls.push_back((val - nominal_var->getValV()) / nominal_var->errorVar()->getValV());
-                pull_errors.push_back(err / width);
+                pull_errors.push_back(err / nominal_var->errorVar()->getValV());
                 names.push_back(name);
             }
             else if (type == 1) {
