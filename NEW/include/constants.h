@@ -140,6 +140,12 @@
 # define Scale_SSBAR_validation_MC15rd (0.36449/1.458959)
 # define Scale_CHARM_validation_MC15rd (0.36449/1.458959)
 
+// off-resonance sample for MC15rd
+# define Scale_UUBAR_offres_MC15rd (0.04264/0.169328) // 169.328/fb
+# define Scale_DDBAR_offres_MC15rd (0.04264/0.169328) // 169.328/fb
+# define Scale_SSBAR_offres_MC15rd (0.04264/0.169328) // 169.328/fb
+# define Scale_CHARM_offres_MC15rd (0.04264/0.169328) // 169.328/fb
+
 // the number of Xs decay
 # define Xsu_frag_decay1 531.4
 # define Xsu_frag_decay2 1062.1
