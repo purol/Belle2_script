@@ -52,7 +52,7 @@ void ReadROOT(const char* dirname, const char* included_string, std::vector<int>
 
     float MVA_BB;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names, included_string);
 
     for (unsigned int i = 0; i < names.size(); i++) {
