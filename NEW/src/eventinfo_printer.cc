@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
     fp = fopen("event_info.csv", "w");
     fprintf(fp, "experiment,run,event\n");
     for (int i = 0; i < experiments.size(); i++) {
-        fprintf(fp, "%lf,%lf,%lf\n", experiments.at(i), runs.at(i), events.at(i));
+        fprintf(fp, "%d,%d,%u\n", experiments.at(i), runs.at(i), events.at(i));
     }
     fclose(fp);
     /* ====================================== */
