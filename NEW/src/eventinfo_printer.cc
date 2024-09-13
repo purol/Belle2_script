@@ -127,10 +127,10 @@ int main(int argc, char* argv[])
     // file output
     FILE* fp;
 
-    fp = fopen(("event_info.csv").c_str(), "w");
+    fp = fopen("event_info.csv", "w");
     fprintf(fp, "experiment,run,event\n");
     for (int i = 0; i < experiments.size(); i++) {
-        fprintf(fp, "%lf,%lf,%lf\n", experiments.zt(i), runs.at(i), events.at(i));
+        fprintf(fp, "%lf,%lf,%lf\n", experiments.at(i), runs.at(i), events.at(i));
     }
     fclose(fp);
     /* ====================================== */
