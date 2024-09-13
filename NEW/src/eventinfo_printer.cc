@@ -101,6 +101,8 @@ void ReadROOT(const char* dirname, const char* included_string, std::vector<int>
             events_->push_back(__event__);
 
         }
+
+        input_file->Close();
     }
 
 }
