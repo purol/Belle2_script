@@ -337,9 +337,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
-            Nevt = Nevt + total_weight;
-
-            hist->Fill(MVA_var, total_weight);
+            Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
 
         }
         input_file->Close();
@@ -358,14 +356,14 @@ void ReadXsTransitionPDF()
     /* ====================================== */
     // Define PDFs for HistFactory
     // nominal PDFs
-    TH1D* Xsu_nominal = new TH1D("Xsu_nominal", "Xsu_nominal", RarityBins_MX3, BinMIN_MX3, BinMAX_MX3);
-    TH1D* Xsd_nominal = new TH1D("Xsd_nominal", "Xsd_nominal", RarityBins_MX3, BinMIN_MX3, BinMAX_MX3);
+    TH1D* Xsu_nominal = new TH1D("Xsu_nominal", "Xsu_nominal", RarityBins, BinMIN, BinMAX);
+    TH1D* Xsd_nominal = new TH1D("Xsd_nominal", "Xsd_nominal", RarityBins, BinMIN, BinMAX);
 
     // transition
-    TH1D* Xsu_transition_p = new TH1D("Xsu_transition_p", "Xsu_transition_p", RarityBins_MX3, BinMIN_MX3, BinMAX_MX3);
-    TH1D* Xsu_transition_m = new TH1D("Xsu_transition_m", "Xsu_transition_m", RarityBins_MX3, BinMIN_MX3, BinMAX_MX3);
-    TH1D* Xsd_transition_p = new TH1D("Xsd_transition_p", "Xsd_transition_p", RarityBins_MX3, BinMIN_MX3, BinMAX_MX3);
-    TH1D* Xsd_transition_m = new TH1D("Xsd_transition_m", "Xsd_transition_m", RarityBins_MX3, BinMIN_MX3, BinMAX_MX3);
+    TH1D* Xsu_transition_p = new TH1D("Xsu_transition_p", "Xsu_transition_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Xsu_transition_m = new TH1D("Xsu_transition_m", "Xsu_transition_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Xsd_transition_p = new TH1D("Xsd_transition_p", "Xsd_transition_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Xsd_transition_m = new TH1D("Xsd_transition_m", "Xsd_transition_m", RarityBins, BinMIN, BinMAX);
     /* ====================================== */
 
 
@@ -400,32 +398,32 @@ void ReadXsTransitionPDF()
     FILE* fp;
 
     fp = fopen("Xsu_Htransition_weight.txt", "w");
-    fprintf(fp, "%d\n", RarityBins_MX3);
-    for (int i = 0; i < RarityBins_MX3; i++) { // Xsu up
+    fprintf(fp, "%d\n", RarityBins);
+    for (int i = 0; i < RarityBins; i++) { // Xsu up
         double correction_factor = Xsu_transition_p->GetBinContent(i + 1) / Xsu_nominal->GetBinContent(i + 1);
         fprintf(fp, "%lf\n", correction_factor);
     }
     fclose(fp);
 
     fp = fopen("Xsu_Ltransition_weight.txt", "w");
-    fprintf(fp, "%d\n", RarityBins_MX3);
-    for (int i = 0; i < RarityBins_MX3; i++) { // Xsu down
+    fprintf(fp, "%d\n", RarityBins);
+    for (int i = 0; i < RarityBins; i++) { // Xsu down
         double correction_factor = Xsu_transition_m->GetBinContent(i + 1) / Xsu_nominal->GetBinContent(i + 1);
         fprintf(fp, "%lf\n", correction_factor);
     }
     fclose(fp);
 
     fp = fopen("Xsd_Htransition_weight.txt", "w");
-    fprintf(fp, "%d\n", RarityBins_MX3);
-    for (int i = 0; i < RarityBins_MX3; i++) { // Xsd up
+    fprintf(fp, "%d\n", RarityBins);
+    for (int i = 0; i < RarityBins; i++) { // Xsd up
         double correction_factor = Xsd_transition_p->GetBinContent(i + 1) / Xsd_nominal->GetBinContent(i + 1);
         fprintf(fp, "%lf\n", correction_factor);
     }
     fclose(fp);
 
     fp = fopen("Xsd_Ltransition_weight.txt", "w");
-    fprintf(fp, "%d\n", RarityBins_MX3);
-    for (int i = 0; i < RarityBins_MX3; i++) { // Xsd down
+    fprintf(fp, "%d\n", RarityBins);
+    for (int i = 0; i < RarityBins; i++) { // Xsd down
         double correction_factor = Xsd_transition_m->GetBinContent(i + 1) / Xsd_nominal->GetBinContent(i + 1);
         fprintf(fp, "%lf\n", correction_factor);
     }
