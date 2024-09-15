@@ -43,14 +43,13 @@ Corrector_PID corrector_PID;
 Corrector_pi0 corrector_pi0;
 Corrector_FakePID corrector_FakePID;
 Corrector_Knn corrector_Knn;
+Corrector_Xsnn corrector_Xsnn;
 Corrector_Multiplicity corrector_Multiplicity;
 Corrector_KpKLKL corrector_KpKLKL;
 Corrector_KSKLKL corrector_KSKLKL;
-
 Corrector_phiKL corrector_phiKL;
 Corrector_KstarKLKL corrector_KstarKLKL;
 Corrector_XsKLKL corrector_XsKLKL;
-
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
 Corrector_Fragmentation corrector_Fragmentation;
 
