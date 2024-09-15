@@ -276,25 +276,6 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             tree_Btag->GetEntry(j);
             if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
 
-            // select the specific true MXs region
-            if (strcmp(sample, "SIGNAL") == 0) {
-                double MC_MXs = -1;
-                if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
-                else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
-
-                // sanity check
-                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
-                else { // mass is NaN. try to find true mass region by file name
-                    if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
-                    else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
-                    else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
-                    else {
-                        printf("MC Mass of Xs cannot be found and the file name is not expected\n");
-                        exit(1);
-                    }
-                }
-            }
-
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
