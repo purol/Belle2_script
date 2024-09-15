@@ -207,4 +207,10 @@ const double B2Knn_dn_uncer[N_Knn_type] = { // relative uncertainty
     0.32 / 2.66, 0.25 / 1.24, 0.5 / 5.9, 0.7 / 3.6
 };
 
+// scale factor for each systematic MC sample 
+# define Scale_Xsu_nonresonant_syst (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_nunubar_syst)
+# define Scale_Xsd_nonresonant_syst (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar_syst)
+
+
+
 #endif 
