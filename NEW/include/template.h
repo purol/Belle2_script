@@ -6,21 +6,21 @@
 
 // 0.0 < MXs < 0.6
 # define RarityBins_MX1 5
-# define BinMIN_MX1 0.90
+# define BinMIN_MX1 0.86
 # define BinMAX_MX1 1.0
-const double boundary_MXs1[RarityBins_MX1 + 1] = { BinMIN_MX1, 0.9395, 0.979, 0.986, 0.993, BinMAX_MX1 };
+const double boundary_MXs1[RarityBins_MX1 + 1] = { BinMIN_MX1, 0.9195, 0.979, 0.986, 0.993, BinMAX_MX1 };
 
 // 0.6 < MXs < 1.0
-# define RarityBins_MX2 4
-# define BinMIN_MX2 0.90
+# define RarityBins_MX2 5
+# define BinMIN_MX2 0.86
 # define BinMAX_MX2 1.0
-const double boundary_MXs2[RarityBins_MX2 + 1] = { BinMIN_MX2, 0.925, 0.95, 0.975, BinMAX_MX2 };
+const double boundary_MXs2[RarityBins_MX2 + 1] = { BinMIN_MX2, 0.8925, 0.925, 0.95, 0.975, BinMAX_MX2 };
 
 // 1.0 < MXs < 2.0
 # define RarityBins_MX3 5
-# define BinMIN_MX3 0.90
+# define BinMIN_MX3 0.86
 # define BinMAX_MX3 1.0
-const double boundary_MXs3[RarityBins_MX3 + 1] = { BinMIN_MX3, 0.92, 0.94, 0.96, 0.98, BinMAX_MX3 };
+const double boundary_MXs3[RarityBins_MX3 + 1] = { BinMIN_MX3, 0.9, 0.94, 0.96, 0.98, BinMAX_MX3 };
 
 const int RarityBins = (RarityBins_MX1 + RarityBins_MX2 + RarityBins_MX3);
 const int BinMIN = 0;

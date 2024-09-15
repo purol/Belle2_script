@@ -211,6 +211,4 @@ const double B2Knn_dn_uncer[N_Knn_type] = { // relative uncertainty
 # define Scale_Xsu_nonresonant_syst (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_nunubar_syst)
 # define Scale_Xsd_nonresonant_syst (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar_syst)
 
-
-
 #endif 
