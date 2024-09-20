@@ -334,8 +334,8 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
-            else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
-            else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+            else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, systtype, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+            else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, systtype, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
             Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
 
@@ -400,7 +400,9 @@ void ReadXsTransitionPDF()
     fp = fopen("Xsu_Htransition_weight.txt", "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsu up
-        double correction_factor = Xsu_transition_p->GetBinContent(i + 1) / Xsu_nominal->GetBinContent(i + 1);
+        double correction_factor = 1.0;
+        if (Xsu_nominal->GetBinContent(i + 1) > MyEPSILON) correction_factor = Xsu_transition_p->GetBinContent(i + 1) / Xsu_nominal->GetBinContent(i + 1);
+        else correction_factor = 1.0;
         fprintf(fp, "%lf\n", correction_factor);
     }
     fclose(fp);
@@ -408,7 +410,9 @@ void ReadXsTransitionPDF()
     fp = fopen("Xsu_Ltransition_weight.txt", "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsu down
-        double correction_factor = Xsu_transition_m->GetBinContent(i + 1) / Xsu_nominal->GetBinContent(i + 1);
+        double correction_factor = 1.0;
+        if (Xsu_nominal->GetBinContent(i + 1) > MyEPSILON) correction_factor = Xsu_transition_m->GetBinContent(i + 1) / Xsu_nominal->GetBinContent(i + 1);
+        else correction_factor = 1.0;
         fprintf(fp, "%lf\n", correction_factor);
     }
     fclose(fp);
@@ -416,7 +420,9 @@ void ReadXsTransitionPDF()
     fp = fopen("Xsd_Htransition_weight.txt", "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsd up
-        double correction_factor = Xsd_transition_p->GetBinContent(i + 1) / Xsd_nominal->GetBinContent(i + 1);
+        double correction_factor = 1.0;
+        if (Xsd_nominal->GetBinContent(i + 1) > MyEPSILON)correction_factor = Xsd_transition_p->GetBinContent(i + 1) / Xsd_nominal->GetBinContent(i + 1);
+        else correction_factor = 1.0;
         fprintf(fp, "%lf\n", correction_factor);
     }
     fclose(fp);
@@ -424,7 +430,9 @@ void ReadXsTransitionPDF()
     fp = fopen("Xsd_Ltransition_weight.txt", "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsd down
-        double correction_factor = Xsd_transition_m->GetBinContent(i + 1) / Xsd_nominal->GetBinContent(i + 1);
+        double correction_factor = 1.0;
+        if (Xsd_nominal->GetBinContent(i + 1) > MyEPSILON) correction_factor = Xsd_transition_m->GetBinContent(i + 1) / Xsd_nominal->GetBinContent(i + 1);
+        else correction_factor = 1.0;
         fprintf(fp, "%lf\n", correction_factor);
     }
     fclose(fp);
