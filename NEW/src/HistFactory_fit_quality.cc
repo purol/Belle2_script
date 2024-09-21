@@ -245,6 +245,226 @@ std::vector<std::string> split(std::string str, char Delimiter) {
     return result;
 }
 
+std::vector<double> MySetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double injected_mu) {
+
+    std::vector<double> Nevt;
+    for (int i = 0; i < RarityBins; i++) Nevt.push_back(0.0);
+
+    w->loadSnapshot("ParamValues");
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+
+    for (unsigned int i = 0; i < names->size(); i++) {
+        if (names->at(i).find("alpha") != std::string::npos) {
+            std::normal_distribution<double> distribution(0.0, 1.0);
+            w->var(names->at(i).c_str())->setVal(distribution(generator));
+        }
+        else if (names->at(i).find("gamma_stat") != std::string::npos) {
+
+            /* poisson */
+            //RooRealVar* norm = w->var(("nom_" + names->at(i)).c_str());
+            //std::poisson_distribution<> distribution(norm->getValV());
+            //w->var(names->at(i).c_str())->setVal(distribution(generator) / norm->getValV());
+
+            /* gaussian */
+            RooRealVar* variable = w->var(names->at(i).c_str());
+            RooErrorVar* err_variable = variable->errorVar();
+
+            std::normal_distribution<double> distribution(1.0, err_variable->getValV());
+            w->var(names->at(i).c_str())->setVal(distribution(generator));
+        }
+        else if ((names->at(i).find("gamma") != std::string::npos) && (names->at(i).find("uncorr") != std::string::npos)) {
+
+            RooRealVar* variable = w->var(names->at(i).c_str());
+            RooErrorVar* err_variable = variable->errorVar();
+
+            std::normal_distribution<double> distribution(1.0, err_variable->getValV());
+            w->var(names->at(i).c_str())->setVal(distribution(generator));
+
+        }
+    }
+
+    w->var("mu_MXs1")->setVal(injected_mu);
+    w->var("mu_MXs2")->setVal(injected_mu);
+    w->var("mu_MXs3")->setVal(injected_mu);
+
+    /* ================================ cal Nexpected ================================*/
+    {
+        RooAbsBinning const& binning = x_val_MXs1->getBinning();
+        const double oldVal = x_val_MXs1->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs1 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs1") == nullptr) continue; // skip non-MXs1
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt.at(iBin) = Nevt.at(iBin) + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs1 = oldVal;
+    }
+
+    {
+        RooAbsBinning const& binning = x_val_MXs2->getBinning();
+        const double oldVal = x_val_MXs2->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs2 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs2") == nullptr) continue; // skip non-MXs2
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt.at(iBin + RarityBins_MX1) = Nevt.at(iBin + RarityBins_MX1) + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs2 = oldVal;
+    }
+
+    {
+        RooAbsBinning const& binning = x_val_MXs3->getBinning();
+        const double oldVal = x_val_MXs3->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs3 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs3") == nullptr) continue; // skip non-MXs3
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+                Nevt.at(iBin + RarityBins_MX1 + RarityBins_MX2) = Nevt.at(iBin + RarityBins_MX1 + RarityBins_MX2) + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs3 = oldVal;
+    }
+
+    return Nevt;
+
+}
+
+RooDataSet* MyGenerate(RooWorkspace* w, std::vector<double> Nevts, bool extended) {
+
+    // get variables and weight
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+    RooCategory* channelCat = (RooCategory*)(&model->indexCat());
+    RooRealVar* weight_ = new RooRealVar("weight_", "", 0.0, 1000.0);
+
+    // define data
+    RooDataSet* genData = new RooDataSet("hmaster", "hmaster", RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat, *weight_), weight_->GetName());
+
+    for (int j = 0; j < RarityBins_MX1; j++) {
+        // channel 1
+        x_val_MXs1->setVal(0.5 + j);
+        x_val_MXs2->setVal(0.5);
+        x_val_MXs3->setVal(0.5);
+        channelCat->setLabel("channel_MXs1");
+
+        // generate
+        if (data->weight() > MyEPSILON) {
+            if (extended) {
+                std::poisson_distribution<int> distribution((int)floor(Nevts.at(j) + 0.5));
+                int Nentry_with_fluctuation = distribution(generator);
+                genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nentry_with_fluctuation);
+            }
+            else {
+                genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), (int)floor(Nevts.at(j) + 0.5));
+            }
+        }
+        else { // no event. Maybe because of partial unblind. Just set 0
+            genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), 0);
+        }
+
+    }
+    for (int j = 0; j < RarityBins_MX2; j++) {
+        // channel 2
+        x_val_MXs1->setVal(RarityBins_MX1 - 0.5);
+        x_val_MXs2->setVal(0.5 + j);
+        x_val_MXs3->setVal(0.5);
+        channelCat->setLabel("channel_MXs2");
+
+        // generate
+        if (data->weight() > MyEPSILON) {
+            if (extended) {
+                std::poisson_distribution<int> distribution((int)floor(Nevts.at(RarityBins_MX1 + j) + 0.5));
+                int Nentry_with_fluctuation = distribution(generator);
+                genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nentry_with_fluctuation);
+            }
+            else {
+                genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), (int)floor(Nevts.at(RarityBins_MX1 + j) + 0.5));
+            }
+        }
+        else { // no event. Maybe because of partial unblind. Just set 0
+            genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), 0);
+        }
+
+    }
+    for (int j = 0; j < RarityBins_MX3; j++) {
+        // channel 3
+        x_val_MXs1->setVal(RarityBins_MX1 - 0.5);
+        x_val_MXs2->setVal(RarityBins_MX2 - 0.5);
+        x_val_MXs3->setVal(0.5 + j);
+        channelCat->setLabel("channel_MXs3");
+
+        // generate
+        if (data->weight() > MyEPSILON) {
+            if (extended) {
+                std::poisson_distribution<int> distribution((int)floor(Nevts.at(RarityBins_MX1 + RarityBins_MX2 + j) + 0.5));
+                int Nentry_with_fluctuation = distribution(generator);
+                genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nentry_with_fluctuation);
+            }
+            else {
+                genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), (int)floor(Nevts.at(RarityBins_MX1 + RarityBins_MX2 + j) + 0.5));
+            }
+        }
+        else { // no event. Maybe because of partial unblind. Just set 0
+            genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), 0);
+        }
+
+    }
+
+    delete weight_;
+
+    return genData;
+}
+
 double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double injected_mu) {
 
     double Nevt = 0.0;
