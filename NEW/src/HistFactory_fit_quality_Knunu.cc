@@ -322,6 +322,9 @@ std::vector<double> MySetParamsForToy(RooWorkspace* w, std::vector<std::string>*
 
 RooDataSet* MyGenerate(RooWorkspace* w, std::vector<double> Nevts, bool extended) {
 
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
     // get variables and weight
     RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
     RooCategory* channelCat = (RooCategory*)(&model->indexCat());
