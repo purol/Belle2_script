@@ -336,7 +336,7 @@ RooDataSet* MyGenerate(RooWorkspace* w, std::vector<double> Nevts, bool extended
         channelCat->setLabel("channel_MXs1");
 
         // generate
-        if (data->weight() > MyEPSILON) {
+        if (Nevts.at(j) > MyEPSILON) {
             if (extended) {
                 std::poisson_distribution<int> distribution((int)floor(Nevts.at(j) + 0.5));
                 int Nentry_with_fluctuation = distribution(generator);

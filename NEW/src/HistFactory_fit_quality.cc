@@ -398,7 +398,7 @@ RooDataSet* MyGenerate(RooWorkspace* w, std::vector<double> Nevts, bool extended
         channelCat->setLabel("channel_MXs1");
 
         // generate
-        if (data->weight() > MyEPSILON) {
+        if (Nevts.at(j) > MyEPSILON) {
             if (extended) {
                 std::poisson_distribution<int> distribution((int)floor(Nevts.at(j) + 0.5));
                 int Nentry_with_fluctuation = distribution(generator);
@@ -421,7 +421,7 @@ RooDataSet* MyGenerate(RooWorkspace* w, std::vector<double> Nevts, bool extended
         channelCat->setLabel("channel_MXs2");
 
         // generate
-        if (data->weight() > MyEPSILON) {
+        if (Nevts.at(RarityBins_MX1 + j) > MyEPSILON) {
             if (extended) {
                 std::poisson_distribution<int> distribution((int)floor(Nevts.at(RarityBins_MX1 + j) + 0.5));
                 int Nentry_with_fluctuation = distribution(generator);
@@ -444,7 +444,7 @@ RooDataSet* MyGenerate(RooWorkspace* w, std::vector<double> Nevts, bool extended
         channelCat->setLabel("channel_MXs3");
 
         // generate
-        if (data->weight() > MyEPSILON) {
+        if (Nevts.at(RarityBins_MX1 + RarityBins_MX2 + j) > MyEPSILON) {
             if (extended) {
                 std::poisson_distribution<int> distribution((int)floor(Nevts.at(RarityBins_MX1 + RarityBins_MX2 + j) + 0.5));
                 int Nentry_with_fluctuation = distribution(generator);
