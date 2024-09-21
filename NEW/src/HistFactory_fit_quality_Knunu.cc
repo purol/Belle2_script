@@ -574,6 +574,7 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
             filesaver.WriteIntoBranch();
 
             delete fitres;
+            delete genData;
 
         }
 }
