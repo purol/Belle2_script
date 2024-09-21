@@ -883,10 +883,12 @@ void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, 
         for(int i=0; i< Toy_iter_num; i++) { // Do Toy MC study
             
             double Nevt_total = SetParamsForToy(w, names, 1.0);
+            // std::vector<double> Nevt_total = MySetParamsForToy(w, names, 1.0);
 
             filesaver.GetTrueValues(w, names);
 
             RooDataSet* genData = model->generate(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, model->indexCat()), Nevt_total, false, true, "", false, true);
+            // RooDataSet* genData = MyGenerate(w, Nevt_total, true);
 
             w->loadSnapshot("ParamValues");
             //RooFitResult* fitres = model->fitTo(*genData, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
