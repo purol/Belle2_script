@@ -60,6 +60,7 @@
 #include "RooStats/HypoTestInverterPlot.h"
 
 #include "Fitter.h"
+#include "constants.h"
 
 using namespace RooFit;
 using namespace RooStats;
@@ -862,9 +863,15 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
             data->get(j);
 
             // generate data with Poisson fluctuation
-            std::poisson_distribution<int> distribution((int)floor(data->weight() + 0.5));
-            int Nentry_with_fluctuation = distribution(generator);
-            genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nentry_with_fluctuation);
+            if (data->weight() > MyEPSILON) {
+                std::poisson_distribution<int> distribution((int)floor(data->weight() + 0.5));
+                int Nentry_with_fluctuation = distribution(generator);
+                genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nentry_with_fluctuation);
+            }
+            else { // no event. Maybe because of partial unblind. Just set 0
+                genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), 0);
+            }
+
         }
         for (int j = 0; j < RarityBins_MX2; j++) {
             // channel 2
@@ -877,9 +884,15 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
             data->get(RarityBins_MX1 + j);
 
             // generate data with Poisson fluctuation
-            std::poisson_distribution<int> distribution((int)floor(data->weight() + 0.5));
-            int Nentry_with_fluctuation = distribution(generator);
-            genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nentry_with_fluctuation);
+            if (data->weight() > MyEPSILON) {
+                std::poisson_distribution<int> distribution((int)floor(data->weight() + 0.5));
+                int Nentry_with_fluctuation = distribution(generator);
+                genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nentry_with_fluctuation);
+            }
+            else { // no event. Maybe because of partial unblind. Just set 0
+                genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), 0);
+            }
+
         }
         for (int j = 0; j < RarityBins_MX3; j++) {
             // channel 3
@@ -892,9 +905,15 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
             data->get(RarityBins_MX1 + RarityBins_MX2 + j);
 
             // generate data with Poisson fluctuation
-            std::poisson_distribution<int> distribution((int)floor(data->weight() + 0.5));
-            int Nentry_with_fluctuation = distribution(generator);
-            genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nentry_with_fluctuation);
+            if (data->weight() > MyEPSILON) {
+                std::poisson_distribution<int> distribution((int)floor(data->weight() + 0.5));
+                int Nentry_with_fluctuation = distribution(generator);
+                genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), Nentry_with_fluctuation);
+            }
+            else {
+                genData->add(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, *channelCat), 0);
+            }
+
         }
 
         w->loadSnapshot("ParamValues");
