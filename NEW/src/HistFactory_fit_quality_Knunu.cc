@@ -601,6 +601,8 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
 
     for (int i = 0; i < Toy_iter_num; i++) { // Do Toy MC study
 
+        RooRealVar* weight_ = new RooRealVar("weight_", "", 0.0, 1000.0);
+
         // get nominal configuration
         w->loadSnapshot("ParamValues");
         filesaver.GetTrueValues(w, names);
@@ -634,6 +636,7 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
         RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
 
         delete genData;
+        delete weight_;
 
         if (MyDEBUG) Debug(w, fitres, genData);
 

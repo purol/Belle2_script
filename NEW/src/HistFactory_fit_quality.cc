@@ -841,9 +841,10 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
     RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
     RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
     RooCategory* channelCat = (RooCategory*)(&model->indexCat());
-    RooRealVar* weight_ = new RooRealVar("weight_", "", 0.0, 1000.0);
 
     for (int i = 0; i < Toy_iter_num; i++) { // Do Toy MC study
+
+        RooRealVar* weight_ = new RooRealVar("weight_", "", 0.0, 1000.0);
 
         // get nominal configuration
         w->loadSnapshot("ParamValues");
@@ -922,6 +923,7 @@ void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, d
         RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
 
         delete genData;
+        delete weight_;
 
         if (MyDEBUG) Debug(w, fitres, genData);
 
