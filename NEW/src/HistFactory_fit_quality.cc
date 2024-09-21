@@ -831,7 +831,7 @@ void FitToData(RooWorkspace* w, double eps) {
     delete fitres;
 }
 
-void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, double eps, RooDataSet* data) {
+void MyToyMCStudyDataPoisson(RooWorkspace* w, std::vector<std::string>* names, double eps, RooDataSet* data, int indicator = 0) {
 
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
@@ -998,7 +998,7 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::string> param_names;
     
-    if ((std::string(argv[1]) == std::string("ToyMC")) || (std::string(argv[1]) == std::string("ToyMCRC"))) {  // main ToyMC|ToyMCRC
+    if ((std::string(argv[1]) == std::string("ToyMC")) || (std::string(argv[1]) == std::string("ToyMCRC")) || (std::string(argv[1]) == std::string("ToyMCbox"))) {  // main ToyMC|ToyMCRC|ToyMCbox
         if (argc == 5) {
             injected_mu = -1;
             eps = std::atof(argv[2]);
@@ -1036,7 +1036,7 @@ int main(int argc, char* argv[]) {
         }
     }
     else {
-        printf("first argument should be {ToyMC|LinearityTest|nuisance|ToyMCRC}\n");
+        printf("first argument should be {ToyMC|LinearityTest|nuisance|ToyMCRC|ToyMCbox}\n");
         exit(1);
     }
 
@@ -1048,7 +1048,7 @@ int main(int argc, char* argv[]) {
 
     RooWorkspace* w = (RooWorkspace*)f->Get("combined");
 
-    if ((std::string(argv[1]) == std::string("ToyMC")) || (std::string(argv[1]) == std::string("ToyMCRC"))) {
+    if ((std::string(argv[1]) == std::string("ToyMC")) || (std::string(argv[1]) == std::string("ToyMCRC")) || (std::string(argv[1]) == std::string("ToyMCbox"))) {
         ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
         RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
@@ -1093,6 +1093,11 @@ int main(int argc, char* argv[]) {
     else if (std::string(argv[1]) == std::string("ToyMCRC")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
         MyToyMCRCStudy(w, &param_names, eps, indicator);
+    }
+    else if (std::string(argv[1]) == std::string("ToyMCbox")) {
+        RooDataSet* data = (RooDataSet*)w->data("obsData");
+        filesaver.OpenFile(true, &param_names, injected_mu, indicator);
+        MyToyMCStudyDataPoisson(w, &param_names, eps, data, indicator);
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) {
         filesaver.OpenFile(false, &param_names, injected_mu, indicator);
