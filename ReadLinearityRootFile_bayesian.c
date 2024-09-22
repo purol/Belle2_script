@@ -68,7 +68,7 @@ void ReadLinearityRootFile_bayesian() {
     // draw Linearity map
     std::vector<double>::iterator max_it = std::max_element(in_mus.begin(), in_mus.end());
     double in_mu_MAX = *max_it;
-    TH2D* Linearity_map = new TH2D("Linearity_map", ";input #mu;output #mu", 100, 0.0, in_mu_MAX, 100, 0.0, in_mu_MAX);
+    TH2D* Linearity_map = new TH2D("Linearity_map", ";input #mu;output #mu", 50, 0.0, in_mu_MAX, 50, 0.0, in_mu_MAX);
     for (int i = 0; i < in_mus.size(); i++) {
         Linearity_map->Fill(in_mus.at(i), out_mus.at(i));
     }
@@ -84,10 +84,10 @@ void ReadLinearityRootFile_bayesian() {
         std::vector<double> in_mus_for_specific_out_mu;
 
         for (int j = 0; j < in_mus.size(); j++) {
-            if (((specific_out_mu + 0.1) > out_mus.at(j)) && ((specific_out_mu - 0.1) < out_mus.at(j))) in_mus_for_specific_out_mu.push_back(in_mus.at(j));
+            if (((specific_out_mu + 0.2) > out_mus.at(j)) && ((specific_out_mu - 0.2) < out_mus.at(j))) in_mus_for_specific_out_mu.push_back(in_mus.at(j));
         }
 
-        TH1D* temp_hist = new TH1D("temp_hist", ";input #mu;toys", 100, specific_out_mu - 10.0, specific_out_mu + 10.0);
+        TH1D* temp_hist = new TH1D("temp_hist", ";input #mu;toys", 50, specific_out_mu - 10.0, specific_out_mu + 10.0);
         for (int j = 0; j < in_mus_for_specific_out_mu.size(); j++) temp_hist->Fill(in_mus_for_specific_out_mu.at(j));
         temp_hist->Draw("Hist");
         c->SaveAs(("Linearity_MXs3_test_bayesian_" + std::to_string(specific_out_mu) + ".png").c_str());
