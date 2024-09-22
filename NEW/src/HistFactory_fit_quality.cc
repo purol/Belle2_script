@@ -993,12 +993,14 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
     for (int i = 0; i < LT_iter_num; i++) { // Do LT MC study
 
         double Nevt_total = SetParamsForToy(w, names, mu_injected);
+        // std::vector<double> Nevt_total = MySetParamsForToy(w, names, mu_injected);
 
         filesaver.GetTrueValues(w, names);
 
         RooDataSet* genData = model->generate(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, model->indexCat()), Nevt_total, false, true, "", false, true);
-        w->loadSnapshot("ParamValues");
+        // RooDataSet* genData = MyGenerate(w, Nevt_total, true);
 
+        w->loadSnapshot("ParamValues");
         //RooFitResult* fitres = model->fitTo(*genData, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
         RooAbsReal* nll;
         RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
