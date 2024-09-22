@@ -47,6 +47,7 @@ void ReadLinearityRootFile_bayesian() {
     for (unsigned int k = 0; k < names.size(); k++) {
 
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(k)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), k, names.size());
         TTree* temp_tree = (TTree*)input_file->Get("LT_result");
 
         double in_mu;
