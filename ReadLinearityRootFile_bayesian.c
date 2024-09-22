@@ -51,7 +51,7 @@ void ReadLinearityRootFile_bayesian() {
 
         double in_mu;
         double out_mu;
-        Nentry = temp_tree->GetEntries();
+        unsigned int Nentry = temp_tree->GetEntries();
 
         temp_tree->SetBranchAddress("mu_MXs3_true", &in_mu);
         temp_tree->SetBranchAddress("mu_MXs3_value", &out_mu);
@@ -87,9 +87,9 @@ void ReadLinearityRootFile_bayesian() {
         }
 
         TH1D* temp_hist = new TH1D("temp_hist", ";input #mu;toys", 100, specific_out_mu - 10.0, specific_out_mu + 10.0);
-        for (int j = 0; j < in_mus_for_specific_out_mu.size(), j++) temp_hist->Fill(in_mus_for_specific_out_mu.at(j));
+        for (int j = 0; j < in_mus_for_specific_out_mu.size(); j++) temp_hist->Fill(in_mus_for_specific_out_mu.at(j));
         temp_hist->Draw("Hist");
-        c->SaveAs("Linearity_MXs3_test_bayesian_" + std::to_string(specific_out_mu) + ".png");
+        c->SaveAs(("Linearity_MXs3_test_bayesian_" + std::to_string(specific_out_mu) + ".png").c_str());
 
         delete temp_hist;
 
