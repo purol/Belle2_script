@@ -1408,7 +1408,7 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
     TCanvas* cpull = new TCanvas("pull_Plot", "pull Plot", 2200, 800); cpull->SetBottomMargin(0.3);
     pull_two_sigma->Draw("E2");
     pull_one_sigma->Draw("E2 same");
-    pull_ht->Draw("e1 same");
+    pull_ht->Draw("e0 e1 same");
     line->Draw();
 
     cpull->SaveAs("param_pull.png");
