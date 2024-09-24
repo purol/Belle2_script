@@ -45,13 +45,13 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-TH1D* SIGNAL_hist = new TH1D("signal", ";##Upsilon(4S) multiplicity;Fraction of events", 6, -0.5, 5.5);
-TH1D* CHG_hist = new TH1D("charged", ";#Upsilon(4S) multiplicity;Fraction of events", 6, -0.5, 5.5);
-TH1D* MIX_hist = new TH1D("mixed", ";#Upsilon(4S) multiplicity;Fraction of events", 6, -0.5, 5.5);
-TH1D* UUBAR_hist = new TH1D("u#bar{u}", ";#Upsilon(4S) multiplicity;Fraction of events", 6, -0.5, 5.5);
-TH1D* DDBAR_hist = new TH1D("d#bar{d}", ";#Upsilon(4S) multiplicity;Fraction of events", 6, -0.5, 5.5);
-TH1D* SSBAR_hist = new TH1D("s#bar{s}", ";#Upsilon(4S) multiplicity;Fraction of events", 6, -0.5, 5.5);
-TH1D* CHARM_hist = new TH1D("c#bar{c}", ";#Upsilon(4S) multiplicity;Fraction of events", 6, -0.5, 5.5);
+TH1D* SIGNAL_hist = new TH1D("signal", ";##Upsilon(4S) multiplicity;Fraction of events", 5, 0.5, 5.5);
+TH1D* CHG_hist = new TH1D("charged", ";#Upsilon(4S) multiplicity;Fraction of events", 5, 0.5, 5.5);
+TH1D* MIX_hist = new TH1D("mixed", ";#Upsilon(4S) multiplicity;Fraction of events", 5, 0.5, 5.5);
+TH1D* UUBAR_hist = new TH1D("u#bar{u}", ";#Upsilon(4S) multiplicity;Fraction of events", 5, 0.5, 5.5);
+TH1D* DDBAR_hist = new TH1D("d#bar{d}", ";#Upsilon(4S) multiplicity;Fraction of events", 5, 0.5, 5.5);
+TH1D* SSBAR_hist = new TH1D("s#bar{s}", ";#Upsilon(4S) multiplicity;Fraction of events", 5, 0.5, 5.5);
+TH1D* CHARM_hist = new TH1D("c#bar{c}", ";#Upsilon(4S) multiplicity;Fraction of events", 5, 0.5, 5.5);
 
 void LetsFill(const char* dirname, TH1D* hist, double weight = 1) {
 
