@@ -21,7 +21,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 const bool Normalized = true;
 
-void THStack_plot_sideband() {
+void THStack_plot_nominal() {
 
     Nevt nevt_CHG = { 0.0, 0.0 };
     Nevt nevt_MIX = { 0.0, 0.0 };
@@ -618,6 +618,12 @@ void THStack_plot_sideband() {
             signal_hist[k]->SetFillStyle(0);
 
             TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
+
+            TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
+            pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
+            pad1->SetGridx(); pad1->Draw(); pad1->cd();
+            if ((variable_names.at(k).find("MVA") != std::string::npos) && (Nominal_MC_values[k].size() > 10000)) pad1->SetLogy(1);
+            else pad1->SetLogy(0);
 
             gStyle->SetPalette(kGistEarth);
 
