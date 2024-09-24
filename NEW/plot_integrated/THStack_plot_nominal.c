@@ -619,12 +619,6 @@ void THStack_plot_nominal() {
 
             TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
 
-            TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
-            pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
-            pad1->SetGridx(); pad1->Draw(); pad1->cd();
-            if ((variable_names.at(k).find("MVA") != std::string::npos) && (Nominal_MC_values[k].size() > 10000)) pad1->SetLogy(1);
-            else pad1->SetLogy(0);
-
             gStyle->SetPalette(kGistEarth);
 
             Float_t ymax_1 = Stack[k]->GetMaximum();
@@ -636,7 +630,7 @@ void THStack_plot_nominal() {
             Stack[k]->SetMaximum(real_max * 1.1);
 
             Stack[k]->Draw("pfc Hist"); signal_hist[k]->Draw("HistSAME");
-            TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
+            TLegend* legend = gPad->BuildLegend(0.95, 0.9, 0.75, 0.6);
             //gPad->BuildLegend();
             legend->SetFillStyle(0); legend->SetLineWidth(0);
             c_temp->SaveAs((variable_names.at(k) + ".png").c_str());
