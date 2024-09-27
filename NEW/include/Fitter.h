@@ -1416,4 +1416,193 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
     delete cpull;
 }
 
+void PrintNevtFile(RooWorkspace* w, const char* filename) {
+
+    // Nevts for each samples
+    std::vector<double> Signal_MXs1_Nevts; // Nevt for signal whose MXs^true is within [0.0, 0.6]
+    std::vector<double> Signal_MXs2_Nevts; // Nevt for signal whose MXs^true is within [0.6, 1.0]
+    std::vector<double> Signal_MXs3_Nevts; // Nevt for signal whose MXs^true is within [1.0, infty)
+    std::vector<double> CHG_Nevts; // Nevt for CHG
+    std::vector<double> MIX_Nevts; // Nevt for MIX
+    std::vector<double> UUBAR_Nevts; // Nevt for UUBAR
+    std::vector<double> DDBAR_Nevts; // Nevt for DDBAR
+    std::vector<double> SSBAR_Nevts; // Nevt for SSBAR
+    std::vector<double> CHARM_Nevts; // Nevt for CHARM
+
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+
+    {
+        RooAbsBinning const& binning = x_val_MXs1->getBinning();
+        const double oldVal = x_val_MXs1->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs1 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs1") == nullptr) continue; // skip non-MXs1
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+
+                double Nevt = temp_func_scaleFactors->getValV() * temp_func_shapes->getValV();
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs1") != nullptr) Signal_MXs1_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs2") != nullptr) Signal_MXs2_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs3") != nullptr) Signal_MXs3_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "CHG") != nullptr) CHG_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "MIX") != nullptr) MIX_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "UUBAR") != nullptr) UUBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "DDBAR") != nullptr) DDBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "SSBAR") != nullptr) SSBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "CHARM") != nullptr) CHARM_Nevts.push_back(Nevt);
+                else {
+                    printf("[ERROR] unexpected sample\n");
+                    exit(1);
+                }
+
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs1 = oldVal;
+    }
+
+    {
+        RooAbsBinning const& binning = x_val_MXs2->getBinning();
+        const double oldVal = x_val_MXs2->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs2 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs2") == nullptr) continue; // skip non-MXs2
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+
+                double Nevt = temp_func_scaleFactors->getValV() * temp_func_shapes->getValV();
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs1") != nullptr) Signal_MXs1_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs2") != nullptr) Signal_MXs2_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs3") != nullptr) Signal_MXs3_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "CHG") != nullptr) CHG_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "MIX") != nullptr) MIX_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "UUBAR") != nullptr) UUBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "DDBAR") != nullptr) DDBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "SSBAR") != nullptr) SSBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "CHARM") != nullptr) CHARM_Nevts.push_back(Nevt);
+                else {
+                    printf("[ERROR] unexpected sample\n");
+                    exit(1);
+                }
+
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs2 = oldVal;
+    }
+
+    {
+        RooAbsBinning const& binning = x_val_MXs3->getBinning();
+        const double oldVal = x_val_MXs3->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs3 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs3") == nullptr) continue; // skip non-MXs3
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+
+                double Nevt = temp_func_scaleFactors->getValV() * temp_func_shapes->getValV();
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs1") != nullptr) Signal_MXs1_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs2") != nullptr) Signal_MXs2_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs3") != nullptr) Signal_MXs3_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "CHG") != nullptr) CHG_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "MIX") != nullptr) MIX_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "UUBAR") != nullptr) UUBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "DDBAR") != nullptr) DDBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "SSBAR") != nullptr) SSBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "CHARM") != nullptr) CHARM_Nevts.push_back(Nevt);
+                else {
+                    printf("[ERROR] unexpected sample\n");
+                    exit(1);
+                }
+
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs3 = oldVal;
+    }
+
+    FILE* fp;
+    fp = fopen(filename, "w");
+
+    fprintf("Signal_MXs1:\n");
+    for (int i = 0; i < Signal_MXs1_Nevts.size(); i++) fprintf("%lf ", Signal_MXs1_Nevts.at(i));
+    fprintf("\n");
+
+    fprintf("Signal_MXs2:\n");
+    for (int i = 0; i < Signal_MXs2_Nevts.size(); i++) fprintf("%lf ", Signal_MXs2_Nevts.at(i));
+    fprintf("\n");
+
+    fprintf("Signal_MXs3:\n");
+    for (int i = 0; i < Signal_MXs3_Nevts.size(); i++) fprintf("%lf ", Signal_MXs3_Nevts.at(i));
+    fprintf("\n");
+
+    fprintf("CHG:\n");
+    for (int i = 0; i < CHG_Nevts.size(); i++) fprintf("%lf ", CHG_Nevts.at(i));
+    fprintf("\n");
+
+    fprintf("MIX:\n");
+    for (int i = 0; i < MIX_Nevts.size(); i++) fprintf("%lf ", MIX_Nevts.at(i));
+    fprintf("\n");
+
+    fprintf("UUBAR:\n");
+    for (int i = 0; i < UUBAR_Nevts.size(); i++) fprintf("%lf ", UUBAR_Nevts.at(i));
+    fprintf("\n");
+
+    fprintf("DDBAR:\n");
+    for (int i = 0; i < DDBAR_Nevts.size(); i++) fprintf("%lf ", DDBAR_Nevts.at(i));
+    fprintf("\n");
+
+    fprintf("SSBAR:\n");
+    for (int i = 0; i < SSBAR_Nevts.size(); i++) fprintf("%lf ", SSBAR_Nevts.at(i));
+    fprintf("\n");
+
+    fprintf("CHARM:\n");
+    for (int i = 0; i < CHARM_Nevts.size(); i++) fprintf("%lf ", CHARM_Nevts.at(i));
+    fprintf("\n");
+
+    fclose(fp);
+
+}
+
 #endif 
