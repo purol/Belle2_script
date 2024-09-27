@@ -3462,8 +3462,6 @@ void Printchi2(THStack* MC_stack, TH1D* data_hist) {
         double data_error = data_hist->GetBinError(i + 1);
 
         chi2 = chi2 + ((MC_value - data_value) * (MC_value - data_value) / (data_error * data_error));
-
-        printf("[bin %d] data = %lf +- %lf, MC = %lf +- %lf\n", i, data_value, data_error, MC_value, MC_error);
     }
 
     printf("chi2: %lf\n", chi2);
