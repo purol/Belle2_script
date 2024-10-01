@@ -1202,6 +1202,7 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
 }
 
 void PrintNevtFile(RooWorkspace* w, const char* filename) {
+    // for `LetsDrawFitPlot` in `THStack_plot.h`
 
     // Nevts for each samples
     std::vector<double> Signal_MXs1_Nevts; // Nevt for signal whose MXs^true is within [0.0, 0.6]

@@ -19,6 +19,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "correctors.h"
 #include "base.h"
 #include "template.h"
+#include "Fitter.h"
 
 Corrector_FEI corrector_FEI;
 Corrector_PID corrector_PID;
@@ -49,6 +50,28 @@ double CAL = 1.0; // must be 1.0
 # define CAL_qq_Xs 1.0
 
 bool NormalizeAtEachMXs = false;
+
+bool DrawFitPlots = false;
+
+std::vector<double> Signal_MXs1_Nevts_nominal;
+std::vector<double> Signal_MXs2_Nevts_nominal;
+std::vector<double> Signal_MXs3_Nevts_nominal;
+std::vector<double> CHG_Nevts_nominal;
+std::vector<double> MIX_Nevts_nominal;
+std::vector<double> UUBAR_Nevts_nominal;
+std::vector<double> DDBAR_Nevts_nominal;
+std::vector<double> SSBAR_Nevts_nominal;
+std::vector<double> CHARM_Nevts_nominal;
+
+std::vector<double> Signal_MXs1_Nevts_fit;
+std::vector<double> Signal_MXs2_Nevts_fit;
+std::vector<double> Signal_MXs3_Nevts_fit;
+std::vector<double> CHG_Nevts_fit;
+std::vector<double> MIX_Nevts_fit;
+std::vector<double> UUBAR_Nevts_fit;
+std::vector<double> DDBAR_Nevts_fit;
+std::vector<double> SSBAR_Nevts_fit;
+std::vector<double> CHARM_Nevts_fit;
 
 /* ====================================== */
 
@@ -90,6 +113,234 @@ double BDTcToWeight(double BDTc) {
     if (BDTc > (5.0 / 6.0)) return std::sqrt(5.0);
     else return std::sqrt(BDTc / (1.0 - BDTc));
 
+}
+
+void ReadNominalNevt(const char* filename) {
+    FILE* fp = fopen(filename, "r");
+
+    fscanf(fp, "Signal_MXs1:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Signal_MXs1_Nevts_nominal.push_back(temp);
+    }
+    fscanf(fp, "\n");
+
+    fprintf("Signal_MXs2:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Signal_MXs2_Nevts_nominal.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("Signal_MXs3:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Signal_MXs3_Nevts_nominal.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("CHG:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        CHG_Nevts_nominal.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("MIX:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        MIX_Nevts_nominal.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("UUBAR:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        UUBAR_Nevts_nominal.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("DDBAR:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        DDBAR_Nevts_nominal.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("SSBAR:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        SSBAR_Nevts_nominal.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("CHARM:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        CHARM_Nevts_nominal.push_back(temp);
+    }
+    fprintf("\n");
+
+    fclose(fp);
+}
+
+void ReadFittedNevt(const char* filename) {
+    FILE* fp = fopen(filename, "r");
+
+    fscanf(fp, "Signal_MXs1:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Signal_MXs1_Nevts_fit.push_back(temp);
+    }
+    fscanf(fp, "\n");
+
+    fprintf("Signal_MXs2:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Signal_MXs2_Nevts_fit.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("Signal_MXs3:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Signal_MXs3_Nevts_fit.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("CHG:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        CHG_Nevts_fit.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("MIX:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        MIX_Nevts_fit.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("UUBAR:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        UUBAR_Nevts_fit.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("DDBAR:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        DDBAR_Nevts_fit.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("SSBAR:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        SSBAR_Nevts_fit.push_back(temp);
+    }
+    fprintf("\n");
+
+    fprintf("CHARM:\n");
+    for (int i = 0; i < RarityBins; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        CHARM_Nevts_fit.push_back(temp);
+    }
+    fprintf("\n");
+
+    fclose(fp);
+}
+
+void LetsDrawFitPlot(bool DrawFitPlots_) {
+
+    if (DrawFitPlots_ == true) {
+        if (Signal_MXs1_Nevts_nominal.size() != RarityBins) {
+            printf("[ERROR] You should call `ReadNominalNevt` first\n");
+            exit(1);
+        }
+
+        if (Signal_MXs1_Nevts_fit.size() != RarityBins) {
+            printf("[ERROR] You should call `ReadFittedNevt` first\n");
+            exit(1);
+        }
+    }
+
+    DrawFitPlots = DrawFitPlots_;
+}
+
+double GetFitWeight(double bin_index, double MC_MXs, std::string SampleName) {
+    // Currently, I only include this function into `NevtCount_ri`, `LetsFillMC`, and `LetsFillMC_correction`
+
+    // double bin_index starts from 0.5
+    int bin_index_int = static_cast <int> (std::floor(bin_index));
+
+    if (SampleName == "CHG") {
+        if (CHG_Nevts_nominal.at(bin_index_int) < MyEPSILON) return 1.0;
+        else return CHG_Nevts_fit.at(bin_index_int) / CHG_Nevts_nominal.at(bin_index_int);
+    }
+    else if (SampleName == "MIX") {
+        if (MIX_Nevts_nominal.at(bin_index_int) < MyEPSILON) return 1.0;
+        else return MIX_Nevts_fit.at(bin_index_int) / MIX_Nevts_nominal.at(bin_index_int);
+    }
+    else if (SampleName == "UUBAR") {
+        if (UUBAR_Nevts_nominal.at(bin_index_int) < MyEPSILON) return 1.0;
+        else return UUBAR_Nevts_fit.at(bin_index_int) / UUBAR_Nevts_nominal.at(bin_index_int);
+    }
+    else if (SampleName == "DDBAR") {
+        if (DDBAR_Nevts_nominal.at(bin_index_int) < MyEPSILON) return 1.0;
+        else return DDBAR_Nevts_fit.at(bin_index_int) / DDBAR_Nevts_nominal.at(bin_index_int);
+    }
+    else if (SampleName == "SSBAR") {
+        if (SSBAR_Nevts_nominal.at(bin_index_int) < MyEPSILON) return 1.0;
+        else return SSBAR_Nevts_fit.at(bin_index_int) / SSBAR_Nevts_nominal.at(bin_index_int);
+    }
+    else if (SampleName == "CHARM") {
+        if (CHARM_Nevts_nominal.at(bin_index_int) < MyEPSILON) return 1.0;
+        else return CHARM_Nevts_fit.at(bin_index_int) / CHARM_Nevts_nominal.at(bin_index_int);
+    }
+    else if (SampleName == "SIGNAL") {
+
+        if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {
+            if (Signal_MXs1_Nevts_nominal.at(bin_index_int) < MyEPSILON) return 1.0;
+            else return Signal_MXs1_Nevts_fit.at(bin_index_int) / Signal_MXs1_Nevts_nominal.at(bin_index_int);
+        }
+        else if ((MC_MXs >= 0.6) && (MC_MXs < 1.0)) {
+            if (Signal_MXs2_Nevts_nominal.at(bin_index_int) < MyEPSILON) return 1.0;
+            else return Signal_MXs2_Nevts_fit.at(bin_index_int) / Signal_MXs2_Nevts_nominal.at(bin_index_int);
+        }
+        else if (MC_MXs >= 1.0) {
+            if (Signal_MXs3_Nevts_nominal.at(bin_index_int) < MyEPSILON) return 1.0;
+            else return Signal_MXs3_Nevts_fit.at(bin_index_int) / Signal_MXs3_Nevts_nominal.at(bin_index_int);
+        }
+        else {
+            printf("[ERROR] unexpected MC_MXs for SIGNAL\n");
+            exit(1);
+        }
+
+    }
+
+    // never reached
+    return -1.0;
 }
 
 void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, std::vector<std::string> branch_names, std::vector<double> variable_values[], std::vector<int>* numberings, std::vector<double>* weights, std::string SampleName, int option = 0, double additional_weight = 1.0) {
@@ -136,6 +387,10 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
 
     double FEI_calibration_factor = -1;
+
+    double MC_MXs = -1;
+    double Mxs_Bc_MC = -1;
+    double Mxs_B0_MC = -1;
 
     double invM_Knn = 0;
     double invM_Kstarnn = 0;
@@ -227,6 +482,9 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
         if (SampleName == "SIGNAL") {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &nBp);
             tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &nB0);
+
+            tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_Bc_MC);
+            tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_B0_MC);
         }
         for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
@@ -295,6 +553,39 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
             else if ((option != 0) && (option != 1) && (option != 2)){
                 printf("improper option value!\n");
                 exit(1);
+            }
+
+            // obtain true MXs
+            if (SampleName == "SIGNAL") {
+
+                // set MXs from filename
+                if (std::strstr(names.at(i).c_str(), "B2Knunu") != nullptr) MC_MXs = Mxs_Bc_MC;
+                else if (std::strstr(names.at(i).c_str(), "B2Kstarnunu") != nullptr) MC_MXs = Mxs_Bc_MC;
+                else if (std::strstr(names.at(i).c_str(), "B2Xsnunu") != nullptr) MC_MXs = Mxs_Bc_MC;
+                else if (std::strstr(names.at(i).c_str(), "B02K0nunu") != nullptr) MC_MXs = Mxs_B0_MC;
+                else if (std::strstr(names.at(i).c_str(), "B02Kstar0nunu") != nullptr) MC_MXs = Mxs_B0_MC;
+                else if (std::strstr(names.at(i).c_str(), "B02Xsnunu") != nullptr) MC_MXs = Mxs_B0_MC;
+                else {
+                    printf("[ERROR] unexpected filename for SIGNAL\n");
+                    exit(1);
+                }
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
+                else {
+                    if (std::strstr(names.at(i).c_str(), "B2Knunu") != nullptr) MC_MXs = 0.4868;
+                    else if (std::strstr(names.at(i).c_str(), "B2Kstarnunu") != nullptr) MC_MXs = 0.8916;
+                    else if (std::strstr(names.at(i).c_str(), "B2Xsnunu") != nullptr) MC_MXs = 1.5;
+                    else if (std::strstr(names.at(i).c_str(), "B02K0nunu") != nullptr) MC_MXs = 0.4868;
+                    else if (std::strstr(names.at(i).c_str(), "B02Kstar0nunu") != nullptr) MC_MXs = 0.8916;
+                    else if (std::strstr(names.at(i).c_str(), "B02Xsnunu") != nullptr) MC_MXs = 1.5;
+                }
+
+            }
+            else {
+                MC_MXs = -1;
+                Mxs_Bc_MC = -1;
+                Mxs_B0_MC = -1;
             }
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
@@ -429,9 +720,18 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
                 else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) normfactor_MXs = data_Nevt_MXs3->GetBinContent(1) / MC_Nevt_MXs3->GetBinContent(1);
             }
 
-            weights->push_back(FEI_calibration_factor* CAL* weight_ri* Correction_pi0* Correction_KID* Correction_PID* Correction_fake* Correction_Knn* Correction_Xnn* Correction_multiplicity* Correction_KpKLKL* Correction_KSKLKL* Correction_KstarKLKL* Correction_XKLKL* Correction_BtoDtoXKL* additional_weight * normfactor_MXs);
+            // scale factor to adjust into fit result
+            double fitfactor = 1.0;
+            if (DrawFitPlots == true) {
+                auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
+                int index_FBDT_raw = std::distance(variable_names.begin(), it);
+                double bin_index = ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M);
+                fitfactor = GetFitWeight(bin_index, MC_MXs, SampleName);
+            }
 
-            MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight * normfactor_MXs);
+            weights->push_back(FEI_calibration_factor* CAL* weight_ri* Correction_pi0* Correction_KID* Correction_PID* Correction_fake* Correction_Knn* Correction_Xnn* Correction_multiplicity* Correction_KpKLKL* Correction_KSKLKL* Correction_KstarKLKL* Correction_XKLKL* Correction_BtoDtoXKL* additional_weight * normfactor_MXs * fitfactor);
+
+            MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight * normfactor_MXs * fitfactor);
         }
         input_file->Close();
 
@@ -705,6 +1005,10 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
 
     double FEI_calibration_factor = -1;
 
+    double MC_MXs = -1;
+    double Mxs_Bc_MC = -1;
+    double Mxs_B0_MC = -1;
+
     double invM_Knn = 0;
     double invM_Kstarnn = 0;
     double invM_K0nn = 0;
@@ -798,6 +1102,9 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
         if (SampleName == "SIGNAL") {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &nBp);
             tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &nB0);
+
+            tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_Bc_MC);
+            tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_B0_MC);
         }
         for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
@@ -871,6 +1178,39 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
 
             // BDTc correction factor
             BDTc_correction = BDTcToWeight(BDTc) * NormFactor;
+
+            // obtain true MXs
+            if (SampleName == "SIGNAL") {
+
+                // set MXs from filename
+                if (std::strstr(names.at(i).c_str(), "B2Knunu") != nullptr) MC_MXs = Mxs_Bc_MC;
+                else if (std::strstr(names.at(i).c_str(), "B2Kstarnunu") != nullptr) MC_MXs = Mxs_Bc_MC;
+                else if (std::strstr(names.at(i).c_str(), "B2Xsnunu") != nullptr) MC_MXs = Mxs_Bc_MC;
+                else if (std::strstr(names.at(i).c_str(), "B02K0nunu") != nullptr) MC_MXs = Mxs_B0_MC;
+                else if (std::strstr(names.at(i).c_str(), "B02Kstar0nunu") != nullptr) MC_MXs = Mxs_B0_MC;
+                else if (std::strstr(names.at(i).c_str(), "B02Xsnunu") != nullptr) MC_MXs = Mxs_B0_MC;
+                else {
+                    printf("[ERROR] unexpected filename for SIGNAL\n");
+                    exit(1);
+                }
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
+                else {
+                    if (std::strstr(names.at(i).c_str(), "B2Knunu") != nullptr) MC_MXs = 0.4868;
+                    else if (std::strstr(names.at(i).c_str(), "B2Kstarnunu") != nullptr) MC_MXs = 0.8916;
+                    else if (std::strstr(names.at(i).c_str(), "B2Xsnunu") != nullptr) MC_MXs = 1.5;
+                    else if (std::strstr(names.at(i).c_str(), "B02K0nunu") != nullptr) MC_MXs = 0.4868;
+                    else if (std::strstr(names.at(i).c_str(), "B02Kstar0nunu") != nullptr) MC_MXs = 0.8916;
+                    else if (std::strstr(names.at(i).c_str(), "B02Xsnunu") != nullptr) MC_MXs = 1.5;
+                }
+
+            }
+            else {
+                MC_MXs = -1;
+                Mxs_Bc_MC = -1;
+                Mxs_B0_MC = -1;
+            }
 
             for (int k = 0; k < (int)variable_names.size(); k++) {
                 if (variable_names.at(k).find("bin index") != std::string::npos) {
@@ -1004,9 +1344,18 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
                 else if ((Bsig_M > 1.0) && (Bsig_M < 2.0)) normfactor_MXs = data_Nevt_MXs3->GetBinContent(1) / MC_Nevt_MXs3->GetBinContent(1);
             }
 
-            weights->push_back(FEI_calibration_factor* CAL* weight_ri* Correction_pi0* Correction_KID* Correction_PID* Correction_fake* Correction_Knn* Correction_Xnn* Correction_multiplicity* Correction_KpKLKL* Correction_KSKLKL* Correction_KstarKLKL* Correction_XKLKL* Correction_BtoDtoXKL* BDTc_correction* additional_weight * normfactor_MXs);
+            // scale factor to adjust into fit result
+            double fitfactor = 1.0;
+            if (DrawFitPlots == true) {
+                auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
+                int index_FBDT_raw = std::distance(variable_names.begin(), it);
+                double bin_index = ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M);
+                fitfactor = GetFitWeight(bin_index, MC_MXs, SampleName);
+            }
 
-            MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight * normfactor_MXs);
+            weights->push_back(FEI_calibration_factor* CAL* weight_ri* Correction_pi0* Correction_KID* Correction_PID* Correction_fake* Correction_Knn* Correction_Xnn* Correction_multiplicity* Correction_KpKLKL* Correction_KSKLKL* Correction_KstarKLKL* Correction_XKLKL* Correction_BtoDtoXKL* BDTc_correction* additional_weight * normfactor_MXs * fitfactor);
+
+            MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight * normfactor_MXs * fitfactor);
 
         }
         input_file->Close();
@@ -3174,6 +3523,10 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
 
     double FEI_calibration_factor = -1;
 
+    double MC_MXs = -1;
+    double Mxs_Bc_MC = -1;
+    double Mxs_B0_MC = -1;
+
     double invM_Knn = 0;
     double invM_Kstarnn = 0;
     double invM_K0nn = 0;
@@ -3220,6 +3573,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
 
     double Bsig_M = -1;
 
+    float MVA_BB = -1;
     float BDTc = -1;
     double BDTc_correction = -1;
 
@@ -3251,6 +3605,9 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
         if (SampleName == "SIGNAL") {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &nBp);
             tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &nB0);
+
+            tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_Bc_MC);
+            tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_B0_MC);
         }
         for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
@@ -3305,6 +3662,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
         tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &nDptoXKL);
         tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &nD0toXKL);
 
+        tree_upsilon->SetBranchAddress("MVA_BB", &MVA_BB);
         tree_upsilon->SetBranchAddress("MVA_Continuum", &BDTc);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
@@ -3315,6 +3673,39 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
 
             // BDTc correction factor
             BDTc_correction = BDTcToWeight(BDTc);
+
+            // obtain true MXs
+            if (SampleName == "SIGNAL") {
+
+                // set MXs from filename
+                if (std::strstr(names.at(i).c_str(), "B2Knunu") != nullptr) MC_MXs = Mxs_Bc_MC;
+                else if (std::strstr(names.at(i).c_str(), "B2Kstarnunu") != nullptr) MC_MXs = Mxs_Bc_MC;
+                else if (std::strstr(names.at(i).c_str(), "B2Xsnunu") != nullptr) MC_MXs = Mxs_Bc_MC;
+                else if (std::strstr(names.at(i).c_str(), "B02K0nunu") != nullptr) MC_MXs = Mxs_B0_MC;
+                else if (std::strstr(names.at(i).c_str(), "B02Kstar0nunu") != nullptr) MC_MXs = Mxs_B0_MC;
+                else if (std::strstr(names.at(i).c_str(), "B02Xsnunu") != nullptr) MC_MXs = Mxs_B0_MC;
+                else {
+                    printf("[ERROR] unexpected filename for SIGNAL\n");
+                    exit(1);
+                }
+
+                // sanity check
+                if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
+                else {
+                    if (std::strstr(names.at(i).c_str(), "B2Knunu") != nullptr) MC_MXs = 0.4868;
+                    else if (std::strstr(names.at(i).c_str(), "B2Kstarnunu") != nullptr) MC_MXs = 0.8916;
+                    else if (std::strstr(names.at(i).c_str(), "B2Xsnunu") != nullptr) MC_MXs = 1.5;
+                    else if (std::strstr(names.at(i).c_str(), "B02K0nunu") != nullptr) MC_MXs = 0.4868;
+                    else if (std::strstr(names.at(i).c_str(), "B02Kstar0nunu") != nullptr) MC_MXs = 0.8916;
+                    else if (std::strstr(names.at(i).c_str(), "B02Xsnunu") != nullptr) MC_MXs = 1.5;
+                }
+
+            }
+            else {
+                MC_MXs = -1;
+                Mxs_Bc_MC = -1;
+                Mxs_B0_MC = -1;
+            }
 
             // Fill numberings
             double weight_ri = 0.0;
@@ -3421,8 +3812,15 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight;
-            nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight;
+            // scale factor to adjust into fit result
+            double fitfactor = 1.0;
+            if (DrawFitPlots == true) {
+                double bin_index = ReturnBinIndex(MVA_BB, Bsig_M);
+                fitfactor = GetFitWeight(bin_index, MC_MXs, SampleName);
+            }
+
+            nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight * fitfactor;
+            nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight * fitfactor;
 
 
         }
