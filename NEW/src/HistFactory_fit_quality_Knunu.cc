@@ -966,7 +966,7 @@ int main(int argc, char* argv[]) {
             exit(1);
         }
     }
-    else if (std::string(argv[1]) == std::string("nuisance")) { // check the power of nuisance parameters
+    else if (std::string(argv[1]) == std::string("nuisance") || (std::string(argv[1]) == std::string("nuisanceLOAD"))) { // check the power of nuisance parameters
         if (argc == 6) {
             injected_mu = -1;
             eps = std::atof(argv[2]);
@@ -975,12 +975,12 @@ int main(int argc, char* argv[]) {
             fixed_param = std::string(argv[5]);
         }
         else {
-            printf("nuisance Toy MC requires 5 arguments {eps} {indicator} {Num of sample} {fixed param}\n");
+            printf("nuisance(LOAD) Toy MC requires 5 arguments {eps} {indicator} {Num of sample} {fixed param}\n");
             exit(1);
         }
     }
     else {
-        printf("first argument should be {ToyMC|LinearityTest|nuisance|ToyMCRC|ToyMCbox}\n");
+        printf("first argument should be {ToyMC|LinearityTest|nuisance|nuisanceLOAD|ToyMCRC|ToyMCbox}\n");
         exit(1);
     }
 
@@ -1016,7 +1016,7 @@ int main(int argc, char* argv[]) {
         // save snapshot
         w->saveSnapshot("ParamValues", *params, true);
     }
-    else if (std::string(argv[1]) == std::string("nuisance")) {
+    else if (std::string(argv[1]) == std::string("nuisance") || (std::string(argv[1]) == std::string("nuisanceLOAD"))) {
         OPTIONS* options = (OPTIONS*)malloc(sizeof(OPTIONS));
         Initialize_options(options, fixed_param.c_str());
 
@@ -1046,6 +1046,11 @@ int main(int argc, char* argv[]) {
     else if (std::string(argv[1]) == std::string("nuisance")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
         MyToyMCStudy(w, &param_names, eps, indicator);
+    }
+    else if (std::string(argv[1]) == std::string("nuisanceLOAD")) {
+        filesaver.OpenFile(true, &param_names, injected_mu, indicator);
+        std::vector<double> Nevts = ReadFittedNevt("Nevts.txt");
+        MyToyMCStudyWithNevts(w, &param_names, eps, Nevts, indicator);
     }
 
     f->Close();
