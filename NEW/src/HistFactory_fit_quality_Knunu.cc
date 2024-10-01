@@ -802,6 +802,120 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data) {
     }
 }
 
+std::vector<double> ReadFittedNevt(const char* filename) {
+    std::vector<double> Nevts;
+    for (int i = 0; i < RarityBins_MX1; i++) Nevts.push_back(0.0);
+
+    FILE* fp = fopen(filename, "r");
+
+    fscanf(fp, "Signal_MXs1:\n");
+    for (int i = 0; i < RarityBins_MX1; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Nevts.at(i) = Nevts.at(i) + temp;
+    }
+    fscanf(fp, "\n");
+
+    fprintf("Signal_MXs2:\n");
+    for (int i = 0; i < RarityBins_MX1; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Nevts.at(i) = Nevts.at(i) + temp;
+    }
+    fprintf("\n");
+
+    fprintf("Signal_MXs3:\n");
+    for (int i = 0; i < RarityBins_MX1; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Nevts.at(i) = Nevts.at(i) + temp;
+    }
+    fprintf("\n");
+
+    fprintf("CHG:\n");
+    for (int i = 0; i < RarityBins_MX1; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Nevts.at(i) = Nevts.at(i) + temp;
+    }
+    fprintf("\n");
+
+    fprintf("MIX:\n");
+    for (int i = 0; i < RarityBins_MX1; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Nevts.at(i) = Nevts.at(i) + temp;
+    }
+    fprintf("\n");
+
+    fprintf("UUBAR:\n");
+    for (int i = 0; i < RarityBins_MX1; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Nevts.at(i) = Nevts.at(i) + temp;
+    }
+    fprintf("\n");
+
+    fprintf("DDBAR:\n");
+    for (int i = 0; i < RarityBins_MX1; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Nevts.at(i) = Nevts.at(i) + temp;
+    }
+    fprintf("\n");
+
+    fprintf("SSBAR:\n");
+    for (int i = 0; i < RarityBins_MX1; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Nevts.at(i) = Nevts.at(i) + temp;
+    }
+    fprintf("\n");
+
+    fprintf("CHARM:\n");
+    for (int i = 0; i < RarityBins_MX1; i++) {
+        double temp;
+        fscanf(fp, "%lf ", &temp);
+        Nevts.at(i) = Nevts.at(i) + temp;
+    }
+    fprintf("\n");
+
+    fclose(fp);
+
+    return Nevts;
+}
+
+void MyToyMCStudyWithNevts(RooWorkspace* w, std::vector<std::string>* names, double eps, std::vector<double> Nevts, int indicator = 0) {
+
+    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+
+    for (int i = 0; i < Toy_iter_num; i++) { // Do Toy MC study
+
+        filesaver.GetTrueValues(w, names);
+
+        RooDataSet* genData = MyGenerate(w, Nevts, true);
+
+        w->loadSnapshot("ParamValues");
+        //RooFitResult* fitres = model->fitTo(*genData, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"))), RooFit::SumW2Error(false), Save());
+        RooAbsReal* nll;
+        RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
+
+        if (MyDEBUG) Debug(w, fitres, genData);
+
+        filesaver.GetFittingValues(fitres, names);
+        filesaver.GetFittingStatus(fitres);
+        filesaver.WriteIntoBranch();
+
+        delete fitres;
+        delete genData;
+
+    }
+}
+
 int main(int argc, char* argv[]) {
 
     ::ROOT::Math::MinimizerOptions::SetDefaultPrintLevel(2);
