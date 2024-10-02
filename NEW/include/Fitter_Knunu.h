@@ -1265,41 +1265,41 @@ void PrintNevtFile(RooWorkspace* w, const char* filename) {
     FILE* fp;
     fp = fopen(filename, "w");
 
-    fprintf("Signal_MXs1:\n");
-    for (int i = 0; i < Signal_MXs1_Nevts.size(); i++) fprintf("%lf ", Signal_MXs1_Nevts.at(i));
-    fprintf("\n");
+    fprintf(fp, "Signal_MXs1:\n");
+    for (int i = 0; i < Signal_MXs1_Nevts.size(); i++) fprintf(fp, "%lf ", Signal_MXs1_Nevts.at(i));
+    fprintf(fp, "\n");
 
-    fprintf("Signal_MXs2:\n");
-    for (int i = 0; i < Signal_MXs2_Nevts.size(); i++) fprintf("%lf ", Signal_MXs2_Nevts.at(i));
-    fprintf("\n");
+    fprintf(fp, "Signal_MXs2:\n");
+    for (int i = 0; i < Signal_MXs2_Nevts.size(); i++) fprintf(fp, "%lf ", Signal_MXs2_Nevts.at(i));
+    fprintf(fp, "\n");
 
-    fprintf("Signal_MXs3:\n");
-    for (int i = 0; i < Signal_MXs3_Nevts.size(); i++) fprintf("%lf ", Signal_MXs3_Nevts.at(i));
-    fprintf("\n");
+    fprintf(fp, "Signal_MXs3:\n");
+    for (int i = 0; i < Signal_MXs3_Nevts.size(); i++) fprintf(fp, "%lf ", Signal_MXs3_Nevts.at(i));
+    fprintf(fp, "\n");
 
-    fprintf("CHG:\n");
-    for (int i = 0; i < CHG_Nevts.size(); i++) fprintf("%lf ", CHG_Nevts.at(i));
-    fprintf("\n");
+    fprintf(fp, "CHG:\n");
+    for (int i = 0; i < CHG_Nevts.size(); i++) fprintf(fp, "%lf ", CHG_Nevts.at(i));
+    fprintf(fp, "\n");
 
-    fprintf("MIX:\n");
-    for (int i = 0; i < MIX_Nevts.size(); i++) fprintf("%lf ", MIX_Nevts.at(i));
-    fprintf("\n");
+    fprintf(fp, "MIX:\n");
+    for (int i = 0; i < MIX_Nevts.size(); i++) fprintf(fp, "%lf ", MIX_Nevts.at(i));
+    fprintf(fp, "\n");
 
-    fprintf("UUBAR:\n");
-    for (int i = 0; i < UUBAR_Nevts.size(); i++) fprintf("%lf ", UUBAR_Nevts.at(i));
-    fprintf("\n");
+    fprintf(fp, "UUBAR:\n");
+    for (int i = 0; i < UUBAR_Nevts.size(); i++) fprintf(fp, "%lf ", UUBAR_Nevts.at(i));
+    fprintf(fp, "\n");
 
-    fprintf("DDBAR:\n");
-    for (int i = 0; i < DDBAR_Nevts.size(); i++) fprintf("%lf ", DDBAR_Nevts.at(i));
-    fprintf("\n");
+    fprintf(fp, "DDBAR:\n");
+    for (int i = 0; i < DDBAR_Nevts.size(); i++) fprintf(fp, "%lf ", DDBAR_Nevts.at(i));
+    fprintf(fp, "\n");
 
-    fprintf("SSBAR:\n");
-    for (int i = 0; i < SSBAR_Nevts.size(); i++) fprintf("%lf ", SSBAR_Nevts.at(i));
-    fprintf("\n");
+    fprintf(fp, "SSBAR:\n");
+    for (int i = 0; i < SSBAR_Nevts.size(); i++) fprintf(fp, "%lf ", SSBAR_Nevts.at(i));
+    fprintf(fp, "\n");
 
-    fprintf("CHARM:\n");
-    for (int i = 0; i < CHARM_Nevts.size(); i++) fprintf("%lf ", CHARM_Nevts.at(i));
-    fprintf("\n");
+    fprintf(fp, "CHARM:\n");
+    for (int i = 0; i < CHARM_Nevts.size(); i++) fprintf(fp, "%lf ", CHARM_Nevts.at(i));
+    fprintf(fp, "\n");
 
     fclose(fp);
 
