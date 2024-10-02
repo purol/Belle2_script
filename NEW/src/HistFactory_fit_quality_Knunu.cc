@@ -816,69 +816,69 @@ std::vector<double> ReadFittedNevt(const char* filename) {
     }
     fscanf(fp, "\n");
 
-    fprintf("Signal_MXs2:\n");
+    fprintf(fp, "Signal_MXs2:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf("\n");
+    fprintf(fp, "\n");
 
-    fprintf("Signal_MXs3:\n");
+    fprintf(fp, "Signal_MXs3:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf("\n");
+    fprintf(fp, "\n");
 
-    fprintf("CHG:\n");
+    fprintf(fp, "CHG:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf("\n");
+    fprintf(fp, "\n");
 
-    fprintf("MIX:\n");
+    fprintf(fp, "MIX:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf("\n");
+    fprintf(fp, "\n");
 
-    fprintf("UUBAR:\n");
+    fprintf(fp, "UUBAR:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf("\n");
+    fprintf(fp, "\n");
 
-    fprintf("DDBAR:\n");
+    fprintf(fp, "DDBAR:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf("\n");
+    fprintf(fp, "\n");
 
-    fprintf("SSBAR:\n");
+    fprintf(fp, "SSBAR:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf("\n");
+    fprintf(fp, "\n");
 
-    fprintf("CHARM:\n");
+    fprintf(fp, "CHARM:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf("\n");
+    fprintf(fp, "\n");
 
     fclose(fp);
 
