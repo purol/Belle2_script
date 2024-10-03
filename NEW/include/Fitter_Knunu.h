@@ -1330,4 +1330,24 @@ void PrintNuisanceParameters(RooArgSet* fitargs) {
 
 }
 
+void LoadNuisanceParameter(RooWorkspace* w, const char* fname) {
+
+    FILE* fp = fopen(fname, "r");
+
+    while (true) {
+
+        char variable_name[100];
+        double variable_value = -1;
+
+        if (fscanf(fp, "%s\n", variable_name) == EOF) break;
+        if (fscanf(fp, "%lf\n", &variable_value) == EOF) break;
+
+        w->var(variable_name)->setVal(variable_value);
+
+    }
+
+    fclose(fp);
+
+}
+
 #endif 
