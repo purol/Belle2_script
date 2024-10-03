@@ -1366,7 +1366,7 @@ int main(int argc, char* argv[]) {
             exit(1);
         }
     }
-    else if ((std::string(argv[1]) == std::string("nuisance")) || (std::string(argv[1]) == std::string("nuisanceLOAD")) || (std::string(argv[1]) == std::string("nuisanceLOADFixNuisance"))) { // check the power of nuisance parameters
+    else if ((std::string(argv[1]) == std::string("nuisance")) || (std::string(argv[1]) == std::string("nuisanceLOADNevt")) || (std::string(argv[1]) == std::string("nuisanceLOADNevtLOADNuisance"))) { // check the power of nuisance parameters
         if (argc == 6) {
             injected_mu = -1;
             eps = std::atof(argv[2]);
@@ -1380,7 +1380,7 @@ int main(int argc, char* argv[]) {
         }
     }
     else {
-        printf("first argument should be {ToyMC|LinearityTest|nuisance|nuisanceLOAD|nuisanceLOADFixNuisance|ToyMCRC|ToyMCbox}\n");
+        printf("first argument should be {ToyMC|LinearityTest|nuisance|nuisanceLOADNevt|nuisanceLOADNevtLOADNuisance|ToyMCRC|ToyMCbox}\n");
         exit(1);
     }
 
@@ -1420,14 +1420,14 @@ int main(int argc, char* argv[]) {
         // save snapshot
         w->saveSnapshot("ParamValues", *params, true);
     }
-    else if ((std::string(argv[1]) == std::string("nuisance")) || (std::string(argv[1]) == std::string("nuisanceLOAD"))) {
+    else if ((std::string(argv[1]) == std::string("nuisance")) || (std::string(argv[1]) == std::string("nuisanceLOADNevt"))) {
         OPTIONS* options = (OPTIONS*)malloc(sizeof(OPTIONS));
         Initialize_options(options, fixed_param.c_str());
 
         w->loadSnapshot("NominalParamValues");
         FixParameters(w, options);
     }
-    else if (std::string(argv[1]) == std::string("nuisanceLOADFixNuisance")) {
+    else if (std::string(argv[1]) == std::string("nuisanceLOADNevtLOADNuisance")) {
         OPTIONS* options = (OPTIONS*)malloc(sizeof(OPTIONS));
         Initialize_options(options, fixed_param.c_str());
 
@@ -1459,12 +1459,12 @@ int main(int argc, char* argv[]) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
         MyToyMCStudy(w, &param_names, eps, indicator);
     }
-    else if (std::string(argv[1]) == std::string("nuisanceLOAD")) {
+    else if (std::string(argv[1]) == std::string("nuisanceLOADNevt")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
         std::vector<double> Nevts = ReadFittedNevt("Nevts.txt");
         MyToyMCStudyWithNevts(w, &param_names, eps, Nevts, indicator);
     }
-    else if (std::string(argv[1]) == std::string("nuisanceLOADFixNuisance")) {
+    else if (std::string(argv[1]) == std::string("nuisanceLOADNevtLOADNuisance")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
         std::vector<double> Nevts = ReadFittedNevt("Nevts.txt");
         MyToyMCStudyWithNevts(w, &param_names, eps, Nevts, indicator);
