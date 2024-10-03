@@ -1417,7 +1417,7 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
 }
 
 void PrintNevtFile(RooWorkspace* w, const char* filename) {
-    // for `LetsDrawFitPlot` in `THStack_plot.h`
+    // for `LetsDrawFitPlot` in `THStack_plot.h, and `MyToyMCStudyWithNevts`
 
     // Nevts for each samples
     std::vector<double> Signal_MXs1_Nevts; // Nevt for signal whose MXs^true is within [0.0, 0.6]
@@ -1601,6 +1601,31 @@ void PrintNevtFile(RooWorkspace* w, const char* filename) {
     fprintf(fp, "CHARM:\n");
     for (int i = 0; i < CHARM_Nevts.size(); i++) fprintf(fp, "%lf ", CHARM_Nevts.at(i));
     fprintf(fp, "\n");
+
+    fclose(fp);
+
+}
+
+void PrintNuisanceParameters(RooArgSet* fitargs) {
+
+    FILE* fp = fopen("nuisance.txt", "w");
+
+    TIterator* iter(fitargs->createIterator());
+
+    for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        double val = rrv->getVal();
+        double err = rrv->getError();
+        double HIerr = rrv->getAsymErrorHi();
+        double LOerr = rrv->getAsymErrorLo();
+
+        if ((str.find("alpha") != std::string::npos) && (str.find("gamma") != std::string::npos)) { // it is nuisance parameter
+            fprintf("%s\n", name.c_str());
+            fprintf("%lf\n", val);
+        }
+
+    }
 
     fclose(fp);
 
