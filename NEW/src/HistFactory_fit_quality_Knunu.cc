@@ -816,69 +816,69 @@ std::vector<double> ReadFittedNevt(const char* filename) {
     }
     fscanf(fp, "\n");
 
-    fprintf(fp, "Signal_MXs2:\n");
+    fscanf(fp, "Signal_MXs2:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf(fp, "\n");
+    fscanf(fp, "\n");
 
-    fprintf(fp, "Signal_MXs3:\n");
+    fscanf(fp, "Signal_MXs3:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf(fp, "\n");
+    fscanf(fp, "\n");
 
-    fprintf(fp, "CHG:\n");
+    fscanf(fp, "CHG:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf(fp, "\n");
+    fscanf(fp, "\n");
 
-    fprintf(fp, "MIX:\n");
+    fscanf(fp, "MIX:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf(fp, "\n");
+    fscanf(fp, "\n");
 
-    fprintf(fp, "UUBAR:\n");
+    fscanf(fp, "UUBAR:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf(fp, "\n");
+    fscanf(fp, "\n");
 
-    fprintf(fp, "DDBAR:\n");
+    fscanf(fp, "DDBAR:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf(fp, "\n");
+    fscanf(fp, "\n");
 
-    fprintf(fp, "SSBAR:\n");
+    fscanf(fp, "SSBAR:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf(fp, "\n");
+    fscanf(fp, "\n");
 
-    fprintf(fp, "CHARM:\n");
+    fscanf(fp, "CHARM:\n");
     for (int i = 0; i < RarityBins_MX1; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Nevts.at(i) = Nevts.at(i) + temp;
     }
-    fprintf(fp, "\n");
+    fscanf(fp, "\n");
 
     fclose(fp);
 

@@ -126,69 +126,69 @@ void ReadNominalNevt(const char* filename) {
     }
     fscanf(fp, "\n");
 
-    fprintf("Signal_MXs2:\n");
+    fscanf("Signal_MXs2:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Signal_MXs2_Nevts_nominal.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("Signal_MXs3:\n");
+    fscanf("Signal_MXs3:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Signal_MXs3_Nevts_nominal.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("CHG:\n");
+    fscanf("CHG:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         CHG_Nevts_nominal.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("MIX:\n");
+    fscanf("MIX:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         MIX_Nevts_nominal.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("UUBAR:\n");
+    fscanf("UUBAR:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         UUBAR_Nevts_nominal.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("DDBAR:\n");
+    fscanf("DDBAR:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         DDBAR_Nevts_nominal.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("SSBAR:\n");
+    fscanf("SSBAR:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         SSBAR_Nevts_nominal.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("CHARM:\n");
+    fscanf("CHARM:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         CHARM_Nevts_nominal.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
     fclose(fp);
 }
@@ -204,69 +204,69 @@ void ReadFittedNevt(const char* filename) {
     }
     fscanf(fp, "\n");
 
-    fprintf("Signal_MXs2:\n");
+    fscanf("Signal_MXs2:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Signal_MXs2_Nevts_fit.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("Signal_MXs3:\n");
+    fscanf("Signal_MXs3:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Signal_MXs3_Nevts_fit.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("CHG:\n");
+    fscanf("CHG:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         CHG_Nevts_fit.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("MIX:\n");
+    fscanf("MIX:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         MIX_Nevts_fit.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("UUBAR:\n");
+    fscanf("UUBAR:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         UUBAR_Nevts_fit.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("DDBAR:\n");
+    fscanf("DDBAR:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         DDBAR_Nevts_fit.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("SSBAR:\n");
+    fscanf("SSBAR:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         SSBAR_Nevts_fit.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
-    fprintf("CHARM:\n");
+    fscanf("CHARM:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         CHARM_Nevts_fit.push_back(temp);
     }
-    fprintf("\n");
+    fscanf("\n");
 
     fclose(fp);
 }
