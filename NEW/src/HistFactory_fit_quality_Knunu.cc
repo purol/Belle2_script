@@ -966,7 +966,7 @@ int main(int argc, char* argv[]) {
             exit(1);
         }
     }
-    else if (std::string(argv[1]) == std::string("nuisance") || (std::string(argv[1]) == std::string("nuisanceLOAD"))) { // check the power of nuisance parameters
+    else if (std::string(argv[1]) == std::string("nuisance") || (std::string(argv[1]) == std::string("nuisanceLOAD")) || (std::string(argv[1]) == std::string("nuisanceLOADFixNuisance"))) { // check the power of nuisance parameters
         if (argc == 6) {
             injected_mu = -1;
             eps = std::atof(argv[2]);
@@ -980,7 +980,7 @@ int main(int argc, char* argv[]) {
         }
     }
     else {
-        printf("first argument should be {ToyMC|LinearityTest|nuisance|nuisanceLOAD|ToyMCRC|ToyMCbox}\n");
+        printf("first argument should be {ToyMC|LinearityTest|nuisance|nuisanceLOAD|nuisanceLOADFixNuisance|ToyMCRC|ToyMCbox}\n");
         exit(1);
     }
 
@@ -1023,6 +1023,14 @@ int main(int argc, char* argv[]) {
         w->loadSnapshot("NominalParamValues");
         FixParameters(w, options);
     }
+    else if (std::string(argv[1]) == std::string("nuisanceLOADFixNuisance")) {
+        OPTIONS* options = (OPTIONS*)malloc(sizeof(OPTIONS));
+        Initialize_options(options, fixed_param.c_str());
+
+        w->loadSnapshot("NominalParamValues");
+        LoadNuisanceParameter(w, "nuisance.txt");
+        FixParameters(w, options);
+    }
 
     GetNameOfParams(w, &param_names);
 
@@ -1048,6 +1056,11 @@ int main(int argc, char* argv[]) {
         MyToyMCStudy(w, &param_names, eps, indicator);
     }
     else if (std::string(argv[1]) == std::string("nuisanceLOAD")) {
+        filesaver.OpenFile(true, &param_names, injected_mu, indicator);
+        std::vector<double> Nevts = ReadFittedNevt("Nevts.txt");
+        MyToyMCStudyWithNevts(w, &param_names, eps, Nevts, indicator);
+    }
+    else if (std::string(argv[1]) == std::string("nuisanceLOADFixNuisance")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
         std::vector<double> Nevts = ReadFittedNevt("Nevts.txt");
         MyToyMCStudyWithNevts(w, &param_names, eps, Nevts, indicator);
