@@ -1319,7 +1319,7 @@ void PrintNuisanceParameters(RooArgSet* fitargs) {
         double HIerr = rrv->getAsymErrorHi();
         double LOerr = rrv->getAsymErrorLo();
 
-        if ((str.find("alpha") != std::string::npos) && (str.find("gamma") != std::string::npos)) { // it is nuisance parameter
+        if ((name.find("alpha") != std::string::npos) && (name.find("gamma") != std::string::npos)) { // it is nuisance parameter
             fprintf(fp, "%s\n", name.c_str());
             fprintf(fp, "%lf\n", val);
         }
