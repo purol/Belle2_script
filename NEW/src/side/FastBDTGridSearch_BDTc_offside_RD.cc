@@ -35,7 +35,7 @@
 #include "base.h"
 #include "MyFBDT.h"
 
-int main(int argc, char* argv[]) // offres total: 42.329/fb, on-resonance total: 361.673/fb
+int main(int argc, char* argv[]) // offres total: 42.329/fb, on-resonance total: 365.37/fb
 {
     // grid search
     // unsigned int nTrees[5] = { 100, 500, 1000, 1500, 2000 };  default is 100
