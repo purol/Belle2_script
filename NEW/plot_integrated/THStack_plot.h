@@ -126,13 +126,13 @@ void ReadNominalNevt(const char* filename) {
     }
     fscanf(fp, "\n");
 
-    fscanf("Signal_MXs2:\n");
+    fscanf(fp, "Signal_MXs2:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         Signal_MXs2_Nevts_nominal.push_back(temp);
     }
-    fscanf("\n");
+    fscanf(fp, "\n");
 
     fscanf("Signal_MXs3:\n");
     for (int i = 0; i < RarityBins; i++) {
@@ -140,25 +140,25 @@ void ReadNominalNevt(const char* filename) {
         fscanf(fp, "%lf ", &temp);
         Signal_MXs3_Nevts_nominal.push_back(temp);
     }
-    fscanf("\n");
+    fscanf(fp, "\n");
 
-    fscanf("CHG:\n");
+    fscanf(fp, "CHG:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         CHG_Nevts_nominal.push_back(temp);
     }
-    fscanf("\n");
+    fscanf(fp, "\n");
 
-    fscanf("MIX:\n");
+    fscanf(fp, "MIX:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         MIX_Nevts_nominal.push_back(temp);
     }
-    fscanf("\n");
+    fscanf(fp, "\n");
 
-    fscanf("UUBAR:\n");
+    fscanf(fp, "UUBAR:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
@@ -166,7 +166,7 @@ void ReadNominalNevt(const char* filename) {
     }
     fscanf("\n");
 
-    fscanf("DDBAR:\n");
+    fscanf(fp, "DDBAR:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
@@ -174,15 +174,15 @@ void ReadNominalNevt(const char* filename) {
     }
     fscanf("\n");
 
-    fscanf("SSBAR:\n");
+    fscanf(fp, "SSBAR:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
         SSBAR_Nevts_nominal.push_back(temp);
     }
-    fscanf("\n");
+    fscanf(fp, "\n");
 
-    fscanf("CHARM:\n");
+    fscanf(fp, "CHARM:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
