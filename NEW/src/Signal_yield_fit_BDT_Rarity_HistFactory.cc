@@ -941,20 +941,20 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
                         double New_Correction_FEI = 1.0;
 
                         if (strcmp(type, "Bplus") == 0) {
-                            if (std::abs(Btag_ID - 0.0) < MyEPSILON) New_Correction_FEI = 0.873985;
-                            else if (std::abs(Btag_ID - 1.0) < MyEPSILON) New_Correction_FEI = 0.873985;
-                            else if (std::abs(Btag_ID - 3.0) < MyEPSILON) New_Correction_FEI = 0.873985;
-                            else if (std::abs(Btag_ID - 4.0) < MyEPSILON) New_Correction_FEI = 0.873985;
-                            else if (std::abs(Btag_ID - 15.0) < MyEPSILON) New_Correction_FEI = 0.581819;
-                            else if (std::abs(Btag_ID - 16.0) < MyEPSILON) New_Correction_FEI = 0.581819;
-                            else if (std::abs(Btag_ID - 18.0) < MyEPSILON) New_Correction_FEI = 0.581819;
-                            else if (std::abs(Btag_ID - 19.0) < MyEPSILON) New_Correction_FEI = 0.581819;
-                            else if (std::abs(Btag_ID - 23.0) < MyEPSILON) New_Correction_FEI = 0.228530;
-                            else if (std::abs(Btag_ID - 24.0) < MyEPSILON) New_Correction_FEI = 0.228530;
-                            else if (std::abs(Btag_ID - 30.0) < MyEPSILON) New_Correction_FEI = 0.228530;
-                            else New_Correction_FEI = 0.228530;
+                            if (std::abs(Btag_ID - 0.0) < MyEPSILON) New_Correction_FEI = 0.871866;
+                            else if (std::abs(Btag_ID - 1.0) < MyEPSILON) New_Correction_FEI = 0.871866;
+                            else if (std::abs(Btag_ID - 3.0) < MyEPSILON) New_Correction_FEI = 0.871866;
+                            else if (std::abs(Btag_ID - 4.0) < MyEPSILON) New_Correction_FEI = 0.871866;
+                            else if (std::abs(Btag_ID - 15.0) < MyEPSILON) New_Correction_FEI = 0.580409;
+                            else if (std::abs(Btag_ID - 16.0) < MyEPSILON) New_Correction_FEI = 0.580409;
+                            else if (std::abs(Btag_ID - 18.0) < MyEPSILON) New_Correction_FEI = 0.580409;
+                            else if (std::abs(Btag_ID - 19.0) < MyEPSILON) New_Correction_FEI = 0.580409;
+                            else if (std::abs(Btag_ID - 23.0) < MyEPSILON) New_Correction_FEI = 0.227976;
+                            else if (std::abs(Btag_ID - 24.0) < MyEPSILON) New_Correction_FEI = 0.227976;
+                            else if (std::abs(Btag_ID - 30.0) < MyEPSILON) New_Correction_FEI = 0.227976;
+                            else New_Correction_FEI = 0.227976;
                         }
-                        else if (strcmp(type, "Bzero") == 0) New_Correction_FEI = 0.960632;
+                        else if (strcmp(type, "Bzero") == 0) New_Correction_FEI = 0.958304;
 
                         // we also need to cancel out the previous FEI correction factor
                         total_weight = total_weight * (New_Correction_FEI / Correction_FEI);

@@ -1126,23 +1126,23 @@ double GetPDFs_NEW_FEI(const char* dirname, const char* included_string, TH1D* h
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) {
                 if (std::abs(Btag_isSignal - 1.0) < MyEPSILON) {
-                    if (std::abs(Btag_ID - 0.0) < MyEPSILON) Correction_FEI = 0.761553;
-                    else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Correction_FEI = 0.761553;
-                    else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Correction_FEI = 0.761553;
-                    else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Correction_FEI = 0.761553;
-                    else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Correction_FEI = 0.655428;
-                    else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Correction_FEI = 0.655428;
-                    else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Correction_FEI = 0.655428;
-                    else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Correction_FEI = 0.655428;
-                    else if (std::abs(Btag_ID - 23.0) < MyEPSILON) Correction_FEI = 0.130498;
-                    else if (std::abs(Btag_ID - 24.0) < MyEPSILON) Correction_FEI = 0.130498;
-                    else if (std::abs(Btag_ID - 30.0) < MyEPSILON) Correction_FEI = 0.130498;
-                    else Correction_FEI = 0.130498;
+                    if (std::abs(Btag_ID - 0.0) < MyEPSILON) Correction_FEI = 0.871866;
+                    else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Correction_FEI = 0.871866;
+                    else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Correction_FEI = 0.871866;
+                    else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Correction_FEI = 0.871866;
+                    else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Correction_FEI = 0.580409;
+                    else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Correction_FEI = 0.580409;
+                    else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Correction_FEI = 0.580409;
+                    else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Correction_FEI = 0.580409;
+                    else if (std::abs(Btag_ID - 23.0) < MyEPSILON) Correction_FEI = 0.227976;
+                    else if (std::abs(Btag_ID - 24.0) < MyEPSILON) Correction_FEI = 0.227976;
+                    else if (std::abs(Btag_ID - 30.0) < MyEPSILON) Correction_FEI = 0.227976;
+                    else Correction_FEI = 0.227976;
                 }
                 else Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             }
             else if (strcmp(type, "Bzero") == 0) {
-                if(std::abs(Btag_isSignal - 1.0) < MyEPSILON) Correction_FEI = 1.198734; // true Btag
+                if(std::abs(Btag_isSignal - 1.0) < MyEPSILON) Correction_FEI = 0.958304; // true Btag
                 else Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             }
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
