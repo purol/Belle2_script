@@ -134,7 +134,7 @@ void ReadNominalNevt(const char* filename) {
     }
     fscanf(fp, "\n");
 
-    fscanf("Signal_MXs3:\n");
+    fscanf(fp, "Signal_MXs3:\n");
     for (int i = 0; i < RarityBins; i++) {
         double temp;
         fscanf(fp, "%lf ", &temp);
