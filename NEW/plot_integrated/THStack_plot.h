@@ -164,7 +164,7 @@ void ReadNominalNevt(const char* filename) {
         fscanf(fp, "%lf ", &temp);
         UUBAR_Nevts_nominal.push_back(temp);
     }
-    fscanf("\n");
+    fscanf(fp, "\n");
 
     fscanf(fp, "DDBAR:\n");
     for (int i = 0; i < RarityBins; i++) {
@@ -172,7 +172,7 @@ void ReadNominalNevt(const char* filename) {
         fscanf(fp, "%lf ", &temp);
         DDBAR_Nevts_nominal.push_back(temp);
     }
-    fscanf("\n");
+    fscanf(fp, "\n");
 
     fscanf(fp, "SSBAR:\n");
     for (int i = 0; i < RarityBins; i++) {
@@ -218,7 +218,7 @@ void ReadFittedNevt(const char* filename) {
         fscanf(fp, "%lf ", &temp);
         Signal_MXs3_Nevts_fit.push_back(temp);
     }
-    fscanf("\n");
+    fscanf(fp, "\n");
 
     fscanf(fp, "CHG:\n");
     for (int i = 0; i < RarityBins; i++) {
