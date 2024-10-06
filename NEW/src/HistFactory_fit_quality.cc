@@ -76,7 +76,6 @@ void Debug(RooWorkspace* w, RooFitResult* fitres, RooDataSet* data);
 #include "correctors.h"
 
 int Toy_iter_num = 0.0;
-int LT_iter_num = 0.0;
 
 std::random_device rd;
 std::default_random_engine generator(rd());
@@ -953,7 +952,7 @@ void MyToyMCStudy(RooWorkspace* w, std::vector<std::string>* names, double mu1_i
     RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
     RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
 
-    for (int i = 0; i < LT_iter_num; i++) { // Do LT MC study
+    for (int i = 0; i < Toy_iter_num; i++) { // Do LT/TOY MC study
 
         double Nevt_total = SetParamsForToy(w, names, mu1_injected, mu2_injected, mu3_injected);
         // std::vector<double> Nevt_total = MySetParamsForToy(w, names, mu1_injected, mu2_injected, mu3_injected);
@@ -1338,7 +1337,7 @@ int main(int argc, char* argv[]) {
             injected_mu = std::atof(argv[2]);
             eps = std::atof(argv[3]);
             indicator = std::atoi(argv[4]);
-            LT_iter_num = std::atoi(argv[5]);
+            Toy_iter_num = std::atoi(argv[5]);
         }
         else {
             printf("Linearity test requires 5 arguments: {injected mu} {eps} {indicator} {Num of sample}\n");
