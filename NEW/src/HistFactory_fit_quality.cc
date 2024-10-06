@@ -245,7 +245,7 @@ std::vector<std::string> split(std::string str, char Delimiter) {
     return result;
 }
 
-std::vector<double> MySetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double injected_mu) {
+std::vector<double> MySetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double injected_mu1, double injected_mu2, double injected_mu3) {
 
     std::vector<double> Nevt;
     for (int i = 0; i < RarityBins; i++) Nevt.push_back(0.0);
@@ -288,9 +288,9 @@ std::vector<double> MySetParamsForToy(RooWorkspace* w, std::vector<std::string>*
         }
     }
 
-    w->var("mu_MXs1")->setVal(injected_mu);
-    w->var("mu_MXs2")->setVal(injected_mu);
-    w->var("mu_MXs3")->setVal(injected_mu);
+    w->var("mu_MXs1")->setVal(injected_mu1);
+    w->var("mu_MXs2")->setVal(injected_mu2);
+    w->var("mu_MXs3")->setVal(injected_mu3);
 
     /* ================================ cal Nexpected ================================*/
     {
@@ -468,7 +468,7 @@ RooDataSet* MyGenerate(RooWorkspace* w, std::vector<double> Nevts, bool extended
     return genData;
 }
 
-double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double injected_mu) {
+double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double injected_mu1, double injected_mu2, double injected_mu3) {
 
     double Nevt = 0.0;
 
@@ -510,9 +510,9 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
         }
     }
 
-    w->var("mu_MXs1")->setVal(injected_mu);
-    w->var("mu_MXs2")->setVal(injected_mu);
-    w->var("mu_MXs3")->setVal(injected_mu);
+    w->var("mu_MXs1")->setVal(injected_mu1);
+    w->var("mu_MXs2")->setVal(injected_mu2);
+    w->var("mu_MXs3")->setVal(injected_mu3);
 
     /* ================================ cal Nexpected ================================*/
     {
@@ -600,7 +600,7 @@ double SetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double 
 
 }
 
-double DoNotSetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double injected_mu) {
+double DoNotSetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, double injected_mu1, double injected_mu2, double injected_mu3) {
 
     double Nevt = 0.0;
 
@@ -612,9 +612,9 @@ double DoNotSetParamsForToy(RooWorkspace* w, std::vector<std::string>* names, do
     RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
     RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
 
-    w->var("mu_MXs1")->setVal(injected_mu);
-    w->var("mu_MXs2")->setVal(injected_mu);
-    w->var("mu_MXs3")->setVal(injected_mu);
+    w->var("mu_MXs1")->setVal(injected_mu1);
+    w->var("mu_MXs2")->setVal(injected_mu2);
+    w->var("mu_MXs3")->setVal(injected_mu3);
 
     /* ================================ cal Nexpected ================================*/
     {
@@ -873,43 +873,6 @@ std::vector<double> GetNevts(RooWorkspace* w) {
     return Nevts;
 }
 
-void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, int indicator = 0){
-
-        ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
-        RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
-
-        RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-        RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
-        RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
-        RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
-
-        for(int i=0; i< Toy_iter_num; i++) { // Do Toy MC study
-            
-            double Nevt_total = SetParamsForToy(w, names, 1.0);
-            // std::vector<double> Nevt_total = MySetParamsForToy(w, names, 1.0);
-
-            filesaver.GetTrueValues(w, names);
-
-            RooDataSet* genData = model->generate(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3, model->indexCat()), Nevt_total, false, true, "", false, true);
-            // RooDataSet* genData = MyGenerate(w, Nevt_total, true);
-
-            w->loadSnapshot("ParamValues");
-            //RooFitResult* fitres = model->fitTo(*genData, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
-            RooAbsReal* nll;
-            RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
-
-            if(MyDEBUG) Debug(w, fitres, genData);
-
-            filesaver.GetFittingValues(fitres, names);
-            filesaver.GetFittingStatus(fitres);
-            filesaver.WriteIntoBranch();
-
-            delete fitres;
-            delete genData;
-
-        }
-}
-
 void MyToyMCRCStudy(RooWorkspace* w, std::vector<std::string>* names, double eps, int indicator = 0) {
     // based on Makus-san's comment, get Poisson fluctuation first, then fluctuate nuisance parameters
 
@@ -929,7 +892,7 @@ void MyToyMCRCStudy(RooWorkspace* w, std::vector<std::string>* names, double eps
         w->loadSnapshot("ParamValues");
         std::vector<double> PoissonError = GetPoissonError(w);
 
-        double Nevt_total = SetParamsForToy(w, names, 1.0);
+        double Nevt_total = SetParamsForToy(w, names, 1.0, 1.0, 1.0);
         std::vector<double> Nevts = GetNevts(w);
 
         filesaver.GetTrueValues(w, names);
@@ -980,7 +943,7 @@ void MyToyMCRCStudy(RooWorkspace* w, std::vector<std::string>* names, double eps
     }
 }
 
-void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu_injected, double eps, int indicator = 0) {
+void MyToyMCStudy(RooWorkspace* w, std::vector<std::string>* names, double mu1_injected, double mu2_injected, double mu3_injected, double eps, int indicator = 0) {
 
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
@@ -992,8 +955,8 @@ void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu
 
     for (int i = 0; i < LT_iter_num; i++) { // Do LT MC study
 
-        double Nevt_total = SetParamsForToy(w, names, mu_injected);
-        // std::vector<double> Nevt_total = MySetParamsForToy(w, names, mu_injected);
+        double Nevt_total = SetParamsForToy(w, names, mu1_injected, mu2_injected, mu3_injected);
+        // std::vector<double> Nevt_total = MySetParamsForToy(w, names, mu1_injected, mu2_injected, mu3_injected);
 
         filesaver.GetTrueValues(w, names);
 
@@ -1440,7 +1403,7 @@ int main(int argc, char* argv[]) {
 
     if (std::string(argv[1]) == std::string("ToyMC")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
-        MyToyMCStudy(w, &param_names, eps, indicator);
+        MyToyMCStudy(w, &param_names, 1.0, 1.0, 1.0, eps, indicator);
     }
     else if (std::string(argv[1]) == std::string("ToyMCRC")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
@@ -1453,11 +1416,11 @@ int main(int argc, char* argv[]) {
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) {
         filesaver.OpenFile(false, &param_names, injected_mu, indicator);
-        MyLinearityTest(w, &param_names, injected_mu, eps, indicator);
+        MyToyMCStudy(w, &param_names, injected_mu, injected_mu, injected_mu, eps, indicator);
     }
     else if (std::string(argv[1]) == std::string("nuisance")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
-        MyToyMCStudy(w, &param_names, eps, indicator);
+        MyToyMCStudy(w, &param_names, 1.0, 1.0, 1.0, eps, indicator);
     }
     else if (std::string(argv[1]) == std::string("nuisanceLOADNevt")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);

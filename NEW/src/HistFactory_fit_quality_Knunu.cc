@@ -549,41 +549,6 @@ std::vector<double> GetNevts(RooWorkspace* w) {
     return Nevts;
 }
 
-void MyToyMCStudy(RooWorkspace *w, std::vector<std::string>* names, double eps, int indicator = 0){
-
-        ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
-        RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
-
-        RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-        RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
-
-        for(int i=0; i< Toy_iter_num; i++) { // Do Toy MC study
-            
-            double Nevt_total = SetParamsForToy(w, names, 1.0);
-            // std::vector<double> Nevt_total = MySetParamsForToy(w, names, 1.0);
-
-            filesaver.GetTrueValues(w, names);
-
-            RooDataSet* genData = model->generate(RooArgSet(*x_val_MXs1, model->indexCat()), Nevt_total, false, true, "", false, true);
-            // RooDataSet* genData = MyGenerate(w, Nevt_total, true);
-
-            w->loadSnapshot("ParamValues");
-            //RooFitResult* fitres = model->fitTo(*genData, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"))), RooFit::SumW2Error(false), Save());
-            RooAbsReal* nll;
-            RooFitResult* fitres = MyMinimizeNLL(w, genData, &nll, eps);
-
-            if(MyDEBUG) Debug(w, fitres, genData);
-
-            filesaver.GetFittingValues(fitres, names);
-            filesaver.GetFittingStatus(fitres);
-            filesaver.WriteIntoBranch();
-
-            delete fitres;
-            delete genData;
-
-        }
-}
-
 void MyToyMCRCStudy(RooWorkspace* w, std::vector<std::string>* names, double eps, int indicator = 0) {
     // based on Makus-san's comment, get Poisson fluctuation first, then fluctuate nuisance parameters
 
@@ -634,7 +599,7 @@ void MyToyMCRCStudy(RooWorkspace* w, std::vector<std::string>* names, double eps
     }
 }
 
-void MyLinearityTest(RooWorkspace* w, std::vector<std::string>* names, double mu_injected, double eps, int indicator = 0) {
+void MyToyMCStudy(RooWorkspace* w, std::vector<std::string>* names, double mu_injected, double eps, int indicator = 0) {
 
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
@@ -1036,7 +1001,7 @@ int main(int argc, char* argv[]) {
 
     if (std::string(argv[1]) == std::string("ToyMC")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
-        MyToyMCStudy(w, &param_names, eps, indicator);
+        MyToyMCStudy(w, &param_names, 1.0, eps, indicator);
     }
     else if (std::string(argv[1]) == std::string("ToyMCRC")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
@@ -1049,11 +1014,11 @@ int main(int argc, char* argv[]) {
     }
     else if (std::string(argv[1]) == std::string("LinearityTest")) {
         filesaver.OpenFile(false, &param_names, injected_mu, indicator);
-        MyLinearityTest(w, &param_names, injected_mu, eps, indicator);
+        MyToyMCStudy(w, &param_names, injected_mu, eps, indicator);
     }
     else if (std::string(argv[1]) == std::string("nuisance")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
-        MyToyMCStudy(w, &param_names, eps, indicator);
+        MyToyMCStudy(w, &param_names, 1.0, eps, indicator);
     }
     else if (std::string(argv[1]) == std::string("nuisanceLOADNevt")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
