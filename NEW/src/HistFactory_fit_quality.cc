@@ -1299,13 +1299,29 @@ int main(int argc, char* argv[]) {
     // argv[5]: Num of sample
     // argv[6]: fixed nuisance parameter
     double injected_mu = -1;
+    double injected_mu_2 = -1;
+    double injected_mu_3 = -1;
     double eps = -1.0;
     int indicator = 0;
     std::string fixed_param;
 
     std::vector<std::string> param_names;
     
-    if ((std::string(argv[1]) == std::string("ToyMC")) || (std::string(argv[1]) == std::string("ToyMCRC")) || (std::string(argv[1]) == std::string("ToyMCbox"))) {  // main ToyMC|ToyMCRC|ToyMCbox
+    if (std::string(argv[1]) == std::string("ToyMC")) {  // main ToyMC
+        if (argc == 8) {
+            injected_mu = std::atof(argv[2]);
+            injected_mu_2 = std::atof(argv[3]);
+            injected_mu_3 = std::atof(argv[4]);
+            eps = std::atof(argv[5]);
+            indicator = std::atoi(argv[6]);
+            Toy_iter_num = std::atoi(argv[7]);
+        }
+        else {
+            printf("Toy MC requires 7 arguments {injected mu_1} {injected mu_2} {injected mu_3} {eps} {indicator} {Num of sample}\n");
+            exit(1);
+        }
+    }
+    else if ((std::string(argv[1]) == std::string("ToyMCRC")) || (std::string(argv[1]) == std::string("ToyMCbox"))) {  // ToyMCRC|ToyMCbox
         if (argc == 5) {
             injected_mu = -1;
             eps = std::atof(argv[2]);
@@ -1313,7 +1329,7 @@ int main(int argc, char* argv[]) {
             Toy_iter_num = std::atoi(argv[4]);
         }
         else {
-            printf("Toy MC(RC) requires 4 arguments {eps} {indicator} {Num of sample}\n");
+            printf("Toy MCRC and ToyMCbox requires 4 arguments {eps} {indicator} {Num of sample}\n");
             exit(1);
         }
     }
@@ -1403,7 +1419,7 @@ int main(int argc, char* argv[]) {
 
     if (std::string(argv[1]) == std::string("ToyMC")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
-        MyToyMCStudy(w, &param_names, 1.0, 1.0, 1.0, eps, indicator);
+        MyToyMCStudy(w, &param_names, injected_mu, injected_mu_2, injected_mu_3, eps, indicator);
     }
     else if (std::string(argv[1]) == std::string("ToyMCRC")) {
         filesaver.OpenFile(true, &param_names, injected_mu, indicator);
