@@ -699,14 +699,14 @@ int WorkSpace() {
 	channel_MXs3.SetStatErrorConfig(1e-5, "Gaussian");
 
 	// get MC
-	AddSample(&channel_MXs1, fname_MXs1, 1, expmu, 1.2106, 0.1072, 1.0225, 0.0356, 0.2);
+	AddSample(&channel_MXs1, fname_MXs1, 1, expmu, 1.1991, 0.1072, 1.0226, 0.0356, 0.2);
 	if (KnunuOnly) {
 		AddEmptySample(&channel_MXs2, 2);
 		AddEmptySample(&channel_MXs3, 3);
 	}
 	else {
-		AddSample(&channel_MXs2, fname_MXs2, 2, expmu, 0.7653, 0.2375, 1.0646, 0.0787, 0.2);
-		AddSample(&channel_MXs3, fname_MXs3, 3, expmu, 0.7189, 0.1352, 0.9453, 0.1515, 0.2);
+		AddSample(&channel_MXs2, fname_MXs2, 2, expmu, 0.7580, 0.2375, 1.0647, 0.0787, 0.2);
+		AddSample(&channel_MXs3, fname_MXs3, 3, expmu, 0.7121, 0.1352, 0.9457, 0.1515, 0.2);
 	}
 
 	// add channel to measurement
