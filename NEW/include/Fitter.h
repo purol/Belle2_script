@@ -111,6 +111,7 @@ typedef struct Options
     bool NEWFEICAL;
     bool BRXnn;
     bool BRDKL0;
+    bool fitter;
     bool dataMC;
     bool uncorrelated;
 
@@ -268,6 +269,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     options_->NEWFEICAL = false;
     options_->BRXnn = false;
     options_->BRDKL0 = false;
+    options_->fitter = false;
     options_->dataMC = false;
     options_->uncorrelated = false;
 
@@ -299,6 +301,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
         options_->NEWFEICAL = true;
         options_->BRXnn = true;
         options_->BRDKL0 = true;
+        options_->fitter = true;
         options_->dataMC = true;
         options_->uncorrelated = true;
     }
@@ -330,6 +333,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     else if (std::string(tested_param) == std::string("NEWFEICAL")) options_->NEWFEICAL = true;
     else if (std::string(tested_param) == std::string("BRXnn")) options_->BRXnn = true;
     else if (std::string(tested_param) == std::string("BtoDtoXKL")) options_->BRDKL0 = true;
+    else if (std::string(tested_param) == std::string("fitter")) options_->fitter = true;
     else if (std::string(tested_param) == std::string("dataMC")) options_->dataMC = true;
     else if (std::string(tested_param) == std::string("uncorrelated")) options_->uncorrelated = true;
     else {
@@ -502,6 +506,19 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // B->(D->X KL0) + anything
     if (options_->BRDKL0) w->var("alpha_BtoDtoXKL_uncer")->setConstant(options_->BRDKL0);
+
+    // fitter bias
+    if (options_->fitter) {
+        if (w->var("mu1_fitter_bias_mean")) w->var("mu1_fitter_bias_mean")->setConstant(options_->fitter);
+        if (w->var("mu1_fitter_bias_sigma")) w->var("mu1_fitter_bias_sigma")->setConstant(options_->fitter);
+        if (w->var("mu2_fitter_bias_mean")) w->var("mu2_fitter_bias_mean")->setConstant(options_->fitter);
+        if (w->var("mu2_fitter_bias_sigma")) w->var("mu2_fitter_bias_sigma")->setConstant(options_->fitter);
+        if (w->var("mu3_fitter_bias_mean")) w->var("mu3_fitter_bias_mean")->setConstant(options_->fitter);
+        if (w->var("mu3_fitter_bias_sigma")) w->var("mu3_fitter_bias_sigma")->setConstant(options_->fitter);
+
+        if (w->var("mu_fitter_bias_mean")) w->var("mu_fitter_bias_mean")->setConstant(options_->fitter);
+        if (w->var("mu_fitter_bias_sigma")) w->var("mu_fitter_bias_sigma")->setConstant(options_->fitter);
+    }
 
     // data MC discrepancy
     if (options_->dataMC) {
