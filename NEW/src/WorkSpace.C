@@ -58,6 +58,8 @@ using std::to_string;
 
 Corrector_Fragmentation corrector_Fragmentation;
 
+const bool KnunuOnly = false;
+
 void ModifyPiecewiseInterpolationForAll(RooWorkspace* ws, int code) {
 	RooArgSet funcs = ws->allFunctions();
 	TIter it = funcs.createIterator();
@@ -448,7 +450,8 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp_MXs2.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	sig_temp_MXs2.ActivateStatError("Signal_MXs2_all_uncorrelated_MC_stat", fname, "");
 	sig_temp_MXs2.SetNormalizeByTheory(kFALSE);
-	sig_temp_MXs2.AddNormFactor("mu_MXs2", expmu, -100.0, 100.0);
+	if (KnunuOnly) sig_temp_MXs2.AddNormFactor("mu_MXs2", expmu, 1.0, 1.0);
+	else sig_temp_MXs2.AddNormFactor("mu_MXs2", expmu, -100.0, 100.0);
 	channel->AddSample(sig_temp_MXs2);
 
 	/* ================================ SIGNAL with true MXs3 ================================ */
@@ -517,7 +520,8 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp_MXs3.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	sig_temp_MXs3.ActivateStatError("Signal_MXs3_all_uncorrelated_MC_stat", fname, "");
 	sig_temp_MXs3.SetNormalizeByTheory(kFALSE);
-	sig_temp_MXs3.AddNormFactor("mu_MXs3", expmu, -100.0, 100.0);
+	if (KnunuOnly) sig_temp_MXs3.AddNormFactor("mu_MXs3", expmu, 1.0, 1.0);
+	else sig_temp_MXs3.AddNormFactor("mu_MXs3", expmu, -100.0, 100.0);
 	channel->AddSample(sig_temp_MXs3);
 
 	// read background template
@@ -696,8 +700,14 @@ int WorkSpace() {
 
 	// get MC
 	AddSample(&channel_MXs1, fname_MXs1, 1, expmu, 1.2106, 0.1072, 1.0225, 0.0356, 0.2);
-	AddSample(&channel_MXs2, fname_MXs2, 2, expmu, 0.7653, 0.2375, 1.0646, 0.0787, 0.2);
-	AddSample(&channel_MXs3, fname_MXs3, 3, expmu, 0.7189, 0.1352, 0.9453, 0.1515, 0.2);
+	if (KnunuOnly) {
+		AddEmptySample(&channel_MXs2, 2);
+		AddEmptySample(&channel_MXs3, 3);
+	}
+	else {
+		AddSample(&channel_MXs2, fname_MXs2, 2, expmu, 0.7653, 0.2375, 1.0646, 0.0787, 0.2);
+		AddSample(&channel_MXs3, fname_MXs3, 3, expmu, 0.7189, 0.1352, 0.9453, 0.1515, 0.2);
+	}
 
 	// add channel to measurement
 	meas.AddChannel(channel_MXs1);
