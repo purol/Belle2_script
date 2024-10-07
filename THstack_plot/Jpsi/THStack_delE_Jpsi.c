@@ -108,21 +108,21 @@ void LetsFill(const char* dirname, TH1F* hist, const char* included_string, doub
 
 void THStack_delE_Jpsi() {
 
-    const char* SIGNAL_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/SIGNAL";
-    const char* CHG_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/CHG";
-    const char* MIX_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/MIX";
-    const char* UUBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/UUBAR";
-    const char* DDBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/DDBAR";
-    const char* SSBAR_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/SSBAR";
-    const char* CHARM_dirname = "/home/jwpark/storage/BKG_gbasf2/Nazrin_LS_MC_Jpsi/Jpsi/CHARM";
+    const char* SIGNAL_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/SIGNAL";
+    const char* CHG_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/CHG";
+    const char* MIX_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/MIX";
+    const char* UUBAR_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/UUBAR";
+    const char* DDBAR_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/DDBAR";
+    const char* SSBAR_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/SSBAR";
+    const char* CHARM_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/CHARM";
 
-    LetsFill(SIGNAL_dirname, SIGNAL_hist, (0.3616/1.8));
-    LetsFill(CHG_dirname, CHG_hist, (0.3616 / 0.8));
-    LetsFill(MIX_dirname, MIX_hist, (0.3616 / 0.8));
-    LetsFill(UUBAR_dirname, UUBAR_hist, (0.3616 / 1.0));
-    LetsFill(DDBAR_dirname, DDBAR_hist, (0.3616 / 1.0));
-    LetsFill(SSBAR_dirname, SSBAR_hist, (0.3616 / 1.0));
-    LetsFill(CHARM_dirname, CHARM_hist, (0.3616 / 1.0));
+    LetsFill(SIGNAL_dirname, SIGNAL_hist, (Scale_CHG_validation_MC15rd + Scale_MIX_validation_MC15rd) / 2.0);
+    LetsFill(CHG_dirname, CHG_hist, Scale_CHG_validation_MC15rd);
+    LetsFill(MIX_dirname, MIX_hist, Scale_MIX_validation_MC15rd);
+    LetsFill(UUBAR_dirname, UUBAR_hist, Scale_UUBAR_validation_MC15rd);
+    LetsFill(DDBAR_dirname, DDBAR_hist, Scale_DDBAR_validation_MC15rd);
+    LetsFill(SSBAR_dirname, SSBAR_hist, Scale_SSBAR_validation_MC15rd);
+    LetsFill(CHARM_dirname, CHARM_hist, Scale_CHARM_validation_MC15rd);
 
 
     double CHG_int = CHG_hist->Integral();
