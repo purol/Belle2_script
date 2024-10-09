@@ -30,6 +30,8 @@ using namespace RooFit;
 using std::string;
 using std::to_string;
 
+const bool KnunuOnly = false;
+
 # define MCTYPE "MC15ri"
 
 #include "template.h"
@@ -275,6 +277,12 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            if (KnunuOnly) {
+                // select B+ --> K+ nu nubar reconstruction only
+                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
+                else continue;
+            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
