@@ -455,6 +455,7 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (variable_names.at(k).find("bin index") != std::string::npos) continue;
+            else if (variable_names.at(k).find("q^{2}") != std::string::npos) continue;
 
             if (branch_names.at(k) == std::string("Upsilon")) {
                 if(variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -593,6 +594,18 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
                     auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                     int index_FBDT_raw = std::distance(variable_names.begin(), it);
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
+                }
+                else if (variable_names.at(k).find("q^{2}") != std::string::npos) {
+                    auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
+                    int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
+
+                    auto it_E = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
+                    int index_E = std::distance(variable_names.begin(), it_E);
+
+                    auto it_p = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc");
+                    int index_p = std::distance(variable_names.begin(), it_p);
+
+                    variable_values[k].push_back(var[index_qsquared] + var[index_E]* var[index_E] - var[index_p] * var[index_p]);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -770,6 +783,7 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (variable_names.at(k).find("bin index") != std::string::npos) continue;
+            else if (variable_names.at(k).find("q^{2}") != std::string::npos) continue;
 
             if (branch_names.at(k) == std::string("Upsilon")) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -807,6 +821,18 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
                     auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                     int index_FBDT_raw = std::distance(variable_names.begin(), it);
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
+                }
+                else if (variable_names.at(k).find("q^{2}") != std::string::npos) {
+                    auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
+                    int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
+
+                    auto it_E = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
+                    int index_E = std::distance(variable_names.begin(), it_E);
+
+                    auto it_p = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc");
+                    int index_p = std::distance(variable_names.begin(), it_p);
+
+                    variable_values[k].push_back(var[index_qsquared] + var[index_E] * var[index_E] - var[index_p] * var[index_p]);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -857,6 +883,7 @@ void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_n
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (variable_names.at(k).find("bin index") != std::string::npos) continue;
+            else if (variable_names.at(k).find("q^{2}") != std::string::npos) continue;
 
             if (branch_names.at(k) == std::string("Upsilon")) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -897,6 +924,18 @@ void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_n
                     auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                     int index_FBDT_raw = std::distance(variable_names.begin(), it);
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
+                }
+                else if (variable_names.at(k).find("q^{2}") != std::string::npos) {
+                    auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
+                    int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
+
+                    auto it_E = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
+                    int index_E = std::distance(variable_names.begin(), it_E);
+
+                    auto it_p = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc");
+                    int index_p = std::distance(variable_names.begin(), it_p);
+
+                    variable_values[k].push_back(var[index_qsquared] + var[index_E] * var[index_E] - var[index_p] * var[index_p]);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -1075,6 +1114,7 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (variable_names.at(k).find("bin index") != std::string::npos) continue;
+            else if (variable_names.at(k).find("q^{2}") != std::string::npos) continue;
 
             if (branch_names.at(k) == std::string("Upsilon")) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -1217,6 +1257,18 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
                     auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                     int index_FBDT_raw = std::distance(variable_names.begin(), it);
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
+                }
+                else if (variable_names.at(k).find("q^{2}") != std::string::npos) {
+                    auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
+                    int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
+
+                    auto it_E = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
+                    int index_E = std::distance(variable_names.begin(), it_E);
+
+                    auto it_p = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc");
+                    int index_p = std::distance(variable_names.begin(), it_p);
+
+                    variable_values[k].push_back(var[index_qsquared] + var[index_E] * var[index_E] - var[index_p] * var[index_p]);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -1475,6 +1527,7 @@ void LetsFillMC_ESide(const char* dirname, std::vector<std::string> variable_nam
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (variable_names.at(k).find("bin index") != std::string::npos) continue;
+            else if (variable_names.at(k).find("q^{2}") != std::string::npos) continue;
 
             if (branch_names.at(k) == std::string("Upsilon")) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -1577,6 +1630,18 @@ void LetsFillMC_ESide(const char* dirname, std::vector<std::string> variable_nam
                     auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                     int index_FBDT_raw = std::distance(variable_names.begin(), it);
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
+                }
+                else if (variable_names.at(k).find("q^{2}") != std::string::npos) {
+                    auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
+                    int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
+
+                    auto it_E = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
+                    int index_E = std::distance(variable_names.begin(), it_E);
+
+                    auto it_p = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc");
+                    int index_p = std::distance(variable_names.begin(), it_p);
+
+                    variable_values[k].push_back(var[index_qsquared] + var[index_E] * var[index_E] - var[index_p] * var[index_p]);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -1823,6 +1888,7 @@ void LetsFillMC_MUSide(const char* dirname, std::vector<std::string> variable_na
 
         for (int k = 0; k < (int)variable_names.size(); k++) {
             if (variable_names.at(k).find("bin index") != std::string::npos) continue;
+            else if (variable_names.at(k).find("q^{2}") != std::string::npos) continue;
 
             if (branch_names.at(k) == std::string("Upsilon")) {
                 if (variable_names.at(k).find("MVA") == std::string::npos) tree_upsilon->SetBranchAddress(variable_names.at(k).c_str(), &var[k]);
@@ -1925,6 +1991,18 @@ void LetsFillMC_MUSide(const char* dirname, std::vector<std::string> variable_na
                     auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                     int index_FBDT_raw = std::distance(variable_names.begin(), it);
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
+                }
+                else if (variable_names.at(k).find("q^{2}") != std::string::npos) {
+                    auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
+                    int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
+
+                    auto it_E = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
+                    int index_E = std::distance(variable_names.begin(), it_E);
+
+                    auto it_p = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc");
+                    int index_p = std::distance(variable_names.begin(), it_p);
+
+                    variable_values[k].push_back(var[index_qsquared] + var[index_E] * var[index_E] - var[index_p] * var[index_p]);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);

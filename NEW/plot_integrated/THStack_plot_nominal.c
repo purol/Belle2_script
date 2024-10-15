@@ -205,6 +205,10 @@ void THStack_plot_nominal() {
     variable_names.push_back("chiProb"); branch_names.push_back("Upsilon");
     variable_names.push_back("dr"); branch_names.push_back("Upsilon");
     variable_names.push_back("dz"); branch_names.push_back("Upsilon");
+    variable_names.push_back("qsquared"); branch_names.push_back("Upsilon");
+    variable_names.push_back("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc"); branch_names.push_back("Upsilon");
+    variable_names.push_back("q^{2}"); branch_names.push_back("Upsilon");
     variable_names.push_back("MsquaredBsig_op0"); branch_names.push_back("Upsilon");
     variable_names.push_back("MsquaredBsig_op1"); branch_names.push_back("Upsilon");
     variable_names.push_back("MsquaredBsig_op2"); branch_names.push_back("Upsilon");
