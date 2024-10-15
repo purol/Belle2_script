@@ -599,13 +599,20 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
                     auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
                     int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
 
-                    auto it_E = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
-                    int index_E = std::distance(variable_names.begin(), it_E);
+                    auto it_deltaE = std::find(variable_names.begin(), variable_names.end(), "Btag_deltaE");
+                    int index_deltaE = std::distance(variable_names.begin(), it_deltaE);
 
-                    auto it_p = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc");
-                    int index_p = std::distance(variable_names.begin(), it_p);
+                    auto it_EBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_E");
+                    int index_EBcms = std::distance(variable_names.begin(), it_EBcms);
 
-                    variable_values[k].push_back(var[index_qsquared] + var[index_E]* var[index_E] - var[index_p] * var[index_p]);
+                    auto it_pBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_p");
+                    int index_pBcms = std::distance(variable_names.begin(), it_pBcms);
+
+                    double Ebeamstar = 2 * (var[index_EBcms] - var[index_deltaE]); // EBstar - deltaE
+
+                    double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
+
+                    variable_values[k].push_back(real_qsquared);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -826,13 +833,20 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
                     auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
                     int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
 
-                    auto it_E = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
-                    int index_E = std::distance(variable_names.begin(), it_E);
+                    auto it_deltaE = std::find(variable_names.begin(), variable_names.end(), "Btag_deltaE");
+                    int index_deltaE = std::distance(variable_names.begin(), it_deltaE);
 
-                    auto it_p = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc");
-                    int index_p = std::distance(variable_names.begin(), it_p);
+                    auto it_EBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_E");
+                    int index_EBcms = std::distance(variable_names.begin(), it_EBcms);
 
-                    variable_values[k].push_back(var[index_qsquared] + var[index_E] * var[index_E] - var[index_p] * var[index_p]);
+                    auto it_pBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_p");
+                    int index_pBcms = std::distance(variable_names.begin(), it_pBcms);
+
+                    double Ebeamstar = 2 * (var[index_EBcms] - var[index_deltaE]); // EBstar - deltaE
+
+                    double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
+
+                    variable_values[k].push_back(real_qsquared);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -929,13 +943,20 @@ void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_n
                     auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
                     int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
 
-                    auto it_E = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
-                    int index_E = std::distance(variable_names.begin(), it_E);
+                    auto it_deltaE = std::find(variable_names.begin(), variable_names.end(), "Btag_deltaE");
+                    int index_deltaE = std::distance(variable_names.begin(), it_deltaE);
 
-                    auto it_p = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc");
-                    int index_p = std::distance(variable_names.begin(), it_p);
+                    auto it_EBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_E");
+                    int index_EBcms = std::distance(variable_names.begin(), it_EBcms);
 
-                    variable_values[k].push_back(var[index_qsquared] + var[index_E] * var[index_E] - var[index_p] * var[index_p]);
+                    auto it_pBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_p");
+                    int index_pBcms = std::distance(variable_names.begin(), it_pBcms);
+
+                    double Ebeamstar = 2 * (var[index_EBcms] - var[index_deltaE]); // EBstar - deltaE
+
+                    double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
+
+                    variable_values[k].push_back(real_qsquared);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -1262,13 +1283,20 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
                     auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
                     int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
 
-                    auto it_E = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
-                    int index_E = std::distance(variable_names.begin(), it_E);
+                    auto it_deltaE = std::find(variable_names.begin(), variable_names.end(), "Btag_deltaE");
+                    int index_deltaE = std::distance(variable_names.begin(), it_deltaE);
 
-                    auto it_p = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc");
-                    int index_p = std::distance(variable_names.begin(), it_p);
+                    auto it_EBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_E");
+                    int index_EBcms = std::distance(variable_names.begin(), it_EBcms);
 
-                    variable_values[k].push_back(var[index_qsquared] + var[index_E] * var[index_E] - var[index_p] * var[index_p]);
+                    auto it_pBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_p");
+                    int index_pBcms = std::distance(variable_names.begin(), it_pBcms);
+
+                    double Ebeamstar = 2 * (var[index_EBcms] - var[index_deltaE]); // EBstar - deltaE
+
+                    double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
+
+                    variable_values[k].push_back(real_qsquared);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -1635,13 +1663,20 @@ void LetsFillMC_ESide(const char* dirname, std::vector<std::string> variable_nam
                     auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
                     int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
 
-                    auto it_E = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
-                    int index_E = std::distance(variable_names.begin(), it_E);
+                    auto it_deltaE = std::find(variable_names.begin(), variable_names.end(), "Btag_deltaE");
+                    int index_deltaE = std::distance(variable_names.begin(), it_deltaE);
 
-                    auto it_p = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc");
-                    int index_p = std::distance(variable_names.begin(), it_p);
+                    auto it_EBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_E");
+                    int index_EBcms = std::distance(variable_names.begin(), it_EBcms);
 
-                    variable_values[k].push_back(var[index_qsquared] + var[index_E] * var[index_E] - var[index_p] * var[index_p]);
+                    auto it_pBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_p");
+                    int index_pBcms = std::distance(variable_names.begin(), it_pBcms);
+
+                    double Ebeamstar = 2 * (var[index_EBcms] - var[index_deltaE]); // EBstar - deltaE
+
+                    double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
+
+                    variable_values[k].push_back(real_qsquared);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -1996,13 +2031,20 @@ void LetsFillMC_MUSide(const char* dirname, std::vector<std::string> variable_na
                     auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
                     int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
 
-                    auto it_E = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
-                    int index_E = std::distance(variable_names.begin(), it_E);
+                    auto it_deltaE = std::find(variable_names.begin(), variable_names.end(), "Btag_deltaE");
+                    int index_deltaE = std::distance(variable_names.begin(), it_deltaE);
 
-                    auto it_p = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc");
-                    int index_p = std::distance(variable_names.begin(), it_p);
+                    auto it_EBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_E");
+                    int index_EBcms = std::distance(variable_names.begin(), it_EBcms);
 
-                    variable_values[k].push_back(var[index_qsquared] + var[index_E] * var[index_E] - var[index_p] * var[index_p]);
+                    auto it_pBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_p");
+                    int index_pBcms = std::distance(variable_names.begin(), it_pBcms);
+
+                    double Ebeamstar = 2 * (var[index_EBcms] - var[index_deltaE]); // EBstar - deltaE
+
+                    double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
+
+                    variable_values[k].push_back(real_qsquared);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);

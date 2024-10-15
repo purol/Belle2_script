@@ -71,6 +71,7 @@ void THStack_plot_nominal() {
     variable_names.push_back("missingMomentumOfEvent"); branch_names.push_back("Upsilon");
     variable_names.push_back("Btag_deltaE"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_Mbc"); branch_names.push_back("Btag");
+    variable_names.push_back("Btag_useCMSFrame_E"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_useCMSFrame_theta"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_R2"); branch_names.push_back("Btag");
     variable_names.push_back("Btag_cosTBTO"); branch_names.push_back("Btag");
@@ -212,8 +213,6 @@ void THStack_plot_nominal() {
     variable_names.push_back("dr"); branch_names.push_back("Upsilon");
     variable_names.push_back("dz"); branch_names.push_back("Upsilon");
     variable_names.push_back("qsquared"); branch_names.push_back("Upsilon");
-    variable_names.push_back("useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("useTagSideRecoilRestFrame__bodaughter__bo1__cmp__bc__cm0__bc"); branch_names.push_back("Upsilon");
     variable_names.push_back("q^{2}"); branch_names.push_back("Upsilon");
     variable_names.push_back("MsquaredBsig_op0"); branch_names.push_back("Upsilon");
     variable_names.push_back("MsquaredBsig_op1"); branch_names.push_back("Upsilon");
