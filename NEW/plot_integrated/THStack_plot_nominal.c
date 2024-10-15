@@ -23,6 +23,12 @@ const bool Normalized = true;
 
 void THStack_plot_nominal() {
 
+    /*
+    ReadNominalNevt("Nominal_Nevt.txt");
+    ReadFittedNevt("Fit_Nevt.txt");
+    LetsDrawFitPlot(true);
+    */
+
     Nevt nevt_CHG = { 0.0, 0.0 };
     Nevt nevt_MIX = { 0.0, 0.0 };
     Nevt nevt_UUBAR = { 0.0, 0.0 };
