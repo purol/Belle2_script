@@ -685,6 +685,9 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
 
                     variable_values[k].push_back(real_qsquared);
                 }
+                else if (variable_names.at(k).find("Bsig_M") != std::string::npos) {
+                    variable_values[k].push_back(Bsig_M);
+                }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
                 //else variable_values[k].push_back(GetBinIndex((double)var_float[k], Bsig_M));
@@ -921,6 +924,9 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
 
                     variable_values[k].push_back(real_qsquared);
                 }
+                else if (variable_names.at(k).find("Bsig_M") != std::string::npos) {
+                    variable_values[k].push_back(Bsig_M);
+                }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
                 //else variable_values[k].push_back(GetBinIndex((double)var_float[k], Bsig_M));
@@ -1030,6 +1036,9 @@ void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_n
                     double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
 
                     variable_values[k].push_back(real_qsquared);
+                }
+                else if (variable_names.at(k).find("Bsig_M") != std::string::npos) {
+                    variable_values[k].push_back(Bsig_M);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -1370,6 +1379,9 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
                     double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
 
                     variable_values[k].push_back(real_qsquared);
+                }
+                else if (variable_names.at(k).find("Bsig_M") != std::string::npos) {
+                    variable_values[k].push_back(Bsig_M);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
@@ -1753,6 +1765,9 @@ void LetsFillMC_ESide(const char* dirname, std::vector<std::string> variable_nam
 
                     variable_values[k].push_back(real_qsquared);
                 }
+                else if (variable_names.at(k).find("Bsig_M") != std::string::npos) {
+                    variable_values[k].push_back(Bsig_M);
+                }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
                 //else variable_values[k].push_back(GetBinIndex((double)var_float[k], Bsig_M));
@@ -2120,6 +2135,9 @@ void LetsFillMC_MUSide(const char* dirname, std::vector<std::string> variable_na
                     double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
 
                     variable_values[k].push_back(real_qsquared);
+                }
+                else if (variable_names.at(k).find("Bsig_M") != std::string::npos) {
+                    variable_values[k].push_back(Bsig_M);
                 }
                 else if (variable_names.at(k).find("MVA") == std::string::npos) variable_values[k].push_back(var[k]);
                 else variable_values[k].push_back((double)var_float[k]);
