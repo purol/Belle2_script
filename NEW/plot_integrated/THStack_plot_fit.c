@@ -25,7 +25,7 @@ void THStack_plot_fit() {
     ReadNominalNevt("Nominal_Nevt.txt");
     ReadFittedNevt("Fit_Nevt.txt");
     LetsDrawFitPlot(true);
-    
+    LetsSetFitCAL(1.1991, 0.7580, 0.7121, 1.0226, 1.0647, 0.9457);
 
     Nevt nevt_CHG = { 0.0, 0.0 };
     Nevt nevt_MIX = { 0.0, 0.0 };

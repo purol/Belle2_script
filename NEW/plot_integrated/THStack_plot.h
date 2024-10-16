@@ -73,6 +73,14 @@ std::vector<double> DDBAR_Nevts_fit;
 std::vector<double> SSBAR_Nevts_fit;
 std::vector<double> CHARM_Nevts_fit;
 
+double qq_CAL_MXs1 = 1.0;
+double qq_CAL_MXs2 = 1.0;
+double qq_CAL_MXs3 = 1.0;
+
+double FBDT_CAL_MXs1 = 1.0;
+double FBDT_CAL_MXs2 = 1.0;
+double FBDT_CAL_MXs3 = 1.0;
+
 /* ====================================== */
 
 // Histogram for counting
@@ -286,6 +294,69 @@ void LetsDrawFitPlot(bool DrawFitPlots_) {
     }
 
     DrawFitPlots = DrawFitPlots_;
+}
+
+void LetsSetFitCAL(double qq_CAL_MXs1_, double qq_CAL_MXs2_, double qq_CAL_MXs3_, double FBDT_CAL_MXs1_, double FBDT_CAL_MXs2_, double FBDT_CAL_MXs3_) {
+    qq_CAL_MXs1 = qq_CAL_MXs1_;
+    qq_CAL_MXs2 = qq_CAL_MXs2_;
+    qq_CAL_MXs3 = qq_CAL_MXs3_;
+
+    FBDT_CAL_MXs1 = FBDT_CAL_MXs1_;
+    FBDT_CAL_MXs2 = FBDT_CAL_MXs2_;
+    FBDT_CAL_MXs3 = FBDT_CAL_MXs3_;
+}
+
+double GetFitCAL(double bin_index, double MC_MXs, std::string SampleName) {
+    // Currently, I only include this function into `NevtCount_ri`, `LetsFillMC`, and `LetsFillMC_correction`
+
+// double bin_index starts from 0.5
+    int bin_index_int = static_cast <int> (std::floor(bin_index));
+
+    if (SampleName == "CHG") return 1.0;
+    else if (SampleName == "MIX") return 1.0;
+    else if (SampleName == "UUBAR") {
+        if (0 <= bin_index_int < RarityBins_MX1) return qq_CAL_MXs1;
+        else if (RarityBins_MX1 <= bin_index_int < (RarityBins_MX1 + RarityBins_MX2)) return qq_CAL_MXs2;
+        else return qq_CAL_MXs3;
+    }
+    else if (SampleName == "DDBAR") {
+        if (0 <= bin_index_int < RarityBins_MX1) return qq_CAL_MXs1;
+        else if (RarityBins_MX1 <= bin_index_int < (RarityBins_MX1 + RarityBins_MX2)) return qq_CAL_MXs2;
+        else return qq_CAL_MXs3;
+    }
+    else if (SampleName == "SSBAR") {
+        if (0 <= bin_index_int < RarityBins_MX1) return qq_CAL_MXs1;
+        else if (RarityBins_MX1 <= bin_index_int < (RarityBins_MX1 + RarityBins_MX2)) return qq_CAL_MXs2;
+        else return qq_CAL_MXs3;
+    }
+    else if (SampleName == "CHARM") {
+        if (0 <= bin_index_int < RarityBins_MX1) return qq_CAL_MXs1;
+        else if (RarityBins_MX1 <= bin_index_int < (RarityBins_MX1 + RarityBins_MX2)) return qq_CAL_MXs2;
+        else return qq_CAL_MXs3;
+    }
+    else if (SampleName == "SIGNAL") {
+
+        if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {
+            if (0 <= bin_index_int < RarityBins_MX1) return FBDT_CAL_MXs1;
+            else return 1.0;
+        }
+        else if ((MC_MXs >= 0.6) && (MC_MXs < 1.0)) {
+            if (RarityBins_MX1 <= bin_index_int < (RarityBins_MX1 + RarityBins_MX2)) return FBDT_CAL_MXs2;
+            else return 1.0;
+        }
+        else if (MC_MXs >= 1.0) {
+            if ((RarityBins_MX1 + RarityBins_MX2) <= bin_index_int < (RarityBins_MX1 + RarityBins_MX2 + RarityBins_MX3)) return FBDT_CAL_MXs3;
+            else return 1.0;
+        }
+        else {
+            printf("[ERROR] unexpected MC_MXs for SIGNAL\n");
+            exit(1);
+        }
+
+    }
+
+    // never reached
+    return -1.0;
 }
 
 double GetFitWeight(double bin_index, double MC_MXs, std::string SampleName) {
@@ -742,16 +813,18 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
 
             // scale factor to adjust into fit result
             double fitfactor = 1.0;
+            double CALfactor = 1.0;
             if (DrawFitPlots == true) {
                 auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                 int index_FBDT_raw = std::distance(variable_names.begin(), it);
                 double bin_index = ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M);
                 fitfactor = GetFitWeight(bin_index, MC_MXs, SampleName);
+                CALfactor = GetFitCAL(bin_index, MC_MXs, SampleName);
             }
 
-            weights->push_back(FEI_calibration_factor* CAL* weight_ri* Correction_pi0* Correction_KID* Correction_PID* Correction_fake* Correction_Knn* Correction_Xnn* Correction_multiplicity* Correction_KpKLKL* Correction_KSKLKL* Correction_KstarKLKL* Correction_XKLKL* Correction_BtoDtoXKL* additional_weight * normfactor_MXs * fitfactor);
+            weights->push_back(FEI_calibration_factor* CAL* weight_ri* Correction_pi0* Correction_KID* Correction_PID* Correction_fake* Correction_Knn* Correction_Xnn* Correction_multiplicity* Correction_KpKLKL* Correction_KSKLKL* Correction_KstarKLKL* Correction_XKLKL* Correction_BtoDtoXKL* additional_weight * normfactor_MXs * fitfactor * CALfactor);
 
-            MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight * normfactor_MXs * fitfactor);
+            MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight * normfactor_MXs * fitfactor * CALfactor);
         }
         input_file->Close();
 
@@ -1426,16 +1499,18 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
 
             // scale factor to adjust into fit result
             double fitfactor = 1.0;
+            double CALfactor = 1.0;
             if (DrawFitPlots == true) {
                 auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
                 int index_FBDT_raw = std::distance(variable_names.begin(), it);
                 double bin_index = ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M);
                 fitfactor = GetFitWeight(bin_index, MC_MXs, SampleName);
+                CALfactor = GetFitCAL(bin_index, MC_MXs, SampleName);
             }
 
-            weights->push_back(FEI_calibration_factor* CAL* weight_ri* Correction_pi0* Correction_KID* Correction_PID* Correction_fake* Correction_Knn* Correction_Xnn* Correction_multiplicity* Correction_KpKLKL* Correction_KSKLKL* Correction_KstarKLKL* Correction_XKLKL* Correction_BtoDtoXKL* BDTc_correction* additional_weight * normfactor_MXs * fitfactor);
+            weights->push_back(FEI_calibration_factor* CAL* weight_ri* Correction_pi0* Correction_KID* Correction_PID* Correction_fake* Correction_Knn* Correction_Xnn* Correction_multiplicity* Correction_KpKLKL* Correction_KSKLKL* Correction_KstarKLKL* Correction_XKLKL* Correction_BtoDtoXKL* BDTc_correction* additional_weight * normfactor_MXs * fitfactor * CALfactor);
 
-            MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight * normfactor_MXs * fitfactor);
+            MC_one_bin->Fill(1.0, FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight * normfactor_MXs * fitfactor * CALfactor);
 
         }
         input_file->Close();
@@ -3934,13 +4009,15 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
 
             // scale factor to adjust into fit result
             double fitfactor = 1.0;
+            double CALfactor = 1.0;
             if (DrawFitPlots == true) {
                 double bin_index = ReturnBinIndex(MVA_BB, Bsig_M);
                 fitfactor = GetFitWeight(bin_index, MC_MXs, SampleName);
+                CALfactor = GetFitCAL(bin_index, MC_MXs, SampleName);
             }
 
-            nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight * fitfactor;
-            nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight * fitfactor;
+            nevt->NevtwithoutCorrection = nevt->NevtwithoutCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * additional_weight * fitfactor * CALfactor;
+            nevt->NevtwithCorrection = nevt->NevtwithCorrection + FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_correction * additional_weight * fitfactor * CALfactor;
 
 
         }
