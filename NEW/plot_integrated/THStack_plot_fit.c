@@ -579,6 +579,7 @@ void THStack_plot_fit() {
         Stack[k]->Add(ddbar_hist[k]);
         Stack[k]->Add(ssbar_hist[k]);
         Stack[k]->Add(ccbar_hist[k]);
+        Stack[k]->Add(signal_hist[k]);
         //Stack[k]->Add(taupair_hist[k]);
         //Stack[k]->Add(mumu_hist[k]);
         //Stack[k]->Add(gg_hist[k]);
@@ -587,7 +588,6 @@ void THStack_plot_fit() {
         //Stack[k]->Add(eemumu_hist[k]);
         //Stack[k]->Add(llXX_hist[k]);
         //Stack[k]->Add(hhISR_hist[k]);
-        signal_hist[k]->SetLineWidth(3); signal_hist[k]->SetLineColor(2); signal_hist[k]->SetFillStyle(0);
 
         Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
         Ratio_hist[k]->Divide(data_hist[k], stat_error_hist[k]);
@@ -611,7 +611,7 @@ void THStack_plot_fit() {
         Stack[k]->SetMaximum(real_max * 1.1);
 
         Stack[k]->Draw("pfc Hist");
-        data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP EX0"); signal_hist[k]->Draw("HistSAME");
+        data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP EX0"); 
         TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
 
