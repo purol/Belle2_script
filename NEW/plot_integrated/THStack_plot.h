@@ -667,8 +667,6 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
                 }
                 else if (variable_names.at(k).find("q^{2}") != std::string::npos) {
-                    auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
-                    int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
 
                     auto it_deltaE = std::find(variable_names.begin(), variable_names.end(), "Btag_deltaE");
                     int index_deltaE = std::distance(variable_names.begin(), it_deltaE);
@@ -679,9 +677,14 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
                     auto it_pBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_p");
                     int index_pBcms = std::distance(variable_names.begin(), it_pBcms);
 
+                    auto it_EXs_recoil = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
+                    int index_EXs_recoil = std::distance(variable_names.begin(), it_EXs_recoil);
+
                     double Ebeamstar = 2 * (var[index_EBcms] - var[index_deltaE]); // EBstar - deltaE
 
-                    double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
+                    double MBsig = std::sqrt((Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms]); // MBsig calculated from Pee - PBtag
+
+                    double real_qsquared = MBsig * MBsig + Bsig_M * Bsig_M - 2 * MBsig * var[index_EXs_recoil];
 
                     variable_values[k].push_back(real_qsquared);
                 }
@@ -906,8 +909,6 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
                 }
                 else if (variable_names.at(k).find("q^{2}") != std::string::npos) {
-                    auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
-                    int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
 
                     auto it_deltaE = std::find(variable_names.begin(), variable_names.end(), "Btag_deltaE");
                     int index_deltaE = std::distance(variable_names.begin(), it_deltaE);
@@ -918,9 +919,14 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
                     auto it_pBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_p");
                     int index_pBcms = std::distance(variable_names.begin(), it_pBcms);
 
+                    auto it_EXs_recoil = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
+                    int index_EXs_recoil = std::distance(variable_names.begin(), it_EXs_recoil);
+
                     double Ebeamstar = 2 * (var[index_EBcms] - var[index_deltaE]); // EBstar - deltaE
 
-                    double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
+                    double MBsig = std::sqrt((Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms]); // MBsig calculated from Pee - PBtag
+
+                    double real_qsquared = MBsig * MBsig + Bsig_M * Bsig_M - 2 * MBsig * var[index_EXs_recoil];
 
                     variable_values[k].push_back(real_qsquared);
                 }
@@ -1019,8 +1025,6 @@ void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_n
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
                 }
                 else if (variable_names.at(k).find("q^{2}") != std::string::npos) {
-                    auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
-                    int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
 
                     auto it_deltaE = std::find(variable_names.begin(), variable_names.end(), "Btag_deltaE");
                     int index_deltaE = std::distance(variable_names.begin(), it_deltaE);
@@ -1031,9 +1035,14 @@ void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_n
                     auto it_pBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_p");
                     int index_pBcms = std::distance(variable_names.begin(), it_pBcms);
 
+                    auto it_EXs_recoil = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
+                    int index_EXs_recoil = std::distance(variable_names.begin(), it_EXs_recoil);
+
                     double Ebeamstar = 2 * (var[index_EBcms] - var[index_deltaE]); // EBstar - deltaE
 
-                    double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
+                    double MBsig = std::sqrt((Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms]); // MBsig calculated from Pee - PBtag
+
+                    double real_qsquared = MBsig * MBsig + Bsig_M * Bsig_M - 2 * MBsig * var[index_EXs_recoil];
 
                     variable_values[k].push_back(real_qsquared);
                 }
@@ -1362,8 +1371,6 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
                 }
                 else if (variable_names.at(k).find("q^{2}") != std::string::npos) {
-                    auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
-                    int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
 
                     auto it_deltaE = std::find(variable_names.begin(), variable_names.end(), "Btag_deltaE");
                     int index_deltaE = std::distance(variable_names.begin(), it_deltaE);
@@ -1374,9 +1381,14 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
                     auto it_pBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_p");
                     int index_pBcms = std::distance(variable_names.begin(), it_pBcms);
 
+                    auto it_EXs_recoil = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
+                    int index_EXs_recoil = std::distance(variable_names.begin(), it_EXs_recoil);
+
                     double Ebeamstar = 2 * (var[index_EBcms] - var[index_deltaE]); // EBstar - deltaE
 
-                    double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
+                    double MBsig = std::sqrt((Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms]); // MBsig calculated from Pee - PBtag
+
+                    double real_qsquared = MBsig * MBsig + Bsig_M * Bsig_M - 2 * MBsig * var[index_EXs_recoil];
 
                     variable_values[k].push_back(real_qsquared);
                 }
@@ -1747,8 +1759,6 @@ void LetsFillMC_ESide(const char* dirname, std::vector<std::string> variable_nam
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
                 }
                 else if (variable_names.at(k).find("q^{2}") != std::string::npos) {
-                    auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
-                    int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
 
                     auto it_deltaE = std::find(variable_names.begin(), variable_names.end(), "Btag_deltaE");
                     int index_deltaE = std::distance(variable_names.begin(), it_deltaE);
@@ -1759,9 +1769,14 @@ void LetsFillMC_ESide(const char* dirname, std::vector<std::string> variable_nam
                     auto it_pBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_p");
                     int index_pBcms = std::distance(variable_names.begin(), it_pBcms);
 
+                    auto it_EXs_recoil = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
+                    int index_EXs_recoil = std::distance(variable_names.begin(), it_EXs_recoil);
+
                     double Ebeamstar = 2 * (var[index_EBcms] - var[index_deltaE]); // EBstar - deltaE
 
-                    double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
+                    double MBsig = std::sqrt((Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms]); // MBsig calculated from Pee - PBtag
+
+                    double real_qsquared = MBsig * MBsig + Bsig_M * Bsig_M - 2 * MBsig * var[index_EXs_recoil];
 
                     variable_values[k].push_back(real_qsquared);
                 }
@@ -2118,8 +2133,6 @@ void LetsFillMC_MUSide(const char* dirname, std::vector<std::string> variable_na
                     variable_values[k].push_back(ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M));
                 }
                 else if (variable_names.at(k).find("q^{2}") != std::string::npos) {
-                    auto it_qsquared = std::find(variable_names.begin(), variable_names.end(), "qsquared");
-                    int index_qsquared = std::distance(variable_names.begin(), it_qsquared);
 
                     auto it_deltaE = std::find(variable_names.begin(), variable_names.end(), "Btag_deltaE");
                     int index_deltaE = std::distance(variable_names.begin(), it_deltaE);
@@ -2130,9 +2143,14 @@ void LetsFillMC_MUSide(const char* dirname, std::vector<std::string> variable_na
                     auto it_pBcms = std::find(variable_names.begin(), variable_names.end(), "Btag_useCMSFrame_p");
                     int index_pBcms = std::distance(variable_names.begin(), it_pBcms);
 
+                    auto it_EXs_recoil = std::find(variable_names.begin(), variable_names.end(), "useTagSideRecoilRestFrame__bodaughter__bo1__cmE__bc__cm0__bc");
+                    int index_EXs_recoil = std::distance(variable_names.begin(), it_EXs_recoil);
+
                     double Ebeamstar = 2 * (var[index_EBcms] - var[index_deltaE]); // EBstar - deltaE
 
-                    double real_qsquared = var[index_qsquared] + (Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms];
+                    double MBsig = std::sqrt((Ebeamstar - var[index_EBcms]) * (Ebeamstar - var[index_EBcms]) - var[index_pBcms] * var[index_pBcms]); // MBsig calculated from Pee - PBtag
+
+                    double real_qsquared = MBsig * MBsig + Bsig_M * Bsig_M - 2 * MBsig * var[index_EXs_recoil];
 
                     variable_values[k].push_back(real_qsquared);
                 }
