@@ -19,9 +19,13 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "THStack_plot.h"
 #include "template.h"
 
-const bool Normalized = true;
+void THStack_plot_fit() {
 
-void THStack_plot_nominal() {
+    
+    ReadNominalNevt("Nominal_Nevt.txt");
+    ReadFittedNevt("Fit_Nevt.txt");
+    LetsDrawFitPlot(true);
+    
 
     Nevt nevt_CHG = { 0.0, 0.0 };
     Nevt nevt_MIX = { 0.0, 0.0 };
@@ -488,46 +492,25 @@ void THStack_plot_nominal() {
             bins = RarityBins;
         }
 
-        if (Normalized) {
-            Stack[k] = new THStack(variable_names.at(k).c_str(), (";" + variable_names.at(k) + ";arbitrary unit").c_str());
-            charged_hist[k] = new TH1D("charged", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            mixed_hist[k] = new TH1D("mixed", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            uubar_hist[k] = new TH1D("u#bar{u}", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            ddbar_hist[k] = new TH1D("d#bar{d}", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            ssbar_hist[k] = new TH1D("s#bar{s}", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            ccbar_hist[k] = new TH1D("c#bar{c}", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            taupair_hist[k] = new TH1D("#tau#bar{#tau}", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            mumu_hist[k] = new TH1D("#mu#bar{#mu}", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            gg_hist[k] = new TH1D("gg", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            ee_hist[k] = new TH1D("e#bar{e}", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            eeee_hist[k] = new TH1D("ee#bar{e}#bar{e}", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            eemumu_hist[k] = new TH1D("e#bar{e}#mu#bar{#mu}", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            llXX_hist[k] = new TH1D("\ell#bar{\ell}XX", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            hhISR_hist[k] = new TH1D("hhISR", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            signal_hist[k] = new TH1D("signal", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-            data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";arbitrary unit").c_str(), bins, min, max);
-        }
-        else {
-            Stack[k] = new THStack(variable_names.at(k).c_str(), (";" + variable_names.at(k) + ";number of candidates").c_str());
-            charged_hist[k] = new TH1D("charged", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            mixed_hist[k] = new TH1D("mixed", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            uubar_hist[k] = new TH1D("u#bar{u}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            ddbar_hist[k] = new TH1D("d#bar{d}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            ssbar_hist[k] = new TH1D("s#bar{s}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            ccbar_hist[k] = new TH1D("c#bar{c}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            taupair_hist[k] = new TH1D("#tau#bar{#tau}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            mumu_hist[k] = new TH1D("#mu#bar{#mu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            gg_hist[k] = new TH1D("gg", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            ee_hist[k] = new TH1D("e#bar{e}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            eeee_hist[k] = new TH1D("ee#bar{e}#bar{e}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            eemumu_hist[k] = new TH1D("e#bar{e}#mu#bar{#mu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            llXX_hist[k] = new TH1D("\ell#bar{\ell}XX", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            hhISR_hist[k] = new TH1D("hhISR", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            signal_hist[k] = new TH1D("signal", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-            data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        }
+        Stack[k] = new THStack(variable_names.at(k).c_str(), (";" + variable_names.at(k) + ";number of candidates").c_str());
+        charged_hist[k] = new TH1D("charged", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        mixed_hist[k] = new TH1D("mixed", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        uubar_hist[k] = new TH1D("u#bar{u}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        ddbar_hist[k] = new TH1D("d#bar{d}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        ssbar_hist[k] = new TH1D("s#bar{s}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        ccbar_hist[k] = new TH1D("c#bar{c}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        taupair_hist[k] = new TH1D("#tau#bar{#tau}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        mumu_hist[k] = new TH1D("#mu#bar{#mu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        gg_hist[k] = new TH1D("gg", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        ee_hist[k] = new TH1D("e#bar{e}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        eeee_hist[k] = new TH1D("ee#bar{e}#bar{e}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        eemumu_hist[k] = new TH1D("e#bar{e}#mu#bar{#mu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        llXX_hist[k] = new TH1D("\ell#bar{\ell}XX", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        hhISR_hist[k] = new TH1D("hhISR", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        signal_hist[k] = new TH1D("signal", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+
         Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;data/MC", bins, min, max);
     }
 
@@ -590,127 +573,64 @@ void THStack_plot_nominal() {
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
 
-        if (Normalized) {
-            double CHG_int = charged_hist[k]->Integral();
-            double MIX_int = mixed_hist[k]->Integral();
-            double UUBAR_int = uubar_hist[k]->Integral();
-            double DDBAR_int = ddbar_hist[k]->Integral();
-            double SSBAR_int = ssbar_hist[k]->Integral();
-            double CHARM_int = ccbar_hist[k]->Integral();
-            double SIGNAL_int = signal_hist[k]->Integral();
+        Stack[k]->Add(charged_hist[k]);
+        Stack[k]->Add(mixed_hist[k]);
+        Stack[k]->Add(uubar_hist[k]);
+        Stack[k]->Add(ddbar_hist[k]);
+        Stack[k]->Add(ssbar_hist[k]);
+        Stack[k]->Add(ccbar_hist[k]);
+        //Stack[k]->Add(taupair_hist[k]);
+        //Stack[k]->Add(mumu_hist[k]);
+        //Stack[k]->Add(gg_hist[k]);
+        //Stack[k]->Add(ee_hist[k]);
+        //Stack[k]->Add(eeee_hist[k]);
+        //Stack[k]->Add(eemumu_hist[k]);
+        //Stack[k]->Add(llXX_hist[k]);
+        //Stack[k]->Add(hhISR_hist[k]);
+        signal_hist[k]->SetLineWidth(3); signal_hist[k]->SetLineColor(2); signal_hist[k]->SetFillStyle(0);
 
-            double BKG_int = CHG_int + MIX_int + UUBAR_int + DDBAR_int + SSBAR_int + CHARM_int;
+        Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
+        Ratio_hist[k]->Divide(data_hist[k], stat_error_hist[k]);
 
-            charged_hist[k]->Scale(1.0 / BKG_int, "width");
-            mixed_hist[k]->Scale(1.0 / BKG_int, "width");
-            uubar_hist[k]->Scale(1.0 / BKG_int, "width");
-            ddbar_hist[k]->Scale(1.0 / BKG_int, "width");
-            ssbar_hist[k]->Scale(1.0 / BKG_int, "width");
-            ccbar_hist[k]->Scale(1.0 / BKG_int, "width");
+        TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
-            Stack[k]->Add(charged_hist[k]);
-            Stack[k]->Add(mixed_hist[k]);
-            Stack[k]->Add(uubar_hist[k]);
-            Stack[k]->Add(ddbar_hist[k]);
-            Stack[k]->Add(ssbar_hist[k]);
-            Stack[k]->Add(ccbar_hist[k]);
+        TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
+        pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
+        pad1->SetGridx(); pad1->Draw(); pad1->cd();
+        if ((variable_names.at(k).find("MVA") != std::string::npos) && (Nominal_MC_values[k].size() > 10000)) pad1->SetLogy(1);
+        else pad1->SetLogy(0);
 
-            signal_hist[k]->Scale(1.0 / SIGNAL_int, "width");
-            signal_hist[k]->SetLineWidth(3);
-            signal_hist[k]->SetLineColor(2);
-            signal_hist[k]->SetFillStyle(0);
+        gStyle->SetPalette(kPastel);
 
-            TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
+        Float_t ymax_1 = Stack[k]->GetMaximum();
+        Float_t ymax_2 = data_hist[k]->GetMaximum();
+        double real_max = 0;
+        if (ymax_1 > ymax_2) real_max = ymax_1;
+        else real_max = ymax_2;
 
-            gStyle->SetPalette(kGistEarth);
+        Stack[k]->SetMaximum(real_max * 1.1);
 
-            Float_t ymax_1 = Stack[k]->GetMaximum();
-            Float_t ymax_2 = signal_hist[k]->GetMaximum();
-            double real_max = 0;
-            if (ymax_1 > ymax_2) real_max = ymax_1;
-            else real_max = ymax_2;
+        Stack[k]->Draw("pfc Hist");
+        data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP EX0"); signal_hist[k]->Draw("HistSAME");
+        TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
+        legend->SetFillStyle(0); legend->SetLineWidth(0);
 
-            Stack[k]->SetMaximum(real_max * 1.1);
+        c_temp->cd();
+        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+        Ratio_hist[k]->SetMinimum(0.5); Ratio_hist[k]->SetMaximum(1.5); Ratio_hist[k]->SetLineWidth(2);
+        Ratio_hist[k]->GetYaxis()->SetTitleSize(0.08); Ratio_hist[k]->GetYaxis()->SetTitleOffset(0.5);
+        Ratio_hist[k]->GetXaxis()->SetLabelSize(0.08); Ratio_hist[k]->GetYaxis()->SetLabelSize(0.08);
+        Ratio_hist[k]->Draw("e0p");
+        TLine* line = new TLine(Ratio_hist[k]->GetXaxis()->GetXmin(), 1.0, Ratio_hist[k]->GetXaxis()->GetXmax(), 1.0);
+        line->SetLineColor(kRed);
+        line->SetLineStyle(1); line->SetLineWidth(3);
+        line->Draw();
 
-            Stack[k]->Draw("pfc Hist"); signal_hist[k]->Draw("HistSAME");
-            TLegend* legend = gPad->BuildLegend(0.95, 0.9, 0.75, 0.6);
-            //gPad->BuildLegend();
-            legend->SetFillStyle(0); legend->SetLineWidth(0);
-            c_temp->SaveAs((variable_names.at(k) + ".png").c_str());
+        c_temp->SetBottomMargin(0.0);
+        c_temp->SaveAs((variable_names.at(k) + ".png").c_str());
 
-            delete c_temp;
-        }
-        else {
-            // Scale the histogram
-            CAL = Ratio_one_bin->GetBinContent(1);
-            charged_hist[k]->Scale(CAL);
-            mixed_hist[k]->Scale(CAL);
-            uubar_hist[k]->Scale(CAL);
-            ddbar_hist[k]->Scale(CAL);
-            ssbar_hist[k]->Scale(CAL);
-            ccbar_hist[k]->Scale(CAL);
-            stat_error_hist[k]->Scale(CAL);
+        delete c_temp;
 
-            Stack[k]->Add(charged_hist[k]);
-            Stack[k]->Add(mixed_hist[k]);
-            Stack[k]->Add(uubar_hist[k]);
-            Stack[k]->Add(ddbar_hist[k]);
-            Stack[k]->Add(ssbar_hist[k]);
-            Stack[k]->Add(ccbar_hist[k]);
-            //Stack[k]->Add(taupair_hist[k]);
-            //Stack[k]->Add(mumu_hist[k]);
-            //Stack[k]->Add(gg_hist[k]);
-            //Stack[k]->Add(ee_hist[k]);
-            //Stack[k]->Add(eeee_hist[k]);
-            //Stack[k]->Add(eemumu_hist[k]);
-            //Stack[k]->Add(llXX_hist[k]);
-            //Stack[k]->Add(hhISR_hist[k]);
-            signal_hist[k]->SetLineWidth(3); signal_hist[k]->SetLineColor(2); signal_hist[k]->SetFillStyle(0);
-
-            Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
-            Ratio_hist[k]->Divide(data_hist[k], stat_error_hist[k]);
-
-            TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
-
-            TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
-            pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
-            pad1->SetGridx(); pad1->Draw(); pad1->cd();
-            if ((variable_names.at(k).find("MVA") != std::string::npos) && (Nominal_MC_values[k].size() > 10000)) pad1->SetLogy(1);
-            else pad1->SetLogy(0);
-
-            gStyle->SetPalette(kPastel);
-
-            Float_t ymax_1 = Stack[k]->GetMaximum();
-            Float_t ymax_2 = data_hist[k]->GetMaximum();
-            double real_max = 0;
-            if (ymax_1 > ymax_2) real_max = ymax_1;
-            else real_max = ymax_2;
-
-            Stack[k]->SetMaximum(real_max * 1.1);
-
-            Stack[k]->Draw("pfc Hist");
-            stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
-            data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP EX0"); signal_hist[k]->Draw("HistSAME");
-            TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
-            legend->SetFillStyle(0); legend->SetLineWidth(0);
-            TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str()); pt->Draw();
-
-            c_temp->cd();
-            TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
-            Ratio_hist[k]->SetMinimum(0.5); Ratio_hist[k]->SetMaximum(1.5); Ratio_hist[k]->SetLineWidth(2);
-            Ratio_hist[k]->GetYaxis()->SetTitleSize(0.08); Ratio_hist[k]->GetYaxis()->SetTitleOffset(0.5);
-            Ratio_hist[k]->GetXaxis()->SetLabelSize(0.08); Ratio_hist[k]->GetYaxis()->SetLabelSize(0.08);
-            Ratio_hist[k]->Draw("e0p");
-            TLine* line = new TLine(Ratio_hist[k]->GetXaxis()->GetXmin(), 1.0, Ratio_hist[k]->GetXaxis()->GetXmax(), 1.0);
-            line->SetLineColor(kRed);
-            line->SetLineStyle(1); line->SetLineWidth(3);
-            line->Draw();
-
-            c_temp->SetBottomMargin(0.0);
-            c_temp->SaveAs((variable_names.at(k) + ".png").c_str());
-
-            delete c_temp;
-        }
     }
 
     // Print data-MC discrepancy
