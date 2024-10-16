@@ -4092,7 +4092,7 @@ void Printchi2(THStack* MC_stack, TH1D* data_hist) {
         double data_value = data_hist->GetBinContent(i + 1);
         double data_error = data_hist->GetBinError(i + 1);
 
-        chi2 = chi2 + ((MC_value - data_value) * (MC_value - data_value) / (data_error * data_error));
+        chi2 = chi2 + ((MC_value - data_value) * (MC_value - data_value) / (data_error * data_error + MC_error * MC_error));
     }
 
     printf("chi2: %lf\n", chi2);
