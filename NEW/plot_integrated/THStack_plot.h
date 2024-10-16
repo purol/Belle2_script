@@ -315,37 +315,37 @@ double GetFitCAL(double bin_index, double MC_MXs, std::string SampleName) {
     if (SampleName == "CHG") return 1.0;
     else if (SampleName == "MIX") return 1.0;
     else if (SampleName == "UUBAR") {
-        if (0 <= bin_index_int < RarityBins_MX1) return qq_CAL_MXs1;
-        else if (RarityBins_MX1 <= bin_index_int < (RarityBins_MX1 + RarityBins_MX2)) return qq_CAL_MXs2;
+        if ((0 <= bin_index_int) && (bin_index_int < RarityBins_MX1)) return qq_CAL_MXs1;
+        else if ((RarityBins_MX1 <= bin_index_int) && (bin_index_int < (RarityBins_MX1 + RarityBins_MX2))) return qq_CAL_MXs2;
         else return qq_CAL_MXs3;
     }
     else if (SampleName == "DDBAR") {
-        if (0 <= bin_index_int < RarityBins_MX1) return qq_CAL_MXs1;
-        else if (RarityBins_MX1 <= bin_index_int < (RarityBins_MX1 + RarityBins_MX2)) return qq_CAL_MXs2;
+        if ((0 <= bin_index_int) && (bin_index_int < RarityBins_MX1)) return qq_CAL_MXs1;
+        else if ((RarityBins_MX1 <= bin_index_int) && (bin_index_int < (RarityBins_MX1 + RarityBins_MX2))) return qq_CAL_MXs2;
         else return qq_CAL_MXs3;
     }
     else if (SampleName == "SSBAR") {
-        if (0 <= bin_index_int < RarityBins_MX1) return qq_CAL_MXs1;
-        else if (RarityBins_MX1 <= bin_index_int < (RarityBins_MX1 + RarityBins_MX2)) return qq_CAL_MXs2;
+        if ((0 <= bin_index_int) && (bin_index_int < RarityBins_MX1)) return qq_CAL_MXs1;
+        else if ((RarityBins_MX1 <= bin_index_int) && (bin_index_int < (RarityBins_MX1 + RarityBins_MX2))) return qq_CAL_MXs2;
         else return qq_CAL_MXs3;
     }
     else if (SampleName == "CHARM") {
-        if (0 <= bin_index_int < RarityBins_MX1) return qq_CAL_MXs1;
-        else if (RarityBins_MX1 <= bin_index_int < (RarityBins_MX1 + RarityBins_MX2)) return qq_CAL_MXs2;
+        if ((0 <= bin_index_int) && (bin_index_int < RarityBins_MX1)) return qq_CAL_MXs1;
+        else if ((RarityBins_MX1 <= bin_index_int) && (bin_index_int < (RarityBins_MX1 + RarityBins_MX2))) return qq_CAL_MXs2;
         else return qq_CAL_MXs3;
     }
     else if (SampleName == "SIGNAL") {
 
         if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) {
-            if (0 <= bin_index_int < RarityBins_MX1) return FBDT_CAL_MXs1;
+            if ((0 <= bin_index_int) && (bin_index_int < RarityBins_MX1)) return FBDT_CAL_MXs1;
             else return 1.0;
         }
         else if ((MC_MXs >= 0.6) && (MC_MXs < 1.0)) {
-            if (RarityBins_MX1 <= bin_index_int < (RarityBins_MX1 + RarityBins_MX2)) return FBDT_CAL_MXs2;
+            if ((RarityBins_MX1 <= bin_index_int) && (bin_index_int < (RarityBins_MX1 + RarityBins_MX2))) return FBDT_CAL_MXs2;
             else return 1.0;
         }
         else if (MC_MXs >= 1.0) {
-            if ((RarityBins_MX1 + RarityBins_MX2) <= bin_index_int < (RarityBins_MX1 + RarityBins_MX2 + RarityBins_MX3)) return FBDT_CAL_MXs3;
+            if (((RarityBins_MX1 + RarityBins_MX2) <= bin_index_int) && (bin_index_int < (RarityBins_MX1 + RarityBins_MX2 + RarityBins_MX3))) return FBDT_CAL_MXs3;
             else return 1.0;
         }
         else {
