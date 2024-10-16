@@ -34,15 +34,15 @@ void THStack_plot_fit() {
     Nevt nevt_SSBAR = { 0.0, 0.0 };
     Nevt nevt_CHARM = { 0.0, 0.0 };
 
-    const char* Nominal_MC_SIGNAL_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/final_output";
-    const char* Nominal_MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHG_analysis/validation_v004/final_output";
-    const char* Nominal_MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/MIX_analysis/validation_v004/final_output";
-    const char* Nominal_MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/UUBAR_analysis/validation_v004/final_output";
-    const char* Nominal_MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/DDBAR_analysis/validation_v004/final_output";
-    const char* Nominal_MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SSBAR_analysis/validation_v004/final_output";
-    const char* Nominal_MC_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHARM_analysis/validation_v004/final_output";
+    const char* Nominal_MC_SIGNAL_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* Nominal_MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/CHG_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* Nominal_MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/MIX_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* Nominal_MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/UUBAR_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* Nominal_MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/DDBAR_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* Nominal_MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/SSBAR_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* Nominal_MC_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/CHARM_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
 
-    const char* Nominal_data_dirname = "";
+    const char* Nominal_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_data/SIGNAL_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut";
 
     NevtCount_ri(Nominal_MC_CHG_validation_dirname, "CHG", &nevt_CHG);
     NevtCount_ri(Nominal_MC_MIX_validation_dirname, "MIX", &nevt_MIX);
