@@ -38,7 +38,7 @@ using namespace RooFit;
 using std::string;
 using std::to_string;
 
-# define Knunu_only false
+const bool KnunuOnly = false;
 
 enum PDFtype { // reco level
     nominal = 0,
@@ -640,6 +640,12 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
             tree_Btag->GetEntry(j);
             if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
 
+            if (KnunuOnly) {
+                // select B+ --> K+ nu nubar reconstruction only
+                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
+                else continue;
+            }
+
             // select the specific true MXs region
             if (strcmp(sample, "SIGNAL") == 0) {
                 double MC_MXs = -1;
@@ -1089,6 +1095,12 @@ double GetPDFs_NEW_FEI(const char* dirname, const char* included_string, TH1D* h
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
+
+            if (KnunuOnly) {
+                // select B+ --> K+ nu nubar reconstruction only
+                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
+                else continue;
+            }
 
             // select the specific true MXs region
             if (strcmp(sample, "SIGNAL") == 0) {
