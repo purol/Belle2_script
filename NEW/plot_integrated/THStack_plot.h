@@ -637,6 +637,8 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
                 else if (std::strstr(names.at(i).c_str(), "B02K0nunu") != nullptr) MC_MXs = Mxs_B0_MC;
                 else if (std::strstr(names.at(i).c_str(), "B02Kstar0nunu") != nullptr) MC_MXs = Mxs_B0_MC;
                 else if (std::strstr(names.at(i).c_str(), "B02Xsnunu") != nullptr) MC_MXs = Mxs_B0_MC;
+                else if (std::strstr(names.at(i).c_str(), "CHG") != nullptr) {} // It is probably Jpsi signal
+                else if (std::strstr(names.at(i).c_str(), "MIX") != nullptr) {} // It is probably Jpsi signal
                 else {
                     printf("[ERROR] unexpected filename for SIGNAL\n");
                     exit(1);
@@ -1341,6 +1343,8 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
                 else if (std::strstr(names.at(i).c_str(), "B02K0nunu") != nullptr) MC_MXs = Mxs_B0_MC;
                 else if (std::strstr(names.at(i).c_str(), "B02Kstar0nunu") != nullptr) MC_MXs = Mxs_B0_MC;
                 else if (std::strstr(names.at(i).c_str(), "B02Xsnunu") != nullptr) MC_MXs = Mxs_B0_MC;
+                else if (std::strstr(names.at(i).c_str(), "CHG") != nullptr) {} // It is probably Jpsi signal
+                else if (std::strstr(names.at(i).c_str(), "MIX") != nullptr) {} // It is probably Jpsi signal
                 else {
                     printf("[ERROR] unexpected filename for SIGNAL\n");
                     exit(1);
@@ -3915,6 +3919,8 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
                 else if (std::strstr(names.at(i).c_str(), "B02K0nunu") != nullptr) MC_MXs = Mxs_B0_MC;
                 else if (std::strstr(names.at(i).c_str(), "B02Kstar0nunu") != nullptr) MC_MXs = Mxs_B0_MC;
                 else if (std::strstr(names.at(i).c_str(), "B02Xsnunu") != nullptr) MC_MXs = Mxs_B0_MC;
+                else if (std::strstr(names.at(i).c_str(), "CHG") != nullptr) {} // It is probably Jpsi signal
+                else if (std::strstr(names.at(i).c_str(), "MIX") != nullptr) {} // It is probably Jpsi signal
                 else {
                     printf("[ERROR] unexpected filename for SIGNAL\n");
                     exit(1);
