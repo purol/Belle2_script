@@ -1147,7 +1147,8 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     if (data != nullptr) {
         for (int i = 0; i < RarityBins; i++) {
             const RooArgSet* argSet = data->get(i);
-            data_hist->SetBinContent(i + 1, data->weight());
+            if (!argSet) data_hist->SetBinContent(i + 1, 0.0);
+            else data_hist->SetBinContent(i + 1, data->weight());
         }
     }
 
