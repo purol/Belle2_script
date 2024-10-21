@@ -130,7 +130,8 @@ int main() {
 
     // draw pull
     iter->Reset();
-    Drawpull(w, iter);
+    Drawpull(w, iter, "param_pull_type0.png", 0);
+    Drawpull(w, iter, "param_pull_type1.png", 1);
 
     // define frame
     // RooPlot* x_frame = x->frame(Title("fit result"));

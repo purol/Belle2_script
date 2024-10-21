@@ -1284,7 +1284,7 @@ void ObtainNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll) {
     (*nll) = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
 }
 
-void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
+void Drawpull(RooWorkspace* w, TIterator* iter, const char* fname, int type = 0) {
     /*
     * type = 0:
     * center = (postfit_value - prefit_value) / prefit_error
@@ -1429,7 +1429,7 @@ void Drawpull(RooWorkspace* w, TIterator* iter, int type = 0) {
     pull_ht->Draw("e0 e1 same");
     line->Draw();
 
-    cpull->SaveAs("param_pull.png");
+    cpull->SaveAs(fname);
 
     delete cpull;
 }
