@@ -14,6 +14,8 @@ mu_bar = 1.1*w1+2.2*w2+5.4*w3
 
 chi2 = np.array([[1.1 - mu_bar, 2.2-mu_bar, 5.4-mu_bar]]) @ Covariance_inverse @ np.array([[1.1-mu_bar], [2.2-mu_bar], [5.4-mu_bar]])
 
+variance = np.array([[w1, w2, w3]]) @ Covariance @ np.array([[w1], [w2], [w3]])
+
 print("Covariance matrix:")
 print(Covariance)
 print("\n")
@@ -35,7 +37,7 @@ print("%f / %f = %f" % (np.sum(Covariance_inverse[2, :]), np.sum(Covariance_inve
 print("\n")
 
 print("mu_bar:")
-print("%f" % mu_bar)
+print("%f +- %f" % (mu_bar, np.sqrt(variance)))
 print("\n")
 
 print("chi2:")
@@ -56,6 +58,8 @@ mu_bar = 1.1*w1+2.2*w2
 
 chi2 = np.array([[1.1 - mu_bar, 2.2-mu_bar]]) @ Covariance_inverse @ np.array([[1.1-mu_bar], [2.2-mu_bar]])
 
+variance = np.array([[w1, w2]]) @ Covariance @ np.array([[w1], [w2]])
+
 print("Covariance matrix:")
 print(Covariance)
 print("\n")
@@ -74,7 +78,7 @@ print("\n")
 
 
 print("mu_bar:")
-print("%f" % mu_bar)
+print("%f +- %f" % (mu_bar, np.sqrt(variance)))
 print("\n")
 
 print("chi2:")
