@@ -126,7 +126,7 @@ int main(int argc, char* argv[]) {
     const double mu_MXs3_err = w->var("mu_MXs3")->getError();
     const double NLL_global = nll->getVal(); // global minimum of -log(L)
     //double PLL_value = -1;
-    //RooAbsReal* pll = nll->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
+    RooAbsReal* pll = nll->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
 
     FILE* fp = fopen(("scan_result_" + std::string(argv[1]) + ".csv").c_str(), "w");
 
@@ -155,12 +155,28 @@ int main(int argc, char* argv[]) {
 
                 RooFitResult* fitres = MyMinimizeNLLReuse(w, data, &nll, eps, false);
 
+                /* test */
                 //PLL_value = pll->getVal();
 
                 std::unique_ptr<RooArgSet> test_vars{model->getVariables()};
                 test_vars->Print("v");
 
                 printf("status: %d\n", fitres->status());
+                printf("PLL: %lf\n", nll->getVal() - NLL_global);
+
+                w->loadSnapshot("GlobalMinimumParamValues");
+
+                mu_MXs1->setVal(mu1_local);
+                mu_MXs2->setVal(mu2_local);
+                mu_MXs3->setVal(mu3_local);
+
+                mu_MXs1->setConstant(true);
+                mu_MXs2->setConstant(true);
+                mu_MXs3->setConstant(true);
+
+                printf("ROOT PLL: %lf\n", pll->getVal());
+
+                /* test */
 
                 if (NLL_conditional > nll->getVal()) {
                     NLL_conditional = nll->getVal();
