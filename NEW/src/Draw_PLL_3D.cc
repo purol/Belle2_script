@@ -135,8 +135,8 @@ int main(int argc, char* argv[]) {
     double mu_MXs2_conditional = 0;
     double mu_MXs3_conditional = 0;
     double PLL_conditional = DBL_MAX;
-    for (double mu1_local = mu_MXs1_global - 3 * mu_MXs1_err; mu1_local < mu_MXs1_global + 3 * mu_MXs1_err; mu1_local = mu1_local + mu_MXs1_err * step) {
-        for (double mu2_local = mu_MXs2_global - 3 * mu_MXs2_err; mu2_local < mu_MXs2_global + 3 * mu_MXs2_err; mu2_local = mu2_local + mu_MXs2_err * step) {
+    for (double mu1_local = mu_MXs1_global - 3.5 * mu_MXs1_err; mu1_local < mu_MXs1_global + 3.5 * mu_MXs1_err; mu1_local = mu1_local + mu_MXs1_err * step) {
+        for (double mu2_local = mu_MXs2_global - 3.5 * mu_MXs2_err; mu2_local < mu_MXs2_global + 3.5 * mu_MXs2_err; mu2_local = mu2_local + mu_MXs2_err * step) {
 
             double mu3_local = (target_BR - mu1_local * BR_1 - mu2_local * BR_2) / BR_3;
             if ((mu3_local >= mu_MXs3_global - 3 * mu_MXs3_err) && (mu3_local < mu_MXs3_global + 3 * mu_MXs3_err)) {
