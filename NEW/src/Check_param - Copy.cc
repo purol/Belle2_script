@@ -87,14 +87,14 @@ int main() {
     RooWorkspace* w = (RooWorkspace*)f->Get("combined");
 
     // get Category and data
-    RooAbsData* data = (RooAbsData*)w->data("obsData");
+    RooDataSet* data = (RooDataSet*)w->data("obsData");
 
     // fit to get initial point
     double eps = 0.1;
     RooAbsReal* nll;
     RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps);
 
-    double NLL_global = (*nll)->getVal();
+    double NLL_global = nll->getVal();
 
     double target_BR = 0.000047;
     double NLL_local = MyMinimizeNLLFixedBR(w, data, &nll, target_BR);

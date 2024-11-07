@@ -803,7 +803,7 @@ double MyMinimizeNLLFixedBR(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
                     w->var("mu_MXs3")->setVal(mu_MXs3_local);
 
                     // fit with fixed BR
-                    MyMinim.minimize(minimizer, algorithm);
+                    minim.minimize(minimizer, algorithm);
 
                     if (minimum_NLL > (*nll)->getVal()) {
                         minimum_NLL = (*nll)->getVal();
