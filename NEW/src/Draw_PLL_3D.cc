@@ -96,11 +96,11 @@ int main(int argc, char* argv[]) {
     const double BR_1 = 0.0000048514;
     const double BR_2 = 0.0000085024;
     const double BR_3 = 0.0000156653;
-    const double BR_3 = 0.000029;
+    const double BR_total = 0.000029;
 
     // target BR
     double target_mu = std::atof(argv[1]);
-    double target_BR = target_mu * BR_3;
+    double target_BR = target_mu * BR_total;
 
     // fit
     double eps = 0.1;
@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
     for (double mu1_local = mu_MXs1_global - 3 * mu_MXs1_err; mu1_local < mu_MXs1_global + 3 * mu_MXs1_err; mu1_local = mu1_local + mu_MXs1_err * step) {
         for (double mu2_local = mu_MXs2_global - 3 * mu_MXs2_err; mu2_local < mu_MXs2_global + 3 * mu_MXs2_err; mu2_local = mu2_local + mu_MXs2_err * step) {
 
-            double mu3_local = (target_BR - mu_MXs1_local * BR_1 - mu_MXs2_local * BR_2) / BR_3;
+            double mu3_local = (target_BR - mu1_local * BR_1 - mu2_local * BR_2) / BR_3;
             if ((mu3_local >= mu_MXs3_global - 3 * mu_MXs3_err) && (mu3_local < mu_MXs3_global + 3 * mu_MXs3_err)) {
 
                 int k = std::atoi(argv[1]);
