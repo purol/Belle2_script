@@ -73,7 +73,7 @@ void PrintToyResult(){
 
     // write in txt file
     FILE* fp = fopen("mu_fit_values.csv", "w");
-    fprintf(fp, "%mu1,mu2,mu3\n");
+    fprintf(fp, "mu1,mu2,mu3\n");
     for (int i = 0; i < mu2_fitting.size(); i++) fprintf(fp, "%lf,%lf,%lf\n", mu1_fitting.at(i), mu2_fitting.at(i), mu3_fitting.at(i));
     fclose(fp);
 
