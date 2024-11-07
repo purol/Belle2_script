@@ -105,7 +105,6 @@ int main(int argc, char* argv[]) {
 
     // get PLL value
     RooPlot* mu_frame;
-    RooAbsReal* pll;
     double PLL_value = -1;
     RooAbsReal* pll = nll->createProfile(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3));
 
@@ -114,9 +113,9 @@ int main(int argc, char* argv[]) {
         for (int j = 0; j < NStep; j++) {
             for (int k = 0; k < NStep; k++) {
 
-                mu1_local = -100.0 + i * (200.0 / NStep);
-                mu2_local = -100.0 + j * (200.0 / NStep);
-                mu3_local = -100.0 + k * (200.0 / NStep);
+                double mu1_local = -100.0 + i * (200.0 / NStep);
+                double mu2_local = -100.0 + j * (200.0 / NStep);
+                double mu3_local = -100.0 + k * (200.0 / NStep);
 
                 x_val_MXs1->setVal(mu1_local);
                 x_val_MXs2->setVal(mu2_local);
