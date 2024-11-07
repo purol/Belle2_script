@@ -92,6 +92,16 @@ int main(int argc, char* argv[]) {
 
     RooDataSet* data = (RooDataSet*)w->data("obsData");
 
+    // constant variables
+    const double BR_1 = 0.0000048514;
+    const double BR_2 = 0.0000085024;
+    const double BR_3 = 0.0000156653;
+    const double BR_3 = 0.000029;
+
+    // target BR
+    double target_mu = 0.0;
+    double target_BR = target_mu * BR_3;
+
     // fit
     double eps = 0.1;
     RooAbsReal* nll;
@@ -104,7 +114,7 @@ int main(int argc, char* argv[]) {
 
     w->saveSnapshot("GlobalMinimumParamValues", *params, true);
 
-    // get PLL value
+    // get global value
     RooRealVar* mu_MXs1 = w->var("mu_MXs1");
     RooRealVar* mu_MXs2 = w->var("mu_MXs2");
     RooRealVar* mu_MXs3 = w->var("mu_MXs3");
@@ -114,44 +124,57 @@ int main(int argc, char* argv[]) {
     const double mu_MXs1_err = w->var("mu_MXs1")->getError();
     const double mu_MXs2_err = w->var("mu_MXs2")->getError();
     const double mu_MXs3_err = w->var("mu_MXs3")->getError();
-    double PLL_value = -1;
-    RooAbsReal* pll = nll->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
+    const double NLL_global = nll->getVal(); // global minimum of -log(L)
+    //double PLL_value = -1;
+    //RooAbsReal* pll = nll->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
 
     FILE* fp = fopen(("scan_result_" + std::string(argv[1]) + ".csv").c_str(), "w");
 
-    const int NStep = 30;
-    for (int i = 0; i < NStep; i++) {
-        for (int j = 0; j < NStep; j++) {
-//            for (int k = 0; k < NStep; k++) {
+    const double step = 0.01;
+    double mu_MXs1_conditional = 0;
+    double mu_MXs2_conditional = 0;
+    double mu_MXs3_conditional = 0;
+    double NLL_conditional = DBL_MAX;
+    for (double mu1_local = mu_MXs1_global - 3 * mu_MXs1_err; mu1_local < mu_MXs1_global + 3 * mu_MXs1_err; mu1_local = mu1_local + mu_MXs1_err * step) {
+        for (double mu2_local = mu_MXs2_global - 3 * mu_MXs2_err; mu2_local < mu_MXs2_global + 3 * mu_MXs2_err; mu2_local = mu2_local + mu_MXs2_err * step) {
+
+            double mu3_local = (target_BR - mu_MXs1_local * BR_1 - mu_MXs2_local * BR_2) / BR_3;
+            if ((mu3_local >= mu_MXs3_global - 3 * mu_MXs3_err) && (mu3_local < mu_MXs3_global + 3 * mu_MXs3_err)) {
 
                 int k = std::atoi(argv[1]);
 
                 w->loadSnapshot("GlobalMinimumParamValues");
 
-                double mu1_local = mu_MXs1_global - 3 * mu_MXs1_err + i * (6 * mu_MXs1_err / NStep);
-                double mu2_local = mu_MXs2_global - 3 * mu_MXs2_err + j * (6 * mu_MXs2_err / NStep);
-                double mu3_local = mu_MXs3_global - 3 * mu_MXs3_err + k * (6 * mu_MXs3_err / NStep);
-
                 mu_MXs1->setVal(mu1_local);
                 mu_MXs2->setVal(mu2_local);
                 mu_MXs3->setVal(mu3_local);
 
-                //x_val_MXs1->setConstant(true);
-                //x_val_MXs2->setConstant(true);
-                //x_val_MXs3->setConstant(true);
+                mu_MXs1->setConstant(true);
+                mu_MXs2->setConstant(true);
+                mu_MXs3->setConstant(true);
 
-                //MyMinimizeNLLReuse(w, data, &nll, eps, false);
+                RooFitResult* fitres = MyMinimizeNLLReuse(w, data, &nll, eps, false);
 
-                PLL_value = pll->getVal();
+                //PLL_value = pll->getVal();
 
-                //std::unique_ptr<RooArgSet> test_vars{model->getVariables()};
-                //test_vars->Print("v");
+                std::unique_ptr<RooArgSet> test_vars{model->getVariables()};
+                test_vars->Print("v");
 
-                fprintf(fp, "%lf,%lf,%lf,%lf", PLL_value, mu_MXs1, mu_MXs2, mu_MXs3);
+                printf("status: %d\n", fitres->status());
 
-//            }
+                if (NLL_conditional > nll->getVal()) {
+                    NLL_conditional = nll->getVal();
+                    mu_MXs1_conditional = mu1_local;
+                    mu_MXs2_conditional = mu2_local;
+                    mu_MXs3_conditional = mu3_local;
+                }
+
+            }
+
         }
     }
+
+    fprintf(fp, "%lf,%lf,%lf,%lf,%lf,%lf", target_mu, NLL_global, NLL_conditional, mu_MXs1_conditional, mu_MXs2_conditional, mu_MXs3_conditional);
 
     fclose(fp);
 
