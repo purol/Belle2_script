@@ -776,23 +776,30 @@ double MyMinimizeNLLFixedBR(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
         const double previous_mu_MXs3 = w->var("mu_MXs3")->getValV();
 
         double Difference_BR = target_BR - (BR_1 * previous_mu_MXs1 + BR_2 * previous_mu_MXs2 + BR_3 * previous_mu_MXs3);
-        double Delta_BR = Difference_BR;
-        if (Delta_BR > error_BR * BR_step) Delta_BR = error_BR * BR_step;
-        else terminate_flag = true;
+        double Delta_BR = 0;
+
+        if (std::abs(Difference_BR) > std::abs(error_BR * BR_step)) {
+            if (Difference_BR > 0) Delta_BR = error_BR * BR_step;
+            else Delta_BR = -error_BR * BR_step;
+        }
+        else {
+            Delta_BR = Difference_BR;
+            terminate_flag = true;
+        }
 
         // scan
-        const int abs_max = (int)(scan_boundary / scan_step);
+        const int abs_max = (int)(error_BR * scan_boundary / scan_step);
         double minimum_NLL = DBL_MAX;
         for (int i = -abs_max; i <= abs_max; ++i) {
             for (int j = -abs_max; j <= abs_max; ++j) {
-                int k = ((int)(BR_step / scan_step)) - i - j;
+                int k = ((int)(Delta_BR / scan_step)) - i - j;
                 // Check if k is within the allowed range of [-abs_max, abs_max]
                 if (std::abs(k) <= abs_max) {
                     std::cout << "(" << i << ", " << j << ", " << k << ")\n";
 
-                    double mu_MXs1_local = previous_mu_MXs1 + (i * error_BR * scan_step) / BR_1;
-                    double mu_MXs2_local = previous_mu_MXs2 + (j * error_BR * scan_step) / BR_2;
-                    double mu_MXs3_local = previous_mu_MXs3 + (k * error_BR * scan_step) / BR_3;
+                    double mu_MXs1_local = previous_mu_MXs1 + (i * scan_step) / BR_1;
+                    double mu_MXs2_local = previous_mu_MXs2 + (j * scan_step) / BR_2;
+                    double mu_MXs3_local = previous_mu_MXs3 + (k * scan_step) / BR_3;
 
                     w->var("mu_MXs1")->setVal(mu_MXs1_local);
                     w->var("mu_MXs2")->setVal(mu_MXs2_local);
