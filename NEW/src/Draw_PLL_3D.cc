@@ -170,9 +170,9 @@ int main(int argc, char* argv[]) {
                 mu_MXs2->setVal(mu2_local);
                 mu_MXs3->setVal(mu3_local);
 
-                mu_MXs1->setConstant(true);
-                mu_MXs2->setConstant(true);
-                mu_MXs3->setConstant(true);
+                //mu_MXs1->setConstant(true);
+                //mu_MXs2->setConstant(true);
+                //mu_MXs3->setConstant(true);
 
                 printf("ROOT PLL: %lf\n", pll->getVal());
 
