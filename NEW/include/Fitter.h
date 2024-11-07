@@ -698,7 +698,9 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
 
 double MyMinimizeNLLFixedBR(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double target_BR, double tolerance = -1.0, double scan_step = 0.01) {
     // scan_step: size of step for mu, when scanning BR=const plane
-    
+    RooFit::MsgLevel message_level = RooMsgService::instance().globalKillBelow();
+    RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
+
     // what we have done
     w->loadSnapshot("ParamValues");
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
@@ -802,6 +804,8 @@ double MyMinimizeNLLFixedBR(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
     w->var("mu_MXs1")->setConstant(false);
     w->var("mu_MXs2")->setConstant(false);
     w->var("mu_MXs3")->setConstant(false);
+
+    RooMsgService::instance().setGlobalKillBelow(message_level);
 
     return minimum_NLL;
 }
