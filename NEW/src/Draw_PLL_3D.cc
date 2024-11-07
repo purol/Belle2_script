@@ -67,7 +67,7 @@ std::vector<std::string> split(std::string str, char Delimiter) {
 }
 
 int main(int argc, char* argv[]) {
-    // argv[1]: step index for mu_MXs3.
+    // argv[1]: total mu
 
     ::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit2", "Minimize"); // default: Minuit Migrad
     ::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) {
     const double BR_3 = 0.000029;
 
     // target BR
-    double target_mu = 0.0;
+    double target_mu = std::atof(argv[1]);
     double target_BR = target_mu * BR_3;
 
     // fit
