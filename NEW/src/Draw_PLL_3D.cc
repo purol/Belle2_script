@@ -67,6 +67,7 @@ std::vector<std::string> split(std::string str, char Delimiter) {
 }
 
 int main(int argc, char* argv[]) {
+    // argv[1]: step index for mu_MXs3.
 
     ::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit2", "Minimize"); // default: Minuit Migrad
     ::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
@@ -107,19 +108,29 @@ int main(int argc, char* argv[]) {
     RooRealVar* mu_MXs1 = w->var("mu_MXs1");
     RooRealVar* mu_MXs2 = w->var("mu_MXs2");
     RooRealVar* mu_MXs3 = w->var("mu_MXs3");
+    const double mu_MXs1_global = w->var("mu_MXs1")->getVal();
+    const double mu_MXs2_global = w->var("mu_MXs2")->getVal();
+    const double mu_MXs3_global = w->var("mu_MXs3")->getVal();
+    const double mu_MXs1_err = w->var("mu_MXs1")->getError();
+    const double mu_MXs2_err = w->var("mu_MXs2")->getError();
+    const double mu_MXs3_err = w->var("mu_MXs3")->getError();
     double PLL_value = -1;
     RooAbsReal* pll = nll->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
 
-    const int NStep = 100;
+    FILE* fp = fopen(("scan_result_" + std::string(argv[1]) + ".csv").c_str(), "w");
+
+    const int NStep = 30;
     for (int i = 0; i < NStep; i++) {
         for (int j = 0; j < NStep; j++) {
-            for (int k = 0; k < NStep; k++) {
+//            for (int k = 0; k < NStep; k++) {
+
+                int k = std::atoi(argv[1]);
 
                 w->loadSnapshot("GlobalMinimumParamValues");
 
-                double mu1_local = -100.0 + i * (200.0 / NStep);
-                double mu2_local = -100.0 + j * (200.0 / NStep);
-                double mu3_local = -100.0 + k * (200.0 / NStep);
+                double mu1_local = mu_MXs1_global - 3 * mu_MXs1_err + i * (6 * mu_MXs1_err / NStep);
+                double mu2_local = mu_MXs2_global - 3 * mu_MXs2_err + j * (6 * mu_MXs2_err / NStep);
+                double mu3_local = mu_MXs3_global - 3 * mu_MXs3_err + k * (6 * mu_MXs3_err / NStep);
 
                 mu_MXs1->setVal(mu1_local);
                 mu_MXs2->setVal(mu2_local);
@@ -133,14 +144,16 @@ int main(int argc, char* argv[]) {
 
                 PLL_value = pll->getVal();
 
-                std::unique_ptr<RooArgSet> test_vars{model->getVariables()};
-                test_vars->Print("v");
+                //std::unique_ptr<RooArgSet> test_vars{model->getVariables()};
+                //test_vars->Print("v");
 
-                printf("values: %lf, %lf %lf %lf\n", PLL_value, mu1_local, mu2_local, mu3_local);
+                fprintf(fp, "%lf,%lf,%lf,%lf", PLL_value, mu_MXs1, mu_MXs2, mu_MXs3);
 
-            }
+//            }
         }
     }
+
+    fclose(fp);
 
     return 0;
 }
