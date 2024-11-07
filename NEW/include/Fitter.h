@@ -730,7 +730,7 @@ double MyMinimizeNLLFixedBR(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
 
     Int_t fPrintLevel = ::ROOT::Math::MinimizerOptions::DefaultPrintLevel();
     //LM: RooMinimizer.setPrintLevel has +1 offset - so subtract  here -1 + an extra -1
-    int level = -1;
+    int level = -2;
 
 
     // follow what ProfileLikelihoodTestStat.cxx does
@@ -763,7 +763,6 @@ double MyMinimizeNLLFixedBR(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
     double local_NLL = 0;
     w->saveSnapshot("MyMinimizeNLLFixedBR_snapshot", w->allVars(), true);
     while (true) {
-        w->loadSnapshot("MyMinimizeNLLFixedBR_snapshot");
 
         w->var("mu_MXs1")->setConstant(true);
         w->var("mu_MXs2")->setConstant(true);
@@ -772,9 +771,9 @@ double MyMinimizeNLLFixedBR(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
         bool terminate_flag = false;
         bool IsItBoundary = false;
 
-        double previous_mu_MXs1 = mu_MXs1_global;
-        double previous_mu_MXs2 = mu_MXs2_global;
-        double previous_mu_MXs3 = mu_MXs3_global;
+        const double previous_mu_MXs1 = w->var("mu_MXs1")->getValV();
+        const double previous_mu_MXs2 = w->var("mu_MXs2")->getValV();
+        const double previous_mu_MXs3 = w->var("mu_MXs3")->getValV();
 
         double Difference_BR = target_BR - (BR_1 * previous_mu_MXs1 + BR_2 * previous_mu_MXs2 + BR_3 * previous_mu_MXs3);
         double Delta_BR = Difference_BR;
@@ -784,9 +783,6 @@ double MyMinimizeNLLFixedBR(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
         // scan
         const int abs_max = (int)(scan_boundary / scan_step);
         double minimum_NLL = DBL_MAX;
-        double minimum_mu_MXs1 = 0;
-        double minimum_mu_MXs2 = 0;
-        double minimum_mu_MXs3 = 0;
         for (int i = -abs_max; i <= abs_max; ++i) {
             for (int j = -abs_max; j <= abs_max; ++j) {
                 int k = ((int)(BR_step / scan_step)) - i - j;
@@ -807,32 +803,27 @@ double MyMinimizeNLLFixedBR(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
 
                     if (minimum_NLL > (*nll)->getVal()) {
                         minimum_NLL = (*nll)->getVal();
-                        minimum_mu_MXs1 = mu_MXs1_local;
-                        minimum_mu_MXs2 = mu_MXs2_local;
-                        minimum_mu_MXs3 = mu_MXs3_local;
                         w->saveSnapshot("MyMinimizeNLLFixedBR_snapshot", w->allVars(), true);
 
                         if ((i == std::abs(abs_max)) || (j == std::abs(abs_max)) || (k == std::abs(abs_max))) IsItBoundary = true;
+                        else IsItBoundary = false;
                     }
 
                 }
             }
         }
 
-        previous_mu_MXs1 = minimum_mu_MXs1;
-        previous_mu_MXs2 = minimum_mu_MXs2;
-        previous_mu_MXs3 = minimum_mu_MXs3;
+        w->loadSnapshot("MyMinimizeNLLFixedBR_snapshot");
 
         if (IsItBoundary) {
             printf("[MyMinimizeNLLFixedBR] variable is in boundary!\n");
-            printf("mu1 = %lf\n", minimum_mu_MXs1);
-            printf("mu2 = %lf\n", minimum_mu_MXs2);
-            printf("mu3 = %lf\n", minimum_mu_MXs3);
+            printf("mu1 = %lf\n", w->var("mu_MXs1")->getValV());
+            printf("mu2 = %lf\n", w->var("mu_MXs2")->getValV());
+            printf("mu3 = %lf\n", w->var("mu_MXs3")->getValV());
             exit(1);
         }
 
         if (terminate_flag) {
-            w->loadSnapshot("MyMinimizeNLLFixedBR_snapshot");
             w->var("mu_MXs1")->setConstant(false);
             w->var("mu_MXs2")->setConstant(false);
             w->var("mu_MXs3")->setConstant(false);
