@@ -99,14 +99,16 @@ int main(int argc, char* argv[]) {
     RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
     RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
     RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
-    std::unique_ptr<RooArgSet> params{model->getParameters(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3))};
+    std::unique_ptr<RooArgSet> params{model->getVariables()};
 
     w->saveSnapshot("GlobalMinimumParamValues", *params, true);
 
     // get PLL value
-    RooPlot* mu_frame;
+    RooRealVar* mu_MXs1 = w->var("mu_MXs1");
+    RooRealVar* mu_MXs2 = w->var("mu_MXs2");
+    RooRealVar* mu_MXs3 = w->var("mu_MXs3");
     double PLL_value = -1;
-    RooAbsReal* pll = nll->createProfile(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3));
+    RooAbsReal* pll = nll->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
 
     const int NStep = 100;
     for (int i = 0; i < NStep; i++) {
@@ -119,9 +121,9 @@ int main(int argc, char* argv[]) {
                 double mu2_local = -100.0 + j * (200.0 / NStep);
                 double mu3_local = -100.0 + k * (200.0 / NStep);
 
-                x_val_MXs1->setVal(mu1_local);
-                x_val_MXs2->setVal(mu2_local);
-                x_val_MXs3->setVal(mu3_local);
+                mu_MXs1->setVal(mu1_local);
+                mu_MXs2->setVal(mu2_local);
+                mu_MXs3->setVal(mu3_local);
 
                 //x_val_MXs1->setConstant(true);
                 //x_val_MXs2->setConstant(true);
