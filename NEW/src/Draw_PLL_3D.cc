@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
 
     RooWorkspace* w = (RooWorkspace*)f->Get("combined");
 
-    w->Print();
+    // w->Print();
     ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
@@ -89,7 +89,7 @@ int main(int argc, char* argv[]) {
     w->loadSnapshot("NominalParamValues");
     FixParameters(w, options);
 
-    RooDataSet* data = (RooDataSet*)w->data("asimovData");
+    RooDataSet* data = (RooDataSet*)w->data("obsData");
 
     // fit
     double eps = 0.1;
@@ -113,6 +113,8 @@ int main(int argc, char* argv[]) {
         for (int j = 0; j < NStep; j++) {
             for (int k = 0; k < NStep; k++) {
 
+                w->loadSnapshot("GlobalMinimumParamValues");
+
                 double mu1_local = -100.0 + i * (200.0 / NStep);
                 double mu2_local = -100.0 + j * (200.0 / NStep);
                 double mu3_local = -100.0 + k * (200.0 / NStep);
@@ -121,9 +123,18 @@ int main(int argc, char* argv[]) {
                 x_val_MXs2->setVal(mu2_local);
                 x_val_MXs3->setVal(mu3_local);
 
+                //x_val_MXs1->setConstant(true);
+                //x_val_MXs2->setConstant(true);
+                //x_val_MXs3->setConstant(true);
+
+                //MyMinimizeNLLReuse(w, data, &nll, eps, false);
+
                 PLL_value = pll->getVal();
 
-                printf("%lf, %lf %lf %lf\n", PLL_value, mu1_local, mu2_local, mu3_local);
+                std::unique_ptr<RooArgSet> test_vars{model->getVariables()};
+                test_vars->Print("v");
+
+                printf("values: %lf, %lf %lf %lf\n", PLL_value, mu1_local, mu2_local, mu3_local);
 
             }
         }
