@@ -696,11 +696,8 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
     return minim.save();
 }
 
-double MyMinimizeNLLFixedBR(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double target_BR, double tolerance = -1.0, double BR_step = 0.1, double scan_step = 0.05, double scan_boundary = 5.0) {
-    // BR_step: size of step that search the next BR
-    // scan_step: size of step that search the minimum value in BR = constant plane
-    // scan_boundary: scan the following region: BR_i_previous - scan_boundary * err < BR_i < BR_i_previous + scan_boundary * err
-    // BR_step / scan_step is recommended to be integer
+double MyMinimizeNLLFixedBR(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double target_BR, double tolerance = -1.0, double scan_step = 0.01) {
+    // scan_step: size of step for mu, when scanning BR=const plane
     
     // what we have done
     w->loadSnapshot("ParamValues");
@@ -744,7 +741,7 @@ double MyMinimizeNLLFixedBR(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
     minim.optimizeConst(2);
     minim.migrad();
 
-    // try to find the minimum value with fixed \mu (or fixed BR)
+    // set constants variables
     const double mu_MXs1_global = w->var("mu_MXs1")->getValV();
     const double mu_MXs2_global = w->var("mu_MXs2")->getValV();
     const double mu_MXs3_global = w->var("mu_MXs3")->getValV();
@@ -760,94 +757,59 @@ double MyMinimizeNLLFixedBR(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
     // this is reference error and does not change
     const double error_BR = std::sqrt((BR_1 * mu_MXs1_err_global) * (BR_1 * mu_MXs1_err_global) + (BR_2 * mu_MXs2_err_global) * (BR_2 * mu_MXs2_err_global) + (BR_3 * mu_MXs3_err_global) * (BR_3 * mu_MXs3_err_global));
 
-    double local_NLL = 0;
-    w->saveSnapshot("MyMinimizeNLLFixedBR_snapshot", w->allVars(), true);
-    while (true) {
+    double minimum_NLL = DBL_MAX;
+    bool IsItBoundary = false;
+    w->var("mu_MXs1")->setConstant(true);
+    w->var("mu_MXs2")->setConstant(true);
+    w->var("mu_MXs3")->setConstant(true);
+    for (int i = 0; i < (int) (200.0 / scan_step); i++) {
+        for (int j = 0; j < (int)(200.0 / scan_step); j++) {
+            double mu_MXs1_local = -100.0 + (i * scan_step);
+            double mu_MXs2_local = -100.0 + (j * scan_step);
+            double mu_MXs3_local = (target_BR - mu_MXs1_local * BR_1 - mu_MXs2_local * BR_2) / BR_3;
 
-        w->var("mu_MXs1")->setConstant(true);
-        w->var("mu_MXs2")->setConstant(true);
-        w->var("mu_MXs3")->setConstant(true);
+            if ((mu_MXs3_local >= -100.0) && (mu_MXs3_local <= 100.0)) {
+                w->var("mu_MXs1")->setVal(mu_MXs1_local);
+                w->var("mu_MXs2")->setVal(mu_MXs2_local);
+                w->var("mu_MXs3")->setVal(mu_MXs3_local);
 
-        bool terminate_flag = false;
-        bool IsItBoundary = false;
+                // fit with fixed BR
+                minim.minimize(minimizer, algorithm);
 
-        const double previous_mu_MXs1 = w->var("mu_MXs1")->getValV();
-        const double previous_mu_MXs2 = w->var("mu_MXs2")->getValV();
-        const double previous_mu_MXs3 = w->var("mu_MXs3")->getValV();
+                if (minimum_NLL > (*nll)->getVal()) {
+                    minimum_NLL = (*nll)->getVal();
+                    w->saveSnapshot("MyMinimizeNLLFixedBR_snapshot", w->allVars(), true);
 
-        double Difference_BR = target_BR - (BR_1 * previous_mu_MXs1 + BR_2 * previous_mu_MXs2 + BR_3 * previous_mu_MXs3);
-        double Delta_BR = 0;
-
-        if (std::abs(Difference_BR) > std::abs(error_BR * BR_step)) {
-            if (Difference_BR > 0) Delta_BR = error_BR * BR_step;
-            else Delta_BR = -error_BR * BR_step;
-        }
-        else {
-            Delta_BR = Difference_BR;
-            terminate_flag = true;
-        }
-
-        // scan
-        const int abs_max = (int)(error_BR * scan_boundary / scan_step);
-        double minimum_NLL = DBL_MAX;
-        for (int i = -abs_max; i <= abs_max; ++i) {
-            for (int j = -abs_max; j <= abs_max; ++j) {
-                int k = ((int)(Delta_BR / scan_step)) - i - j;
-                // Check if k is within the allowed range of [-abs_max, abs_max]
-                if (std::abs(k) <= abs_max) {
-                    std::cout << "(" << i << ", " << j << ", " << k << ")\n";
-
-                    double mu_MXs1_local = previous_mu_MXs1 + (i * scan_step) / BR_1;
-                    double mu_MXs2_local = previous_mu_MXs2 + (j * scan_step) / BR_2;
-                    double mu_MXs3_local = previous_mu_MXs3 + (k * scan_step) / BR_3;
-
-                    w->var("mu_MXs1")->setVal(mu_MXs1_local);
-                    w->var("mu_MXs2")->setVal(mu_MXs2_local);
-                    w->var("mu_MXs3")->setVal(mu_MXs3_local);
-
-                    // fit with fixed BR
-                    minim.minimize(minimizer, algorithm);
-
-                    if (minimum_NLL > (*nll)->getVal()) {
-                        minimum_NLL = (*nll)->getVal();
-                        w->saveSnapshot("MyMinimizeNLLFixedBR_snapshot", w->allVars(), true);
-
-                        if ((i == std::abs(abs_max)) || (j == std::abs(abs_max)) || (k == std::abs(abs_max))) IsItBoundary = true;
-                        else IsItBoundary = false;
-                    }
-
+                    if ((i == 0) || (j == 0) || (i == (int)(200.0 / scan_step)) || (j == (int)(200.0 / scan_step))) IsItBoundary = true;
+                    else IsItBoundary = false;
                 }
+
             }
+
         }
-
-        w->loadSnapshot("MyMinimizeNLLFixedBR_snapshot");
-
-        if (IsItBoundary) {
-            printf("[MyMinimizeNLLFixedBR] variable is in boundary!\n");
-            printf("mu1 = %lf\n", w->var("mu_MXs1")->getValV());
-            printf("mu2 = %lf\n", w->var("mu_MXs2")->getValV());
-            printf("mu3 = %lf\n", w->var("mu_MXs3")->getValV());
-            exit(1);
-        }
-
-        if (terminate_flag) {
-            w->var("mu_MXs1")->setConstant(false);
-            w->var("mu_MXs2")->setConstant(false);
-            w->var("mu_MXs3")->setConstant(false);
-            local_NLL = minimum_NLL;
-
-            break;
-        }
-
     }
 
-    return local_NLL;
+    w->loadSnapshot("MyMinimizeNLLFixedBR_snapshot");
+
+    if (IsItBoundary) {
+        printf("[MyMinimizeNLLFixedBR] variable is in boundary!\n");
+        printf("mu1 = %lf\n", w->var("mu_MXs1")->getValV());
+        printf("mu2 = %lf\n", w->var("mu_MXs2")->getValV());
+        printf("mu3 = %lf\n", w->var("mu_MXs3")->getValV());
+        exit(1);
+    }
+
+    w->var("mu_MXs1")->setConstant(false);
+    w->var("mu_MXs2")->setConstant(false);
+    w->var("mu_MXs3")->setConstant(false);
+
+    return minimum_NLL;
 }
 
-double MyMinimizeNLLFixedmu(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double target_mu, double tolerance = -1.0, double BR_step = 0.1, double scan_step = 0.05, double scan_boundary = 5.0) {
+double MyMinimizeNLLFixedmu(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double target_mu, double tolerance = -1.0, double scan_step = 0.01) {
 
     const double target_BR = 0.000029 * target_mu;
-    return MyMinimizeNLLFixedBR(w, data, nll, target_BR, tolerance, BR_step, scan_step, scan_boundary);
+    return MyMinimizeNLLFixedBR(w, data, nll, target_BR, tolerance, scan_step);
 }
 
 RooFitResult* MyMinimizeNLLReuse(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true) {
