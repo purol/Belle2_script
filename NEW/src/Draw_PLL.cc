@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
     // scan PLL
     const double step = 0.01;
     if (std::string(argv[1]) == std::string("mu_MXs1")) {
-        RooAbsReal* pll; = nll->createProfile(RooArgSet(*mu_MXs1));
+        pll = nll->createProfile(RooArgSet(*mu_MXs1));
         for (double mu_local = mu_MXs1_global - 5 * mu_MXs1_err; mu_local < mu_MXs1_global + 5 * mu_MXs1_err; mu_local = mu_local + step * mu_MXs1_err) {
             w->loadSnapshot("GlobalMinimumParamValues");
             mu_MXs1->setVal(mu_local);
@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
         }
     }
     else if (std::string(argv[1]) == std::string("mu_MXs2")) {
-        RooAbsReal* pll; = nll->createProfile(RooArgSet(*mu_MXs2));
+        pll = nll->createProfile(RooArgSet(*mu_MXs2));
         for (double mu_local = mu_MXs2_global - 5 * mu_MXs2_err; mu_local < mu_MXs2_global + 5 * mu_MXs2_err; mu_local = mu_local + step * mu_MXs2_err) {
             w->loadSnapshot("GlobalMinimumParamValues");
             mu_MXs2->setVal(mu_local);
@@ -147,7 +147,7 @@ int main(int argc, char* argv[]) {
         }
     }
     else if (std::string(argv[1]) == std::string("mu_MXs3")) {
-        RooAbsReal* pll; = nll->createProfile(RooArgSet(*mu_MXs3));
+        pll = nll->createProfile(RooArgSet(*mu_MXs3));
         for (double mu_local = mu_MXs3_global - 5 * mu_MXs3_err; mu_local < mu_MXs3_global + 5 * mu_MXs3_err; mu_local = mu_local + step * mu_MXs3_err) {
             w->loadSnapshot("GlobalMinimumParamValues");
             mu_MXs3->setVal(mu_local);
