@@ -123,7 +123,7 @@ int main(int argc, char* argv[]) {
     double PLL_value = -1;
     RooAbsReal* pll;
 
-    FILE* fp = fopen((std::string(argv[1]) + "_scan_result") + ".csv").c_str(), "w");
+    FILE* fp = fopen((std::string(argv[1]) + "_scan_result" + ".csv").c_str(), "w");
 
     // scan PLL
     const double step = 0.01;
