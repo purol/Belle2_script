@@ -95,76 +95,71 @@ int main(int argc, char* argv[]) {
     //RooRealVar* alpha = w->var("nom_gamma_stat_channel_bin_0");
     //printf("%lf", alpha->getValV());
 
-    // Lets tell roofit the right names for our histogram variables //
-    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
-    RooRealVar* x = (RooRealVar*)obs->find("obs_x_channel");
-    x->SetTitle("FBDT output");
-    x->setUnit("");
-
     // get Category and data
-    RooCategory* idx = (RooCategory*)obs->find("channelCat");
-    //RooAbsData* data = (RooAbsData*)w->data("obsData");
-    RooDataSet* data = (RooDataSet*)w->data("asimovData");
+    RooDataSet* data = (RooDataSet*)w->data("obsData");
 
     // fit
-    //RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
-    //RooAbsReal* nll;
-    //ObtainNLL(w, data, &nll);
-    //double eps = ::ROOT::Math::MinimizerOptions::DefaultTolerance();
-    double eps = 0.001;
+    double eps = 0.1;
     RooAbsReal* nll;
     RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps, false);
 
     RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
     RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
     RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
-    std::unique_ptr<RooArgSet> params{model->getParameters(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3))};
+    std::unique_ptr<RooArgSet> params{model->getVariables()};
 
     w->saveSnapshot("GlobalMinimumParamValues", *params, true);
 
-    // get PLL value
-    RooPlot* mu_frame;
-    RooAbsReal* pll;
-    double set_value = std::atof(argv[2]);
+    // get global value
+    RooRealVar* mu_MXs1 = w->var("mu_MXs1");
+    RooRealVar* mu_MXs2 = w->var("mu_MXs2");
+    RooRealVar* mu_MXs3 = w->var("mu_MXs3");
+    const double mu_MXs1_global = w->var("mu_MXs1")->getVal();
+    const double mu_MXs2_global = w->var("mu_MXs2")->getVal();
+    const double mu_MXs3_global = w->var("mu_MXs3")->getVal();
+    const double mu_MXs1_err = w->var("mu_MXs1")->getError();
+    const double mu_MXs2_err = w->var("mu_MXs2")->getError();
+    const double mu_MXs3_err = w->var("mu_MXs3")->getError();
+    const double NLL_global = nll->getVal(); // global minimum of -log(L)
     double PLL_value = -1;
+    RooAbsReal* pll;
+
+    FILE* fp = fopen((std::string(argv[1]) + "scan_result_" + std::string(argv[2]) + ".csv").c_str(), "w");
+
+    // scan PLL
+    const double step = 0.01;
     if (std::string(argv[1]) == std::string("mu_MXs1")) {
-        RooRealVar* mu_MXs1 = w->var("mu_MXs1");
-        mu_frame = mu_MXs1->frame();
-        w->loadSnapshot("GlobalMinimumParamValues");
-        RooAbsReal* pll = nll->createProfile(*mu_MXs1);
-        mu_MXs1->setVal(set_value);
-        mu_MXs1->setConstant(true);
-        MyMinimizeNLLReuse(w, data, &nll, eps, false);
-        PLL_value = pll->getVal();
+        RooAbsReal* pll; = nll->createProfile(RooArgSet(*mu_MXs1));
+        for (double mu_local = mu_MXs1_global - 5 * mu_MXs1_err; mu_local < mu_MXs1_global + 5 * mu_MXs1_err; mu_local = mu_local + step * mu_MXs1_err) {
+            w->loadSnapshot("GlobalMinimumParamValues");
+            mu_MXs1->setVal(mu_local);
+            PLL_value = pll->getVal();
+            fprintf(fp, "%lf,%lf,%lf\n", mu_local, NLL_global, PLL_value);
+        }
     }
     else if (std::string(argv[1]) == std::string("mu_MXs2")) {
-        RooRealVar* mu_MXs2 = w->var("mu_MXs2");
-        mu_frame = mu_MXs2->frame();
-        w->loadSnapshot("GlobalMinimumParamValues");
-        RooAbsReal* pll = nll->createProfile(*mu_MXs2);
-        mu_MXs2->setVal(set_value);
-        mu_MXs2->setConstant(true);
-        MyMinimizeNLLReuse(w, data, &nll, eps, false);
-        PLL_value = pll->getVal();
+        RooAbsReal* pll; = nll->createProfile(RooArgSet(*mu_MXs2));
+        for (double mu_local = mu_MXs2_global - 5 * mu_MXs2_err; mu_local < mu_MXs2_global + 5 * mu_MXs2_err; mu_local = mu_local + step * mu_MXs2_err) {
+            w->loadSnapshot("GlobalMinimumParamValues");
+            mu_MXs2->setVal(mu_local);
+            PLL_value = pll->getVal();
+            fprintf(fp, "%lf,%lf,%lf\n", mu_local, NLL_global, PLL_value);
+        }
     }
     else if (std::string(argv[1]) == std::string("mu_MXs3")) {
-        RooRealVar* mu_MXs3 = w->var("mu_MXs3");
-        mu_frame = mu_MXs3->frame();
-        w->loadSnapshot("GlobalMinimumParamValues");
-        RooAbsReal* pll = nll->createProfile(*mu_MXs3);
-        mu_MXs3->setVal(set_value);
-        mu_MXs3->setConstant(true);
-        MyMinimizeNLLReuse(w, data, &nll, eps, false);
-        PLL_value = pll->getVal();
+        RooAbsReal* pll; = nll->createProfile(RooArgSet(*mu_MXs3));
+        for (double mu_local = mu_MXs3_global - 5 * mu_MXs3_err; mu_local < mu_MXs3_global + 5 * mu_MXs3_err; mu_local = mu_local + step * mu_MXs3_err) {
+            w->loadSnapshot("GlobalMinimumParamValues");
+            mu_MXs3->setVal(mu_local);
+            PLL_value = pll->getVal();
+            fprintf(fp, "%lf,%lf,%lf\n", mu_local, NLL_global, PLL_value);
+        }
     }
     else {
         printf("choose among {mu_MXs1|mu_MXs2|mu_MXs3}\n");
         exit(1);
     }
     
-    // save the result
-    FILE* fp = fopen(("./" + std::string(argv[1]) + "_" + std::string(argv[2])).c_str(), "w");
-    fprintf(fp, "%s %s %lf", argv[1], argv[2], PLL_value);
     fclose(fp);
 
     return 0;
