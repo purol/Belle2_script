@@ -510,15 +510,15 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // fitter bias
     if (options_->fitter) {
-        if (w->var("mu1_fitter_bias_mean")) w->var("mu1_fitter_bias_mean")->setConstant(options_->fitter);
-        if (w->var("mu1_fitter_bias_sigma")) w->var("mu1_fitter_bias_sigma")->setConstant(options_->fitter);
-        if (w->var("mu2_fitter_bias_mean")) w->var("mu2_fitter_bias_mean")->setConstant(options_->fitter);
-        if (w->var("mu2_fitter_bias_sigma")) w->var("mu2_fitter_bias_sigma")->setConstant(options_->fitter);
-        if (w->var("mu3_fitter_bias_mean")) w->var("mu3_fitter_bias_mean")->setConstant(options_->fitter);
-        if (w->var("mu3_fitter_bias_sigma")) w->var("mu3_fitter_bias_sigma")->setConstant(options_->fitter);
+        if (w->var("alpha_mu1_fitter_bias_mean")) w->var("alpha_mu1_fitter_bias_mean")->setConstant(options_->fitter);
+        if (w->var("alpha_mu1_fitter_bias_sigma")) w->var("alpha_mu1_fitter_bias_sigma")->setConstant(options_->fitter);
+        if (w->var("alpha_mu2_fitter_bias_mean")) w->var("alpha_mu2_fitter_bias_mean")->setConstant(options_->fitter);
+        if (w->var("alpha_mu2_fitter_bias_sigma")) w->var("alpha_mu2_fitter_bias_sigma")->setConstant(options_->fitter);
+        if (w->var("alpha_mu3_fitter_bias_mean")) w->var("alpha_mu3_fitter_bias_mean")->setConstant(options_->fitter);
+        if (w->var("alpha_mu3_fitter_bias_sigma")) w->var("alpha_mu3_fitter_bias_sigma")->setConstant(options_->fitter);
 
-        if (w->var("mu_fitter_bias_mean")) w->var("mu_fitter_bias_mean")->setConstant(options_->fitter);
-        if (w->var("mu_fitter_bias_sigma")) w->var("mu_fitter_bias_sigma")->setConstant(options_->fitter);
+        if (w->var("alpha_mu_fitter_bias_mean")) w->var("alpha_mu_fitter_bias_mean")->setConstant(options_->fitter);
+        if (w->var("alpha_mu_fitter_bias_sigma")) w->var("alpha_mu_fitter_bias_sigma")->setConstant(options_->fitter);
     }
 
     // data MC discrepancy
@@ -696,7 +696,7 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
     return minim.save();
 }
 
-RooFitResult* MyMinimizeNLLReuse(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true) {
+RooFitResult* MyMinimizeNLLReuse(RooWorkspace* w, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true) {
     // minimizer option
     TString fMinimizer = ::ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str();
     TString minimizer = fMinimizer;
