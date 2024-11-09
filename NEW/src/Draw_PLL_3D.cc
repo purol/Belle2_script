@@ -74,6 +74,9 @@ int main(int argc, char* argv[]) {
 
     RooStats::UseNLLOffset(true); // default off
 
+    RooMsgService::instance().setStreamStatus(1, false);
+    RooMsgService::instance().setGlobalKillBelow(RooFit::ERROR);
+
     const char* fname = "./PDFandDATA_workspace.root";
 
     TFile* f = TFile::Open(fname);

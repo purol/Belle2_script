@@ -5,7 +5,7 @@ from scipy.integrate import simps
 from scipy.interpolate import interp1d
 
 # Step 1: Load the CSV file
-df = pd.read_csv("total_scan_heavy.csv", header=None)
+df = pd.read_csv("total_scan_destroyer.csv", header=None)
 x = df.iloc[:, 0]
 y = np.exp(- df.iloc[:, 2])
 
