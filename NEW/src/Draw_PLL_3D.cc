@@ -201,8 +201,9 @@ int main(int argc, char* argv[]) {
 
     FILE* fp = fopen(("scan_result_" + std::string(argv[1]) + ".csv").c_str(), "w");
 
-    const double step = 0.05;
+    const double step = 0.1;
     const double range = 4.0;
+    double correction = 1.0;
     double mu_MXs1_conditional = 0;
     double mu_MXs2_conditional = 0;
     double mu_MXs3_conditional = 0;
@@ -217,21 +218,19 @@ int main(int argc, char* argv[]) {
         mu_MXs2_global = csv_file.mu2_meaningful_values.at(closest_index);
         mu_MXs3_global = csv_file.mu3_meaningful_values.at(closest_index);
 
-        /*
-        * more good way is to use mu_MXs1_err * csv_file.step;
-        * however, CSV file made with limited box space.
-        * to find the real global minimum, we use mu_MXs1_err
-        */
-        mu_MXs1_err = mu_MXs1_err / range;
-        mu_MXs2_err = mu_MXs2_err / range;
-        mu_MXs3_err = mu_MXs3_err / range;
+        mu_MXs1_err = mu_MXs1_err;
+        mu_MXs2_err = mu_MXs2_err;
+        mu_MXs3_err = mu_MXs3_err;
+
+        // if we read CSV file, just scan +-1sigma region
+        correction = (1.0 / range);
     }
 
-    for (double mu1_local = mu_MXs1_global - range * mu_MXs1_err; mu1_local < mu_MXs1_global + range * mu_MXs1_err; mu1_local = mu1_local + mu_MXs1_err * step) {
-        for (double mu2_local = mu_MXs2_global - range * mu_MXs2_err; mu2_local < mu_MXs2_global + range * mu_MXs2_err; mu2_local = mu2_local + mu_MXs2_err * step) {
+    for (double mu1_local = mu_MXs1_global - range * mu_MXs1_err * correction; mu1_local < mu_MXs1_global + range * mu_MXs1_err * correction; mu1_local = mu1_local + mu_MXs1_err * step) {
+        for (double mu2_local = mu_MXs2_global - range * mu_MXs2_err * correction; mu2_local < mu_MXs2_global + range * mu_MXs2_err * correction; mu2_local = mu2_local + mu_MXs2_err * step) {
 
             double mu3_local = (target_BR - mu1_local * BR_1 - mu2_local * BR_2) / BR_3;
-            if ((mu3_local >= mu_MXs3_global - range * mu_MXs3_err) && (mu3_local < mu_MXs3_global + range * mu_MXs3_err)) {
+            if ((mu3_local >= mu_MXs3_global - range * mu_MXs3_err * correction) && (mu3_local < mu_MXs3_global + range * mu_MXs3_err * correction)) {
 
                 w->loadSnapshot("GlobalMinimumParamValues");
 
