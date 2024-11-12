@@ -100,7 +100,7 @@ void ReadCSVFile() {
     double mu_MXs3_conditional;
 
     while (true) {
-        if (fscanf(fp, "%lf,%lf,%lf,%lf,%lf,%lf\n", target_mu, NLL_global, PLL_conditional, mu_MXs1_conditional, mu_MXs2_conditional, mu_MXs3_conditional) == EOF) break;
+        if (fscanf(fp, "%lf,%lf,%lf,%lf,%lf,%lf\n", &target_mu, &NLL_global, &PLL_conditional, &mu_MXs1_conditional, &mu_MXs2_conditional, &mu_MXs3_conditional) == EOF) break;
         csv_file.mu_values.push_back(target_mu);
         csv_file.mu1_values.push_back(mu_MXs1_conditional);
         csv_file.mu2_values.push_back(mu_MXs2_conditional);
