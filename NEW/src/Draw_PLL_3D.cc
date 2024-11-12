@@ -89,7 +89,7 @@ typedef struct csv_setting_ {
 const bool CSVfileON = false;
 csv_setting csv_file = { "total_scan_heavy.csv", 0.035, 4 };
 
-void ReadcsvFile() {
+void ReadCSVFile() {
     FILE* fp = fopen(csv_file.filename, "r");
 
     double target_mu;
