@@ -90,7 +90,7 @@ const bool CSVfileON = false;
 csv_setting csv_file = { "total_scan_heavy.csv", 0.035, 4 };
 
 void ReadcsvFile() {
-    FILE* fp = fopen(csv_file.filename);
+    FILE* fp = fopen(csv_file.filename, "r");
 
     double target_mu;
     double NLL_global;
