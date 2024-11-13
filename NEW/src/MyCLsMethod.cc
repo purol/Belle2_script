@@ -118,7 +118,7 @@ double ConditionalFit(RooWorkspace* w, RooAbsReal** nll, double target_mu, doubl
     const double mu_MXs3_initial = mu_MXs3_global - C_ * (A_ * mu_MXs1_global + B_ * mu_MXs2_global + C_ * mu_MXs3_global + D_) / (A_ * A_ + B_ * B_ + C_ * C_);
 
     double PLL_value = -1;
-    RooAbsReal* pll = nll->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
+    RooAbsReal* pll = (*nll)->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
 
     double mu_MXs1_conditional = 0;
     double mu_MXs2_conditional = 0;
@@ -163,6 +163,8 @@ double ConditionalFit(RooWorkspace* w, RooAbsReal** nll, double target_mu, doubl
 }
 
 double UnConditionalFit(RooWorkspace* w, RooAbsReal** nll, double target_mu, double eps, MyFitResult* MyUnconditionalFitResult) {
+    double target_BR = target_mu * BR_total;
+
     RooFitResult* fitres = MyMinimizeNLLReuse(w, nll, eps, false);
 
     double mu_MXs1_conditional = w->var("mu_MXs1")->getVal();
@@ -192,7 +194,7 @@ double UnConditionalFit(RooWorkspace* w, RooAbsReal** nll, double target_mu, dou
     else MyUnconditionalFitResult->OneSideFlag = false; // please conduct conditional fit
 
     RooAbsReal::setHideOffset(false);
-    return nll->getVal();
+    return (*nll)->getVal();
 }
 
 double GenerateToy() {
@@ -229,6 +231,10 @@ int main(int argc, char* argv[]) {
     RooRandom::randomGenerator()->SetSeed(rd());
 
     // get model and pdf
+    const char* fname = "./PDFandDATA_workspace.root";
+    TFile* f = TFile::Open(fname);
+    RooWorkspace* w = (RooWorkspace*)f->Get("combined");
+
     RooStats::ModelConfig* model = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooStats::RooSimultaneous* pdf = (RooStats::RooSimultaneous*)model->GetPdf();
 
