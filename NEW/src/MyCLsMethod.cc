@@ -247,7 +247,7 @@ int main(int argc, char* argv[]) {
     RooArgSet* allParams = pdf->getParameters(*data);
     RooStats::RemoveConstantParameters(allParams);
 
-    RooAbsReal* nll = = pdf->createNLL(*data, RooFit::CloneData(false), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset("bin"));
+    RooAbsReal* nll = pdf->createNLL(*data, RooFit::CloneData(false), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset("bin"));
     
     double data_test_statistic = 0.0;
     MyFitResult MyUnconditionalFitResult;
