@@ -113,7 +113,7 @@ double ConditionalFit(RooWorkspace* w, RooAbsReal** nll, double target_mu, doubl
     const double mu_MXs1_initial = mu_MXs1_global;
     const double mu_MXs2_initial = mu_MXs2_global;
     const double mu_MXs3_initial = mu_MXs3_global;
-
+    printf("initial v0: %lf %lf %lf\n", mu_MXs1_initial, mu_MXs2_initial, mu_MXs3_initial);
     double PLL_value = -1;
     RooAbsReal* pll = (*nll)->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
 
@@ -182,7 +182,7 @@ double ConditionalFit_v1(RooWorkspace* w, RooAbsReal** nll, double target_mu, do
     const double mu_MXs1_initial = mu_MXs1_global - A_ * (A_ * mu_MXs1_global + B_ * mu_MXs2_global + C_ * mu_MXs3_global + D_) / (A_ * A_ + B_ * B_ + C_ * C_);
     const double mu_MXs2_initial = mu_MXs2_global - B_ * (A_ * mu_MXs1_global + B_ * mu_MXs2_global + C_ * mu_MXs3_global + D_) / (A_ * A_ + B_ * B_ + C_ * C_);
     const double mu_MXs3_initial = mu_MXs3_global - C_ * (A_ * mu_MXs1_global + B_ * mu_MXs2_global + C_ * mu_MXs3_global + D_) / (A_ * A_ + B_ * B_ + C_ * C_);
-
+    printf("initial v1: %lf %lf %lf\n", mu_MXs1_initial, mu_MXs2_initial, mu_MXs3_initial);
     double PLL_value = -1;
     RooAbsReal* pll = (*nll)->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
 
@@ -272,7 +272,7 @@ double ConditionalFit_v2(RooWorkspace* w, RooAbsReal** nll, double target_mu, do
     const double mu_MXs1_initial = mu_MXs1_global + t_ * (PLL_value_delta_mu1 / delta);
     const double mu_MXs2_initial = mu_MXs2_global + t_ * (PLL_value_delta_mu2 / delta);
     const double mu_MXs3_initial = mu_MXs3_global + t_ * (PLL_value_delta_mu3 / delta);
-
+    printf("initial v2: %lf %lf %lf\n", mu_MXs1_initial, mu_MXs2_initial, mu_MXs3_initial);
     double mu_MXs1_conditional = 0;
     double mu_MXs2_conditional = 0;
     double mu_MXs3_conditional = 0;
@@ -416,19 +416,21 @@ int main(int argc, char* argv[]) {
         //double data_cond_PLL = ConditionalFit(w, &nll, scanned_mu, eps, MyUnconditionalFitResult, "GlobalMinimumParamValues", &MyconditionalFitResult);
         //data_test_statistic = data_cond_PLL;
 
+        printf("global: %lf %lf %lf\n", MyUnconditionalFitResult.mu1_value, MyUnconditionalFitResult.mu2_value, MyUnconditionalFitResult.mu3_value);
+
         MyFitResult MyconditionalFitResult;
 
         w->loadSnapshot("GlobalMinimumParamValues");
         ConditionalFit(w, &nll, scanned_mu, eps, MyUnconditionalFitResult, "GlobalMinimumParamValues", &MyconditionalFitResult);
-        printf("%lf %lf %lf %lf\n", MyconditionalFitResult.mu1_value, MyconditionalFitResult.mu2_value, MyconditionalFitResult.mu3_value, MyconditionalFitResult.status);
+        printf("result v0: %lf %lf %lf %lf\n", MyconditionalFitResult.mu1_value, MyconditionalFitResult.mu2_value, MyconditionalFitResult.mu3_value, MyconditionalFitResult.status);
 
         w->loadSnapshot("GlobalMinimumParamValues");
         ConditionalFit_v1(w, &nll, scanned_mu, eps, MyUnconditionalFitResult, "GlobalMinimumParamValues", &MyconditionalFitResult);
-        printf("%lf %lf %lf %lf\n", MyconditionalFitResult.mu1_value, MyconditionalFitResult.mu2_value, MyconditionalFitResult.mu3_value, MyconditionalFitResult.status);
+        printf("result v1: %lf %lf %lf %lf\n", MyconditionalFitResult.mu1_value, MyconditionalFitResult.mu2_value, MyconditionalFitResult.mu3_value, MyconditionalFitResult.status);
 
         w->loadSnapshot("GlobalMinimumParamValues");
         ConditionalFit_v2(w, &nll, scanned_mu, eps, MyUnconditionalFitResult, "GlobalMinimumParamValues", &MyconditionalFitResult);
-        printf("%lf %lf %lf %lf\n", MyconditionalFitResult.mu1_value, MyconditionalFitResult.mu2_value, MyconditionalFitResult.mu3_value, MyconditionalFitResult.status);
+        printf("result v2: %lf %lf %lf %lf\n", MyconditionalFitResult.mu1_value, MyconditionalFitResult.mu2_value, MyconditionalFitResult.mu3_value, MyconditionalFitResult.status);
     }
 
     // get s+b test statistics
