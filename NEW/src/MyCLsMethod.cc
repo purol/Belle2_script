@@ -138,7 +138,7 @@ double ConditionalFit(RooWorkspace* w, RooAbsReal** nll, double target_mu, doubl
 
                 PLL_value = pll->getVal();
                 if ((PLL_conditional > PLL_value) && (PLL_value > 0.0)) {
-                    PLL_conditional = pll->getVal();
+                    PLL_conditional = PLL_value;
                     mu_MXs1_conditional = mu1_local;
                     mu_MXs2_conditional = mu2_local;
                     mu_MXs3_conditional = mu3_local;
