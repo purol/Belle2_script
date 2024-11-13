@@ -236,7 +236,7 @@ int main(int argc, char* argv[]) {
     RooWorkspace* w = (RooWorkspace*)f->Get("combined");
 
     RooStats::ModelConfig* model = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
-    RooStats::RooSimultaneous* pdf = (RooStats::RooSimultaneous*)model->GetPdf();
+    RooSimultaneous* pdf = (RooSimultaneous*)model->GetPdf();
 
     RooArgSet fGlobalObs = *model->GetGlobalObservables();
     RooArgSet fConditionalObs;
@@ -253,7 +253,8 @@ int main(int argc, char* argv[]) {
     MyFitResult MyUnconditionalFitResult;
 
     double data_uncond_NLL = UnConditionalFit(w, &nll, scanned_mu, eps, &MyUnconditionalFitResult);
-    w->saveSnapshot("GlobalMinimumParamValues", pdf->getVariables(), true);
+    std::unique_ptr<RooArgSet> params{pdf->getVariables()};
+    w->saveSnapshot("GlobalMinimumParamValues", *params, true);
 
     if (MyUnconditionalFitResult.OneSideFlag) data_test_statistic = 0.0;
     else {
