@@ -68,7 +68,7 @@ std::default_random_engine generator(rd());
 /* =========================== configuration =========================== */
 const double eps = 0.1;
 
-const double step = 0.2;
+const double step = 0.3;
 const double boundary = 3.0;
 
 const double BR_1 = 0.0000048514;
@@ -91,9 +91,75 @@ typedef struct MyFitResult_ {
     bool OneSideFlag;
 
     double mu_value;
+
 } MyFitResult;
 
 double ConditionalFit(RooWorkspace* w, RooAbsReal** nll, double target_mu, double eps, MyFitResult MyGlobalFitResult, const char* snapshot_name, MyFitResult* MyconditionalFitResult) {
+    // just manually scan. Too slow. Is there any better way??
+
+    double target_BR = target_mu * BR_total;
+
+    RooRealVar* mu_MXs1 = w->var("mu_MXs1");
+    RooRealVar* mu_MXs2 = w->var("mu_MXs2");
+    RooRealVar* mu_MXs3 = w->var("mu_MXs3");
+    const double mu_MXs1_global = MyGlobalFitResult.mu1_value;
+    const double mu_MXs2_global = MyGlobalFitResult.mu2_value;
+    const double mu_MXs3_global = MyGlobalFitResult.mu3_value;
+    const double mu_MXs1_err = MyGlobalFitResult.mu1_error;
+    const double mu_MXs2_err = MyGlobalFitResult.mu2_error;
+    const double mu_MXs3_err = MyGlobalFitResult.mu3_error;
+
+    // my ansatz: start from global minimum
+    const double mu_MXs1_initial = mu_MXs1_global;
+    const double mu_MXs2_initial = mu_MXs2_global;
+    const double mu_MXs3_initial = mu_MXs3_global;
+
+    double PLL_value = -1;
+    RooAbsReal* pll = (*nll)->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
+
+    double mu_MXs1_conditional = 0;
+    double mu_MXs2_conditional = 0;
+    double mu_MXs3_conditional = 0;
+    double PLL_conditional = DBL_MAX;
+    for (double mu1_local = mu_MXs1_initial - boundary * mu_MXs1_err; mu1_local < mu_MXs1_initial + boundary * mu_MXs1_err; mu1_local = mu1_local + mu_MXs1_err * step) {
+        for (double mu2_local = mu_MXs2_initial - boundary * mu_MXs2_err; mu2_local < mu_MXs2_initial + boundary * mu_MXs2_err; mu2_local = mu2_local + mu_MXs2_err * step) {
+
+            double mu3_local = (target_BR - mu1_local * BR_1 - mu2_local * BR_2) / BR_3;
+            if ((mu3_local >= mu_MXs3_initial - boundary * mu_MXs3_err) && (mu3_local < mu_MXs3_initial + boundary * mu_MXs3_err)) {
+
+                w->loadSnapshot(snapshot_name);
+
+                mu_MXs1->setVal(mu1_local);
+                mu_MXs2->setVal(mu2_local);
+                mu_MXs3->setVal(mu3_local);
+
+                PLL_value = pll->getVal();
+                if ((PLL_conditional > PLL_value) && (PLL_value > 0.0)) {
+                    PLL_conditional = PLL_value;
+                    mu_MXs1_conditional = mu1_local;
+                    mu_MXs2_conditional = mu2_local;
+                    mu_MXs3_conditional = mu3_local;
+
+                    MyconditionalFitResult->mu1_value = mu_MXs1_conditional;
+                    MyconditionalFitResult->mu2_value = mu_MXs2_conditional;
+                    MyconditionalFitResult->mu3_value = mu_MXs3_conditional;
+                    MyconditionalFitResult->mu1_error = mu_MXs1_err;
+                    MyconditionalFitResult->mu2_error = mu_MXs2_err;
+                    MyconditionalFitResult->mu3_error = mu_MXs3_err;
+                    MyconditionalFitResult->status = PLL_conditional;
+                    MyconditionalFitResult->OneSideFlag = true;
+                    MyconditionalFitResult->mu_value = target_mu;
+                }
+
+            }
+
+        }
+    }
+
+    return PLL_conditional;
+}
+
+double ConditionalFit_v1(RooWorkspace* w, RooAbsReal** nll, double target_mu, double eps, MyFitResult MyGlobalFitResult, const char* snapshot_name, MyFitResult* MyconditionalFitResult) {
     // just manually scan. Too slow. Is there any better way??
 
     double target_BR = target_mu * BR_total;
@@ -119,6 +185,93 @@ double ConditionalFit(RooWorkspace* w, RooAbsReal** nll, double target_mu, doubl
 
     double PLL_value = -1;
     RooAbsReal* pll = (*nll)->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
+
+    double mu_MXs1_conditional = 0;
+    double mu_MXs2_conditional = 0;
+    double mu_MXs3_conditional = 0;
+    double PLL_conditional = DBL_MAX;
+    for (double mu1_local = mu_MXs1_initial - boundary * mu_MXs1_err; mu1_local < mu_MXs1_initial + boundary * mu_MXs1_err; mu1_local = mu1_local + mu_MXs1_err * step) {
+        for (double mu2_local = mu_MXs2_initial - boundary * mu_MXs2_err; mu2_local < mu_MXs2_initial + boundary * mu_MXs2_err; mu2_local = mu2_local + mu_MXs2_err * step) {
+
+            double mu3_local = (target_BR - mu1_local * BR_1 - mu2_local * BR_2) / BR_3;
+            if ((mu3_local >= mu_MXs3_initial - boundary * mu_MXs3_err) && (mu3_local < mu_MXs3_initial + boundary * mu_MXs3_err)) {
+
+                w->loadSnapshot(snapshot_name);
+
+                mu_MXs1->setVal(mu1_local);
+                mu_MXs2->setVal(mu2_local);
+                mu_MXs3->setVal(mu3_local);
+
+                PLL_value = pll->getVal();
+                if ((PLL_conditional > PLL_value) && (PLL_value > 0.0)) {
+                    PLL_conditional = PLL_value;
+                    mu_MXs1_conditional = mu1_local;
+                    mu_MXs2_conditional = mu2_local;
+                    mu_MXs3_conditional = mu3_local;
+
+                    MyconditionalFitResult->mu1_value = mu_MXs1_conditional;
+                    MyconditionalFitResult->mu2_value = mu_MXs2_conditional;
+                    MyconditionalFitResult->mu3_value = mu_MXs3_conditional;
+                    MyconditionalFitResult->mu1_error = mu_MXs1_err;
+                    MyconditionalFitResult->mu2_error = mu_MXs2_err;
+                    MyconditionalFitResult->mu3_error = mu_MXs3_err;
+                    MyconditionalFitResult->status = PLL_conditional;
+                    MyconditionalFitResult->OneSideFlag = true;
+                    MyconditionalFitResult->mu_value = target_mu;
+                }
+
+            }
+
+        }
+    }
+
+    return PLL_conditional;
+}
+
+double ConditionalFit_v2(RooWorkspace* w, RooAbsReal** nll, double target_mu, double eps, MyFitResult MyGlobalFitResult, const char* snapshot_name, MyFitResult* MyconditionalFitResult) {
+    // just manually scan. Too slow. Is there any better way??
+
+    double target_BR = target_mu * BR_total;
+
+    RooRealVar* mu_MXs1 = w->var("mu_MXs1");
+    RooRealVar* mu_MXs2 = w->var("mu_MXs2");
+    RooRealVar* mu_MXs3 = w->var("mu_MXs3");
+    const double mu_MXs1_global = MyGlobalFitResult.mu1_value;
+    const double mu_MXs2_global = MyGlobalFitResult.mu2_value;
+    const double mu_MXs3_global = MyGlobalFitResult.mu3_value;
+    const double mu_MXs1_err = MyGlobalFitResult.mu1_error;
+    const double mu_MXs2_err = MyGlobalFitResult.mu2_error;
+    const double mu_MXs3_err = MyGlobalFitResult.mu3_error;
+
+    // my ansatz: get derivative and obtain line. Then start from the intersection between the plane and the line
+    double PLL_value = -1;
+    RooAbsReal* pll = (*nll)->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
+
+    const double delta = 0.1;
+
+    mu_MXs1->setVal(mu_MXs1_global + delta);
+    mu_MXs2->setVal(mu_MXs2_global);
+    mu_MXs3->setVal(mu_MXs3_global);
+    double PLL_value_delta_mu1 = pll->getVal();
+
+    mu_MXs1->setVal(mu_MXs1_global);
+    mu_MXs2->setVal(mu_MXs2_global + delta);
+    mu_MXs3->setVal(mu_MXs3_global);
+    double PLL_value_delta_mu2 = pll->getVal();
+
+    mu_MXs1->setVal(mu_MXs1_global);
+    mu_MXs2->setVal(mu_MXs2_global);
+    mu_MXs3->setVal(mu_MXs3_global + delta);
+    double PLL_value_delta_mu3 = pll->getVal();
+
+    const double A_ = BR_1 / BR_total;
+    const double B_ = BR_2 / BR_total;
+    const double C_ = BR_3 / BR_total;
+    const double D_ = -target_mu;
+    const double t_ = (-D_ - A_ * mu_MXs1_global - B_ * mu_MXs2_global - C_ * mu_MXs3_global) / (A_ * (PLL_value_delta_mu1 / delta) + B_ * (PLL_value_delta_mu2 / delta) + C_ * (PLL_value_delta_mu3 / delta));
+    const double mu_MXs1_initial = mu_MXs1_global + t_ * (PLL_value_delta_mu1 / delta);
+    const double mu_MXs2_initial = mu_MXs2_global + t_ * (PLL_value_delta_mu2 / delta);
+    const double mu_MXs3_initial = mu_MXs3_global + t_ * (PLL_value_delta_mu3 / delta);
 
     double mu_MXs1_conditional = 0;
     double mu_MXs2_conditional = 0;
@@ -258,11 +411,23 @@ int main(int argc, char* argv[]) {
 
     if (MyUnconditionalFitResult.OneSideFlag) data_test_statistic = 0.0;
     else {
-        w->loadSnapshot("GlobalMinimumParamValues");
-        MyFitResult MyconditionalFitResult;
-        double data_cond_PLL = ConditionalFit(w, &nll, scanned_mu, eps, MyUnconditionalFitResult, "GlobalMinimumParamValues", &MyconditionalFitResult);
-        data_test_statistic = data_cond_PLL;
+        //w->loadSnapshot("GlobalMinimumParamValues");
+        //MyFitResult MyconditionalFitResult;
+        //double data_cond_PLL = ConditionalFit(w, &nll, scanned_mu, eps, MyUnconditionalFitResult, "GlobalMinimumParamValues", &MyconditionalFitResult);
+        //data_test_statistic = data_cond_PLL;
 
+        MyFitResult MyconditionalFitResult;
+
+        w->loadSnapshot("GlobalMinimumParamValues");
+        ConditionalFit(w, &nll, scanned_mu, eps, MyUnconditionalFitResult, "GlobalMinimumParamValues", &MyconditionalFitResult);
+        printf("%lf %lf %lf %lf\n", MyconditionalFitResult.mu1_value, MyconditionalFitResult.mu2_value, MyconditionalFitResult.mu3_value, MyconditionalFitResult.status);
+
+        w->loadSnapshot("GlobalMinimumParamValues");
+        ConditionalFit_v1(w, &nll, scanned_mu, eps, MyUnconditionalFitResult, "GlobalMinimumParamValues", &MyconditionalFitResult);
+        printf("%lf %lf %lf %lf\n", MyconditionalFitResult.mu1_value, MyconditionalFitResult.mu2_value, MyconditionalFitResult.mu3_value, MyconditionalFitResult.status);
+
+        w->loadSnapshot("GlobalMinimumParamValues");
+        ConditionalFit_v2(w, &nll, scanned_mu, eps, MyUnconditionalFitResult, "GlobalMinimumParamValues", &MyconditionalFitResult);
         printf("%lf %lf %lf %lf\n", MyconditionalFitResult.mu1_value, MyconditionalFitResult.mu2_value, MyconditionalFitResult.mu3_value, MyconditionalFitResult.status);
     }
 
