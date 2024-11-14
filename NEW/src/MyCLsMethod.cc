@@ -243,76 +243,102 @@ double ConditionalFit_v2(RooWorkspace* w, RooAbsReal** nll, double target_mu, do
     const double mu_MXs2_err = MyGlobalFitResult.mu2_error;
     const double mu_MXs3_err = MyGlobalFitResult.mu3_error;
 
-    // my ansatz: get derivative and obtain line. Then start from the intersection between the plane and the line
-    double PLL_value = -1;
-    RooAbsReal* pll = (*nll)->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
-
-    const double delta = 0.1;
-
-    mu_MXs1->setVal(mu_MXs1_global + delta);
-    mu_MXs2->setVal(mu_MXs2_global);
-    mu_MXs3->setVal(mu_MXs3_global);
-    double PLL_value_delta_mu1 = pll->getVal();
-
-    mu_MXs1->setVal(mu_MXs1_global);
-    mu_MXs2->setVal(mu_MXs2_global + delta);
-    mu_MXs3->setVal(mu_MXs3_global);
-    double PLL_value_delta_mu2 = pll->getVal();
-
-    mu_MXs1->setVal(mu_MXs1_global);
-    mu_MXs2->setVal(mu_MXs2_global);
-    mu_MXs3->setVal(mu_MXs3_global + delta);
-    double PLL_value_delta_mu3 = pll->getVal();
-
+    // my ansatz: start from intersection point between \mu=const plane and perpendicular line from global minimum. Then get vertex with gredient method
     const double A_ = BR_1 / BR_total;
     const double B_ = BR_2 / BR_total;
     const double C_ = BR_3 / BR_total;
     const double D_ = -target_mu;
-    const double t_ = (-D_ - A_ * mu_MXs1_global - B_ * mu_MXs2_global - C_ * mu_MXs3_global) / (A_ * (PLL_value_delta_mu1 / delta) + B_ * (PLL_value_delta_mu2 / delta) + C_ * (PLL_value_delta_mu3 / delta));
-    const double mu_MXs1_initial = mu_MXs1_global + t_ * (PLL_value_delta_mu1 / delta);
-    const double mu_MXs2_initial = mu_MXs2_global + t_ * (PLL_value_delta_mu2 / delta);
-    const double mu_MXs3_initial = mu_MXs3_global + t_ * (PLL_value_delta_mu3 / delta);
-    printf("initial v2: %lf %lf %lf\n", mu_MXs1_initial, mu_MXs2_initial, mu_MXs3_initial);
-    double mu_MXs1_conditional = 0;
-    double mu_MXs2_conditional = 0;
-    double mu_MXs3_conditional = 0;
-    double PLL_conditional = DBL_MAX;
-    for (double mu1_local = mu_MXs1_initial - boundary * mu_MXs1_err; mu1_local < mu_MXs1_initial + boundary * mu_MXs1_err; mu1_local = mu1_local + mu_MXs1_err * step) {
-        for (double mu2_local = mu_MXs2_initial - boundary * mu_MXs2_err; mu2_local < mu_MXs2_initial + boundary * mu_MXs2_err; mu2_local = mu2_local + mu_MXs2_err * step) {
+    const double mu_MXs1_initial = mu_MXs1_global - A_ * (A_ * mu_MXs1_global + B_ * mu_MXs2_global + C_ * mu_MXs3_global + D_) / (A_ * A_ + B_ * B_ + C_ * C_);
+    const double mu_MXs2_initial = mu_MXs2_global - B_ * (A_ * mu_MXs1_global + B_ * mu_MXs2_global + C_ * mu_MXs3_global + D_) / (A_ * A_ + B_ * B_ + C_ * C_);
+    const double mu_MXs3_initial = mu_MXs3_global - C_ * (A_ * mu_MXs1_global + B_ * mu_MXs2_global + C_ * mu_MXs3_global + D_) / (A_ * A_ + B_ * B_ + C_ * C_);
+    const double vec1[3] = { -B_ / std::sqrt(A_ * A_ + B_ * B_), A_ / std::sqrt(A_ * A_ + B_ * B_) , 0 };
+    const double vec2[3] = { -C_ * A_ / std::sqrt(A_ * A_ * C_ * C_ + B_ * B_ * C_ * C_ + (A_ * A_ + B_ * B_) * (A_ * A_ + B_ * B_)),
+        -B_ * C_ / std::sqrt(A_ * A_ * C_ * C_ + B_ * B_ * C_ * C_ + (A_ * A_ + B_ * B_) * (A_ * A_ + B_ * B_)),
+        (A_ * A_ + B_ * B_) / std::sqrt(A_ * A_ * C_ * C_ + B_ * B_ * C_ * C_ + (A_ * A_ + B_ * B_) * (A_ * A_ + B_ * B_)) };
 
-            double mu3_local = (target_BR - mu1_local * BR_1 - mu2_local * BR_2) / BR_3;
-            if ((mu3_local >= mu_MXs3_initial - boundary * mu_MXs3_err) && (mu3_local < mu_MXs3_initial + boundary * mu_MXs3_err)) {
+    printf("initial v1: %lf %lf %lf\n", mu_MXs1_initial, mu_MXs2_initial, mu_MXs3_initial);
+    double PLL_value = -1;
+    RooAbsReal* pll = (*nll)->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
 
-                w->loadSnapshot(snapshot_name);
+    double mu_MXs1_conditional = mu_MXs1_initial;
+    double mu_MXs2_conditional = mu_MXs2_initial;
+    double mu_MXs3_conditional = mu_MXs3_initial;
 
-                mu_MXs1->setVal(mu1_local);
-                mu_MXs2->setVal(mu2_local);
-                mu_MXs3->setVal(mu3_local);
+    double mu_err = std::sqrt(mu_MXs1_err * mu_MXs1_err + mu_MXs2_err * mu_MXs2_err + mu_MXs3_err * mu_MXs3_err);
 
-                PLL_value = pll->getVal();
-                if ((PLL_conditional > PLL_value) && (PLL_value > 0.0)) {
-                    PLL_conditional = PLL_value;
-                    mu_MXs1_conditional = mu1_local;
-                    mu_MXs2_conditional = mu2_local;
-                    mu_MXs3_conditional = mu3_local;
+    mu_MXs1->setVal(mu_MXs1_conditional);
+    mu_MXs2->setVal(mu_MXs2_conditional);
+    mu_MXs3->setVal(mu_MXs3_conditional);
+    PLL_value = pll->getVal();
 
-                    MyconditionalFitResult->mu1_value = mu_MXs1_conditional;
-                    MyconditionalFitResult->mu2_value = mu_MXs2_conditional;
-                    MyconditionalFitResult->mu3_value = mu_MXs3_conditional;
-                    MyconditionalFitResult->mu1_error = mu_MXs1_err;
-                    MyconditionalFitResult->mu2_error = mu_MXs2_err;
-                    MyconditionalFitResult->mu3_error = mu_MXs3_err;
-                    MyconditionalFitResult->status = PLL_conditional;
-                    MyconditionalFitResult->OneSideFlag = true;
-                    MyconditionalFitResult->mu_value = target_mu;
-                }
-
-            }
-
-        }
+    if (PLL_value > 1000000000.0) {
+        MyconditionalFitResult->mu1_value = mu_MXs1_initial;
+        MyconditionalFitResult->mu2_value = mu_MXs2_initial;
+        MyconditionalFitResult->mu3_value = mu_MXs3_initial;
+        MyconditionalFitResult->mu1_error = mu_MXs1_err;
+        MyconditionalFitResult->mu2_error = mu_MXs2_err;
+        MyconditionalFitResult->mu3_error = mu_MXs3_err;
+        MyconditionalFitResult->status = PLL_value;
+        MyconditionalFitResult->OneSideFlag = true;
+        MyconditionalFitResult->mu_value = target_mu;
     }
 
-    return PLL_conditional;
+    const double delta = 0.03;
+    int trial = 0;
+    double damping = 1.0;
+    double previous_gredient[3] = { DBL_MAX, DBL_MAX, DBL_MAX };
+    while (true) {
+
+        mu_MXs1->setVal(mu_MXs1_conditional + delta * mu_err * vec1[0]);
+        mu_MXs2->setVal(mu_MXs2_conditional + delta * mu_err * vec1[1]);
+        mu_MXs3->setVal(mu_MXs3_conditional + delta * mu_err * vec1[2]);
+        double PLL_value_1 = pll->getVal();
+
+        mu_MXs1->setVal(mu_MXs1_conditional + delta * mu_err * vec2[0]);
+        mu_MXs2->setVal(mu_MXs2_conditional + delta * mu_err * vec2[1]);
+        mu_MXs3->setVal(mu_MXs3_conditional + delta * mu_err * vec2[2]);
+        double PLL_value_2 = pll->getVal();
+
+        double gredient[3];
+        gredient[0] = vec1[0] * (PLL_value_1 - PLL_value) / (delta * mu_err) + vec2[0] * (PLL_value_2 - PLL_value) / (delta * mu_err);
+        gredient[1] = vec1[1] * (PLL_value_1 - PLL_value) / (delta * mu_err) + vec2[1] * (PLL_value_2 - PLL_value) / (delta * mu_err);
+        gredient[2] = vec1[2] * (PLL_value_1 - PLL_value) / (delta * mu_err) + vec2[2] * (PLL_value_2 - PLL_value) / (delta * mu_err);
+
+        if (previous_gredient[0] != DBL_MAX) {
+            if ((gredient[0] * previous_gredient[0] + gredient[1] * previous_gredient[1] + gredient[2] * previous_gredient[2]) < 0) damping = damping / 2.0;
+        }
+
+        mu_MXs1_conditional = mu_MXs1_conditional + gredient[0] * mu_err * step * damping;
+        mu_MXs2_conditional = mu_MXs2_conditional + gredient[1] * mu_err * step * damping;
+        mu_MXs3_conditional = mu_MXs3_conditional + gredient[2] * mu_err * step * damping;
+
+        mu_MXs1->setVal(mu_MXs1_conditional);
+        mu_MXs2->setVal(mu_MXs2_conditional);
+        mu_MXs3->setVal(mu_MXs3_conditional);
+        double previous_PLL_value = PLL_value;
+        PLL_value = pll->getVal();
+
+        if (damping < (0.5) * (0.5) * (0.5) * (0.5)) break; // if it is too dampled, just break
+
+        trial++;
+        if (trial * step > 5.0) break; // Do not go further than 5 sigma
+
+        previous_gredient[0] = gredient[0];
+        previous_gredient[1] = gredient[1];
+        previous_gredient[2] = gredient[2];
+    }
+
+    MyconditionalFitResult->mu1_value = mu_MXs1_conditional;
+    MyconditionalFitResult->mu2_value = mu_MXs2_conditional;
+    MyconditionalFitResult->mu3_value = mu_MXs3_conditional;
+    MyconditionalFitResult->mu1_error = mu_err * step * damping;
+    MyconditionalFitResult->mu2_error = mu_err * step * damping;
+    MyconditionalFitResult->mu3_error = mu_err * step * damping;
+    MyconditionalFitResult->status = PLL_value;
+    MyconditionalFitResult->OneSideFlag = true;
+    MyconditionalFitResult->mu_value = target_mu;
+
+    return PLL_value;
 }
 
 double UnConditionalFit(RooWorkspace* w, RooAbsReal** nll, double target_mu, double eps, MyFitResult* MyUnconditionalFitResult) {
