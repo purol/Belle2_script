@@ -323,6 +323,14 @@ double ConditionalFit_v2(RooWorkspace* w, RooAbsReal** nll, double target_mu, do
         double previous_PLL_value = PLL_value;
         PLL_value = pll->getVal();
 
+        if (PLL_value > 1000000000.0) {
+            mu_MXs1_conditional = mu_MXs1_conditional - gredient[0] * mu_err * step * damping;
+            mu_MXs2_conditional = mu_MXs2_conditional - gredient[1] * mu_err * step * damping;
+            mu_MXs3_conditional = mu_MXs3_conditional - gredient[2] * mu_err * step * damping;
+            PLL_value = previous_PLL_value;
+            break;
+        }
+
         if (damping < (0.5) * (0.5) * (0.5) * (0.5)) break; // if it is too dampled, just break
 
         trial++;
