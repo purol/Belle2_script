@@ -304,6 +304,11 @@ double ConditionalFit_v2(RooWorkspace* w, RooAbsReal** nll, double target_mu, do
         gredient[1] = vec1[1] * (PLL_value_1 - PLL_value) / (delta * mu_err) + vec2[1] * (PLL_value_2 - PLL_value) / (delta * mu_err);
         gredient[2] = vec1[2] * (PLL_value_1 - PLL_value) / (delta * mu_err) + vec2[2] * (PLL_value_2 - PLL_value) / (delta * mu_err);
 
+        // we need to find the smallest PLL. So sign should be flipped
+        gredient[0] = -gredient[0];
+        gredient[1] = -gredient[1];
+        gredient[2] = -gredient[2];
+
         if (previous_gredient[0] != DBL_MAX) {
             if ((gredient[0] * previous_gredient[0] + gredient[1] * previous_gredient[1] + gredient[2] * previous_gredient[2]) < 0) damping = damping / 2.0;
         }
@@ -321,8 +326,8 @@ double ConditionalFit_v2(RooWorkspace* w, RooAbsReal** nll, double target_mu, do
         if (damping < (0.5) * (0.5) * (0.5) * (0.5)) break; // if it is too dampled, just break
 
         trial++;
-        if (trial * step > 5.0) break; // Do not go further than 5 sigma
-
+        if (trial * step > boundary) break; // Do not go further than boundary
+        printf("v2 search...: %lf %lf %lf %lf\n", mu_MXs1_conditional, mu_MXs2_conditional, mu_MXs3_conditional, PLL_value);
         previous_gredient[0] = gredient[0];
         previous_gredient[1] = gredient[1];
         previous_gredient[2] = gredient[2];
