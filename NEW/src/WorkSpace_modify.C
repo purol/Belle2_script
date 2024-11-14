@@ -68,9 +68,30 @@ int WorkSpace_modify() {
 	RooStats::ModelConfig* sbModel = (RooStats::ModelConfig*)w->obj("ModelConfig");
 
 	for (int i = 0; i < 50; i++) {
-		RooStats::ModelConfig* temp_Model = (RooStats::ModelConfig*)sbModel->Clone(("BonlyModel_" + std::to_string(i)).c_str());
-		w.factory("PROD::Signal_MXs1_nominal_MXs1_channel_MXs1_scaleFactors(Signal_MXs1_nominal_MXs1_channel_MXs1_epsilon, FBDT_efficiency_CAL_MXs1)");
+		RooStats::ModelConfig* temp_Model = (RooStats::ModelConfig*)sbModel->Clone(("ModelConfig_" + std::to_string(i)).c_str());
 		printf("print!\n");
+
+		const double BR_1 = 0.0000048514;
+		const double BR_2 = 0.0000085024;
+		const double BR_3 = 0.0000156653;
+		const double BR_total = 0.000029;
+
+		RooRealVar* mu_MXs1 = w->var("mu_MXs1");
+		RooRealVar* mu_MXs2 = w->var("mu_MXs2");
+		RooRealVar* mu_MXs3 = w->var("mu_MXs3");
+
+		mu_MXs1->setConstant(true);
+		RooRealVar* mu = new RooRealVar("mu", "mu", 100.0, 100.0);
+
+		RooProduct* MXs1_MXs1_scale = (RooProduct*)w->function("Signal_MXs1_nominal_MXs1_channel_MXs1_scaleFactors");
+		MXs1_MXs1_scale->addTerm(mu);
+
+		RooProduct* MXs1_MXs2_scale = (RooProduct*)w->function("Signal_MXs1_nominal_MXs2_channel_MXs2_scaleFactors");
+		MXs1_MXs2_scale->addTerm(mu);
+
+		RooProduct* MXs1_MXs3_scale = (RooProduct*)w->function("Signal_MXs1_nominal_MXs3_channel_MXs3_scaleFactors");
+		MXs1_MXs3_scale->addTerm(mu);
+
 		w->Print();
 	}
 
