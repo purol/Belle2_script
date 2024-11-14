@@ -81,16 +81,17 @@ int WorkSpace_modify() {
 		RooRealVar* mu_MXs3 = w->var("mu_MXs3");
 
 		mu_MXs1->setConstant(true);
-		RooRealVar* mu = new RooRealVar("mu", "mu", 100.0, 100.0);
+		RooRealVar* mu = new RooRealVar("mu", "mu", -100.0, 100.0);
+		RooRealVar* mu1 = new RooFormulaVar("mu_MXs1_alt", "(@2*0.000029-@0*0.0000085024-@1*0.0000156653)/0.0000048514", RooArgList(*mu_MXs2, *mu_MXs3, *mu));
 
 		RooProduct* MXs1_MXs1_scale = (RooProduct*)w->function("Signal_MXs1_nominal_MXs1_channel_MXs1_scaleFactors");
-		MXs1_MXs1_scale->addTerm(mu);
+		MXs1_MXs1_scale->addTerm(mu1);
 
 		RooProduct* MXs1_MXs2_scale = (RooProduct*)w->function("Signal_MXs1_nominal_MXs2_channel_MXs2_scaleFactors");
-		MXs1_MXs2_scale->addTerm(mu);
+		MXs1_MXs2_scale->addTerm(mu1);
 
 		RooProduct* MXs1_MXs3_scale = (RooProduct*)w->function("Signal_MXs1_nominal_MXs3_channel_MXs3_scaleFactors");
-		MXs1_MXs3_scale->addTerm(mu);
+		MXs1_MXs3_scale->addTerm(mu1);
 
 		w->Print();
 	}
