@@ -256,7 +256,7 @@ double ConditionalFit_v2(RooWorkspace* w, RooAbsReal** nll, double target_mu, do
         -B_ * C_ / std::sqrt(A_ * A_ * C_ * C_ + B_ * B_ * C_ * C_ + (A_ * A_ + B_ * B_) * (A_ * A_ + B_ * B_)),
         (A_ * A_ + B_ * B_) / std::sqrt(A_ * A_ * C_ * C_ + B_ * B_ * C_ * C_ + (A_ * A_ + B_ * B_) * (A_ * A_ + B_ * B_)) };
 
-    printf("initial v1: %lf %lf %lf\n", mu_MXs1_initial, mu_MXs2_initial, mu_MXs3_initial);
+    printf("initial v2: %lf %lf %lf\n", mu_MXs1_initial, mu_MXs2_initial, mu_MXs3_initial);
     double PLL_value = -1;
     RooAbsReal* pll = (*nll)->createProfile(RooArgSet(*mu_MXs1, *mu_MXs2, *mu_MXs3));
 
@@ -326,8 +326,8 @@ double ConditionalFit_v2(RooWorkspace* w, RooAbsReal** nll, double target_mu, do
         if (damping < (0.5) * (0.5) * (0.5) * (0.5)) break; // if it is too dampled, just break
 
         trial++;
-        if (trial * step > boundary) break; // Do not go further than boundary
-        printf("v2 search...: %lf %lf %lf %lf\n", mu_MXs1_conditional, mu_MXs2_conditional, mu_MXs3_conditional, PLL_value);
+        if (trial * step > boundary) break; // Do not go further than 2 * boundary
+
         previous_gredient[0] = gredient[0];
         previous_gredient[1] = gredient[1];
         previous_gredient[2] = gredient[2];
@@ -451,17 +451,32 @@ int main(int argc, char* argv[]) {
 
         MyFitResult MyconditionalFitResult;
 
+        TStopwatch sw;
+        sw.Start();
+
         w->loadSnapshot("GlobalMinimumParamValues");
         ConditionalFit(w, &nll, scanned_mu, eps, MyUnconditionalFitResult, "GlobalMinimumParamValues", &MyconditionalFitResult);
         printf("result v0: %lf %lf %lf %lf\n", MyconditionalFitResult.mu1_value, MyconditionalFitResult.mu2_value, MyconditionalFitResult.mu3_value, MyconditionalFitResult.status);
+
+        sw.Stop();
+        printf("consumed time: %lf (s)\n", sw.RealTime());
+        sw.Start();
 
         w->loadSnapshot("GlobalMinimumParamValues");
         ConditionalFit_v1(w, &nll, scanned_mu, eps, MyUnconditionalFitResult, "GlobalMinimumParamValues", &MyconditionalFitResult);
         printf("result v1: %lf %lf %lf %lf\n", MyconditionalFitResult.mu1_value, MyconditionalFitResult.mu2_value, MyconditionalFitResult.mu3_value, MyconditionalFitResult.status);
 
+        sw.Stop();
+        printf("consumed time: %lf (s)\n", sw.RealTime());
+        sw.Start();
+
         w->loadSnapshot("GlobalMinimumParamValues");
         ConditionalFit_v2(w, &nll, scanned_mu, eps, MyUnconditionalFitResult, "GlobalMinimumParamValues", &MyconditionalFitResult);
         printf("result v2: %lf %lf %lf %lf\n", MyconditionalFitResult.mu1_value, MyconditionalFitResult.mu2_value, MyconditionalFitResult.mu3_value, MyconditionalFitResult.status);
+
+
+        sw.Stop();
+        printf("consumed time: %lf (s)\n", sw.RealTime());
     }
 
     // get s+b test statistics
