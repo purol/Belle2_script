@@ -68,8 +68,8 @@ std::default_random_engine generator(rd());
 /* =========================== configuration =========================== */
 const double eps = 0.1;
 
-const double step = 0.3;
-const double boundary = 3.0;
+const double step = 0.5;
+const double boundary = 10.0;
 
 const double BR_1 = 0.0000048514;
 const double BR_2 = 0.0000085024;
@@ -283,7 +283,7 @@ double ConditionalFit_v2(RooWorkspace* w, RooAbsReal** nll, double target_mu, do
         MyconditionalFitResult->mu_value = target_mu;
     }
 
-    const double delta = 0.03;
+    const double delta = 0.01;
     int trial = 0;
     double damping = 1.0;
     double previous_gredient[3] = { DBL_MAX, DBL_MAX, DBL_MAX };
