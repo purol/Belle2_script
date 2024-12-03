@@ -211,14 +211,10 @@ int main() {
     legend->SetFillStyle(0); legend->SetLineWidth(0);
 
     Float_t ymax = Stack->GetMaximum();
-    TLine* lineA = new TLine(1.84, 0, 1.84, ymax);
+    TLine* lineA = new TLine(2.0, 0, 2.0, ymax);
     lineA->SetLineColor(kRed);
     lineA->SetLineStyle(5);
     lineA->Draw();
-    TLine* lineB = new TLine(1.89, 0, 1.89, ymax);
-    lineB->SetLineColor(kRed);
-    lineB->SetLineStyle(5);
-    lineB->Draw();
     c_temp->SaveAs("Plot_Mxs_preselection.png");
 
 //    free(lineA);
