@@ -11,7 +11,23 @@ revise void Loader::PrintSeparateRootFile(std::string output_name)
 revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double flag = 0)
 */
 
+#include "TLine.h"
+#include "TCanvas.h"
+#include "TLegend.h"
+#include "TH1D.h"
+#include "TTree.h"
+#include "TFile.h"
+#include "THStack.h"
+#include "TGaxis.h"
+#include "TStyle.h"
+#include "TSystemFile.h"
+#include "TSystemDirectory.h"
+
+#include <string>
+
 #include "constants.h"
+
+using namespace std;
 
 void load_files(const char *dirname, std::vector<string>* names){
    TSystemDirectory dir(dirname, dirname);
@@ -122,20 +138,20 @@ void LetsFill(const char* dirname, TH1D* hist, const char* included_string, doub
 
 }
 
-void THStack_Mxs_preselection() {
+void main() {
 
-    const char* Knunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/SIGNAL/validation";
-    const char* Kstarnunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/SIGNAL/validation";
-    const char* Xsununu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/SIGNAL/validation";
-    const char* K0nunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/SIGNAL/validation";
-    const char* K0starnunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/SIGNAL/validation";
-    const char* Xsdnunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/SIGNAL/validation";
-    const char* CHG_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/CHG/validation";
-    const char* MIX_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/MIX/validation";
-    const char* UUBAR_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/UUBAR/validation";
-    const char* DDBAR_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/DDBAR/validation";
-    const char* SSBAR_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/SSBAR/validation";
-    const char* CHARM_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/SatoriRD/CHARM/validation";
+    const char* Knunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/SIGNAL/validation";
+    const char* Kstarnunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/SIGNAL/validation";
+    const char* Xsununu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/SIGNAL/validation";
+    const char* K0nunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/SIGNAL/validation";
+    const char* K0starnunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/SIGNAL/validation";
+    const char* Xsdnunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/SIGNAL/validation";
+    const char* CHG_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/CHG/validation";
+    const char* MIX_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/MIX/validation";
+    const char* UUBAR_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/UUBAR/validation";
+    const char* DDBAR_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/DDBAR/validation";
+    const char* SSBAR_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/SSBAR/validation";
+    const char* CHARM_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/CHARM/validation";
 
     LetsFill(Knunu_dirname, SIGNAL_hist, "B2Knunu", Scale_Kplus_validation_MC15rd);
     LetsFill(Kstarnunu_dirname, SIGNAL_hist, "B2Kstarnunu", Scale_Kplusstar_validation_MC15rd);
@@ -209,4 +225,6 @@ void THStack_Mxs_preselection() {
 //    free(lineB);
 //    gPad->BuildLegend();
 //    c_temp->SaveAs("Plot_with_legend.png");
+
+    return 0;
 }
