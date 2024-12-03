@@ -33,8 +33,8 @@
 # define N_BpBp_1invab 540000000.0
 # define N_B0B0_1invab 510000000.0
 
-// f+-/f0
-# define fpm_f0 1.065 
+// f+-/f0 [https://arxiv.org/abs/2411.18639]
+# define fpm_f0 1.052
 
 // https://confluence.desy.de/pages/viewpage.action?spaceKey=BI&title=Conference+readiness
 # define N_BB_LS1 387100000.0 // NBB = (387.1 +/- 5.6) x 10^6
