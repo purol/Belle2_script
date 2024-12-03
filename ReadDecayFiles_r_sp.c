@@ -560,14 +560,16 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
             if (filename.find("B2Knunu") != string::npos)  temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Kplus);
             else if (filename.find("B2Kstarnunu") != string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Kplusstar);
             else if (filename.find("B2Xsnunu") != string::npos) {
-                double Correction_Fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp_data.Decay, Mxs(temp_data), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
-                temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Xsu_nonresonant * Correction_Fragmentation);
+                // double Correction_Fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp_data.Decay, Mxs(temp_data), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
+                // temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Xsu_nonresonant * Correction_Fragmentation);
+                temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Xsu_nonresonant);
             }
             else if (filename.find("B02K0nunu") != string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_K0);
             else if (filename.find("B02Kstar0nunu") != string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_K0star);
             else if (filename.find("B02Xsnunu") != string::npos) {
-                double Correction_Fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp_data.Decay, Mxs(temp_data), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
-                temp_hist[decaymodeid]->Fill(Mxs(temp_data), Correction_Fragmentation * Scale_Xsd_nonresonant);
+                // double Correction_Fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp_data.Decay, Mxs(temp_data), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
+                // temp_hist[decaymodeid]->Fill(Mxs(temp_data), Correction_Fragmentation * Scale_Xsd_nonresonant);
+                temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Xsd_nonresonant);
             }
             else { temp_hist[decaymodeid]->Fill(Mxs(temp_data)); }
         }
@@ -641,8 +643,10 @@ void Loader::End() {
 	}
         THStacks.at(i)->Draw("pfc Hist"); 
         c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + ".png").c_str());
-	gPad->BuildLegend(0.9, 0.9, 0.6, 0.6);
-	c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + "_legend.png").c_str());
+        TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.65, 0.45);
+        legend->SetFillStyle(0); legend->SetLineWidth(0);
+        // c_temp->SetLogy();
+        c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + "_legend.png").c_str());
         delete c_temp;
     }
 }
@@ -741,7 +745,7 @@ Loader::DecayMode Loader::PrintDecayClassification(Data data) {
 void ReadDecayFiles_r_sp(){
 
     std::vector<string> names;
-    const char* dirname = "/home/jwpark/storage/DecayInfo/small";
+    const char* dirname = "/home/belle2/junewoo/storage_b2/MXs_distribution/small";
 
     load_files(dirname, &names);
 
@@ -756,7 +760,7 @@ void ReadDecayFiles_r_sp(){
         if (loader.event_info_is_valid() == false) { printf("error!\n"); return; }
 
         loader.PrintInformation(std::string("========== inital =========="));
-        loader.DrawTHStack("Mxs", ";M_{Xs} [GeV]; evt", 100, 0.45, 3.5, names.at(i), true);
+        loader.DrawTHStack("Mxs", ";M_{Xs}^{gen} [GeV]; arbitrary unit", 100, 0.45, 3.5, names.at(i), true);
 
     }
     loader.End();
