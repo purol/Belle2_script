@@ -1,31 +1,6 @@
-# define N_decay 38 // five decay mode + others
+#include "constants.h"
 
-# define MyEPSILON 0.000001
 # define MCTYPE "MC15ri"
-
-// arXiv:1409.4557v2
-# define TB0 1.5195 // (Table. 1)
-# define TBp 1.6384 // (Table. 1)
-# define BR_Kplus_nunubar 0.000005044 // Table VI = (5.044 +- 0.402) * 10^{-6}
-# define BR_K0star_nunubar 0.00000919 // (eq. 11)
-# define BR_K0_nunubar (BR_Kplus_nunubar*TB0/TBp) // under (eq. 15). In Table VI = (4.6669 +- 0.3707) * 10^{-6}
-# define BR_Kplusstar_nunubar (BR_K0star_nunubar*TBp/TB0) // under (eq. 15)
-# define BR_Xs_nunubar 0.000029 // (eq. 23)
-# define BR_Xsu_nonresonant_nunubar (BR_Xs_nunubar - BR_Kplus_nunubar - BR_Kplusstar_nunubar)
-# define BR_Xsd_nonresonant_nunubar (BR_Xs_nunubar - BR_K0_nunubar - BR_K0star_nunubar)
-
-# define BR_BpBp 0.514
-# define BR_B0B0 0.486
-
-# define N_BpBp_LS1 (387100000.0 * (BR_BpBp/(BR_BpBp+BR_B0B0)))
-# define N_B0B0_LS1 (387100000.0 * (BR_B0B0/(BR_BpBp+BR_B0B0)))
-
-# define N_Kplus_nunubar_LS1 (2.0 * N_BpBp_LS1 * BR_Kplus_nunubar)
-# define N_Kplusstar_nunubar_LS1 (2.0 * N_BpBp_LS1 * BR_Kplusstar_nunubar)
-# define N_Xsu_nonresonant_nunubar_LS1 (2.0 * N_BpBp_LS1 * BR_Xsu_nonresonant_nunubar)
-# define N_K0_nunubar_LS1 (2.0 * N_B0B0_LS1 * BR_K0_nunubar)
-# define N_K0star_nunubar_LS1 (2.0 * N_B0B0_LS1 * BR_K0star_nunubar)
-# define N_Xsd_nunubar_LS1 (2.0 * N_B0B0_LS1 * BR_Xsd_nonresonant_nunubar)
 
 // my MC sample number
 # define N_Kplus_nunubar 1000000.0
