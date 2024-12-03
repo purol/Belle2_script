@@ -45,14 +45,14 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-THStack* Stack = new THStack("thstack", ";M_{Xs} [GeV];number of candidates");
-TH1D* SIGNAL_hist = new TH1D("signal #times 10^{5}", ";M_{Xs} [GeV];number of candidates", 70, 0.4, 2.8);
-TH1D* CHG_hist = new TH1D("charged", ";M_{Xs} [GeV];number of candidates", 70, 0.4, 2.8);
-TH1D* MIX_hist = new TH1D("mixed", ";M_{Xs} [GeV];number of candidates", 70, 0.4, 2.8);
-TH1D* UUBAR_hist = new TH1D("u#bar{u}", ";M_{Xs} [GeV];number of candidates", 70, 0.4, 2.8);
-TH1D* DDBAR_hist = new TH1D("d#bar{d}", ";M_{Xs} [GeV];number of candidates", 70, 0.4, 2.8);
-TH1D* SSBAR_hist = new TH1D("s#bar{s}", ";M_{Xs} [GeV];number of candidates", 70, 0.4, 2.8);
-TH1D* CHARM_hist = new TH1D("c#bar{c}", ";M_{Xs} [GeV];number of candidates", 70, 0.4, 2.8);
+THStack* Stack = new THStack("thstack", ";M_{Xs}^{reco} [GeV];number of candidates");
+TH1D* SIGNAL_hist = new TH1D("signal #times 10^{5}", ";M_{Xs}^{reco} [GeV];number of candidates", 70, 0.4, 2.8);
+TH1D* CHG_hist = new TH1D("charged", ";M_{Xs}^{reco} [GeV];number of candidates", 70, 0.4, 2.8);
+TH1D* MIX_hist = new TH1D("mixed", ";M_{Xs}^{reco} [GeV];number of candidates", 70, 0.4, 2.8);
+TH1D* UUBAR_hist = new TH1D("u#bar{u}", ";M_{Xs}^{reco} [GeV];number of candidates", 70, 0.4, 2.8);
+TH1D* DDBAR_hist = new TH1D("d#bar{d}", ";M_{Xs}^{reco} [GeV];number of candidates", 70, 0.4, 2.8);
+TH1D* SSBAR_hist = new TH1D("s#bar{s}", ";M_{Xs}^{reco} [GeV];number of candidates", 70, 0.4, 2.8);
+TH1D* CHARM_hist = new TH1D("c#bar{c}", ";M_{Xs}^{reco} [GeV];number of candidates", 70, 0.4, 2.8);
 
 void LetsFill(const char* dirname, TH1D* hist, double weight = 1) {
     double var = 0;
