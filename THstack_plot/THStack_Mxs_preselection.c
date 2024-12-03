@@ -138,7 +138,7 @@ void LetsFill(const char* dirname, TH1D* hist, const char* included_string, doub
 
 }
 
-void main() {
+int main() {
 
     const char* Knunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/SIGNAL/validation";
     const char* Kstarnunu_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/KumoiRD/SIGNAL/validation";
