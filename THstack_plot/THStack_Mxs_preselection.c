@@ -159,12 +159,14 @@ int main() {
     LetsFill(K0nunu_dirname, SIGNAL_hist, "B02K0nunu", Scale_K0_validation_MC15rd);
     LetsFill(K0starnunu_dirname, SIGNAL_hist, "B02Kstar0nunu", Scale_K0star_validation_MC15rd);
     LetsFill(Xsdnunu_dirname, SIGNAL_hist, "B02Xsnunu", Scale_Xsd_nonresonant_validation_MC15rd);
-    LetsFill(CHG_dirname, CHG_hist, Scale_CHG_validation_MC15rd);
-    LetsFill(MIX_dirname, MIX_hist, Scale_MIX_validation_MC15rd);
-    LetsFill(UUBAR_dirname, UUBAR_hist, Scale_UUBAR_validation_MC15rd);
-    LetsFill(DDBAR_dirname, DDBAR_hist, Scale_DDBAR_validation_MC15rd);
-    LetsFill(SSBAR_dirname, SSBAR_hist, Scale_SSBAR_validation_MC15rd);
-    LetsFill(CHARM_dirname, CHARM_hist, Scale_CHARM_validation_MC15rd);
+
+    // we multiply 20 for background samples because only 5% of them are included in the tree
+    LetsFill(CHG_dirname, CHG_hist, Scale_CHG_validation_MC15rd * 20);
+    LetsFill(MIX_dirname, MIX_hist, Scale_MIX_validation_MC15rd * 20);
+    LetsFill(UUBAR_dirname, UUBAR_hist, Scale_UUBAR_validation_MC15rd * 20);
+    LetsFill(DDBAR_dirname, DDBAR_hist, Scale_DDBAR_validation_MC15rd * 20);
+    LetsFill(SSBAR_dirname, SSBAR_hist, Scale_SSBAR_validation_MC15rd * 20);
+    LetsFill(CHARM_dirname, CHARM_hist, Scale_CHARM_validation_MC15rd * 20);
 
     double CHG_int = CHG_hist->Integral();
     double MIX_int = MIX_hist->Integral();
@@ -195,7 +197,7 @@ int main() {
     Stack->Add(CHARM_hist);
     //Stack->SetMaximum(100.0);
 
-    SIGNAL_hist->Scale(5000.0);
+    SIGNAL_hist->Scale(100000.0);
     //SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
     SIGNAL_hist->SetLineWidth(3);
     SIGNAL_hist->SetLineColor(2);
