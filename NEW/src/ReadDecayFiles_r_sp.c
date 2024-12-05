@@ -71,6 +71,44 @@ public:
         others,
         MAX_NUM_DECAYMODE
     };
+    enum DecayModeMC { // MC level
+        Xsu2Kc_MC = 0,
+        Xsu2Kcstar2KcPi0_MC,
+        Xsu2Kcstar2K0Pic_MC,
+        Xsu2KcPi0_MC,
+        Xsu2K0Pic_MC,
+        Xsu2KcPicPic_MC,
+        Xsu2K0PicPi0_MC,
+        Xsu2KcPicPicPi0_MC,
+        Xsu2K0PicPicPic_MC,
+        Xsu2KcPicPicPicPic_MC,
+        Xsu2K0PicPicPicPi0_MC,
+        Xsu2KcPi0Pi0_MC,
+        Xsu2K0PicPi0Pi0_MC,
+        Xsu2KcPicPicPi0Pi0_MC,
+        Xsu2KcKcKc_MC,
+        Xsu2KcKcK0Pic_MC,
+        Xsu2KcKcKcPi0_MC,
+        Xsd2K0_MC,
+        Xsd2K0star2KcPic_MC,
+        Xsd2K0star2K0Pi0_MC,
+        Xsd2KcPic_MC,
+        Xsd2K0Pi0_MC,
+        Xsd2KcPicPi0_MC,
+        Xsd2K0PicPic_MC,
+        Xsd2KcPicPicPic_MC,
+        Xsd2K0PicPicPi0_MC,
+        Xsd2KcPicPicPicPi0_MC,
+        Xsd2K0PicPicPicPic_MC,
+        Xsd2K0Pi0Pi0_MC,
+        Xsd2KcPicPi0Pi0_MC,
+        Xsd2K0PicPicPi0Pi0_MC,
+        Xsd2KcKcK0_MC,
+        Xsd2KcKcKcPic_MC,
+        Xsd2KcKcK0Pi0_MC,
+        other,
+        MAX_NUM_DECAYMODE_MC
+    };
 private:
     std::queue<Data> TotalData;
 
@@ -83,6 +121,10 @@ private:
     std::vector<THStack*> THStacks;
     std::vector<TH1D*> TH1Ds_THStack[Loader::MAX_NUM_DECAYMODE];
     int current_THStack;
+
+    std::vector<double> N_MC_modes[Loader::MAX_NUM_DECAYMODE_MC];
+
+    bool TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymodeMC);
 
 public:
     Loader();
@@ -284,6 +326,7 @@ void Loader::PrintInformation(std::string title) {
         N_events.push_back(0);
         N_candidates.push_back(0);
         titles.push_back(title);
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) N_MC_modes[i].push_back(0);
     }
     else if (N_events.size() > current_N_event && N_candidates.size() > current_N_candidate && N_events.size() == N_candidates.size() && current_N_event == current_N_candidate) { // use what I have
     }
@@ -309,6 +352,45 @@ void Loader::PrintInformation(std::string title) {
             temp_Labels.__event__ = temp.__event__;
             temp_Labels.__ncandidates__ = temp.__ncandidates__;
             label_list.push_back(temp_Labels);
+
+            // get detail MC decay information
+            Loader::DecayModeMC decaymodeid_MC = Loader::MAX_NUM_DECAYMODE_MC;
+            for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) { // find MC decay mode
+                if (TrueIfDecayModeMatch_MC(temp, static_cast<Loader::DecayModeMC>(i))) {
+                    decaymodeid_MC = static_cast<Loader::DecayModeMC>(i);
+                    break;
+                }
+            }
+            if (decaymodeid_MC == Loader::MAX_NUM_DECAYMODE_MC) {
+                printf("ERROR! MC decay id cannot be found\n");
+                exit(1);
+            }
+
+            // Number of event with MC decayID (scaled)
+            double temp_N = -1;
+            if (decaymodeid_MC == Loader::Xsu2Kc_MC) {
+                double correction_weight = corrector.GetCorrectionFactor(temp.invM * temp.invM, "Bplus");
+                temp_N = Scale_Kplus * correction_weight;
+            }
+            else if (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC) temp_N = Scale_Kplusstar;
+            else if (static_cast<int>(Xsu2KcPi0_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(Xsu2KcKcKcPi0_MC)) {
+                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
+                temp_N = Scale_Xsu_nonresonant * correction_fragmentation;
+            }
+            else if (decaymodeid_MC == Loader::Xsd2K0_MC) {
+                double correction_weight = corrector.GetCorrectionFactor(temp.invM * temp.invM, "Bzero");
+                temp_N = Scale_K0 * correction_weight;
+            }
+            else if (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC) temp_N = Scale_K0star;
+            else if (static_cast<int>(Xsd2KcPic_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(other)) {
+                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
+                temp_N = Scale_Xsd_nonresonant * correction_fragmentation;
+            }
+            else {
+                printf("ERROR 265\n");
+                exit(1);
+            }
+            N_MC_modes[decaymodeid_MC].at(current_N_event) = N_MC_modes[decaymodeid_MC].at(current_N_event) + temp_N;
         }
     }
     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size();
@@ -323,6 +405,7 @@ void Loader::End() {
         printf("%s\n", titles.at(i).c_str());
         printf("Number of event: %d\n", N_events.at(i));
         printf("Number of candidate: %d\n", N_candidates.at(i));
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i));
     }
 
     for (int i = 0; i < THStacks.size(); i++) {
@@ -433,6 +516,159 @@ Loader::DecayMode Loader::PrintDecayClassification(Data data) {
     else if (data.Decay[13] > 0 || data.Decay[14] > 0 || data.Decay[15] > 0 || data.Decay[32] > 0 || data.Decay[33] > 0 || data.Decay[34] > 0) return Loader::K_w_2pi0_w_atmost_4Pi;
     else if (data.Decay[16] > 0 || data.Decay[17] > 0 || data.Decay[18] > 0 || data.Decay[35] > 0 || data.Decay[36] > 0 || data.Decay[37] > 0) return Loader::_3K_w_atmost_1Pi;
     return Loader::others;
+}
+
+bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymodeMC) {
+
+    switch (decaymodeMC) {
+    case Loader::Xsu2Kc_MC:
+        if (temp_data.Decay[0] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2Kcstar2KcPi0_MC:
+        if (temp_data.Decay[2] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2Kcstar2K0Pic_MC:
+        if (temp_data.Decay[1] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcPi0_MC:
+        if (temp_data.Decay[5] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2K0Pic_MC:
+        if (temp_data.Decay[6] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcPicPic_MC:
+        if (temp_data.Decay[7] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2K0PicPi0_MC:
+        if (temp_data.Decay[8] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcPicPicPi0_MC:
+        if (temp_data.Decay[9] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2K0PicPicPic_MC:
+        if (temp_data.Decay[10] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcPicPicPicPic_MC:
+        if (temp_data.Decay[11] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2K0PicPicPicPi0_MC:
+        if (temp_data.Decay[12] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcPi0Pi0_MC:
+        if (temp_data.Decay[13] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2K0PicPi0Pi0_MC:
+        if (temp_data.Decay[14] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcPicPicPi0Pi0_MC:
+        if (temp_data.Decay[15] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcKcKc_MC:
+        if (temp_data.Decay[16] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcKcK0Pic_MC:
+        if (temp_data.Decay[17] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsu2KcKcKcPi0_MC:
+        if (temp_data.Decay[18] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0_MC:
+        if (temp_data.Decay[19] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0star2KcPic_MC:
+        if (temp_data.Decay[20] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0star2K0Pi0_MC:
+        if (temp_data.Decay[21] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcPic_MC:
+        if (temp_data.Decay[24] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0Pi0_MC:
+        if (temp_data.Decay[25] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcPicPi0_MC:
+        if (temp_data.Decay[26] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0PicPic_MC:
+        if (temp_data.Decay[27] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcPicPicPic_MC:
+        if (temp_data.Decay[28] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0PicPicPi0_MC:
+        if (temp_data.Decay[29] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcPicPicPicPi0_MC:
+        if (temp_data.Decay[30] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0PicPicPicPic_MC:
+        if (temp_data.Decay[31] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0Pi0Pi0_MC:
+        if (temp_data.Decay[32] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcPicPi0Pi0_MC:
+        if (temp_data.Decay[33] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2K0PicPicPi0Pi0_MC:
+        if (temp_data.Decay[34] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcKcK0_MC:
+        if (temp_data.Decay[35] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcKcKcPic_MC:
+        if (temp_data.Decay[36] > 0) return true;
+        return false;
+        break;
+    case Loader::Xsd2KcKcK0Pi0_MC:
+        if (temp_data.Decay[37] > 0) return true;
+        return false;
+        break;
+    case Loader::other:
+        return true;
+        break;
+    default:
+        printf("ERROR! Input value of TrueIfDecayModeMatch_MC is not appropriate\n");
+        exit(1);
+        break;
+    }
+
+    printf("ERROR! Input value of TrueIfDecayModeMatch_MC is not appropriate\n");
+    exit(1);
+    return false;
 }
 
 void ReadDecayFiles_r_sp(){
