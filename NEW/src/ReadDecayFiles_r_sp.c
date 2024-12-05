@@ -419,7 +419,7 @@ void Loader::End() {
         printf("Number of candidate: %d\n", N_candidates.at(i));
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i));
 
-        printf("To run python code, copy-paste the following lines:");
+        printf("To run python code, copy-paste the following lines:\n");
         printf("decay 0: %lf\n", N_MC_modes[Loader::Xsu2Kc_MC].at(i));
         printf("decay 1: %lf\n", N_MC_modes[Loader::Xsu2Kcstar2KcPi0_MC].at(i) + N_MC_modes[Loader::Xsu2KcPi0_MC].at(i));
         printf("decay 2: %lf\n", N_MC_modes[Loader::Xsu2Kcstar2K0Pic_MC].at(i) + N_MC_modes[Loader::Xsu2K0Pic_MC].at(i));
