@@ -364,7 +364,11 @@ void Loader::PrintInformation(std::string title, std::string filename) {
             for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) { // find MC decay mode
                 if (TrueIfDecayModeMatch_MC(temp, static_cast<Loader::DecayModeMC>(i))) {
                     decaymodeid_MC = static_cast<Loader::DecayModeMC>(i);
-                    break;
+                    if ((filename.find("B2Xsnunu") != string::npos) && (decaymodeid_MC == Loader::Xsu2Kc_MC)) {} // something wrong, try to find another decay mode
+                    else if ((filename.find("B2Xsnunu") != string::npos) && (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC)) {} // something wrong, try to find another decay mode
+                    else if ((filename.find("B02Xsnunu") != string::npos) && (decaymodeid_MC == Loader::Xsd2K0_MC)) {} // something wrong, try to find another decay mode
+                    else if ((filename.find("B02Xsnunu") != string::npos) && (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC)) {} // something wrong, try to find another decay mode
+                    else break;
                 }
             }
             if (decaymodeid_MC == Loader::MAX_NUM_DECAYMODE_MC) {
