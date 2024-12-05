@@ -285,7 +285,7 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
         if (smart_mode == false) temp_hist[decaymodeid]->Fill(Mxs(temp_data));
         else {
             if (filename.find("B2Knunu") != string::npos) {
-                double correction_weight = corrector.GetCorrectionFactor(temp.invM * temp.invM, "Bplus");
+                double correction_weight = corrector.GetCorrectionFactor(temp_data.invM * temp_data.invM, "Bplus");
                 // double correction_weight = 1.0;
                 temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Kplus * correction_weight);
             }
@@ -296,7 +296,7 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
                 //temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Xsu_nonresonant);
             }
             else if (filename.find("B02K0nunu") != string::npos) {
-                double correction_weight = corrector.GetCorrectionFactor(temp.invM * temp.invM, "Bzero");
+                double correction_weight = corrector.GetCorrectionFactor(temp_data.invM * temp_data.invM, "Bzero");
                 // double correction_weight = 1.0;
                 temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_K0 * correction_weight);
             }
