@@ -12,7 +12,7 @@
 # define N_Xsu_nonresonant_nunubar 5000000.0
 # define N_Xsd_nonresonant_nunubar 5000000.0
 
-// scale factor for each MC sample for 361.673/fb
+// scale factor for each MC sample until LS1
 # define Scale_Kplus (N_Kplus_nunubar_LS1/N_Kplus_nunubar)
 # define Scale_Kplusstar (N_Kplusstar_nunubar_LS1/N_Kplusstar_nunubar)
 # define Scale_Xsu_nonresonant (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_nunubar)
@@ -81,7 +81,7 @@ private:
     int current_N_candidate;
 
     std::vector<THStack*> THStacks;
-    std::vector<TH1F*> TH1Fs_THStack[Loader::MAX_NUM_DECAYMODE];
+    std::vector<TH1D*> TH1Ds_THStack[Loader::MAX_NUM_DECAYMODE];
     int current_THStack;
 
 public:
@@ -212,8 +212,8 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
         THStack* stack = new THStack(name, title);
         THStacks.push_back(stack);
         for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
-            TH1F* hist = new TH1F(decay_names[i], title, nbins, x_low, x_high);
-            TH1Fs_THStack[i].push_back(hist);
+            TH1D* hist = new TH1D(decay_names[i], title, nbins, x_low, x_high);
+            TH1Ds_THStack[i].push_back(hist);
         }
     }
     else if (THStacks.size() > current_THStack) { // use what I have
@@ -223,9 +223,9 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
         exit(1);
     }
 
-    TH1F* temp_hist[Loader::MAX_NUM_DECAYMODE];
+    TH1D* temp_hist[Loader::MAX_NUM_DECAYMODE];
     for (int i = 0; i < Loader::MAX_NUM_DECAYMODE;i++) {
-        temp_hist[i] = TH1Fs_THStack[i].at(current_THStack);
+        temp_hist[i] = TH1Ds_THStack[i].at(current_THStack);
     }
 
     std::queue<Data> temp_queue = TotalData;
@@ -330,10 +330,10 @@ void Loader::End() {
         gStyle->SetPalette(kColorPrintableOnGrey);
 
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) {
-		THStacks.at(i)->Add(TH1Fs_THStack[j].at(i));
-//                TH1Fs_THStack[j].at(i)->Draw("Hist");
-//		c_temp->SaveAs( (std::string(TH1Fs_THStack[j].at(i)->GetName()) + ".png").c_str() );
-	}
+            THStacks.at(i)->Add(TH1Ds_THStack[j].at(i));
+            // TH1Ds_THStack[j].at(i)->Draw("Hist");
+            // c_temp->SaveAs( (std::string(TH1Ds_THStack[j].at(i)->GetName()) + ".png").c_str() );
+        }
         THStacks.at(i)->Draw("pfc Hist"); 
         c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + ".png").c_str());
         TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.65, 0.45);
