@@ -696,7 +696,7 @@ void ReadDecayFiles_r_sp(){
         loader.GetData(input_file);
         if (loader.event_info_is_valid() == false) { printf("error!\n"); return; }
 
-        loader.PrintInformation(std::string("========== inital =========="));
+        loader.PrintInformation(std::string("========== inital =========="), names.at(i));
         loader.DrawTHStack("Mxs", ";M_{Xs}^{gen} [GeV]; arbitrary unit", 100, 0.45, 3.5, names.at(i), true);
 
     }
