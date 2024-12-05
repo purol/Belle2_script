@@ -135,7 +135,7 @@ public:
     void GetData(TFile* input_file);
     bool event_info_is_valid();
     void DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, std::string filename = std::string(""), bool smart_mode = true);
-    void PrintInformation(std::string title);
+    void PrintInformation(std::string title, std::string filename);
     double Mxs(Data data);
     bool AreTheyNeutrinosAndConj(double pdg1, double pdg2);
     bool AreTheyBmesonAndXs(double Bpdg, double Xspdg);
