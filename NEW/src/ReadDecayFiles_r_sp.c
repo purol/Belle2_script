@@ -52,6 +52,9 @@ typedef struct data{
 
     double invM;
 
+    double MXs_c;
+    double MXs_0;
+
 } Data; 
 
 class Loader {
@@ -223,6 +226,9 @@ void Loader::GetData(TFile* input_file) {
 
     tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &temp.invM);
 
+    tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp.MXs_c);
+    tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp.MXs_0);
+
     printf("%lld entries...\n", tree_Xs->GetEntries());
     for (unsigned int j = 0; j < tree_Xs->GetEntries(); j++) { // Fill
         tree_Xs->GetEntry(j);
@@ -374,7 +380,8 @@ void Loader::PrintInformation(std::string title) {
             }
             else if (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC) temp_N = Scale_Kplusstar;
             else if (static_cast<int>(Xsu2KcPi0_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(Xsu2KcKcKcPi0_MC)) {
-                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
+                //double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
+                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.MXs_c, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
                 temp_N = Scale_Xsu_nonresonant * correction_fragmentation;
             }
             else if (decaymodeid_MC == Loader::Xsd2K0_MC) {
@@ -383,7 +390,8 @@ void Loader::PrintInformation(std::string title) {
             }
             else if (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC) temp_N = Scale_K0star;
             else if (static_cast<int>(Xsd2KcPic_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(other)) {
-                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
+                //double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
+                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.MXs_0, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
                 temp_N = Scale_Xsd_nonresonant * correction_fragmentation;
             }
             else {
