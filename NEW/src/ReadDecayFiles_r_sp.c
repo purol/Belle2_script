@@ -374,22 +374,22 @@ void Loader::PrintInformation(std::string title, std::string filename) {
 
             // Number of event with MC decayID (scaled)
             double temp_N = -1;
-            if ((decaymodeid_MC == Loader::Xsu2Kc_MC) && (filename.find("B2Knunu") != string::npos)) {
+            if (decaymodeid_MC == Loader::Xsu2Kc_MC) {
                 double correction_weight = corrector.GetCorrectionFactor(temp.invM * temp.invM, "Bplus");
                 temp_N = Scale_Kplus * correction_weight;
             }
-            else if (((decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC) || (decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC)) && (filename.find("B2Kstarnunu") != string::npos)) temp_N = Scale_Kplusstar;
-            else if (((static_cast<int>(Xsu2KcPi0_MC) <= static_cast<int>(decaymodeid_MC)) && (static_cast<int>(decaymodeid_MC) <= static_cast<int>(Xsu2KcKcKcPi0_MC))) && (filename.find("B2Xsnunu") != string::npos)) {
+            else if (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC) temp_N = Scale_Kplusstar;
+            else if (static_cast<int>(Xsu2KcPi0_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(Xsu2KcKcKcPi0_MC)) {
                 //double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
                 double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
                 temp_N = Scale_Xsu_nonresonant * correction_fragmentation;
             }
-            else if ((decaymodeid_MC == Loader::Xsd2K0_MC) && (filename.find("B02K0nunu") != string::npos)) {
+            else if (decaymodeid_MC == Loader::Xsd2K0_MC) {
                 double correction_weight = corrector.GetCorrectionFactor(temp.invM * temp.invM, "Bzero");
                 temp_N = Scale_K0 * correction_weight;
             }
-            else if (((decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC) || (decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC)) && (filename.find("B02Kstar0nunu") != string::npos)) temp_N = Scale_K0star;
-            else if (((static_cast<int>(Xsd2KcPic_MC) <= static_cast<int>(decaymodeid_MC)) && (static_cast<int>(decaymodeid_MC) <= static_cast<int>(other))) && (filename.find("B02Xsnunu") != string::npos)) {
+            else if (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC) temp_N = Scale_K0star;
+            else if (static_cast<int>(Xsd2KcPic_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(other)) {
                 //double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
                 double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
                 temp_N = Scale_Xsd_nonresonant * correction_fragmentation;
