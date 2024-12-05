@@ -418,6 +418,40 @@ void Loader::End() {
         printf("Number of event: %d\n", N_events.at(i));
         printf("Number of candidate: %d\n", N_candidates.at(i));
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i));
+
+        printf("To run python code, copy-paste the following lines:");
+        printf("decay 0: %lf\n", N_MC_modes[Loader::Xsu2Kc_MC].at(i));
+        printf("decay 1: %lf\n", N_MC_modes[Loader::Xsu2Kcstar2KcPi0_MC].at(i) + N_MC_modes[Loader::Xsu2KcPi0_MC].at(i));
+        printf("decay 2: %lf\n", N_MC_modes[Loader::Xsu2Kcstar2K0Pic_MC].at(i) + N_MC_modes[Loader::Xsu2K0Pic_MC].at(i));
+        printf("decay 3: %lf\n", N_MC_modes[Loader::Xsu2KcPicPic_MC].at(i));
+        printf("decay 4: %lf\n", N_MC_modes[Loader::Xsu2K0PicPi0_MC].at(i));
+        printf("decay 5: %lf\n", N_MC_modes[Loader::Xsu2KcPicPicPi0_MC].at(i));
+        printf("decay 6: %lf\n", N_MC_modes[Loader::Xsu2K0PicPicPic_MC].at(i));
+        printf("decay 7: %lf\n", N_MC_modes[Loader::Xsu2KcPicPicPicPic_MC].at(i));
+        printf("decay 8: %lf\n", N_MC_modes[Loader::Xsu2K0PicPicPicPi0_MC].at(i));
+        printf("decay 9: %lf\n", N_MC_modes[Loader::Xsu2KcPi0Pi0_MC].at(i));
+        printf("decay 10: %lf\n", N_MC_modes[Loader::Xsu2K0PicPi0Pi0_MC].at(i));
+        printf("decay 11: %lf\n", N_MC_modes[Loader::Xsu2KcPicPicPi0Pi0_MC].at(i));
+        printf("decay 12: %lf\n", N_MC_modes[Loader::Xsu2KcKcKc_MC].at(i));
+        printf("decay 13: %lf\n", N_MC_modes[Loader::Xsu2KcKcK0Pic_MC].at(i));
+        printf("decay 14: %lf\n", N_MC_modes[Loader::Xsu2KcKcKcPi0_MC].at(i));
+
+        printf("decay 15: %lf\n", N_MC_modes[Loader::Xsd2K0_MC].at(i));
+        printf("decay 16: %lf\n", N_MC_modes[Loader::Xsd2K0star2KcPic_MC].at(i) + N_MC_modes[Loader::Xsd2KcPic_MC].at(i));
+        printf("decay 17: %lf\n", N_MC_modes[Loader::Xsd2K0star2K0Pi0_MC].at(i) + N_MC_modes[Loader::Xsd2K0Pi0_MC].at(i));
+        printf("decay 18: %lf\n", N_MC_modes[Loader::Xsd2KcPicPi0_MC].at(i));
+        printf("decay 19: %lf\n", N_MC_modes[Loader::Xsd2K0PicPic_MC].at(i));
+        printf("decay 20: %lf\n", N_MC_modes[Loader::Xsd2KcPicPicPic_MC].at(i));
+        printf("decay 21: %lf\n", N_MC_modes[Loader::Xsd2K0PicPicPi0_MC].at(i));
+        printf("decay 22: %lf\n", N_MC_modes[Loader::Xsd2KcPicPicPicPi0_MC].at(i));
+        printf("decay 23: %lf\n", N_MC_modes[Loader::Xsd2K0PicPicPicPic_MC].at(i));
+        printf("decay 24: %lf\n", N_MC_modes[Loader::Xsd2K0Pi0Pi0_MC].at(i));
+        printf("decay 25: %lf\n", N_MC_modes[Loader::Xsd2KcPicPi0Pi0_MC].at(i));
+        printf("decay 25: %lf\n", N_MC_modes[Loader::Xsd2K0PicPicPi0Pi0_MC].at(i));
+        printf("decay 26: %lf\n", N_MC_modes[Loader::Xsd2KcKcK0_MC].at(i));
+        printf("decay 27: %lf\n", N_MC_modes[Loader::Xsd2KcKcKcPic_MC].at(i));
+        printf("decay 28: %lf\n", N_MC_modes[Loader::Xsd2KcKcK0Pi0_MC].at(i));
+        printf("decay 29: %lf\n", N_MC_modes[Loader::other].at(i));
     }
 
     for (int i = 0; i < THStacks.size(); i++) {
