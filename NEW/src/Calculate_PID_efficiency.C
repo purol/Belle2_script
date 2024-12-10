@@ -22,6 +22,10 @@ double totalTrueMyChargedPion = 0;
 double totalTrueKaonID = 0;
 double totalTruePionID = 0;
 
+Corrector corrector;
+Corrector_Knn corrector_Knn;
+Corrector_Fragmentation corrector_Fragmentation;
+
 /* ====================================== */
 
 void GetNominalNevt(const char* dirname, const char* included_string, const char* type, const char* MC_version, const char* category, double weight_var = 1.0) { // get nominal PDF with appropriate correction
