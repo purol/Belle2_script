@@ -145,18 +145,20 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
 
             Nevt = Nevt + total_weight;
 
+            totalTrueKaon = totalTrueKaon + NTrueKaon * total_weight;
+            totalTruePion = totalTruePion + NTruePion * total_weight;
+            totalTrueMyChargedKaon = totalTrueMyChargedKaon + NTrueMyChargedKaon * total_weight;
+            totalTrueMyChargedPion = totalTrueMyChargedPion + NTrueMyChargedPion * total_weight;
+            totalTrueKaonID = totalTrueKaonID + NTrueKaonID * total_weight;
+            totalTruePionID = totalTruePionID + NTruePionID * total_weight;
+
         }
         input_file->Close();
 
         printf("%s has %lf events (with correction)\n", filename.c_str(), Nevt);
 
         Ntotal = Ntotal + Nevt;
-        totalTrueKaon = totalTrueKaon + NTrueKaon;
-        totalTruePion = totalTruePion + NTruePion;
-        totalTrueMyChargedKaon = totalTrueMyChargedKaon + NTrueMyChargedKaon;
-        totalTrueMyChargedPion = totalTrueMyChargedPion + NTrueMyChargedPion;
-        totalTrueKaonID = totalTrueKaonID + NTrueKaonID;
-        totalTruePionID = totalTruePionID + NTruePionID;
+
     }
 
     return;
