@@ -27,7 +27,7 @@ df_cm = pd.DataFrame(confusion_matrix.values, index = [i for i in reco_list], co
 #df_cm = pd.DataFrame(confusion_matrix)
 
 plt.figure(figsize = (12,8))
-ax = sn.heatmap(df_cm, annot=True, cmap="YlGnBu", annot_kws={'size': 25})
+ax = sn.heatmap(df_cm, annot=df_cm.round(1).to_numpy(), cmap="YlGnBu", annot_kws={'size': 25})
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45, fontsize = 18, horizontalalignment='right')
 ax.set_yticklabels(ax.get_yticklabels(), rotation=45, fontsize = 18)
 plt.savefig("migration.png", bbox_inches='tight')
