@@ -40,12 +40,12 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
 
     int Decay[N_decay] = { 0 };
 
-    double NTrueKaon = 0;
-    double NTruePion = 0;
-    double NTrueMyChargedKaon = 0;
-    double NTrueMyChargedPion = 0;
-    double NTrueKaonID = 0;
-    double NTruePionID = 0;
+    int NTrueKaon = 0;
+    int NTruePion = 0;
+    int NTrueMyChargedKaon = 0;
+    int NTrueMyChargedPion = 0;
+    int NTrueKaonID = 0;
+    int NTruePionID = 0;
 
     double MC_MXs = -1;
     double qsquared = -1;
@@ -112,7 +112,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
         tree_upsilon->SetBranchAddress("nParticlesInList__boK__pl__clmychargedKaon_true__bc", &NTrueMyChargedKaon);
         tree_upsilon->SetBranchAddress("nParticlesInList__bopi__pl__clmychargedPion_true__bc", &NTrueMyChargedPion);
         tree_upsilon->SetBranchAddress("nParticlesInList__boK__pl__clKaonID_true__bc", &NTrueKaonID);
-        tree_upsilon->SetBranchAddress("nParticlesInlist__bopi__pl__clPionID_true__bc", &NTruePionID);
+        tree_upsilon->SetBranchAddress("nParticlesInList__bopi__pl__clPionID_true__bc", &NTruePionID);
 
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
