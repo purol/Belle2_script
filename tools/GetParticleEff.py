@@ -76,14 +76,14 @@ ma.matchMCTruth("K+:KaonID", path=my_path)
 ma.matchMCTruth("pi+:PionID", path=my_path)
 
 # select true particle
-ma.cutAndCopyList("K+:mychargedKaon_true", "K+:mychargedKaon", cut="abs(mcPDG) == 321", path=my_path)
-ma.cutAndCopyList("pi+:mychargedPion_true", "pi+:mychargedPion", cut="abs(mcPDG) == 211", path=my_path)
-ma.cutAndCopyList("K+:KaonID_true", "K+:KaonID", cut="abs(mcPDG) == 321", path=my_path)
-ma.cutAndCopyList("pi+:PionID_true", "pi+:PionID", cut="abs(mcPDG) == 211", path=my_path)
+ma.cutAndCopyList("K+:mychargedKaon_true", "K+:mychargedKaon", cut="[abs(mcPDG) == 321] and [inCDCAcceptance]", path=my_path)
+ma.cutAndCopyList("pi+:mychargedPion_true", "pi+:mychargedPion", cut="[abs(mcPDG) == 211] and [inCDCAcceptance]", path=my_path)
+ma.cutAndCopyList("K+:KaonID_true", "K+:KaonID", cut="[abs(mcPDG) == 321] and [inCDCAcceptance]", path=my_path)
+ma.cutAndCopyList("pi+:PionID_true", "pi+:PionID", cut="[abs(mcPDG) == 211] and [inCDCAcceptance]", path=my_path)
 
 # fill MC particles
-ma.fillParticleListFromMC('K+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
-ma.fillParticleListFromMC('pi+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+ma.fillParticleListFromMC('K+:PrimaryMC', cut = '[mcPrimary] and [inCDCAcceptance]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+ma.fillParticleListFromMC('pi+:PrimaryMC', cut = '[mcPrimary] and [inCDCAcceptance]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
 
 # for fragmentation correction
 ma.fillParticleListFromMC('K*+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
