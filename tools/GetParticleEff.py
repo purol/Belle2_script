@@ -60,33 +60,34 @@ ma.inputMdst(environmentType='default',filename=fName,path=my_path)
 # fill Upsilon(4S) MC particle
 ma.fillParticleListFromMC('Upsilon(4S):PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
 
-# fill my charged particles
-ma.fillParticleList(decayString="K+:mychargedKaon", cut="kaonID>0.6 and nCDCHits > 20 and dr < 0.5 and abs(dz) < 2 and nPXDHits > 0", path=my_path)
-ma.fillParticleList(decayString="pi+:mychargedPion", cut="pionID>0.6 and nCDCHits > 20 and dr < 0.5 and abs(dz) < 2 and nPXDHits > 0", path=my_path)
-
 # fill kaon only / pion only
-ma.fillParticleList(decayString="K+:KaonID", cut="kaonID>0.6", path=my_path)
-ma.fillParticleList(decayString="pi+:PionID", cut="pionID>0.6", path=my_path)
+ma.fillParticleList(decayString="K+:Kaon_base", cut="", path=my_path)
+ma.fillParticleList(decayString="pi+:Pion_base", cut="", path=my_path)
+ma.matchMCTruth("K+:Kaon_base", path=my_path)
+ma.matchMCTruth("pi+:Pion_base", path=my_path)
 
-# MC match
-ma.matchMCTruth("K+:mychargedKaon", path=my_path)
-ma.matchMCTruth("pi+:mychargedPion", path=my_path)
+# fill my charged particles
+ma.cutAndCopyList("K+:mychargedKaon", "K+:Kaon_base", cut="kaonID>0.6 and nCDCHits > 20 and dr < 0.5 and abs(dz) < 2 and nPXDHits > 0", path=my_path)
+ma.cutAndCopyList("pi+:mychargedPion", "pi+:Pion_base", cut="pionID>0.6 and nCDCHits > 20 and dr < 0.5 and abs(dz) < 2 and nPXDHits > 0", path=my_path)
 
-ma.matchMCTruth("K+:KaonID", path=my_path)
-ma.matchMCTruth("pi+:PionID", path=my_path)
+# fill kaon/pion ID particle
+ma.cutAndCopyList("K+:KaonID", "K+:Kaon_base", cut="kaonID>0.6", path=my_path)
+ma.cutAndCopyList("pi+:PionID", "pi+:Pion_base", cut="pionID>0.6", path=my_path)
 
-# select true particle
-ma.cutAndCopyList("K+:mychargedKaon_true", "K+:mychargedKaon", cut="[abs(mcPDG) == 321] and [inCDCAcceptance]", path=my_path)
-ma.cutAndCopyList("pi+:mychargedPion_true", "pi+:mychargedPion", cut="[abs(mcPDG) == 211] and [inCDCAcceptance]", path=my_path)
-ma.cutAndCopyList("K+:KaonID_true", "K+:KaonID", cut="[abs(mcPDG) == 321] and [inCDCAcceptance]", path=my_path)
-ma.cutAndCopyList("pi+:PionID_true", "pi+:PionID", cut="[abs(mcPDG) == 211] and [inCDCAcceptance]", path=my_path)
+# select true particles
+ma.cutAndCopyList("K+:Kaon_true", "K+:Kaon_base", cut="abs(mcPDG) == 321", path=my_path)
+ma.cutAndCopyList("pi+:Pion_true", "pi+:Pion_base", cut="abs(mcPDG) == 211", path=my_path)
 
-# fill MC particles
-ma.fillParticleListFromMC('K+:PrimaryMC', cut = '[mcPrimary] and [inCDCAcceptance]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
-ma.fillParticleListFromMC('pi+:PrimaryMC', cut = '[mcPrimary] and [inCDCAcceptance]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+ma.cutAndCopyList("K+:mychargedKaon_true", "K+:mychargedKaon", cut="abs(mcPDG) == 321", path=my_path)
+ma.cutAndCopyList("pi+:mychargedPion_true", "pi+:mychargedPion", cut="abs(mcPDG) == 211", path=my_path)
+
+ma.cutAndCopyList("K+:KaonID_true", "K+:KaonID", cut="abs(mcPDG) == 321", path=my_path)
+ma.cutAndCopyList("pi+:PionID_true", "pi+:PionID", cut="abs(mcPDG) == 211", path=my_path)
 
 # for fragmentation correction
+ma.fillParticleListFromMC('K+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
 ma.fillParticleListFromMC('K*+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+ma.fillParticleListFromMC('pi+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
 ma.fillParticleListFromMC('e+:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
 ma.fillParticleListFromMC('nu_e:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
 ma.fillParticleListFromMC('nu_mu:PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
@@ -206,7 +207,7 @@ systematics = ["nParticlesInList(nu_e:MC_signal)", "nParticlesInList(B+:MC_signa
 # make Ntuple
 NMyChargedParticle = ["nParticlesInList(K+:mychargedKaon)", "nParticlesInList(pi+:mychargedPion)", "nParticlesInList(K+:mychargedKaon_true)", "nParticlesInList(pi+:mychargedPion_true)"]
 NPIDChargedParticle = ["nParticlesInList(K+:KaonID)", "nParticlesInList(pi+:PionID)", "nParticlesInList(K+:KaonID_true)", "nParticlesInList(pi+:PionID_true)"]
-NMCChargedParticle = ["nParticlesInList(K+:PrimaryMC)", "nParticlesInList(pi+:PrimaryMC)"]
+NMCChargedParticle = ["nParticlesInList(K+:Kaon_true)", "nParticlesInList(pi+:Pion_true)"]
 va.variables.addAlias("qsquared","formula(\
 (mcDaughter(0, mcDaughter(1, E))+mcDaughter(0, mcDaughter(2, E)))^2\
 - (mcDaughter(0, mcDaughter(1, px))+mcDaughter(0, mcDaughter(2, px)))^2\
