@@ -61,8 +61,8 @@ ma.inputMdst(environmentType='default',filename=fName,path=my_path)
 ma.fillParticleListFromMC('Upsilon(4S):PrimaryMC', cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
 
 # fill kaon only / pion only
-ma.fillParticleList(decayString="K+:Kaon_base", cut="", path=my_path)
-ma.fillParticleList(decayString="pi+:Pion_base", cut="", path=my_path)
+ma.fillParticleList(decayString="K+:Kaon_base", cut="nCDCHits > 20 and dr < 0.5 and abs(dz) < 2 and nPXDHits > 0", path=my_path)
+ma.fillParticleList(decayString="pi+:Pion_base", cut="nCDCHits > 20 and dr < 0.5 and abs(dz) < 2 and nPXDHits > 0", path=my_path)
 ma.matchMCTruth("K+:Kaon_base", path=my_path)
 ma.matchMCTruth("pi+:Pion_base", path=my_path)
 
