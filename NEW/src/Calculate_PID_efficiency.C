@@ -107,8 +107,8 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             tree_upsilon->SetBranchAddress("qsquared", &qsquared);
         }
 
-        tree_upsilon->SetBranchAddress("nParticlesInList__boK__pl__clPrimaryMC__bc", &NTrueKaon);
-        tree_upsilon->SetBranchAddress("nParticlesInList__bopi__pl__clPrimaryMC__bc", &NTruePion);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boK__pl__clKaon_true__bc", &NTrueKaon);
+        tree_upsilon->SetBranchAddress("nParticlesInList__bopi__pl__clPion_true__bc", &NTruePion);
         tree_upsilon->SetBranchAddress("nParticlesInList__boK__pl__clmychargedKaon_true__bc", &NTrueMyChargedKaon);
         tree_upsilon->SetBranchAddress("nParticlesInList__bopi__pl__clmychargedPion_true__bc", &NTrueMyChargedPion);
         tree_upsilon->SetBranchAddress("nParticlesInList__boK__pl__clKaonID_true__bc", &NTrueKaonID);
