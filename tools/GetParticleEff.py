@@ -217,8 +217,8 @@ va.variables.addAlias("qsquared","formula(\
 XsKinematics = ["mcDaughter(0, mcDaughter(0, M))", "qsquared"]
 ma.variablesToNtuple(decayString="Upsilon(4S):PrimaryMC",variables=NMyChargedParticle + NPIDChargedParticle + NMCChargedParticle + XsKinematics + decay_num + systematics, filename=output_file, treename="Upsilon", path=my_path)
 
-ma.variablesToNtuple(decayString="K+:Kaon_true", variable = ["p", "cosTheta", "kaonID", "pionID"] + ["averageValueInList(Upsilon(4S):PrimaryMC, qsquared)", "averageValueInList(Upsilon(4S):PrimaryMC, mcDaughter(0, mcDaughter(0, M)))"], treename="Kaon", path=my_path)
-ma.variablesToNtuple(decayString="pi+:Pion_true", variable = ["p", "cosTheta", "kaonID", "pionID"] + ["averageValueInList(Upsilon(4S):PrimaryMC, qsquared)", "averageValueInList(Upsilon(4S):PrimaryMC, mcDaughter(0, mcDaughter(0, M)))"], treename="Pion", path=my_path)
+ma.variablesToNtuple(decayString="K+:Kaon_true", variables = ["p", "cosTheta", "kaonID", "pionID"] + ["averageValueInList(Upsilon(4S):PrimaryMC, qsquared)", "averageValueInList(Upsilon(4S):PrimaryMC, mcDaughter(0, mcDaughter(0, M)))"], treename="Kaon", path=my_path)
+ma.variablesToNtuple(decayString="pi+:Pion_true", variables = ["p", "cosTheta", "kaonID", "pionID"] + ["averageValueInList(Upsilon(4S):PrimaryMC, qsquared)", "averageValueInList(Upsilon(4S):PrimaryMC, mcDaughter(0, mcDaughter(0, M)))"], treename="Pion", path=my_path)
 
 # for debug
 #kinematics = ["mcDaughter(0, E)", "mcDaughter(0, px)", "mcDaughter(0, py)", "mcDaughter(0, pz)", "mcDaughter(1, E)", "mcDaughter(1, px)", "mcDaughter(1, py)", "mcDaughter(1, pz)"]
