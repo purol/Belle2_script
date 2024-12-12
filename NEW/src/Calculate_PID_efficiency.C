@@ -441,14 +441,14 @@ void ReadPionTree(const char* dirname, const char* included_string, const char* 
             double cosTheta_bin = -1;
             double p_bin = -1;
 
-            if ((-0.866 < cosTheta_bin) && (cosTheta_bin < -0.682)) cosTheta_bin = 0.5;
-            else if ((-0.682 < cosTheta_bin) && (cosTheta_bin < -0.4226)) cosTheta_bin = 1.5;
-            else if ((-0.4226 < cosTheta_bin) && (cosTheta_bin < -0.1045)) cosTheta_bin = 2.5;
-            else if ((-0.1045 < cosTheta_bin) && (cosTheta_bin < 0.225)) cosTheta_bin = 3.5;
-            else if ((0.225 < cosTheta_bin) && (cosTheta_bin < 0.5)) cosTheta_bin = 4.5;
-            else if ((0.5 < cosTheta_bin) && (cosTheta_bin < 0.766)) cosTheta_bin = 5.5;
-            else if ((0.766 < cosTheta_bin) && (cosTheta_bin < 0.8829)) cosTheta_bin = 6.5;
-            else if ((0.8829 < cosTheta_bin) && (cosTheta_bin < 0.9563)) cosTheta_bin = 7.5;
+            if ((-0.866 < particle_costheta) && (particle_costheta < -0.682)) cosTheta_bin = 0.5;
+            else if ((-0.682 < particle_costheta) && (particle_costheta < -0.4226)) cosTheta_bin = 1.5;
+            else if ((-0.4226 < particle_costheta) && (particle_costheta < -0.1045)) cosTheta_bin = 2.5;
+            else if ((-0.1045 < particle_costheta) && (particle_costheta < 0.225)) cosTheta_bin = 3.5;
+            else if ((0.225 < particle_costheta) && (particle_costheta < 0.5)) cosTheta_bin = 4.5;
+            else if ((0.5 < particle_costheta) && (particle_costheta < 0.766)) cosTheta_bin = 5.5;
+            else if ((0.766 < particle_costheta) && (particle_costheta < 0.8829)) cosTheta_bin = 6.5;
+            else if ((0.8829 < particle_costheta) && (particle_costheta < 0.9563)) cosTheta_bin = 7.5;
 
             if (particle_p < 0.5) p_bin = 0.5;
             else if (particle_p < 1.0) p_bin = 1.5;
@@ -497,7 +497,7 @@ int Calculate_PID_efficiency() {
 
     TH1D* Kaon_p_dist = new TH1D("Kaon_p_dist", ";p_{lab} [GeV];arbitrary unit", 50, 0.0, 4.5);
     TH1D* KaonID_dist = new TH1D("KaonID_dist", ";KaonID;arbitrary unit", 50, 0.0, 1.0);
-    TH2D* Kaon_before_dist = new TH2D("Kaon_before_dist", ";cos#theta;p_{lab} [GeV];", 8, 0.0, 8.0, 9, 0.0, 9.0);
+    TH2D* Kaon_before_dist = new TH2D("Kaon_before_dist", ";cos#theta;p;", 8, 0.0, 8.0, 9, 0.0, 9.0);
     TH2D* Kaon_after_dist = new TH2D("Kaon_after_dist", ";cos#theta;p;", 8, 0.0, 8.0, 9, 0.0, 9.0);
     TH2D* Kaon_eff_dist = new TH2D("Kaon_eff_dist", ";cos#theta;p;", 8, 0.0, 8.0, 9, 0.0, 9.0);
 
@@ -528,21 +528,27 @@ int Calculate_PID_efficiency() {
     // draw
     TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
+    Kaon_p_dist->SetStats(0);
     Kaon_p_dist->Draw("Hist");
     c_temp->SaveAs("Kaon_p.png");
 
+    KaonID_dist->SetStats(0);
     KaonID_dist->Draw("Hist");
     c_temp->SaveAs("KaonID.png");
 
+    Kaon_eff_dist->SetStats(0);
     Kaon_eff_dist->Draw("COLZ");
     c_temp->SaveAs("Kaon_eff.png");
 
+    Pion_p_dist->SetStats(0);
     Pion_p_dist->Draw("Hist");
     c_temp->SaveAs("Pion_p.png");
 
+    PionID_dist->SetStats(0);
     PionID_dist->Draw("Hist");
     c_temp->SaveAs("PionID.png");
 
+    Pion_eff_dist->SetStats(0);
     Pion_eff_dist->Draw("COLZ");
     c_temp->SaveAs("Pion_eff.png");
 
