@@ -285,14 +285,14 @@ void ReadKaonTree(const char* dirname, const char* included_string, const char* 
             double cosTheta_bin = -1;
             double p_bin = -1;
 
-            if ((-0.866 < cosTheta_bin) && (cosTheta_bin < -0.682)) cosTheta_bin = 0.5;
-            else if ((-0.682 < cosTheta_bin) && (cosTheta_bin < -0.4226)) cosTheta_bin = 1.5;
-            else if ((-0.4226 < cosTheta_bin) && (cosTheta_bin < -0.1045)) cosTheta_bin = 2.5;
-            else if ((-0.1045 < cosTheta_bin) && (cosTheta_bin < 0.225)) cosTheta_bin = 3.5;
-            else if ((0.225 < cosTheta_bin) && (cosTheta_bin < 0.5)) cosTheta_bin = 4.5;
-            else if ((0.5 < cosTheta_bin) && (cosTheta_bin < 0.766)) cosTheta_bin = 5.5;
-            else if ((0.766 < cosTheta_bin) && (cosTheta_bin < 0.8829)) cosTheta_bin = 6.5;
-            else if ((0.8829 < cosTheta_bin) && (cosTheta_bin < 0.9563)) cosTheta_bin = 7.5;
+            if ((-0.866 < particle_costheta) && (particle_costheta < -0.682)) cosTheta_bin = 0.5;
+            else if ((-0.682 < particle_costheta) && (particle_costheta < -0.4226)) cosTheta_bin = 1.5;
+            else if ((-0.4226 < particle_costheta) && (particle_costheta < -0.1045)) cosTheta_bin = 2.5;
+            else if ((-0.1045 < particle_costheta) && (particle_costheta < 0.225)) cosTheta_bin = 3.5;
+            else if ((0.225 < particle_costheta) && (particle_costheta < 0.5)) cosTheta_bin = 4.5;
+            else if ((0.5 < particle_costheta) && (particle_costheta < 0.766)) cosTheta_bin = 5.5;
+            else if ((0.766 < particle_costheta) && (particle_costheta < 0.8829)) cosTheta_bin = 6.5;
+            else if ((0.8829 < particle_costheta) && (particle_costheta < 0.9563)) cosTheta_bin = 7.5;
 
             if (particle_p < 0.5) p_bin = 0.5;
             else if (particle_p < 1.0) p_bin = 1.5;
@@ -532,24 +532,28 @@ int Calculate_PID_efficiency() {
     Kaon_p_dist->Draw("Hist");
     c_temp->SaveAs("Kaon_p.png");
 
+    c_temp->Setlogy();
     KaonID_dist->SetStats(0);
     KaonID_dist->Draw("Hist");
     c_temp->SaveAs("KaonID.png");
+    c_temp->Setlogy(0);
 
     Kaon_eff_dist->SetStats(0);
-    Kaon_eff_dist->Draw("COLZ");
+    Kaon_eff_dist->Draw("text COLZ");
     c_temp->SaveAs("Kaon_eff.png");
 
     Pion_p_dist->SetStats(0);
     Pion_p_dist->Draw("Hist");
     c_temp->SaveAs("Pion_p.png");
 
+    c_temp->Setlogy();
     PionID_dist->SetStats(0);
     PionID_dist->Draw("Hist");
     c_temp->SaveAs("PionID.png");
+    c_temp->Setlogy(0);
 
     Pion_eff_dist->SetStats(0);
-    Pion_eff_dist->Draw("COLZ");
+    Pion_eff_dist->Draw("text COLZ");
     c_temp->SaveAs("Pion_eff.png");
 
     return 0;
