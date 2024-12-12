@@ -532,11 +532,11 @@ int Calculate_PID_efficiency() {
     Kaon_p_dist->Draw("Hist");
     c_temp->SaveAs("Kaon_p.png");
 
-    c_temp->Setlogy();
+    c_temp->SetLogy();
     KaonID_dist->SetStats(0);
     KaonID_dist->Draw("Hist");
     c_temp->SaveAs("KaonID.png");
-    c_temp->Setlogy(0);
+    c_temp->SetLogy(0);
 
     Kaon_eff_dist->SetStats(0);
     Kaon_eff_dist->Draw("text COLZ");
@@ -546,11 +546,11 @@ int Calculate_PID_efficiency() {
     Pion_p_dist->Draw("Hist");
     c_temp->SaveAs("Pion_p.png");
 
-    c_temp->Setlogy();
+    c_temp->SetLogy();
     PionID_dist->SetStats(0);
     PionID_dist->Draw("Hist");
     c_temp->SaveAs("PionID.png");
-    c_temp->Setlogy(0);
+    c_temp->SetLogy(0);
 
     Pion_eff_dist->SetStats(0);
     Pion_eff_dist->Draw("text COLZ");
