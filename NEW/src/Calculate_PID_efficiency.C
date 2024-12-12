@@ -28,7 +28,7 @@ Corrector_Fragmentation corrector_Fragmentation;
 
 /* ====================================== */
 
-void GetNominalNevt(const char* dirname, const char* included_string, const char* type, const char* MC_version, const char* category, double weight_var = 1.0) { // get nominal PDF with appropriate correction
+void ReadUpsilonTree(const char* dirname, const char* included_string, const char* type, const char* MC_version, const char* category, double weight_var = 1.0) { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -164,16 +164,328 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
     return;
 }
 
+void ReadKaonTree(const char* dirname, const char* included_string, const char* type, const char* MC_version, const char* category, TH1D* p_dist, TH1D* PID_dist, TH2D* after_dist, TH2D* before_dist, double weight_var = 1.0) { // get nominal PDF with appropriate correction
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    B2Xsnunu
+    B02Xsnunu
+    otherwise
+    */
+
+    int Decay[N_decay] = { 0 };
+
+    int NparticleTrue = 0;
+
+    double MC_MXs = -1;
+    double qsquared = -1;
+
+    double particle_p = 0;
+    double particle_costheta = 0;
+    double particle_PID = 0;
+
+    std::vector<std::string> names;
+    load_files(dirname, &names, included_string);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        double Nevt = 0;
+        std::string filename = names.at(i);
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_particle = (TTree*)input_file->Get("Kaon");
+
+        if (strcmp(type, "SIGNAL") == 0) {
+            tree_particle->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
+            tree_particle->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
+            tree_particle->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &Decay[3]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch1__bc", &Decay[4]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch2__bc", &Decay[5]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch3__bc", &Decay[6]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch4__bc", &Decay[7]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch5__bc", &Decay[8]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch6__bc", &Decay[9]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch7__bc", &Decay[10]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch8__bc", &Decay[11]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch9__bc", &Decay[12]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch10__bc", &Decay[13]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch11__bc", &Decay[14]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch12__bc", &Decay[15]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch13__bc", &Decay[16]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch14__bc", &Decay[17]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch15__bc", &Decay[18]);
+            tree_particle->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &Decay[19]);
+            tree_particle->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &Decay[20]);
+            tree_particle->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay[21]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &Decay[22]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch16__bc", &Decay[23]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch17__bc", &Decay[24]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch18__bc", &Decay[25]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch19__bc", &Decay[26]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch20__bc", &Decay[27]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch21__bc", &Decay[28]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch22__bc", &Decay[29]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch23__bc", &Decay[30]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch24__bc", &Decay[31]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch25__bc", &Decay[32]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch26__bc", &Decay[33]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch27__bc", &Decay[34]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &Decay[35]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &Decay[36]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &Decay[37]);
+
+            tree_particle->SetBranchAddress("averageValueInList__boUpsilon__bo4S__bc__clPrimaryMC__cm__spmcDaughter__bo0__cm__spmcDaughter__bo0__cm__spM__bc__bc__bc", &MC_MXs);
+            tree_particle->SetBranchAddress("averageValueInList__boUpsilon__bo4S__bc__clPrimaryMC__cm__spqsquared__bc", &qsquared);
+        }
+
+        tree_particle->SetBranchAddress("p", &particle_p);
+        tree_particle->SetBranchAddress("cosTheta", &particle_costheta);
+        tree_particle->SetBranchAddress("kaonID", &particle_PID);
+
+        printf("%lld entries...\n", tree_particle->GetEntries());
+        for (unsigned int j = 0; j < tree_particle->GetEntries(); j++) { // Fill
+            tree_particle->GetEntry(j);
+
+            double total_weight = weight_var;
+
+            if (strcmp(type, "SIGNAL") == 0) {
+                if (filename.find("B2Knunu") != std::string::npos) {
+                    double correction_weight = corrector.GetCorrectionFactor(qsquared, "Bplus");
+                    total_weight = total_weight * ObtainWeight(type, MC_version, category, filename) * correction_weight;
+                }
+                else if (filename.find("B2Kstarnunu") != std::string::npos) total_weight = total_weight * ObtainWeight(type, MC_version, category, filename);
+                else if (filename.find("B2Xsnunu") != std::string::npos) {
+                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(Decay, MC_MXs, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
+                    total_weight = total_weight * ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
+                }
+                else if (filename.find("B02K0nunu") != std::string::npos) {
+                    double correction_weight = corrector.GetCorrectionFactor(qsquared, "Bzero");
+                    total_weight = total_weight * ObtainWeight(type, MC_version, category, filename) * correction_weight;
+                }
+                else if (filename.find("B02Kstar0nunu") != std::string::npos) total_weight = total_weight * ObtainWeight(type, MC_version, category, filename);
+                else if (filename.find("B02Xsnunu") != std::string::npos) {
+                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(Decay, MC_MXs, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
+                    total_weight = total_weight * ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
+                }
+                else { total_weight = total_weight * ObtainWeight(type, MC_version, category, filename); }
+            }
+            else total_weight = total_weight * ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
+
+            Nevt = Nevt + total_weight;
+
+            NparticleTrue = NparticleTrue + total_weight;
+
+            p_dist->Fill(particle_p, total_weight);
+            PID_dist->Fill(particle_PID, total_weight);
+
+            double cosTheta_bin = -1;
+            double p_bin = -1;
+
+            if ((-0.866 < cosTheta_bin) && (cosTheta_bin < -0.682)) cosTheta_bin = 0.5;
+            else if ((-0.682 < cosTheta_bin) && (cosTheta_bin < -0.4226)) cosTheta_bin = 1.5;
+            else if ((-0.4226 < cosTheta_bin) && (cosTheta_bin < -0.1045)) cosTheta_bin = 2.5;
+            else if ((-0.1045 < cosTheta_bin) && (cosTheta_bin < 0.225)) cosTheta_bin = 3.5;
+            else if ((0.225 < cosTheta_bin) && (cosTheta_bin < 0.5)) cosTheta_bin = 4.5;
+            else if ((0.5 < cosTheta_bin) && (cosTheta_bin < 0.766)) cosTheta_bin = 5.5;
+            else if ((0.766 < cosTheta_bin) && (cosTheta_bin < 0.8829)) cosTheta_bin = 6.5;
+            else if ((0.8829 < cosTheta_bin) && (cosTheta_bin < 0.9563)) cosTheta_bin = 7.5;
+
+            if (particle_p < 0.5) p_bin = 0.5;
+            else if (particle_p < 1.0) p_bin = 1.5;
+            else if (particle_p < 1.5) p_bin = 2.5;
+            else if (particle_p < 2.0) p_bin = 3.5;
+            else if (particle_p < 2.5) p_bin = 4.5;
+            else if (particle_p < 3.0) p_bin = 5.5;
+            else if (particle_p < 3.5) p_bin = 6.5;
+            else if (particle_p < 4.0) p_bin = 7.5;
+            else if (particle_p < 4.5) p_bin = 8.5;
+
+            before_dist->Fill(cosTheta_bin, p_bin, total_weight);
+
+            if(particle_PID > 0.6) after_dist->Fill(cosTheta_bin, p_bin, total_weight);
+
+        }
+        input_file->Close();
+
+        printf("%s has %lf events (with correction)\n", filename.c_str(), Nevt);
+
+        Ntotal = Ntotal + Nevt;
+
+    }
+
+    return;
+}
+
+void ReadPionTree(const char* dirname, const char* included_string, const char* type, const char* MC_version, const char* category, TH1D* p_dist, TH1D* PID_dist, TH2D* after_dist, TH2D* before_dist, double weight_var = 1.0) { // get nominal PDF with appropriate correction
+    /*
+    CorrectionType for new form factors
+    B2Knunu
+    B02K0nunu
+    B2Xsnunu
+    B02Xsnunu
+    otherwise
+    */
+
+    int Decay[N_decay] = { 0 };
+
+    int NparticleTrue = 0;
+
+    double MC_MXs = -1;
+    double qsquared = -1;
+
+    double particle_p = 0;
+    double particle_costheta = 0;
+    double particle_PID = 0;
+
+    std::vector<std::string> names;
+    load_files(dirname, &names, included_string);
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+
+        double Nevt = 0;
+        std::string filename = names.at(i);
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+
+        TTree* tree_particle = (TTree*)input_file->Get("Pion");
+
+        if (strcmp(type, "SIGNAL") == 0) {
+            tree_particle->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
+            tree_particle->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
+            tree_particle->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &Decay[3]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch1__bc", &Decay[4]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch2__bc", &Decay[5]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch3__bc", &Decay[6]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch4__bc", &Decay[7]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch5__bc", &Decay[8]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch6__bc", &Decay[9]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch7__bc", &Decay[10]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch8__bc", &Decay[11]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch9__bc", &Decay[12]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch10__bc", &Decay[13]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch11__bc", &Decay[14]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch12__bc", &Decay[15]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch13__bc", &Decay[16]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch14__bc", &Decay[17]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsu__clMCch15__bc", &Decay[18]);
+            tree_particle->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &Decay[19]);
+            tree_particle->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &Decay[20]);
+            tree_particle->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay[21]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &Decay[22]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch16__bc", &Decay[23]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch17__bc", &Decay[24]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch18__bc", &Decay[25]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch19__bc", &Decay[26]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch20__bc", &Decay[27]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch21__bc", &Decay[28]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch22__bc", &Decay[29]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch23__bc", &Decay[30]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch24__bc", &Decay[31]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch25__bc", &Decay[32]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch26__bc", &Decay[33]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch27__bc", &Decay[34]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &Decay[35]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &Decay[36]);
+            tree_particle->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &Decay[37]);
+
+            tree_particle->SetBranchAddress("averageValueInList__boUpsilon__bo4S__bc__clPrimaryMC__cm__spmcDaughter__bo0__cm__spmcDaughter__bo0__cm__spM__bc__bc__bc", &MC_MXs);
+            tree_particle->SetBranchAddress("averageValueInList__boUpsilon__bo4S__bc__clPrimaryMC__cm__spqsquared__bc", &qsquared);
+        }
+
+        tree_particle->SetBranchAddress("p", &particle_p);
+        tree_particle->SetBranchAddress("cosTheta", &particle_costheta);
+        tree_particle->SetBranchAddress("pionID", &particle_PID);
+
+        printf("%lld entries...\n", tree_particle->GetEntries());
+        for (unsigned int j = 0; j < tree_particle->GetEntries(); j++) { // Fill
+            tree_particle->GetEntry(j);
+
+            double total_weight = weight_var;
+
+            if (strcmp(type, "SIGNAL") == 0) {
+                if (filename.find("B2Knunu") != std::string::npos) {
+                    double correction_weight = corrector.GetCorrectionFactor(qsquared, "Bplus");
+                    total_weight = total_weight * ObtainWeight(type, MC_version, category, filename) * correction_weight;
+                }
+                else if (filename.find("B2Kstarnunu") != std::string::npos) total_weight = total_weight * ObtainWeight(type, MC_version, category, filename);
+                else if (filename.find("B2Xsnunu") != std::string::npos) {
+                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(Decay, MC_MXs, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
+                    total_weight = total_weight * ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
+                }
+                else if (filename.find("B02K0nunu") != std::string::npos) {
+                    double correction_weight = corrector.GetCorrectionFactor(qsquared, "Bzero");
+                    total_weight = total_weight * ObtainWeight(type, MC_version, category, filename) * correction_weight;
+                }
+                else if (filename.find("B02Kstar0nunu") != std::string::npos) total_weight = total_weight * ObtainWeight(type, MC_version, category, filename);
+                else if (filename.find("B02Xsnunu") != std::string::npos) {
+                    double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(Decay, MC_MXs, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
+                    total_weight = total_weight * ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
+                }
+                else { total_weight = total_weight * ObtainWeight(type, MC_version, category, filename); }
+            }
+            else total_weight = total_weight * ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
+
+            Nevt = Nevt + total_weight;
+
+            NparticleTrue = NparticleTrue + total_weight;
+
+            p_dist->Fill(particle_p, total_weight);
+            PID_dist->Fill(particle_PID, total_weight);
+
+            double cosTheta_bin = -1;
+            double p_bin = -1;
+
+            if ((-0.866 < cosTheta_bin) && (cosTheta_bin < -0.682)) cosTheta_bin = 0.5;
+            else if ((-0.682 < cosTheta_bin) && (cosTheta_bin < -0.4226)) cosTheta_bin = 1.5;
+            else if ((-0.4226 < cosTheta_bin) && (cosTheta_bin < -0.1045)) cosTheta_bin = 2.5;
+            else if ((-0.1045 < cosTheta_bin) && (cosTheta_bin < 0.225)) cosTheta_bin = 3.5;
+            else if ((0.225 < cosTheta_bin) && (cosTheta_bin < 0.5)) cosTheta_bin = 4.5;
+            else if ((0.5 < cosTheta_bin) && (cosTheta_bin < 0.766)) cosTheta_bin = 5.5;
+            else if ((0.766 < cosTheta_bin) && (cosTheta_bin < 0.8829)) cosTheta_bin = 6.5;
+            else if ((0.8829 < cosTheta_bin) && (cosTheta_bin < 0.9563)) cosTheta_bin = 7.5;
+
+            if (particle_p < 0.5) p_bin = 0.5;
+            else if (particle_p < 1.0) p_bin = 1.5;
+            else if (particle_p < 1.5) p_bin = 2.5;
+            else if (particle_p < 2.0) p_bin = 3.5;
+            else if (particle_p < 2.5) p_bin = 4.5;
+            else if (particle_p < 3.0) p_bin = 5.5;
+            else if (particle_p < 3.5) p_bin = 6.5;
+            else if (particle_p < 4.0) p_bin = 7.5;
+            else if (particle_p < 4.5) p_bin = 8.5;
+
+            before_dist->Fill(cosTheta_bin, p_bin, total_weight);
+
+            if (particle_PID > 0.6) after_dist->Fill(cosTheta_bin, p_bin, total_weight);
+
+        }
+        input_file->Close();
+
+        printf("%s has %lf events (with correction)\n", filename.c_str(), Nevt);
+
+        Ntotal = Ntotal + Nevt;
+
+    }
+
+    return;
+}
+
 int Calculate_PID_efficiency() {
 
     const char* dirname = "";
 
-    GetNominalNevt(dirname, "B2Knunu", "SIGNAL", MCTYPE, "validation", 1.0);
-    GetNominalNevt(dirname, "B2Kstarnunu", "SIGNAL", MCTYPE, "validation", 1.0);
-    GetNominalNevt(dirname, "B2Xsnunu", "SIGNAL", MCTYPE, "validation", 1.0);
-    GetNominalNevt(dirname, "B02K0nunu", "SIGNAL", MCTYPE, "validation", 1.0);
-    GetNominalNevt(dirname, "B02Kstar0nunu", "SIGNAL", MCTYPE, "validation", 1.0);
-    GetNominalNevt(dirname, "B02Xsnunu", "SIGNAL", MCTYPE, "validation", 1.0);
+    ReadUpsilonTree(dirname, "B2Knunu", "SIGNAL", MCTYPE, "validation", 1.0);
+    ReadUpsilonTree(dirname, "B2Kstarnunu", "SIGNAL", MCTYPE, "validation", 1.0);
+    ReadUpsilonTree(dirname, "B2Xsnunu", "SIGNAL", MCTYPE, "validation", 1.0);
+    ReadUpsilonTree(dirname, "B02K0nunu", "SIGNAL", MCTYPE, "validation", 1.0);
+    ReadUpsilonTree(dirname, "B02Kstar0nunu", "SIGNAL", MCTYPE, "validation", 1.0);
+    ReadUpsilonTree(dirname, "B02Xsnunu", "SIGNAL", MCTYPE, "validation", 1.0);
 
     printf("Ntotal: %lf\n", Ntotal);
     printf("totalTrueKaon: %lf\n", totalTrueKaon);
@@ -182,6 +494,57 @@ int Calculate_PID_efficiency() {
     printf("totalTrueMyChargedPion: %lf\n", totalTrueMyChargedPion);
     printf("totalTrueKaonID: %lf\n", totalTrueKaonID);
     printf("totalTruePionID: %lf\n", totalTruePionID);
+
+    TH1D* Kaon_p_dist = new TH1D("Kaon_p_dist", ";p_{lab} [GeV];arbitrary unit", 50, 0.0, 4.5);
+    TH1D* KaonID_dist = new TH1D("KaonID_dist", ";KaonID;arbitrary unit", 50, 0.0, 1.0);
+    TH2D* Kaon_before_dist = new TH2D("Kaon_before_dist", ";cos#theta;p_{lab} [GeV];", 8, 0.0, 8.0, 9, 0.0, 9.0);
+    TH2D* Kaon_after_dist = new TH2D("Kaon_after_dist", ";cos#theta;p;", 8, 0.0, 8.0, 9, 0.0, 9.0);
+    TH2D* Kaon_eff_dist = new TH2D("Kaon_eff_dist", ";cos#theta;p;", 8, 0.0, 8.0, 9, 0.0, 9.0);
+
+    ReadKaonTree(dirname, "B2Knunu", "SIGNAL", MCTYPE, "validation", Kaon_p_dist, KaonID_dist, Kaon_after_dist, Kaon_before_dist, 1.0);
+    ReadKaonTree(dirname, "B2Kstarnunu", "SIGNAL", MCTYPE, "validation", Kaon_p_dist, KaonID_dist, Kaon_after_dist, Kaon_before_dist, 1.0);
+    ReadKaonTree(dirname, "B2Xsnunu", "SIGNAL", MCTYPE, "validation", Kaon_p_dist, KaonID_dist, Kaon_after_dist, Kaon_before_dist, 1.0);
+    ReadKaonTree(dirname, "B02K0nunu", "SIGNAL", MCTYPE, "validation", Kaon_p_dist, KaonID_dist, Kaon_after_dist, Kaon_before_dist, 1.0);
+    ReadKaonTree(dirname, "B02Kstar0nunu", "SIGNAL", MCTYPE, "validation", Kaon_p_dist, KaonID_dist, Kaon_after_dist, Kaon_before_dist, 1.0);
+    ReadKaonTree(dirname, "B02Xsnunu", "SIGNAL", MCTYPE, "validation", Kaon_p_dist, KaonID_dist, Kaon_after_dist, Kaon_before_dist, 1.0);
+
+    Kaon_eff_dist->Divide(Kaon_after_dist, Kaon_before_dist);
+
+    TH1D* Pion_p_dist = new TH1D("Pion_p_dist", ";p_{lab} [GeV];arbitrary unit", 50, 0.0, 4.5);
+    TH1D* PionID_dist = new TH1D("PionID_dist", ";PionID;arbitrary unit", 50, 0.0, 1.0);
+    TH2D* Pion_before_dist = new TH2D("Pion_before_dist", ";cos#theta;p;", 8, 0.0, 8.0, 9, 0.0, 9.0);
+    TH2D* Pion_after_dist = new TH2D("Pion_after_dist", ";cos#theta;p;", 8, 0.0, 8.0, 9, 0.0, 9.0);
+    TH2D* Pion_eff_dist = new TH2D("Pion_eff_dist", ";cos#theta;p;", 8, 0.0, 8.0, 9, 0.0, 9.0);
+
+    ReadPionTree(dirname, "B2Knunu", "SIGNAL", MCTYPE, "validation", Pion_p_dist, PionID_dist, Pion_after_dist, Pion_before_dist, 1.0);
+    ReadPionTree(dirname, "B2Kstarnunu", "SIGNAL", MCTYPE, "validation", Pion_p_dist, PionID_dist, Pion_after_dist, Pion_before_dist, 1.0);
+    ReadPionTree(dirname, "B2Xsnunu", "SIGNAL", MCTYPE, "validation", Pion_p_dist, PionID_dist, Pion_after_dist, Pion_before_dist, 1.0);
+    ReadPionTree(dirname, "B02K0nunu", "SIGNAL", MCTYPE, "validation", Pion_p_dist, PionID_dist, Pion_after_dist, Pion_before_dist, 1.0);
+    ReadPionTree(dirname, "B02Kstar0nunu", "SIGNAL", MCTYPE, "validation", Pion_p_dist, PionID_dist, Pion_after_dist, Pion_before_dist, 1.0);
+    ReadPionTree(dirname, "B02Xsnunu", "SIGNAL", MCTYPE, "validation", Pion_p_dist, PionID_dist, Pion_after_dist, Pion_before_dist, 1.0);
+
+    Pion_eff_dist->Divide(Pion_after_dist, Pion_before_dist);
+
+    // draw
+    TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+
+    Kaon_p_dist->Draw("Hist");
+    c_temp->SaveAs("Kaon_p.png");
+
+    KaonID_dist->Draw("Hist");
+    c_temp->SaveAs("KaonID.png");
+
+    Kaon_eff_dist->Draw("COLZ");
+    c_temp->SaveAs("Kaon_eff.png");
+
+    Pion_p_dist->Draw("Hist");
+    c_temp->SaveAs("Pion_p.png");
+
+    PionID_dist->Draw("Hist");
+    c_temp->SaveAs("PionID.png");
+
+    Pion_eff_dist->Draw("COLZ");
+    c_temp->SaveAs("Pion_eff.png");
 
     return 0;
 }
