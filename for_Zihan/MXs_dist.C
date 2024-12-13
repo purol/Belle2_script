@@ -50,8 +50,8 @@ void load_files(const char* dirname, std::vector<std::string>* names, const char
     }
 }
 
-TH1D* MXs_11 = new TH1D("MXs_11", ";M_{Xs} [GeV];arbitrary unit", 30, 1.1, 4.0);
-TH1D* MXs_10 = new TH1D("MXs_10", ";M_{Xs} [GeV];arbitrary unit", 30, 1.1, 4.0);
+TH1D* MXs_11 = new TH1D("MXs cut = 1.1 GeV", ";M_{Xs} [GeV];arbitrary unit", 30, 1.1, 4.0);
+TH1D* MXs_10 = new TH1D("MXs cut = 1.0 GeV", ";M_{Xs} [GeV];arbitrary unit", 30, 1.1, 4.0);
 
 void LetsFill(const char* dirname, const char* included_string, TH1D* MXs_hist, double weight_var = 1.0) {
     double Mx = 0;
@@ -109,7 +109,7 @@ void MXs_dist()
     // draw plot and get p-value
     gStyle->SetOptStat(0);
 
-    TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd(); gPad->SetLogy();
+    TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd();
     MXs_11->Draw("Hist"); MXs_10->Draw("HistSAME");
     TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.6, 0.6); legend->SetFillStyle(0); legend->SetLineWidth(0);
     c_temp->SaveAs("MXsll.png");
