@@ -185,6 +185,9 @@ void ReadKaonTree(const char* dirname, const char* included_string, const char* 
     double particle_costheta = 0;
     double particle_PID = 0;
 
+    double seenInARICH = 0;
+    double seenInTOP = 0;
+
     std::vector<std::string> names;
     load_files(dirname, &names, included_string);
 
@@ -245,6 +248,9 @@ void ReadKaonTree(const char* dirname, const char* included_string, const char* 
         tree_particle->SetBranchAddress("p", &particle_p);
         tree_particle->SetBranchAddress("cosTheta", &particle_costheta);
         tree_particle->SetBranchAddress("kaonID", &particle_PID);
+
+        tree_particle->SetBranchAddress("matchedMC__boseenInARICH__bc", &seenInARICH);
+        tree_particle->SetBranchAddress("matchedMC__boseenInTOP__bc", &seenInTOP);
 
         printf("%lld entries...\n", tree_particle->GetEntries());
         for (unsigned int j = 0; j < tree_particle->GetEntries(); j++) { // Fill
@@ -341,6 +347,9 @@ void ReadPionTree(const char* dirname, const char* included_string, const char* 
     double particle_costheta = 0;
     double particle_PID = 0;
 
+    double seenInARICH = 0;
+    double seenInTOP = 0;
+
     std::vector<std::string> names;
     load_files(dirname, &names, included_string);
 
@@ -401,6 +410,9 @@ void ReadPionTree(const char* dirname, const char* included_string, const char* 
         tree_particle->SetBranchAddress("p", &particle_p);
         tree_particle->SetBranchAddress("cosTheta", &particle_costheta);
         tree_particle->SetBranchAddress("pionID", &particle_PID);
+
+        tree_particle->SetBranchAddress("matchedMC__boseenInARICH__bc", &seenInARICH);
+        tree_particle->SetBranchAddress("matchedMC__boseenInTOP__bc", &seenInTOP);
 
         printf("%lld entries...\n", tree_particle->GetEntries());
         for (unsigned int j = 0; j < tree_particle->GetEntries(); j++) { // Fill
