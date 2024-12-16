@@ -2157,6 +2157,12 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Upsilon_info[index] > max) { max = temp.at(i).Upsilon_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
+                for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
+                    if ((temp.at(i).Upsilon_info[index] == max) && (i != best_candidate_index)) {
+                        printf("There is more than one candidates with the same BCS variable\n");
+                        exit(1);
+                    }
+                }
                 new_container.push(temp[best_candidate_index]);
             }
             else if (crit == Loader::Lowest) {
@@ -2166,6 +2172,12 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Upsilon_info[index] < min) { min = temp.at(i).Upsilon_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
+                for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
+                    if ((temp.at(i).Upsilon_info[index] == max) && (i != best_candidate_index)) {
+                        printf("There is more than one candidates with the same BCS variable\n");
+                        exit(1);
+                    }
+                }
                 new_container.push(temp[best_candidate_index]);
             }
             break;
@@ -2177,6 +2189,12 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Bsig_info[index] > max) { max = temp.at(i).Bsig_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
+                for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
+                    if ((temp.at(i).Bsig_info[index] == max) && (i != best_candidate_index)) {
+                        printf("There is more than one candidates with the same BCS variable\n");
+                        exit(1);
+                    }
+                }
                 new_container.push(temp[best_candidate_index]);
             }
             else if (crit == Loader::Lowest) {
@@ -2186,6 +2204,12 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Bsig_info[index] < min) { min = temp.at(i).Bsig_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
+                for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
+                    if ((temp.at(i).Bsig_info[index] == max) && (i != best_candidate_index)) {
+                        printf("There is more than one candidates with the same BCS variable\n");
+                        exit(1);
+                    }
+                }
                 new_container.push(temp[best_candidate_index]);
             }
             break;
@@ -2197,6 +2221,12 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Btag_info[index] > max) { max = temp.at(i).Btag_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
+                for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
+                    if ((temp.at(i).Btag_info[index] == max) && (i != best_candidate_index)) {
+                        printf("There is more than one candidates with the same BCS variable\n");
+                        exit(1);
+                    }
+                }
                 new_container.push(temp[best_candidate_index]);
             }
             else if (crit == Loader::Lowest) {
@@ -2206,6 +2236,12 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Btag_info[index] < min) { min = temp.at(i).Btag_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
+                for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
+                    if ((temp.at(i).Btag_info[index] == max) && (i != best_candidate_index)) {
+                        printf("There is more than one candidates with the same BCS variable\n");
+                        exit(1);
+                    }
+                }
                 new_container.push(temp[best_candidate_index]);
             }
             break;
