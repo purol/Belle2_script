@@ -402,7 +402,7 @@ public:
     void Cut(const char* bracket_1, double const_1, Loader::Arithmetic ari_1, Loader::Variable variable_1, int i_1, const char* bracket_2, Loader::Arithmetic ari, const char* bracket_3, double const_2, Loader::Arithmetic ari_2, Loader::Variable variable_2, int i_2, const char* bracket_4, Loader::Inequality inq, double value);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::Variable variable_qual, int i_qual, Loader::Inequality inq_qual, double value_qual);
-    void BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit);
+    void BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit, bool IntendedMultipleCandidate = false);
     void BCS_random(std::string seedString = "The quick brown fox jumps over the lazy dog");
     bool IsBCSValid();
     void End();
@@ -2131,7 +2131,7 @@ void Loader::PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequalit
     current_N_experiment_index++;
 }
 
-void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit) {
+void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit, bool IntendedMultipleCandidate) {
     std::queue<Data> new_container;
     bool BCSisPerfect = true;
 
@@ -2161,10 +2161,15 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Upsilon_info[index] > max) { max = temp.at(i).Upsilon_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
-                for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
-                    if ((temp.at(i).Upsilon_info[index] == max) && (i != best_candidate_index)) BCSisPerfect = false;
+                for (unsigned int i = 0; i < temp.size(); i++) { // check whether there are more than 1 candidates after BCS
+                    if ((temp.at(i).Upsilon_info[index] == max) && (i != best_candidate_index)) {
+                        BCSisPerfect = false;
+                        break;
+                    }
                 }
-                new_container.push(temp[best_candidate_index]);
+                for (unsigned int i = 0; i < temp.size(); i++) {
+                    if (temp.at(i).Upsilon_info[index] == max) new_container.push(temp[i]);
+                }
             }
             else if (crit == Loader::Lowest) {
                 double min = std::numeric_limits<double>::max();
@@ -2173,10 +2178,15 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Upsilon_info[index] < min) { min = temp.at(i).Upsilon_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
-                for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
-                    if ((temp.at(i).Upsilon_info[index] == min) && (i != best_candidate_index)) BCSisPerfect = false;
+                for (unsigned int i = 0; i < temp.size(); i++) { // check whether there are more than 1 candidates after BCS
+                    if ((temp.at(i).Upsilon_info[index] == min) && (i != best_candidate_index)) {
+                        BCSisPerfect = false;
+                        break;
+                    }
                 }
-                new_container.push(temp[best_candidate_index]);
+                for (unsigned int i = 0; i < temp.size(); i++) {
+                    if (temp.at(i).Upsilon_info[index] == min) new_container.push(temp[i]);
+                }
             }
             break;
         case Loader::Bsig:
@@ -2187,10 +2197,15 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Bsig_info[index] > max) { max = temp.at(i).Bsig_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
-                for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
-                    if ((temp.at(i).Bsig_info[index] == max) && (i != best_candidate_index)) BCSisPerfect = false;
+                for (unsigned int i = 0; i < temp.size(); i++) { // check whether there are more than 1 candidates after BCS
+                    if ((temp.at(i).Bsig_info[index] == max) && (i != best_candidate_index)) {
+                        BCSisPerfect = false;
+                        break;
+                    }
                 }
-                new_container.push(temp[best_candidate_index]);
+                for (unsigned int i = 0; i < temp.size(); i++) {
+                    if (temp.at(i).Bsig_info[index] == max) new_container.push(temp[i]);
+                }
             }
             else if (crit == Loader::Lowest) {
                 double min = std::numeric_limits<double>::max();
@@ -2199,10 +2214,15 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Bsig_info[index] < min) { min = temp.at(i).Bsig_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
-                for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
-                    if ((temp.at(i).Bsig_info[index] == min) && (i != best_candidate_index)) BCSisPerfect = false;
+                for (unsigned int i = 0; i < temp.size(); i++) { // check whether there are more than 1 candidates after BCS
+                    if ((temp.at(i).Bsig_info[index] == min) && (i != best_candidate_index)) {
+                        BCSisPerfect = false;
+                        break;
+                    }
                 }
-                new_container.push(temp[best_candidate_index]);
+                for (unsigned int i = 0; i < temp.size(); i++) {
+                    if (temp.at(i).Bsig_info[index] == min) new_container.push(temp[i]);
+                }
             }
             break;
         case Loader::Btag:
@@ -2213,10 +2233,15 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Btag_info[index] > max) { max = temp.at(i).Btag_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
-                for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
-                    if ((temp.at(i).Btag_info[index] == max) && (i != best_candidate_index)) BCSisPerfect = false;
+                for (unsigned int i = 0; i < temp.size(); i++) { // check whether there are more than 1 candidates after BCS
+                    if ((temp.at(i).Btag_info[index] == max) && (i != best_candidate_index)) {
+                        BCSisPerfect = false;
+                        break;
+                    }
                 }
-                new_container.push(temp[best_candidate_index]);
+                for (unsigned int i = 0; i < temp.size(); i++) {
+                    if (temp.at(i).Btag_info[index] == max) new_container.push(temp[i]);
+                }
             }
             else if (crit == Loader::Lowest) {
                 double min = std::numeric_limits<double>::max();
@@ -2225,10 +2250,15 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Btag_info[index] < min) { min = temp.at(i).Btag_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
-                for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
-                    if ((temp.at(i).Btag_info[index] == min) && (i != best_candidate_index)) BCSisPerfect = false;
+                for (unsigned int i = 0; i < temp.size(); i++) { // check whether there are more than 1 candidates after BCS
+                    if ((temp.at(i).Btag_info[index] == min) && (i != best_candidate_index)) {
+                        BCSisPerfect = false;
+                        break;
+                    }
                 }
-                new_container.push(temp[best_candidate_index]);
+                for (unsigned int i = 0; i < temp.size(); i++) {
+                    if (temp.at(i).Btag_info[index] == min) new_container.push(temp[i]);
+                }
             }
             break;
         default:
@@ -2243,7 +2273,7 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
         new_container.pop();
         TotalData.push(temp_data);
     }
-    if (BCSisPerfect == false) {
+    if ((BCSisPerfect == false) && (IntendedMultipleCandidate == false)) {
         printf("There is more than one candidates with the same BCS variable. Is it what you intend?\n");
     }
 }
