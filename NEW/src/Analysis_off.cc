@@ -95,6 +95,7 @@ int main(int argc, char* argv[]) {
         loader.PrintInformation(std::string("========== D veto =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
         loader.BCS(Loader::Btag, 5, Loader::Highest);
+        loader.BCS_random(names.at(i));
         if (loader.IsBCSValid() == false) {
             printf("ERROR! it is not valid\n");
             exit(1);
