@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <functional>
+#include <random>
 #include "TH1.h"
 #include "TH2.h"
 #include "TList.h"
@@ -401,6 +403,7 @@ public:
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::Variable variable_qual, int i_qual, Loader::Inequality inq_qual, double value_qual);
     void BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit);
+    void BCS_random(std::string seedString = "The quick brown fox jumps over the lazy dog");
     bool IsBCSValid();
     void End();
     void PrintRootFile(std::string output_name);
@@ -2130,6 +2133,7 @@ void Loader::PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequalit
 
 void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit) {
     std::queue<Data> new_container;
+    bool BCSisPerfect = true;
 
     while (!TotalData.empty()) {
         std::vector<Data> temp;
@@ -2158,10 +2162,7 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
                 for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
-                    if ((temp.at(i).Upsilon_info[index] == max) && (i != best_candidate_index)) {
-                        printf("There is more than one candidates with the same BCS variable\n");
-                        exit(1);
-                    }
+                    if ((temp.at(i).Upsilon_info[index] == max) && (i != best_candidate_index)) BCSisPerfect = false;
                 }
                 new_container.push(temp[best_candidate_index]);
             }
@@ -2173,10 +2174,7 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
                 for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
-                    if ((temp.at(i).Upsilon_info[index] == min) && (i != best_candidate_index)) {
-                        printf("There is more than one candidates with the same BCS variable\n");
-                        exit(1);
-                    }
+                    if ((temp.at(i).Upsilon_info[index] == min) && (i != best_candidate_index)) BCSisPerfect = false;
                 }
                 new_container.push(temp[best_candidate_index]);
             }
@@ -2190,10 +2188,7 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
                 for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
-                    if ((temp.at(i).Bsig_info[index] == max) && (i != best_candidate_index)) {
-                        printf("There is more than one candidates with the same BCS variable\n");
-                        exit(1);
-                    }
+                    if ((temp.at(i).Bsig_info[index] == max) && (i != best_candidate_index)) BCSisPerfect = false;
                 }
                 new_container.push(temp[best_candidate_index]);
             }
@@ -2205,10 +2200,7 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
                 for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
-                    if ((temp.at(i).Bsig_info[index] == min) && (i != best_candidate_index)) {
-                        printf("There is more than one candidates with the same BCS variable\n");
-                        exit(1);
-                    }
+                    if ((temp.at(i).Bsig_info[index] == min) && (i != best_candidate_index)) BCSisPerfect = false;
                 }
                 new_container.push(temp[best_candidate_index]);
             }
@@ -2222,10 +2214,7 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
                 for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
-                    if ((temp.at(i).Btag_info[index] == max) && (i != best_candidate_index)) {
-                        printf("There is more than one candidates with the same BCS variable\n");
-                        exit(1);
-                    }
+                    if ((temp.at(i).Btag_info[index] == max) && (i != best_candidate_index)) BCSisPerfect = false;
                 }
                 new_container.push(temp[best_candidate_index]);
             }
@@ -2237,10 +2226,7 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
                 for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
-                    if ((temp.at(i).Btag_info[index] == min) && (i != best_candidate_index)) {
-                        printf("There is more than one candidates with the same BCS variable\n");
-                        exit(1);
-                    }
+                    if ((temp.at(i).Btag_info[index] == min) && (i != best_candidate_index)) BCSisPerfect = false;
                 }
                 new_container.push(temp[best_candidate_index]);
             }
@@ -2256,6 +2242,66 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
         Data temp_data = new_container.front();
         new_container.pop();
         TotalData.push(temp_data);
+    }
+    if (BCSisPerfect == false) {
+        printf("There is more than one candidates with the same BCS variable. Is it what you intend?\n");
+    }
+}
+
+void Loader::BCS_random(std::string seedString) {
+    // Convert the string to a size_t hash value
+    std::hash<std::string> hasher;
+    size_t hashValue = hasher(seedString);
+
+    // Initialize the random number generator with the hash value
+    std::mt19937 rng(static_cast<unsigned int>(hashValue));
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
+
+    std::queue<Data> new_container;
+    bool BCSisPerfect = true;
+
+    while (!TotalData.empty()) {
+        std::vector<Data> temp;
+        Data initial_data = TotalData.front();
+        int experiment_ = initial_data.__experiment__;
+        int run_ = initial_data.__run__;
+        unsigned int event_ = initial_data.__event__;
+        int ncandidates_ = initial_data.__ncandidates__;
+        while (true) { // I suppose that the order of data exists
+            if (TotalData.empty()) break;
+            Data temp_data = TotalData.front();
+            if (temp_data.__experiment__ == experiment_ && temp_data.__run__ == run_ && temp_data.__event__ == event_ && temp_data.__ncandidates__ == ncandidates_) {
+                TotalData.pop();
+                temp.push_back(temp_data);
+            }
+            else break;
+        }
+
+        // generate random numbers
+        std::vector<double> random_numbers;
+        for (unsigned int i = 0; i < temp.size(); i++) random_numbers.push_back(dist(rng));
+
+        double max = -std::numeric_limits<double>::max();
+        int best_candidate_index = -1;
+        for (unsigned int i = 0; i < temp.size(); i++) {
+            if (random_numbers.at(i) > max) { max = random_numbers.at(i); best_candidate_index = i; }
+        }
+        if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
+        for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
+            if ((random_numbers.at(i) == max) && (i != best_candidate_index)) BCSisPerfect = false;
+        }
+        new_container.push(temp[best_candidate_index]);
+
+    }
+    while (!TotalData.empty()) TotalData.pop();
+    while (!new_container.empty()) {
+        Data temp_data = new_container.front();
+        new_container.pop();
+        TotalData.push(temp_data);
+    }
+    if (BCSisPerfect == false) {
+        printf("There is more than one candidates with BCSrandom. Something wrong.\n");
+        exit(1);
     }
 }
 
