@@ -86,7 +86,8 @@ gbasf2_Newton.py
 -> (count B0 -> phi(->KS0 KL0) KL0) ->
 gbasf2_Seija.py
 -> (now Mbc sideband save hashmap) ->
-gbasf2_Yuka.py
+gbasf2_Yuka.py -> (bugfix for ppbar/KSKS data) -> gbasf2_Yuka_BUGFIX.py
+
 
 plan
 - Emiss + Pmiss
