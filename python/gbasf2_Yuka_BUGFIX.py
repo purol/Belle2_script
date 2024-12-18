@@ -591,7 +591,7 @@ for analysistype in Options:
             ma.fillParticleListFromMC("B+:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
             ma.fillParticleListFromMC("B0:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
 
-            ma.buildRestOfEvent("B+:PrimaryMC",path=my_path)
+            ma.buildRestOfEventFromMC("B+:PrimaryMC",path=my_path)
             roe_path_KSKS_one = basf2.Path()
             deadEndPath_KSKS_one = basf2.Path()
             ma.signalSideParticleFilter('B+:PrimaryMC', '', roe_path_KSKS_one, deadEndPath_KSKS_one)
@@ -607,7 +607,7 @@ for analysistype in Options:
             my_path.for_each('RestOfEvent', 'RestOfEvents', roe_path_KSKS_one)
             ma.cutAndCopyList("B+:XKSKS", "B+:PrimaryMC", "[extraInfo(Nnue) < 1] and [extraInfo(Nnumu) < 1] and [extraInfo(Nnutau) < 1] and [extraInfo(NKS0) > 1]",path=my_path)
 
-            ma.buildRestOfEvent("B0:PrimaryMC",path=my_path)
+            ma.buildRestOfEventFromMC("B0:PrimaryMC",path=my_path)
             roe_path_KSKS_two = basf2.Path()
             deadEndPath_KSKS_two = basf2.Path()
             ma.signalSideParticleFilter('B0:PrimaryMC', '', roe_path_KSKS_two, deadEndPath_KSKS_two)
