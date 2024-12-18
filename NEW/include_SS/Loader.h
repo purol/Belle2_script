@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <functional>
+#include <random>
 #include "TH1.h"
 #include "TH2.h"
 #include "TList.h"
@@ -17,12 +19,14 @@
 #include "TCanvas.h"
 #include "constants.h"
 #include "correctors.h"
+#include "ObtainWeight.h"
 
 # define Nstep 20
 # define stepstart 0.8
 # define stepend 1.0
 
 Corrector corrector;
+Corrector_Knn corrector_Knn;
 Corrector_Fragmentation corrector_Fragmentation;
 
 typedef struct data {
@@ -81,9 +85,15 @@ typedef struct data {
     // 146: nBplustoKnn, 147: inv_Knn, 148: nBplustoK*nn, 149: inv_K*nn, 150: nBzerotoK0nn, 151: inv_K0nn, 152: nBzerotoK0*nn, 153: inv_K0*nn
     // 154: nBplustoKpKLKL_all, 155: nBplustoKpKLKL_NR, 156: BplustoKpKLKL_M01, 157: BplustoKpKLKL_M02, 158: BplustoKpKLKL_M12
     // 159: nBzerotoKSKLKL_all, 160: nBzerotoKSKLKL_NR, 161: BzerotoKSKLKL_M01, 162: BzerotoKSKLKL_M02, 163: BzerotoKSKLKL_M12
-    // 164: # of KS0, 165: avg E of KS0, 166: avg px of KS0, 167: avg py of KS0, 168: avg pz of KS0,
-    // 169: E of 1st KS0, 170: px of 1st KS0, 171: py of 1st KS0, 172: pz of 1st KS0, 173: E of 2nd KS0
-    // 174: px of 2nd KS0, 175: py of 2nd KS0, 176: pz of 2nd KS0, 177: nBplustToXKSKS, 178: nBzeroToXKSKS
+    // 164: nBplustoXnn, 165: nBzerotoXnn, 166: Mnnbar
+    // 167: nKL0_XKLKL, 168: avg_KL0_XKLKL_E, 169: avg_KL0_XKLKL_px, 170: avg_KL0_XKLKL_py, 171: avg_KL0_XKLKL_pz
+    // 172: avg_1st_KL0_XKLKL_E, 173: avg_1st_KL0_XKLKL_px, 174: avg_1st_KL0_XKLKL_py, 175: avg_1st_KL0_XKLKL_pz
+    // 176: avg_2nd_KL0_XKLKL_E, 177: avg_2nd_KL0_XKLKL_px, 178: avg_2nd_KL0_XKLKL_py, 179: avg_2nd_KL0_XKLKL_pz
+    // 180: nKS0_XKLKL, 181: avg_KS0_XKLKL_E, 182: avg_KS0_XKLKL_px, 183: avg_KS0_XKLKL_py, 184: avg_KS0_XKLKL_pz
+    // 185: nB2KstarKLKL, 186: nB02KstarKLKL, 187: nB02phiKL, 188: nGamma from KL0
+    // 189: # of KS0, 190: avg E of KS0, 191: avg px of KS0, 192: avg py of KS0, 193: avg pz of KS0,
+    // 194: E of 1st KS0, 195: px of 1st KS0, 196: py of 1st KS0, 197: pz of 1st KS0, 198: E of 2nd KS0
+    // 199: px of 2nd KS0, 200: py of 2nd KS0, 201: pz of 2nd KS0, 202: nBplustToXKSKS, 203: nBzeroToXKSKS
 
     double Bsig_info[N_Bsig_info];
     // 0: Bsig_E, 1: Bsig_E_CMS, 2: Bsig_E_Recoil
@@ -112,13 +122,19 @@ typedef struct data {
     // 64: mychiProb, 65: mydr, 66: mydz
     // 67-358: PIDs
     // 359-366: pi0s
-    // 367-514: fake from E, 542-737: fake from MU
-    // 738: Mbc, 739: deltaE, 740: MXs, 741: Bsig_isSignal, 742: Bsig_phi
+    // 367-514: fake from E, 542-737: fake from MU, 738: Bsig_isSignal
+    // 739: nDc_noDCS, 740: Dc_pValue_med_noDCS, 741: Dc_pValue:std_noDCS, 742: Dcsimpleveto_chiProb_noDCS
+    // 743: Dcsimpleveto_dr_noDCS, 744: Dcsimpleveto_dz_noDCS, 745: Dcsimpleveto_M_noDCS
+    // 746: nDc_yespizero, 747: Dc_pValue_med_yespizero, 748: Dc_pValue:std_yespizero, 749: Dcsimpleveto_chiProb_yespizero
+    // 750: Dcsimpleveto_dr_yespizero, 751: Dcsimpleveto_dz_yespizero, 752: Dcsimpleveto_M_yespizero
+    // 753: nD0_yespizero, 754: D0_pValue_med_yespizero, 755: D0_pValue:std_yespizero, 756: D0simpleveto_chiProb_yespizero
+    // 757: D0simpleveto_dr_yespizero, 758: D0simpleveto_dz_yespizero, 759: D0simpleveto_M_yespizero
+    // 760: Mbc, 761: deltaE, 762: MXs, 763: Bsig_phi
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
     // 3: Btag_E, 4: Btag_E_CMS, 5: Btag_signalprobability, 6: chiProb_tag
-    // 7: dr, 8: dz, 9: Btag_p_CMS, 10: Btag_CMS_phi
+    // 7: dr, 8: dz, 9: Btag_p_CMS, 10: Btag_CMS_phi, 11: Btag_isSignal
 
     double Needed_info[N_Needed_info];
     // 0: Btag_R2, 1: Btag_thrustBm, 2: Btag_thrustOm. 3: Btag_cosTBTO
@@ -265,7 +281,10 @@ public:
     };
     enum MassRegion {
         SmallMass = 0,
-        LargeMass
+        LargeMass,
+        KaonMass,
+        KstarMass,
+        XsMass
     };
 
 private:
@@ -282,6 +301,12 @@ private:
     std::vector<std::string> titles;
     int current_N_event;
     int current_N_candidate;
+
+    std::vector<double> N_events_mu1;
+    std::vector<double> N_events_mu2;
+    std::vector<double> N_events_mu3;
+    std::vector<std::string> titles_PrintInformationAboutMXs;
+    int current_N_PrintInformationAboutMXs;
 
     std::vector<int> experiment_indices;
     std::vector<int> run_indices;
@@ -374,13 +399,15 @@ public:
     void DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear);
     void PrintInformation(std::string title, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
+    void PrintInformationAboutMXs(std::string title, std::string filename, const char* MC_version, const char* category);
     void PrintVariablebin(std::string title, Loader::Variable variable, int variable_index, int Nbin, double Var_hist_min, double Var_hist_max, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value);
     void Cut(Loader::Variable variable_1, int i_1, Loader::Arithmetic ari, Loader::Variable variable_2, int i_2, Loader::Inequality inq, double value);
     void Cut(const char* bracket_1, double const_1, Loader::Arithmetic ari_1, Loader::Variable variable_1, int i_1, const char* bracket_2, Loader::Arithmetic ari, const char* bracket_3, double const_2, Loader::Arithmetic ari_2, Loader::Variable variable_2, int i_2, const char* bracket_4, Loader::Inequality inq, double value);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::Variable variable_qual, int i_qual, Loader::Inequality inq_qual, double value_qual);
-    void BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit);
+    void BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit, bool IntendedMultipleCandidate = false);
+    void BCS_random(std::string seedString = "The quick brown fox jumps over the lazy dog");
     bool IsBCSValid();
     void End();
     void PrintRootFile(std::string output_name);
@@ -395,10 +422,12 @@ public:
     void PrintFOM(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
     void PrintFOM1D(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
     void MVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
+    void MVACutBelow(double OBB, double Oqq, Loader::MassRegion massRegion);
     void CountMCEvent(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
     void SelectDecayModeOf(Loader::DecayMode decaymode);
     void RejectDecayModeOf(Loader::DecayMode decaymode);
     void BeamEnergyCorrectionFromDeltaE(int index_pBcms, int index_EBcms, int index_Mbc, int index_deltaE, double targetEbeamstar, bool IsItBtag);
+    void BeamEnergyCorrectionFromDeltaE_RC(int index_pBcms, int index_EBcms, int index_Mbc, int index_deltaE, double targetEbeamstar, bool IsItBtag);
 };
 
 Loader::Loader() {
@@ -408,6 +437,7 @@ Loader::Loader() {
     current_TH2F = 0;
     current_N_event = 0;
     current_N_candidate = 0;
+    current_N_PrintInformationAboutMXs = 0;
     current_file = 0;
     current_N_experiment_index = 0;
     current_Var_hists = 0;
@@ -446,6 +476,7 @@ void Loader::initialize() {
     current_TH2F = 0;
     current_N_event = 0;
     current_N_candidate = 0;
+    current_N_PrintInformationAboutMXs = 0;
     current_file = 0;
     current_N_experiment_index = 0;
     current_Var_hists = 0;
@@ -491,7 +522,7 @@ void Loader::GetData(TFile* input_file) {
 
     Data temp = { 0 };
 
-    int MakeShiftDoubleToInt[19] = { 0 }; // intermediate variable to convert from int to double
+    int MakeShiftDoubleToInt[26] = { 0 }; // intermediate variable to convert from int to double
     const char* TypeName = tree_upsilon->FindLeaf("nRemainingTracksInEvent")->GetTypeName(); // to get type name. Check `nRemainingTracksInEvent` only
 
     // get event_info
@@ -713,26 +744,78 @@ void Loader::GetData(TFile* input_file) {
     tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp.Upsilon_info[161]);
     tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp.Upsilon_info[162]);
     tree_upsilon->SetBranchAddress("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp.Upsilon_info[163]);
-    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boN_KS_KSKS__bc__bc", &temp.Upsilon_info[164]);
-    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_E__bc__bc", &temp.Upsilon_info[165]);
-    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_px__bc__bc", &temp.Upsilon_info[166]);
-    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_py__bc__bc", &temp.Upsilon_info[167]);
-    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_pz__bc__bc", &temp.Upsilon_info[168]);
-    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_E__bc__bc", &temp.Upsilon_info[169]);
-    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_px__bc__bc", &temp.Upsilon_info[170]);
-    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_py__bc__bc", &temp.Upsilon_info[171]);
-    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_pz__bc__bc", &temp.Upsilon_info[172]);
-    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_E__bc__bc", &temp.Upsilon_info[173]);
-    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_px__bc__bc", &temp.Upsilon_info[174]);
-    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_py__bc__bc", &temp.Upsilon_info[175]);
-    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_pz__bc__bc", &temp.Upsilon_info[176]);
     if (strcmp(TypeName, "Int_t") == 0) {
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clXKSKS__bc", &MakeShiftDoubleToInt[17]); // temp.Upsilon_info[177]
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clXKSKS__bc", &MakeShiftDoubleToInt[18]); // temp.Upsilon_info[178]
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clXnn__bc", &MakeShiftDoubleToInt[17]); // temp.Upsilon_info[164]
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clXnn__bc", &MakeShiftDoubleToInt[18]); // temp.Upsilon_info[165]
     }
     else {
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clXKSKS__bc", &temp.Upsilon_info[177]);
-        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clXKSKS__bc", &temp.Upsilon_info[178]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clXnn__bc", &temp.Upsilon_info[164]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clXnn__bc", &temp.Upsilon_info[165]);
+    }
+    tree_upsilon->SetBranchAddress("invMassInLists__bon0__clXnn__bc", &temp.Upsilon_info[166]);
+    if (strcmp(TypeName, "Int_t") == 0) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boK_L0__clXKLKL__bc", &MakeShiftDoubleToInt[19]); // temp.Upsilon_info[167]
+    }
+    else {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boK_L0__clXKLKL__bc", &temp.Upsilon_info[167]);
+    }
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL__cm__spE__bc", &temp.Upsilon_info[168]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL__cm__sppx__bc", &temp.Upsilon_info[169]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL__cm__sppy__bc", &temp.Upsilon_info[170]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL__cm__sppz__bc", &temp.Upsilon_info[171]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__spE__bc", &temp.Upsilon_info[172]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppx__bc", &temp.Upsilon_info[173]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppy__bc", &temp.Upsilon_info[174]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_1st__cm__sppz__bc", &temp.Upsilon_info[175]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__spE__bc", &temp.Upsilon_info[176]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppx__bc", &temp.Upsilon_info[177]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppy__bc", &temp.Upsilon_info[178]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppz__bc", &temp.Upsilon_info[179]);
+    if (strcmp(TypeName, "Int_t") == 0) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boK_S0__clXKLKL__bc", &MakeShiftDoubleToInt[20]); // temp.Upsilon_info[180]
+    }
+    else {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boK_S0__clXKLKL__bc", &temp.Upsilon_info[180]);
+    }
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__spE__bc", &temp.Upsilon_info[181]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &temp.Upsilon_info[182]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &temp.Upsilon_info[183]);
+    tree_upsilon->SetBranchAddress("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp.Upsilon_info[184]);
+    if (strcmp(TypeName, "Int_t") == 0) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarKLKL__bc", &MakeShiftDoubleToInt[21]); // temp.Upsilon_info[185]
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstarKLKL__bc", &MakeShiftDoubleToInt[22]); // temp.Upsilon_info[186]
+    }
+    else {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp.Upsilon_info[185]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKstarKLKL__bc", &temp.Upsilon_info[186]);
+    }
+    if (strcmp(TypeName, "Int_t") == 0) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_phi__bc", &MakeShiftDoubleToInt[23]);
+    }
+    else {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clKSKLKL_phi__bc", &temp.Upsilon_info[187]);
+    }
+    tree_upsilon->SetBranchAddress("extraInfo__boNgammav200_KL0__bc", &temp.Upsilon_info[188]);
+    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boN_KS_KSKS__bc__bc", &temp.Upsilon_info[189]);
+    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_E__bc__bc", &temp.Upsilon_info[190]);
+    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_px__bc__bc", &temp.Upsilon_info[191]);
+    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_py__bc__bc", &temp.Upsilon_info[192]);
+    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_pz__bc__bc", &temp.Upsilon_info[193]);
+    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_E__bc__bc", &temp.Upsilon_info[194]);
+    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_px__bc__bc", &temp.Upsilon_info[195]);
+    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_py__bc__bc", &temp.Upsilon_info[196]);
+    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_pz__bc__bc", &temp.Upsilon_info[197]);
+    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_E__bc__bc", &temp.Upsilon_info[198]);
+    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_px__bc__bc", &temp.Upsilon_info[199]);
+    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_py__bc__bc", &temp.Upsilon_info[200]);
+    tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_pz__bc__bc", &temp.Upsilon_info[201]);
+    if (strcmp(TypeName, "Int_t") == 0) {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clXKSKS__bc", &MakeShiftDoubleToInt[24]); // temp.Upsilon_info[202]
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clXKSKS__bc", &MakeShiftDoubleToInt[25]); // temp.Upsilon_info[203]
+    }
+    else {
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clXKSKS__bc", &temp.Upsilon_info[202]);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clXKSKS__bc", &temp.Upsilon_info[203]);
     }
 
     // get Bsig_info
@@ -822,11 +905,32 @@ void Loader::GetData(TFile* input_file) {
         tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp.Bsig_info[542 + 4 * i_PID + 2]);
         tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp.Bsig_info[542 + 4 * i_PID + 3]);
     }
-    tree_Bsig->SetBranchAddress("Bsig_Mbc", &temp.Bsig_info[738]);
-    tree_Bsig->SetBranchAddress("Bsig_deltaE", &temp.Bsig_info[739]);
-    tree_Bsig->SetBranchAddress("Bsig_daughter_0_M", &temp.Bsig_info[740]);
-    tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[741]);
-    tree_Bsig->SetBranchAddress("Bsig_phi", &temp.Bsig_info[742]);
+    tree_Bsig->SetBranchAddress("Bsig_isSignal", &temp.Bsig_info[738]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nDc_noDCS", &temp.Bsig_info[739]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &temp.Bsig_info[740]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &temp.Bsig_info[741]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &temp.Bsig_info[742]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_noDCS", &temp.Bsig_info[743]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &temp.Bsig_info[744]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &temp.Bsig_info[745]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nDc_yespizero", &temp.Bsig_info[746]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_med_yespizero", &temp.Bsig_info[747]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dc_pValue_std_yespizero", &temp.Bsig_info[748]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_yespizero", &temp.Bsig_info[749]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_yespizero", &temp.Bsig_info[750]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_yespizero", &temp.Bsig_info[751]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_yespizero", &temp.Bsig_info[752]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_nD0_yespizero", &temp.Bsig_info[753]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &temp.Bsig_info[754]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &temp.Bsig_info[755]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &temp.Bsig_info[756]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &temp.Bsig_info[757]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &temp.Bsig_info[758]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &temp.Bsig_info[759]);
+    tree_Bsig->SetBranchAddress("Bsig_Mbc", &temp.Bsig_info[760]);
+    tree_Bsig->SetBranchAddress("Bsig_deltaE", &temp.Bsig_info[761]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_M", &temp.Bsig_info[762]);
+    tree_Bsig->SetBranchAddress("Bsig_phi", &temp.Bsig_info[763]);
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
@@ -840,6 +944,7 @@ void Loader::GetData(TFile* input_file) {
     tree_Btag->SetBranchAddress("Btag_dz", &temp.Btag_info[8]);
     tree_Btag->SetBranchAddress("Btag_useCMSFrame_p", &temp.Btag_info[9]);
     tree_Btag->SetBranchAddress("Btag_useCMSFrame_phi", &temp.Btag_info[10]);
+    tree_Btag->SetBranchAddress("Btag_isSignal", &temp.Btag_info[11]);
 
     // other information I need
     tree_Btag->SetBranchAddress("Btag_R2", &temp.Needed_info[0]);
@@ -987,8 +1092,15 @@ void Loader::GetData(TFile* input_file) {
             temp.Upsilon_info[155] = static_cast<double>(MakeShiftDoubleToInt[14]);
             temp.Upsilon_info[159] = static_cast<double>(MakeShiftDoubleToInt[15]);
             temp.Upsilon_info[160] = static_cast<double>(MakeShiftDoubleToInt[16]);
-            temp.Upsilon_info[177] = static_cast<double>(MakeShiftDoubleToInt[17]);
-            temp.Upsilon_info[178] = static_cast<double>(MakeShiftDoubleToInt[18]);
+            temp.Upsilon_info[164] = static_cast<double>(MakeShiftDoubleToInt[17]);
+            temp.Upsilon_info[165] = static_cast<double>(MakeShiftDoubleToInt[18]);
+            temp.Upsilon_info[167] = static_cast<double>(MakeShiftDoubleToInt[19]);
+            temp.Upsilon_info[180] = static_cast<double>(MakeShiftDoubleToInt[20]);
+            temp.Upsilon_info[185] = static_cast<double>(MakeShiftDoubleToInt[21]);
+            temp.Upsilon_info[186] = static_cast<double>(MakeShiftDoubleToInt[22]);
+            temp.Upsilon_info[187] = static_cast<double>(MakeShiftDoubleToInt[23]);
+            temp.Upsilon_info[202] = static_cast<double>(MakeShiftDoubleToInt[24]);
+            temp.Upsilon_info[203] = static_cast<double>(MakeShiftDoubleToInt[25]);
         }
 
         TotalData.push(temp);
@@ -1411,7 +1523,7 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
                     }
                     else { N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename); }
                 }
-                else N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename);
+                else N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
             }
             Labels temp_Labels;
             temp_Labels.__experiment__ = temp.__experiment__;
@@ -1530,8 +1642,8 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
                 }
             }
             else {
-                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
-                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
+                N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
+                N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
             }
 
         }
@@ -1541,6 +1653,120 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
 
     current_N_event++;
     current_N_candidate++;
+}
+
+void Loader::PrintInformationAboutMXs(std::string title, std::string filename, const char* MC_version, const char* category) {
+    typedef struct labels {
+        int __experiment__;
+        int __run__;
+        unsigned int __event__;
+        int __ncandidates__;
+    } Labels;
+    std::vector<Labels> label_list;
+
+    if (!DoesItHaveXsBranch) {
+        printf("[PrintInformationAboutMXs] There is no Xs branch\n");
+        exit(1);
+    }
+
+    if (N_events_mu1.size() == current_N_PrintInformationAboutMXs && N_events_mu2.size() == current_N_PrintInformationAboutMXs && N_events_mu3.size() == current_N_PrintInformationAboutMXs) { // allocate new int
+        N_events_mu1.push_back(0);
+        N_events_mu2.push_back(0);
+        N_events_mu3.push_back(0);
+        titles_PrintInformationAboutMXs.push_back(title);
+    }
+    else if (N_events_mu1.size() > current_N_PrintInformationAboutMXs && N_events_mu2.size() > current_N_PrintInformationAboutMXs && N_events_mu3.size() > current_N_PrintInformationAboutMXs) { // use what I have
+    }
+    else { // error
+        printf("ERROR! 028\n");
+        exit(1);
+    }
+
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
+    while (!temp_queue.empty()) {
+        Data temp = temp_queue.front();
+        temp_queue.pop();
+
+        bool overlap = false;
+        for (unsigned int i = 0; i < label_list.size(); i++) {
+            if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) {
+                overlap = true;
+            }
+        }
+        if (overlap == false) {
+            // get MXs
+            double MC_MXs = -1;
+
+            if (filename.find("B2") != std::string::npos) MC_MXs = temp.Decay_syst_ff[index_MXs_Bc];
+            else if (filename.find("B02") != std::string::npos) MC_MXs = temp.Decay_syst_ff[index_MXs_B0];
+
+            // sanity check
+            if (MC_MXs > 0.0) {}
+            else { // mass is NaN. try to find true mass region by file name
+                if ((filename.find("B2Knunu") != std::string::npos) || (filename.find("B02K0nunu") != std::string::npos)) MC_MXs = 0.4868;
+                else if ((filename.find("B2Kstarnunu") != std::string::npos) || (filename.find("B02Kstar0nunu") != std::string::npos)) MC_MXs = 0.8916;
+                else if ((filename.find("B2Xsnunu") != std::string::npos) || (filename.find("B02Xsnunu") != std::string::npos)) MC_MXs = 1.5;
+                else {
+                    printf("MC Mass of Xs cannot be found and the file name is not expected\n");
+                    exit(1);
+                }
+            }
+
+            // Number of event
+            if (filename.find("B2Knunu") != std::string::npos) {
+                double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
+                if((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_weight;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_weight;
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_weight;
+            }
+            else if (filename.find("B2Kstarnunu") != std::string::npos) {
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+            }
+            else if (filename.find("B2Xsnunu") != std::string::npos) {
+                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_fragmentation;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_fragmentation;
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_fragmentation;
+            }
+            else if (filename.find("B02K0nunu") != std::string::npos) {
+                double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_weight;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_weight;
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_weight;
+            }
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) {
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+            }
+            else if (filename.find("B02Xsnunu") != std::string::npos) {
+                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_fragmentation;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_fragmentation;
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename) * correction_fragmentation;
+            }
+            else { 
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) N_events_mu1.at(current_N_PrintInformationAboutMXs) = N_events_mu1.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) N_events_mu2.at(current_N_PrintInformationAboutMXs) = N_events_mu2.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+                else if (MC_MXs > 1.0) N_events_mu3.at(current_N_PrintInformationAboutMXs) = N_events_mu3.at(current_N_PrintInformationAboutMXs) + ObtainWeight("SIGNAL", MC_version, category, filename);
+            }
+
+            Labels temp_Labels;
+            temp_Labels.__experiment__ = temp.__experiment__;
+            temp_Labels.__run__ = temp.__run__;
+            temp_Labels.__event__ = temp.__event__;
+            temp_Labels.__ncandidates__ = temp.__ncandidates__;
+
+            label_list.push_back(temp_Labels);
+        }
+
+        TotalData.push(temp);
+    }
+
+    current_N_PrintInformationAboutMXs++;
 }
 
 void Loader::PrintVariablebin(std::string title, Loader::Variable variable, int variable_index, int Nbin, double Var_hist_min, double Var_hist_max, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode) {
@@ -1600,7 +1826,7 @@ void Loader::PrintVariablebin(std::string title, Loader::Variable variable, int 
                 }
                 else { Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename)); }
             }
-            else Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename));
+            else Var_hists.at(current_Var_hists)->Fill(temp_value, ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false));
         }
 
         TotalData.push(temp);
@@ -1936,8 +2162,9 @@ void Loader::PrintDebugLogIf(Loader::Variable variable, int i, Loader::Inequalit
     current_N_experiment_index++;
 }
 
-void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit) {
+void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit, bool IntendedMultipleCandidate) {
     std::queue<Data> new_container;
+    bool BCSisPerfect = true;
 
     while (!TotalData.empty()) {
         std::vector<Data> temp;
@@ -1965,7 +2192,15 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Upsilon_info[index] > max) { max = temp.at(i).Upsilon_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
-                new_container.push(temp[best_candidate_index]);
+                for (unsigned int i = 0; i < temp.size(); i++) { // check whether there are more than 1 candidates after BCS
+                    if ((temp.at(i).Upsilon_info[index] == max) && (i != best_candidate_index)) {
+                        BCSisPerfect = false;
+                        break;
+                    }
+                }
+                for (unsigned int i = 0; i < temp.size(); i++) {
+                    if (temp.at(i).Upsilon_info[index] == max) new_container.push(temp[i]);
+                }
             }
             else if (crit == Loader::Lowest) {
                 double min = std::numeric_limits<double>::max();
@@ -1974,7 +2209,15 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Upsilon_info[index] < min) { min = temp.at(i).Upsilon_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
-                new_container.push(temp[best_candidate_index]);
+                for (unsigned int i = 0; i < temp.size(); i++) { // check whether there are more than 1 candidates after BCS
+                    if ((temp.at(i).Upsilon_info[index] == min) && (i != best_candidate_index)) {
+                        BCSisPerfect = false;
+                        break;
+                    }
+                }
+                for (unsigned int i = 0; i < temp.size(); i++) {
+                    if (temp.at(i).Upsilon_info[index] == min) new_container.push(temp[i]);
+                }
             }
             break;
         case Loader::Bsig:
@@ -1985,7 +2228,15 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Bsig_info[index] > max) { max = temp.at(i).Bsig_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
-                new_container.push(temp[best_candidate_index]);
+                for (unsigned int i = 0; i < temp.size(); i++) { // check whether there are more than 1 candidates after BCS
+                    if ((temp.at(i).Bsig_info[index] == max) && (i != best_candidate_index)) {
+                        BCSisPerfect = false;
+                        break;
+                    }
+                }
+                for (unsigned int i = 0; i < temp.size(); i++) {
+                    if (temp.at(i).Bsig_info[index] == max) new_container.push(temp[i]);
+                }
             }
             else if (crit == Loader::Lowest) {
                 double min = std::numeric_limits<double>::max();
@@ -1994,7 +2245,15 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Bsig_info[index] < min) { min = temp.at(i).Bsig_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
-                new_container.push(temp[best_candidate_index]);
+                for (unsigned int i = 0; i < temp.size(); i++) { // check whether there are more than 1 candidates after BCS
+                    if ((temp.at(i).Bsig_info[index] == min) && (i != best_candidate_index)) {
+                        BCSisPerfect = false;
+                        break;
+                    }
+                }
+                for (unsigned int i = 0; i < temp.size(); i++) {
+                    if (temp.at(i).Bsig_info[index] == min) new_container.push(temp[i]);
+                }
             }
             break;
         case Loader::Btag:
@@ -2005,7 +2264,15 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Btag_info[index] > max) { max = temp.at(i).Btag_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
-                new_container.push(temp[best_candidate_index]);
+                for (unsigned int i = 0; i < temp.size(); i++) { // check whether there are more than 1 candidates after BCS
+                    if ((temp.at(i).Btag_info[index] == max) && (i != best_candidate_index)) {
+                        BCSisPerfect = false;
+                        break;
+                    }
+                }
+                for (unsigned int i = 0; i < temp.size(); i++) {
+                    if (temp.at(i).Btag_info[index] == max) new_container.push(temp[i]);
+                }
             }
             else if (crit == Loader::Lowest) {
                 double min = std::numeric_limits<double>::max();
@@ -2014,7 +2281,15 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
                     if (temp.at(i).Btag_info[index] < min) { min = temp.at(i).Btag_info[index]; best_candidate_index = i; }
                 }
                 if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
-                new_container.push(temp[best_candidate_index]);
+                for (unsigned int i = 0; i < temp.size(); i++) { // check whether there are more than 1 candidates after BCS
+                    if ((temp.at(i).Btag_info[index] == min) && (i != best_candidate_index)) {
+                        BCSisPerfect = false;
+                        break;
+                    }
+                }
+                for (unsigned int i = 0; i < temp.size(); i++) {
+                    if (temp.at(i).Btag_info[index] == min) new_container.push(temp[i]);
+                }
             }
             break;
         default:
@@ -2028,6 +2303,66 @@ void Loader::BCS(Loader::Variable variable, int index, Loader::BCS_criterion cri
         Data temp_data = new_container.front();
         new_container.pop();
         TotalData.push(temp_data);
+    }
+    if ((BCSisPerfect == false) && (IntendedMultipleCandidate == false)) {
+        printf("There is more than one candidates with the same BCS variable. Is it what you intend?\n");
+    }
+}
+
+void Loader::BCS_random(std::string seedString) {
+    // Convert the string to a size_t hash value
+    std::hash<std::string> hasher;
+    size_t hashValue = hasher(seedString);
+
+    // Initialize the random number generator with the hash value
+    std::mt19937 rng(static_cast<unsigned int>(hashValue));
+    std::uniform_real_distribution<double> dist(0.0, 1.0);
+
+    std::queue<Data> new_container;
+    bool BCSisPerfect = true;
+
+    while (!TotalData.empty()) {
+        std::vector<Data> temp;
+        Data initial_data = TotalData.front();
+        int experiment_ = initial_data.__experiment__;
+        int run_ = initial_data.__run__;
+        unsigned int event_ = initial_data.__event__;
+        int ncandidates_ = initial_data.__ncandidates__;
+        while (true) { // I suppose that the order of data exists
+            if (TotalData.empty()) break;
+            Data temp_data = TotalData.front();
+            if (temp_data.__experiment__ == experiment_ && temp_data.__run__ == run_ && temp_data.__event__ == event_ && temp_data.__ncandidates__ == ncandidates_) {
+                TotalData.pop();
+                temp.push_back(temp_data);
+            }
+            else break;
+        }
+
+        // generate random numbers
+        std::vector<double> random_numbers;
+        for (unsigned int i = 0; i < temp.size(); i++) random_numbers.push_back(dist(rng));
+
+        double max = -std::numeric_limits<double>::max();
+        int best_candidate_index = -1;
+        for (unsigned int i = 0; i < temp.size(); i++) {
+            if (random_numbers.at(i) > max) { max = random_numbers.at(i); best_candidate_index = i; }
+        }
+        if (best_candidate_index == -1) { printf("error!\n"); exit(1); }
+        for (unsigned int i = 0; i < temp.size(); i++) { // sanity check
+            if ((random_numbers.at(i) == max) && (i != best_candidate_index)) BCSisPerfect = false;
+        }
+        new_container.push(temp[best_candidate_index]);
+
+    }
+    while (!TotalData.empty()) TotalData.pop();
+    while (!new_container.empty()) {
+        Data temp_data = new_container.front();
+        new_container.pop();
+        TotalData.push(temp_data);
+    }
+    if (BCSisPerfect == false) {
+        printf("There is more than one candidates with BCSrandom. Something wrong.\n");
+        exit(1);
     }
 }
 
@@ -2083,6 +2418,13 @@ void Loader::End() {
         printf("Number of candidate: %lf\n", N_candidates.at(i));
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %lf\n", j, N_candidates_modes[j].at(i));
         if (AllOfThemHaveXsBranch) for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i));
+    }
+
+    for (int i = 0; i < N_events_mu1.size(); i++) {
+        printf("%s\n", titles_PrintInformationAboutMXs.at(i).c_str());
+        printf("Number of event at first region: %lf\n", N_events_mu1.at(i));
+        printf("Number of event at second region: %lf\n", N_events_mu2.at(i));
+        printf("Number of event at third region: %lf\n", N_events_mu3.at(i));
     }
 
     for (int i = 0; i < Var_hists.size(); i++) {
@@ -2462,21 +2804,46 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &UpsilonDataToTree[161]);
         tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &UpsilonDataToTree[162]);
         tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &UpsilonDataToTree[163]);
-        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boN_KS_KSKS__bc__bc", &UpsilonDataToTree[164]);
-        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_E__bc__bc", &UpsilonDataToTree[165]);
-        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_px__bc__bc", &UpsilonDataToTree[166]);
-        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_py__bc__bc", &UpsilonDataToTree[167]);
-        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_pz__bc__bc", &UpsilonDataToTree[168]);
-        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_E__bc__bc", &UpsilonDataToTree[169]);
-        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_px__bc__bc", &UpsilonDataToTree[170]);
-        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_py__bc__bc", &UpsilonDataToTree[171]);
-        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_pz__bc__bc", &UpsilonDataToTree[172]);
-        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_E__bc__bc", &UpsilonDataToTree[173]);
-        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_px__bc__bc", &UpsilonDataToTree[174]);
-        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_py__bc__bc", &UpsilonDataToTree[175]);
-        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_pz__bc__bc", &UpsilonDataToTree[176]);
-        tree_upsilon->Branch("nParticlesInList__boB__pl__clXKSKS__bc", &UpsilonDataToTree[177]);
-        tree_upsilon->Branch("nParticlesInList__boB0__clXKSKS__bc", &UpsilonDataToTree[178]);
+        tree_upsilon->Branch("nParticlesInList__boB__pl__clXnn__bc", &UpsilonDataToTree[164]);
+        tree_upsilon->Branch("nParticlesInList__boB0__clXnn__bc", &UpsilonDataToTree[165]);
+        tree_upsilon->Branch("invMassInLists__bon0__clXnn__bc", &UpsilonDataToTree[166]);
+        tree_upsilon->Branch("nParticlesInList__boK_L0__clXKLKL__bc", &UpsilonDataToTree[167]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL__cm__spE__bc", &UpsilonDataToTree[168]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppx__bc", &UpsilonDataToTree[169]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppy__bc", &UpsilonDataToTree[170]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppz__bc", &UpsilonDataToTree[171]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__spE__bc", &UpsilonDataToTree[172]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppx__bc", &UpsilonDataToTree[173]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppy__bc", &UpsilonDataToTree[174]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppz__bc", &UpsilonDataToTree[175]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__spE__bc", &UpsilonDataToTree[176]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppx__bc", &UpsilonDataToTree[177]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppy__bc", &UpsilonDataToTree[178]);
+        tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppz__bc", &UpsilonDataToTree[179]);
+        tree_upsilon->Branch("nParticlesInList__boK_S0__clXKLKL__bc", &UpsilonDataToTree[180]);
+        tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__spE__bc", &UpsilonDataToTree[181]);
+        tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &UpsilonDataToTree[182]);
+        tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &UpsilonDataToTree[183]);
+        tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &UpsilonDataToTree[184]);
+        tree_upsilon->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &UpsilonDataToTree[185]);
+        tree_upsilon->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &UpsilonDataToTree[186]);
+        tree_upsilon->Branch("nParticlesInList__boB0__clKSKLKL_phi__bc", &UpsilonDataToTree[187]);
+        tree_upsilon->Branch("extraInfo__boNgammav200_KL0__bc", &UpsilonDataToTree[188]);
+        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boN_KS_KSKS__bc__bc", &UpsilonDataToTree[189]);
+        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_E__bc__bc", &UpsilonDataToTree[190]);
+        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_px__bc__bc", &UpsilonDataToTree[191]);
+        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_py__bc__bc", &UpsilonDataToTree[192]);
+        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_pz__bc__bc", &UpsilonDataToTree[193]);
+        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_E__bc__bc", &UpsilonDataToTree[194]);
+        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_px__bc__bc", &UpsilonDataToTree[195]);
+        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_py__bc__bc", &UpsilonDataToTree[196]);
+        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_pz__bc__bc", &UpsilonDataToTree[197]);
+        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_E__bc__bc", &UpsilonDataToTree[198]);
+        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_px__bc__bc", &UpsilonDataToTree[199]);
+        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_py__bc__bc", &UpsilonDataToTree[200]);
+        tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_pz__bc__bc", &UpsilonDataToTree[201]);
+        tree_upsilon->Branch("nParticlesInList__boB__pl__clXKSKS__bc", &UpsilonDataToTree[202]);
+        tree_upsilon->Branch("nParticlesInList__boB0__clXKSKS__bc", &UpsilonDataToTree[203]);
 
         // get Bsig_info
         tree_Bsig->Branch("Bsig_E", &BsigDataToTree[0]);
@@ -2565,11 +2932,32 @@ void Loader::PrintRootFile(std::string output_name) {
             tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &BsigDataToTree[542 + 4 * i_PID + 2]);
             tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &BsigDataToTree[542 + 4 * i_PID + 3]);
         }
-        tree_Bsig->Branch("Bsig_Mbc", &BsigDataToTree[738]);
-        tree_Bsig->Branch("Bsig_deltaE", &BsigDataToTree[739]);
-        tree_Bsig->Branch("Bsig_daughter_0_M", &BsigDataToTree[740]);
-        tree_Bsig->Branch("Bsig_isSignal", &BsigDataToTree[741]);
-        tree_Bsig->Branch("Bsig_phi", &BsigDataToTree[742]);
+        tree_Bsig->Branch("Bsig_isSignal", &BsigDataToTree[738]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc_noDCS", &BsigDataToTree[739]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &BsigDataToTree[740]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &BsigDataToTree[741]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &BsigDataToTree[742]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_noDCS", &BsigDataToTree[743]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &BsigDataToTree[744]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &BsigDataToTree[745]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc_yespizero", &BsigDataToTree[746]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_yespizero", &BsigDataToTree[747]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_yespizero", &BsigDataToTree[748]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_yespizero", &BsigDataToTree[749]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_yespizero", &BsigDataToTree[750]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_yespizero", &BsigDataToTree[751]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_yespizero", &BsigDataToTree[752]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nD0_yespizero", &BsigDataToTree[753]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &BsigDataToTree[754]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &BsigDataToTree[755]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &BsigDataToTree[756]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &BsigDataToTree[757]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &BsigDataToTree[758]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &BsigDataToTree[759]);
+        tree_Bsig->Branch("Bsig_Mbc", &BsigDataToTree[760]);
+        tree_Bsig->Branch("Bsig_deltaE", &BsigDataToTree[761]);
+        tree_Bsig->Branch("Bsig_daughter_0_M", &BsigDataToTree[762]);
+        tree_Bsig->Branch("Bsig_phi", &BsigDataToTree[763]);
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -2583,6 +2971,7 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Btag->Branch("Btag_dz", &BtagDataToTree[8]);
         tree_Btag->Branch("Btag_useCMSFrame_p", &BtagDataToTree[9]);
         tree_Btag->Branch("Btag_useCMSFrame_phi", &BtagDataToTree[10]);
+        tree_Btag->Branch("Btag_isSignal", &BtagDataToTree[11]);
 
         // other information I need
         tree_Btag->Branch("Btag_R2", &DataToTree[0]);
@@ -3000,21 +3389,46 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp_UpsilonDataToTree[161]);
     temp_tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp_UpsilonDataToTree[162]);
     temp_tree_upsilon->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp_UpsilonDataToTree[163]);
-    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boN_KS_KSKS__bc__bc", &temp_UpsilonDataToTree[164]);
-    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_E__bc__bc", &temp_UpsilonDataToTree[165]);
-    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_px__bc__bc", &temp_UpsilonDataToTree[166]);
-    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_py__bc__bc", &temp_UpsilonDataToTree[167]);
-    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_pz__bc__bc", &temp_UpsilonDataToTree[168]);
-    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_E__bc__bc", &temp_UpsilonDataToTree[169]);
-    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_px__bc__bc", &temp_UpsilonDataToTree[170]);
-    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_py__bc__bc", &temp_UpsilonDataToTree[171]);
-    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_pz__bc__bc", &temp_UpsilonDataToTree[172]);
-    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_E__bc__bc", &temp_UpsilonDataToTree[173]);
-    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_px__bc__bc", &temp_UpsilonDataToTree[174]);
-    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_py__bc__bc", &temp_UpsilonDataToTree[175]);
-    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_pz__bc__bc", &temp_UpsilonDataToTree[176]);
-    temp_tree_upsilon->Branch("nParticlesInList__boB__pl__clXKSKS__bc", &temp_UpsilonDataToTree[177]);
-    temp_tree_upsilon->Branch("nParticlesInList__boB0__clXKSKS__bc", &temp_UpsilonDataToTree[178]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB__pl__clXnn__bc", &temp_UpsilonDataToTree[164]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB0__clXnn__bc", &temp_UpsilonDataToTree[165]);
+    temp_tree_upsilon->Branch("invMassInLists__bon0__clXnn__bc", &temp_UpsilonDataToTree[166]);
+    temp_tree_upsilon->Branch("nParticlesInList__boK_L0__clXKLKL__bc", &temp_UpsilonDataToTree[167]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[168]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[169]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[170]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[171]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__spE__bc", &temp_UpsilonDataToTree[172]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppx__bc", &temp_UpsilonDataToTree[173]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppy__bc", &temp_UpsilonDataToTree[174]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppz__bc", &temp_UpsilonDataToTree[175]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__spE__bc", &temp_UpsilonDataToTree[176]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppx__bc", &temp_UpsilonDataToTree[177]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppy__bc", &temp_UpsilonDataToTree[178]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppz__bc", &temp_UpsilonDataToTree[179]);
+    temp_tree_upsilon->Branch("nParticlesInList__boK_S0__clXKLKL__bc", &temp_UpsilonDataToTree[180]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[181]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[182]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[183]);
+    temp_tree_upsilon->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[184]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB0__clKSKLKL_phi__bc", &temp_UpsilonDataToTree[187]);
+    temp_tree_upsilon->Branch("extraInfo__boNgammav200_KL0__bc", &temp_UpsilonDataToTree[188]);
+    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boN_KS_KSKS__bc__bc", &temp_UpsilonDataToTree[189]);
+    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_E__bc__bc", &temp_UpsilonDataToTree[190]);
+    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_px__bc__bc", &temp_UpsilonDataToTree[191]);
+    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_py__bc__bc", &temp_UpsilonDataToTree[192]);
+    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_pz__bc__bc", &temp_UpsilonDataToTree[193]);
+    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_E__bc__bc", &temp_UpsilonDataToTree[194]);
+    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_px__bc__bc", &temp_UpsilonDataToTree[195]);
+    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_py__bc__bc", &temp_UpsilonDataToTree[196]);
+    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_pz__bc__bc", &temp_UpsilonDataToTree[197]);
+    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_E__bc__bc", &temp_UpsilonDataToTree[198]);
+    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_px__bc__bc", &temp_UpsilonDataToTree[199]);
+    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_py__bc__bc", &temp_UpsilonDataToTree[200]);
+    temp_tree_upsilon->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_pz__bc__bc", &temp_UpsilonDataToTree[201]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB__pl__clXKSKS__bc", &temp_UpsilonDataToTree[202]);
+    temp_tree_upsilon->Branch("nParticlesInList__boB0__clXKSKS__bc", &temp_UpsilonDataToTree[203]);
 
     // get Bsig_info
     temp_tree_Bsig->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -3103,11 +3517,32 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 2]);
         temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
     }
-    temp_tree_Bsig->Branch("Bsig_Mbc", &temp_BsigDataToTree[738]);
-    temp_tree_Bsig->Branch("Bsig_deltaE", &temp_BsigDataToTree[739]);
-    temp_tree_Bsig->Branch("Bsig_daughter_0_M", &temp_BsigDataToTree[740]);
-    temp_tree_Bsig->Branch("Bsig_isSignal", &temp_BsigDataToTree[741]);
-    temp_tree_Bsig->Branch("Bsig_phi", &temp_BsigDataToTree[742]);
+    temp_tree_Bsig->Branch("Bsig_isSignal", &temp_BsigDataToTree[738]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc_noDCS", &temp_BsigDataToTree[739]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &temp_BsigDataToTree[740]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &temp_BsigDataToTree[741]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &temp_BsigDataToTree[742]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_noDCS", &temp_BsigDataToTree[743]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &temp_BsigDataToTree[744]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &temp_BsigDataToTree[745]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nDc_yespizero", &temp_BsigDataToTree[746]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_yespizero", &temp_BsigDataToTree[747]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_yespizero", &temp_BsigDataToTree[748]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_yespizero", &temp_BsigDataToTree[749]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_yespizero", &temp_BsigDataToTree[750]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_yespizero", &temp_BsigDataToTree[751]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_yespizero", &temp_BsigDataToTree[752]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_nD0_yespizero", &temp_BsigDataToTree[753]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &temp_BsigDataToTree[754]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &temp_BsigDataToTree[755]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &temp_BsigDataToTree[756]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &temp_BsigDataToTree[757]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &temp_BsigDataToTree[758]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &temp_BsigDataToTree[759]);
+    temp_tree_Bsig->Branch("Bsig_Mbc", &temp_BsigDataToTree[760]);
+    temp_tree_Bsig->Branch("Bsig_deltaE", &temp_BsigDataToTree[761]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_M", &temp_BsigDataToTree[762]);
+    temp_tree_Bsig->Branch("Bsig_phi", &temp_BsigDataToTree[763]);
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -3121,6 +3556,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Btag->Branch("Btag_dz", &temp_BtagDataToTree[8]);
     temp_tree_Btag->Branch("Btag_useCMSFrame_p", &temp_BtagDataToTree[9]);
     temp_tree_Btag->Branch("Btag_useCMSFrame_phi", &temp_BtagDataToTree[10]);
+    temp_tree_Btag->Branch("Btag_isSignal", &temp_BtagDataToTree[11]);
 
     // other information I need
     temp_tree_Btag->Branch("Btag_R2", &temp_DataToTree[0]);
@@ -3524,21 +3960,46 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp1__bc__bc", &temp_UpsilonDataToTree[161]);
     temp_tree->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo0__cm__sp2__bc__bc", &temp_UpsilonDataToTree[162]);
     temp_tree->Branch("averageValueInList__boB0__clKSKLKL_NR__cm__spdaughterInvariantMass__bo1__cm__sp2__bc__bc", &temp_UpsilonDataToTree[163]);
-    temp_tree->Branch("daughter__bo1__cmextraInfo__boN_KS_KSKS__bc__bc", &temp_UpsilonDataToTree[164]);
-    temp_tree->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_E__bc__bc", &temp_UpsilonDataToTree[165]);
-    temp_tree->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_px__bc__bc", &temp_UpsilonDataToTree[166]);
-    temp_tree->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_py__bc__bc", &temp_UpsilonDataToTree[167]);
-    temp_tree->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_pz__bc__bc", &temp_UpsilonDataToTree[168]);
-    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_E__bc__bc", &temp_UpsilonDataToTree[169]);
-    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_px__bc__bc", &temp_UpsilonDataToTree[170]);
-    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_py__bc__bc", &temp_UpsilonDataToTree[171]);
-    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_pz__bc__bc", &temp_UpsilonDataToTree[172]);
-    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_E__bc__bc", &temp_UpsilonDataToTree[173]);
-    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_px__bc__bc", &temp_UpsilonDataToTree[174]);
-    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_py__bc__bc", &temp_UpsilonDataToTree[175]);
-    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_pz__bc__bc", &temp_UpsilonDataToTree[176]);
-    temp_tree->Branch("nParticlesInList__boB__pl__clXKSKS__bc", &temp_UpsilonDataToTree[177]);
-    temp_tree->Branch("nParticlesInList__boB0__clXKSKS__bc", &temp_UpsilonDataToTree[178]);
+    temp_tree->Branch("nParticlesInList__boB__pl__clXnn__bc", &temp_UpsilonDataToTree[164]);
+    temp_tree->Branch("nParticlesInList__boB0__clXnn__bc", &temp_UpsilonDataToTree[165]);
+    temp_tree->Branch("invMassInLists__bon0__clXnn__bc", &temp_UpsilonDataToTree[166]);
+    temp_tree->Branch("nParticlesInList__boK_L0__clXKLKL__bc", &temp_UpsilonDataToTree[167]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[168]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[169]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[170]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[171]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__spE__bc", &temp_UpsilonDataToTree[172]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppx__bc", &temp_UpsilonDataToTree[173]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppy__bc", &temp_UpsilonDataToTree[174]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_1st__cm__sppz__bc", &temp_UpsilonDataToTree[175]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__spE__bc", &temp_UpsilonDataToTree[176]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppx__bc", &temp_UpsilonDataToTree[177]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppy__bc", &temp_UpsilonDataToTree[178]);
+    temp_tree->Branch("averageValueInList__boK_L0__clXKLKL_2nd__cm__sppz__bc", &temp_UpsilonDataToTree[179]);
+    temp_tree->Branch("nParticlesInList__boK_S0__clXKLKL__bc", &temp_UpsilonDataToTree[180]);
+    temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__spE__bc", &temp_UpsilonDataToTree[181]);
+    temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppx__bc", &temp_UpsilonDataToTree[182]);
+    temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppy__bc", &temp_UpsilonDataToTree[183]);
+    temp_tree->Branch("averageValueInList__boK_S0__clXKLKL__cm__sppz__bc", &temp_UpsilonDataToTree[184]);
+    temp_tree->Branch("nParticlesInList__boB__pl__clKstarKLKL__bc", &temp_UpsilonDataToTree[185]);
+    temp_tree->Branch("nParticlesInList__boB0__clKstarKLKL__bc", &temp_UpsilonDataToTree[186]);
+    temp_tree->Branch("nParticlesInList__boB0__clKSKLKL_phi__bc", &temp_UpsilonDataToTree[187]);
+    temp_tree->Branch("extraInfo__boNgammav200_KL0__bc", &temp_UpsilonDataToTree[188]);
+    temp_tree->Branch("daughter__bo1__cmextraInfo__boN_KS_KSKS__bc__bc", &temp_UpsilonDataToTree[189]);
+    temp_tree->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_E__bc__bc", &temp_UpsilonDataToTree[190]);
+    temp_tree->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_px__bc__bc", &temp_UpsilonDataToTree[191]);
+    temp_tree->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_py__bc__bc", &temp_UpsilonDataToTree[192]);
+    temp_tree->Branch("daughter__bo1__cmextraInfo__boavg_KS_KSKS_pz__bc__bc", &temp_UpsilonDataToTree[193]);
+    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_E__bc__bc", &temp_UpsilonDataToTree[194]);
+    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_px__bc__bc", &temp_UpsilonDataToTree[195]);
+    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_py__bc__bc", &temp_UpsilonDataToTree[196]);
+    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_1st_pz__bc__bc", &temp_UpsilonDataToTree[197]);
+    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_E__bc__bc", &temp_UpsilonDataToTree[198]);
+    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_px__bc__bc", &temp_UpsilonDataToTree[199]);
+    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_py__bc__bc", &temp_UpsilonDataToTree[200]);
+    temp_tree->Branch("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_pz__bc__bc", &temp_UpsilonDataToTree[201]);
+    temp_tree->Branch("nParticlesInList__boB__pl__clXKSKS__bc", &temp_UpsilonDataToTree[202]);
+    temp_tree->Branch("nParticlesInList__boB0__clXKSKS__bc", &temp_UpsilonDataToTree[203]);
 
     // get Bsig_info
     temp_tree->Branch("Bsig_E", &temp_BsigDataToTree[0]);
@@ -3627,11 +4088,32 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
         temp_tree->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 2]);
         temp_tree->Branch(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_PID)).c_str(), &temp_BsigDataToTree[542 + 4 * i_PID + 3]);
     }
-    temp_tree->Branch("Bsig_Mbc", &temp_BsigDataToTree[738]);
-    temp_tree->Branch("Bsig_deltaE", &temp_BsigDataToTree[739]);
-    temp_tree->Branch("Bsig_daughter_0_M", &temp_BsigDataToTree[740]);
-    temp_tree->Branch("Bsig_isSignal", &temp_BsigDataToTree[741]);
-    temp_tree->Branch("Bsig_phi", &temp_BsigDataToTree[742]);
+    temp_tree->Branch("Bsig_isSignal", &temp_BsigDataToTree[738]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nDc_noDCS", &temp_BsigDataToTree[739]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_noDCS", &temp_BsigDataToTree[740]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_noDCS", &temp_BsigDataToTree[741]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_noDCS", &temp_BsigDataToTree[742]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_noDCS", &temp_BsigDataToTree[743]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_noDCS", &temp_BsigDataToTree[744]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_noDCS", &temp_BsigDataToTree[745]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nDc_yespizero", &temp_BsigDataToTree[746]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_med_yespizero", &temp_BsigDataToTree[747]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dc_pValue_std_yespizero", &temp_BsigDataToTree[748]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_chiProb_yespizero", &temp_BsigDataToTree[749]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dr_yespizero", &temp_BsigDataToTree[750]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_dz_yespizero", &temp_BsigDataToTree[751]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_Dcsimpleveto_M_yespizero", &temp_BsigDataToTree[752]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_nD0_yespizero", &temp_BsigDataToTree[753]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0_pValue_med_yespizero", &temp_BsigDataToTree[754]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0_pValue_std_yespizero", &temp_BsigDataToTree[755]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_chiProb_yespizero", &temp_BsigDataToTree[756]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &temp_BsigDataToTree[757]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &temp_BsigDataToTree[758]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &temp_BsigDataToTree[759]);
+    temp_tree->Branch("Bsig_Mbc", &temp_BsigDataToTree[760]);
+    temp_tree->Branch("Bsig_deltaE", &temp_BsigDataToTree[761]);
+    temp_tree->Branch("Bsig_daughter_0_M", &temp_BsigDataToTree[762]);
+    temp_tree->Branch("Bsig_phi", &temp_BsigDataToTree[763]);
 
 
     // get Btag_info
@@ -3646,6 +4128,7 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("Btag_dz", &temp_BtagDataToTree[8]);
     temp_tree->Branch("Btag_useCMSFrame_p", &temp_BtagDataToTree[9]);
     temp_tree->Branch("Btag_useCMSFrame_phi", &temp_BtagDataToTree[10]);
+    temp_tree->Branch("Btag_isSignal", &temp_BtagDataToTree[11]);
 
     // other information I need
     temp_tree->Branch("Btag_R2", &temp_DataToTree[0]);
@@ -4468,7 +4951,7 @@ void Loader::PrintFOM(std::string filename, const char* type, const char* MC_ver
                                 double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                                 EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                             }
-                            else { EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename); }
+                            else { EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false); }
                         }
                         Labels temp_Labels;
                         temp_Labels.__experiment__ = temp.__experiment__;
@@ -4547,7 +5030,7 @@ void Loader::PrintFOM1D(std::string filename, const char* type, const char* MC_v
                             double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                             EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                         }
-                        else EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename);
+                        else EVT_num = EVT_num + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
                     }
                     Labels temp_Labels;
                     temp_Labels.__experiment__ = temp.__experiment__;
@@ -4589,6 +5072,78 @@ void Loader::MVACut(double OBB, double Oqq, Loader::MassRegion massRegion) {
             else {
                 if (temp_data.MVA_BB > OBB && temp_data.MVA_Continuum > Oqq) temp_queue.push(temp_data);
             }
+        }
+        else if (massRegion == Loader::KaonMass) {
+            if (temp_data.Bsig_info[6] > 0.6) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB > OBB && temp_data.MVA_Continuum > Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else if (massRegion == Loader::KstarMass) {
+            if ((temp_data.Bsig_info[6] < 0.6) || (temp_data.Bsig_info[6] > 1.0)) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB > OBB && temp_data.MVA_Continuum > Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else if (massRegion == Loader::XsMass) {
+            if (temp_data.Bsig_info[6] < 1.0) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB > OBB && temp_data.MVA_Continuum > Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else {
+            printf("[Loader::MVACut] undefined mass region\n");
+            exit(1);
+        }
+
+    }
+    TotalData.swap(temp_queue);
+}
+
+void Loader::MVACutBelow(double OBB, double Oqq, Loader::MassRegion massRegion) {
+    if (DoesItHaveMVAOutput == false) {
+        printf("ERROR! MVACut is called when the data does not have MVA output\n");
+        exit(1);
+    }
+
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+
+        if (massRegion == Loader::SmallMass) {
+            if (temp_data.Bsig_info[6] > 1.1) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB < OBB && temp_data.MVA_Continuum < Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else if (massRegion == Loader::LargeMass) {
+            if (temp_data.Bsig_info[6] < 1.1) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB < OBB && temp_data.MVA_Continuum < Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else if (massRegion == Loader::KaonMass) {
+            if (temp_data.Bsig_info[6] > 0.6) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB < OBB && temp_data.MVA_Continuum < Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else if (massRegion == Loader::KstarMass) {
+            if ((temp_data.Bsig_info[6] < 0.6) || (temp_data.Bsig_info[6] > 1.0)) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB < OBB && temp_data.MVA_Continuum < Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else if (massRegion == Loader::XsMass) {
+            if (temp_data.Bsig_info[6] < 1.0) temp_queue.push(temp_data);
+            else {
+                if (temp_data.MVA_BB < OBB && temp_data.MVA_Continuum < Oqq) temp_queue.push(temp_data);
+            }
+        }
+        else {
+            printf("[Loader::MVACut] undefined mass region\n");
+            exit(1);
         }
 
     }
@@ -4718,6 +5273,28 @@ void Loader::BeamEnergyCorrectionFromDeltaE(int index_pBcms, int index_EBcms, in
             double Ebeamstar = temp_data.Bsig_info[index_EBcms] - temp_data.Bsig_info[index_deltaE]; // EBstar - deltaE
             temp_data.Bsig_info[index_Mbc] = std::sqrt(targetEbeamstar * targetEbeamstar - targetEbeamstar * targetEbeamstar * temp_data.Bsig_info[index_pBcms] * temp_data.Bsig_info[index_pBcms] / (Ebeamstar * Ebeamstar)); // correct Mbc
             temp_data.Bsig_info[index_deltaE] = (targetEbeamstar / Ebeamstar) * temp_data.Bsig_info[index_EBcms] - targetEbeamstar; // correct deltaE
+        }
+
+        temp_queue.push(temp_data);
+    }
+    TotalData.swap(temp_queue);
+}
+
+void Loader::BeamEnergyCorrectionFromDeltaE_RC(int index_pBcms, int index_EBcms, int index_Mbc, int index_deltaE, double targetEbeamstar, bool IsItBtag) {
+    std::queue<Data> temp_queue;
+    while (!TotalData.empty()) {
+        Data temp_data = TotalData.front();
+        TotalData.pop();
+
+        if (IsItBtag) {
+            double Ebeamstar = temp_data.Btag_info[index_EBcms] - temp_data.Btag_info[index_deltaE]; // EBstar - deltaE
+            temp_data.Btag_info[index_Mbc] = temp_data.Btag_info[index_Mbc] + (targetEbeamstar - Ebeamstar); // correct Mbc
+            temp_data.Btag_info[index_deltaE] = temp_data.Btag_info[index_deltaE]; // keep deltaE
+        }
+        else {
+            double Ebeamstar = temp_data.Bsig_info[index_EBcms] - temp_data.Bsig_info[index_deltaE]; // EBstar - deltaE
+            temp_data.Bsig_info[index_Mbc] = temp_data.Bsig_info[index_Mbc] + (targetEbeamstar - Ebeamstar); // correct Mbc
+            temp_data.Bsig_info[index_deltaE] = temp_data.Bsig_info[index_deltaE]; // keep deltaE
         }
 
         temp_queue.push(temp_data);

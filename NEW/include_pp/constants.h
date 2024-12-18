@@ -2,9 +2,9 @@
 #define CONSTANTS_H
 
 # define N_Needed_info 37
-# define N_Upsilon_info 167
-# define N_Bsig_info 815
-# define N_Btag_info 11
+# define N_Upsilon_info 192
+# define N_Bsig_info 836
+# define N_Btag_info 12
 # define N_decay 38 // five decay mode + others
 # define N_decay_nparticles 5 // # of nu_e, B->Xs nu_e nu_e_bar, B0->Xs nu_e nu_e_bar, B+-, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
@@ -33,18 +33,18 @@
 # define N_BpBp_1invab 540000000.0
 # define N_B0B0_1invab 510000000.0
 
-# define BR_BpBp 0.514
-# define BR_B0B0 0.486
+// f+-/f0 [https://arxiv.org/abs/2411.18639]
+# define fpm_f0 1.052
 
 // https://confluence.desy.de/pages/viewpage.action?spaceKey=BI&title=Conference+readiness
 # define N_BB_LS1 387100000.0 // NBB = (387.1 +/- 5.6) x 10^6
 
-# define N_Kplus_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplus_nunubar)
-# define N_Kplusstar_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Kplusstar_nunubar)
-# define N_Xsu_nonresonant_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_BpBp/(BR_BpBp+BR_B0B0)) * BR_Xsu_nonresonant_nunubar)
-# define N_K0_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0_nunubar)
-# define N_K0star_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_K0star_nunubar)
-# define N_Xsd_nunubar_LS1 (2.0 * N_BB_LS1 * (BR_B0B0/(BR_BpBp+BR_B0B0)) * BR_Xsd_nonresonant_nunubar)
+# define N_Kplus_nunubar_LS1 (2.0 * N_BB_LS1 * (fpm_f0/(fpm_f0+1.0)) * BR_Kplus_nunubar)
+# define N_Kplusstar_nunubar_LS1 (2.0 * N_BB_LS1 * (fpm_f0/(fpm_f0+1.0)) * BR_Kplusstar_nunubar)
+# define N_Xsu_nonresonant_nunubar_LS1 (2.0 * N_BB_LS1 * (fpm_f0/(fpm_f0+1.0)) * BR_Xsu_nonresonant_nunubar)
+# define N_K0_nunubar_LS1 (2.0 * N_BB_LS1 * (1.0/(fpm_f0+1.0)) * BR_K0_nunubar)
+# define N_K0star_nunubar_LS1 (2.0 * N_BB_LS1 * (1.0/(fpm_f0+1.0)) * BR_K0star_nunubar)
+# define N_Xsd_nunubar_LS1 (2.0 * N_BB_LS1 * (1.0/(fpm_f0+1.0)) * BR_Xsd_nonresonant_nunubar)
 
 // SIGNAL MC sample number before skimming
 # define N_Kplus_train 7039000.0
@@ -104,25 +104,26 @@
 # define N_SSBAR_train 31001866.0
 # define N_CHARM_train 174901296.0
 
-// new scale factor for BKG MC sample with additional 1/ab (364.436 - 2.763 = 361.673/fb), until LS1
-# define Scale_CHG_train ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab * (N_CHG_train / (N_CHG_train + N_CHG_test)) ))
-# define Scale_MIX_train ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab * (N_MIX_train / (N_MIX_train + N_MIX_test)) ))
-# define Scale_UUBAR_train (0.361673/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
-# define Scale_DDBAR_train (0.361673/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
-# define Scale_SSBAR_train (0.361673/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
-# define Scale_CHARM_train (0.361673/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
-# define Scale_CHG_test ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab * (N_CHG_test / (N_CHG_train + N_CHG_test)) ))
-# define Scale_MIX_test ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab * (N_MIX_test / (N_MIX_train + N_MIX_test)) ))
-# define Scale_UUBAR_test (0.361673/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
-# define Scale_DDBAR_test (0.361673/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
-# define Scale_SSBAR_test (0.361673/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
-# define Scale_CHARM_test (0.361673/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
-# define Scale_CHG_validation ((N_BB_LS1* (BR_BpBp / (BR_BpBp + BR_B0B0))) / (2.8 * N_BpBp_1invab))
-# define Scale_MIX_validation ((N_BB_LS1* (BR_B0B0 / (BR_BpBp + BR_B0B0))) / (2.8 * N_B0B0_1invab))
-# define Scale_UUBAR_validation (0.361673)
-# define Scale_DDBAR_validation (0.361673)
-# define Scale_SSBAR_validation (0.361673)
-# define Scale_CHARM_validation (0.361673)
+// untile LS1, integrated luminosity is 365.37/fb
+// https://arxiv.org/abs/2407.00965
+# define Scale_CHG_train ((N_BB_LS1* (fpm_f0/(fpm_f0+1.0))) / (2.8 * N_BpBp_1invab * (N_CHG_train / (N_CHG_train + N_CHG_test)) ))
+# define Scale_MIX_train ((N_BB_LS1* (1.0/(fpm_f0+1.0))) / (2.8 * N_B0B0_1invab * (N_MIX_train / (N_MIX_train + N_MIX_test)) ))
+# define Scale_UUBAR_train (0.36537/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_train (0.36537/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_train (0.36537/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_train (0.36537/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_CHG_test ((N_BB_LS1* (fpm_f0/(fpm_f0+1.0))) / (2.8 * N_BpBp_1invab * (N_CHG_test / (N_CHG_train + N_CHG_test)) ))
+# define Scale_MIX_test ((N_BB_LS1* (1.0/(fpm_f0+1.0))) / (2.8 * N_B0B0_1invab * (N_MIX_test / (N_MIX_train + N_MIX_test)) ))
+# define Scale_UUBAR_test (0.36537/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
+# define Scale_DDBAR_test (0.36537/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
+# define Scale_SSBAR_test (0.36537/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
+# define Scale_CHARM_test (0.36537/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
+# define Scale_CHG_validation ((N_BB_LS1* (fpm_f0/(fpm_f0+1.0))) / (2.8 * N_BpBp_1invab))
+# define Scale_MIX_validation ((N_BB_LS1* (1.0/(fpm_f0+1.0))) / (2.8 * N_B0B0_1invab))
+# define Scale_UUBAR_validation (0.36537)
+# define Scale_DDBAR_validation (0.36537)
+# define Scale_SSBAR_validation (0.36537)
+# define Scale_CHARM_validation (0.36537)
 
 // BKG MC sample number for MC15rd
 # define N_CHG_validation_MC15rd 785108449.0 // 1458.959/fb
@@ -132,11 +133,82 @@
 # define N_SSBAR_validation_MC15rd 526874294.0 // 1458.959/fb
 # define N_CHARM_validation_MC15rd 1889822323.0 // 1458.959/fb
 
-# define Scale_CHG_validation_MC15rd (0.361673/1.458959)
-# define Scale_MIX_validation_MC15rd (0.361673/1.458959)
-# define Scale_UUBAR_validation_MC15rd (0.361673/1.458959)
-# define Scale_DDBAR_validation_MC15rd (0.361673/1.458959)
-# define Scale_SSBAR_validation_MC15rd (0.361673/1.458959)
-# define Scale_CHARM_validation_MC15rd (0.361673/1.458959)
+# define Scale_CHG_validation_MC15rd (0.36537/1.458959)
+# define Scale_MIX_validation_MC15rd (0.36537/1.458959)
+# define Scale_UUBAR_validation_MC15rd (0.36537/1.458959)
+# define Scale_DDBAR_validation_MC15rd (0.36537/1.458959)
+# define Scale_SSBAR_validation_MC15rd (0.36537/1.458959)
+# define Scale_CHARM_validation_MC15rd (0.36537/1.458959)
+
+// off-resonance sample for MC15rd
+# define Scale_UUBAR_offres_MC15rd (0.04274/0.169328) // 169.328/fb
+# define Scale_DDBAR_offres_MC15rd (0.04274/0.169328) // 169.328/fb
+# define Scale_SSBAR_offres_MC15rd (0.04274/0.169328) // 169.328/fb
+# define Scale_CHARM_offres_MC15rd (0.04274/0.169328) // 169.328/fb
+
+// the number of Xs decay
+# define Xsu_frag_decay1 531.4
+# define Xsu_frag_decay2 1062.1
+# define Xsu_frag_decay3 673.9
+# define Xsu_frag_decay4 825.3
+# define Xsu_frag_decay5 473.3
+# define Xsu_frag_decay6 119.1
+# define Xsu_frag_decay7 24.6
+# define Xsu_frag_decay8 148.2
+# define Xsu_frag_decay9 127.6
+# define Xsu_frag_decay10 102.9
+# define Xsu_frag_decay11 91.8
+# define Xsu_frag_decay12 54.8
+# define Xsu_frag_decay13 21.7
+# define Xsu_frag_decay14 11.0
+# define Xsu_frag_decay30 858.4
+
+# define Xsd_frag_decay16 1072.6
+# define Xsd_frag_decay17 536.2
+# define Xsd_frag_decay18 835.5
+# define Xsd_frag_decay19 677.4
+# define Xsd_frag_decay20 120.5
+# define Xsd_frag_decay21 475.9
+# define Xsd_frag_decay22 149.8
+# define Xsd_frag_decay23 25.0
+# define Xsd_frag_decay24 129.2
+# define Xsd_frag_decay25 104.4
+# define Xsd_frag_decay26 92.4
+# define Xsd_frag_decay27 54.9
+# define Xsd_frag_decay28 14.5
+# define Xsd_frag_decay29 10.9
+# define Xsd_frag_decay30 871.0
+
+// uncertainty of BR from parametric reason
+# define Sigma_BR_Kplus_nunubar 0.000000402
+# define Sigma_BR_K0star_nunubar 0.00000050
+# define Sigma_BR_K0_nunubar (Sigma_BR_Kplus_nunubar*TB0/TBp)
+# define Sigma_BR_Kplusstar_nunubar (Sigma_BR_K0star_nunubar*TBp/TB0)
+# define Sigma_BR_Xs_nunubar 0.000003
+
+// scale factor for systematic MC sample
+# define N_K0star_nunubar_syst 10000000.0
+# define N_Kplusstar_nunubar_syst 10000000.0
+# define N_Xsu_nonresonant_nunubar_syst 10000000.0
+# define N_Xsd_nonresonant_nunubar_syst 10000000.0
+
+# define KS0_rel_uncertainty 0.6 // %/cm
+# define track_rel_uncertainty 0.24 // %
+# define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
+
+# define BR_KpKLKL_uncertainty (0.04/1.05) // not percentage. relative uncertainty
+# define BR_KSKLKL_uncertainty (0.5/6.0) // not percentage. relative uncertainty
+
+# define N_Knn_type 4 //  B2Knn B2Kstarnn B02K0nn B02K0starnn
+const double B2Knn_up_uncer[N_Knn_type] = { // relative uncertainty
+    0.32 / 2.66, 0.28 / 1.24, 0.5 / 5.9, 0.8 / 3.6
+};
+const double B2Knn_dn_uncer[N_Knn_type] = { // relative uncertainty
+    0.32 / 2.66, 0.25 / 1.24, 0.5 / 5.9, 0.7 / 3.6
+};
+
+// scale factor for each systematic MC sample 
+# define Scale_Xsu_nonresonant_syst (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_nunubar_syst)
+# define Scale_Xsd_nonresonant_syst (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar_syst)
 
 #endif 

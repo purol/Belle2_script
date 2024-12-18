@@ -6,6 +6,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "constants.h"
+#include "ObtainWeight.h"
 
 # define FEI_cal_Bc_num 12
 # define FEI_cal_B0_num 11
@@ -173,6 +174,8 @@ public:
 };
 
 Corrector_PID::Corrector_PID() {
+    printf("[Corrector_PID] try to read PID correction files...\n");
+
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < N_PID_syst; j++) {
             PID_correction_MC15ri[i][j] = 0.0;
@@ -429,6 +432,8 @@ public:
 };
 
 Corrector_FakePID::Corrector_FakePID() {
+    printf("[Corrector_FakePID] try to read fake PID correction files...\n");
+
     for (int i = 0; i < 4; i++) {
         for (int j = 0; j < N_fakeE_syst; j++) {
             PID_fakeE_correction_MC15ri[i][j] = 0.0;
@@ -1126,6 +1131,215 @@ double Corrector_FakePID::GetUncertaintyfakeMU(int PID_type, int bin_PID, std::s
     }
 }
 
+# define N_EID_syst 37
+# define N_MUID_syst 49
+class Corrector_LID {
+private:
+
+    double PID_trueE_correction_MC15rd[2][N_EID_syst] = { 0.0 }; //  K-, K+
+    double PID_trueE_uncer_MC15rd[2][N_EID_syst] = { 0.0 }; //  K-, K+
+    double PID_trueMU_correction_MC15rd[2][N_MUID_syst] = { 0.0 }; //  K-, K+
+    double PID_trueMU_uncer_MC15rd[2][N_MUID_syst] = { 0.0 }; //  K-, K+
+
+    void ReadPIDFile_MC15rd();
+public:
+    Corrector_LID();
+    double GetCorrectionFactortrueE(int PID_type, int bin_PID, std::string type);
+    double GetCorrectionFactortrueMU(int PID_type, int bin_PID, std::string type);
+};
+
+Corrector_LID::Corrector_LID() {
+    printf("[Corrector_LID] try to read true LID correction files...\n");
+
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < N_EID_syst; j++) {
+            PID_trueE_correction_MC15rd[i][j] = 0.0;
+            PID_trueE_uncer_MC15rd[i][j] = 0.0;
+        }
+    }
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < N_MUID_syst; j++) {
+            PID_trueMU_correction_MC15rd[i][j] = 0.0;
+            PID_trueMU_uncer_MC15rd[i][j] = 0.0;
+        }
+    }
+
+    ReadPIDFile_MC15rd();
+}
+
+void Corrector_LID::ReadPIDFile_MC15rd() {
+    // initialization
+    for (int i = 0; i < N_EID_syst; i++) {
+        PID_trueE_correction_MC15rd[0][i] = 1.0; //  K-, K+
+        PID_trueE_correction_MC15rd[1][i] = 1.0;
+
+        PID_trueE_uncer_MC15rd[0][i] = 0.0;
+        PID_trueE_uncer_MC15rd[1][i] = 0.0;
+    }
+
+    for (int i = 0; i < N_MUID_syst; i++) {
+        PID_trueMU_correction_MC15rd[0][i] = 1.0;
+        PID_trueMU_correction_MC15rd[1][i] = 1.0;
+
+        PID_trueMU_uncer_MC15rd[0][i] = 0.0;
+        PID_trueMU_uncer_MC15rd[1][i] = 0.0;
+    }
+
+    const char* EID_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15rd_EID/e_efficiency_table.csv";
+    const char* MUID_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15rd_MUID/mu_efficiency_table.csv";
+
+    FILE* fp_fromE = fopen(EID_file, "r");
+    FILE* fp_fromMU = fopen(MUID_file, "r");
+
+    fscanf(fp_fromE, "variable,charge,p_min,p_max,theta_min,theta_max,data_MC_ratio,data_MC_uncertainty_statsys_dn,data_MC_uncertainty_statsys_up\n");
+    fscanf(fp_fromMU, "variable,charge,p_min,p_max,theta_min,theta_max,data_MC_ratio,data_MC_uncertainty_statsys_dn,data_MC_uncertainty_statsys_up\n");
+
+    char temp_charge;
+    double temp_p_min;
+    double temp_p_max;
+    double temp_theta_min;
+    double temp_theta_max;
+    double temp_data_MC_ratio;
+    double temp_data_MC_uncertainty_up;
+    double temp_data_MC_uncertainty_dn;
+
+    // true electron
+    while (fscanf(fp_fromE, "electronID_noSVD_noTOP,%c,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_MC_ratio, &temp_data_MC_uncertainty_dn, &temp_data_MC_uncertainty_up) != EOF) {
+        int p_bin = -1;
+        int theta_bin = -1;
+
+        if (std::abs(temp_p_min - 0.4) < MyEPSILON && std::abs(temp_p_max - 0.5) < MyEPSILON) p_bin = 0;
+        else if (std::abs(temp_p_min - 0.5) < MyEPSILON && std::abs(temp_p_max - 1.0) < MyEPSILON) p_bin = 1;
+        else if (std::abs(temp_p_min - 1.0) < MyEPSILON && std::abs(temp_p_max - 1.5) < MyEPSILON) p_bin = 2;
+        else if (std::abs(temp_p_min - 1.5) < MyEPSILON && std::abs(temp_p_max - 2.0) < MyEPSILON) p_bin = 3;
+        else if (std::abs(temp_p_min - 2.0) < MyEPSILON && std::abs(temp_p_max - 2.5) < MyEPSILON) p_bin = 4;
+        else if (std::abs(temp_p_min - 2.5) < MyEPSILON && std::abs(temp_p_max - 3.0) < MyEPSILON) p_bin = 5;
+        else {
+            printf("[ERROR] unknown p bin!\n");
+            printf("[ERROR] just ignore it: [%lf, %lf]!\n", temp_p_min, temp_p_max);
+            continue;
+        }
+
+        if (std::abs(temp_theta_min - 0.22) < MyEPSILON && std::abs(temp_theta_max - 0.56) < MyEPSILON) theta_bin = 0;
+        else if (std::abs(temp_theta_min - 0.56) < MyEPSILON && std::abs(temp_theta_max - 1.13) < MyEPSILON) theta_bin = 1;
+        else if (std::abs(temp_theta_min - 1.13) < MyEPSILON && std::abs(temp_theta_max - 1.57) < MyEPSILON) theta_bin = 2;
+        else if (std::abs(temp_theta_min - 1.57) < MyEPSILON && std::abs(temp_theta_max - 1.88) < MyEPSILON) theta_bin = 3;
+        else if (std::abs(temp_theta_min - 1.88) < MyEPSILON && std::abs(temp_theta_max - 2.23) < MyEPSILON) theta_bin = 4;
+        else if (std::abs(temp_theta_min - 2.23) < MyEPSILON && std::abs(temp_theta_max - 2.71) < MyEPSILON) theta_bin = 5;
+        else {
+            printf("[ERROR] unknown theta bin!\n");
+            printf("[ERROR] just ignore it: [%lf, %lf]!\n", temp_theta_min, temp_theta_max);
+            continue;
+        }
+
+        int bin = theta_bin + 6 * p_bin;
+
+        if (temp_charge == '+') {
+            PID_trueE_correction_MC15rd[1][bin] = temp_data_MC_ratio;
+            PID_trueE_uncer_MC15rd[1][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_trueE_correction_MC15rd[1][bin]) < MyEPSILON) {
+                PID_trueE_correction_MC15rd[1][bin] = 1.0;
+                PID_trueE_uncer_MC15rd[1][bin] = 0.0;
+            }
+
+        }
+        else if (temp_charge == '-') {
+            PID_trueE_correction_MC15rd[0][bin] = temp_data_MC_ratio;
+            PID_trueE_uncer_MC15rd[0][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_trueE_correction_MC15rd[0][bin]) < MyEPSILON) {
+                PID_trueE_correction_MC15rd[0][bin] = 1.0;
+                PID_trueE_uncer_MC15rd[0][bin] = 0.0;
+            }
+
+        }
+        else {
+            printf("[ERROR] unknown charge!\n");
+            exit(1);
+        }
+    }
+    fclose(fp_fromE);
+
+
+    // Kaon from fake muon
+    while (fscanf(fp_fromMU, "muonID_noSVD,%c,%lf,%lf,%lf,%lf,%lf,%lf,%lf\n", &temp_charge, &temp_p_min, &temp_p_max, &temp_theta_min, &temp_theta_max, &temp_data_MC_ratio, &temp_data_MC_uncertainty_dn, &temp_data_MC_uncertainty_up) != EOF) {
+        int p_bin = -1;
+        int theta_bin = -1;
+
+        if (std::abs(temp_p_min - 0.4) < MyEPSILON && std::abs(temp_p_max - 0.5) < MyEPSILON) p_bin = 0;
+        else if (std::abs(temp_p_min - 0.5) < MyEPSILON && std::abs(temp_p_max - 0.7) < MyEPSILON) p_bin = 1;
+        else if (std::abs(temp_p_min - 0.7) < MyEPSILON && std::abs(temp_p_max - 1.0) < MyEPSILON) p_bin = 2;
+        else if (std::abs(temp_p_min - 1.0) < MyEPSILON && std::abs(temp_p_max - 1.5) < MyEPSILON) p_bin = 3;
+        else if (std::abs(temp_p_min - 1.5) < MyEPSILON && std::abs(temp_p_max - 2.0) < MyEPSILON) p_bin = 4;
+        else if (std::abs(temp_p_min - 2.0) < MyEPSILON && std::abs(temp_p_max - 2.5) < MyEPSILON) p_bin = 5;
+        else {
+            printf("[ERROR] unknown p bin!\n");
+            printf("[ERROR] just ignore it: [%lf, %lf]!\n", temp_p_min, temp_p_max);
+            continue;
+        }
+
+        if (std::abs(temp_theta_min - 0.4) < MyEPSILON && std::abs(temp_theta_max - 0.64) < MyEPSILON) theta_bin = 0;
+        else if (std::abs(temp_theta_min - 0.64) < MyEPSILON && std::abs(temp_theta_max - 0.82) < MyEPSILON) theta_bin = 1;
+        else if (std::abs(temp_theta_min - 0.82) < MyEPSILON && std::abs(temp_theta_max - 1.16) < MyEPSILON) theta_bin = 2;
+        else if (std::abs(temp_theta_min - 1.16) < MyEPSILON && std::abs(temp_theta_max - 1.46) < MyEPSILON) theta_bin = 3;
+        else if (std::abs(temp_theta_min - 1.46) < MyEPSILON && std::abs(temp_theta_max - 1.78) < MyEPSILON) theta_bin = 4;
+        else if (std::abs(temp_theta_min - 1.78) < MyEPSILON && std::abs(temp_theta_max - 2.13) < MyEPSILON) theta_bin = 5;
+        else if (std::abs(temp_theta_min - 2.13) < MyEPSILON && std::abs(temp_theta_max - 2.22) < MyEPSILON) theta_bin = 6;
+        else if (std::abs(temp_theta_min - 2.22) < MyEPSILON && std::abs(temp_theta_max - 2.6) < MyEPSILON) theta_bin = 7;
+        else {
+            printf("[ERROR] unknown theta bin!\n");
+            printf("[ERROR] just ignore it: [%lf, %lf]!\n", temp_theta_min, temp_theta_max);
+            continue;
+        }
+
+        int bin = theta_bin + 8 * p_bin;
+
+        if (temp_charge == '+') {
+            PID_trueMU_correction_MC15rd[1][bin] = temp_data_MC_ratio;
+            PID_trueMU_uncer_MC15rd[1][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_trueMU_correction_MC15rd[1][bin]) < MyEPSILON) {
+                PID_trueMU_correction_MC15rd[1][bin] = 1.0;
+                PID_trueMU_uncer_MC15rd[1][bin] = 0.0;
+            }
+
+        }
+        else if (temp_charge == '-') {
+            PID_trueMU_correction_MC15rd[0][bin] = temp_data_MC_ratio;
+            PID_trueMU_uncer_MC15rd[0][bin] = (temp_data_MC_uncertainty_up + temp_data_MC_uncertainty_dn) / 2.0;
+
+            if (std::abs(PID_trueMU_correction_MC15rd[0][bin]) < MyEPSILON) {
+                PID_trueMU_correction_MC15rd[0][bin] = 1.0;
+                PID_trueMU_uncer_MC15rd[0][bin] = 0.0;
+            }
+
+        }
+        else {
+            printf("[ERROR] unknown charge!\n");
+            exit(1);
+        }
+    }
+    fclose(fp_fromMU);
+
+}
+
+double Corrector_LID::GetCorrectionFactortrueE(int PID_type, int bin_PID, std::string type) {
+    if (type == "MC15rd") return PID_trueE_correction_MC15rd[PID_type][bin_PID];
+    else {
+        printf("[Corrector_LID] Invalid type!\n");
+        exit(1);
+    }
+}
+
+double Corrector_LID::GetCorrectionFactortrueMU(int PID_type, int bin_PID, std::string type) {
+    if (type == "MC15rd") return PID_trueMU_correction_MC15rd[PID_type][bin_PID];
+    else {
+        printf("[Corrector_LID] Invalid type!\n");
+        exit(1);
+    }
+}
+
 # define N_ProtonID_syst 73
 class Corrector_ProtonID {
 private:
@@ -1160,6 +1374,8 @@ Corrector_ProtonID::Corrector_ProtonID() {
 }
 
 void Corrector_ProtonID::ReadPIDFile_MC15rd() {
+    printf("[Corrector_ProtonID] try to read protonID correction files...\n");
+
     const char* ProtonID_true_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15rd_PID/ProtonEff.csv";
 
     FILE* fp_ProtonID_true = fopen(ProtonID_true_file, "r");
@@ -1494,28 +1710,30 @@ private:
 
 public:
     Corrector_Knn();
-    double GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
-    double GetCorrectionFactorAtGeneric(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn);
+    double GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn, std::string fname, const char* MC_version, bool OnSpecial);
+    double GetCorrectionFactorCancelOutObtainWeight(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn, std::string fname, const char* MC_version, bool OnSpecial);
 };
 
 Corrector_Knn::Corrector_Knn() :
     DECAY_DEC_BR_Knn(0.0000057),
     new_BR_K0pp(0.00000266),
-    Nraw_initial_Knn(1000000.0),
+    Nraw_initial_Knn(200000.0),
     DECAY_DEC_BR_Kstarnn(0.0000057),
     new_BR_K0starpp(0.00000124),
-    Nraw_initial_Kstarnn(1000000.0),
+    Nraw_initial_Kstarnn(200000.0),
     DECAY_DEC_BR_K0nn(0.000002),
     new_BR_Kpp(0.0000059),
-    Nraw_initial_K0nn(1000000.0),
+    Nraw_initial_K0nn(200000.0),
     DECAY_DEC_BR_K0starnn(0.0000056),
     new_BR_Kstarpp(0.0000036),
-    Nraw_initial_K0starnn(1000000.0),
+    Nraw_initial_K0starnn(200000.0),
     N_EPSILON(0.01),
     CUTOFF(50.0),
     tau_Bp(1.6384), // ps
     tau_B0(1.5195) // ps
 {
+    printf("[Corrector_Knn] try to read Knn correction files...\n");
+
     FILE* fp;
 
     // read Knn weights
@@ -1573,13 +1791,58 @@ Corrector_Knn::Corrector_Knn() :
     new_BR_K0nn = new_BR_Kpp * (tau_B0 / tau_Bp);
     new_BR_K0starnn = new_BR_Kstarpp * (tau_B0 / tau_Bp);
 
-    Nscale_initial_Knn = (2.0 * N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0)) * new_BR_Knn);
-    Nscale_initial_Kstarnn = (2.0 * N_BB_LS1 * (BR_BpBp / (BR_BpBp + BR_B0B0)) * new_BR_Kstarnn);
-    Nscale_initial_K0nn = (2.0 * N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0)) * new_BR_K0nn);
-    Nscale_initial_K0starnn = (2.0 * N_BB_LS1 * (BR_B0B0 / (BR_BpBp + BR_B0B0)) * new_BR_K0starnn);
+    Nscale_initial_Knn = (2.0 * N_BB_LS1 * (fpm_f0 / (fpm_f0 + 1.0)) * new_BR_Knn);
+    Nscale_initial_Kstarnn = (2.0 * N_BB_LS1 * (fpm_f0 / (fpm_f0 + 1.0)) * new_BR_Kstarnn);
+    Nscale_initial_K0nn = (2.0 * N_BB_LS1 * (1.0 / (fpm_f0 + 1.0)) * new_BR_K0nn);
+    Nscale_initial_K0starnn = (2.0 * N_BB_LS1 * (1.0 / (fpm_f0 + 1.0)) * new_BR_K0starnn);
 }
 
-double Corrector_Knn::GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
+double Corrector_Knn::GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn, std::string fname, const char* MC_version, bool OnSpecial) {
+    // It remove B->K(*)nn decay from generic MC
+    // - MC_version
+    // MC15ri: We do not put special MC15ri. We apply 0 weight for special, apply 1 weight for remaining
+    // MC15rd: We put special MC15rd.
+    // - OnSpecial
+    // false: we turn off special and turn on generic. apply 1 when if it is generic B->K(*)nn. apply 0 when it is special
+    // true: we turn off generic and turn on special. apply 0 when if it is generic B->K(*)nn. apply proper correction when it is special
+
+    if (strcmp(MC_version, "MC15ri") == 0) {
+        // there is no special MC for MC15ri. Just apply 0.0 if there is special MC. Otherwise, apply 1.0
+        if (fname.find("B2Knn_flat") != std::string::npos) return 0.0; // it is B+ --> K+ n nbar special MC
+        else if (fname.find("B2Kstarnn_flat") != std::string::npos) return 0.0; // it is B+ --> K*+ n nbar special MC
+        else if (fname.find("B02K0nn_flat") != std::string::npos) return 0.0; // it is B0 --> K0 n nbar special MC
+        else if (fname.find("B02K0nn_flat") != std::string::npos) return 0.0; // it is B0 --> K0 n nbar special MC
+        else return 1.0; // it is generic MC!
+    }
+    else if (strcmp(MC_version, "MC15rd") == 0) {
+        // there IS special MC for MC15rd. 
+        if (OnSpecial == false) { // we turn off special MC and turn on generic MC
+            if (fname.find("B2Knn_flat") != std::string::npos) return 0.0; // it is B+ --> K+ n nbar special MC
+            else if (fname.find("B2Kstarnn_flat") != std::string::npos) return 0.0; // it is B+ --> K*+ n nbar special MC
+            else if (fname.find("B02K0nn_flat") != std::string::npos) return 0.0; // it is B0 --> K0 n nbar special MC
+            else if (fname.find("B02K0nn_flat") != std::string::npos) return 0.0; // it is B0 --> K0 n nbar special MC
+            else return 1.0; // it is generic MC!
+        }
+        else { // we turn off special MC and turn on generic MC
+            if (fname.find("B2Knn_flat") != std::string::npos) {} // it is B+ --> K+ n nbar special MC
+            else if (fname.find("B2Kstarnn_flat") != std::string::npos) {} // it is B+ --> K*+ n nbar special MC
+            else if (fname.find("B02K0nn_flat") != std::string::npos) {} // it is B0 --> K0 n nbar special MC
+            else if (fname.find("B02K0nn_flat") != std::string::npos) {} // it is B0 --> K0 n nbar special MC
+            else { // it is generic MC!
+                if ((N_Knn < N_EPSILON) && (N_Kstarnn < N_EPSILON) && (N_K0nn < N_EPSILON) && (N_K0starnn < N_EPSILON)) return 1.0; // it is generic MC and there is no B->K(*)nn decay
+                else return 0.0; // it is generic MC and there IS B->K(*)nn decay
+            }
+        }
+    }
+    else {
+        printf("[corrector Knn] unexpected MC version\n");
+        exit(1);
+    }
+
+    // at this point. the following combination is alive:
+    // MC_version == MC15rd
+    // OnSpecial == true
+    // file is special MC for B->K(*)nn
 
     double Correction_Knn = 1;
     double Correction_Kstarnn = 1;
@@ -1621,7 +1884,54 @@ double Corrector_Knn::GetCorrectionFactor(double invM_Knn, double invM_Kstarnn, 
     return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
 }
 
-double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn) {
+double Corrector_Knn::GetCorrectionFactorCancelOutObtainWeight(double invM_Knn, double invM_Kstarnn, double invM_K0nn, double invM_K0starnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn, std::string fname, const char* MC_version, bool OnSpecial) {
+    // It remove B->K(*)nn decay from generic MC
+    // - MC_version
+    // MC15ri: We do not put special MC15ri. We apply 0 weight for special, apply 1 weight for remaining
+    // MC15rd: We put special MC15rd.
+    // - OnSpecial
+    // false: we turn off special and turn on generic. apply 1 when if it is generic B->K(*)nn. apply 0 when it is special
+    // true: we turn off generic and turn on special. apply 0 when if it is generic B->K(*)nn. apply proper correction when it is special
+
+    // this function cancel out the effect of ObtainWeight
+
+    if (strcmp(MC_version, "MC15ri") == 0) {
+        // there is no special MC for MC15ri. Just apply 0.0 if there is special MC. Otherwise, apply 1.0
+        if (fname.find("B2Knn_flat") != std::string::npos) return 0.0; // it is B+ --> K+ n nbar special MC
+        else if (fname.find("B2Kstarnn_flat") != std::string::npos) return 0.0; // it is B+ --> K*+ n nbar special MC
+        else if (fname.find("B02K0nn_flat") != std::string::npos) return 0.0; // it is B0 --> K0 n nbar special MC
+        else if (fname.find("B02K0starnn_flat") != std::string::npos) return 0.0; // it is B0 --> K*0 n nbar special MC
+        else return 1.0; // it is generic MC!
+    }
+    else if (strcmp(MC_version, "MC15rd") == 0) {
+        // there IS special MC for MC15rd. 
+        if (OnSpecial == false) { // we turn off special MC and turn on generic MC
+            if (fname.find("B2Knn_flat") != std::string::npos) return 0.0; // it is B+ --> K+ n nbar special MC
+            else if (fname.find("B2Kstarnn_flat") != std::string::npos) return 0.0; // it is B+ --> K*+ n nbar special MC
+            else if (fname.find("B02K0nn_flat") != std::string::npos) return 0.0; // it is B0 --> K0 n nbar special MC
+            else if (fname.find("B02K0starnn_flat") != std::string::npos) return 0.0; // it is B0 --> K*0 n nbar special MC
+            else return 1.0; // it is generic MC!
+        }
+        else { // we turn off special MC and turn on generic MC
+            if (fname.find("B2Knn_flat") != std::string::npos) {} // it is B+ --> K+ n nbar special MC
+            else if (fname.find("B2Kstarnn_flat") != std::string::npos) {} // it is B+ --> K*+ n nbar special MC
+            else if (fname.find("B02K0nn_flat") != std::string::npos) {} // it is B0 --> K0 n nbar special MC
+            else if (fname.find("B02K0starnn_flat") != std::string::npos) {} // it is B0 --> K*0 n nbar special MC
+            else { // it is generic MC!
+                if ((N_Knn < N_EPSILON) && (N_Kstarnn < N_EPSILON) && (N_K0nn < N_EPSILON) && (N_K0starnn < N_EPSILON)) return 1.0; // it is generic MC and there is no B->K(*)nn decay
+                else return 0.0; // it is generic MC and there IS B->K(*)nn decay
+            }
+        }
+    }
+    else {
+        printf("[corrector Knn] unexpected MC version\n");
+        exit(1);
+    }
+
+    // at this point. the following combination is alive:
+    // MC_version == MC15rd
+    // OnSpecial == true
+    // file is special MC for B->K(*)nn
 
     double Correction_Knn = 1;
     double Correction_Kstarnn = 1;
@@ -1633,7 +1943,7 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
         int Bin = weights_Knn->FindBin(invM_Knn);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_Knn) Bin = STEP_Knn;
-        Correction_Knn = std::pow((new_BR_Knn / DECAY_DEC_BR_Knn) * weights_Knn->GetBinContent(Bin), N_Knn); // BR correction * invM correction
+        Correction_Knn = std::pow((Nscale_initial_Knn / Nraw_initial_Knn) * weights_Knn->GetBinContent(Bin), N_Knn); // BR correction * invM correction
     }
 
     if (N_Kstarnn < N_EPSILON) Correction_Kstarnn = 1;
@@ -1641,7 +1951,7 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
         int Bin = weights_Kstarnn->FindBin(invM_Kstarnn);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_Kstarnn) Bin = STEP_Kstarnn;
-        Correction_Kstarnn = std::pow((new_BR_Kstarnn / DECAY_DEC_BR_Kstarnn) * weights_Kstarnn->GetBinContent(Bin), N_Kstarnn); // BR correction * invM correction
+        Correction_Kstarnn = std::pow((Nscale_initial_Kstarnn / Nraw_initial_Kstarnn) * weights_Kstarnn->GetBinContent(Bin), N_Kstarnn); // BR correction * invM correction
     }
 
     if (N_K0nn < N_EPSILON) Correction_K0nn = 1;
@@ -1649,7 +1959,7 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
         int Bin = weights_K0nn->FindBin(invM_K0nn);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_K0nn) Bin = STEP_K0nn;
-        Correction_K0nn = std::pow((new_BR_K0nn / DECAY_DEC_BR_K0nn) * weights_K0nn->GetBinContent(Bin), N_K0nn); // BR correction * invM correction
+        Correction_K0nn = std::pow((Nscale_initial_K0nn / Nraw_initial_K0nn) * weights_K0nn->GetBinContent(Bin), N_K0nn); // BR correction * invM correction
     }
 
     if (N_K0starnn < N_EPSILON) Correction_K0starnn = 1;
@@ -1657,10 +1967,72 @@ double Corrector_Knn::GetCorrectionFactorAtGeneric(double invM_Knn, double invM_
         int Bin = weights_K0starnn->FindBin(invM_K0starnn);
         if (Bin < 1) Bin = 1;
         else if (Bin > STEP_K0starnn) Bin = STEP_K0starnn;
-        Correction_K0starnn = std::pow((new_BR_K0starnn / DECAY_DEC_BR_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * invM correction
+        Correction_K0starnn = std::pow((Nscale_initial_K0starnn / Nraw_initial_K0starnn) * weights_K0starnn->GetBinContent(Bin), N_K0starnn); // BR correction * invM correction
     }
 
-    return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn;
+    // cancel out ObtainWeight
+    // we know that this sample is MC15rd & validation
+    double weight_ri = 1.0;
+    if ((fname.find("B2Knn_flat") != std::string::npos) || (fname.find("B2Kstarnn_flat") != std::string::npos)) weight_ri = ObtainWeight("CHG", "MC15rd", "validation", fname); // it is charged B sample
+    else if((fname.find("B02K0nn_flat") != std::string::npos) || (fname.find("B02K0starnn_flat") != std::string::npos)) weight_ri = ObtainWeight("MIX", "MC15rd", "validation", fname); // it is neutral B sample
+    else {
+        printf("[GetCorrectionFactorCancelOutObtainWeight] something wrong when try to find weight_ri");
+        exit(1);
+    }
+
+    return Correction_Knn * Correction_Kstarnn * Correction_K0nn * Correction_K0starnn / weight_ri;
+}
+
+class Corrector_Xsnn {
+private:
+
+    // Xsnn
+    int STEP_Xsnn;
+    double mininvM_Xsnn;
+    double maxinvM_Xsnn;
+    TH1D* weights_Xsnn;
+
+    const double N_EPSILON;
+
+public:
+    Corrector_Xsnn();
+    double GetCorrectionFactorAtGeneric(double invM_Xsnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn, double N_Xsnn);
+};
+
+Corrector_Xsnn::Corrector_Xsnn() :
+    N_EPSILON(0.01)
+{
+    printf("[Corrector_Xsnn] try to read Xnn correction files...\n");
+
+    FILE* fp;
+
+    // read Xsnn weights
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/Xpp_weight/Xpp_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_Xsnn, &mininvM_Xsnn, &maxinvM_Xsnn);
+    weights_Xsnn = new TH1D("Xsnn_weights", ";;", STEP_Xsnn, mininvM_Xsnn, maxinvM_Xsnn);
+    for (int i = 0; i < STEP_Xsnn; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        weights_Xsnn->SetBinContent(i + 1, temp);
+    }
+    fclose(fp);
+
+}
+
+double Corrector_Xsnn::GetCorrectionFactorAtGeneric(double invM_Xsnn, double N_Knn, double N_Kstarnn, double N_K0nn, double N_K0starnn, double N_Xsnn) {
+
+    double Correction_Xsnn = 1;
+
+    if (N_Xsnn < N_EPSILON) Correction_Xsnn = 1;
+    else if ((N_Knn > N_EPSILON) || (N_Kstarnn > N_EPSILON) || (N_K0nn > N_EPSILON) || (N_K0starnn > N_EPSILON)) Correction_Xsnn = 1; // there is a resonance
+    else if(std::abs(N_Xsnn - 1) < N_EPSILON) {
+        int Bin = weights_Xsnn->FindBin(invM_Xsnn);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_Xsnn) Bin = STEP_Xsnn;
+        Correction_Xsnn = std::pow(weights_Xsnn->GetBinContent(Bin), N_Xsnn); // BR correction * invM correction
+    }
+
+    return Correction_Xsnn;
 }
 
 class Corrector_Multiplicity {
@@ -1679,6 +2051,8 @@ public:
 Corrector_Multiplicity::Corrector_Multiplicity() :
     CUTOFF(50.0)
 {
+    printf("[Corrector_Multiplicity] try to read Multiplicity correction files...\n");
+
     FILE* fp;
 
     // read multiplicity weights
@@ -1700,6 +2074,8 @@ Corrector_Multiplicity::Corrector_Multiplicity() :
 Corrector_Multiplicity::Corrector_Multiplicity(const char* filename) :
     CUTOFF(50.0)
 {
+    printf("[Corrector_Multiplicity] try to read Multiplicity correction files, %s...\n", filename);
+
     FILE* fp;
 
     // read multiplicity weights
@@ -1758,6 +2134,8 @@ Corrector_KpKLKL::Corrector_KpKLKL() :
     BR_KpKLKL_NR_evtpdl(0.0000115),
     BR_RelativeUncertainty_KpKLKL_all_PDG(0.04 / 1.05)
 {
+    printf("[Corrector_KpKLKL] try to read KpKLKL correction files...\n");
+
     FILE* fp;
 
     // read KpKLKL weights
@@ -1824,10 +2202,16 @@ public:
 
 Corrector_KSKLKL::Corrector_KSKLKL() :
     N_EPSILON(0.01),
-    BR_KSKLKL_all_PDG(0.000018),
+    // This value excludes B0 -> phi(-> KS0 KL0) KL0 resonance.
+    // according to eq (28) in https://arxiv.org/pdf/hep-ph/0509155, BR(B0 -> KS0 KS0 KS0) = 3 * BR(B0 ->KS0 KL0 KL0), without phi resonance
+    // according to PDG, BR(B0 -> KS0 KS0 KS0) = 0.000006. Therefore, BR(B0 ->KS0 KL0 KL0) = 0.000002, without phi resonance
+    // in decfile, 0.000048000   K0  anti-K0  K0. Therefore, BR(B0->KS0 KL0 KL0) = 0.000018 in decfile.
+    BR_KSKLKL_all_PDG(0.000002),
     BR_KSKLKL_NR_evtpdl(0.000018),
     BR_RelativeUncertainty_KSKLKL_all_PDG(0.5 / 6.0)
 {
+    printf("[Corrector_KSKLKL] try to read KSKLKL correction files...\n");
+
     FILE* fp;
 
     // read KSKLKL weights
@@ -1883,63 +2267,143 @@ private:
     TH2D* weights_KSKLKL;
 
     const double N_EPSILON;
-    const double BR_phiKL_all_PDG;
-    const double BR_KSKLKL_NR_evtpdl;
+    const double BR_B02phiKL_PDG;
+    const double BR_B02phiKL_evtpdl;
     const double BR_RelativeUncertainty_phiKL_all_PDG;
 
 public:
     Corrector_phiKL();
-    double GetCorrectionFactorAtGeneric(double smax, double smin, double nB2KSKLKL_all, double nB2KSKLKL_NR);
+    double GetCorrectionFactorAtGeneric(double nB02phiKL0);
 };
 
 Corrector_phiKL::Corrector_phiKL() :
     N_EPSILON(0.01),
     // This class gives a correction factor to produce B0 -> phi(-> KS0 KL0) KL0 resonance from B0 -> KS0 KL0 KL0 NR
-    BR_phiKL_all_PDG(0.00000365),
-    BR_KSKLKL_NR_evtpdl(0.000018),
+    BR_B02phiKL_PDG(0.0000073 * 0.5), // In PDG, BR(B0 -> phi K0) = 0.0000073
+    BR_B02phiKL_evtpdl(0.0000043), // In decfile, BR(B0 -> phi KL0) = 0.0000043
     BR_RelativeUncertainty_phiKL_all_PDG(0.7 / 7.3)
+{ }
+
+double Corrector_phiKL::GetCorrectionFactorAtGeneric(double nB02phiKL0) {
+
+    if (nB02phiKL0 < N_EPSILON) return 1.0; // no correction needed.
+
+    return (BR_B02phiKL_PDG / BR_B02phiKL_evtpdl);
+}
+
+class Corrector_KstarKLKL {
+private:
+
+    int STEP_KstarKLKL;
+    double mininvM_KstarKLKL;
+    double maxinvM_KstarKLKL;
+    TH1D* weights_KstarKLKL;
+
+    const double N_EPSILON;
+
+public:
+    Corrector_KstarKLKL();
+    double GetCorrectionFactorAtGeneric(double E_1, double px_1, double py_1, double pz_1, double E_2, double px_2, double py_2, double pz_2, double nB2KstarKLKL);
+};
+
+Corrector_KstarKLKL::Corrector_KstarKLKL() :
+    N_EPSILON(0.01)
 {
-    printf("[Corrector_phiKL] try to read phiKL correction files...\n");
+    printf("[Corrector_KstarKLKL] try to read KstarKLKL correction files...\n");
 
     FILE* fp;
 
-    // read phiKL weights
-    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/KSKLKL/phiKL_weight.txt", "r");
-    fscanf(fp, "smax: %d %lf %lf\n", &smax_NBin, &smax_min, &smax_max);
-    fscanf(fp, "smin: %d %lf %lf\n", &smin_NBin, &smin_min, &smin_max);
-    weights_KSKLKL = new TH2D("KSKLKL_weights_for_phiKL", ";;", smax_NBin, smax_min, smax_max, smin_NBin, smin_min, smin_max);
-    for (int i = 0; i < smax_NBin; i++) {
-        for (int j = 0; j < smin_NBin; j++) {
-            double smax;
-            double smin;
-            double weight;
-            fscanf(fp, "%lf %lf %lf\n", &smax, &smin, &weight);
-            weights_KSKLKL->Fill(smax, smin, weight);
-        }
+    // read KstarKLKL weights
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/XKSKS_weight/KstarKSKS_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_KstarKLKL, &mininvM_KstarKLKL, &maxinvM_KstarKLKL);
+    weights_KstarKLKL = new TH1D("KstarKLKL_weights", ";;", STEP_KstarKLKL, mininvM_KstarKLKL, maxinvM_KstarKLKL);
+    for (int i = 0; i < STEP_KstarKLKL; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        weights_KstarKLKL->SetBinContent(i + 1, temp);
     }
     fclose(fp);
 
 }
 
-double Corrector_phiKL::GetCorrectionFactorAtGeneric(double smax, double smin, double nB2KSKLKL_all, double nB2KSKLKL_NR) {
+double Corrector_KstarKLKL::GetCorrectionFactorAtGeneric(double E_1, double px_1, double py_1, double pz_1, double E_2, double px_2, double py_2, double pz_2, double nB2KstarKLKL) {
 
-    if (nB2KSKLKL_all < N_EPSILON) return 1.0; // no correction needed
-    if (nB2KSKLKL_all - nB2KSKLKL_NR > N_EPSILON) return 0.0; // remove B0 --> KS0 [X --> KL0 KL0]
-    if (nB2KSKLKL_all < 0 || nB2KSKLKL_NR < 0) {
-        printf("[Corrector_phiKL] number of decay is smaller than 0!\n");
-        exit(1);
+    double Correction_KstarKLKL = 1;
+
+    if (nB2KstarKLKL < N_EPSILON) Correction_KstarKLKL = 1;
+    else if (std::abs(nB2KstarKLKL - 1) < N_EPSILON) {
+        double E_sum = E_1 + E_2;
+        double px_sum = px_1 + px_2;
+        double py_sum = py_1 + py_2;
+        double pz_sum = pz_1 + pz_2;
+
+        double invM = std::sqrt(E_sum * E_sum - px_sum * px_sum - py_sum * py_sum - pz_sum * pz_sum);
+
+        int Bin = weights_KstarKLKL->FindBin(invM);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_KstarKLKL) Bin = STEP_KstarKLKL;
+        Correction_KstarKLKL = std::pow(weights_KstarKLKL->GetBinContent(Bin), nB2KstarKLKL); // BR correction * invM correction
     }
 
-    // check smax and smin
-    double smax_ = std::max(smax, smin);
-    double smin_ = std::min(smax, smin);
+    return Correction_KstarKLKL;
+}
 
-    double Correction = 1;
+class Corrector_XsKLKL {
+private:
 
-    int GLobalBin_weight = weights_KSKLKL->FindBin(smax_, smin_);
-    Correction = weights_KSKLKL->GetBinContent(GLobalBin_weight) * (BR_phiKL_all_PDG / BR_KSKLKL_NR_evtpdl);
+    int STEP_XsKLKL;
+    double mininvM_XsKLKL;
+    double maxinvM_XsKLKL;
+    TH1D* weights_XsKLKL;
 
-    return Correction;
+    const double N_EPSILON;
+
+public:
+    Corrector_XsKLKL();
+    double GetCorrectionFactorAtGeneric(double E_1, double px_1, double py_1, double pz_1, double E_2, double px_2, double py_2, double pz_2, double nB2KpKLKL_all, double nB2KSKLKL_all, double nB2KstarKLKL, double nKL_XKLKL);
+};
+
+Corrector_XsKLKL::Corrector_XsKLKL() :
+    N_EPSILON(0.01)
+{
+    printf("[Corrector_XsKLKL] try to read XsKLKL correction files...\n");
+
+    FILE* fp;
+
+    // read XsKLKL weights
+    fp = fopen("/home/belle2/junewoo/storage_b1/bsub/systematic/XKSKS_weight/XsKSKS_weight.txt", "r");
+    fscanf(fp, "%d %lf %lf\n", &STEP_XsKLKL, &mininvM_XsKLKL, &maxinvM_XsKLKL);
+    weights_XsKLKL = new TH1D("XsKLKL_weights", ";;", STEP_XsKLKL, mininvM_XsKLKL, maxinvM_XsKLKL);
+    for (int i = 0; i < STEP_XsKLKL; i++) {
+        double temp;
+        fscanf(fp, "%lf\n", &temp);
+        weights_XsKLKL->SetBinContent(i + 1, temp);
+    }
+    fclose(fp);
+
+}
+
+double Corrector_XsKLKL::GetCorrectionFactorAtGeneric(double E_1, double px_1, double py_1, double pz_1, double E_2, double px_2, double py_2, double pz_2, double nB2KpKLKL_all, double nB2KSKLKL_all, double nB2KstarKLKL, double nKL_XKLKL) {
+
+    double Correction_XsKLKL = 1;
+
+    if (nKL_XKLKL < N_EPSILON) Correction_XsKLKL = 1; // there is no B -> Xs KL KL decay
+    else if ((nB2KpKLKL_all > N_EPSILON) || (nB2KSKLKL_all > N_EPSILON) || (nB2KstarKLKL > N_EPSILON)) Correction_XsKLKL = 1; // one of the resonance decay
+    else if (std::abs(nKL_XKLKL - 2) < N_EPSILON) {
+        double E_sum = E_1 + E_2;
+        double px_sum = px_1 + px_2;
+        double py_sum = py_1 + py_2;
+        double pz_sum = pz_1 + pz_2;
+
+        double invM = std::sqrt(E_sum * E_sum - px_sum * px_sum - py_sum * py_sum - pz_sum * pz_sum);
+
+        int Bin = weights_XsKLKL->FindBin(invM);
+        if (Bin < 1) Bin = 1;
+        else if (Bin > STEP_XsKLKL) Bin = STEP_XsKLKL;
+        Correction_XsKLKL = std::pow(weights_XsKLKL->GetBinContent(Bin), nKL_XKLKL / 2); // BR correction * invM correction
+    }
+
+    return Correction_XsKLKL;
 }
 
 class Corrector_BtoDtoXKL {
@@ -2241,7 +2705,10 @@ double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double M
         double TotalNevtAtMxsBinWithMissing = Total_Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin] + Nevt_Nominal_missing_before_Xsgamma_MC15[TargetMxsBin];
         double TargetNevtAtMxsBin;
         if (TargetCategory == N_Category_gamma) TargetNevtAtMxsBin = Nevt_Nominal_missing_before_Xsgamma_MC15[TargetMxsBin]; // if it is missing mode
-        else TargetNevtAtMxsBin = Total_Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin] * (Fragmentation_Xsgamma[TargetMxsBin][TargetCategory] * 0.01);
+        else {
+            if ((TargetMxsBin != 0) && (TargetMxsBin != (N_Bin_gamma - 1))) TargetNevtAtMxsBin = Total_Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin] * (Fragmentation_Xsgamma[TargetMxsBin][TargetCategory] * 0.01); // if target MXsbin is within [1.15, 2.4], there is fragmentation data from Xs J/psi analysis
+            else TargetNevtAtMxsBin = Nevt_Nominal_before_Xsgamma_MC15[TargetMxsBin][TargetCategory]; // otherwise, we just use MC fragmentation
+        }
         double TotalNevtAtMxsBinWithMissingWithoutTargetCategory = TotalNevtAtMxsBinWithMissing - TargetNevtAtMxsBin;
 
         if (Category == TargetCategory) { // it is target category
