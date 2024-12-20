@@ -39,8 +39,8 @@
 #include <limits>
 
 # define Nstep 400
-# define start 0.5
-# define end 1.0
+# define scan_start 0.5
+# define scan_end 1.0
 
 using std::string;
 using std::to_string;
@@ -298,12 +298,6 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             tree_Btag->GetEntry(j);
             if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
 
-            if (KnunuOnly) {
-                // select B+ --> K+ nu nubar reconstruction only
-                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
-                else continue;
-            }
-
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -459,7 +453,7 @@ void CalculateFOM(
     for (int i = 0; i < Nstep; i++) FBDT_cut[i] = 0;
 
     for (int j = 0; j < Nstep; j++) {
-        double BB_output = start + (end - start) * j / Nstep;
+        double BB_output = scan_start + (scan_end - scan_start) * j / Nstep;
         FBDT_cut[j] = BB_output;
 
         double BKG_num = 0;
