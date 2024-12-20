@@ -407,43 +407,43 @@ void CalculateFOM(
     for (std::vector<FOM_structure>::iterator it = SIGNAL_FOM_.begin(); it != SIGNAL_FOM_.end();)
     {
         if((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
-        else it = allPlayers.erase(it);
+        else it = SIGNAL_FOM_.erase(it);
     }
 
-    for (std::vector<FOM_structure>::iterator it = SIGNAL_FOM_.begin(); it != SIGNAL_FOM_.end();)
+    for (std::vector<FOM_structure>::iterator it = CHG_FOM_.begin(); it != CHG_FOM_.end();)
     {
         if ((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
-        else it = allPlayers.erase(it);
+        else it = CHG_FOM_.erase(it);
     }
 
-    for (std::vector<FOM_structure>::iterator it = SIGNAL_FOM_.begin(); it != SIGNAL_FOM_.end();)
+    for (std::vector<FOM_structure>::iterator it = MIX_FOM_.begin(); it != MIX_FOM_.end();)
     {
         if ((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
-        else it = allPlayers.erase(it);
+        else it = MIX_FOM_.erase(it);
     }
 
-    for (std::vector<FOM_structure>::iterator it = SIGNAL_FOM_.begin(); it != SIGNAL_FOM_.end();)
+    for (std::vector<FOM_structure>::iterator it = UUBAR_FOM_.begin(); it != UUBAR_FOM_.end();)
     {
         if ((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
-        else it = allPlayers.erase(it);
+        else it = UUBAR_FOM_.erase(it);
     }
 
-    for (std::vector<FOM_structure>::iterator it = SIGNAL_FOM_.begin(); it != SIGNAL_FOM_.end();)
+    for (std::vector<FOM_structure>::iterator it = DDBAR_FOM_.begin(); it != DDBAR_FOM_.end();)
     {
         if ((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
-        else it = allPlayers.erase(it);
+        else it = DDBAR_FOM_.erase(it);
     }
 
-    for (std::vector<FOM_structure>::iterator it = SIGNAL_FOM_.begin(); it != SIGNAL_FOM_.end();)
+    for (std::vector<FOM_structure>::iterator it = SSBAR_FOM_.begin(); it != SSBAR_FOM_.end();)
     {
         if ((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
-        else it = allPlayers.erase(it);
+        else it = SSBAR_FOM_.erase(it);
     }
 
-    for (std::vector<FOM_structure>::iterator it = SIGNAL_FOM_.begin(); it != SIGNAL_FOM_.end();)
+    for (std::vector<FOM_structure>::iterator it = CHARM_FOM_.begin(); it != CHARM_FOM_.end();)
     {
         if ((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
-        else it = allPlayers.erase(it);
+        else it = CHARM_FOM_.erase(it);
     }
 
     double FOM_Matrix[Nstep];
