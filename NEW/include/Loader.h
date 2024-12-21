@@ -2375,9 +2375,11 @@ bool Loader::IsBCSValid(const char* MC_version) { // modified for makeshift.
 
         if (IsItValid == true) TotalData.push(temp);
         else if ((IsItValid == false) && (Mbc_tagsame == true) && (std::string(MC_version) == "data")) { // for the safety net, the makeshift only works for data
+            printf("[Loader::IsBCSValid] There seems to be duplicated events. We drop the event.\n");
             IsItValid = true; // makeshift
         }
         else if ((IsItValid == false) && (Mbc_tagsame == false) && (std::string(MC_version) == "data")) { // for the safety net, the makeshift only works for data
+            printf("[Loader::IsBCSValid] There seems to be duplicated events. We catch the event. Generally it does not happend. Please check it.\n");
             IsItValid = true; // makeshift
             TotalData.push(temp);
         }
