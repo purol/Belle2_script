@@ -93,7 +93,7 @@ int main(int argc, char* argv[]) {
 
         loader.BCS(Loader::Btag, 5, Loader::Highest, true);
         loader.BCS_random(names.at(i));
-        if (loader.IsBCSValid() == false) {
+        if (loader.IsBCSValid(argv[5]) == false) {
             printf("ERROR! it is not valid\n");
             exit(1);
         }

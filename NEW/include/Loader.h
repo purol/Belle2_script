@@ -404,8 +404,7 @@ public:
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value, Loader::Qualifier qualifier, Loader::Variable variable_qual, int i_qual, Loader::Inequality inq_qual, double value_qual);
     void BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit, bool IntendedMultipleCandidate = false);
     void BCS_random(std::string seedString = "The quick brown fox jumps over the lazy dog");
-    bool IsBCSValid();
-    bool IsBCSValidMakeShift();
+    bool IsBCSValid(const char* MC_version);
     void End();
     void PrintRootFile(std::string output_name);
     void PrintSeparateRootFile(std::string output_name);
@@ -2336,44 +2335,11 @@ void Loader::BCS_random(std::string seedString) {
     }
 }
 
-bool Loader::IsBCSValid() { 
-    bool IsItValid = true;
-
-    typedef struct labels {
-        int __experiment__;
-        int __run__;
-        unsigned int __event__;
-        int __ncandidates__;
-    } Labels;
-
-    std::vector<Labels> label_list;
-    std::queue<Data> TotalData_;
-    TotalData_.swap(TotalData);
-
-    while (!TotalData_.empty()) {
-        Data temp = TotalData_.front();
-        TotalData_.pop();
-        for (unsigned int i = 0; i < label_list.size(); i++) {
-            if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) {
-                IsItValid = false;
-            }
-        }
-        Labels temp_Labels;
-        temp_Labels.__experiment__ = temp.__experiment__;
-        temp_Labels.__run__ = temp.__run__;
-        temp_Labels.__event__ = temp.__event__;
-        temp_Labels.__ncandidates__ = temp.__ncandidates__;
-        label_list.push_back(temp_Labels);
-
-        if (IsItValid == true) TotalData.push(temp);
-        else return IsItValid;
-    }
-    return IsItValid;
-}
-
-bool Loader::IsBCSValidMakeShift() { // modified for makeshift. It SHOULD NOT USED!
-    print("IsBCSValidMakeShift should not be used\n");
-    exit(1);
+bool Loader::IsBCSValid(const char* MC_version) { // modified for makeshift. 
+    // generally, we do not need to use this makeshift. However, there seems to be duplicated data:
+    // https://questions.belle2.org/question/13676/duplicated-event-in-proc13-feihadronic-data/
+    // therefore, I manually remove it...
+    // If there are more than one candidate, this function SHOULD NOT be used.
 
     bool IsItValid = true;
     bool Mbc_tagsame = false;
@@ -2408,13 +2374,14 @@ bool Loader::IsBCSValidMakeShift() { // modified for makeshift. It SHOULD NOT US
         label_list.push_back(temp_Labels);
 
         if (IsItValid == true) TotalData.push(temp);
-        else if (IsItValid == false && Mbc_tagsame == true) {
+        else if ((IsItValid == false) && (Mbc_tagsame == true) && (std::string(MC_version) == "data")) { // for the safety net, the makeshift only works for data
             IsItValid = true; // makeshift
         }
-        else if (IsItValid == false && Mbc_tagsame == false) {
+        else if ((IsItValid == false) && (Mbc_tagsame == false) && (std::string(MC_version) == "data")) { // for the safety net, the makeshift only works for data
             IsItValid = true; // makeshift
             TotalData.push(temp);
         }
+        else if ((IsItValid == false) && (std::string(MC_version) != "data")) return IsItValid; // for the MC, there is no makeshift.
     }
     return IsItValid;
 }
