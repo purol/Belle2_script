@@ -92,22 +92,24 @@ int main() {
 
     OPTIONS* options = (OPTIONS*)malloc(sizeof(OPTIONS));
     Initialize_options(options, "none");
-
     w->loadSnapshot("NominalParamValues");
     FixParameters(w, options);
+
+    PrintNevtFile(w, "Nominal_Nevt.txt");
 
     // test
     //RooRealVar* alpha = w->var("nom_gamma_stat_channel_bin_0");
     //printf("%lf", alpha->getValV());
 
     // get Category and data
-    //RooAbsData* data = (RooAbsData*)w->data("obsData");
-    RooDataSet* data = (RooDataSet*)w->data("asimovData");
+    RooDataSet* data = (RooDataSet*)w->data("obsData");
+    //RooDataSet* data = (RooDataSet*)w->data("asimovData");
+
+    // draw
+    GetPlotTemplate(w, data, "prefit.png");
 
     // fit
-    //RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
-    //double eps = ::ROOT::Math::MinimizerOptions::DefaultTolerance();
-    double eps = 0.001;
+    double eps = 0.1;
     RooAbsReal* nll;
     RooFitResult* fitres = MyMinimizeNLL(w, data, &nll, eps);
 
@@ -136,7 +138,41 @@ int main() {
     // RooPlot* x_frame = x->frame(Title("fit result"));
 
     // draw
-    // GetPlotTemplate(w, data);
+    GetPlotTemplate(w, data, "postfit.png");
+    double NSIGNAL = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
+    double NBKG = GetNumEvts(w, "CHG_MX1") + GetNumEvts(w, "CHG_MX2") + GetNumEvts(w, "CHG_MX3") +
+GetNumEvts(w, "MIX_MX1") + GetNumEvts(w, "MIX_MX2") + GetNumEvts(w, "MIX_MX3") +
+GetNumEvts(w, "UUBAR_MX1") + GetNumEvts(w, "UUBAR_MX2") + GetNumEvts(w, "UUBAR_MX3") +
+GetNumEvts(w, "DDBAR_MX1") + GetNumEvts(w, "DDBAR_MX2") + GetNumEvts(w, "DDBAR_MX3") +
+GetNumEvts(w, "SSBAR_MX1") + GetNumEvts(w, "SSBAR_MX2") + GetNumEvts(w, "SSBAR_MX3") +
+GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
+
+    printf("NSIG: %lf\nNBKG: %lf\n", NSIGNAL, NBKG);
+
+    // get stat uncertainty only
+    Initialize_options(options, "all");
+    FixParameters(w, options);
+
+    fitres = MyMinimizeNLL(w, data, &nll, eps);
+
+    fitargs = fitres->floatParsFinal();
+    TIterator* iter_again(fitargs.createIterator());
+
+    for (TObject* a = iter_again->Next(); a != 0; a = iter_again->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        double val = rrv->getVal();
+        double err = rrv->getError();
+        double HIerr = rrv->getAsymErrorHi();
+        double LOerr = rrv->getAsymErrorLo();
+
+        printf("fit result for %s = %lf +- %lf\n", name.c_str(), val, err);
+        printf("MINOS error: %lf %lf\n", HIerr, LOerr);
+
+    }
+
+    PrintNevtFile(w, "Fit_Nevt.txt");
+    PrintNuisanceParameters(&fitargs);
 
     // draw profile likelihood
     /*
