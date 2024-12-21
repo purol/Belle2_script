@@ -1432,6 +1432,7 @@ void Drawpull(RooWorkspace* w, TIterator* iter, const char* fname, int type = 0)
 
     cpull->SaveAs(fname);
 
+    delete pull_ht;
     delete pull_one_sigma;
     delete pull_two_sigma;
     delete cpull;
