@@ -2371,7 +2371,10 @@ bool Loader::IsBCSValid() {
     return IsItValid;
 }
 
-bool Loader::IsBCSValidMakeShift() { // modified for makeshift!!
+bool Loader::IsBCSValidMakeShift() { // modified for makeshift. It SHOULD NOT USED!
+    print("IsBCSValidMakeShift should not be used\n");
+    exit(1);
+
     bool IsItValid = true;
     bool Mbc_tagsame = false;
 
