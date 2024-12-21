@@ -2335,7 +2335,42 @@ void Loader::BCS_random(std::string seedString) {
     }
 }
 
-bool Loader::IsBCSValid() { // modified for makeshift!!
+bool Loader::IsBCSValid() { 
+    bool IsItValid = true;
+
+    typedef struct labels {
+        int __experiment__;
+        int __run__;
+        unsigned int __event__;
+        int __ncandidates__;
+    } Labels;
+
+    std::vector<Labels> label_list;
+    std::queue<Data> TotalData_;
+    TotalData_.swap(TotalData);
+
+    while (!TotalData_.empty()) {
+        Data temp = TotalData_.front();
+        TotalData_.pop();
+        for (unsigned int i = 0; i < label_list.size(); i++) {
+            if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) {
+                IsItValid = false;
+            }
+        }
+        Labels temp_Labels;
+        temp_Labels.__experiment__ = temp.__experiment__;
+        temp_Labels.__run__ = temp.__run__;
+        temp_Labels.__event__ = temp.__event__;
+        temp_Labels.__ncandidates__ = temp.__ncandidates__;
+        label_list.push_back(temp_Labels);
+
+        if (IsItValid == true) TotalData.push(temp);
+        else return IsItValid;
+    }
+    return IsItValid;
+}
+
+bool Loader::IsBCSValidMakeShift() { // modified for makeshift!!
     bool IsItValid = true;
     bool Mbc_tagsame = false;
 
