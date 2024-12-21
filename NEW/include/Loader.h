@@ -405,6 +405,7 @@ public:
     void BCS(Loader::Variable variable, int index, Loader::BCS_criterion crit, bool IntendedMultipleCandidate = false);
     void BCS_random(std::string seedString = "The quick brown fox jumps over the lazy dog");
     bool IsBCSValid();
+    bool IsBCSValidMakeShift();
     void End();
     void PrintRootFile(std::string output_name);
     void PrintSeparateRootFile(std::string output_name);
