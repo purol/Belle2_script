@@ -2337,14 +2337,14 @@ void Loader::BCS_random(std::string seedString) {
 
 bool Loader::IsBCSValid() { // modified for makeshift!!
     bool IsItValid = true;
-    bool Eeclsame = false;
+    bool Mbc_tagsame = false;
 
     typedef struct labels {
         int __experiment__;
         int __run__;
         unsigned int __event__;
         int __ncandidates__;
-        double Eecl; // Makeshift
+        double Mbc_tag; // Makeshift
     } Labels;
 
     std::vector<Labels> label_list;
@@ -2357,7 +2357,7 @@ bool Loader::IsBCSValid() { // modified for makeshift!!
         for (unsigned int i = 0; i < label_list.size(); i++) {
             if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) {
                 IsItValid = false;
-                if (label_list.at(i).Eecl == temp.Upsilon_info[3]) Eeclsame = true; // makeshift
+                if (label_list.at(i).Mbc_tag == temp.Btag_info[1]) Mbc_tagsame = true; // makeshift
             }
         }
         Labels temp_Labels;
@@ -2365,14 +2365,14 @@ bool Loader::IsBCSValid() { // modified for makeshift!!
         temp_Labels.__run__ = temp.__run__;
         temp_Labels.__event__ = temp.__event__;
         temp_Labels.__ncandidates__ = temp.__ncandidates__;
-        temp_Labels.Eecl = temp.Upsilon_info[3];
+        temp_Labels.Mbc_tag = temp.Btag_info[1];
         label_list.push_back(temp_Labels);
 
         if (IsItValid == true) TotalData.push(temp);
-        else if (IsItValid == false && Eeclsame == true) {
+        else if (IsItValid == false && Mbc_tagsame == true) {
             IsItValid = true; // makeshift
         }
-        else if (IsItValid == false && Eeclsame == false) {
+        else if (IsItValid == false && Mbc_tagsame == false) {
             IsItValid = true; // makeshift
             TotalData.push(temp);
         }
