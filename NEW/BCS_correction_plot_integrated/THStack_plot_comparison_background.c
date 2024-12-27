@@ -543,8 +543,8 @@ void THStack_plot_comparison_background() {
         ddbar_MC15rd_hist[k] = new TH1D("d#bar{d} MC15rd", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         ssbar_MC15rd_hist[k] = new TH1D("s#bar{s} MC15rd", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         ccbar_MC15rd_hist[k] = new TH1D("c#bar{c} MC15rd", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        MC15rd_old_hist[k] = new TH1D("MC15rd_old background", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        MC15rd_hist[k] = new TH1D("MC15rd background", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        MC15rd_old_hist[k] = new TH1D("old background", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
+        MC15rd_hist[k] = new TH1D("new background", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;new/old", bins, min, max);
