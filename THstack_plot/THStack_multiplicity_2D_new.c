@@ -189,6 +189,8 @@ void THStack_multiplicity_2D_new() {
     LetsFill(K0starnunu_after_BCS_dirname, &after_BCS_Event, "B02Kstar0nunu", false, Scale_K0star_validation_MC15rd);
     LetsFill(Xsdnunu_after_BCS_dirname, &after_BCS_Event, "B02Xsnunu", false, Scale_Xsd_nonresonant_validation_MC15rd);
 
+    FillMatrix(Ncandidates, before_BCS_Event, after_BCS_Event);
+
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             printf("%lf ", Ncandidates[j][i]);
