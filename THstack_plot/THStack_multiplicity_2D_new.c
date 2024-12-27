@@ -122,7 +122,7 @@ void LetsFill(const char* dirname, std::vector<Event>* event_vector, const char*
             // D veto
             if ((MXs > 1.84) && (MXs < 1.89)) continue;
 
-            Event temp_ = { __experiment__, __run__, __event__, __ncandidates__, MXs, original_filename, weight };
+            Event temp_ = { __experiment__, __run__, __event__, __ncandidates__, MXs, weight, original_filename};
             event_vector->push_back(temp_);
 
         }
