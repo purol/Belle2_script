@@ -21,7 +21,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 // for background
 // (old sample + new FBDT) VS (new sample + new FBDT)
 
-void THStack_plot_comparison_signal() {
+void THStack_plot_comparison_signal_new_old() {
 
     const char* old_signal_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/SIGNAL_analysis/validation_v010/final_output_root_after_MVA_Application/";
 
