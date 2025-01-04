@@ -346,6 +346,9 @@ private:
     double MCcount[Loader::MAX_NUM_DECAYMODE_MC];
     bool MCcountOn;
 
+    int current_Btagcount;
+    std::vector<double> N_Btag;
+
     int UpsilonExperimentToTree;
     int UpsilonRunToTree;
     unsigned int UpsilonEventToTree;
@@ -420,6 +423,7 @@ public:
     void MVACut(double OBB, double Oqq, Loader::MassRegion massRegion);
     void MVACutBelow(double OBB, double Oqq, Loader::MassRegion massRegion);
     void CountMCEvent(std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
+    void CountBtag(std::string filename, std::vector<int> identifiers, const char* type, const char* MC_version, const char* category, bool smartmode = true);
     void SelectDecayModeOf(Loader::DecayMode decaymode);
     void RejectDecayModeOf(Loader::DecayMode decaymode);
     void BeamEnergyCorrectionFromDeltaE(int index_pBcms, int index_EBcms, int index_Mbc, int index_deltaE, double targetEbeamstar, bool IsItBtag);
@@ -461,6 +465,7 @@ Loader::Loader() {
     for (int i = 0; i < Nstep; i++) for (int j = 0; j < Nstep; j++) FOM_Matrix[i][j] = 0.0; // initialization
     FOMIsOn = false;
     current_MCcount = 0;
+    current_Btagcount = 0;
     for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) MCcount[i] = 0;
     MCcountOn = false;
 }
@@ -486,6 +491,7 @@ void Loader::initialize() {
     current_FOM = 0;
     FOMIsOn = false;
     current_MCcount = 0;
+    current_Btagcount = 0;
     MCcountOn = false;
 }
 
@@ -2402,6 +2408,10 @@ void Loader::End() {
         printf("Number of event at first region: %lf\n", N_events_mu1.at(i));
         printf("Number of event at second region: %lf\n", N_events_mu2.at(i));
         printf("Number of event at third region: %lf\n", N_events_mu3.at(i));
+    }
+
+    for (int i = 0; i < N_Btag.size(); i++) {
+        printf("[%d] The number of Btag: %lf\n", i, N_Btag.at(i));
     }
 
     for (int i = 0; i < Var_hists.size(); i++) {
@@ -5151,6 +5161,91 @@ void Loader::CountMCEvent(std::string filename, const char* type, const char* MC
 
     MCcountOn = true;
     current_MCcount++;
+}
+
+void Loader::CountBtag(std::string filename, std::vector<int> identifiers, const char* type, const char* MC_version, const char* category, bool smartmode) {
+    typedef struct labels {
+        int __experiment__;
+        int __run__;
+        unsigned int __event__;
+        int __ncandidates__;
+        std::vector<double> some_variable;
+    } Labels;
+    std::vector<Labels> Btag_label_list;
+
+    if (N_Btag.size() == current_Btagcount) { // allocate new int
+        N_Btag.push_back(0);
+    }
+    else if (N_Btag.size() > current_Btagcount) { // use what I have
+    }
+    else { // error
+        printf("ERROR! 028\n");
+        exit(1);
+    }
+
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
+    while (!temp_queue.empty()) {
+        Data temp = temp_queue.front();
+        temp_queue.pop();
+
+        bool overlap = false;
+        for (unsigned int i = 0; i < label_list.size(); i++) {
+            if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) {
+                for (int j = 0; j < identifiers.size(); j++) {
+                    bool all_variables_same = true;
+                    if (label_list.at(i).some_variable.at(j) != temp.Btag_info[identifiers.at(j)]) {
+                        all_variables_same = false;
+                        break;
+                    }
+                }
+                if (all_variables_same) overlap = true;
+            }
+        }
+        if (overlap == false) {
+            // Number of Btag
+            if (smartmode == false) N_Btag.at(current_Btagcount) = N_Btag.at(current_Btagcount) + 1;
+            else {
+                if (strcmp(type, "SIGNAL") == 0) {
+                    if (filename.find("B2Knunu") != std::string::npos) {
+                        double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
+                        N_Btag.at(current_Btagcount) = N_Btag.at(current_Btagcount) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
+                    }
+                    else if (filename.find("B2Kstarnunu") != std::string::npos) N_Btag.at(current_Btagcount) = N_Btag.at(current_Btagcount) + ObtainWeight(type, MC_version, category, filename);
+                    else if (filename.find("B2Xsnunu") != std::string::npos) {
+                        double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
+                        N_Btag.at(current_Btagcount) = N_Btag.at(current_Btagcount) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
+                    }
+                    else if (filename.find("B02K0nunu") != std::string::npos) {
+                        double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
+                        N_Btag.at(current_Btagcount) = N_Btag.at(current_Btagcount) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
+                    }
+                    else if (filename.find("B02Kstar0nunu") != std::string::npos) N_Btag.at(current_Btagcount) = N_Btag.at(current_Btagcount) + ObtainWeight(type, MC_version, category, filename);
+                    else if (filename.find("B02Xsnunu") != std::string::npos) {
+                        double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
+                        N_Btag.at(current_Btagcount) = N_Btag.at(current_Btagcount) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
+                    }
+                    else { N_Btag.at(current_Btagcount) = N_Btag.at(current_Btagcount) + ObtainWeight(type, MC_version, category, filename); }
+                }
+                else N_Btag.at(current_Btagcount) = N_Btag.at(current_Btagcount) + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
+            }
+            Labels temp_Labels;
+            temp_Labels.__experiment__ = temp.__experiment__;
+            temp_Labels.__run__ = temp.__run__;
+            temp_Labels.__event__ = temp.__event__;
+            temp_Labels.__ncandidates__ = temp.__ncandidates__;
+            for (int j = 0; j < identifiers.size(); j++) {
+                temp_Labels.some_variable.push_back(temp.Btag_info[identifiers.at(j)]);
+            }
+
+            label_list.push_back(temp_Labels);
+
+        }
+
+        TotalData.push(temp);
+    }
+
+    current_Btagcount++;
 }
 
 void Loader::SelectDecayModeOf(Loader::DecayMode decaymode) {

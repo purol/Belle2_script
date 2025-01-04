@@ -405,7 +405,7 @@ void THStack_plot_comparison_signal_new_old() {
 
         MC15rd_hist[k]->SetFillColor(4); MC15rd_hist[k]->SetLineColor(4); MC15rd_hist[k]->SetLineWidth(1); MC15rd_hist[k]->SetFillStyle(3002); MC15rd_hist[k]->Draw("e1 Hist");
         MC15rd_old_hist[k]->SetFillColor(2); MC15rd_old_hist[k]->SetLineColor(2); MC15rd_old_hist[k]->SetLineWidth(1); MC15rd_old_hist[k]->SetFillStyle(3003); MC15rd_old_hist[k]->Draw("e1 Hist SAME");
-        TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
+        TLegend* legend = pad1->BuildLegend(0.35, 0.9, 0.15, 0.6);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
         //TPaveText* pt = new TPaveText(0.135, 0.88, 0.6, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC15rd_old scaled to MC15rd, MC15rd/MC15rd_old= " + std::to_string(CAL_MC15rd_old/ CAL_MC15rd)).c_str()); pt->Draw();
 
