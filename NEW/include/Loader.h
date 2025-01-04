@@ -5190,11 +5190,11 @@ void Loader::CountBtag(std::string filename, std::vector<int> identifiers, const
         temp_queue.pop();
 
         bool overlap = false;
-        for (unsigned int i = 0; i < label_list.size(); i++) {
-            if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) {
+        for (unsigned int i = 0; i < Btag_label_list.size(); i++) {
+            if (Btag_label_list.at(i).__experiment__ == temp.__experiment__ && Btag_label_list.at(i).__run__ == temp.__run__ && Btag_label_list.at(i).__event__ == temp.__event__ && Btag_label_list.at(i).__ncandidates__ == temp.__ncandidates__) {
+                bool all_variables_same = true;
                 for (int j = 0; j < identifiers.size(); j++) {
-                    bool all_variables_same = true;
-                    if (label_list.at(i).some_variable.at(j) != temp.Btag_info[identifiers.at(j)]) {
+                    if (Btag_label_list.at(i).some_variable.at(j) != temp.Btag_info[identifiers.at(j)]) {
                         all_variables_same = false;
                         break;
                     }
@@ -5238,7 +5238,7 @@ void Loader::CountBtag(std::string filename, std::vector<int> identifiers, const
                 temp_Labels.some_variable.push_back(temp.Btag_info[identifiers.at(j)]);
             }
 
-            label_list.push_back(temp_Labels);
+            Btag_label_list.push_back(temp_Labels);
 
         }
 
