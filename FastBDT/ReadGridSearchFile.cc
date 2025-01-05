@@ -147,6 +147,7 @@ int ReadGridSearchFile()
     gr_train->SetTitle(";test AUC rank;AUC");
 
     TCanvas* c = new TCanvas("c1", "AUC", 200, 10, 600, 600);
+    c->SetLeftMargin(0.15);
 
     gr_train->Draw("AP");
     gr_test->Draw("P");
