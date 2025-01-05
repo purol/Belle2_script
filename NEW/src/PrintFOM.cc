@@ -516,6 +516,7 @@ void CalculateFOM(
 
     // draw
     TCanvas* c3 = new TCanvas("c3", "Graph Draw Options", 200, 10, 600, 600);
+    c3->SetLeftMargin(0.15);
 
     TGraph* gr3 = new TGraph(Nstep, FBDT_cut, FOM_Matrix);
     gr3->SetTitle(";FBDT cut;#frac{S}{#sqrt{S+B}}");
