@@ -462,5 +462,10 @@ int main(int argc, char* argv[])
     out_stream_3 << classifier << std::endl;
     out_stream_3.close();
 
+    // save model again again again
+    std::fstream out_stream_4(("/home/belle2/junewoo/storage_b1/bsub/Analysis/GridSearch/" + std::string(argv[6]) + "RD_side_" + std::string(argv[7]) + "/BB.weightfile").c_str(), std::ios_base::out | std::ios_base::trunc);
+    out_stream_4 << classifier << std::endl;
+    out_stream_4.close();
+
     return 0;
 }
