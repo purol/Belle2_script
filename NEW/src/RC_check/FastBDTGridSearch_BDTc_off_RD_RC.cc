@@ -72,12 +72,12 @@ int main(int argc, char* argv[]) // offres total: 42.329/fb, on-resonance total:
 
 
     // input file
-    std::string off_data = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_data_off/SIGNAL_analysis/validation_" + std::string(argv[7]) + "/final_output_data").c_str();
+    std::string off_data = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_data_off/SIGNAL_analysis/validation_" + std::string("v009") + "/final_output_data").c_str();
    
-    std::string off_MC_UUBAR_validation = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/UUBAR_analysis/validation_" + std::string(argv[7]) + "/final_output_data").c_str();
-    std::string off_MC_DDBAR_validation = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/DDBAR_analysis/validation_" + std::string(argv[7]) + "/final_output_data").c_str();
-    std::string off_MC_SSBAR_validation = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/SSBAR_analysis/validation_" + std::string(argv[7]) + "/final_output_data").c_str();
-    std::string off_MC_CHARM_validation = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/CHARM_analysis/validation_" + std::string(argv[7]) + "/final_output_data").c_str();
+    std::string off_MC_UUBAR_validation = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/UUBAR_analysis/validation_" + std::string("v009") + "/final_output_data").c_str();
+    std::string off_MC_DDBAR_validation = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/DDBAR_analysis/validation_" + std::string("v009") + "/final_output_data").c_str();
+    std::string off_MC_SSBAR_validation = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/SSBAR_analysis/validation_" + std::string("v009") + "/final_output_data").c_str();
+    std::string off_MC_CHARM_validation = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/CHARM_analysis/validation_" + std::string("v009") + "/final_output_data").c_str();
 
     // define input of the classifier
     std::vector<std::vector<float>> InputVariables;

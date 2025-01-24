@@ -76,17 +76,17 @@ int main(int argc, char* argv[]) // offres total: 42.329/fb
 
 
     // input file
-    std::string off_data = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_data_off/SIGNAL_analysis/validation_" + std::string(argv[7]) + "/final_output_data").c_str();
+    std::string off_data = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_data_off/SIGNAL_analysis/validation_" + std::string("v009") + "/final_output_data").c_str();
    
-    std::string off_MC_UUBAR_train = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/UUBAR_analysis/train_" + std::string(argv[7]) + "/final_output_data").c_str();
-    std::string off_MC_DDBAR_train = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/DDBAR_analysis/train_" + std::string(argv[7]) + "/final_output_data").c_str();
-    std::string off_MC_SSBAR_train = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/SSBAR_analysis/train_" + std::string(argv[7]) + "/final_output_data").c_str();
-    std::string off_MC_CHARM_train = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/CHARM_analysis/train_" + std::string(argv[7]) + "/final_output_data").c_str();
+    std::string off_MC_UUBAR_train = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/UUBAR_analysis/train_" + std::string("v009") + "/final_output_data").c_str();
+    std::string off_MC_DDBAR_train = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/DDBAR_analysis/train_" + std::string("v009") + "/final_output_data").c_str();
+    std::string off_MC_SSBAR_train = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/SSBAR_analysis/train_" + std::string("v009") + "/final_output_data").c_str();
+    std::string off_MC_CHARM_train = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/CHARM_analysis/train_" + std::string("v009") + "/final_output_data").c_str();
 
-    std::string off_MC_UUBAR_test = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/UUBAR_analysis/test_" + std::string(argv[7]) + "/final_output_data").c_str();
-    std::string off_MC_DDBAR_test = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/DDBAR_analysis/test_" + std::string(argv[7]) + "/final_output_data").c_str();
-    std::string off_MC_SSBAR_test = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/SSBAR_analysis/test_" + std::string(argv[7]) + "/final_output_data").c_str();
-    std::string off_MC_CHARM_test = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/CHARM_analysis/test_" + std::string(argv[7]) + "/final_output_data").c_str();
+    std::string off_MC_UUBAR_test = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/UUBAR_analysis/test_" + std::string("v009") + "/final_output_data").c_str();
+    std::string off_MC_DDBAR_test = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/DDBAR_analysis/test_" + std::string("v009") + "/final_output_data").c_str();
+    std::string off_MC_SSBAR_test = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/SSBAR_analysis/test_" + std::string("v009") + "/final_output_data").c_str();
+    std::string off_MC_CHARM_test = ("/home/belle2/junewoo/storage_ghi/Analysis/" + std::string(argv[6]) + "_LS_MC_off/CHARM_analysis/test_" + std::string("v009") + "/final_output_data").c_str();
 
     // define input of the classifier
     std::vector<std::vector<float>> InputVariables;
