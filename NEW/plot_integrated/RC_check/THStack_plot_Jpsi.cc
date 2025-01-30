@@ -13,8 +13,9 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # include <algorithm>
 # include <float.h>
-#include <vector>
-#include <string>
+# include <vector>
+# include <string>
+# include <cstring>
 
 #include "constants.h"
 #include "base.h"
@@ -34,13 +35,13 @@ int main(int argc, char* argv[]) {
     NormalizeAtEachMXs = true;
 
     // dirnames
-    const char* Jpsi_MC_SIGNAL_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output";
-    const char* Jpsi_MC_CHG_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHG_analysis/validation_" + std::string(argv[1]) + "/final_output";
-    const char* Jpsi_MC_MIX_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/MIX_analysis/validation_" + std::string(argv[1]) + "/final_output";
-    const char* Jpsi_MC_UUBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/UUBAR_analysis/validation_" + std::string(argv[1]) + "/final_output";
-    const char* Jpsi_MC_DDBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/DDBAR_analysis/validation_" + std::string(argv[1]) + "/final_output";
-    const char* Jpsi_MC_SSBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SSBAR_analysis/validation_" + std::string(argv[1]) + "/final_output";
-    const char* Jpsi_MC_CHARM_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHARM_analysis/validation_" + std::string(argv[1]) + "/final_output";
+    const char* Jpsi_MC_SIGNAL_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output").c_str());
+    const char* Jpsi_MC_CHG_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHG_analysis/validation_" + std::string(argv[1]) + "/final_output").c_str());
+    const char* Jpsi_MC_MIX_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/MIX_analysis/validation_" + std::string(argv[1]) + "/final_output").c_str());
+    const char* Jpsi_MC_UUBAR_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/UUBAR_analysis/validation_" + std::string(argv[1]) + "/final_output").c_str());
+    const char* Jpsi_MC_DDBAR_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/DDBAR_analysis/validation_" + std::string(argv[1]) + "/final_output").c_str());
+    const char* Jpsi_MC_SSBAR_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SSBAR_analysis/validation_" + std::string(argv[1]) + "/final_output").c_str());
+    const char* Jpsi_MC_CHARM_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHARM_analysis/validation_" + std::string(argv[1]) + "/final_output").c_str());
 
     const char* Jpsi_data_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_data_Jpsi/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output";
 
