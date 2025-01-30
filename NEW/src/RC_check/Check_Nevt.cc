@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "TFile.h"
+#include "TTree.h"
 
 #include "constants.h"
 #include "base.h"
