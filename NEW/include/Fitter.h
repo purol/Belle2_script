@@ -25,6 +25,8 @@
 
 # include "RooStats/ModelConfig.h"
 
+#include "Math/MinimizerOptions.h"
+
 using namespace RooFit;
 using namespace RooStats;
 using namespace HistFactory;
