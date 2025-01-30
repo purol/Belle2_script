@@ -26,19 +26,23 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "TLegend.h"
 
 int main() {
+    /*
+    * argv[1]: input version (ex. v031)
+    * argv[2]: output path
+    */
 
     NormalizeAtEachMXs = true;
 
     // dirnames
-    const char* Jpsi_MC_SIGNAL_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/SIGNAL_analysis/validation_v004/final_output";
-    const char* Jpsi_MC_CHG_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/CHG_analysis/validation_v004/final_output";
-    const char* Jpsi_MC_MIX_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/MIX_analysis/validation_v004/final_output";
-    const char* Jpsi_MC_UUBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/UUBAR_analysis/validation_v004/final_output";
-    const char* Jpsi_MC_DDBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/DDBAR_analysis/validation_v004/final_output";
-    const char* Jpsi_MC_SSBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/SSBAR_analysis/validation_v004/final_output";
-    const char* Jpsi_MC_CHARM_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/CHARM_analysis/validation_v004/final_output";
+    const char* Jpsi_MC_SIGNAL_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output";
+    const char* Jpsi_MC_CHG_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHG_analysis/validation_" + std::string(argv[1]) + "/final_output";
+    const char* Jpsi_MC_MIX_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/MIX_analysis/validation_" + std::string(argv[1]) + "/final_output";
+    const char* Jpsi_MC_UUBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/UUBAR_analysis/validation_" + std::string(argv[1]) + "/final_output";
+    const char* Jpsi_MC_DDBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/DDBAR_analysis/validation_" + std::string(argv[1]) + "/final_output";
+    const char* Jpsi_MC_SSBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SSBAR_analysis/validation_" + std::string(argv[1]) + "/final_output";
+    const char* Jpsi_MC_CHARM_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHARM_analysis/validation_" + std::string(argv[1]) + "/final_output";
 
-    const char* Jpsi_data_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_data_Jpsi/SIGNAL_analysis/validation_v004/final_output";
+    const char* Jpsi_data_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_data_Jpsi/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output";
 
     // Count event to normalize at each MXs region
     LetsCountMC(Jpsi_MC_SIGNAL_dirname, "SIGNAL");
@@ -660,7 +664,7 @@ int main() {
         line->Draw();
 
         c_temp->SetBottomMargin(0.0);
-        c_temp->SaveAs((variable_names.at(k) + "_Jpsi.png").c_str());
+        c_temp->SaveAs((std::string(argv[2]) + "/" + variable_names.at(k) + "_Jpsi.png").c_str());
 
         delete c_temp;
     }
@@ -688,6 +692,16 @@ int main() {
         printf("data/MC in 2nd region: %lf +- %lf\n", Ratio_Nevt_MXs2->GetBinContent(1), Ratio_Nevt_MXs2->GetBinError(1));
         printf("data/MC in 3rd region: %lf +- %lf\n", Ratio_Nevt_MXs3->GetBinContent(1), Ratio_Nevt_MXs3->GetBinError(1));
     }
+
+    int index_bin_index = std::distance(variable_names.begin(), std::find(variable_names.begin(), variable_names.end(), "bin index"));
+    FILE* fp;
+    fp = fopen((std::string(argv[2]) + "/data_Nevt.csv").c_str(), "w");
+    for (int i = 0; i < RarityBins; i++) {
+        fprintf(fp, "%lf", data_hist[index_bin_index]->GetBinContent(i + 1));
+        if (i != (RarityBins - 1)) fprintf(fp, ",");
+    }
+    fprintf(fp, "\n");
+    fclose(fp);
 
     // free
     delete[] Jpsi_MC_values;
