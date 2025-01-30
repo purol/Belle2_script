@@ -25,7 +25,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "TPad.h"
 #include "TLegend.h"
 
-void THStack_plot_Jpsi() {
+int main() {
 
     NormalizeAtEachMXs = true;
 
@@ -754,4 +754,6 @@ void THStack_plot_Jpsi() {
     delete MC_one_bin;
     delete data_one_bin;
     delete Ratio_one_bin;
+
+    return 0;
 }
