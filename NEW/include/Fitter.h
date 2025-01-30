@@ -17,7 +17,13 @@
 # include "TColor.h"
 # include "TPaveText.h"
 # include "RooErrorVar.h"
-#include "RooWorkspace.h"
+# include "RooWorkspace.h"
+# include "TCanvas.h"
+# include "TPad.h"
+# include "TLegend.h"
+# include "RooSimultaneous.h"
+
+# include "RooStats/ModelConfig.h"
 
 using namespace RooFit;
 using namespace RooStats;
