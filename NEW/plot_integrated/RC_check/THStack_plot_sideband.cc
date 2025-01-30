@@ -26,35 +26,28 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "TPad.h"
 #include "TLegend.h"
 
-int main(int argc, char* argv[]) {
-    /*
-    * argv[1]: input version (ex. v031)
-    * argv[2]: output path
-    */
+void main(int argc, char* argv[]) {
 
     NormalizeAtEachMXs = true;
 
-    // dirnames
-    const char* Jpsi_MC_SIGNAL_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
-    const char* Jpsi_MC_CHG_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHG_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
-    const char* Jpsi_MC_MIX_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/MIX_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
-    const char* Jpsi_MC_UUBAR_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/UUBAR_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
-    const char* Jpsi_MC_DDBAR_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/DDBAR_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
-    const char* Jpsi_MC_SSBAR_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SSBAR_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
-    const char* Jpsi_MC_CHARM_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHARM_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Sideband_MC_CHG_validation_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_side/CHG_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Sideband_MC_MIX_validation_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_side/MIX_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Sideband_MC_UUBAR_validation_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_side/UUBAR_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Sideband_MC_DDBAR_validation_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_side/DDBAR_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Sideband_MC_SSBAR_validation_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_side/SSBAR_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Sideband_MC_CHARM_validation_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_side/CHARM_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
 
-    const char* Jpsi_data_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_data_Jpsi/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Sideband_data_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_data_side/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
 
     // Count event to normalize at each MXs region
-    LetsCountMC(Jpsi_MC_SIGNAL_dirname, "SIGNAL");
-    LetsCountMC(Jpsi_MC_CHG_dirname, "CHG");
-    LetsCountMC(Jpsi_MC_MIX_dirname, "MIX");
-    LetsCountMC(Jpsi_MC_UUBAR_dirname, "UUBAR");
-    LetsCountMC(Jpsi_MC_DDBAR_dirname, "DDBAR");
-    LetsCountMC(Jpsi_MC_SSBAR_dirname, "SSBAR");
-    LetsCountMC(Jpsi_MC_CHARM_dirname, "CHARM");
+    LetsCountMC(Sideband_MC_CHG_validation_dirname, "CHG");
+    LetsCountMC(Sideband_MC_MIX_validation_dirname, "MIX");
+    LetsCountMC(Sideband_MC_UUBAR_validation_dirname, "UUBAR");
+    LetsCountMC(Sideband_MC_DDBAR_validation_dirname, "DDBAR");
+    LetsCountMC(Sideband_MC_SSBAR_validation_dirname, "SSBAR");
+    LetsCountMC(Sideband_MC_CHARM_validation_dirname, "CHARM");
 
-    LetsCountdata(Jpsi_data_dirname);
+    LetsCountdata(Sideband_data_dirname);
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
@@ -218,7 +211,7 @@ int main(int argc, char* argv[]) {
 
     Nvar_num = static_cast<int>(variable_names.size());
 
-    std::vector<double>* Jpsi_MC_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* Sideband_MC_values = new std::vector<double>[Nvar_num];
     std::vector<double>* charged_values = new std::vector<double>[Nvar_num];
     std::vector<double>* mixed_values = new std::vector<double>[Nvar_num];
     std::vector<double>* uubar_values = new std::vector<double>[Nvar_num];
@@ -233,10 +226,9 @@ int main(int argc, char* argv[]) {
     std::vector<double>* eemumu_values = new std::vector<double>[Nvar_num];
     std::vector<double>* llXX_values = new std::vector<double>[Nvar_num];
     std::vector<double>* hhISR_values = new std::vector<double>[Nvar_num];
-    std::vector<double>* signal_values = new std::vector<double>[Nvar_num];
-    std::vector<int> Jpsi_MC_numbering;
+    std::vector<int> Sideband_MC_numbering;
 
-    std::vector<double>* Jpsi_data_values = new std::vector<double>[Nvar_num];
+    std::vector<double>* Sideband_data_values = new std::vector<double>[Nvar_num];
 
     std::vector<double> weights;
     std::vector<double> charged_weights;
@@ -253,78 +245,80 @@ int main(int argc, char* argv[]) {
     std::vector<double> eemumu_weights;
     std::vector<double> llXX_weights;
     std::vector<double> hhISR_weights;
-    std::vector<double> signal_weights;
-
-    LetsFillMC(Jpsi_MC_SIGNAL_dirname, variable_names, branch_names, Jpsi_MC_values, &Jpsi_MC_numbering, &weights, "SIGNAL");
-    LetsFillMC(Jpsi_MC_CHG_dirname, variable_names, branch_names, Jpsi_MC_values, &Jpsi_MC_numbering, &weights, "CHG");
-    LetsFillMC(Jpsi_MC_MIX_dirname, variable_names, branch_names, Jpsi_MC_values, &Jpsi_MC_numbering, &weights, "MIX");
-    LetsFillMC(Jpsi_MC_UUBAR_dirname, variable_names, branch_names, Jpsi_MC_values, &Jpsi_MC_numbering, &weights, "UUBAR");
-    LetsFillMC(Jpsi_MC_DDBAR_dirname, variable_names, branch_names, Jpsi_MC_values, &Jpsi_MC_numbering, &weights, "DDBAR");
-    LetsFillMC(Jpsi_MC_SSBAR_dirname, variable_names, branch_names, Jpsi_MC_values, &Jpsi_MC_numbering, &weights, "SSBAR");
-    LetsFillMC(Jpsi_MC_CHARM_dirname, variable_names, branch_names, Jpsi_MC_values, &Jpsi_MC_numbering, &weights, "CHARM");
-    LetsFilldata(Jpsi_data_dirname, variable_names, branch_names, Jpsi_data_values);
+    /*
+    LetsFillMC(Sideband_MC_CHG_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
+    LetsFillMC(Sideband_MC_MIX_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
+    LetsFillMC_correction(Sideband_MC_UUBAR_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR", NormFactor_UUBAR);
+    LetsFillMC_correction(Sideband_MC_DDBAR_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR", NormFactor_DDBAR);
+    LetsFillMC_correction(Sideband_MC_SSBAR_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR", NormFactor_SSBAR);
+    LetsFillMC_correction(Sideband_MC_CHARM_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM", NormFactor_CHARM);
+    */
+    LetsFillMC(Sideband_MC_CHG_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHG");
+    LetsFillMC(Sideband_MC_MIX_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "MIX");
+    LetsFillMC(Sideband_MC_UUBAR_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "UUBAR");
+    LetsFillMC(Sideband_MC_DDBAR_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "DDBAR");
+    LetsFillMC(Sideband_MC_SSBAR_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "SSBAR");
+    LetsFillMC(Sideband_MC_CHARM_validation_dirname, variable_names, branch_names, Sideband_MC_values, &Sideband_MC_numbering, &weights, "CHARM");
+    
+    LetsFilldata(Sideband_data_dirname, variable_names, branch_names, Sideband_data_values);
 
     // sort variables
-    for (int k = 0; k < (int)Jpsi_MC_numbering.size(); k++) {
-        if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::CHG)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) charged_values[l].push_back(Jpsi_MC_values[l].at(k));
+    for (int k = 0; k < (int)Sideband_MC_numbering.size(); k++) {
+        if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::CHG)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) charged_values[l].push_back(Sideband_MC_values[l].at(k));
             charged_weights.push_back(weights.at(k));
         }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::MIX)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) mixed_values[l].push_back(Jpsi_MC_values[l].at(k));
+        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::MIX)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) mixed_values[l].push_back(Sideband_MC_values[l].at(k));
             mixed_weights.push_back(weights.at(k));
         }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::UUBAR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) uubar_values[l].push_back(Jpsi_MC_values[l].at(k));
+        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::UUBAR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) uubar_values[l].push_back(Sideband_MC_values[l].at(k));
             uubar_weights.push_back(weights.at(k));
         }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::DDBAR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ddbar_values[l].push_back(Jpsi_MC_values[l].at(k));
+        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::DDBAR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ddbar_values[l].push_back(Sideband_MC_values[l].at(k));
             ddbar_weights.push_back(weights.at(k));
         }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::SSBAR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ssbar_values[l].push_back(Jpsi_MC_values[l].at(k));
+        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::SSBAR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ssbar_values[l].push_back(Sideband_MC_values[l].at(k));
             ssbar_weights.push_back(weights.at(k));
         }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::CHARM)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ccbar_values[l].push_back(Jpsi_MC_values[l].at(k));
+        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::CHARM)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ccbar_values[l].push_back(Sideband_MC_values[l].at(k));
             ccbar_weights.push_back(weights.at(k));
         }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::TAU)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) taupair_values[l].push_back(Jpsi_MC_values[l].at(k));
+        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::TAU)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) taupair_values[l].push_back(Sideband_MC_values[l].at(k));
             taupair_weights.push_back(weights.at(k));
         }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::MUMU)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) mumu_values[l].push_back(Jpsi_MC_values[l].at(k));
+        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::MUMU)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) mumu_values[l].push_back(Sideband_MC_values[l].at(k));
             mumu_weights.push_back(weights.at(k));
         }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::GG)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) gg_values[l].push_back(Jpsi_MC_values[l].at(k));
+        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::GG)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) gg_values[l].push_back(Sideband_MC_values[l].at(k));
             gg_weights.push_back(weights.at(k));
         }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::EE)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) ee_values[l].push_back(Jpsi_MC_values[l].at(k));
+        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::EE)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) ee_values[l].push_back(Sideband_MC_values[l].at(k));
             ee_weights.push_back(weights.at(k));
         }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::EEEE)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) eeee_values[l].push_back(Jpsi_MC_values[l].at(k));
+        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::EEEE)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) eeee_values[l].push_back(Sideband_MC_values[l].at(k));
             eeee_weights.push_back(weights.at(k));
         }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::EEMUMU)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) eemumu_values[l].push_back(Jpsi_MC_values[l].at(k));
+        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::EEMUMU)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) eemumu_values[l].push_back(Sideband_MC_values[l].at(k));
             eemumu_weights.push_back(weights.at(k));
         }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::LLXX)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) llXX_values[l].push_back(Jpsi_MC_values[l].at(k));
+        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::LLXX)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) llXX_values[l].push_back(Sideband_MC_values[l].at(k));
             llXX_weights.push_back(weights.at(k));
         }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::HHISR)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) hhISR_values[l].push_back(Jpsi_MC_values[l].at(k));
+        else if (Sideband_MC_numbering.at(k) == static_cast<int>(MCsample::HHISR)) {
+            for (int l = 0; l < (int)variable_names.size(); l++) hhISR_values[l].push_back(Sideband_MC_values[l].at(k));
             hhISR_weights.push_back(weights.at(k));
-        }
-        else if (Jpsi_MC_numbering.at(k) == static_cast<int>(MCsample::SIGNAL)) {
-            for (int l = 0; l < (int)variable_names.size(); l++) signal_values[l].push_back(Jpsi_MC_values[l].at(k));
-            signal_weights.push_back(weights.at(k));
         }
         else {
             printf("undefined numbering!\n");
@@ -347,7 +341,6 @@ int main(int argc, char* argv[]) {
     TH1D** eemumu_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
     TH1D** llXX_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
     TH1D** hhISR_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
-    TH1D** signal_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
     TH1D** stat_error_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
     TH1D** data_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
     TH1D** Ratio_hist = (TH1D**)malloc(sizeof(TH1D*) * Nvar_num);
@@ -368,13 +361,12 @@ int main(int argc, char* argv[]) {
         temp_v.insert(temp_v.end(), eemumu_values[k].begin(), eemumu_values[k].end());
         temp_v.insert(temp_v.end(), llXX_values[k].begin(), llXX_values[k].end());
         temp_v.insert(temp_v.end(), hhISR_values[k].begin(), hhISR_values[k].end());
-        temp_v.insert(temp_v.end(), signal_values[k].begin(), signal_values[k].end());
-        temp_v.insert(temp_v.end(), Jpsi_data_values[k].begin(), Jpsi_data_values[k].end());
+        temp_v.insert(temp_v.end(), Sideband_data_values[k].begin(), Sideband_data_values[k].end());
 
 
         double min = *min_element(temp_v.begin(), temp_v.end());
         double max = *max_element(temp_v.begin(), temp_v.end());
-        int bins = 30;
+        int bins = 100;
 
         if (hasEnding(variable_names.at(k), std::string("dr"))) { // exceptions
             max = 0.2;
@@ -478,7 +470,6 @@ int main(int argc, char* argv[]) {
             bins = RarityBins;
         }
 
-
         Stack[k] = new THStack(variable_names.at(k).c_str(), (";" + variable_names.at(k) + ";number of candidates").c_str());
         charged_hist[k] = new TH1D("charged", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         mixed_hist[k] = new TH1D("mixed", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
@@ -494,7 +485,6 @@ int main(int argc, char* argv[]) {
         eemumu_hist[k] = new TH1D("e#bar{e}#mu#bar{#mu}", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         llXX_hist[k] = new TH1D("\ell#bar{\ell}XX", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         hhISR_hist[k] = new TH1D("hhISR", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
-        signal_hist[k] = new TH1D("signal", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         stat_error_hist[k] = new TH1D("MC stat error", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         data_hist[k] = new TH1D("data", (";" + variable_names.at(k) + ";number of candidates").c_str(), bins, min, max);
         Ratio_hist[k] = new TH1D((variable_names.at(k) + "_ratio").c_str(), ";;data/MC", bins, min, max);
@@ -515,29 +505,8 @@ int main(int argc, char* argv[]) {
     for (int i = 0; i < (int)eemumu_values[index].size(); i++) eemumu_values[index].at(i) = log10l(eemumu_values[index].at(i));
     for (int i = 0; i < (int)llXX_values[index].size(); i++) llXX_values[index].at(i) = log10l(llXX_values[index].at(i));
     for (int i = 0; i < (int)hhISR_values[index].size(); i++) hhISR_values[index].at(i) = log10l(hhISR_values[index].at(i));
-    for (int i = 0; i < (int)signal_values[index].size(); i++) signal_values[index].at(i) = log10l(signal_values[index].at(i));
-    for (int i = 0; i < (int)Jpsi_MC_values[index].size(); i++) Jpsi_MC_values[index].at(i) = log10l(Jpsi_MC_values[index].at(i));
-    for (int i = 0; i < (int)Jpsi_data_values[index].size(); i++) Jpsi_data_values[index].at(i) = log10l(Jpsi_data_values[index].at(i));
-
-    // nRemainingtracksinevent should be subtracted by 2 for Jpsi without signal embedding
-    index = std::find(variable_names.begin(), variable_names.end(), std::string("nRemainingTracksInEvent")) - variable_names.begin();
-    for (int i = 0; i < (int)charged_values[index].size(); i++) charged_values[index].at(i) = charged_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)mixed_values[index].size(); i++) mixed_values[index].at(i) = mixed_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)uubar_values[index].size(); i++) uubar_values[index].at(i) = uubar_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)ddbar_values[index].size(); i++) ddbar_values[index].at(i) = ddbar_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)ssbar_values[index].size(); i++) ssbar_values[index].at(i) = ssbar_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)ccbar_values[index].size(); i++) ccbar_values[index].at(i) = ccbar_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)taupair_values[index].size(); i++) taupair_values[index].at(i) = taupair_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)mumu_values[index].size(); i++) mumu_values[index].at(i) = mumu_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)gg_values[index].size(); i++) gg_values[index].at(i) = gg_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)ee_values[index].size(); i++) ee_values[index].at(i) = ee_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)eeee_values[index].size(); i++) eeee_values[index].at(i) = eeee_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)eemumu_values[index].size(); i++) eemumu_values[index].at(i) = eemumu_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)llXX_values[index].size(); i++) llXX_values[index].at(i) = llXX_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)hhISR_values[index].size(); i++) hhISR_values[index].at(i) = hhISR_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)signal_values[index].size(); i++) signal_values[index].at(i) = signal_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)Jpsi_MC_values[index].size(); i++) Jpsi_MC_values[index].at(i) = Jpsi_MC_values[index].at(i) - 2.0;
-    for (int i = 0; i < (int)Jpsi_data_values[index].size(); i++) Jpsi_data_values[index].at(i) = Jpsi_data_values[index].at(i) - 2.0;
+    for (int i = 0; i < (int)Sideband_MC_values[index].size(); i++) Sideband_MC_values[index].at(i) = log10l(Sideband_MC_values[index].at(i));
+    for (int i = 0; i < (int)Sideband_data_values[index].size(); i++) Sideband_data_values[index].at(i) = log10l(Sideband_data_values[index].at(i));
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // fill
         for (int i = 0; i < (int)charged_values[k].size(); i++) charged_hist[k]->Fill(charged_values[k].at(i), charged_weights.at(i));
@@ -554,9 +523,8 @@ int main(int argc, char* argv[]) {
         for (int i = 0; i < (int)eemumu_values[k].size(); i++) eemumu_hist[k]->Fill(eemumu_values[k].at(i), eemumu_weights.at(i));
         for (int i = 0; i < (int)llXX_values[k].size(); i++) llXX_hist[k]->Fill(llXX_values[k].at(i), llXX_weights.at(i));
         for (int i = 0; i < (int)hhISR_values[k].size(); i++) hhISR_hist[k]->Fill(hhISR_values[k].at(i), hhISR_weights.at(i));
-        for (int i = 0; i < (int)signal_values[k].size(); i++) signal_hist[k]->Fill(signal_values[k].at(i), signal_weights.at(i));
-        for (int i = 0; i < (int)Jpsi_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Jpsi_MC_values[k].at(i), weights.at(i));
-        for (int i = 0; i < (int)Jpsi_data_values[k].size(); i++) data_hist[k]->Fill(Jpsi_data_values[k].at(i));
+        for (int i = 0; i < (int)Sideband_MC_values[k].size(); i++) stat_error_hist[k]->Fill(Sideband_MC_values[k].at(i), weights.at(i));
+        for (int i = 0; i < (int)Sideband_data_values[k].size(); i++) data_hist[k]->Fill(Sideband_data_values[k].at(i));
     }
     if (NormalizeAtEachMXs == false) {
         Ratio_one_bin->Divide(data_one_bin, MC_one_bin);
@@ -581,8 +549,7 @@ int main(int argc, char* argv[]) {
     printf("eemuu: %d\n", (int)eemumu_values[0].size());
     printf("llXX: %d\n", (int)llXX_values[0].size());
     printf("hhISR: %d\n", (int)hhISR_values[0].size());
-    printf("signal: %d\n", (int)signal_values[0].size());
-    printf("data: %d\n", (int)Jpsi_data_values[0].size());
+    printf("data: %d\n", (int)Sideband_data_values[0].size());
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
         // Scale the histogram if `NormalizeAtEachMXs` is not turned on
@@ -611,7 +578,6 @@ int main(int argc, char* argv[]) {
         //Stack[k]->Add(eemumu_hist[k]);
         //Stack[k]->Add(llXX_hist[k]);
         //Stack[k]->Add(hhISR_hist[k]);
-        Stack[k]->Add(signal_hist[k]);
 
         Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
         Ratio_hist[k]->Divide(data_hist[k], stat_error_hist[k]);
@@ -621,6 +587,8 @@ int main(int argc, char* argv[]) {
         TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
         pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
         pad1->SetGridx(); pad1->Draw(); pad1->cd();
+        if((variable_names.at(k).find("MVA") != std::string::npos) && (Sideband_MC_values[k].size() > 10000)) pad1->SetLogy(1);
+        else pad1->SetLogy(0);
 
         gStyle->SetPalette(kPastel);
 
@@ -641,15 +609,14 @@ int main(int argc, char* argv[]) {
             TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB");
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
-            pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL) + ", Data= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
+            pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str());
             pt->Draw();
-
         }
         else {
             TPaveText* pt = new TPaveText(0.135, 0.88, 0.9, 1.0, "NDC NB");
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
-            pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + std::to_string(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs3->GetBinContent(1)) + ", TotalData= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
+            pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + std::to_string(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs3->GetBinContent(1)) ).c_str());
             pt->Draw();
         }
 
@@ -665,7 +632,14 @@ int main(int argc, char* argv[]) {
         line->Draw();
 
         c_temp->SetBottomMargin(0.0);
-        c_temp->SaveAs((std::string(argv[2]) + "/" + variable_names.at(k) + "_Jpsi.png").c_str());
+        c_temp->SaveAs((std::string(argv[2]) + "/" + variable_names.at(k) + "_sideband.png").c_str());
+
+        // print data/MC if it is bin-index
+        if (variable_names.at(k) == "bin index") {
+            PrintDataMCRatio(Stack[k], data_hist[k], Ratio_hist[k], "dataMCratio_sideband.txt");
+            PrintDataMC(Stack[k], data_hist[k]);
+            Printchi2(Stack[k], data_hist[k]);
+        }
 
         delete c_temp;
     }
@@ -673,8 +647,8 @@ int main(int argc, char* argv[]) {
     // Print data-MC discrepancy
     if (NormalizeAtEachMXs == false) {
         double MC_sum = 0;
-        for (int i = 0; i < (int)Jpsi_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
-        printf("data num: %ld\n", Jpsi_data_values[0].size());
+        for (int i = 0; i < (int)Sideband_MC_values[0].size(); i++) MC_sum = MC_sum + weights.at(i);
+        printf("data num: %ld\n", Sideband_data_values[0].size());
         printf("MC num with calibration: %lf\n", MC_sum);
         printf("MC with calibration: %lf +- %lf\n", MC_one_bin->GetBinContent(1), MC_one_bin->GetBinError(1));
         printf("data with calibration: %lf +- %lf\n", data_one_bin->GetBinContent(1), data_one_bin->GetBinError(1));
@@ -705,7 +679,7 @@ int main(int argc, char* argv[]) {
     fclose(fp);
 
     // free
-    delete[] Jpsi_MC_values;
+    delete[] Sideband_MC_values;
     delete[] charged_values;
     delete[] mixed_values;
     delete[] uubar_values;
@@ -720,9 +694,8 @@ int main(int argc, char* argv[]) {
     delete[] eemumu_values;
     delete[] llXX_values;
     delete[] hhISR_values;
-    delete[] signal_values;
 
-    delete[] Jpsi_data_values;
+    delete[]  Sideband_data_values;
 
     for (int k = 0; k < Nvar_num; k++) {
         delete Stack[k];
@@ -740,7 +713,6 @@ int main(int argc, char* argv[]) {
         delete eemumu_hist[k];
         delete llXX_hist[k];
         delete hhISR_hist[k];
-        delete signal_hist[k];
         delete stat_error_hist[k];
         delete data_hist[k];
         delete Ratio_hist[k];
@@ -761,7 +733,6 @@ int main(int argc, char* argv[]) {
     free(eemumu_hist);
     free(llXX_hist);
     free(hhISR_hist);
-    free(signal_hist);
     free(stat_error_hist);
     free(data_hist);
     free(Ratio_hist);
