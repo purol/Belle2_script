@@ -25,12 +25,9 @@
 # include "RooMinimizer.h"
 
 # include "RooStats/ModelConfig.h"
+# include "RooStats/RooStatsUtils.h"
 
 #include "Math/MinimizerOptions.h"
-
-using namespace RooFit;
-using namespace RooStats;
-using namespace HistFactory;
 
 Corrector_Fragmentation corrector_Fragmentation;
 
