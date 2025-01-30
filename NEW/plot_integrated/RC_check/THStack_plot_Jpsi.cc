@@ -25,7 +25,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "TPad.h"
 #include "TLegend.h"
 
-int main() {
+int main(int argc, char* argv[]) {
     /*
     * argv[1]: input version (ex. v031)
     * argv[2]: output path
