@@ -44,6 +44,9 @@ int main(int argc, char* argv[]) {
 
         if (temp_tree->GetEntries() == 0) fprintf(fp, "%s\n", names.at(i).c_str());
 
+        input_file->Close();
+        delete input_file;
+
     }
 
     fclose(fp);
