@@ -56,7 +56,7 @@ int main() {
     }
 
     TCanvas* c = new TCanvas("c", "", 800, 800);
-    third_bin->Draf("Hist");
+    third_bin->Draw("Hist");
     c->SaveAs("third_bin.png");
 
     delete c;
