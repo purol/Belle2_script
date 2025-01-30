@@ -43,7 +43,7 @@ int main(int argc, char* argv[]) {
     const char* Jpsi_MC_SSBAR_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SSBAR_analysis/validation_" + std::string(argv[1]) + "/final_output").c_str());
     const char* Jpsi_MC_CHARM_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHARM_analysis/validation_" + std::string(argv[1]) + "/final_output").c_str());
 
-    const char* Jpsi_data_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_data_Jpsi/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output";
+    const char* Jpsi_data_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_data_Jpsi/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output").c_str());
 
     // Count event to normalize at each MXs region
     LetsCountMC(Jpsi_MC_SIGNAL_dirname, "SIGNAL");
