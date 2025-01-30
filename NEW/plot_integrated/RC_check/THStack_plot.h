@@ -26,6 +26,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "TH1.h"
 #include "TFile.h"
 #include "TFile.h"
+#include "TTree.h"
 
 Corrector_FEI corrector_FEI;
 Corrector_PID corrector_PID;

@@ -21,6 +21,10 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "THStack_plot.h"
 #include "template.h"
 
+#include "TCanvas.h"
+#include "TPad.h"
+#include "TLegend.h"
+
 void THStack_plot_Jpsi() {
 
     NormalizeAtEachMXs = true;
