@@ -4,17 +4,20 @@
 # include <vector>
 # include <deque>
 # include <string>
-# include "RooFitResult.h"
+# include <cstring>
+# include <float.h>
+
 # include "template.h"
 # include "correctors.h"
-# include <cstring>
+
+# include "RooFitResult.h"
 # include "THStack.h"
 # include "TStyle.h"
 # include "TLine.h"
 # include "TColor.h"
 # include "TPaveText.h"
 # include "RooErrorVar.h"
-# include <float.h>
+#include "RooWorkspace.h"
 
 using namespace RooFit;
 using namespace RooStats;
@@ -684,6 +687,7 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
     minim.optimizeConst(2);
     minim.migrad();
     if (Minos) {
+        // minim.minos(RooArgSet(*w->var("mu")));
         minim.minos(RooArgSet(*w->var("mu_MXs1")));
         minim.minos(RooArgSet(*w->var("mu_MXs2")));
         minim.minos(RooArgSet(*w->var("mu_MXs3")));
