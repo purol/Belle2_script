@@ -22,6 +22,7 @@
 # include "TPad.h"
 # include "TLegend.h"
 # include "RooSimultaneous.h"
+# include "RooMinimizer.h"
 
 # include "RooStats/ModelConfig.h"
 
@@ -365,7 +366,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
 
 void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
-    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
     RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
@@ -570,7 +571,7 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
 
     double Nevt = 0.0;
 
-    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
     RooArgSet* obs = (RooArgSet*)mc->GetObservables();
     RooRealVar* x_val;
@@ -655,7 +656,7 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
 RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true) {
     // what we have done
     w->loadSnapshot("ParamValues");
-    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
     // get nll
@@ -752,7 +753,7 @@ RooFitResult* MyMinimizeNLLReuse(RooWorkspace* w, RooAbsReal** nll, double toler
 RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true) {
     // what we have done
     w->loadSnapshot("ParamValues");
-    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
     // get nll
@@ -1284,7 +1285,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
 
 void ObtainNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll) {
     // what we have done
-    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
     // get nll
@@ -1465,7 +1466,7 @@ void PrintNevtFile(RooWorkspace* w, const char* filename) {
     std::vector<double> SSBAR_Nevts; // Nevt for SSBAR
     std::vector<double> CHARM_Nevts; // Nevt for CHARM
 
-    ModelConfig* mc = (ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
     RooArgSet* obs = (RooArgSet*)mc->GetObservables();
     RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
