@@ -47,20 +47,22 @@ int main(int argc, char* argv[]) {
         TFile* input_file = new TFile((argv[1] + std::string("/") + names.at(i)).c_str(), "read");
         //printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
 
-        TTree* temp_tree = (TTree*)input_file->Get("Upsilon");
+        TTree* temp_Upsilon = (TTree*)input_file->Get("Upsilon");
+        TTree* temp_Bsig = (TTree*)input_file->Get("Bsig");
 
-        temp_tree->SetBranchAddress("__experiment__", &__experiment__);
-        temp_tree->SetBranchAddress("__run__", &__run__);
-        temp_tree->SetBranchAddress("__event__", &__event__);
-        temp_tree->SetBranchAddress("__candidate__", &__candidate__);
-        temp_tree->SetBranchAddress("__ncandidates__", &__ncandidates__);
+        temp_Upsilon->SetBranchAddress("__experiment__", &__experiment__);
+        temp_Upsilon->SetBranchAddress("__run__", &__run__);
+        temp_Upsilon->SetBranchAddress("__event__", &__event__);
+        temp_Upsilon->SetBranchAddress("__candidate__", &__candidate__);
+        temp_Upsilon->SetBranchAddress("__ncandidates__", &__ncandidates__);
 
-        temp_tree->SetBranchAddress("Bsig_M", &MXs);
+        temp_Bsig->SetBranchAddress("Bsig_M", &MXs);
 
-        temp_tree->SetBranchAddress("MVA_BB", &BDT_output);
+        temp_Upsilon->SetBranchAddress("MVA_BB", &BDT_output);
 
-        for (unsigned int j = 0; j < temp_tree->GetEntries(); j++) { // Fill
-            temp_tree->GetEntry(j);
+        for (unsigned int j = 0; j < temp_Upsilon->GetEntries(); j++) { // Fill
+            temp_Upsilon->GetEntry(j);
+            temp_Bsig->GetEntry(j);
 
             if ((MXs < 0.6) && (BDT_output > 0.979) && (BDT_output < 0.986)) {
                 printf("%d %d %u %d %d\n", __experiment__, __run__, __event__, __candidate__, __ncandidates__);
