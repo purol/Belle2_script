@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
         int __ncandidates__;
 
         double MXs;
-        double BDT_output;
+        float BDT_output;
 
         TFile* input_file = new TFile((argv[1] + std::string("/") + names.at(i)).c_str(), "read");
         //printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
