@@ -27,6 +27,10 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "TLegend.h"
 
 void main(int argc, char* argv[]) {
+    /*
+    * argv[1]: input version (ex. v031)
+    * argv[2]: output path
+    */
 
     NormalizeAtEachMXs = true;
 
@@ -680,8 +684,10 @@ void main(int argc, char* argv[]) {
 
     int index_bin_index = std::distance(variable_names.begin(), std::find(variable_names.begin(), variable_names.end(), "bin index"));
     FILE* fp;
-    fp = fopen((std::string(argv[2]) + "/CAL.txt").c_str(), "w");
-    fprintf("%lf %lf %lf\n", Ratio_Nevt_MXs1->GetBinContent(1), Ratio_Nevt_MXs2->GetBinContent(1), Ratio_Nevt_MXs3->GetBinContent(1));
+    fp = fopen((std::string(argv[2]) + "/MC_data_ratio.txt").c_str(), "w");
+    fprintf("%lf %lf\n", Ratio_Nevt_MXs1->GetBinContent(1), Ratio_Nevt_MXs1->GetBinError(1));
+    fprintf("%lf %lf\n", Ratio_Nevt_MXs2->GetBinContent(1), Ratio_Nevt_MXs2->GetBinError(1));
+    fprintf("%lf %lf\n", Ratio_Nevt_MXs3->GetBinContent(1), Ratio_Nevt_MXs3->GetBinError(1));
     fclose(fp);
 
     // free
