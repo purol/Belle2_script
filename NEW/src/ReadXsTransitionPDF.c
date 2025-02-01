@@ -401,7 +401,7 @@ int main(int argc, char* argv[])
     /* ====================================== */
     FILE* fp;
 
-    fp = fopen(std::string(argv[3]) + "/Xsu_Htransition_weight.txt", "w");
+    fp = fopen((std::string(argv[3]) + "/Xsu_Htransition_weight.txt").c_str(), "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsu up
         double correction_factor = 1.0;
@@ -411,7 +411,7 @@ int main(int argc, char* argv[])
     }
     fclose(fp);
 
-    fp = fopen(std::string(argv[3]) + "/Xsu_Ltransition_weight.txt", "w");
+    fp = fopen((std::string(argv[3]) + "/Xsu_Ltransition_weight.txt").c_str(), "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsu down
         double correction_factor = 1.0;
@@ -421,7 +421,7 @@ int main(int argc, char* argv[])
     }
     fclose(fp);
 
-    fp = fopen(std::string(argv[3]) + "/Xsd_Htransition_weight.txt", "w");
+    fp = fopen((std::string(argv[3]) + "/Xsd_Htransition_weight.txt").c_str(), "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsd up
         double correction_factor = 1.0;
@@ -431,7 +431,7 @@ int main(int argc, char* argv[])
     }
     fclose(fp);
 
-    fp = fopen(std::string(argv[3]) + "/Xsd_Ltransition_weight.txt", "w");
+    fp = fopen((std::string(argv[3]) + "/Xsd_Ltransition_weight.txt").c_str(), "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsd down
         double correction_factor = 1.0;
