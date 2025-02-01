@@ -64,7 +64,7 @@ double pi0_correction_fluctuation_sys_uncer2[N_pi0_syst] = { 0.0 }; // it is add
 std::random_device rd;
 std::default_random_engine generator(rd());
 
-# define NToys 500
+# define NToys 1
 
 /* ====================================== */
 
@@ -764,6 +764,11 @@ void Fluctuatepi0Correction() {
 
 int main(int argc, char* argv[])
 {
+    /*
+    * argv[1]: number (ex. 0, 1, 2, ...)
+    * argv[2]: version (ex. v020)
+    * argv[3]: output path
+    */
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
@@ -775,33 +780,33 @@ int main(int argc, char* argv[])
 
     /* ====================================== */
     // define path for Ntuple
-    const char* MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
 
-    const char* MC_dirname_CHG = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHG_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
-    const char* MC_dirname_MIX = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/MIX_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
-    const char* MC_dirname_UUBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/UUBAR_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
-    const char* MC_dirname_DDBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/DDBAR_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
-    const char* MC_dirname_SSBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SSBAR_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
-    const char* MC_dirname_CHARM = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHARM_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_CHG = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_MIX = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_UUBAR = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_DDBAR = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_SSBAR = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_CHARM = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
     /* ====================================== */
 
 
 
     /* ====================================== */
     // get nominal Nevt
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    GetNominalNevt(MC_dirname_SIGNAL.c_str(), "B2Knunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+    GetNominalNevt(MC_dirname_SIGNAL.c_str(), "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+    GetNominalNevt(MC_dirname_SIGNAL.c_str(), "B2Xsnunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+    GetNominalNevt(MC_dirname_SIGNAL.c_str(), "B02K0nunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+    GetNominalNevt(MC_dirname_SIGNAL.c_str(), "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+    GetNominalNevt(MC_dirname_SIGNAL.c_str(), "B02Xsnunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
-    GetNominalNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_nominal, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-    GetNominalNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_nominal, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-    GetNominalNevt(MC_dirname_UUBAR, "root", "Continuum", "UUBAR", Nevt_nominal, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-    GetNominalNevt(MC_dirname_DDBAR, "root", "Continuum", "DDBAR", Nevt_nominal, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-    GetNominalNevt(MC_dirname_SSBAR, "root", "Continuum", "SSBAR", Nevt_nominal, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-    GetNominalNevt(MC_dirname_CHARM, "root", "Continuum", "CHARM", Nevt_nominal, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+    GetNominalNevt(MC_dirname_CHG.c_str(), "root", "Bplus", "CHG", Nevt_nominal, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+    GetNominalNevt(MC_dirname_MIX.c_str(), "root", "Bzero", "MIX", Nevt_nominal, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetNominalNevt(MC_dirname_UUBAR.c_str(), "root", "Continuum", "UUBAR", Nevt_nominal, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+    GetNominalNevt(MC_dirname_DDBAR.c_str(), "root", "Continuum", "DDBAR", Nevt_nominal, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+    GetNominalNevt(MC_dirname_SSBAR.c_str(), "root", "Continuum", "SSBAR", Nevt_nominal, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+    GetNominalNevt(MC_dirname_CHARM.c_str(), "root", "Continuum", "CHARM", Nevt_nominal, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     /* ====================================== */
 
 
@@ -811,19 +816,19 @@ int main(int argc, char* argv[])
     for (int i = 0; i < NToys; i++) {
         Fluctuatepi0Correction();
 
-        GetFlucNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-        GetFlucNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-        GetFlucNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-        GetFlucNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-        GetFlucNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-        GetFlucNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B2Knunu", "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B2Xsnunu", "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B02K0nunu", "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B02Xsnunu", "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
-        GetFlucNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_fluc_pi0, i, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-        GetFlucNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_fluc_pi0, i, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-        GetFlucNevt(MC_dirname_UUBAR, "root", "Continuum", "UUBAR", Nevt_fluc_pi0, i, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-        GetFlucNevt(MC_dirname_DDBAR, "root", "Continuum", "DDBAR", Nevt_fluc_pi0, i, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-        GetFlucNevt(MC_dirname_SSBAR, "root", "Continuum", "SSBAR", Nevt_fluc_pi0, i, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-        GetFlucNevt(MC_dirname_CHARM, "root", "Continuum", "CHARM", Nevt_fluc_pi0, i, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+        GetFlucNevt(MC_dirname_CHG.c_str(), "root", "Bplus", "CHG", Nevt_fluc_pi0, i, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+        GetFlucNevt(MC_dirname_MIX.c_str(), "root", "Bzero", "MIX", Nevt_fluc_pi0, i, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+        GetFlucNevt(MC_dirname_UUBAR.c_str(), "root", "Continuum", "UUBAR", Nevt_fluc_pi0, i, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_DDBAR.c_str(), "root", "Continuum", "DDBAR", Nevt_fluc_pi0, i, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_SSBAR.c_str(), "root", "Continuum", "SSBAR", Nevt_fluc_pi0, i, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_CHARM.c_str(), "root", "Continuum", "CHARM", Nevt_fluc_pi0, i, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     }
     /* ====================================== */
 
@@ -845,7 +850,7 @@ int main(int argc, char* argv[])
     // file output
     FILE* fp;
     
-    fp = fopen(("pi0_toys_" + std::string(argv[1]) + ".txt").c_str(),"w");
+    fp = fopen((std::string(argv[3]) + "/pi0_toys_" + std::string(argv[1]) + ".txt").c_str(),"w");
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 9; j++) {
             fprintf(fp, "%lf ", Relative_Uncertainty_pi0[i][j]);
