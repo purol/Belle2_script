@@ -704,6 +704,12 @@ int main(int argc, char* argv[]) {
     fprintf(fp, "\n");
     fclose(fp);
 
+    fp = fopen((std::string(argv[2]) + "/MC_data_ratio.txt").c_str(), "w");
+    fprintf(fp, "%lf %lf\n", Ratio_Nevt_MXs1->GetBinContent(1), Ratio_Nevt_MXs1->GetBinError(1));
+    fprintf(fp, "%lf %lf\n", Ratio_Nevt_MXs2->GetBinContent(1), Ratio_Nevt_MXs2->GetBinError(1));
+    fprintf(fp, "%lf %lf\n", Ratio_Nevt_MXs3->GetBinContent(1), Ratio_Nevt_MXs3->GetBinError(1));
+    fclose(fp);
+
     // free
     delete[] Jpsi_MC_values;
     delete[] charged_values;
