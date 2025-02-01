@@ -348,7 +348,7 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
     return Nevt;
 }
 
-void ReadXsTransitionPDF()
+int main(int argc, char* argv[])
 {
     /*
     * argv[1]: number (ex. 0, 1, 2, ...)
@@ -449,4 +449,6 @@ void ReadXsTransitionPDF()
     delete Xsu_transition_m;
     delete Xsd_transition_p;
     delete Xsd_transition_m;
+
+    return 0;
 }
