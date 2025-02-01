@@ -797,14 +797,14 @@ int main(int argc, char* argv[])
 
     /* ====================================== */
     // define path for Ntuple
-    std::string MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_ghi/bsub/Analysis/KumoiRD/SIGNAL_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
 
-    std::string MC_dirname_CHG = "/home/belle2/junewoo/storage_ghi/bsub/Analysis/KumoiRD/CHG_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
-    std::string MC_dirname_MIX = "/home/belle2/junewoo/storage_ghi/bsub/Analysis/KumoiRD/MIX_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
-    std::string MC_dirname_UUBAR = "/home/belle2/junewoo/storage_ghi/bsub/Analysis/KumoiRD/UUBAR_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
-    std::string MC_dirname_DDBAR = "/home/belle2/junewoo/storage_ghi/bsub/Analysis/KumoiRD/DDBAR_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
-    std::string MC_dirname_SSBAR = "/home/belle2/junewoo/storage_ghi/bsub/Analysis/KumoiRD/SSBAR_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
-    std::string MC_dirname_CHARM = "/home/belle2/junewoo/storage_ghi/bsub/Analysis/KumoiRD/CHARM_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_CHG = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_MIX = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_UUBAR = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_DDBAR = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_SSBAR = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_CHARM = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
     /* ====================================== */
 
 

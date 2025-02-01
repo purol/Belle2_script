@@ -350,7 +350,11 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
 
 void ReadXsTransitionPDF()
 {
-
+    /*
+    * argv[1]: number (ex. 0, 1, 2, ...)
+    * argv[2]: version (ex. v020)
+    * argv[3]: output path
+    */
 
 
     /* ====================================== */
@@ -370,10 +374,10 @@ void ReadXsTransitionPDF()
 
     /* ====================================== */
     // define path for Ntuple
-    const char* MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Kumoi/SIGNAL_analysis/test_v009/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_ghi/bsub/Analysis/Kumoi/SIGNAL_analysis/test_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
 
     // for signal modeling
-    const char* MC_dirname_syst = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Kumoi_syst/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_syst = "/home/belle2/junewoo/storage_ghi/Analysis/Kumoi_syst/SIGNAL_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
     /* ====================================== */
 
 
@@ -381,15 +385,15 @@ void ReadXsTransitionPDF()
     /* ====================================== */
     // Get PDFs
     // get nominal pdfs
-    GetNominalPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Xsu_nominal, "Bplus", "SIGNAL", Corrector_Fragmentation::SystType::Nominal, Scale_Xsu_nonresonant_test, "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Xsd_nominal, "Bzero", "SIGNAL", Corrector_Fragmentation::SystType::Nominal, Scale_Xsd_nonresonant_test, "B02Xsnunu");
+    GetNominalPDFs(MC_dirname_SIGNAL.c_str(), "B2Xsnunu", Xsu_nominal, "Bplus", "SIGNAL", Corrector_Fragmentation::SystType::Nominal, Scale_Xsu_nonresonant_test, "B2Xsnunu");
+    GetNominalPDFs(MC_dirname_SIGNAL.c_str(), "B02Xsnunu", Xsd_nominal, "Bzero", "SIGNAL", Corrector_Fragmentation::SystType::Nominal, Scale_Xsd_nonresonant_test, "B02Xsnunu");
 
     // transition
-    GetNominalPDFs(MC_dirname_syst, "B2Xsnunu_Htransition", Xsu_transition_p, "Bplus", "SIGNAL", Corrector_Fragmentation::SystType::Htransition, Scale_Xsu_nonresonant_syst, "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_syst, "B02Xsnunu_Htransition", Xsd_transition_p, "Bzero", "SIGNAL", Corrector_Fragmentation::SystType::Htransition, Scale_Xsd_nonresonant_syst, "B02Xsnunu");
+    GetNominalPDFs(MC_dirname_syst.c_str(), "B2Xsnunu_Htransition", Xsu_transition_p, "Bplus", "SIGNAL", Corrector_Fragmentation::SystType::Htransition, Scale_Xsu_nonresonant_syst, "B2Xsnunu");
+    GetNominalPDFs(MC_dirname_syst.c_str(), "B02Xsnunu_Htransition", Xsd_transition_p, "Bzero", "SIGNAL", Corrector_Fragmentation::SystType::Htransition, Scale_Xsd_nonresonant_syst, "B02Xsnunu");
 
-    GetNominalPDFs(MC_dirname_syst, "B2Xsnunu_Ltransition", Xsu_transition_m, "Bplus", "SIGNAL", Corrector_Fragmentation::SystType::Ltransition, Scale_Xsu_nonresonant_syst, "B2Xsnunu");
-    GetNominalPDFs(MC_dirname_syst, "B02Xsnunu_Ltransition", Xsd_transition_m, "Bzero", "SIGNAL", Corrector_Fragmentation::SystType::Ltransition, Scale_Xsd_nonresonant_syst, "B02Xsnunu");
+    GetNominalPDFs(MC_dirname_syst.c_str(), "B2Xsnunu_Ltransition", Xsu_transition_m, "Bplus", "SIGNAL", Corrector_Fragmentation::SystType::Ltransition, Scale_Xsu_nonresonant_syst, "B2Xsnunu");
+    GetNominalPDFs(MC_dirname_syst.c_str(), "B02Xsnunu_Ltransition", Xsd_transition_m, "Bzero", "SIGNAL", Corrector_Fragmentation::SystType::Ltransition, Scale_Xsd_nonresonant_syst, "B02Xsnunu");
     /* ====================================== */
 
 
@@ -397,7 +401,7 @@ void ReadXsTransitionPDF()
     /* ====================================== */
     FILE* fp;
 
-    fp = fopen("Xsu_Htransition_weight.txt", "w");
+    fp = fopen(std::string(argv[3]) + "/Xsu_Htransition_weight.txt", "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsu up
         double correction_factor = 1.0;
@@ -407,7 +411,7 @@ void ReadXsTransitionPDF()
     }
     fclose(fp);
 
-    fp = fopen("Xsu_Ltransition_weight.txt", "w");
+    fp = fopen(std::string(argv[3]) + "/Xsu_Ltransition_weight.txt", "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsu down
         double correction_factor = 1.0;
@@ -417,7 +421,7 @@ void ReadXsTransitionPDF()
     }
     fclose(fp);
 
-    fp = fopen("Xsd_Htransition_weight.txt", "w");
+    fp = fopen(std::string(argv[3]) + "/Xsd_Htransition_weight.txt", "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsd up
         double correction_factor = 1.0;
@@ -427,7 +431,7 @@ void ReadXsTransitionPDF()
     }
     fclose(fp);
 
-    fp = fopen("Xsd_Ltransition_weight.txt", "w");
+    fp = fopen(std::string(argv[3]) + "/Xsd_Ltransition_weight.txt", "w");
     fprintf(fp, "%d\n", RarityBins);
     for (int i = 0; i < RarityBins; i++) { // Xsd down
         double correction_factor = 1.0;
