@@ -664,7 +664,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
     int __candidate__ = 0;
     int __ncandidates__ = 0;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names, included_string);
 
     double Nevt = 0;

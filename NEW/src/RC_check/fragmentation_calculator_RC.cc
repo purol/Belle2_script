@@ -500,7 +500,7 @@ void GetOneSigmaNevt(const char* dirname, const char* included_string, const cha
 
     double Bsig_M = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names, included_string);
 
     double Nevt = 0;
