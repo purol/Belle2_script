@@ -374,7 +374,7 @@ int main(int argc, char* argv[])
 
     /* ====================================== */
     // define path for Ntuple
-    std::string MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_ghi/bsub/Analysis/Kumoi/SIGNAL_analysis/test_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
+    std::string MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_ghi/Analysis/Kumoi/SIGNAL_analysis/test_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
 
     // for signal modeling
     std::string MC_dirname_syst = "/home/belle2/junewoo/storage_ghi/Analysis/Kumoi_syst/SIGNAL_analysis/validation_" + std::string(argv[2]) + "/final_output_root_after_MVA_Application_after_cut";
