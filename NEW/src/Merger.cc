@@ -58,6 +58,8 @@ int main(int argc, char* argv[]) {
         loader.PrintInformation(std::string("========== inital =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
         loader.PrintRootFile((output_path + "/" + output_name).c_str());
+
+        delete input_file;
     }
     loader.End();
 
