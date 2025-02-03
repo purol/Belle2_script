@@ -32,11 +32,15 @@ int main(int argc, char* argv[]) {
     * argv[4]: sample type: {SIGNAL|CHG|MIX|UUBAR|DDBAR|SSBAR|CHARM}
     * argv[5]: MC version: {data|MC15ri|MC15rd}
     * argv[6]: sample category: {test|train|validation}
+    * argv[7]: included string
     */
+
+    std::string output_name = std::string(argv[2]);
+    std::string output_path = std::string(argv[3]);
 
     std::vector<std::string> names;
 
-    load_files(argv[1], &names);
+    load_files(argv[1], &names, argv[7]);
 
     Loader loader;
 
@@ -53,7 +57,7 @@ int main(int argc, char* argv[]) {
 
         loader.PrintInformation(std::string("========== inital =========="), names.at(i), argv[4], argv[5], argv[6], true);
 
-        loader.PrintRootFile("./Merge.root");
+        loader.PrintRootFile((output_path + "/" + output_name).c_str());
     }
     loader.End();
 
