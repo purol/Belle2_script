@@ -133,14 +133,14 @@ struct _BRuncertainty {
     {}
 };
 
-void ReadEvtFile() {
-    const char* CHG_Evt_file = "CHG_Evt";
-    const char* MIX_Evt_file = "MIX_Evt";
-    const char* SIGNAL_Evt_file = "SIGNAL_Evt";
+void ReadEvtFile(std::string Evt_path) {
+    std::string CHG_Evt_file = Evt_path + "/CHG_Evt";
+    std::string MIX_Evt_file = Evt_path + "/MIX_Evt";
+    std::string SIGNAL_Evt_file = Evt_path + "/SIGNAL_Evt";
 
-    FILE* fp_CHG_Evt = fopen(CHG_Evt_file, "r");
-    FILE* fp_MIX_Evt = fopen(MIX_Evt_file, "r");
-    FILE* fp_SIGNAL_Evt = fopen(SIGNAL_Evt_file, "r");
+    FILE* fp_CHG_Evt = fopen(CHG_Evt_file.c_str(), "r");
+    FILE* fp_MIX_Evt = fopen(MIX_Evt_file.c_str(), "r");
+    FILE* fp_SIGNAL_Evt = fopen(SIGNAL_Evt_file.c_str(), "r");
 
     double temp_experiment = -1;
     double temp_run = -1;
@@ -940,7 +940,7 @@ int main(int argc, char* argv[])
     * argv[3]: output path
     */
 
-    ReadEvtFile();
+    ReadEvtFile("/home/belle2/junewoo/storage_b1/bsub/DecayInvestigator/KumoiRD_" + std::string(argv[2]));
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
