@@ -3068,7 +3068,7 @@ void AddPDFsWithRelativeUncertainty(TH1D* output_hist, TH1D* input_hist, TH1D* o
     output_hist->Add(output_hist, input_hist);
 }
 
-int main()
+int main(int argc, char* argv[])
 {
     /*
     * argv[1]: version (ex. v020)
