@@ -108,8 +108,8 @@ int main(int argc, char* argv[]) {
     //printf("%lf", alpha->getValV());
 
     // get Category and data
-    RooDataSet* data = (RooDataSet*)w->data("obsData");
-    //RooDataSet* data = (RooDataSet*)w->data("asimovData");
+    //RooDataSet* data = (RooDataSet*)w->data("obsData");
+    RooDataSet* data = (RooDataSet*)w->data("asimovData");
 
     // draw
     GetPlotTemplate(w, data, ("./KumoiRD_" + std::string(argv[1]) + "/set1/prefit.png").c_str());
