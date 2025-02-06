@@ -673,9 +673,9 @@ int main() {
 
 	FILE* fp;
 	fp = fopen("/home/belle2/junewoo/storage_b1/bsub/FastBDTinputdrawtest/KumoiRD_off_RC_check/" + std::string(argv[1]) + "/MC_data_ratio.txt", "r");
-	fscanf("%lf %lf\n", &CAL_off_K, &CAL_off_K_uncer);
-	fscanf("%lf %lf\n", &CAL_off_Kstar, &CAL_off_Kstar_uncer);
-	fscanf("%lf %lf\n", &CAL_off_Xs, &CAL_off_Xs_uncer);
+	fscanf(fp, "%lf %lf\n", &CAL_off_K, &CAL_off_K_uncer);
+	fscanf(fp, "%lf %lf\n", &CAL_off_Kstar, &CAL_off_Kstar_uncer);
+	fscanf(fp, "%lf %lf\n", &CAL_off_Xs, &CAL_off_Xs_uncer);
 	fclose(fp);
 
 	double CAL_FBDT_K = 1.0;
@@ -687,9 +687,9 @@ int main() {
 	double CAL_FBDT_Xs_uncer = 1.0;
 
 	fp = fopen("/home/belle2/junewoo/storage_b1/bsub/FastBDTinputdrawtest/KumoiRD_Jpsi_RC_check/" + std::string(argv[1]) + "/MC_data_ratio.txt", "r");
-	fscanf("%lf %lf\n", &CAL_FBDT_K, &CAL_FBDT_K_uncer);
-	fscanf("%lf %lf\n", &CAL_FBDT_Kstar, &CAL_FBDT_Kstar_uncer);
-	fscanf("%lf %lf\n", &CAL_FBDT_Xs, &CAL_FBDT_Xs_uncer);
+	fscanf(fp, "%lf %lf\n", &CAL_FBDT_K, &CAL_FBDT_K_uncer);
+	fscanf(fp, "%lf %lf\n", &CAL_FBDT_Kstar, &CAL_FBDT_Kstar_uncer);
+	fscanf(fp, "%lf %lf\n", &CAL_FBDT_Xs, &CAL_FBDT_Xs_uncer);
 	fclose(fp);
 
 
@@ -702,11 +702,11 @@ int main() {
 	int NEntryFragmentation = ReadNFragmentationEigenVector(("./KumoiRD_" + std::string(argv[1]) + "/set1/Fragmentation_selected.txt").c_str());
 
 	RooStats::HistFactory::Measurement meas("my_measurement", "my measurement");
-	meas.SetOutputFilePrefix((std::string(argv[2]) + "/PDFandDATA/my_measurement").c_str());
+	meas.SetOutputFilePrefix((std::string(argv[2]) + "/PDFandDATA_MXs1/my_measurement").c_str());
 	meas.SetExportOnly(kTRUE);
 
 	// setting measurement
-	meas.SetPOI("mu");
+	meas.SetPOI("mu_MXs1");
 	meas.SetLumi(1.0);
 	meas.AddConstantParam("Lumi");
 
@@ -763,7 +763,7 @@ int main() {
 
 	w->Print();
 	CheckInterpolation(w);
-	w->writeToFile((std::string(argv[2]) + "/PDFandDATA_workspace_mu.root").c_str());
+	w->writeToFile((std::string(argv[2]) + "/PDFandDATA_workspace.root").c_str());
 
 	// meas.PrintXML("PDFandDATA_MXs1");
 
