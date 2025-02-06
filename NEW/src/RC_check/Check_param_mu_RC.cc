@@ -137,7 +137,7 @@ int main(int argc, char* argv[]) {
 
     FILE* fp;
     fp = fopen("mu_result_mu.csv", "w");
-    for (TObject* a = iter_again->Next(); a != 0; a = iter_again->Next()) {
+    for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
         RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
         std::string name = rrv->GetName();
         double val = rrv->getVal();
@@ -147,7 +147,7 @@ int main(int argc, char* argv[]) {
 
         if (name == "mu_MXs1") fprintf(fp, "%lf,%lf,%lf,", val, HIerr, LOerr);
     }
-    for (TObject* a = iter_again->Next(); a != 0; a = iter_again->Next()) {
+    for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
         RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
         std::string name = rrv->GetName();
         double val = rrv->getVal();
@@ -157,7 +157,7 @@ int main(int argc, char* argv[]) {
 
         if (name == "mu_MXs2") fprintf(fp, "%lf,%lf,%lf,", val, HIerr, LOerr);
     }
-    for (TObject* a = iter_again->Next(); a != 0; a = iter_again->Next()) {
+    for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
         RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
         std::string name = rrv->GetName();
         double val = rrv->getVal();
