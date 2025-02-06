@@ -138,7 +138,7 @@ int main(int argc, char* argv[]) {
     // draw pull
     iter->Reset();
     Drawpull(w, iter, ("./KumoiRD_" + std::string(argv[1]) + "/set1/param_pull_type0_mu.png").c_str(), 0);
-    Drawpull(w, iter, ("./KumoiRD_" + std::string(argv[1]) + "/set1/param_pull_type1_mu.png").c_str(), 1);
+    //Drawpull(w, iter, ("./KumoiRD_" + std::string(argv[1]) + "/set1/param_pull_type1_mu.png").c_str(), 1);
 
     // define frame
     // RooPlot* x_frame = x->frame(Title("fit result"));
