@@ -3075,7 +3075,7 @@ int main(int argc, char* argv[])
     * argv[2]: output path
     */
 
-    std::string input_path = "./KumoiRD_v" + std::string(argv[1]) + "/set1/";
+    std::string input_path = "./KumoiRD_" + std::string(argv[1]) + "/set1/";
     ReadSignalModelingFile(input_path);
 
 
