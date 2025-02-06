@@ -687,9 +687,15 @@ int main(int argc, char* argv[]) {
 	double CAL_FBDT_Kstar_uncer = 1.0;
 	double CAL_FBDT_Xs_uncer = 1.0;
 
-	fp = fopen(("/home/belle2/junewoo/storage_b1/bsub/FastBDTinputdrawtest/KumoiRD_Jpsi_RC_check/" + std::string(argv[1]) + "/MC_data_ratio.txt").c_str(), "r");
+	fp = fopen(("/home/belle2/junewoo/storage_b1/bsub/FastBDTinputdrawtest/KumoiRD_Jpsi_RC_check/" + std::string(argv[1]) + "/MC_data_ratio_eff1.txt").c_str(), "r");
 	fscanf(fp, "%lf %lf\n", &CAL_FBDT_K, &CAL_FBDT_K_uncer);
+	fclose(fp);
+
+	fp = fopen(("/home/belle2/junewoo/storage_b1/bsub/FastBDTinputdrawtest/KumoiRD_Jpsi_RC_check/" + std::string(argv[1]) + "/MC_data_ratio_eff2.txt").c_str(), "r");
 	fscanf(fp, "%lf %lf\n", &CAL_FBDT_Kstar, &CAL_FBDT_Kstar_uncer);
+	fclose(fp);
+
+	fp = fopen(("/home/belle2/junewoo/storage_b1/bsub/FastBDTinputdrawtest/KumoiRD_Jpsi_RC_check/" + std::string(argv[1]) + "/MC_data_ratio_eff3.txt").c_str(), "r");
 	fscanf(fp, "%lf %lf\n", &CAL_FBDT_Xs, &CAL_FBDT_Xs_uncer);
 	fclose(fp);
 
