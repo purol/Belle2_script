@@ -31,6 +31,7 @@
 #include "RooParamHistFunc.h"
 #include "RooHist.h"
 #include "RooRandom.h"
+#include "TFile.h"
 
 #include "RooStats/ModelConfig.h"
 #include "RooStats/ToyMCSampler.h"
@@ -656,7 +657,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ CHARM ================================ */
 }
 
-int main() {
+int main(int argc, char* argv[]) {
 	/*
 	* argv[1]: version (ex. v020)
 	* argv[2]: output path
