@@ -502,15 +502,15 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 		double scale_m = 1.0;
 		FILE* fp;
 
-		if (MXs_bin == 1) fp = fopen(("./KumoiRD_" + std::string(version) + "/Scale_Signal_MXs3_transition_p_MXs1.txt").c_str(), "r");
-		else if (MXs_bin == 2) fp = fopen(("./KumoiRD_" + std::string(version) + "/Scale_Signal_MXs3_transition_p_MXs2.txt").c_str(), "r");
-		else if (MXs_bin == 3) fp = fopen(("./KumoiRD_" + std::string(version) + "/Scale_Signal_MXs3_transition_p_MXs3.txt").c_str(), "r");
+		if (MXs_bin == 1) fp = fopen(("./KumoiRD_" + std::string(version) + "/set1/Scale_Signal_MXs3_transition_p_MXs1.txt").c_str(), "r");
+		else if (MXs_bin == 2) fp = fopen(("./KumoiRD_" + std::string(version) + "/set1/Scale_Signal_MXs3_transition_p_MXs2.txt").c_str(), "r");
+		else if (MXs_bin == 3) fp = fopen(("./KumoiRD_" + std::string(version) + "/set1/Scale_Signal_MXs3_transition_p_MXs3.txt").c_str(), "r");
 		fscanf(fp, "%lf", &scale_p);
 		fclose(fp);
 
-		if (MXs_bin == 1) fp = fopen(("./KumoiRD_" + std::string(version) + "/Scale_Signal_MXs3_transition_m_MXs1.txt").c_str(), "r");
-		else if (MXs_bin == 2) fp = fopen(("./KumoiRD_" + std::string(version) + "/Scale_Signal_MXs3_transition_m_MXs2.txt").c_str(), "r");
-		else if (MXs_bin == 3) fp = fopen(("./KumoiRD_" + std::string(version) + "/Scale_Signal_MXs3_transition_m_MXs3.txt").c_str(), "r");
+		if (MXs_bin == 1) fp = fopen(("./KumoiRD_" + std::string(version) + "/set1/Scale_Signal_MXs3_transition_m_MXs1.txt").c_str(), "r");
+		else if (MXs_bin == 2) fp = fopen(("./KumoiRD_" + std::string(version) + "/set1/Scale_Signal_MXs3_transition_m_MXs2.txt").c_str(), "r");
+		else if (MXs_bin == 3) fp = fopen(("./KumoiRD_" + std::string(version) + "/set1/Scale_Signal_MXs3_transition_m_MXs3.txt").c_str(), "r");
 		fscanf(fp, "%lf", &scale_m);
 		fclose(fp);
 

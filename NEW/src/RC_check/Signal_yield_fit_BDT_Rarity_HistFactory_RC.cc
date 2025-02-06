@@ -2593,7 +2593,7 @@ void GetNegativeChangePDFs(TH1D* nominal_hist, TH1D* positive_hist, TH1D* negati
     }
 }
 
-void GetNormalizedPDF(TH1D* nominal_hist, TH1D* deviated_hist, std::string recon_MXs_bin_) {
+void GetNormalizedPDF(TH1D* nominal_hist, TH1D* deviated_hist, std::string recon_MXs_bin_, const char* version) {
     double total_nominal_value = 0.0;
     double total_deviated_value = 0.0;
 
@@ -2607,7 +2607,7 @@ void GetNormalizedPDF(TH1D* nominal_hist, TH1D* deviated_hist, std::string recon
     printf("the histogram %s is scaled by %lf\n", deviated_hist->GetName(), (total_nominal_value / total_deviated_value));
 
     FILE* fp;
-    fp = fopen(("Scale_" + std::string(deviated_hist->GetName()) + "_" + recon_MXs_bin_ + ".txt").c_str(), "w");
+    fp = fopen(("./KumoiRD_" + std::string(version) + "/set1/Scale_" + std::string(deviated_hist->GetName()) + "_" + recon_MXs_bin_ + ".txt").c_str(), "w");
     fprintf(fp, "%lf", (total_nominal_value / total_deviated_value));
     fclose(fp);
 
@@ -4625,8 +4625,8 @@ int main(int argc, char* argv[])
     AddPDFs(Signal_transition_m, Signal_MXs3_transition_m);
 
     // addition of transition PDFs is done. Let's normalize them
-    GetNormalizedPDF(Signal_MXs3_nominal, Signal_MXs3_transition_p, recon_MXs_bin);
-    GetNormalizedPDF(Signal_MXs3_nominal, Signal_MXs3_transition_m, recon_MXs_bin);
+    GetNormalizedPDF(Signal_MXs3_nominal, Signal_MXs3_transition_p, recon_MXs_bin, argv[1]);
+    GetNormalizedPDF(Signal_MXs3_nominal, Signal_MXs3_transition_m, recon_MXs_bin, argv[1]);
 
     AddPDFs(Signal_mKstar_p, Signal_MXs1_nominal);
     AddPDFs(Signal_mKstar_p, Signal_MXs2_mKstar_p);
