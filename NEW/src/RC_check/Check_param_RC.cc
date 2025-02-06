@@ -135,48 +135,6 @@ int main(int argc, char* argv[]) {
 
     }
 
-    // draw pull
-    iter->Reset();
-    Drawpull(w, iter, ("./KumoiRD_" + std::string(argv[1]) + "/set1/param_pull_type0.png").c_str(), 0);
-    //Drawpull(w, iter, ("./KumoiRD_" + std::string(argv[1]) + "/set1/param_pull_type1.png").c_str(), 1);
-
-    // define frame
-    // RooPlot* x_frame = x->frame(Title("fit result"));
-
-    // draw
-    GetPlotTemplate(w, data, ("./KumoiRD_" + std::string(argv[1]) + "/set1/postfit.png").c_str());
-    double NSIGNAL = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
-    double NBKG = GetNumEvts(w, "CHG_MX1") + GetNumEvts(w, "CHG_MX2") + GetNumEvts(w, "CHG_MX3") +
-GetNumEvts(w, "MIX_MX1") + GetNumEvts(w, "MIX_MX2") + GetNumEvts(w, "MIX_MX3") +
-GetNumEvts(w, "UUBAR_MX1") + GetNumEvts(w, "UUBAR_MX2") + GetNumEvts(w, "UUBAR_MX3") +
-GetNumEvts(w, "DDBAR_MX1") + GetNumEvts(w, "DDBAR_MX2") + GetNumEvts(w, "DDBAR_MX3") +
-GetNumEvts(w, "SSBAR_MX1") + GetNumEvts(w, "SSBAR_MX2") + GetNumEvts(w, "SSBAR_MX3") +
-GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
-
-    printf("NSIG: %lf\nNBKG: %lf\n", NSIGNAL, NBKG);
-
-    // get stat uncertainty only
-    Initialize_options(options, "all");
-    FixParameters(w, options);
-
-    fitres = MyMinimizeNLL(w, data, &nll, eps);
-
-    fitargs = fitres->floatParsFinal();
-    TIterator* iter_again(fitargs.createIterator());
-
-    for (TObject* a = iter_again->Next(); a != 0; a = iter_again->Next()) {
-        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
-        std::string name = rrv->GetName();
-        double val = rrv->getVal();
-        double err = rrv->getError();
-        double HIerr = rrv->getAsymErrorHi();
-        double LOerr = rrv->getAsymErrorLo();
-
-        printf("fit result for %s = %lf +- %lf\n", name.c_str(), val, err);
-        printf("MINOS error: %lf %lf\n", HIerr, LOerr);
-
-    }
-
     FILE* fp;
     fp = fopen("mu_result.csv", "w");
     for (TObject* a = iter_again->Next(); a != 0; a = iter_again->Next()) {
@@ -210,6 +168,48 @@ GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_M
         if (name == "mu_MXs3") fprintf(fp, "%lf,%lf,%lf\n", val, HIerr, LOerr);
     }
     fclose(fp);
+
+    // draw pull
+    iter->Reset();
+    Drawpull(w, iter, ("./KumoiRD_" + std::string(argv[1]) + "/set1/param_pull_type0.png").c_str(), 0);
+    Drawpull(w, iter, ("./KumoiRD_" + std::string(argv[1]) + "/set1/param_pull_type1.png").c_str(), 1);
+
+    // define frame
+    // RooPlot* x_frame = x->frame(Title("fit result"));
+
+    // draw
+    GetPlotTemplate(w, data, ("./KumoiRD_" + std::string(argv[1]) + "/set1/postfit.png").c_str());
+    double NSIGNAL = GetNumEvts(w, "Signal_MX1") + GetNumEvts(w, "Signal_MX2") + GetNumEvts(w, "Signal_MX3");
+    double NBKG = GetNumEvts(w, "CHG_MX1") + GetNumEvts(w, "CHG_MX2") + GetNumEvts(w, "CHG_MX3") +
+GetNumEvts(w, "MIX_MX1") + GetNumEvts(w, "MIX_MX2") + GetNumEvts(w, "MIX_MX3") +
+GetNumEvts(w, "UUBAR_MX1") + GetNumEvts(w, "UUBAR_MX2") + GetNumEvts(w, "UUBAR_MX3") +
+GetNumEvts(w, "DDBAR_MX1") + GetNumEvts(w, "DDBAR_MX2") + GetNumEvts(w, "DDBAR_MX3") +
+GetNumEvts(w, "SSBAR_MX1") + GetNumEvts(w, "SSBAR_MX2") + GetNumEvts(w, "SSBAR_MX3") +
+GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_MX3");
+
+    printf("NSIG: %lf\nNBKG: %lf\n", NSIGNAL, NBKG);
+
+    // get stat uncertainty only
+    Initialize_options(options, "all", ("./KumoiRD_" + std::string(argv[1]) + "/set1/").c_str());
+    FixParameters(w, options);
+
+    fitres = MyMinimizeNLL(w, data, &nll, eps);
+
+    fitargs = fitres->floatParsFinal();
+    TIterator* iter_again(fitargs.createIterator());
+
+    for (TObject* a = iter_again->Next(); a != 0; a = iter_again->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        double val = rrv->getVal();
+        double err = rrv->getError();
+        double HIerr = rrv->getAsymErrorHi();
+        double LOerr = rrv->getAsymErrorLo();
+
+        printf("fit result for %s = %lf +- %lf\n", name.c_str(), val, err);
+        printf("MINOS error: %lf %lf\n", HIerr, LOerr);
+
+    }
 
     PrintNevtFile(w, ("./KumoiRD_" + std::string(argv[1]) + "/set1/Fit_Nevt.txt").c_str());
     PrintNuisanceParameters(&fitargs);
