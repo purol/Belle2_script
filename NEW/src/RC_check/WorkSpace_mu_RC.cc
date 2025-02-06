@@ -673,7 +673,7 @@ int main(int argc, char* argv[]) {
 	double CAL_off_Xs_uncer = 1.0;
 
 	FILE* fp;
-	fp = fopen("/home/belle2/junewoo/storage_b1/bsub/FastBDTinputdrawtest/KumoiRD_off_RC_check/" + std::string(argv[1]) + "/MC_data_ratio.txt", "r");
+	fp = fopen(("/home/belle2/junewoo/storage_b1/bsub/FastBDTinputdrawtest/KumoiRD_off_RC_check/" + std::string(argv[1]) + "/MC_data_ratio.txt").c_str(), "r");
 	fscanf(fp, "%lf %lf\n", &CAL_off_K, &CAL_off_K_uncer);
 	fscanf(fp, "%lf %lf\n", &CAL_off_Kstar, &CAL_off_Kstar_uncer);
 	fscanf(fp, "%lf %lf\n", &CAL_off_Xs, &CAL_off_Xs_uncer);
@@ -687,7 +687,7 @@ int main(int argc, char* argv[]) {
 	double CAL_FBDT_Kstar_uncer = 1.0;
 	double CAL_FBDT_Xs_uncer = 1.0;
 
-	fp = fopen("/home/belle2/junewoo/storage_b1/bsub/FastBDTinputdrawtest/KumoiRD_Jpsi_RC_check/" + std::string(argv[1]) + "/MC_data_ratio.txt", "r");
+	fp = fopen(("/home/belle2/junewoo/storage_b1/bsub/FastBDTinputdrawtest/KumoiRD_Jpsi_RC_check/" + std::string(argv[1]) + "/MC_data_ratio.txt").c_str(), "r");
 	fscanf(fp, "%lf %lf\n", &CAL_FBDT_K, &CAL_FBDT_K_uncer);
 	fscanf(fp, "%lf %lf\n", &CAL_FBDT_Kstar, &CAL_FBDT_Kstar_uncer);
 	fscanf(fp, "%lf %lf\n", &CAL_FBDT_Xs, &CAL_FBDT_Xs_uncer);
