@@ -170,7 +170,7 @@ int main(int argc, char* argv[]) {
 
     FILE* fp;
     fp = fopen((std::string(argv[2]) + "/" + std::string(argv[3])).c_str(), "w");
-    fprintf("%lf %lf\n", efficiency_ratio->GetBinContent(1), efficiency_ratio->GetBinError(1));
+    fprintf(fp, "%lf %lf\n", efficiency_ratio->GetBinContent(1), efficiency_ratio->GetBinError(1));
     fclose(fp);
 
     delete[] Jpsi_MC_values_before;
