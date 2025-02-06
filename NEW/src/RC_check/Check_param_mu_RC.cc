@@ -209,7 +209,7 @@ GetNumEvts(w, "CHARM_MX1") + GetNumEvts(w, "CHARM_MX2") + GetNumEvts(w, "CHARM_M
 
         if (name == "mu_MXs3") fprintf(fp, "%lf,%lf,%lf\n", val, HIerr, LOerr);
     }
-    fclose();
+    fclose(fp);
 
     PrintNevtFile(w, ("./KumoiRD_" + std::string(argv[1]) + "/set1/Fit_Nevt_mu.txt").c_str());
     PrintNuisanceParameters(&fitargs);
