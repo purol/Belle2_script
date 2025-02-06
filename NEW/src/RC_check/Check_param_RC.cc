@@ -137,6 +137,7 @@ int main(int argc, char* argv[]) {
 
     FILE* fp;
     fp = fopen(("./KumoiRD_" + std::string(argv[1]) + "/set1/mu_result.csv").c_str(), "w");
+    iter->Reset();
     for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
         RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
         std::string name = rrv->GetName();
@@ -147,6 +148,7 @@ int main(int argc, char* argv[]) {
 
         if (name == "mu_MXs1") fprintf(fp, "%lf,%lf,%lf,", val, HIerr, LOerr);
     }
+    iter->Reset();
     for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
         RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
         std::string name = rrv->GetName();
@@ -157,6 +159,7 @@ int main(int argc, char* argv[]) {
 
         if (name == "mu_MXs2") fprintf(fp, "%lf,%lf,%lf,", val, HIerr, LOerr);
     }
+    iter->Reset();
     for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
         RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
         std::string name = rrv->GetName();
