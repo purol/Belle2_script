@@ -97,7 +97,7 @@ int main(int argc, char* argv[]) {
     RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
 
     OPTIONS* options = (OPTIONS*)malloc(sizeof(OPTIONS));
-    Initialize_options(options, "none");
+    Initialize_options(options, "none", "./KumoiRD_"  + std::string(argv[1]) + "/set1/");
     w->loadSnapshot("NominalParamValues");
     FixParameters(w, options);
 

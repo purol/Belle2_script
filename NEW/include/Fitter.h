@@ -250,7 +250,7 @@ int ReadNFragmentationEigenVector(const char* dirname) {
     return Nentry;
 }
 
-void Initialize_options(OPTIONS* options_, const char* tested_param) {
+void Initialize_options(OPTIONS* options_, const char* tested_param, const char* path = ".") {
     // initialize
     options_->track = false;
     options_->PID = false;
@@ -352,13 +352,13 @@ void Initialize_options(OPTIONS* options_, const char* tested_param) {
     }
 
     // read entry for nuisance parameters
-    options_->NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
-    options_->NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
-    options_->NEntryPID = ReadNPIDEigenVector("./PID_selected.txt");
-    options_->NEntryBR = ReadNBREigenVector("./BR_selected.txt");
-    options_->NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
-    options_->NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
-    options_->NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
+    options_->NEntryFEI = ReadNFEIEigenVector((std::string(path) + "/FEI_selected.txt").c_str());
+    options_->NEntryKID = ReadNPIDEigenVector((std::string(path) + "/KID_selected.txt").c_str());
+    options_->NEntryPID = ReadNPIDEigenVector((std::string(path) + "/PID_selected.txt").c_str());
+    options_->NEntryBR = ReadNBREigenVector((std::string(path) + "/BR_selected.txt").c_str());
+    options_->NEntrypi0 = ReadNpi0EigenVector((std::string(path) + "/pi0_selected.txt").c_str());
+    options_->NEntryMultiplicity = ReadMultiplicityInfo((std::string(path) + "/multiplicity_selected.txt").c_str());
+    options_->NEntryFragmentation = ReadNFragmentationEigenVector((std::string(path) + "/Fragmentation_selected.txt").c_str());
 }
 
 void FixParameters(RooWorkspace* w, OPTIONS* options_) {
