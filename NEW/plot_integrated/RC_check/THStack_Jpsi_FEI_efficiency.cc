@@ -549,7 +549,7 @@ void LetsFillKonlydata(const char* dirname, const char* included_string = "root"
 
 }
 
-void THStack_Jpsi_FEI_efficiency() {
+int main(int argc, char* argv[]) {
     /*
     * argv[1]: input version (ex. v031)
     * argv[2]: output path
@@ -686,4 +686,15 @@ void THStack_Jpsi_FEI_efficiency() {
     printf("=== data/MC for Bzero ===\n");
     for (int i = 0; i < 1; i++) printf("My category %d: %lf +- %lf\n", i, ratio_Bzero_My->GetBinContent(i + 1), ratio_Bzero_My->GetBinError(i + 1));
     printf("==========================\n");
+
+    FILE* fp = fopen((std::string(argv[2]) + "/NEW_FEI_CAL.txt").c_str(), "w");
+
+    fprintf(fp, "%lf %lf\n", ratio_Bplus_My->GetBinContent(1), ratio_Bplus_My->GetBinError(1));
+    fprintf(fp, "%lf %lf\n", ratio_Bplus_My->GetBinContent(2), ratio_Bplus_My->GetBinError(2));
+    fprintf(fp, "%lf %lf\n", ratio_Bplus_My->GetBinContent(3), ratio_Bplus_My->GetBinError(3));
+    fprintf(fp, "%lf %lf\n", ratio_Bzero_My->GetBinContent(1), ratio_Bzero_My->GetBinError(1));
+
+    fclose(fp);
+
+    return 0;
 }
