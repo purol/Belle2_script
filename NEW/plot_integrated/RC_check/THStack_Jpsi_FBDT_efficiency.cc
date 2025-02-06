@@ -26,23 +26,23 @@ int main(int argc, char* argv[]) {
     */
 
     // dirnames
-    const char* Jpsi_MC_SIGNAL_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* Jpsi_MC_CHG_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHG_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* Jpsi_MC_MIX_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/MIX_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* Jpsi_MC_UUBAR_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* Jpsi_MC_DDBAR_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* Jpsi_MC_SSBAR_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* Jpsi_MC_CHARM_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* Jpsi_data_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_data_Jpsi/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_SIGNAL_before_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application").c_str());
+    const char* Jpsi_MC_CHG_before_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHG_analysis/validation_v009/final_output_root_after_MVA_Application").c_str());
+    const char* Jpsi_MC_MIX_before_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/MIX_analysis/validation_v009/final_output_root_after_MVA_Application").c_str());
+    const char* Jpsi_MC_UUBAR_before_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application").c_str());
+    const char* Jpsi_MC_DDBAR_before_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application").c_str());
+    const char* Jpsi_MC_SSBAR_before_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application").c_str());
+    const char* Jpsi_MC_CHARM_before_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application").c_str());
+    const char* Jpsi_data_before_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_data_Jpsi/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application").c_str());
 
-    const char* Jpsi_MC_SIGNAL_after_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut";
-    const char* Jpsi_MC_CHG_after_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHG_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut";
-    const char* Jpsi_MC_MIX_after_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/MIX_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut";
-    const char* Jpsi_MC_UUBAR_after_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/UUBAR_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut";
-    const char* Jpsi_MC_DDBAR_after_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/DDBAR_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut";
-    const char* Jpsi_MC_SSBAR_after_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SSBAR_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut";
-    const char* Jpsi_MC_CHARM_after_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHARM_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut";
-    const char* Jpsi_data_after_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_data_Jpsi/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut";
+    const char* Jpsi_MC_SIGNAL_after_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Jpsi_MC_CHG_after_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHG_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Jpsi_MC_MIX_after_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/MIX_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Jpsi_MC_UUBAR_after_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/UUBAR_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Jpsi_MC_DDBAR_after_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/DDBAR_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Jpsi_MC_SSBAR_after_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SSBAR_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Jpsi_MC_CHARM_after_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHARM_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
+    const char* Jpsi_data_after_dirname = strdup(("/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_data_Jpsi/SIGNAL_analysis/validation_" + std::string(argv[1]) + "/final_output_root_after_MVA_Application_after_cut").c_str());
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
