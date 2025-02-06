@@ -145,7 +145,7 @@ int main(int argc, char* argv[]) {
         double HIerr = rrv->getAsymErrorHi();
         double LOerr = rrv->getAsymErrorLo();
 
-        if (name == "mu_MXs1") fprintf(fp, "%lf,%lf,%lf,", val, HIerr, LOerr);
+        if (name == "mu") fprintf(fp, "%lf,%lf,%lf,", val, HIerr, LOerr);
     }
     for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
         RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
