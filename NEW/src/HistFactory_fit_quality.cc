@@ -990,6 +990,7 @@ void FitToData(RooWorkspace* w, double eps) {
     // get Category and data
     RooCategory* idx = (RooCategory*)obs->find("channelCat");
     RooDataSet* data = (RooDataSet*)w->data("asimovData");
+    // RooDataSet* data = (RooDataSet*)w->data("obsData");
 
     // fit
     //RooFitResult* fitres = model->fitTo(*data, RooFit::Minimizer("Minuit2"), RooFit::Extended(false), RooFit::Minos(RooArgSet(*w->var("mu_MXs1"), *w->var("mu_MXs2"), *w->var("mu_MXs3"))), RooFit::SumW2Error(false), Save());
