@@ -2,6 +2,8 @@
 #define BASE_H
 
 #include <string>
+#include <sstream>
+#include <iomanip>
 #include "TSystemDirectory.h"
 #include "TList.h"
 #include "TSystemFile.h"
@@ -48,6 +50,12 @@ void load_files(const char* dirname, std::vector<std::string>* names, const char
             }
         }
     }
+}
+
+std::string to_string_precision(double value, int precision = 2) {
+    std::ostringstream out;
+    out << std::fixed << std::setprecision(precision) << value;
+    return out.str();
 }
 
 #endif 
