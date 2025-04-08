@@ -590,9 +590,9 @@ void THStack_plot_charge_sideband() {
         Stack[k]->Draw("pfc Hist");
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP EX0");
-        TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
+        TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.7, 0.5);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
-        TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str()); pt->Draw();
+        TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC scaled to data, Data/MC= " + to_string_precision(CAL)).c_str()); pt->Draw();
 
         c_temp->cd();
         TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();

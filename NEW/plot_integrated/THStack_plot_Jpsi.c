@@ -624,13 +624,13 @@ void THStack_plot_Jpsi() {
         Stack[k]->Draw("pfc Hist");
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP EX0");
-        TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
+        TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.7, 0.5);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
         if (NormalizeAtEachMXs == false) {
             TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB");
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
-            pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL) + ", Data= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
+            pt->AddText(("MC scaled to data, Data/MC= " + to_string_precision(CAL) + ", Data= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
             pt->Draw();
 
         }
@@ -638,7 +638,7 @@ void THStack_plot_Jpsi() {
             TPaveText* pt = new TPaveText(0.135, 0.88, 0.9, 1.0, "NDC NB");
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
-            pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + std::to_string(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs3->GetBinContent(1)) + ", TotalData= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
+            pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + to_string_precision(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs3->GetBinContent(1)) + ", TotalData= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
             pt->Draw();
         }
 
