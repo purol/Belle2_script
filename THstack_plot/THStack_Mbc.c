@@ -172,9 +172,6 @@ void THStack_Mbc() {
     Stack->Add(CHARM_hist);
     Stack->SetMaximum(Stack->GetMaximum() * 1.3);
 
-    Stack->GetXaxis()->SetTitleSize(0.06);
-    Stack->GetYaxis()->SetTitleSize(0.06);
-
     //SIGNAL_hist->Scale(10000.0/BKG_int, "width");
     //SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
     SIGNAL_hist->Scale(5000.0);
@@ -186,7 +183,8 @@ void THStack_Mbc() {
 
     gStyle->SetPalette(kGistEarth);
 
-    Stack->Draw("pfc Hist"); SIGNAL_hist->Draw("HistSAME");
+    Stack->Draw("pfc Hist"); Stack->GetXaxis()->SetTitleSize(0.042); Stack->GetYaxis()->SetTitleSize(0.042);
+    SIGNAL_hist->Draw("HistSAME");
 
     TLegend* legend = gPad->BuildLegend(0.95, 0.9, 0.68, 0.65);
     legend->SetFillStyle(0); legend->SetLineWidth(0);
