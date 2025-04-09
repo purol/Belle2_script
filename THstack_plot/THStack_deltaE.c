@@ -186,6 +186,9 @@ void THStack_deltaE() {
     Stack->Draw("pfc Hist"); Stack->GetXaxis()->SetTitleSize(0.042); Stack->GetYaxis()->SetTitleSize(0.042);
     SIGNAL_hist->Draw("HistSAME");
 
+    TPaveText* pt_lumi = new TPaveText(0.12, 0.83, 0.42, 0.85, "NDC NB");
+    pt_lumi->SetTextSize(0.035); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("Belle II simulation #int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
+
     TLegend* legend = gPad->BuildLegend(0.95, 0.9, 0.68, 0.65);
     legend->SetFillStyle(0); legend->SetLineWidth(0);
 
@@ -193,10 +196,12 @@ void THStack_deltaE() {
     TLine* line = new TLine(0.2, 0, 0.2, ymax);
     line->SetLineColor(kRed);
     line->SetLineStyle(5);
+    line->SetLineWidth(3);
     line->Draw();
     TLine* line2 = new TLine(-0.2, 0, -0.2, ymax);
     line2->SetLineColor(kRed);
     line2->SetLineStyle(5);
+    line2->SetLineWidth(3);
     line2->Draw();
     c_temp->SaveAs("Plot_deltaE.png");
 
