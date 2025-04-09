@@ -28,18 +28,18 @@ void load_files(const char* dirname, std::vector<string>* names) {
 }
 
 TH2F* OBB_Oqq_BKG_train = new TH2F("OBB_Oqq_BKG_train", ";O_{BB};O{qq}", 40, 0, 1.0, 40, 0, 1.0);
-TH1F* OBB_BKG_train = new TH1F("FastBDT BKG train", ";FastBDT;", 40, 0, 1.0);
-TH1F* Oqq_BKG_train = new TH1F("FastBDT BKG train", ";FastBDT;", 40, 0, 1.0);
+TH1F* OBB_BKG_train = new TH1F("FastBDT BKG train", ";FastBDT;Arbitrary unit", 40, 0, 1.0);
+TH1F* Oqq_BKG_train = new TH1F("FastBDT BKG train", ";FastBDT;Arbitrary unit", 40, 0, 1.0);
 TH2F* OBB_Oqq_BKG_test = new TH2F("OBB_Oqq_BKG_test", ";O_{BB};O{qq}", 40, 0, 1.0, 40, 0, 1.0);
-TH1F* OBB_BKG_test = new TH1F("FastBDT BKG test", ";FastBDT;", 40, 0, 1.0);
-TH1F* Oqq_BKG_test = new TH1F("FastBDT BKG test", ";FastBDT;", 40, 0, 1.0);
+TH1F* OBB_BKG_test = new TH1F("FastBDT BKG test", ";FastBDT;Arbitrary unit", 40, 0, 1.0);
+TH1F* Oqq_BKG_test = new TH1F("FastBDT BKG test", ";FastBDT;Arbitrary unit", 40, 0, 1.0);
 
 TH2F* OBB_Oqq_SIGNAL_train = new TH2F("OBB_Oqq_SIGNAL_train", ";O_{BB};O{qq}", 40, 0, 1.0, 40, 0, 1.0);
-TH1F* OBB_SIGNAL_train = new TH1F("FastBDT SIGNAL train", ";FastBDT;", 40, 0, 1.0);
-TH1F* Oqq_SIGNAL_train = new TH1F("FastBDT SIGNAL train", ";FastBDT;", 40, 0, 1.0);
+TH1F* OBB_SIGNAL_train = new TH1F("FastBDT SIGNAL train", ";FastBDT;Arbitrary unit", 40, 0, 1.0);
+TH1F* Oqq_SIGNAL_train = new TH1F("FastBDT SIGNAL train", ";FastBDT;Arbitrary unit", 40, 0, 1.0);
 TH2F* OBB_Oqq_SIGNAL_test = new TH2F("OBB_Oqq_SIGNAL_test", ";O_{BB};O{qq}", 40, 0, 1.0, 40, 0, 1.0);
-TH1F* OBB_SIGNAL_test = new TH1F("FastBDT SIGNAL test", ";FastBDT;", 40, 0, 1.0);
-TH1F* Oqq_SIGNAL_test = new TH1F("FastBDT SIGNAL test", ";FastBDT;", 40, 0, 1.0);
+TH1F* OBB_SIGNAL_test = new TH1F("FastBDT SIGNAL test", ";FastBDT;Arbitrary unit", 40, 0, 1.0);
+TH1F* Oqq_SIGNAL_test = new TH1F("FastBDT SIGNAL test", ";FastBDT;Arbitrary unit", 40, 0, 1.0);
 
 void LetsFill(const char* dirname, TH2F* OBB_Oqq_hist, TH1F* OBB_hist, TH1F* Oqq_hist, double weight_var = 1.0) {
     float OBB_var = 0;
@@ -204,18 +204,20 @@ void FastBDT_output_KS_test()
     if(OBB_BKG_train_max > OBB_SIGNAL_train_max) OBB_BKG_train->SetMaximum(1.05 * OBB_BKG_train_max);
     else OBB_BKG_train->SetMaximum(1.05 * OBB_SIGNAL_train_max);
     OBB_BKG_train->SetMinimum(0.03);
-    OBB_BKG_train->Draw("Hist"); OBB_SIGNAL_train->Draw("HistSAME");
+    OBB_BKG_train->Draw("Hist"); OBB_BKG_train->GetYaxis()->SetTitleOffset(1.3);
+    OBB_SIGNAL_train->Draw("HistSAME");
     OBB_BKG_test->Draw("AP SAME"); OBB_SIGNAL_test->Draw("AP SAME");
-    TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.6, 0.6); legend->SetFillStyle(0); legend->SetLineWidth(0);
+    TLegend* legend = gPad->BuildLegend(0.8, 0.9, 0.3, 0.6); legend->SetFillStyle(0); legend->SetLineWidth(0);
     c_temp->SaveAs("OBB_Plot.png");
 
     TCanvas* c_temp_2 = new TCanvas("c2", "", 600, 600); c_temp_2->cd(); gPad->SetLogy();
     double Oqq_BKG_train_max = Oqq_BKG_train->GetMaximum(); double Oqq_SIGNAL_train_max = Oqq_SIGNAL_train->GetMaximum();
     if(Oqq_BKG_train_max > Oqq_SIGNAL_train_max) Oqq_BKG_train->SetMaximum(1.05 * Oqq_BKG_train_max);
     else Oqq_BKG_train->SetMaximum(1.05 * Oqq_SIGNAL_train_max);
-    Oqq_BKG_train->Draw("Hist"); Oqq_SIGNAL_train->Draw("HistSAME");
+    Oqq_BKG_train->Draw("Hist"); Oqq_BKG_train->GetYaxis()->SetTitleOffset(1.3);
+    Oqq_SIGNAL_train->Draw("HistSAME");
     Oqq_BKG_test->Draw("AP SAME"); Oqq_SIGNAL_test->Draw("AP SAME");
-    TLegend* legend_2 = gPad->BuildLegend(0.9, 0.9, 0.6, 0.6); legend_2->SetFillStyle(0); legend_2->SetLineWidth(0);
+    TLegend* legend_2 = gPad->BuildLegend(0.8, 0.9, 0.3, 0.6); legend_2->SetFillStyle(0); legend_2->SetLineWidth(0);
     c_temp_2->SaveAs("Oqq_Plot.png");
 
 }

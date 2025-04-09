@@ -22,6 +22,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "TStyle.h"
 #include "TSystemFile.h"
 #include "TSystemDirectory.h"
+#include "TPaveText.h"
 
 #include <string>
 
