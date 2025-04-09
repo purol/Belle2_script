@@ -170,6 +170,9 @@ void THStack_psig() {
     Stack->Add(CHARM_hist);
     Stack->SetMaximum(Stack->GetMaximum() * 1.3);
 
+    Stack->GetXaxis()->SetTitleSize(0.06);
+    Stack->GetYaxis()->SetTitleSize(0.06);
+
     //SIGNAL_hist->Scale(10000.0/BKG_int, "width");
     //SIGNAL_hist->Scale(1.0 / SIGNAL_int, "width");
     SIGNAL_hist->Scale(10000.0);
@@ -177,16 +180,13 @@ void THStack_psig() {
     SIGNAL_hist->SetLineColor(2);
     SIGNAL_hist->SetFillStyle(0);
 
-    SIGNAL_hist->GetXaxis()->SetLabelSize(0.06);
-    SIGNAL_hist->GetYaxis()->SetLabelSize(0.06);
-
     TCanvas* c_temp = new TCanvas("c", "", 1500, 1200); c_temp->cd();
 
     gStyle->SetPalette(kGistEarth);
 
     Stack->Draw("pfc Hist"); SIGNAL_hist->Draw("HistSAME");
 
-    TLegend* legend = gPad->BuildLegend(0.95, 0.9, 0.7, 0.6);
+    TLegend* legend = gPad->BuildLegend(0.95, 0.9, 0.68, 0.65);
     legend->SetFillStyle(0); legend->SetLineWidth(0);
 
     Float_t ymax = Stack->GetMaximum();
