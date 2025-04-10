@@ -622,7 +622,7 @@ void THStack_plot_offres() {
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
             pt->SetTextSize(0.06);
-            pt->AddText(("MC scaled to data, Data/MC= " + std::to_string(CAL)).c_str());
+            pt->AddText(("MC scaled to data, Data/MC= " + to_string_precision(CAL)).c_str());
             pt->Draw();
         }
         else {
@@ -630,7 +630,7 @@ void THStack_plot_offres() {
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
             pt->SetTextSize(0.04);
-            pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + std::to_string(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + std::to_string(Ratio_Nevt_MXs3->GetBinContent(1))).c_str());
+            pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + to_string_precision(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs3->GetBinContent(1))).c_str());
             pt->Draw();
         }
 
