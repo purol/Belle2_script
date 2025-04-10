@@ -624,22 +624,24 @@ void THStack_plot_Jpsi() {
         Stack[k]->Draw("pfc Hist");
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP EX0");
-        TPaveText* pt_lumi = new TPaveText(0.12, 0.83, 0.42, 0.85, "NDC NB");
+        TPaveText* pt_lumi = new TPaveText(0.18, 0.83, 0.48, 0.85, "NDC NB");
         pt_lumi->SetTextSize(0.035); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("Belle II #int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
-        TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.7, 0.5);
+        TLegend* legend = pad1->BuildLegend(0.92, 0.9, 0.67, 0.5);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
         if (NormalizeAtEachMXs == false) {
-            TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB");
+            TPaveText* pt = new TPaveText(0.25, 0.88, 0.65, 1.0, "NDC NB");
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
+            pt->SetTextSize(0.06);
             pt->AddText(("MC scaled to data, Data/MC= " + to_string_precision(CAL) + ", Data= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
             pt->Draw();
 
         }
         else {
-            TPaveText* pt = new TPaveText(0.135, 0.88, 0.9, 1.0, "NDC NB");
+            TPaveText* pt = new TPaveText(0.15, 0.88, 0.915, 1.0, "NDC NB");
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
+            pt->SetTextSize(0.04);
             pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + to_string_precision(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs3->GetBinContent(1)) + ", TotalData= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
             pt->Draw();
         }
