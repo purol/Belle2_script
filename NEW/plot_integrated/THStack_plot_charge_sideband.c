@@ -585,11 +585,13 @@ void THStack_plot_charge_sideband() {
         if (ymax_1 > ymax_2) real_max = ymax_1;
         else real_max = ymax_2;
 
-        Stack[k]->SetMaximum(real_max * 1.1);
+        Stack[k]->SetMaximum(real_max * 1.2);
 
         Stack[k]->Draw("pfc Hist");
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP EX0");
+        TPaveText* pt_lumi = new TPaveText(0.12, 0.83, 0.42, 0.85, "NDC NB");
+        pt_lumi->SetTextSize(0.035); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("Belle II #int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
         TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.7, 0.5);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
         TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC scaled to data, Data/MC= " + to_string_precision(CAL)).c_str()); pt->Draw();
