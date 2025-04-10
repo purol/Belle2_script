@@ -31,14 +31,14 @@ void load_files(const char* dirname, std::vector<string>* names) {
     }
 }
 
-TH1F* FBDTc_MC_train = new TH1F("MC train", ";BDT_{c};", 40, 0.0, 1.0);
-TH1F* FBDTc_MC_test = new TH1F("MC test", ";BDT_{c};", 40, 0.0, 1.0);
+TH1F* FBDTc_MC_train = new TH1F("MC train", ";BDT_{c};Arbitrary unit", 40, 0.0, 1.0);
+TH1F* FBDTc_MC_test = new TH1F("MC test", ";BDT_{c};Arbitrary unit", 40, 0.0, 1.0);
 
-TH1F* FBDTc_MC_train_correction = new TH1F("MC train with correction", ";BDT_{c};", 40, 0.0, 1.0);
-TH1F* FBDTc_MC_test_correction = new TH1F("MC test with correction", ";BDT_{c};", 40, 0.0, 1.0);
+TH1F* FBDTc_MC_train_correction = new TH1F("MC train with correction", ";BDT_{c};Arbitrary unit", 40, 0.0, 1.0);
+TH1F* FBDTc_MC_test_correction = new TH1F("MC test with correction", ";BDT_{c};Arbitrary unit", 40, 0.0, 1.0);
 
-TH1F* FBDTc_data_train = new TH1F("data train", ";BDT_{c};", 40, 0.0, 1.0);
-TH1F* FBDTc_data_test = new TH1F("data test", ";BDT_{c};", 40, 0.0, 1.0);
+TH1F* FBDTc_data_train = new TH1F("data train", ";BDT_{c};Arbitrary unit", 40, 0.0, 1.0);
+TH1F* FBDTc_data_test = new TH1F("data test", ";BDT_{c};Arbitrary unit", 40, 0.0, 1.0);
 
 typedef struct _Nevt {
     double NevtwithoutCorrection;
@@ -332,7 +332,8 @@ void FastBDT_output_KS_test_BDTc_off()
     if(MC_train_max > data_train_max) FBDTc_MC_train->SetMaximum(1.1 * MC_train_max);
     else FBDTc_MC_train->SetMaximum(1.1 * data_train_max);
 
-    FBDTc_MC_train->Draw("Hist"); FBDTc_data_train->Draw("HistSAME");
+    FBDTc_MC_train->Draw("Hist"); FBDTc_MC_train->GetYaxis()->SetTitleOffset(1.3);
+    FBDTc_data_train->Draw("HistSAME");
     FBDTc_MC_test->Draw("AP SAME"); FBDTc_data_test->Draw("AP SAME");
     gPad->BuildLegend(0.9, 0.9, 0.6, 0.6);
     c_temp->SaveAs("BDTc_BeforeCorrection.png");
@@ -342,7 +343,8 @@ void FastBDT_output_KS_test_BDTc_off()
     if (MC_train_max > data_train_max) FBDTc_MC_train_correction->SetMaximum(1.1 * MC_train_max);
     else FBDTc_MC_train_correction->SetMaximum(1.1 * data_train_max);
 
-    FBDTc_MC_train_correction->Draw("Hist"); FBDTc_data_train->Draw("HistSAME");
+    FBDTc_MC_train_correction->Draw("Hist"); FBDTc_MC_train_correction->GetYaxis()->SetTitleOffset(1.3);
+    FBDTc_data_train->Draw("HistSAME");
     FBDTc_MC_test_correction->Draw("AP SAME"); FBDTc_data_test->Draw("AP SAME");
     gPad->BuildLegend(0.9, 0.9, 0.6, 0.6);
     c_temp_2->SaveAs("BDTc_AfterCorrection.png");
