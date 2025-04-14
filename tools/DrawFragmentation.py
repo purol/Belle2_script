@@ -11,15 +11,21 @@ def plot_and_save_data(x, y1, yerr1, y2, yerr2, filename, y1_label, y2_label, ti
     er1 = ax.errorbar(x, y1, yerr=yerr1, marker="o", linestyle="none", transform=trans1, label=y1_label)
     er2 = ax.errorbar(x, y2, yerr=yerr2, marker="v", linestyle="none", transform=trans2, label=y2_label)
 
+    y1_top = [y + err for y, err in zip(y1, yerr1)]
+    y2_top = [y + err for y, err in zip(y2, yerr2)]
+    y_max = max(max(y1_top), max(y2_top))
+    ax.set_ylim(-1, y_max * 1.2)
+    ax.set_xlim(-0.5, len(x) - 0.5)
+    
     # Rotate the x-axis labels by 45 degrees
     ax.set_xticks(x)
     ax.set_xticklabels(x, rotation=30, ha='right')
 
     # Add a title and labels for the axes
-    ax.set_xlabel('Decay Mode')
-    ax.set_ylabel('Fraction at 9 decays[%]')
+    ax.set_xlabel('Decay Mode', fontsize=14)
+    ax.set_ylabel('Fraction at 9 decays[%]', fontsize=14)
 
-    ax.legend(loc='best')
+    ax.legend(loc='best', fontsize=15)
 
     ax.text(0.02, 0.95, title, transform=ax.transAxes, color='black', fontsize=16)
 
