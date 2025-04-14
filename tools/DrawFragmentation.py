@@ -19,7 +19,7 @@ def plot_and_save_data(x, y1, yerr1, y2, yerr2, filename, y1_label, y2_label, ti
     
     # Rotate the x-axis labels by 45 degrees
     ax.set_xticks(x)
-    ax.set_xticklabels(x, rotation=30, ha='right')
+    ax.set_xticklabels(x, rotation=30, ha='right', fontsize=14)
 
     # Add a title and labels for the axes
     ax.set_xlabel('Decay Mode', fontsize=14)
