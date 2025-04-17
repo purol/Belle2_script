@@ -35,16 +35,20 @@
 
 // f+-/f0 [https://arxiv.org/abs/2411.18639]
 # define fpm_f0 1.052
+# define f00 0.4861
+# define fpm 0.5113
 
 // https://confluence.desy.de/pages/viewpage.action?spaceKey=BI&title=Conference+readiness
-# define N_BB_LS1 387100000.0 // NBB = (387.1 +/- 5.6) x 10^6
+# define N_Upsilon_LS1 387100000.0 // NUpsilon(4S) = (387.1 +/- 5.6) x 10^6
+# define N_Bp (2 * fpm * N_Upsilon_LS1)
+# define N_B0 (2 * f00 * N_Upsilon_LS1)
 
-# define N_Kplus_nunubar_LS1 (2.0 * N_BB_LS1 * (fpm_f0/(fpm_f0+1.0)) * BR_Kplus_nunubar)
-# define N_Kplusstar_nunubar_LS1 (2.0 * N_BB_LS1 * (fpm_f0/(fpm_f0+1.0)) * BR_Kplusstar_nunubar)
-# define N_Xsu_nonresonant_nunubar_LS1 (2.0 * N_BB_LS1 * (fpm_f0/(fpm_f0+1.0)) * BR_Xsu_nonresonant_nunubar)
-# define N_K0_nunubar_LS1 (2.0 * N_BB_LS1 * (1.0/(fpm_f0+1.0)) * BR_K0_nunubar)
-# define N_K0star_nunubar_LS1 (2.0 * N_BB_LS1 * (1.0/(fpm_f0+1.0)) * BR_K0star_nunubar)
-# define N_Xsd_nunubar_LS1 (2.0 * N_BB_LS1 * (1.0/(fpm_f0+1.0)) * BR_Xsd_nonresonant_nunubar)
+# define N_Kplus_nunubar_LS1 (N_Bp * BR_Kplus_nunubar)
+# define N_Kplusstar_nunubar_LS1 (N_Bp * BR_Kplusstar_nunubar)
+# define N_Xsu_nonresonant_nunubar_LS1 (N_Bp * BR_Xsu_nonresonant_nunubar)
+# define N_K0_nunubar_LS1 (N_B0 * BR_K0_nunubar)
+# define N_K0star_nunubar_LS1 (N_B0 * BR_K0star_nunubar)
+# define N_Xsd_nunubar_LS1 (N_B0 * BR_Xsd_nonresonant_nunubar)
 
 // SIGNAL MC sample number before skimming
 # define N_Kplus_train 7039000.0
@@ -106,20 +110,20 @@
 
 // untile LS1, integrated luminosity is 365.37/fb
 // https://arxiv.org/abs/2407.00965
-# define Scale_CHG_train ((N_BB_LS1* (fpm_f0/(fpm_f0+1.0))) / (2.8 * N_BpBp_1invab * (N_CHG_train / (N_CHG_train + N_CHG_test)) ))
-# define Scale_MIX_train ((N_BB_LS1* (1.0/(fpm_f0+1.0))) / (2.8 * N_B0B0_1invab * (N_MIX_train / (N_MIX_train + N_MIX_test)) ))
+# define Scale_CHG_train (N_Bp / (2.8 * N_BpBp_1invab * (N_CHG_train / (N_CHG_train + N_CHG_test)) ))
+# define Scale_MIX_train (N_B0 / (2.8 * N_B0B0_1invab * (N_MIX_train / (N_MIX_train + N_MIX_test)) ))
 # define Scale_UUBAR_train (0.36537/((N_UUBAR_train/(N_UUBAR_train + N_UUBAR_test))*1.0))
 # define Scale_DDBAR_train (0.36537/((N_DDBAR_train/(N_DDBAR_train + N_DDBAR_test))*1.0))
 # define Scale_SSBAR_train (0.36537/((N_SSBAR_train/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_train (0.36537/((N_CHARM_train/(N_CHARM_train + N_CHARM_test))*1.0))
-# define Scale_CHG_test ((N_BB_LS1* (fpm_f0/(fpm_f0+1.0))) / (2.8 * N_BpBp_1invab * (N_CHG_test / (N_CHG_train + N_CHG_test)) ))
-# define Scale_MIX_test ((N_BB_LS1* (1.0/(fpm_f0+1.0))) / (2.8 * N_B0B0_1invab * (N_MIX_test / (N_MIX_train + N_MIX_test)) ))
+# define Scale_CHG_test (N_Bp / (2.8 * N_BpBp_1invab * (N_CHG_test / (N_CHG_train + N_CHG_test)) ))
+# define Scale_MIX_test (N_B0 / (2.8 * N_B0B0_1invab * (N_MIX_test / (N_MIX_train + N_MIX_test)) ))
 # define Scale_UUBAR_test (0.36537/((N_UUBAR_test/(N_UUBAR_train + N_UUBAR_test))*1.0))
 # define Scale_DDBAR_test (0.36537/((N_DDBAR_test/(N_DDBAR_train + N_DDBAR_test))*1.0))
 # define Scale_SSBAR_test (0.36537/((N_SSBAR_test/(N_SSBAR_train + N_SSBAR_test))*1.0))
 # define Scale_CHARM_test (0.36537/((N_CHARM_test/(N_CHARM_train + N_CHARM_test))*1.0))
-# define Scale_CHG_validation ((N_BB_LS1* (fpm_f0/(fpm_f0+1.0))) / (2.8 * N_BpBp_1invab))
-# define Scale_MIX_validation ((N_BB_LS1* (1.0/(fpm_f0+1.0))) / (2.8 * N_B0B0_1invab))
+# define Scale_CHG_validation (N_Bp / (2.8 * N_BpBp_1invab))
+# define Scale_MIX_validation (N_B0 / (2.8 * N_B0B0_1invab))
 # define Scale_UUBAR_validation (0.36537)
 # define Scale_DDBAR_validation (0.36537)
 # define Scale_SSBAR_validation (0.36537)
