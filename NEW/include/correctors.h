@@ -2471,6 +2471,13 @@ private:
         {0.4250, 1.4490, 0.2646, 0.4003, 0.2509, 0.2671, 0.8409, 0.6682, 0.2898},
         {0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000}
     };
+    static constexpr double Fragmentation_Uncertainty_Xsgamma_XsJpsi[N_Bin_gamma][N_Category_gamma] = { // absolute uncertainty. Calculated from the difference between Xsgamma and XsJpsi
+        {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0}, // just +-100%
+        {std::abs(10.6 - 13), std::abs(5.88 - 7), std::abs(23.2 - 30), std::abs(44.5 - 30), std::abs(0.46 - 5), std::abs(9.99 - 15), std::abs(0.52 - 1), std::abs(44.5 - 30), std::abs(44.5 - 30)}, // use the maximum value for the last two bin
+        {std::abs(3.12 - 6), std::abs(1.13 - 3), std::abs(15.7 - 18), std::abs(20.6 - 19), std::abs(9.48 - 13), std::abs(26.9 - 27), std::abs(5.29 - 12), std::abs(44.5 - 30), std::abs(44.5 - 30)}, // use the maximum value for the last two bin
+        {std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30)}, // use the maximum value for all bins
+        {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0} // just +-100%
+    };
 
     static constexpr double Nevt_Nominal_before_Xsgamma_MC15[N_Bin_gamma][N_Category_gamma] = {
         {228.010067, 113.889034, 97.106455, 99.597443, 2.350444, 17.694690, 0.265738, 25.726503, 0.000112}, // [-inf, 1.15]
@@ -2698,7 +2705,15 @@ double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double M
 
     if (TargetMxsBin != MxsBin) return 1.0; // no fluctuation if it is not in target MXs region
 
-    const double RelativeUncertainty = 1.0;
+    // convert from the absolute uncertainty to the relative uncertainty
+    double RelativeUncertainty = 1.0; // relative uncertainty of target sample
+    if (TargetCategory == N_Category_gamma) RelativeUncertainty = 1.0; // if it is missing mode
+    else {
+        if (Fragmentation_Uncertainty_Xsgamma_XsJpsi[TargetMxsBin][TargetCategory] < 0.0) RelativeUncertainty = 1.0; // outside of B->Xs gamma
+        else {
+            if (sample == Corrector_Fragmentation::Sample::gamma) RelativeUncertainty = Fragmentation_Uncertainty_Xsgamma_XsJpsi[TargetMxsBin][TargetCategory] / Fragmentation_Xsgamma[TargetMxsBin][TargetCategory];
+        }
+    }
 
     if (sample == Corrector_Fragmentation::Sample::gamma) {
 
