@@ -8,6 +8,7 @@
 #include <queue>
 
 #include "TTree.h"
+#include "TFile.h"
 #include "TH1.h"
 #include "THStack.h"
 
@@ -376,6 +377,10 @@ void Loader::PrintInformation(std::string title, std::string filename) {
 
 void Loader::End(const char* output_file) {
 
+    const int NCategory = 9;
+    double N_evt_Category[NCategory] = { 0.0 };
+    double Sum_N_evt_Category = 0.0;
+
     for (int i = 0; i < N_events.size();i++) {
         printf("%s\n", titles.at(i).c_str());
         printf("Number of event: %d\n", N_events.at(i));
@@ -415,10 +420,6 @@ void Loader::End(const char* output_file) {
         printf("decay 28: %lf\n", N_MC_modes[Loader::Xsd2KcKcKcPic_MC].at(i));
         printf("decay 29: %lf\n", N_MC_modes[Loader::Xsd2KcKcK0Pi0_MC].at(i));
         printf("decay 30: %lf\n", N_MC_modes[Loader::other].at(i));
-
-        const int NCategory = 9;
-        double N_evt_Category[NCategory] = { 0.0 };
-        double Sum_N_evt_Category = 0.0;
 
         N_evt_Category[0] = N_MC_modes[Loader::Xsu2Kcstar2K0Pic_MC].at(i) + N_MC_modes[Loader::Xsu2K0Pic_MC].at(i) + N_MC_modes[Loader::Xsd2K0star2KcPic_MC].at(i) + N_MC_modes[Loader::Xsd2KcPic_MC].at(i); // K1pi without pi0
         N_evt_Category[1] = N_MC_modes[Loader::Xsu2Kcstar2KcPi0_MC].at(i) + N_MC_modes[Loader::Xsu2KcPi0_MC].at(i) + N_MC_modes[Loader::Xsd2K0star2K0Pi0_MC].at(i) + N_MC_modes[Loader::Xsd2K0Pi0_MC].at(i); // K1pi with one pi0
@@ -707,17 +708,17 @@ int main(int argc, char* argv[]) {
     else if ((argc == 3) || (argc == 4)) load_files(argv[1], &names, argv[2]);
     else {
         printf("usage: %s {decay info file path} {including string}(optional) {output file}(optional)\n", argv[0]);
-        exit();
+        exit(1);
     }
 
     Loader loader_1;
     for (unsigned int i = 0; i < names.size(); i++) {
         loader_1.initialize();
 
-        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        TFile* input_file = new TFile((std::string(argv[1]) + std::string("/") + names.at(i)).c_str(), "read");
         printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
         loader_1.GetData(input_file);
-        if (loader_1.event_info_is_valid() == false) { printf("error!\n"); return; }
+        if (loader_1.event_info_is_valid() == false) { printf("error!\n"); return 1; }
 
         loader_1.MXsCut(1.15, 1.5);
     }
@@ -728,10 +729,10 @@ int main(int argc, char* argv[]) {
     for (unsigned int i = 0; i < names.size(); i++) {
         loader_2.initialize();
 
-        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        TFile* input_file = new TFile((std::string(argv[1]) + std::string("/") + names.at(i)).c_str(), "read");
         printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
         loader_2.GetData(input_file);
-        if (loader_2.event_info_is_valid() == false) { printf("error!\n"); return; }
+        if (loader_2.event_info_is_valid() == false) { printf("error!\n"); return 1; }
 
         loader_2.MXsCut(1.5, 2.0);
     }
@@ -742,10 +743,10 @@ int main(int argc, char* argv[]) {
     for (unsigned int i = 0; i < names.size(); i++) {
         loader_3.initialize();
 
-        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        TFile* input_file = new TFile((std::string(argv[1]) + std::string("/") + names.at(i)).c_str(), "read");
         printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
         loader_3.GetData(input_file);
-        if (loader_3.event_info_is_valid() == false) { printf("error!\n"); return; }
+        if (loader_3.event_info_is_valid() == false) { printf("error!\n"); return 1; }
 
         loader_3.MXsCut(2.0, 2.4);
     }
