@@ -2,6 +2,15 @@
 #include "correctors.h"
 #include "base.h"
 
+#include <string>
+#include <vector>
+#include <stdio.h>
+#include <queue>
+
+#include "TTree.h"
+#include "TH1.h"
+#include "THStack.h"
+
 # define MCTYPE "MC15ri"
 
 // my MC sample number
@@ -9,8 +18,8 @@
 # define N_K0_nunubar 1000000.0
 # define N_Kplusstar_nunubar 1000000.0
 # define N_K0star_nunubar 1000000.0
-# define N_Xsu_nonresonant_nunubar 5000000.0
-# define N_Xsd_nonresonant_nunubar 5000000.0
+# define N_Xsu_nonresonant_nunubar 1000000.0
+# define N_Xsd_nonresonant_nunubar 1000000.0
 
 // scale factor for each MC sample until LS1
 # define Scale_Kplus (N_Kplus_nunubar_LS1/N_Kplus_nunubar)
@@ -134,13 +143,13 @@ public:
     void initialize();
     void GetData(TFile* input_file);
     bool event_info_is_valid();
-    void DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, std::string filename = std::string(""), bool smart_mode = true);
+    void MXsCut(double MXs_low, double MXs_high);
     void PrintInformation(std::string title, std::string filename);
     double Mxs(Data data);
     bool AreTheyNeutrinosAndConj(double pdg1, double pdg2);
     bool AreTheyBmesonAndXs(double Bpdg, double Xspdg);
     Loader::DecayMode PrintDecayClassification(Data data);
-    void End();
+    void End(const char* output_file = "");
 };
 
 Loader::Loader() {
@@ -255,28 +264,11 @@ bool Loader::event_info_is_valid() {
     return true;
 }
 
-void Loader::DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, std::string filename, bool smart_mode) {
-    if (THStacks.size() == current_THStack) { // allocate new thstacks
-        THStack* stack = new THStack(name, title);
-        THStacks.push_back(stack);
-        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) {
-            TH1D* hist = new TH1D(decay_names[i], title, nbins, x_low, x_high);
-            TH1Ds_THStack[i].push_back(hist);
-        }
-    }
-    else if (THStacks.size() > current_THStack) { // use what I have
-    }
-    else { // error
-        printf("ERROR!\n");
-        exit(1);
-    }
+void Loader::MXsCut(double MXs_low, double MXs_high) {
 
-    TH1D* temp_hist[Loader::MAX_NUM_DECAYMODE];
-    for (int i = 0; i < Loader::MAX_NUM_DECAYMODE;i++) {
-        temp_hist[i] = TH1Ds_THStack[i].at(current_THStack);
-    }
+    std::queue<Data> temp_queue;
+    temp_queue.swap(TotalData);
 
-    std::queue<Data> temp_queue = TotalData;
     while (!temp_queue.empty()) {
         Data temp_data = temp_queue.front();
         temp_queue.pop();
@@ -286,34 +278,7 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
             exit(1);
         }
 
-        int decaymodeid = PrintDecayClassification(temp_data);
-
-        if (smart_mode == false) temp_hist[decaymodeid]->Fill(Mxs(temp_data));
-        else {
-            if (filename.find("B2Knunu") != string::npos) {
-                double correction_weight = corrector.GetCorrectionFactor(temp_data.invM * temp_data.invM, "Bplus");
-                // double correction_weight = 1.0;
-                temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Kplus * correction_weight);
-            }
-            else if (filename.find("B2Kstarnunu") != string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Kplusstar);
-            else if (filename.find("B2Xsnunu") != string::npos) {
-                double Correction_Fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp_data.Decay, Mxs(temp_data), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
-                temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Xsu_nonresonant * Correction_Fragmentation);
-                //temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Xsu_nonresonant);
-            }
-            else if (filename.find("B02K0nunu") != string::npos) {
-                double correction_weight = corrector.GetCorrectionFactor(temp_data.invM * temp_data.invM, "Bzero");
-                // double correction_weight = 1.0;
-                temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_K0 * correction_weight);
-            }
-            else if (filename.find("B02Kstar0nunu") != string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_K0star);
-            else if (filename.find("B02Xsnunu") != string::npos) {
-                double Correction_Fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp_data.Decay, Mxs(temp_data), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
-                temp_hist[decaymodeid]->Fill(Mxs(temp_data), Correction_Fragmentation * Scale_Xsd_nonresonant);
-                //temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Xsd_nonresonant);
-            }
-            else { temp_hist[decaymodeid]->Fill(Mxs(temp_data)); }
-        }
+        if((Mxs(temp_data) > MXs_low) && (Mxs(temp_data) < MXs_high)) TotalData.push(temp_data);
     }
 
     current_THStack++;
@@ -364,10 +329,10 @@ void Loader::PrintInformation(std::string title, std::string filename) {
             for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) { // find MC decay mode
                 if (TrueIfDecayModeMatch_MC(temp, static_cast<Loader::DecayModeMC>(i))) {
                     decaymodeid_MC = static_cast<Loader::DecayModeMC>(i);
-                    if ((filename.find("B2Xsnunu") != string::npos) && (decaymodeid_MC == Loader::Xsu2Kc_MC)) {} // something wrong, try to find another decay mode
-                    else if ((filename.find("B2Xsnunu") != string::npos) && (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC)) {} // something wrong, try to find another decay mode
-                    else if ((filename.find("B02Xsnunu") != string::npos) && (decaymodeid_MC == Loader::Xsd2K0_MC)) {} // something wrong, try to find another decay mode
-                    else if ((filename.find("B02Xsnunu") != string::npos) && (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC)) {} // something wrong, try to find another decay mode
+                    if ((filename.find("B2Xsnunu") != std::string::npos) && (decaymodeid_MC == Loader::Xsu2Kc_MC)) {} // something wrong, try to find another decay mode
+                    else if ((filename.find("B2Xsnunu") != std::string::npos) && (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC)) {} // something wrong, try to find another decay mode
+                    else if ((filename.find("B02Xsnunu") != std::string::npos) && (decaymodeid_MC == Loader::Xsd2K0_MC)) {} // something wrong, try to find another decay mode
+                    else if ((filename.find("B02Xsnunu") != std::string::npos) && (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC)) {} // something wrong, try to find another decay mode
                     else break;
                 }
             }
@@ -384,8 +349,7 @@ void Loader::PrintInformation(std::string title, std::string filename) {
             }
             else if (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC) temp_N = Scale_Kplusstar;
             else if (static_cast<int>(Xsu2KcPi0_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(Xsu2KcKcKcPi0_MC)) {
-                //double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
-                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
+                double correction_fragmentation = 1.0; // fragmentation correction is not applied, because this code is used for pythia parameter tuning
                 temp_N = Scale_Xsu_nonresonant * correction_fragmentation;
             }
             else if (decaymodeid_MC == Loader::Xsd2K0_MC) {
@@ -394,8 +358,7 @@ void Loader::PrintInformation(std::string title, std::string filename) {
             }
             else if (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC) temp_N = Scale_K0star;
             else if (static_cast<int>(Xsd2KcPic_MC) <= static_cast<int>(decaymodeid_MC) && static_cast<int>(decaymodeid_MC) <= static_cast<int>(other)) {
-                //double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
-                double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, Mxs(temp), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
+                double correction_fragmentation = 1.0; // fragmentation correction is not applied, because this code is used for pythia parameter tuning
                 temp_N = Scale_Xsd_nonresonant * correction_fragmentation;
             }
             else {
@@ -411,7 +374,7 @@ void Loader::PrintInformation(std::string title, std::string filename) {
     current_N_candidate++;
 }
 
-void Loader::End() {
+void Loader::End(const char* output_file) {
 
     for (int i = 0; i < N_events.size();i++) {
         printf("%s\n", titles.at(i).c_str());
@@ -473,22 +436,16 @@ void Loader::End() {
         for (int j = 0; j < NCategory; j++) printf("fraction %d: %lf\n", j, N_evt_Category[j] / Sum_N_evt_Category);
     }
 
-    for (int i = 0; i < THStacks.size(); i++) {
-        TCanvas* c_temp = new TCanvas("c", "", 1500, 1200); c_temp->cd();
-        gStyle->SetPalette(kColorPrintableOnGrey);
+    if (output_file[0] != '\0') {
+        FILE* fp = fopen(output_file, "a");
+        for (int j = 0; j < NCategory; j++) fprintf(fp, "%lf,", N_evt_Category[j] / Sum_N_evt_Category);
+        fprintf(fp, "%lf\n", N_MC_modes[Loader::other].at(i) / (Sum_N_evt_Category + N_MC_modes[Loader::other].at(i)));
+        fclose(fp);
+    }
 
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) {
-            THStacks.at(i)->Add(TH1Ds_THStack[j].at(i));
-            // TH1Ds_THStack[j].at(i)->Draw("Hist");
-            // c_temp->SaveAs( (std::string(TH1Ds_THStack[j].at(i)->GetName()) + ".png").c_str() );
-        }
-        THStacks.at(i)->Draw("pfc Hist"); 
-        c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + ".png").c_str());
-        TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.65, 0.45);
-        legend->SetFillStyle(0); legend->SetLineWidth(0);
-        // c_temp->SetLogy();
-        c_temp->SaveAs((std::string(THStacks.at(i)->GetName()) + "_legend.png").c_str());
-        delete c_temp;
+    // clear data
+    while (!TotalData.empty()) {
+        TotalData.pop();
     }
 }
 
@@ -736,26 +693,64 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
     return false;
 }
 
-void ReadDecayFiles(){
+int main(int argc, char* argv[]) {
 
-    std::vector<string> names;
-    const char* dirname = "/home/belle2/junewoo/storage_b2/MXs_distribution/small";
+    /*
+     * argv[1]: decay info file path
+     * argv[2]: including string (optional)
+     * argv[3]: output file (optional)
+     */
 
-    load_files(dirname, &names);
+    std::vector<std::string> names;
 
-    Loader loader;
-
-    for(unsigned int i = 0; i<names.size(); i++){
-        loader.initialize();
-
-        TFile *input_file = new TFile( (dirname+std::string("/")+names.at(i)).c_str(),"read");
-        printf("%s (%d/%zu)\n",("Read "+names.at(i) + "... ").c_str(), i, names.size());
-        loader.GetData(input_file);
-        if (loader.event_info_is_valid() == false) { printf("error!\n"); return; }
-
-        loader.PrintInformation(std::string("========== inital =========="), names.at(i));
-        loader.DrawTHStack("Mxs", ";M_{Xs}^{gen} [GeV]; arbitrary unit", 100, 0.45, 3.5, names.at(i), true);
-
+    if (argc == 2) load_files(argv[1], &names);
+    else if ((argc == 3) || (argc == 4)) load_files(argv[1], &names, argv[2]);
+    else {
+        printf("usage: %s {decay info file path} {including string}(optional) {output file}(optional)\n", argv[0]);
+        exit();
     }
-    loader.End();
+
+    Loader loader_1;
+    for (unsigned int i = 0; i < names.size(); i++) {
+        loader_1.initialize();
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+        loader_1.GetData(input_file);
+        if (loader_1.event_info_is_valid() == false) { printf("error!\n"); return; }
+
+        loader_1.MXsCut(1.15, 1.5);
+    }
+    if (argc == 4) loader_1.End(argv[3]);
+    else loader_1.End();
+
+    Loader loader_2;
+    for (unsigned int i = 0; i < names.size(); i++) {
+        loader_2.initialize();
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+        loader_2.GetData(input_file);
+        if (loader_2.event_info_is_valid() == false) { printf("error!\n"); return; }
+
+        loader_2.MXsCut(1.5, 2.0);
+    }
+    if (argc == 4) loader_2.End(argv[3]);
+    else loader_2.End();
+
+    Loader loader_3;
+    for (unsigned int i = 0; i < names.size(); i++) {
+        loader_3.initialize();
+
+        TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+        loader_3.GetData(input_file);
+        if (loader_3.event_info_is_valid() == false) { printf("error!\n"); return; }
+
+        loader_3.MXsCut(2.0, 2.4);
+    }
+    if (argc == 4) loader_3.End(argv[3]);
+    else loader_3.End();
+
+    return 0;
 }
