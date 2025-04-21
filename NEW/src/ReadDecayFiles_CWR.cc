@@ -282,7 +282,6 @@ void Loader::MXsCut(double MXs_low, double MXs_high) {
         if((Mxs(temp_data) > MXs_low) && (Mxs(temp_data) < MXs_high)) TotalData.push(temp_data);
     }
 
-    current_THStack++;
 }
 
 void Loader::PrintInformation(std::string title, std::string filename) {
