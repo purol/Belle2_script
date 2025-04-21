@@ -506,9 +506,9 @@ int main(int argc, char* argv[]) {
     printf("eff 2nd: %lf\n", Nevt_final_2nd / Nevt_initial_2nd);
     printf("eff 3rd: %lf\n", Nevt_final_3rd / Nevt_initial_3rd);
 
-    printf("BR 1st: %.10lf\n", BR_Xs_nunubar * Nevt_initial_1st / (2.0 * N_BB_LS1 * BR_Xs_nunubar));
-    printf("BR 2nd: %.10lf\n", BR_Xs_nunubar * Nevt_initial_2nd / (2.0 * N_BB_LS1 * BR_Xs_nunubar));
-    printf("BR 3rd: %.10lf\n", BR_Xs_nunubar * Nevt_initial_3rd / (2.0 * N_BB_LS1 * BR_Xs_nunubar));
+    printf("BR 1st: %.10lf\n", BR_Xs_nunubar * Nevt_initial_1st / ((N_Bp + N_B0) * BR_Xs_nunubar));
+    printf("BR 2nd: %.10lf\n", BR_Xs_nunubar * Nevt_initial_2nd / ((N_Bp + N_B0) * BR_Xs_nunubar));
+    printf("BR 3rd: %.10lf\n", BR_Xs_nunubar * Nevt_initial_3rd / ((N_Bp + N_B0) * BR_Xs_nunubar));
 
     return 0;
 }
