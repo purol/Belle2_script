@@ -721,6 +721,7 @@ int main(int argc, char* argv[]) {
         loader_1.GetData(input_file);
         if (loader_1.event_info_is_valid() == false) { printf("error!\n"); return 1; }
 
+        loader_1.PrintInformation(std::string("========== inital =========="), names.at(i));
         loader_1.MXsCut(1.15, 1.5);
     }
     if (argc == 4) loader_1.End(argv[3]);
@@ -735,6 +736,7 @@ int main(int argc, char* argv[]) {
         loader_2.GetData(input_file);
         if (loader_2.event_info_is_valid() == false) { printf("error!\n"); return 1; }
 
+        loader_2.PrintInformation(std::string("========== inital =========="), names.at(i));
         loader_2.MXsCut(1.5, 2.0);
     }
     if (argc == 4) loader_2.End(argv[3]);
@@ -749,6 +751,7 @@ int main(int argc, char* argv[]) {
         loader_3.GetData(input_file);
         if (loader_3.event_info_is_valid() == false) { printf("error!\n"); return 1; }
 
+        loader_3.PrintInformation(std::string("========== inital =========="), names.at(i));
         loader_3.MXsCut(2.0, 2.4);
     }
     if (argc == 4) loader_3.End(argv[3]);
