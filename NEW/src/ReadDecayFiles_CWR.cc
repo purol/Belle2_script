@@ -377,10 +377,6 @@ void Loader::PrintInformation(std::string title, std::string filename) {
 
 void Loader::End(const char* output_file) {
 
-    const int NCategory = 9;
-    double N_evt_Category[NCategory] = { 0.0 };
-    double Sum_N_evt_Category = 0.0;
-
     for (int i = 0; i < N_events.size();i++) {
         printf("%s\n", titles.at(i).c_str());
         printf("Number of event: %d\n", N_events.at(i));
@@ -421,6 +417,10 @@ void Loader::End(const char* output_file) {
         printf("decay 29: %lf\n", N_MC_modes[Loader::Xsd2KcKcK0Pi0_MC].at(i));
         printf("decay 30: %lf\n", N_MC_modes[Loader::other].at(i));
 
+        const int NCategory = 9;
+        double N_evt_Category[NCategory] = { 0.0 };
+        double Sum_N_evt_Category = 0.0;
+
         N_evt_Category[0] = N_MC_modes[Loader::Xsu2Kcstar2K0Pic_MC].at(i) + N_MC_modes[Loader::Xsu2K0Pic_MC].at(i) + N_MC_modes[Loader::Xsd2K0star2KcPic_MC].at(i) + N_MC_modes[Loader::Xsd2KcPic_MC].at(i); // K1pi without pi0
         N_evt_Category[1] = N_MC_modes[Loader::Xsu2Kcstar2KcPi0_MC].at(i) + N_MC_modes[Loader::Xsu2KcPi0_MC].at(i) + N_MC_modes[Loader::Xsd2K0star2K0Pi0_MC].at(i) + N_MC_modes[Loader::Xsd2K0Pi0_MC].at(i); // K1pi with one pi0
         N_evt_Category[2] = N_MC_modes[Loader::Xsu2KcPicPic_MC].at(i) + N_MC_modes[Loader::Xsd2K0PicPic_MC].at(i); // K2pi without pi0
@@ -435,13 +435,14 @@ void Loader::End(const char* output_file) {
         printf("\n");
         printf("visible fraction:\n");
         for (int j = 0; j < NCategory; j++) printf("fraction %d: %lf\n", j, N_evt_Category[j] / Sum_N_evt_Category);
-    }
 
-    if (output_file[0] != '\0') {
-        FILE* fp = fopen(output_file, "a");
-        for (int j = 0; j < NCategory; j++) fprintf(fp, "%lf,", N_evt_Category[j] / Sum_N_evt_Category);
-        fprintf(fp, "%lf\n", N_MC_modes[Loader::other].at(i) / (Sum_N_evt_Category + N_MC_modes[Loader::other].at(i)));
-        fclose(fp);
+        // write to file
+        if (output_file[0] != '\0') {
+            FILE* fp = fopen(output_file, "a");
+            for (int j = 0; j < NCategory; j++) fprintf(fp, "%lf,", N_evt_Category[j] / Sum_N_evt_Category);
+            fprintf(fp, "%lf\n", N_MC_modes[Loader::other].at(i) / (Sum_N_evt_Category + N_MC_modes[Loader::other].at(i)));
+            fclose(fp);
+        }
     }
 
     // clear data
