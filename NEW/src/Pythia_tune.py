@@ -54,7 +54,7 @@ def compute_chi2_and_sigmas_from_Xsgamma(file):
     df = pd.read_csv(file, header=None)
     data = df.iloc[:2, :7].values
     data_norm = data / data[:2, :7].sum(axis=1, keepdims=True)
-    diff = np.abs(data - ref_Xs_gamma_norm)
+    diff = np.abs(data_norm - ref_Xs_gamma_norm)
     mask = abs(ref_Xs_gamma_norm - ref_Xs_Jpsi_norm) != 0  # Ignore zero-uncertainty entries
 
     chi2 = np.sum((diff ** 2)[mask] / ((ref_Xs_gamma_norm - ref_Xs_Jpsi_norm) ** 2)[mask])
