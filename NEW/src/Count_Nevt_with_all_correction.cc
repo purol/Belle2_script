@@ -330,7 +330,8 @@ double GetNominalPDFs(const char* dirname, const char* included_string, TH1D* hi
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
-            Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
+            Nevt = Nevt + total_weight;
+            hist->Fill(0.5, total_weight);
         }
         input_file->Close();
 
@@ -346,8 +347,8 @@ int main()
     /* ====================================== */
     // Define PDFs for HistFactory
     // nominal PDFs
-    TH1D* signal_nominal = new TH1D("signal_nominal", "signal_nominal", RarityBins, BinMIN, BinMAX);
-    TH1D* bkg_nominal = new TH1D("bkg_nominal", "bkg_nominal", RarityBins, BinMIN, BinMAX);
+    TH1D* signal_nominal = new TH1D("signal_nominal", "signal_nominal", 1, 0, 1);
+    TH1D* bkg_nominal = new TH1D("bkg_nominal", "bkg_nominal", 1, 0, 1);
     /* ====================================== */
 
 
@@ -385,14 +386,8 @@ int main()
     GetNominalPDFs(MC_dirname_CHARM, "root", bkg_nominal, "Continuum", "CHARM", ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     /* ====================================== */
 
-    double Nsig = 0;
-    double Nbkg = 0;
-
-    for (int i = 0; i < RarityBins; i++) Nsig = Nsig + signal_nominal->GetBinContent(i + 1);
-    for (int i = 0; i < RarityBins; i++) Nbkg = Nbkg + bkg_nominal->GetBinContent(i + 1);
-
-    printf("Nsig: %lf\n", Nsig);
-    printf("Nbkg: %lf\n", Nbkg);
+    printf("Nsig: %lf\n", signal_nominal->GetBinContent(1));
+    printf("Nbkg: %lf\n", bkg_nominal->GetBinContent(1));
 
     /* ====================================== */
 
