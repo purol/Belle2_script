@@ -2479,6 +2479,8 @@ private:
         {std::abs(9.91 - 1.601) / 9.91, std::abs(4.97 - 0.8546) / 4.97, std::abs(10.80 - 5.941) / 10.80, std::abs(13.22 - 8.406) / 13.22, std::abs(6.591 - 9.179) / 6.591, std::abs(16.09 - 20.50) / 16.09, std::abs(16.46 - 26.72) / 16.46, std::abs(16.80 - 24.07) / 16.80, std::abs(5.161 - 2.729) / 5.161} // estimated by PYTHIA
     };
 
+    static constexpr double Fragmentation_Uncertainty_missing_PYTHIA[N_Bin_gamma] = { std::abs(7.590 - 2.363) / 7.590, std::abs(8.396 - 11.54) / 8.396, 676.491505, 518.892840, 292.939844}; // relative uncertainty. obtained from PYTHIA
+
     static constexpr double Nevt_Nominal_before_Xsgamma_MC15[N_Bin_gamma][N_Category_gamma] = {
         {228.010067, 113.889034, 97.106455, 99.597443, 2.350444, 17.694690, 0.265738, 25.726503, 0.000112}, // [-inf, 1.15]
         {1217.857056, 608.996474, 683.434991, 821.802920, 54.319919, 320.575746, 29.362053, 194.574254, 0.829998}, // [1.15, 1.5]

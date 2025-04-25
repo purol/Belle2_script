@@ -723,7 +723,8 @@ int main(int argc, char* argv[]) {
         loader_0.MXsCut(0.0, 1.15);
         loader_0.PrintInformation(std::string("========== inital =========="), names.at(i));
     }
-    loader_0.End();
+    if (argc == 4) loader_0.End(argv[3]);
+    else loader_0.End();
 
     Loader loader_1;
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -782,7 +783,8 @@ int main(int argc, char* argv[]) {
         loader_4.MXsCut(2.4, 5.3);
         loader_4.PrintInformation(std::string("========== inital =========="), names.at(i));
     }
-    loader_4.End();
+    if (argc == 4) loader_4.End(argv[3]);
+    else loader_4.End();
 
     return 0;
 }
