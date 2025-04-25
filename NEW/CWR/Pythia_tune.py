@@ -21,17 +21,19 @@ abs_unc_Xs_gamma = rel_unc_Xs_gamma * ref_Xs_gamma
 ref_Xs_gamma_norm = ref_Xs_gamma[:2, :7] / ref_Xs_gamma[:2, :7].sum(axis=1, keepdims=True)
 
 ref_Xs_Jpsi = np.array([
-    [0.13, 0.07, 0.30, 0.30, 0.05, 0.15, 0.01, 0.00],
-    [0.06, 0.03, 0.18, 0.19, 0.13, 0.27, 0.12, 0.02]
+    [0.125, 0.074, 0.295, 0.297, 0.047, 0.145, 0.015, 0.000],
+    [0.055, 0.033, 0.179, 0.190, 0.126, 0.270, 0.125, 0.021]
 ])
 
 abs_unc_Xs_Jpsi = np.array([
-    [0.01, 0.01, 0.03, 0.04, 0.06, 0.09, 0.11, 0.01],
-    [0.01, 0.01, 0.03, 0.04, 0.06, 0.09, 0.11, 0.01]
+    [0.005, 0.007, 0.010, 0.024, 0.006, 0.026, 0.000, 0.000],
+    [0.002, 0.003, 0.006, 0.015, 0.015, 0.048, 0.000, 0.000]
 ])
 
 ref_Xs_Jpsi_norm = ref_Xs_Jpsi[:2, :7] / ref_Xs_Jpsi[:2, :7].sum(axis=1, keepdims=True)
 
+print(ref_Xs_gamma_norm)
+print(ref_Xs_Jpsi_norm)
 
 # Load CSVs and compute chi² from the uncertainty of Xs gamma study only
 def compute_chi2_and_sigmas(file):

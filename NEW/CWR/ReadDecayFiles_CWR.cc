@@ -711,6 +711,20 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
+    Loader loader_0;
+    for (unsigned int i = 0; i < names.size(); i++) {
+        loader_0.initialize();
+
+        TFile* input_file = new TFile((std::string(argv[1]) + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+        loader_0.GetData(input_file);
+        if (loader_0.event_info_is_valid() == false) { printf("error!\n"); return 1; }
+
+        loader_0.MXsCut(0.0, 1.15);
+        loader_0.PrintInformation(std::string("========== inital =========="), names.at(i));
+    }
+    loader_0.End();
+
     Loader loader_1;
     for (unsigned int i = 0; i < names.size(); i++) {
         loader_1.initialize();
@@ -755,6 +769,20 @@ int main(int argc, char* argv[]) {
     }
     if (argc == 4) loader_3.End(argv[3]);
     else loader_3.End();
+
+    Loader loader_4;
+    for (unsigned int i = 0; i < names.size(); i++) {
+        loader_4.initialize();
+
+        TFile* input_file = new TFile((std::string(argv[1]) + std::string("/") + names.at(i)).c_str(), "read");
+        printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
+        loader_4.GetData(input_file);
+        if (loader_4.event_info_is_valid() == false) { printf("error!\n"); return 1; }
+
+        loader_4.MXsCut(2.4, 5.3);
+        loader_4.PrintInformation(std::string("========== inital =========="), names.at(i));
+    }
+    loader_4.End();
 
     return 0;
 }

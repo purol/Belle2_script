@@ -2471,12 +2471,12 @@ private:
         {0.4250, 1.4490, 0.2646, 0.4003, 0.2509, 0.2671, 0.8409, 0.6682, 0.2898},
         {0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000, 0.5000}
     };
-    static constexpr double Fragmentation_Uncertainty_Xsgamma_XsJpsi[N_Bin_gamma][N_Category_gamma] = { // absolute uncertainty. Calculated from the difference between Xsgamma and XsJpsi
-        {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0}, // just +-100%
-        {std::abs(10.6 - 13), std::abs(5.88 - 7), std::abs(23.2 - 30), std::abs(44.5 - 30), std::abs(0.46 - 5), std::abs(9.99 - 15), std::abs(0.52 - 1), std::abs(44.5 - 30), std::abs(44.5 - 30)}, // use the maximum value for the last two bin
-        {std::abs(3.12 - 6), std::abs(1.13 - 3), std::abs(15.7 - 18), std::abs(20.6 - 19), std::abs(9.48 - 13), std::abs(26.9 - 27), std::abs(5.29 - 12), std::abs(44.5 - 30), std::abs(44.5 - 30)}, // use the maximum value for the last two bin
-        {std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30), std::abs(44.5 - 30)}, // use the maximum value for all bins
-        {-1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0, -1.0} // just +-100%
+    static constexpr double Fragmentation_Uncertainty_Xsgamma_XsJpsi_PYTHIA[N_Bin_gamma][N_Category_gamma] = { // relative uncertainty. Calculated from the difference between Xsgamma and XsJpsi, and PYTHIA
+        {std::abs(39.00), std::abs(19.48), std::abs(16.61), std::abs(17.04), std::abs(0.4020), std::abs(3.027), std::abs(0.04545), std::abs(4.400), std::abs(0.0000001916)}, // estimated by PYTHIA
+        {std::abs(11.14 - 12.53) / 11.14, std::abs(6.180 - 7.415) / 6.180, std::abs(24.38 - 29.56) / 24.38, std::abs(46.77 - 29.76) / 46.77, std::abs(0.4834 - 4.709) / 0.4834, std::abs(10.50 - 14.53) / 10.50, std::abs(0.5465 - 1.503) / 0.5465, std::abs(4.78 - 6.760) / 4.78, std::abs(0)}, // First 7 values are estimated from (Xsgamma - XsJpsi). The last 2 bins are estimated from PYTHIA
+        {std::abs(3.795 - 5.624) / 3.795, std::abs(1.374 - 3.374) / 1.374, std::abs(19.10 - 18.30) / 19.10, std::abs(25.05 - 19.43) / 25.05, std::abs(11.53 - 12.88) / 11.53, std::abs(32.72 - 27.61) / 32.72, std::abs(6.434 - 12.78) / 6.434, std::abs(15.5 - 14.92) / 15.5, std::abs(2.20 - 1.002) / 2.20}, // First 7 values are estimated from (Xsgamma - XsJpsi). The last 2 bins are estimated from PYTHIA
+        {std::abs(1.65 - 1.99) / 1.65, std::abs(0.51 - 0.920) / 0.51, std::abs(9.02 - 8.46) / 9.02, std::abs(7.98 - 11.12) / 7.98, std::abs(16.8 - 9.93) / 16.8, std::abs(26.7 - 24.27) / 26.7, std::abs(10.3 - 19.84) / 10.3, std::abs(21.8 - 21.41) / 21.8, std::abs(5.38 - 2.06) / 5.38}, // estimated by PYTHIA
+        {std::abs(9.91 - XX) / 9.91, std::abs(4.97 - XX) / 4.97, std::abs(10.80 - XX), std::abs(13.22 - XX), std::abs(6.591), std::abs(16.09), std::abs(16.46), std::abs(16.80), std::abs(5.161)} // estimated by PYTHIA
     };
 
     static constexpr double Nevt_Nominal_before_Xsgamma_MC15[N_Bin_gamma][N_Category_gamma] = {
@@ -2709,9 +2709,9 @@ double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double M
     double RelativeUncertainty = 1.0; // relative uncertainty of target sample
     if (TargetCategory == N_Category_gamma) RelativeUncertainty = 1.0; // if it is missing mode
     else {
-        if (Fragmentation_Uncertainty_Xsgamma_XsJpsi[TargetMxsBin][TargetCategory] < 0.0) RelativeUncertainty = 1.0; // outside of B->Xs gamma
+        if (Fragmentation_Uncertainty_Xsgamma_XsJpsi_PYTHIA[TargetMxsBin][TargetCategory] < 0.0) RelativeUncertainty = 1.0; // outside of B->Xs gamma
         else {
-            if (sample == Corrector_Fragmentation::Sample::gamma) RelativeUncertainty = Fragmentation_Uncertainty_Xsgamma_XsJpsi[TargetMxsBin][TargetCategory] / Fragmentation_Xsgamma[TargetMxsBin][TargetCategory];
+            if (sample == Corrector_Fragmentation::Sample::gamma) RelativeUncertainty = Fragmentation_Uncertainty_Xsgamma_XsJpsi_PYTHIA[TargetMxsBin][TargetCategory];
         }
     }
 
