@@ -2479,7 +2479,7 @@ private:
         {std::abs(9.91 - 1.601) / 9.91, std::abs(4.97 - 0.8546) / 4.97, std::abs(10.80 - 5.941) / 10.80, std::abs(13.22 - 8.406) / 13.22, std::abs(6.591 - 9.179) / 6.591, std::abs(16.09 - 20.50) / 16.09, std::abs(16.46 - 26.72) / 16.46, std::abs(16.80 - 24.07) / 16.80, std::abs(5.161 - 2.729) / 5.161} // estimated by PYTHIA
     };
 
-    static constexpr double Fragmentation_Uncertainty_missing_PYTHIA[N_Bin_gamma] = { std::abs(7.590), std::abs(8.3959), std::abs(15.62), std::abs(34.47), std::abs(56.73)}; // relative uncertainty. obtained from PYTHIA
+    static constexpr double Fragmentation_Uncertainty_missing_PYTHIA[N_Bin_gamma] = { std::abs(7.590 - 4.483) / 7.590, std::abs(8.3959 - 5.095) / 8.3959, std::abs(15.62 - 9.071) / 15.62, std::abs(34.47 - 26.28) / 34.47, std::abs(56.73 - 49.10) / 56.73 }; // relative uncertainty. obtained from PYTHIA
 
     static constexpr double Nevt_Nominal_before_Xsgamma_MC15[N_Bin_gamma][N_Category_gamma] = {
         {228.010067, 113.889034, 97.106455, 99.597443, 2.350444, 17.694690, 0.265738, 25.726503, 0.000112}, // [-inf, 1.15]
@@ -2709,7 +2709,7 @@ double Corrector_Fragmentation::FluctuateCorrection(int Decay[N_decay], double M
 
     // convert from the absolute uncertainty to the relative uncertainty
     double RelativeUncertainty = 1.0; // relative uncertainty of target sample
-    if (TargetCategory == N_Category_gamma) RelativeUncertainty = 1.0; // if it is missing mode
+    if (TargetCategory == N_Category_gamma) RelativeUncertainty = Fragmentation_Uncertainty_missing_PYTHIA[TargetMxsBin]; // if it is missing mode
     else {
         if (sample == Corrector_Fragmentation::Sample::gamma) RelativeUncertainty = Fragmentation_Uncertainty_Xsgamma_XsJpsi_PYTHIA[TargetMxsBin][TargetCategory];
     }
