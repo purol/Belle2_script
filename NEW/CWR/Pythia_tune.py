@@ -32,9 +32,6 @@ abs_unc_Xs_Jpsi = np.array([
 
 ref_Xs_Jpsi_norm = ref_Xs_Jpsi[:2, :7] / ref_Xs_Jpsi[:2, :7].sum(axis=1, keepdims=True)
 
-print(ref_Xs_gamma_norm)
-print(ref_Xs_Jpsi_norm)
-
 # Load CSVs and compute chi² from the uncertainty of Xs gamma study only
 def compute_chi2_and_sigmas(file):
     df = pd.read_csv(file, header=None)
@@ -72,10 +69,41 @@ def compute_chi2_and_sigmas_from_Xsgamma(file):
 csv_dir = "./"  # Change this if needed
 csv_files = sorted(glob(os.path.join(csv_dir, "*.csv")))
 
-# Compute and sort by chi2
-results = [(f, *compute_chi2_and_sigmas_from_Xsgamma(f)) for f in csv_files]
-results.sort(key=lambda x: x[1])  # sort by chi²
+# Output container for files that pass 2σ check
+output_rows = []
 
+# Compute and sort by chi2
+results = []
+for f in csv_files:
+    df = pd.read_csv(f, header=None)
+    data = df.iloc[:2, :7].values
+    data_norm = data / data.sum(axis=1, keepdims=True)
+    diff = np.abs(data_norm - ref_Xs_gamma_norm)
+    sigma = np.abs(ref_Xs_gamma_norm - ref_Xs_Jpsi_norm)
+    mask = sigma != 0
+    within_2sigma_mask = (diff <= 2 * sigma) & mask
+
+    chi2, w1, w2, w3, total = compute_chi2_and_sigmas_from_Xsgamma(f)
+    results.append((f, chi2, w1, w2, w3, total))
+
+    # Check: all valid elements are within 2σ
+    if np.sum(mask) == np.sum(within_2sigma_mask):
+        flat = df.iloc[:3, :].values.flatten()
+        output_rows.append(flat)
+
+# Sort results by chi²
+results.sort(key=lambda x: x[1])
+
+# Print results
 for fname, chi2, w1, w2, w3, total in results:
     print(f"{os.path.basename(fname)}: chi² = {chi2:.4f}, "
           f"within 1σ = {w1}/{total}, 2σ = {w2}/{total}, 3σ = {w3}/{total}")
+
+# Save accepted rows
+if output_rows:
+    output_df = pd.DataFrame(output_rows)
+    output_df.to_csv("within_2sigma_flattened.csv", header=False, index=False)
+
+    print(f"\nSaved {len(output_rows)} file(s) satisfying 2σ to 'within_2sigma_flattened.csv'.")
+else:
+    print("\nNo files satisfied the 2σ condition.")
