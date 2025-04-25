@@ -35,7 +35,7 @@ ref_Xs_Jpsi_norm = ref_Xs_Jpsi[:2, :7] / ref_Xs_Jpsi[:2, :7].sum(axis=1, keepdim
 # Load CSVs and compute chi² from the uncertainty of Xs gamma study only
 def compute_chi2_and_sigmas(file):
     df = pd.read_csv(file, header=None)
-    data = df.iloc[:3, :9].values
+    data = df.iloc[1:4, :9].values
     diff = np.abs(data - ref_Xs_gamma)
     mask = abs_unc_Xs_gamma != 0  # Ignore zero-uncertainty entries
 
@@ -51,7 +51,7 @@ def compute_chi2_and_sigmas(file):
 # Load CSVs and compute chi² . Here, sigma is the difference between Xsgamma and XsJpsi
 def compute_chi2_and_sigmas_from_Xsgamma(file):
     df = pd.read_csv(file, header=None)
-    data = df.iloc[:2, :7].values
+    data = df.iloc[1:3, :7].values
     data_norm = data / data[:2, :7].sum(axis=1, keepdims=True)
     diff = np.abs(data_norm - ref_Xs_gamma_norm)
     mask = abs(ref_Xs_gamma_norm - ref_Xs_Jpsi_norm) != 0  # Ignore zero-uncertainty entries
@@ -76,7 +76,7 @@ output_rows = []
 results = []
 for f in csv_files:
     df = pd.read_csv(f, header=None)
-    data = df.iloc[:2, :7].values
+    data = df.iloc[1:3, :7].values
     data_norm = data / data.sum(axis=1, keepdims=True)
     diff = np.abs(data_norm - ref_Xs_gamma_norm)
     sigma = np.abs(ref_Xs_gamma_norm - ref_Xs_Jpsi_norm)
@@ -88,7 +88,7 @@ for f in csv_files:
 
     # Check: all valid elements are within 2σ
     if np.sum(mask) == np.sum(within_2sigma_mask):
-        flat = df.iloc[:3, :].values.flatten()
+        flat = df.iloc[:, :].values.flatten()
         output_rows.append(flat)
 
 # Sort results by chi²
