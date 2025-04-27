@@ -734,7 +734,10 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
     }
     
     // put by myself
-    if(MaxCall != -1) minim.setMaxFunctionCalls(MaxCall);
+    if (MaxCall != -1) {
+        minim.setMaxFunctionCalls(MaxCall);
+        minim.setMaxIterations(MaxCall);
+    }
 
     // fit!
     int status;
