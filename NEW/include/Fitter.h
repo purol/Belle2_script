@@ -1694,10 +1694,6 @@ void PrintNuisanceParameters(RooArgSet* fitargs) {
             fprintf(fp, "%s\n", name.c_str());
             fprintf(fp, "%lf\n", val);
         }
-        else if ((name == "mu_MXs1") || (name == "mu_MXs2") || (name == "mu_MXs3") || (name == "mu")) { // It is not nuisance parameter but generally we need the POI also
-            fprintf(fp, "%s\n", name.c_str());
-            fprintf(fp, "%lf\n", val);
-        }
 
     }
 
