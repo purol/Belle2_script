@@ -40,6 +40,7 @@
 #include "RooRandom.h"
 #include "RooMsgService.h"
 #include "RooErrorVar.h"
+#include "MinimizerOptions.h"
 
 #include "RooStats/ModelConfig.h"
 #include "RooStats/ToyMCSampler.h"
@@ -1284,6 +1285,9 @@ int main(int argc, char* argv[]) {
     ::ROOT::Math::MinimizerOptions::SetDefaultPrintLevel(2);
     ::ROOT::Math::MinimizerOptions::SetDefaultMinimizer("Minuit2", "Minimize"); // default: Minuit Migrad
     ::ROOT::Math::MinimizerOptions::SetDefaultStrategy(1); // default 1
+
+    //::ROOT::Math::MinimizerOptions::SetMaxIterations(1);
+    //::ROOT::Math::MinimizerOptions::SetMaxFunctionCalls(1);
 
     RooStats::UseNLLOffset(true); // default off
 
