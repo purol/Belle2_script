@@ -650,7 +650,7 @@ double GetNumEvts(RooWorkspace* w, const char* sample_type) {
 
 }
 
-RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true) {
+RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true, int MaxCall = -1) {
     // what we have done
     w->loadSnapshot("ParamValues");
     RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
@@ -698,6 +698,9 @@ RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll,
         minim.minos(RooArgSet(*w->var("mu_MXs2")));
         minim.minos(RooArgSet(*w->var("mu_MXs3")));
     }
+    
+    // put by myself
+    if(MaxCall != -1) minim.SetMaxFunctionCalls(MaxCall);
 
     // fit!
     int status;
