@@ -346,6 +346,40 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
     else if (std::string(tested_param) == std::string("fitter")) options_->fitter = true;
     else if (std::string(tested_param) == std::string("dataMC")) options_->dataMC = true;
     else if (std::string(tested_param) == std::string("uncorrelated")) options_->uncorrelated = true;
+    else if (std::string(tested_param) == std::string("major")) {
+        options_->MCstat = true;
+        options_->BKGNorm = true;
+        options_->BBBR = true;
+        options_->Fragmentation = true;
+        options_->multiplicity = true;
+        options_->FBDT = true;
+        options_->Transition = true;
+    }
+    else if (std::string(tested_param) == std::string("minor")) {
+        options_->track = true;
+        options_->PID = true;
+        options_->KID = true;
+        options_->KS0 = true;
+        options_->pi0 = true;
+        options_->FEI = true;
+        options_->qqbar = true;
+        options_->Kff = true;
+        options_->Kstarff = true;
+        options_->pf = true;
+        options_->mb = true;
+        options_->fraction = true;
+        options_->mKstar = true;
+        options_->BDTc = true;
+        options_->BBcounting = true;
+        options_->BRBtoXKLKL = true;
+        options_->EffECLKL = true;
+        options_->NEWFEICAL = true;
+        options_->BRXnn = true;
+        options_->BRDKL0 = true;
+        options_->fitter = true;
+        options_->dataMC = true;
+        options_->uncorrelated = true;
+    }
     else {
         printf("inappropriate parameter name\n");
         exit(1);
@@ -1073,8 +1107,8 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     bool AllSIGANLnull = true;
 
     THStack* Stack = new THStack("Stack", ";bin index;Events");
-    TH1D* charged_hist = new TH1D("charged", ";bin index;Events", RarityBins, BinMIN, BinMAX);
-    TH1D* mixed_hist = new TH1D("mixed", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* charged_hist = new TH1D("B^{+}B^{-}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* mixed_hist = new TH1D("B^{0}#bar{B}^{0}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
     TH1D* uubar_hist = new TH1D("u#bar{u}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
     TH1D* ddbar_hist = new TH1D("d#bar{d}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
     TH1D* ssbar_hist = new TH1D("s#bar{s}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
@@ -1203,7 +1237,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
         data_hist->SetMarkerStyle(8);
         data_hist->Draw("SAME eP EX0");
     }
-    TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
+    TLegend* legend = pad1->BuildLegend(0.95, 0.89, 0.75, 0.55);
     legend->SetFillStyle(0); legend->SetLineWidth(0);
 
     // vertical line to separate MXs region
