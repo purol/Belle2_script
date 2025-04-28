@@ -69,6 +69,7 @@ void ReadMXs(){
     FILE* fp;
     fp = fopen("MXs_data.csv","w");
     for (int i = 0; i < MXs_list.size(); i++) {
+        if (MXs_list.at(i) < 1.0) continue;
         fprintf(fp, "%lf\n", MXs_list.at(i));
     }
     fclose(fp);
