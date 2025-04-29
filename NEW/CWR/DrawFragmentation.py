@@ -59,7 +59,7 @@ yerr2_2 = [0.20, 0.31, 0.61, 1.5, 1.5, 4.9, 0.0]
 
 
 plot_and_save_data(x, y1_1, yerr1_1, y2_1, yerr2_1, "fraction_1.15_1.5.png", r'$B \rightarrow X_{s} \gamma$ [bn1480_v4]', r'$B \rightarrow X_{s} J/\psi$ MC + correction', r'$1.15 < M_{X_{s}} < 1.5$ GeV')
-plot_and_save_data(x, y1_2, yerr1_2, y2_2, yerr2_2, "fraction_1.5_2.0.png", r'$B \rightarrow X_{s} \gamma$ [bn1480_v4]', r'$B \rightarrow X_{s} J/\psi$ + correction', r'$1.5 < M_{X_{s}} < 2.0$ GeV')
+plot_and_save_data(x, y1_2, yerr1_2, y2_2, yerr2_2, "fraction_1.5_2.0.png", r'$B \rightarrow X_{s} \gamma$ [bn1480_v4]', r'$B \rightarrow X_{s} J/\psi$ MC + correction', r'$1.5 < M_{X_{s}} < 2.0$ GeV')
 
 print_ratio(y1_1, yerr1_1, y2_1, "weight_fragmentation_1.15_1.5.txt")
 print_ratio(y1_2, yerr1_2, y2_2, "weight_fragmentation_1.5_2.0.txt")
