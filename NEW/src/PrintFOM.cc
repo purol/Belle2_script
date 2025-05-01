@@ -673,7 +673,7 @@ void CalculatePunziFOM(
     c3->SetLeftMargin(0.15);
 
     TGraph* gr3 = new TGraph(Nstep, FBDT_cut, FOM_Matrix);
-    gr3->SetTitle(";FBDT cut;#frac{S}{#sqrt{S+B}}");
+    gr3->SetTitle(";FBDT cut;#frac{#epsilon}{#alpha/2+#sqrt{B}}");
     gr3->SetMarkerStyle(0);
     gr3->SetMinimum(MIN_FOM * 0.7);
     gr3->Draw("");
