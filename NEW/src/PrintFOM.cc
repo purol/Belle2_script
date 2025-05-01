@@ -534,6 +534,160 @@ void CalculateFOM(
     delete c3;
 }
 
+void CalculatePunziFOM(
+    std::vector<FOM_structure> SIGNAL_FOM_,
+    std::vector<FOM_structure> CHG_FOM_,
+    std::vector<FOM_structure> MIX_FOM_,
+    std::vector<FOM_structure> UUBAR_FOM_,
+    std::vector<FOM_structure> DDBAR_FOM_,
+    std::vector<FOM_structure> SSBAR_FOM_,
+    std::vector<FOM_structure> CHARM_FOM_,
+    int mass_region,
+    const char* filename,
+    double alpha = 1.28) {
+
+    double min_MXs = -1;
+    double max_MXs = -1;
+    const double Nsig_initial = N_Kplus_nunubar_LS1 + N_Kplusstar_nunubar_LS1 + N_Xsu_nonresonant_nunubar_LS1 + N_K0_nunubar_LS1 + N_K0star_nunubar_LS1 + N_Xsd_nunubar_LS1;
+
+    if (mass_region == 0) {
+        min_MXs = -1;
+        max_MXs = 5.0;
+    }
+    else if (mass_region == 1) {
+        min_MXs = 0.0;
+        max_MXs = 0.6;
+    }
+    else if (mass_region == 2) {
+        min_MXs = 0.6;
+        max_MXs = 1.0;
+    }
+    else if (mass_region == 3) {
+        min_MXs = 1.0;
+        max_MXs = 2.0;
+    }
+
+    // mass cut
+    for (std::vector<FOM_structure>::iterator it = SIGNAL_FOM_.begin(); it != SIGNAL_FOM_.end();)
+    {
+        if ((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
+        else it = SIGNAL_FOM_.erase(it);
+    }
+
+    for (std::vector<FOM_structure>::iterator it = CHG_FOM_.begin(); it != CHG_FOM_.end();)
+    {
+        if ((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
+        else it = CHG_FOM_.erase(it);
+    }
+
+    for (std::vector<FOM_structure>::iterator it = MIX_FOM_.begin(); it != MIX_FOM_.end();)
+    {
+        if ((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
+        else it = MIX_FOM_.erase(it);
+    }
+
+    for (std::vector<FOM_structure>::iterator it = UUBAR_FOM_.begin(); it != UUBAR_FOM_.end();)
+    {
+        if ((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
+        else it = UUBAR_FOM_.erase(it);
+    }
+
+    for (std::vector<FOM_structure>::iterator it = DDBAR_FOM_.begin(); it != DDBAR_FOM_.end();)
+    {
+        if ((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
+        else it = DDBAR_FOM_.erase(it);
+    }
+
+    for (std::vector<FOM_structure>::iterator it = SSBAR_FOM_.begin(); it != SSBAR_FOM_.end();)
+    {
+        if ((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
+        else it = SSBAR_FOM_.erase(it);
+    }
+
+    for (std::vector<FOM_structure>::iterator it = CHARM_FOM_.begin(); it != CHARM_FOM_.end();)
+    {
+        if ((min_MXs <= it->MXs) && (it->MXs < max_MXs)) ++it;
+        else it = CHARM_FOM_.erase(it);
+    }
+
+    double FOM_Matrix[Nstep];
+    for (int i = 0; i < Nstep; i++) FOM_Matrix[i] = 0;
+
+    double FBDT_cut[Nstep];
+    for (int i = 0; i < Nstep; i++) FBDT_cut[i] = 0;
+
+    for (int j = 0; j < Nstep; j++) {
+        double BB_output = scan_start + (scan_end - scan_start) * j / Nstep;
+        FBDT_cut[j] = BB_output;
+
+        double BKG_num = 0;
+        double SIGNAL_num = 0;
+
+        for (int k = 0; k < SIGNAL_FOM_.size(); k++) {
+            if (SIGNAL_FOM_.at(k).BDT_output > BB_output) SIGNAL_num = SIGNAL_num + SIGNAL_FOM_.at(k).total_weight;
+        }
+
+        for (int k = 0; k < CHG_FOM_.size(); k++) {
+            if (CHG_FOM_.at(k).BDT_output > BB_output) BKG_num = BKG_num + CHG_FOM_.at(k).total_weight;
+        }
+
+        for (int k = 0; k < MIX_FOM_.size(); k++) {
+            if (MIX_FOM_.at(k).BDT_output > BB_output) BKG_num = BKG_num + MIX_FOM_.at(k).total_weight;
+        }
+
+        for (int k = 0; k < UUBAR_FOM_.size(); k++) {
+            if (UUBAR_FOM_.at(k).BDT_output > BB_output) BKG_num = BKG_num + UUBAR_FOM_.at(k).total_weight;
+        }
+
+        for (int k = 0; k < DDBAR_FOM_.size(); k++) {
+            if (DDBAR_FOM_.at(k).BDT_output > BB_output) BKG_num = BKG_num + DDBAR_FOM_.at(k).total_weight;
+        }
+
+        for (int k = 0; k < SSBAR_FOM_.size(); k++) {
+            if (SSBAR_FOM_.at(k).BDT_output > BB_output) BKG_num = BKG_num + SSBAR_FOM_.at(k).total_weight;
+        }
+
+        for (int k = 0; k < CHARM_FOM_.size(); k++) {
+            if (CHARM_FOM_.at(k).BDT_output > BB_output) BKG_num = BKG_num + CHARM_FOM_.at(k).total_weight;
+        }
+
+        FOM_Matrix[j] = (SIGNAL_num / Nsig_initial) / (alpha / 2.0 + sqrt(BKG_num));
+
+    }
+
+    for (int i = 0; i < Nstep; i++) {
+        printf("%f ", FOM_Matrix[i]);
+        printf("\n");
+    }
+
+    // get MIN MAX
+    double MIN_FOM = std::numeric_limits<double>::max();
+    double MAX_FOM = std::numeric_limits<double>::lowest();
+    for (int i = 0; i < Nstep; i++) {
+        if (MIN_FOM > FOM_Matrix[i]) MIN_FOM = FOM_Matrix[i];
+        if (MAX_FOM < FOM_Matrix[i]) MAX_FOM = FOM_Matrix[i];
+    }
+
+    // draw
+    TCanvas* c3 = new TCanvas("c3", "Graph Draw Options", 200, 10, 600, 600);
+    c3->SetLeftMargin(0.15);
+
+    TGraph* gr3 = new TGraph(Nstep, FBDT_cut, FOM_Matrix);
+    gr3->SetTitle(";FBDT cut;#frac{S}{#sqrt{S+B}}");
+    gr3->SetMarkerStyle(0);
+    gr3->SetMinimum(MIN_FOM * 0.7);
+    gr3->Draw("");
+
+    TLine* line = new TLine(0.86, MIN_FOM * 0.7, 0.86, MAX_FOM);
+    line->SetLineColor(kRed);
+    line->SetLineStyle(5);
+    line->Draw();
+
+    c3->SaveAs(filename);
+
+    delete c3;
+}
+
 int main(int argc, char* argv[])
 {
 
