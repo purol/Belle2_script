@@ -61,7 +61,7 @@ void LetsFillMK0star(const char* dirname, std::vector<Data>* list, const char* i
         TTree* tree_Xs = (TTree*)input_file->Get("Xs");
 
         tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
-        tree_Xs->SetBranchAddress("daughter__bo1__cm__spdaughter__bo0__cm__spM__bc__bc", &MXs);
+        tree_Xs->SetBranchAddress("daughter__bo1__cm__spdaughter__bo0__cmM__bc__bc", &MXs);
 
         printf("%lld entries...\n", tree_Xs->GetEntries());
         for (unsigned int j = 0; j < tree_Xs->GetEntries(); j++) { // Fill
