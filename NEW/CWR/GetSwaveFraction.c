@@ -45,7 +45,7 @@ void load_files(const char* dirname, std::vector<std::string>* names, const char
     }
 }
 
-void LetsFillMK0star(const char* dirname, std::vector<Data>* list const char* included_string) {
+void LetsFillMK0star(const char* dirname, std::vector<Data>* list, const char* included_string) {
 
     double invM = 0.0;
     double MXs = 0.0;
