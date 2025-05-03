@@ -1320,6 +1320,231 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     delete line_23_pad2;
 }
 
+void GetPlotTemplate_compact(RooWorkspace* w, RooDataSet* data = nullptr, const char* plot_name = "hist_data_plot.png") {
+    // compact version of plot
+
+    bool Allchargednull = true;
+    bool Allmixednull = true;
+    bool Alluubarnull = true;
+    bool Allddbarnull = true;
+    bool Allssbarnull = true;
+    bool Allccbarnull = true;
+    bool AllSIGANLnull = true;
+
+    THStack* Stack = new THStack("Stack", ";bin index;Events");
+    TH1D* charged_hist = new TH1D("B^{+}B^{-}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* mixed_hist = new TH1D("B^{0}#bar{B}^{0}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* uubar_hist = new TH1D("u#bar{u}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* ddbar_hist = new TH1D("d#bar{d}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* ssbar_hist = new TH1D("s#bar{s}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* ccbar_hist = new TH1D("c#bar{c}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* SIGNAL_hist = new TH1D("SIGNAL", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* all_hist = new TH1D("all", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* data_hist = nullptr;
+    if (data != nullptr) {
+        data_hist = new TH1D("data", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+        data_hist->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+    }
+    TH1D* Ratio_hist = new TH1D("Ratio", ";bin index;data/MC", RarityBins, BinMIN, BinMAX);
+
+    // fill histogram
+    for (int i = 0; i < scaleFactors_pdf_names.size(); i++) {
+
+        RooRealVar* x_val;
+        if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs1") != nullptr) x_val = w->var("obs_x_channel_MXs1");
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs2") != nullptr) x_val = w->var("obs_x_channel_MXs2");
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs3") != nullptr) x_val = w->var("obs_x_channel_MXs3");
+        else {
+            printf("[ERROR] unexpected sample type!\n");
+            exit(1);
+        }
+
+        RooAbsBinning const& binning = x_val->getBinning();
+        const double oldVal = x_val->getVal();
+
+        TH1D* temp_hist;
+        if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "Signal") != nullptr) temp_hist = SIGNAL_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHG") != nullptr) temp_hist = charged_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "MIX") != nullptr) temp_hist = mixed_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "UUBAR") != nullptr) temp_hist = uubar_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "DDBAR") != nullptr) temp_hist = ddbar_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "SSBAR") != nullptr) temp_hist = ssbar_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHARM") != nullptr) temp_hist = ccbar_hist;
+        else {
+            printf("[ERROR] unexpected sample type!\n");
+            exit(1);
+        }
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val = binCenter; // set x value
+
+            RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(i).c_str());
+            RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(i).c_str());
+            if ((temp_func_scaleFactors == nullptr) || (temp_func_shapes == nullptr)) {
+                printf("[WARNING] cannot find %s or %s. Just skip.\n", scaleFactors_pdf_names.at(i).c_str(), shapes_pdf_names.at(i).c_str());
+                break;
+            }
+            else {
+                if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "Signal") != nullptr) AllSIGANLnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHG") != nullptr) Allchargednull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "MIX") != nullptr) Allmixednull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "UUBAR") != nullptr) Alluubarnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "DDBAR") != nullptr) Allddbarnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "SSBAR") != nullptr) Allssbarnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHARM") != nullptr) Allccbarnull = false;
+            }
+            double Nevt = (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+
+            int index = -1;
+            if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs1") != nullptr) index = iBin + 1;
+            else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs2") != nullptr) index = iBin + RarityBins_MX1 + 1;
+            else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs3") != nullptr) index = iBin + RarityBins_MX1 + RarityBins_MX2 + 1;
+            else {
+                printf("[ERROR] unexpected sample type!\n");
+                exit(1);
+            }
+
+            temp_hist->SetBinContent(index, temp_hist->GetBinContent(index) + Nevt);
+            all_hist->Fill(((double)index) - 0.5, Nevt);
+            all_hist->SetBinError(index, 0);
+        }
+
+        *x_val = oldVal;
+
+    }
+
+    // Fill data
+    if (data != nullptr) {
+        for (int i = 0; i < RarityBins; i++) {
+            const RooArgSet* argSet = data->get(i);
+            if (!argSet) data_hist->SetBinContent(i + 1, 0.0);
+            else data_hist->SetBinContent(i + 1, data->weight());
+        }
+    }
+
+    // fill stack
+    if (Allchargednull == false) Stack->Add(charged_hist);
+    if (Allmixednull == false) Stack->Add(mixed_hist);
+    if (Alluubarnull == false) Stack->Add(uubar_hist);
+    if (Allddbarnull == false) Stack->Add(ddbar_hist);
+    if (Allssbarnull == false) Stack->Add(ssbar_hist);
+    if (Allccbarnull == false) Stack->Add(ccbar_hist);
+    if (AllSIGANLnull == false) Stack->Add(SIGNAL_hist);
+
+    // fill ratio
+    Ratio_hist->SetLineColor(kBlack); Ratio_hist->SetMarkerStyle(21); Ratio_hist->Sumw2(); Ratio_hist->SetStats(0);
+    Ratio_hist->Divide(data_hist, all_hist);
+
+    // draw plot
+    TCanvas* c_temp = new TCanvas("c", "", 800, 600); c_temp->cd();
+
+    TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.25, 1.0, 1.0);
+    pad1->SetBottomMargin(0.02); pad1->SetLeftMargin(0.15);
+    pad1->Draw(); pad1->cd();
+
+    gStyle->SetPalette(kPastel);
+
+    Float_t ymax_1 = Stack->GetMaximum();
+    Float_t ymax_2 = data_hist->GetMaximum();
+    double real_max = 0;
+    if (ymax_1 > ymax_2) real_max = ymax_1;
+    else real_max = ymax_2;
+
+    Stack->SetMaximum(real_max * 1.13);
+
+    Stack->Draw("pfc Hist");
+    Stack->GetXaxis()->SetLabelSize(0.0); Stack->GetXaxis()->SetTitleSize(0.0);
+    Stack->GetYaxis()->SetLabelSize(0.05); Stack->GetYaxis()->SetTitleSize(0.05);
+    if (data != nullptr) {
+        data_hist->SetLineWidth(2);
+        data_hist->SetLineColor(kBlack);
+        data_hist->SetMarkerStyle(8);
+        data_hist->Draw("SAME eP EX0");
+    }
+    TLegend* legend = pad1->BuildLegend(0.95, 0.89, 0.75, 0.55);
+    legend->SetFillStyle(0); legend->SetLineWidth(0);
+    legend->SetTextSize(0.045);
+
+    // vertical line to separate MXs region
+    c_temp->Update();
+    TLine* line_12 = new TLine((double)RarityBins_MX1, pad1->GetUymin(), (double)RarityBins_MX1, pad1->GetUymax());
+    line_12->SetLineColor(kBlack); line_12->SetLineStyle(2); line_12->SetLineWidth(3);
+    TLine* line_23 = new TLine((double)RarityBins_MX1 + RarityBins_MX2, pad1->GetUymin(), (double)RarityBins_MX1 + RarityBins_MX2, pad1->GetUymax());
+    line_23->SetLineColor(kBlack); line_23->SetLineStyle(2); line_23->SetLineWidth(3);
+    line_12->Draw(); line_23->Draw();
+
+    // write MXs bin text
+    TPaveText* pt_1 = new TPaveText(0.14, 0.85, 0.25 + 0.14, 1.0, "NDC NB");
+    pt_1->SetTextSize(0.045); pt_1->SetFillStyle(0); pt_1->SetLineWidth(0); pt_1->SetTextAlign(11); pt_1->AddText("0.0 < M_{X_{s}}^{reco} < 0.6 GeV/c^{2}"); pt_1->Draw();
+    TPaveText* pt_2 = new TPaveText(0.25 + 0.14, 0.85, 2.0 * 0.25 + 0.14, 1.0, "NDC NB");
+    pt_2->SetTextSize(0.045); pt_2->SetFillStyle(0); pt_2->SetLineWidth(0); pt_2->SetTextAlign(11); pt_2->AddText("0.6 < M_{X_{s}}^{reco} < 1.0 GeV/c^{2}"); pt_2->Draw();
+    TPaveText* pt_3 = new TPaveText(2.0 * 0.25 + 0.14, 0.85, 3.0 * 0.25 + 0.14, 1.0, "NDC NB");
+    pt_3->SetTextSize(0.045); pt_3->SetFillStyle(0); pt_3->SetLineWidth(0); pt_3->SetTextAlign(11); pt_3->AddText("1.0 < M_{X_{s}}^{reco} < 2.0 GeV/c^{2}"); pt_3->Draw();
+
+    // write Belle text
+    TPaveText* pt_belle = new TPaveText(0.40, 0.83, 0.64, 0.88, "NDC NB");
+    pt_belle->SetTextSize(0.045); pt_belle->SetFillStyle(0); pt_belle->SetLineWidth(0); pt_belle->SetTextAlign(11); pt_belle->AddText("Belle II"); pt_belle->Draw();
+    TPaveText* pt_lumi = new TPaveText(0.40, 0.75, 0.64, 0.80, "NDC NB");
+    pt_lumi->SetTextSize(0.045); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("#int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
+
+    c_temp->cd();
+    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.25); pad2->SetBottomMargin(0.35); pad2->SetLeftMargin(0.15); pad2->SetTopMargin(0.05); pad2->Draw(); pad2->cd();
+    Ratio_hist->SetMinimum(0.7); Ratio_hist->SetMaximum(1.23); Ratio_hist->SetLineWidth(2);
+    Ratio_hist->Draw("E X0 P");
+    Ratio_hist->GetYaxis()->SetTitleSize(0.15); Ratio_hist->GetYaxis()->SetTitleOffset(0.4); Ratio_hist->GetYaxis()->SetLabelSize(0.15);
+    Ratio_hist->GetXaxis()->SetLabelSize(0.15); Ratio_hist->GetXaxis()->SetTitleSize(0.15);
+    TLine* line = new TLine(Ratio_hist->GetXaxis()->GetXmin(), 1.0, Ratio_hist->GetXaxis()->GetXmax(), 1.0);
+    line->SetLineColor(kRed);
+    line->SetLineStyle(1); line->SetLineWidth(3);
+    line->Draw();
+
+    // vertical line to separate MXs region
+    c_temp->Update();
+    TLine* line_12_pad2 = new TLine((double)RarityBins_MX1, pad2->GetUymin(), (double)RarityBins_MX1, pad2->GetUymax());
+    line_12_pad2->SetLineColor(kBlack); line_12_pad2->SetLineStyle(2); line_12_pad2->SetLineWidth(3);
+    TLine* line_23_pad2 = new TLine((double)RarityBins_MX1 + RarityBins_MX2, pad2->GetUymin(), (double)RarityBins_MX1 + RarityBins_MX2, pad2->GetUymax());
+    line_23_pad2->SetLineColor(kBlack); line_23_pad2->SetLineStyle(2); line_23_pad2->SetLineWidth(3);
+    line_12_pad2->Draw(); line_23_pad2->Draw();
+
+    c_temp->SetBottomMargin(0.0);
+    c_temp->SaveAs(plot_name);
+
+    // print values
+    printf("data:\n");
+    for (int i = 0; i < RarityBins; i++) printf("%lf +- %lf\n", data_hist->GetBinContent(i + 1), data_hist->GetBinError(i + 1));
+    printf("\nMC:\n");
+    for (int i = 0; i < RarityBins; i++) printf("%lf +- %lf\n", all_hist->GetBinContent(i + 1), all_hist->GetBinError(i + 1));
+    printf("\n");
+
+    // delete
+    delete c_temp;
+
+    delete Stack;
+    delete charged_hist;
+    delete mixed_hist;
+    delete uubar_hist;
+    delete ddbar_hist;
+    delete ssbar_hist;
+    delete ccbar_hist;
+    delete SIGNAL_hist;
+    delete all_hist;
+    if (data != nullptr) {
+        delete data_hist;
+    }
+    delete Ratio_hist;
+
+    delete line;
+
+    delete line_12;
+    delete line_23;
+
+    delete line_12_pad2;
+    delete line_23_pad2;
+}
+
 void ObtainNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll) {
     // what we have done
     RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
