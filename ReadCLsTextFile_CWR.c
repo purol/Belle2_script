@@ -237,7 +237,7 @@ double GetCrossPoint(std::vector<double> x_values, std::vector<double> y_values,
     return lowest_maximum_x_value + (alpha - lowest_maximum) * (highest_minimum_x_value - lowest_maximum_x_value) / (highest_minimum - lowest_maximum);
 }
 
-void ReadCLsTextFile(){
+void ReadCLsTextFile_CWR(){
 
 	std::vector<double> mu_values;
 	std::vector<double> ObsCLss;
