@@ -96,10 +96,13 @@ TMultiGraph* ExpectedGraph(std::vector<double> mu_values, std::vector<double> Ex
 void DrawPlots(TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, double conf = 0.9) {
     TCanvas* c = new TCanvas("c", "c", 696, 472);
 
+    GraphObservedCLs->SetMaximum(1.2);
+
     // draw observed CLs first
     GraphObservedCLs->Draw("APL");
     TGraphErrors* gplot = GraphObservedCLs;
-    gplot->GetHistogram()->SetTitle("CLs scan");
+    gplot->GetHistogram()->SetTitle("");
+    gplot->GetHistogram()->SetTitleSize(0.0);
 
     // draw Expected
     GraphExpectedCLs->Draw();
@@ -116,8 +119,16 @@ void DrawPlots(TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, do
         line->SetLineColor(kRed);
         line->Draw();
         // put axis labels
-        gplot->GetXaxis()->SetTitle("B(B #rightarrow X_{s} #nu #bar{#nu})");
+        gplot->GetXaxis()->SetTitle("B(B #rightarrow X_{s}#nu#bar{#nu})");
         gplot->GetYaxis()->SetTitle("CL_{s}");
+
+        gplot->GetXaxis()->SetTitleSize(0.055);
+        gplot->GetYaxis()->SetTitleSize(0.055);
+
+        gplot->GetXaxis()->SetLabelSize(0.055);
+        gplot->GetYaxis()->SetLabelSize(0.055);
+
+        gplot->GetYaxis()->SetTitleOffset(0.8);
     }
 
     // draw observed CLs again
@@ -127,7 +138,7 @@ void DrawPlots(TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, do
     double y0 = 0.6;
     double verticalSize = 0.3;
     double y1 = y0 + verticalSize;
-    TLegend* l = new TLegend(0.6, y0, 0.9, y1);
+    TLegend* l = new TLegend(0.5, y0, 0.9, y1);
     l->AddEntry(GraphObservedCLs, "", "PEL"); 
     //l->AddEntry(GraphObservedCLs, "", "PEL");
     // loop in reverse order (opposite to drawing one)
@@ -142,8 +153,12 @@ void DrawPlots(TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, do
     l->Draw();
 
     // draw luminosity
-    TPaveText* pt_lumi = new TPaveText(0.18, 0.83, 0.48, 0.85, "NDC NB");
+    TPaveText* pt_lumi = new TPaveText(0.1, 0.83, 0.4, 0.9, "NDC NB");
     pt_lumi->SetTextSize(0.035); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("Belle II #int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
+
+    // set margin
+    gPad->SetTopMargin(0.05);
+    gPad->SetBottomMargin(0.15);
 
     // redraw the axis
     if (gPad) gPad->RedrawAxis();
