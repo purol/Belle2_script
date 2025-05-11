@@ -129,6 +129,8 @@ void DrawPlots(TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, do
         gplot->GetYaxis()->SetLabelSize(0.055);
 
         gplot->GetYaxis()->SetTitleOffset(0.8);
+
+        gplot->GetXaxis()->SetMaxDigits(2);
     }
 
     // draw observed CLs again
@@ -155,6 +157,10 @@ void DrawPlots(TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, do
     // draw luminosity
     TPaveText* pt_lumi = new TPaveText(0.1, 0.83, 0.4, 0.9, "NDC NB");
     pt_lumi->SetTextSize(0.035); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("Belle II #int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
+
+    // draw MXs range
+    TPaveText* pt_MXs = new TPaveText(0.5, 0.4, 0.9, 0.6, "NDC NB");
+    pt_MXs->SetTextSize(0.05); pt_MXs->SetFillStyle(0); pt_MXs->SetLineWidth(0); pt_MXs->SetTextAlign(11); pt_MXs->AddText("0.0 < M_{Xs} < 0.6 GeV/c^{2}"); pt_MXs->Draw();
 
     // set margin
     gPad->SetTopMargin(0.05);
@@ -291,4 +297,17 @@ void ReadCLsTextFile_CWR(){
 
     printf("Expected mu: %lf\n", GetCrossPoint(BR_values, ExpCLsMedian,0.9));
     printf("Observed mu: %lf\n", GetCrossPoint(BR_values, ObsCLss,0.9));
+
+    printf("========= copy the below for the python code =========\n");
+    printf("BR_values,ObsCLss,ObsCLsErrors,ExpCLsMedian,ExpCLs1sigplus,ExpCLs1sigminus,ExpCLs2sigplus,ExpCLs2sigminus\n");
+    for (int i = 0; i < BR_values.size(); i++) {
+        printf("%lf,", BR_values.at(i));
+        printf("%lf,", ObsCLss.at(i));
+        printf("%lf,", ObsCLsErrors.at(i));
+        printf("%lf,", ExpCLsMedian.at(i));
+        printf("%lf,", ExpCLs1sigplus.at(i));
+        printf("%lf,", ExpCLs1sigminus.at(i));
+        printf("%lf,", ExpCLs2sigplus.at(i));
+        printf("%lf\n", ExpCLs2sigminus.at(i));
+    }
 }
