@@ -350,10 +350,10 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
         options_->MCstat = true;
         options_->BKGNorm = true;
         options_->BBBR = true;
-        options_->Fragmentation = true;
         options_->multiplicity = true;
         options_->FBDT = true;
         options_->Transition = true;
+        options_->qqbar = true;
     }
     else if (std::string(tested_param) == std::string("minor")) {
         options_->track = true;
@@ -362,12 +362,12 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
         options_->KS0 = true;
         options_->pi0 = true;
         options_->FEI = true;
-        options_->qqbar = true;
         options_->Kff = true;
         options_->Kstarff = true;
         options_->pf = true;
         options_->mb = true;
         options_->fraction = true;
+        options_->Fragmentation = true;
         options_->mKstar = true;
         options_->BDTc = true;
         options_->BBcounting = true;

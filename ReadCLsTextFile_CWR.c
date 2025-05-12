@@ -94,9 +94,9 @@ TMultiGraph* ExpectedGraph(std::vector<double> mu_values, std::vector<double> Ex
 }
 
 void DrawPlots(TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, double conf = 0.9) {
-    TCanvas* c = new TCanvas("c", "c", 696, 472);
+    TCanvas* c = new TCanvas("c", "c", 700, 420);
 
-    GraphObservedCLs->SetMaximum(1.2);
+    //GraphObservedCLs->SetMaximum(1.2);
 
     // draw observed CLs first
     GraphObservedCLs->Draw("APL");
@@ -155,8 +155,8 @@ void DrawPlots(TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, do
     l->Draw();
 
     // draw luminosity
-    TPaveText* pt_lumi = new TPaveText(0.1, 0.83, 0.4, 0.9, "NDC NB");
-    pt_lumi->SetTextSize(0.035); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("Belle II #int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
+    TPaveText* pt_lumi = new TPaveText(0.5, 0.3, 0.8, 0.37, "NDC NB");
+    pt_lumi->SetTextSize(0.05); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("Belle II #int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
 
     // draw MXs range
     TPaveText* pt_MXs = new TPaveText(0.5, 0.4, 0.9, 0.6, "NDC NB");
