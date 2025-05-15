@@ -749,7 +749,7 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
     return false;
 }
 
-void main(){
+int main(){
 
     std::vector<std::string> names;
     const char* dirname = "/home/belle2/junewoo/storage_ghi/20220929_SIGNAL_decayInfo_again/small";
@@ -764,11 +764,13 @@ void main(){
         TFile *input_file = new TFile( (dirname+std::string("/")+names.at(i)).c_str(),"read");
         printf("%s (%d/%zu)\n",("Read "+names.at(i) + "... ").c_str(), i, names.size());
         loader.GetData(input_file);
-        if (loader.event_info_is_valid() == false) { printf("error!\n"); return; }
+        if (loader.event_info_is_valid() == false) { printf("error!\n"); return 1; }
 
         loader.PrintInformation(std::string("========== inital =========="), names.at(i));
         loader.DrawTHStack("Mxs", ";M_{Xs}^{gen} [GeV]; arbitrary unit", 100, 0.45, 3.5, names.at(i), true);
 
     }
     loader.End();
+
+    return 0;
 }
