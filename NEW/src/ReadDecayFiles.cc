@@ -11,6 +11,9 @@
 #include "TFile.h"
 #include "TH1.h"
 #include "THStack.h"
+#include "TCanvas.h"
+#include "TStyle.h"
+#include "TLegend.h"
 
 # define MCTYPE "MC15ri"
 
@@ -300,24 +303,24 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
 
         if (smart_mode == false) temp_hist[decaymodeid]->Fill(Mxs(temp_data));
         else {
-            if (filename.find("B2Knunu") != string::npos) {
+            if (filename.find("B2Knunu") != std::string::npos) {
                 double correction_weight = corrector.GetCorrectionFactor(temp_data.invM * temp_data.invM, "Bplus");
                 // double correction_weight = 1.0;
                 temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Kplus * correction_weight);
             }
-            else if (filename.find("B2Kstarnunu") != string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Kplusstar);
-            else if (filename.find("B2Xsnunu") != string::npos) {
+            else if (filename.find("B2Kstarnunu") != std::string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Kplusstar);
+            else if (filename.find("B2Xsnunu") != std::string::npos) {
                 double Correction_Fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp_data.Decay, Mxs(temp_data), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
                 temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Xsu_nonresonant * Correction_Fragmentation);
                 //temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Xsu_nonresonant);
             }
-            else if (filename.find("B02K0nunu") != string::npos) {
+            else if (filename.find("B02K0nunu") != std::string::npos) {
                 double correction_weight = corrector.GetCorrectionFactor(temp_data.invM * temp_data.invM, "Bzero");
                 // double correction_weight = 1.0;
                 temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_K0 * correction_weight);
             }
-            else if (filename.find("B02Kstar0nunu") != string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_K0star);
-            else if (filename.find("B02Xsnunu") != string::npos) {
+            else if (filename.find("B02Kstar0nunu") != std::string::npos) temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_K0star);
+            else if (filename.find("B02Xsnunu") != std::string::npos) {
                 double Correction_Fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp_data.Decay, Mxs(temp_data), Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, "MC15ri");
                 temp_hist[decaymodeid]->Fill(Mxs(temp_data), Correction_Fragmentation * Scale_Xsd_nonresonant);
                 //temp_hist[decaymodeid]->Fill(Mxs(temp_data), Scale_Xsd_nonresonant);
@@ -374,10 +377,10 @@ void Loader::PrintInformation(std::string title, std::string filename) {
             for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) { // find MC decay mode
                 if (TrueIfDecayModeMatch_MC(temp, static_cast<Loader::DecayModeMC>(i))) {
                     decaymodeid_MC = static_cast<Loader::DecayModeMC>(i);
-                    if ((filename.find("B2Xsnunu") != string::npos) && (decaymodeid_MC == Loader::Xsu2Kc_MC)) {} // something wrong, try to find another decay mode
-                    else if ((filename.find("B2Xsnunu") != string::npos) && (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC)) {} // something wrong, try to find another decay mode
-                    else if ((filename.find("B02Xsnunu") != string::npos) && (decaymodeid_MC == Loader::Xsd2K0_MC)) {} // something wrong, try to find another decay mode
-                    else if ((filename.find("B02Xsnunu") != string::npos) && (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC)) {} // something wrong, try to find another decay mode
+                    if ((filename.find("B2Xsnunu") != std::string::npos) && (decaymodeid_MC == Loader::Xsu2Kc_MC)) {} // something wrong, try to find another decay mode
+                    else if ((filename.find("B2Xsnunu") != std::string::npos) && (decaymodeid_MC == Loader::Xsu2Kcstar2KcPi0_MC || decaymodeid_MC == Loader::Xsu2Kcstar2K0Pic_MC)) {} // something wrong, try to find another decay mode
+                    else if ((filename.find("B02Xsnunu") != std::string::npos) && (decaymodeid_MC == Loader::Xsd2K0_MC)) {} // something wrong, try to find another decay mode
+                    else if ((filename.find("B02Xsnunu") != std::string::npos) && (decaymodeid_MC == Loader::Xsd2K0star2KcPic_MC || decaymodeid_MC == Loader::Xsd2K0star2K0Pi0_MC)) {} // something wrong, try to find another decay mode
                     else break;
                 }
             }
@@ -748,7 +751,7 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
 
 void ReadDecayFiles(){
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     const char* dirname = "/home/belle2/junewoo/storage_ghi/20220929_SIGNAL_decayInfo_again/small";
 
     load_files(dirname, &names);
