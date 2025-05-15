@@ -749,7 +749,7 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
     return false;
 }
 
-void ReadDecayFiles(){
+void main(){
 
     std::vector<std::string> names;
     const char* dirname = "/home/belle2/junewoo/storage_ghi/20220929_SIGNAL_decayInfo_again/small";
