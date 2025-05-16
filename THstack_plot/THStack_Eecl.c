@@ -181,7 +181,7 @@ void THStack_Eecl() {
 
     gStyle->SetPalette(kGistEarth);
 
-    Stack->Draw("pfc Hist"); Stack->GetXaxis()->SetTitleSize(0.042); Stack->GetYaxis()->SetTitleSize(0.042);
+    Stack->Draw("pfc Hist"); Stack->GetXaxis()->SetTitleSize(0.042); Stack->GetYaxis()->SetTitleSize(0.042); Stack->GetYaxis()->SetMaxDigits(2);
     SIGNAL_hist->Draw("HistSAME");
 
     TPaveText* pt_lumi = new TPaveText(0.12, 0.83, 0.42, 0.85, "NDC NB");
