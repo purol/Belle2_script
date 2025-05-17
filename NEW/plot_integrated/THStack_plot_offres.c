@@ -594,7 +594,7 @@ void THStack_plot_offres() {
 
         TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
-        TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
+        TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
         pad1->SetBottomMargin(0.13); pad1->SetLeftMargin(0.15);
         pad1->SetGridx(); pad1->Draw(); pad1->cd();
 
