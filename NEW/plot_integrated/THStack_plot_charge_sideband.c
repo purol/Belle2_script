@@ -571,9 +571,10 @@ void THStack_plot_charge_sideband() {
 
         TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
-        TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
-        pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
+        TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
+        pad1->SetBottomMargin(0.13); pad1->SetLeftMargin(0.15);
         pad1->SetGridx(); pad1->Draw(); pad1->cd();
+
         if((variable_names.at(k).find("MVA") != std::string::npos) && (ChargeSideband_MC_values[k].size() > 10000)) pad1->SetLogy(1);
         else pad1->SetLogy(0);
 
@@ -588,6 +589,10 @@ void THStack_plot_charge_sideband() {
         Stack[k]->SetMaximum(real_max * 1.2);
 
         Stack[k]->Draw("pfc Hist");
+        Stack[k]->GetXaxis()->SetTitleSize(0.05);
+        Stack[k]->GetYaxis()->SetTitleSize(0.05);
+        Stack[k]->GetXaxis()->SetLabelSize(0.05);
+        Stack[k]->GetYaxis()->SetLabelSize(0.05);
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP EX0");
         TPaveText* pt_lumi = new TPaveText(0.18, 0.83, 0.48, 0.85, "NDC NB");
@@ -597,10 +602,10 @@ void THStack_plot_charge_sideband() {
         TPaveText* pt = new TPaveText(0.25, 0.88, 0.65, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->SetTextSize(0.06); pt->AddText(("MC scaled to data, Data/MC= " + to_string_precision(CAL)).c_str()); pt->Draw();
 
         c_temp->cd();
-        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetTopMargin(0.03); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
         Ratio_hist[k]->SetMinimum(0.5); Ratio_hist[k]->SetMaximum(1.5); Ratio_hist[k]->SetLineWidth(2);
-        Ratio_hist[k]->GetYaxis()->SetTitleSize(0.08); Ratio_hist[k]->GetYaxis()->SetTitleOffset(0.5);
-        Ratio_hist[k]->GetXaxis()->SetLabelSize(0.08); Ratio_hist[k]->GetYaxis()->SetLabelSize(0.08);
+        Ratio_hist[k]->GetYaxis()->SetTitleSize(0.1); Ratio_hist[k]->GetYaxis()->SetTitleOffset(0.5);
+        Ratio_hist[k]->GetXaxis()->SetLabelSize(0.1); Ratio_hist[k]->GetYaxis()->SetLabelSize(0.1);
         Ratio_hist[k]->Draw("e0p");
         TLine* line = new TLine(Ratio_hist[k]->GetXaxis()->GetXmin(), 1.0, Ratio_hist[k]->GetXaxis()->GetXmax(), 1.0);
         line->SetLineColor(kRed);
