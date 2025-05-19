@@ -28,14 +28,14 @@ void THStack_plot_charge_sideband() {
     Nevt nevt_SSBAR = { 0.0, 0.0 };
     Nevt nevt_CHARM = { 0.0, 0.0 };
 
-    const char* ChargeSideband_MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/CHG_analysis/validation_v004/final_output";
-    const char* ChargeSideband_MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/MIX_analysis/validation_v004/final_output";
-    const char* ChargeSideband_MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/UUBAR_analysis/validation_v004/final_output";
-    const char* ChargeSideband_MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/DDBAR_analysis/validation_v004/final_output";
-    const char* ChargeSideband_MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/SSBAR_analysis/validation_v004/final_output";
-    const char* ChargeSideband_MC_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_MC_cside/CHARM_analysis/validation_v004/final_output";
+    const char* ChargeSideband_MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_cside/CHG_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* ChargeSideband_MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_cside/MIX_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* ChargeSideband_MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_cside/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* ChargeSideband_MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_cside/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* ChargeSideband_MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_cside/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* ChargeSideband_MC_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_cside/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application";
 
-    const char* ChargeSideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD_LS_data_cside/SIGNAL_analysis/validation_v004/final_output";
+    const char* ChargeSideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_data_cside/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application";
 
     NevtCount_ri(ChargeSideband_MC_CHG_validation_dirname, "CHG", &nevt_CHG);
     NevtCount_ri(ChargeSideband_MC_MIX_validation_dirname, "MIX", &nevt_MIX);
