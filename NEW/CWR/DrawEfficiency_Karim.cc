@@ -91,9 +91,6 @@ void FillBKG(const char* dirname, const char* included_string, TH1D* hist, doubl
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
 
-            // Here we get only B+ -> K+ pi- pi+
-            if (Decay[7] < 0.5) continue;
-
             double total_weight = weight_var * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, names.at(i), MCTYPE, false);
 
             hist->Fill(Bsig_M, total_weight);
@@ -561,7 +558,7 @@ int main(int argc, char* argv[]) {
     const char* dirname_SIGNAL_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/before_Mbc_cut";
     const char* dirname_SIGNAL_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/final_output";
     const char* dirname_SIGNAL_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
-
+    /*
     FillBKG(dirname_CHG_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("CHG", MCTYPE, "validation", "CHG"));
     FillBKG(dirname_MIX_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("MIX", MCTYPE, "validation", "MIX"));
     FillBKG(dirname_UUBAR_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"));
@@ -596,36 +593,37 @@ int main(int argc, char* argv[]) {
     FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B02K0nunu", "Bzero", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
     FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B02Kstar0nunu", "Bzero", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
     FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B02Xsnunu", "Bzero", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
-
+    */
     FillSIGNAL(dirname_SIGNAL_after_selection, "B2Knunu", "Bplus", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
     FillSIGNAL(dirname_SIGNAL_after_selection, "B2Kstarnunu", "Bplus", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
     FillSIGNAL(dirname_SIGNAL_after_selection, "B2Xsnunu", "Bplus", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
     FillSIGNAL(dirname_SIGNAL_after_selection, "B02K0nunu", "Bzero", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
     FillSIGNAL(dirname_SIGNAL_after_selection, "B02Kstar0nunu", "Bzero", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
     FillSIGNAL(dirname_SIGNAL_after_selection, "B02Xsnunu", "Bzero", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
-
+    /*
     FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B2Knunu", "Bplus", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
     FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B2Kstarnunu", "Bplus", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
     FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B2Xsnunu", "Bplus", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
     FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B02K0nunu", "Bzero", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
     FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B02Kstar0nunu", "Bzero", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
     FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B02Xsnunu", "Bzero", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
-
+    */
     ReadDecayInfo(dirname_SIGNAL_initial, "B2Knunu", "Bplus", Nevt_SIGNAL_initial_true, Scale_Kplus_here, "B2Knunu");
     ReadDecayInfo(dirname_SIGNAL_initial, "B2Kstarnunu", "Bplus", Nevt_SIGNAL_initial_true, Scale_Kplusstar_here, "otherwise");
     ReadDecayInfo(dirname_SIGNAL_initial, "B2Xsnunu", "Bplus", Nevt_SIGNAL_initial_true, Scale_Xsu_nonresonant_here, "B2Xsnunu");
     ReadDecayInfo(dirname_SIGNAL_initial, "B02K0nunu", "Bzero", Nevt_SIGNAL_initial_true, Scale_K0_here, "B02K0nunu");
     ReadDecayInfo(dirname_SIGNAL_initial, "B02Kstar0nunu", "Bzero", Nevt_SIGNAL_initial_true, Scale_K0star_here, "otherwise");
     ReadDecayInfo(dirname_SIGNAL_initial, "B02Xsnunu", "Bzero", Nevt_SIGNAL_initial_true, Scale_Xsd_nonresonant_here, "B02Xsnunu");
-
+    /*
     ReadDecayInfo_q2(dirname_SIGNAL_initial, "B2Knunu", "Bplus", Nevt_SIGNAL_initial_q2_true, Scale_Kplus_here, "B2Knunu");
     ReadDecayInfo_q2(dirname_SIGNAL_initial, "B2Kstarnunu", "Bplus", Nevt_SIGNAL_initial_q2_true, Scale_Kplusstar_here, "otherwise");
     ReadDecayInfo_q2(dirname_SIGNAL_initial, "B2Xsnunu", "Bplus", Nevt_SIGNAL_initial_q2_true, Scale_Xsu_nonresonant_here, "B2Xsnunu");
     ReadDecayInfo_q2(dirname_SIGNAL_initial, "B02K0nunu", "Bzero", Nevt_SIGNAL_initial_q2_true, Scale_K0_here, "B02K0nunu");
     ReadDecayInfo_q2(dirname_SIGNAL_initial, "B02Kstar0nunu", "Bzero", Nevt_SIGNAL_initial_q2_true, Scale_K0star_here, "otherwise");
     ReadDecayInfo_q2(dirname_SIGNAL_initial, "B02Xsnunu", "Bzero", Nevt_SIGNAL_initial_q2_true, Scale_Xsd_nonresonant_here, "B02Xsnunu");
-
+    */
     SIGNAL_pre_and_selection_efficiency_true->Divide(Nevt_SIGNAL_after_selection_true, Nevt_SIGNAL_initial_true, 1.0, 1.0, "B");
+    /*
     SIGNAL_selection_efficiency->Divide(Nevt_SIGNAL_after_selection, Ncandidate_SIGNAL_after_preselection, 1.0, 1.0, "B");
     SIGNAL_FBDT_efficiency->Divide(Nevt_SIGNAL_after_selection, Nevt_SIGNAL_before_FBDT_cut, 1.0, 1.0, "B");
 
@@ -637,7 +635,7 @@ int main(int argc, char* argv[]) {
 
     SIGNAL_efficiency_q2_true->Divide(Nevt_SIGNAL_after_selection_q2_true, Nevt_SIGNAL_initial_q2_true, 1.0, 1.0, "B");
     SIGNAL_efficiency_q2_true->SetStats(false);
-
+    */
     // define TCanvas
     TCanvas* c_temp = new TCanvas("c", "", 1200, 1000);
 
@@ -647,7 +645,7 @@ int main(int argc, char* argv[]) {
     SIGNAL_pre_and_selection_efficiency_true->SetMarkerColor(4);
     SIGNAL_pre_and_selection_efficiency_true->SetMarkerStyle(21);
     SIGNAL_pre_and_selection_efficiency_true->SetStats(false);
-
+    /*
     SIGNAL_FBDT_efficiency->SetMarkerSize(0.0);
     SIGNAL_FBDT_efficiency->SetLineWidth(2);
     SIGNAL_FBDT_efficiency->SetMarkerColor(4);
@@ -665,14 +663,14 @@ int main(int argc, char* argv[]) {
     BKG_selection_efficiency->SetMarkerColor(4);
     BKG_selection_efficiency->SetMarkerStyle(21);
     BKG_selection_efficiency->SetStats(false);
-
+    */
     TPaveText* pt;
 
     // draw SIGNAL preselection + selection efficiency true
     SIGNAL_pre_and_selection_efficiency_true->Draw("P");
     pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for preselection + selection"); pt->Draw();
     c_temp->SaveAs("Efficiency.png");
-
+    /*
     // draw SIGNAL FBDT efficiency reco
     SIGNAL_FBDT_efficiency->Draw("P");
     pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for FBDT"); pt->Draw();
@@ -702,6 +700,6 @@ int main(int argc, char* argv[]) {
     SIGNAL_efficiency_q2_true->Draw("P");
     pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency"); pt->Draw();
     c_temp->SaveAs("Efficiency_q2.png");
-
+    */
     return 0;
 }
