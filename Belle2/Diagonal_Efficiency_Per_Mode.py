@@ -112,9 +112,12 @@ bars = ax.barh(reco_list, Efficiency_diagonal)
 #plt.barh(y, Nevt)
 #plt.yticks(y, decay)
 
-plt.xlabel("Efficiency")
-plt.ylabel("Decay Modes")
+plt.xlabel("Efficiency", fontsize=20)
+plt.ylabel("Decay Modes", fontsize=20)
 plt.grid(True, axis = "x", linestyle="--")
+
+ax.tick_params(axis='x', labelsize=16)  # Change font size of x-axis tick labels
+ax.tick_params(axis='y', labelsize=16)  # Change font size of y-axis tick labels
 
 plt.savefig("Diagonal_Efficiency.png", bbox_inches='tight')
 
