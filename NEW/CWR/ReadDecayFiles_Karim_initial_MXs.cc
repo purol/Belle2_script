@@ -19,8 +19,8 @@
 # define N_K0_nunubar 1000000.0
 # define N_Kplusstar_nunubar 1000000.0
 # define N_K0star_nunubar 1000000.0
-# define N_Xsu_nonresonant_nunubar 1000000.0
-# define N_Xsd_nonresonant_nunubar 1000000.0
+# define N_Xsu_nonresonant_nunubar 5000000.0
+# define N_Xsd_nonresonant_nunubar 5000000.0
 
 // scale factor for each MC sample until LS1
 # define Scale_Kplus (N_Kplus_nunubar_LS1/N_Kplus_nunubar)
