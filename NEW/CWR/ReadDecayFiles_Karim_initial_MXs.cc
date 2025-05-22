@@ -725,7 +725,6 @@ int main(int argc, char* argv[]) {
         loader.GetData(input_file);
         if (loader.event_info_is_valid() == false) { printf("error!\n"); return 1; }
 
-        loader.MXsCut(0.0, 1.15);
         loader.PrintInformation(std::string("========== inital =========="), names.at(i));
     }
     loader.End();
