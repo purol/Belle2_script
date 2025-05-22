@@ -730,7 +730,7 @@ int main(int argc, char* argv[]) {
     }
     loader.End();
 
-    for (int = 0; i < N_decay_num->GetNbinsX(); i++) {
+    for (int i = 0; i < N_decay_num->GetNbinsX(); i++) {
         printf("%lf +- %lf\n", N_decay_num->GetBinContent(i + 1), N_decay_num->GetBinError(i + 1));
     }
 
