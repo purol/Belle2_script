@@ -39,10 +39,10 @@ TH1D* Ncandidate_SIGNAL_after_preselection = new TH1D("Ncandidate_SIGNAL_after_p
 TH1D* Nevt_SIGNAL_before_FBDT_cut = new TH1D("Nevt_SIGNAL_before_FBDT_cut", ";M_{X_{s}}^{reco} [GeV/c^{2}]", 9, 0.45, 3.0);
 TH1D* Nevt_SIGNAL_after_selection = new TH1D("Nevt_SIGNAL_after_selection", ";M_{X_{s}}^{reco} [GeV/c^{2}]", 9, 0.45, 3.0);
 
-TH1D* Nevt_SIGNAL_initial_true = new TH1D("Nevt_SIGNAL_initial_true", ";M_{X_{s}}^{true} [GeV/c^{2}]", 9, 0.45, 3.0);
-TH1D* Nevt_SIGNAL_after_preselection_true = new TH1D("Nevt_SIGNAL_after_preselection_true", ";M_{X_{s}}^{true} [GeV/c^{2}]", 9, 0.45, 3.0);
-TH1D* Nevt_SIGNAL_before_FBDT_cut_true = new TH1D("Nevt_SIGNAL_before_FBDT_cut_true", ";M_{X_{s}}^{true} [GeV/c^{2}]", 9, 0.45, 3.0);
-TH1D* Nevt_SIGNAL_after_selection_true = new TH1D("Nevt_SIGNAL_after_selection_true", ";M_{X_{s}}^{true} [GeV/c^{2}]", 9, 0.45, 3.0);
+TH1D* Nevt_SIGNAL_initial_true = new TH1D("Nevt_SIGNAL_initial_true", ";M_{X_{s}}^{true} [GeV/c^{2}]", 9, 1.1, 4.0);
+TH1D* Nevt_SIGNAL_after_preselection_true = new TH1D("Nevt_SIGNAL_after_preselection_true", ";M_{X_{s}}^{true} [GeV/c^{2}]", 9, 1.1, 4.0);
+TH1D* Nevt_SIGNAL_before_FBDT_cut_true = new TH1D("Nevt_SIGNAL_before_FBDT_cut_true", ";M_{X_{s}}^{true} [GeV/c^{2}]", 9, 1.1, 4.0);
+TH1D* Nevt_SIGNAL_after_selection_true = new TH1D("Nevt_SIGNAL_after_selection_true", ";M_{X_{s}}^{true} [GeV/c^{2}]", 9, 1.1, 4.0);
 
 TH1D* SIGNAL_pre_and_selection_efficiency_true = new TH1D("SIGNAL_pre_and_selection_efficiency_true", ";M_{X_{s}}^{true} [GeV/c^{2}];Efficiency", 9, 0.45, 3.0);
 TH1D* SIGNAL_selection_efficiency = new TH1D("SIGNAL_selection_efficiency", ";M_{X_{s}}^{reco} [GeV/c^{2}];Efficiency", 9, 0.45, 3.0);
