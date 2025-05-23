@@ -74,7 +74,7 @@ gbasf2_Hina_patch.py
 -> (add B->Xs nnbar info, add B->Xs KLKL info, add B->Xs p pbar flag, add B->Xs KS0 KS0 flag) ->
 gbasf2_Tsukumo.py ->  (KS0 MC finder bug fix) -> gbasf2_Tsukumo_BUGFIX.py -> (n0 MC finder bug fix) -> gbasf2_Tsukumo_BUGFIX2.py
 +-> (add new D candidates) ->
-gbasf2_Kumoi.py -> (KS0 MC finder bug fix) -> gbasf2_Kumoi_BUGFIX.py -> (n0 MC finder bug fix) -> gbasf2_Kumoi_BUGFIX2.py -> (remove stdpi0s from Dveto) -> gbasf2_Kumoi_BUGFIX3.py
+gbasf2_Kumoi.py -> (KS0 MC finder bug fix) -> gbasf2_Kumoi_BUGFIX.py -> (n0 MC finder bug fix) -> gbasf2_Kumoi_BUGFIX2.py -> (remove stdpi0s from Dveto) -> gbasf2_Kumoi_BUGFIX3.py -> (add information of K2pi and K3pi for CWR) -> gbasf2_Kumoi_BUGFIX3_CWR.py
 -> (for ppbar and KSKS, save # of ppbar and KSKS decay) ->
 gbasf2_Zanmu.py
 -> (add proton ID correction grid) ->
