@@ -1624,7 +1624,16 @@ for analysistype in Options:
         ma.fillParticleListFromMC("B+:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
         ma.fillParticleListFromMC("B0:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
         ma.fillParticleListFromMC("Upsilon(4S):PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
-    
+
+        ma.fillParticleListFromMC("eta:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+        ma.fillParticleListFromMC("rho0:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+        ma.fillParticleListFromMC("rho+:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+        ma.fillParticleListFromMC("omega:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+        ma.fillParticleListFromMC("phi:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+        ma.fillParticleListFromMC("K_1+:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+        ma.fillParticleListFromMC("K_10:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+        ma.fillParticleListFromMC("K_2*+:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+ 
         ma.reconstructMCDecay('K*+:MC_ch1 =direct=> K0:PrimaryMC pi+:PrimaryMC ?gamma', cut='', dmID = 0, path=my_path)
         ma.reconstructMCDecay('K*+:MC_ch2 =direct=> K+:PrimaryMC pi0:PrimaryMC ?gamma', cut='', dmID = 0, path=my_path)
         ma.reconstructMCDecay('K*0:MC_ch1 =direct=> K+:PrimaryMC pi-:PrimaryMC ?gamma', cut='', dmID = 0, path=my_path)
