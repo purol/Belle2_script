@@ -1728,109 +1728,109 @@ for analysistype in Options:
         decay_num = ["nParticlesInList(B+:Kcharge_total)", "nParticlesInList(B+:Kstarcharge_ch1_total)", "nParticlesInList(B+:Kstarcharge_ch2_total)", "nParticlesInList(Xsu:MCcomb)", "nParticlesInList(Xsu:MCch1)", "nParticlesInList(Xsu:MCch2)", "nParticlesInList(Xsu:MCch3)", "nParticlesInList(Xsu:MCch4)", "nParticlesInList(Xsu:MCch5)", "nParticlesInList(Xsu:MCch6)", "nParticlesInList(Xsu:MCch7)", "nParticlesInList(Xsu:MCch8)", "nParticlesInList(Xsu:MCch9)", "nParticlesInList(Xsu:MCch10)", "nParticlesInList(Xsu:MCch11)", "nParticlesInList(Xsu:MCch12)", "nParticlesInList(Xsu:MCch13)", "nParticlesInList(Xsu:MCch14)", "nParticlesInList(Xsu:MCch15)", "nParticlesInList(B0:Kneutral_total)", "nParticlesInList(B0:Kstarneutral_ch1_total)", "nParticlesInList(B0:Kstarneutral_ch2_total)", "nParticlesInList(Xsd:MCcomb)", "nParticlesInList(Xsd:MCch16)", "nParticlesInList(Xsd:MCch17)", "nParticlesInList(Xsd:MCch18)", "nParticlesInList(Xsd:MCch19)", "nParticlesInList(Xsd:MCch20)", "nParticlesInList(Xsd:MCch21)", "nParticlesInList(Xsd:MCch22)", "nParticlesInList(Xsd:MCch23)", "nParticlesInList(Xsd:MCch24)", "nParticlesInList(Xsd:MCch25)", "nParticlesInList(Xsd:MCch26)", "nParticlesInList(Xsd:MCch27)", "nParticlesInList(Xsd:MCch28)", "nParticlesInList(Xsd:MCch29)", "nParticlesInList(Xsd:MCch30)"]
         systematics = ["nParticlesInList(nu_e:MC_signal)", "nParticlesInList(B+:MC_signal_total_e)", "nParticlesInList(B0:MC_signal_total_e)", "invMassInLists(nu_e:MC_signal)", "averageValueInList(B+:MC_signal_total_e, extraInfo(helicityangle))", "averageValueInList(B0:MC_signal_total_e, extraInfo(helicityangle))", "averageValueInList(B+:MC_signal_total_e, daughter(0, M))", "averageValueInList(B0:MC_signal_total_e, daughter(0, M))", "averageValueInList(B+:MC_signal_total_e, M)", "averageValueInList(B0:MC_signal_total_e, M)", "nParticlesInList(B+:PrimaryMC)", "nParticlesInList(B0:PrimaryMC)"]
 
-        # detail investigation for K pi pi
-        ma.reconstructMCDecay('Xsu:Kpipi_ch1 =direct=> rho0:PrimaryMC K+:PrimaryMC', cut='', dmID = 1, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipi_ch2 =direct=> pi+:PrimaryMC K*0:PrimaryMC', cut='', dmID = 2, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipi_ch3 =direct=> K+:PrimaryMC pi-:PrimaryMC pi+:PrimaryMC', cut='', dmID = 3, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipi_ch4 =direct=> K+:PrimaryMC omega:PrimaryMC', cut='', dmID = 4, path=my_path)
-        ma.copyLists(outputListName="Xsu:Kppimpip", inputListNames=["Xsu:Kpipi_ch1", "Xsu:Kpipi_ch2", "Xsu:Kpipi_ch3", "Xsu:Kpipi_ch4"], path=my_path)
-
-        ma.reconstructMCDecay('Xsu:Kpipi_ch5 =direct=> rho+:PrimaryMC K0:PrimaryMC', cut='', dmID = 5, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipi_ch6 =direct=> pi+:PrimaryMC K*0:PrimaryMC', cut='', dmID = 6, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipi_ch7 =direct=> K0:PrimaryMC pi0:PrimaryMC pi+:PrimaryMC', cut='', dmID = 7, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipi_ch8 =direct=> pi0:PrimaryMC K*+:PrimaryMC', cut='', dmID = 8, path=my_path)
-        ma.copyLists(outputListName="Xsu:Kzpizpip", inputListNames=["Xsu:Kpipi_ch5", "Xsu:Kpipi_ch6", "Xsu:Kpipi_ch7", "Xsu:Kpipi_ch8"], path=my_path)
-
-        ma.reconstructMCDecay('Xsd:Kpipi_ch1 =direct=> rho-:PrimaryMC K+:PrimaryMC', cut='', dmID = 1, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipi_ch2 =direct=> pi-:PrimaryMC K*+:PrimaryMC', cut='', dmID = 2, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipi_ch3 =direct=> K+:PrimaryMC pi-:PrimaryMC pi0:PrimaryMC', cut='', dmID = 3, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipi_ch4 =direct=> pi0:PrimaryMC K*0:PrimaryMC', cut='', dmID = 4, path=my_path)
-        ma.copyLists(outputListName="Xsd:Kppimpiz", inputListNames=["Xsd:Kpipi_ch1", "Xsd:Kpipi_ch2", "Xsd:Kpipi_ch3", "Xsd:Kpipi_ch4"], path=my_path)
-
-        ma.reconstructMCDecay('Xsd:Kpipi_ch5 =direct=> rho0:PrimaryMC K0:PrimaryMC', cut='', dmID = 5, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipi_ch6 =direct=> pi-:PrimaryMC K*+:PrimaryMC', cut='', dmID = 6, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipi_ch7 =direct=> pi-:PrimaryMC pi+:PrimaryMC K0:PrimaryMC', cut='', dmID = 7, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipi_ch8 =direct=> omega:PrimaryMC K0:PrimaryMC', cut='', dmID = 8, path=my_path)
+        # detail investigation for K pi pi
+        ma.reconstructMCDecay('Xsu:Kpipi_ch1 =direct=> rho0:PrimaryMC K+:PrimaryMC', cut='', dmID = 1, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipi_ch2 =direct=> pi+:PrimaryMC K*0:PrimaryMC', cut='', dmID = 2, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipi_ch3 =direct=> K+:PrimaryMC pi-:PrimaryMC pi+:PrimaryMC', cut='', dmID = 3, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipi_ch4 =direct=> K+:PrimaryMC omega:PrimaryMC', cut='', dmID = 4, path=my_path)
+        ma.copyLists(outputListName="Xsu:Kppimpip", inputListNames=["Xsu:Kpipi_ch1", "Xsu:Kpipi_ch2", "Xsu:Kpipi_ch3", "Xsu:Kpipi_ch4"], path=my_path)
+
+        ma.reconstructMCDecay('Xsu:Kpipi_ch5 =direct=> rho+:PrimaryMC K0:PrimaryMC', cut='', dmID = 5, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipi_ch6 =direct=> pi+:PrimaryMC K*0:PrimaryMC', cut='', dmID = 6, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipi_ch7 =direct=> K0:PrimaryMC pi0:PrimaryMC pi+:PrimaryMC', cut='', dmID = 7, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipi_ch8 =direct=> pi0:PrimaryMC K*+:PrimaryMC', cut='', dmID = 8, path=my_path)
+        ma.copyLists(outputListName="Xsu:Kzpizpip", inputListNames=["Xsu:Kpipi_ch5", "Xsu:Kpipi_ch6", "Xsu:Kpipi_ch7", "Xsu:Kpipi_ch8"], path=my_path)
+
+        ma.reconstructMCDecay('Xsd:Kpipi_ch1 =direct=> rho-:PrimaryMC K+:PrimaryMC', cut='', dmID = 1, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipi_ch2 =direct=> pi-:PrimaryMC K*+:PrimaryMC', cut='', dmID = 2, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipi_ch3 =direct=> K+:PrimaryMC pi-:PrimaryMC pi0:PrimaryMC', cut='', dmID = 3, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipi_ch4 =direct=> pi0:PrimaryMC K*0:PrimaryMC', cut='', dmID = 4, path=my_path)
+        ma.copyLists(outputListName="Xsd:Kppimpiz", inputListNames=["Xsd:Kpipi_ch1", "Xsd:Kpipi_ch2", "Xsd:Kpipi_ch3", "Xsd:Kpipi_ch4"], path=my_path)
+
+        ma.reconstructMCDecay('Xsd:Kpipi_ch5 =direct=> rho0:PrimaryMC K0:PrimaryMC', cut='', dmID = 5, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipi_ch6 =direct=> pi-:PrimaryMC K*+:PrimaryMC', cut='', dmID = 6, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipi_ch7 =direct=> pi-:PrimaryMC pi+:PrimaryMC K0:PrimaryMC', cut='', dmID = 7, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipi_ch8 =direct=> omega:PrimaryMC K0:PrimaryMC', cut='', dmID = 8, path=my_path)
         ma.copyLists(outputListName="Xsd:Kzpippim", inputListNames=["Xsd:Kpipi_ch5", "Xsd:Kpipi_ch6", "Xsd:Kpipi_ch7", "Xsd:Kpipi_ch8"], path=my_path)
 
-        # detail investigation for K pi pi pi
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch1 =direct=> rho+:PrimaryMC pi-:PrimaryMC K+:PrimaryMC', cut='',dmID = 1,  path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch2 =direct=> K+:PrimaryMC eta:PrimaryMC', cut='', dmID = 2, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch3 =direct=> omega:PrimaryMC K+:PrimaryMC', cut='', dmID = 3, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch4 =direct=> pi-:PrimaryMC pi+:PrimaryMC pi0:PrimaryMC K+:PrimaryMC', cut='', dmID = 4, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch5 =direct=> K+:PrimaryMC phi:PrimaryMC', cut='', dmID = 5, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch6 =direct=> rho+:PrimaryMC K*0:PrimaryMC', cut='', dmID = 6, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch7 =direct=> pi+:PrimaryMC pi0:PrimaryMC K*0:PrimaryMC', cut='', dmID = 7, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch8 =direct=> rho-:PrimaryMC pi+:PrimaryMC K+:PrimaryMC', cut='',dmID = 8, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch9 =direct=> rho0:PrimaryMC pi0:PrimaryMC K+:PrimaryMC', cut='',dmID = 9,  path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch10 =direct=> rho0:PrimaryMC K*+:PrimaryMC', cut='',dmID = 10,  path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch11 =direct=> pi-:PrimaryMC pi+:PrimaryMC K*+:PrimaryMC', cut='',dmID = 11,  path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch12 =direct=> omega:PrimaryMC K+:PrimaryMC pi0:PrimaryMC', cut='', dmID = 12, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch13 =direct=> omega:PrimaryMC K*+:PrimaryMC', cut='', dmID = 13, path=my_path)
-        ma.copyLists(outputListName="Xsu:Kppippippiz", inputListNames=["Xsu:Kpipipi_ch1", "Xsu:Kpipipi_ch2", "Xsu:Kpipipi_ch3", "Xsu:Kpipipi_ch4", "Xsu:Kpipipi_ch5", "Xsu:Kpipipi_ch6", "Xsu:Kpipipi_ch7", "Xsu:Kpipipi_ch8", "Xsu:Kpipipi_ch9", "Xsu:Kpipipi_ch10", "Xsu:Kpipipi_ch11", "Xsu:Kpipipi_ch12", "Xsu:Kpipipi_ch13"], path=my_path)
-
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch14 =direct=> K*+:PrimaryMC pi-:PrimaryMC pi+:PrimaryMC', cut='',dmID = 14,  path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch15 =direct=> K0:PrimaryMC pi+:PrimaryMC pi-:PrimaryMC pi+:PrimaryMC', cut='', dmID = 15, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch16 =direct=> K*+:PrimaryMC rho0:PrimaryMC', cut='', dmID = 16, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch17 =direct=> K*+:PrimaryMC pi-:PrimaryMC pi+:PrimaryMC', cut='', dmID = 17, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch18 =direct=> K0:PrimaryMC pi+:PrimaryMC rho0:PrimaryMC', cut='', dmID = 18, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch19 =direct=> K*+:PrimaryMC omega:PrimaryMC', cut='', dmID = 19, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch20 =direct=> K0:PrimaryMC pi+:PrimaryMC omega:PrimaryMC', cut='', dmID = 20, path=my_path)
-        ma.copyLists(outputListName="Xsu:Kzpippimpip", inputListNames=["Xsu:Kpipipi_ch14", "Xsu:Kpipipi_ch15", "Xsu:Kpipipi_ch16", "Xsu:Kpipipi_ch17", "Xsu:Kpipipi_ch18", "Xsu:Kpipipi_ch19", "Xsu:Kpipipi_ch20"], path=my_path)
-        
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch21 =direct=> pi0:PrimaryMC rho+:PrimaryMC K0:PrimaryMC', cut='',dmID = 21,  path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch22 =direct=> K*0:PrimaryMC pi+:PrimaryMC pi0:PrimaryMC', cut='', dmID = 22, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch23 =direct=> K*0:PrimaryMC rho+:PrimaryMC', cut='', dmID = 23, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch24 =direct=> K*+:PrimaryMC pi0:PrimaryMC pi0:PrimaryMC', cut='', dmID = 24, path=my_path)
-        ma.reconstructMCDecay('Xsu:Kpipipi_ch25 =direct=> K0:PrimaryMC pi+:PrimaryMC pi0:PrimaryMC pi0:PrimaryMC', cut='', dmID = 25, path=my_path)
-        ma.copyLists(outputListName="Xsu:Kzpippizpiz", inputListNames=["Xsu:Kpipipi_ch21", "Xsu:Kpipipi_ch22", "Xsu:Kpipipi_ch23", "Xsu:Kpipipi_ch24", "Xsu:Kpipipi_ch25"], path=my_path)
-
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch1 =direct=> rho0:PrimaryMC K+:PrimaryMC pi-:PrimaryMC', cut='',dmID = 1,  path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch2 =direct=> K*0:PrimaryMC pi+:PrimaryMC pi-:PrimaryMC', cut='', dmID = 2, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch3 =direct=> K*0:PrimaryMC rho0:PrimaryMC', cut='', dmID = 3, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch4 =direct=> pi-:PrimaryMC pi+:PrimaryMC pi-:PrimaryMC K+:PrimaryMC', cut='', dmID = 4, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch5 =direct=> omega:PrimaryMC K*0:PrimaryMC', cut='', dmID = 5, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch6 =direct=> omega:PrimaryMC K+:PrimaryMC pi-:PrimaryMC', cut='', dmID = 6, path=my_path)
+        # detail investigation for K pi pi pi
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch1 =direct=> rho+:PrimaryMC pi-:PrimaryMC K+:PrimaryMC', cut='',dmID = 1,  path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch2 =direct=> K+:PrimaryMC eta:PrimaryMC', cut='', dmID = 2, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch3 =direct=> omega:PrimaryMC K+:PrimaryMC', cut='', dmID = 3, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch4 =direct=> pi-:PrimaryMC pi+:PrimaryMC pi0:PrimaryMC K+:PrimaryMC', cut='', dmID = 4, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch5 =direct=> K+:PrimaryMC phi:PrimaryMC', cut='', dmID = 5, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch6 =direct=> rho+:PrimaryMC K*0:PrimaryMC', cut='', dmID = 6, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch7 =direct=> pi+:PrimaryMC pi0:PrimaryMC K*0:PrimaryMC', cut='', dmID = 7, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch8 =direct=> rho-:PrimaryMC pi+:PrimaryMC K+:PrimaryMC', cut='',dmID = 8, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch9 =direct=> rho0:PrimaryMC pi0:PrimaryMC K+:PrimaryMC', cut='',dmID = 9,  path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch10 =direct=> rho0:PrimaryMC K*+:PrimaryMC', cut='',dmID = 10,  path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch11 =direct=> pi-:PrimaryMC pi+:PrimaryMC K*+:PrimaryMC', cut='',dmID = 11,  path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch12 =direct=> omega:PrimaryMC K+:PrimaryMC pi0:PrimaryMC', cut='', dmID = 12, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch13 =direct=> omega:PrimaryMC K*+:PrimaryMC', cut='', dmID = 13, path=my_path)
+        ma.copyLists(outputListName="Xsu:Kppippippiz", inputListNames=["Xsu:Kpipipi_ch1", "Xsu:Kpipipi_ch2", "Xsu:Kpipipi_ch3", "Xsu:Kpipipi_ch4", "Xsu:Kpipipi_ch5", "Xsu:Kpipipi_ch6", "Xsu:Kpipipi_ch7", "Xsu:Kpipipi_ch8", "Xsu:Kpipipi_ch9", "Xsu:Kpipipi_ch10", "Xsu:Kpipipi_ch11", "Xsu:Kpipipi_ch12", "Xsu:Kpipipi_ch13"], path=my_path)
+
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch14 =direct=> K*+:PrimaryMC pi-:PrimaryMC pi+:PrimaryMC', cut='',dmID = 14,  path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch15 =direct=> K0:PrimaryMC pi+:PrimaryMC pi-:PrimaryMC pi+:PrimaryMC', cut='', dmID = 15, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch16 =direct=> K*+:PrimaryMC rho0:PrimaryMC', cut='', dmID = 16, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch17 =direct=> K*+:PrimaryMC pi-:PrimaryMC pi+:PrimaryMC', cut='', dmID = 17, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch18 =direct=> K0:PrimaryMC pi+:PrimaryMC rho0:PrimaryMC', cut='', dmID = 18, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch19 =direct=> K*+:PrimaryMC omega:PrimaryMC', cut='', dmID = 19, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch20 =direct=> K0:PrimaryMC pi+:PrimaryMC omega:PrimaryMC', cut='', dmID = 20, path=my_path)
+        ma.copyLists(outputListName="Xsu:Kzpippimpip", inputListNames=["Xsu:Kpipipi_ch14", "Xsu:Kpipipi_ch15", "Xsu:Kpipipi_ch16", "Xsu:Kpipipi_ch17", "Xsu:Kpipipi_ch18", "Xsu:Kpipipi_ch19", "Xsu:Kpipipi_ch20"], path=my_path)
+        
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch21 =direct=> pi0:PrimaryMC rho+:PrimaryMC K0:PrimaryMC', cut='',dmID = 21,  path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch22 =direct=> K*0:PrimaryMC pi+:PrimaryMC pi0:PrimaryMC', cut='', dmID = 22, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch23 =direct=> K*0:PrimaryMC rho+:PrimaryMC', cut='', dmID = 23, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch24 =direct=> K*+:PrimaryMC pi0:PrimaryMC pi0:PrimaryMC', cut='', dmID = 24, path=my_path)
+        ma.reconstructMCDecay('Xsu:Kpipipi_ch25 =direct=> K0:PrimaryMC pi+:PrimaryMC pi0:PrimaryMC pi0:PrimaryMC', cut='', dmID = 25, path=my_path)
+        ma.copyLists(outputListName="Xsu:Kzpippizpiz", inputListNames=["Xsu:Kpipipi_ch21", "Xsu:Kpipipi_ch22", "Xsu:Kpipipi_ch23", "Xsu:Kpipipi_ch24", "Xsu:Kpipipi_ch25"], path=my_path)
+
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch1 =direct=> rho0:PrimaryMC K+:PrimaryMC pi-:PrimaryMC', cut='',dmID = 1,  path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch2 =direct=> K*0:PrimaryMC pi+:PrimaryMC pi-:PrimaryMC', cut='', dmID = 2, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch3 =direct=> K*0:PrimaryMC rho0:PrimaryMC', cut='', dmID = 3, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch4 =direct=> pi-:PrimaryMC pi+:PrimaryMC pi-:PrimaryMC K+:PrimaryMC', cut='', dmID = 4, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch5 =direct=> omega:PrimaryMC K*0:PrimaryMC', cut='', dmID = 5, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch6 =direct=> omega:PrimaryMC K+:PrimaryMC pi-:PrimaryMC', cut='', dmID = 6, path=my_path)
         ma.copyLists(outputListName="Xsd:Kppimpippim", inputListNames=["Xsd:Kpipipi_ch1", "Xsd:Kpipipi_ch2", "Xsd:Kpipipi_ch3", "Xsd:Kpipipi_ch4", "Xsd:Kpipipi_ch5", "Xsd:Kpipipi_ch6"], path=my_path)
 
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch7 =direct=> K0:PrimaryMC omega:PrimaryMC', cut='', dmID = 7, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch8 =direct=> K0:PrimaryMC pi0:PrimaryMC rho0:PrimaryMC', cut='', dmID = 8, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch9 =direct=> K0:PrimaryMC pi+:PrimaryMC pi-:PrimaryMC pi0:PrimaryMC', cut='', dmID = 9, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch10 =direct=> K*0:PrimaryMC pi+:PrimaryMC pi-:PrimaryMC', cut='', dmID = 10, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch11 =direct=> K0:PrimaryMC pi-:PrimaryMC rho+:PrimaryMC', cut='', dmID = 11, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch12 =direct=> K*+:PrimaryMC rho-:PrimaryMC', cut='', dmID = 12, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch13 =direct=> K0:PrimaryMC phi:PrimaryMC', cut='', dmID = 13, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch14 =direct=> K*+:PrimaryMC pi0:PrimaryMC pi-:PrimaryMC', cut='', dmID = 14, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch15 =direct=> K*0:PrimaryMC rho0:PrimaryMC', cut='', dmID = 15, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch16 =direct=> K0:PrimaryMC eta:PrimaryMC', cut='', dmID = 16, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch17 =direct=> K0:PrimaryMC pi+:PrimaryMC rho-:PrimaryMC', cut='', dmID = 17, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch18 =direct=> K0:PrimaryMC pi0:PrimaryMC omega:PrimaryMC', cut='', dmID = 18, path=my_path)
-        ma.copyLists(outputListName="Xsd:Kzpippimpiz", inputListNames=["Xsd:Kpipipi_ch7", "Xsd:Kpipipi_ch8", "Xsd:Kpipipi_ch9", "Xsd:Kpipipi_ch10", "Xsd:Kpipipi_ch11", "Xsd:Kpipipi_ch12", "Xsd:Kpipipi_ch13", "Xsd:Kpipipi_ch14", "Xsd:Kpipipi_ch15", "Xsd:Kpipipi_ch16", "Xsd:Kpipipi_ch17", "Xsd:Kpipipi_ch18"], path=my_path)
-
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch19 =direct=> K+:PrimaryMC rho-:PrimaryMC pi0:PrimaryMC', cut='', dmID = 19, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch20 =direct=> K*+:PrimaryMC pi-:PrimaryMC pi0:PrimaryMC', cut='', dmID = 20, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch21 =direct=> K+:PrimaryMC pi-:PrimaryMC pi0:PrimaryMC pi0:PrimaryMC', cut='', dmID = 21, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch22 =direct=> K*+:PrimaryMC rho-:PrimaryMC', cut='', dmID = 22, path=my_path)
-        ma.reconstructMCDecay('Xsd:Kpipipi_ch23 =direct=> K*0:PrimaryMC pi0:PrimaryMC pi0:PrimaryMC', cut='', dmID = 23, path=my_path)
-        ma.copyLists(outputListName="Xsd:Kppimpizpiz", inputListNames=["Xsd:Kpipipi_ch19", "Xsd:Kpipipi_ch20", "Xsd:Kpipipi_ch21", "Xsd:Kpipipi_ch22", "Xsd:Kpipipi_ch23"], path=my_path)
-
-        ma.reconstructMCDecay('Xsu:1270 -> K_1+:PrimaryMC ...', cut='',dmID = 0,  path=my_path)
-        ma.reconstructMCDecay('Xsu:1430 -> K_2*+:PrimaryMC ...', cut='',dmID = 0,  path=my_path)
-
-        variables = ["nParticlesInList(Xsu:MCch4)", "nParticlesInList(Xsu:MCch5)", "nParticlesInList(Xsu:MCch6)", "nParticlesInList(Xsu:MCch7)", "nParticlesInList(Xsu:MCch11)"]
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch7 =direct=> K0:PrimaryMC omega:PrimaryMC', cut='', dmID = 7, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch8 =direct=> K0:PrimaryMC pi0:PrimaryMC rho0:PrimaryMC', cut='', dmID = 8, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch9 =direct=> K0:PrimaryMC pi+:PrimaryMC pi-:PrimaryMC pi0:PrimaryMC', cut='', dmID = 9, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch10 =direct=> K*0:PrimaryMC pi+:PrimaryMC pi-:PrimaryMC', cut='', dmID = 10, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch11 =direct=> K0:PrimaryMC pi-:PrimaryMC rho+:PrimaryMC', cut='', dmID = 11, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch12 =direct=> K*+:PrimaryMC rho-:PrimaryMC', cut='', dmID = 12, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch13 =direct=> K0:PrimaryMC phi:PrimaryMC', cut='', dmID = 13, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch14 =direct=> K*+:PrimaryMC pi0:PrimaryMC pi-:PrimaryMC', cut='', dmID = 14, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch15 =direct=> K*0:PrimaryMC rho0:PrimaryMC', cut='', dmID = 15, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch16 =direct=> K0:PrimaryMC eta:PrimaryMC', cut='', dmID = 16, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch17 =direct=> K0:PrimaryMC pi+:PrimaryMC rho-:PrimaryMC', cut='', dmID = 17, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch18 =direct=> K0:PrimaryMC pi0:PrimaryMC omega:PrimaryMC', cut='', dmID = 18, path=my_path)
+        ma.copyLists(outputListName="Xsd:Kzpippimpiz", inputListNames=["Xsd:Kpipipi_ch7", "Xsd:Kpipipi_ch8", "Xsd:Kpipipi_ch9", "Xsd:Kpipipi_ch10", "Xsd:Kpipipi_ch11", "Xsd:Kpipipi_ch12", "Xsd:Kpipipi_ch13", "Xsd:Kpipipi_ch14", "Xsd:Kpipipi_ch15", "Xsd:Kpipipi_ch16", "Xsd:Kpipipi_ch17", "Xsd:Kpipipi_ch18"], path=my_path)
+
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch19 =direct=> K+:PrimaryMC rho-:PrimaryMC pi0:PrimaryMC', cut='', dmID = 19, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch20 =direct=> K*+:PrimaryMC pi-:PrimaryMC pi0:PrimaryMC', cut='', dmID = 20, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch21 =direct=> K+:PrimaryMC pi-:PrimaryMC pi0:PrimaryMC pi0:PrimaryMC', cut='', dmID = 21, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch22 =direct=> K*+:PrimaryMC rho-:PrimaryMC', cut='', dmID = 22, path=my_path)
+        ma.reconstructMCDecay('Xsd:Kpipipi_ch23 =direct=> K*0:PrimaryMC pi0:PrimaryMC pi0:PrimaryMC', cut='', dmID = 23, path=my_path)
+        ma.copyLists(outputListName="Xsd:Kppimpizpiz", inputListNames=["Xsd:Kpipipi_ch19", "Xsd:Kpipipi_ch20", "Xsd:Kpipipi_ch21", "Xsd:Kpipipi_ch22", "Xsd:Kpipipi_ch23"], path=my_path)
+
+        ma.reconstructMCDecay('Xsu:1270 -> K_1+:PrimaryMC ...', cut='',dmID = 0,  path=my_path)
+        ma.reconstructMCDecay('Xsu:1430 -> K_2*+:PrimaryMC ...', cut='',dmID = 0,  path=my_path)
+
+        variables = ["nParticlesInList(Xsu:MCch4)", "nParticlesInList(Xsu:MCch5)", "nParticlesInList(Xsu:MCch6)", "nParticlesInList(Xsu:MCch7)", "nParticlesInList(Xsu:MCch11)"]
         variables = variables + ["nParticlesInList(Xsd:MCch19)", "nParticlesInList(Xsd:MCch20)", "nParticlesInList(Xsd:MCch21)", "nParticlesInList(Xsd:MCch22)", "nParticlesInList(Xsd:MCch26)"]
 
-        for index in range(1,9):
-            variables = variables + ["nParticlesInList(Xsu:Kpipi_ch" + str(index) + ")"]
-        for index in range(1,26):
-            variables = variables + ["nParticlesInList(Xsu:Kpipipi_ch" + str(index) + ")"]
-        for index in range(1,9):
-            variables = variables + ["nParticlesInList(Xsd:Kpipi_ch" + str(index) + ")"]
-        for index in range(1,24):
-            variables = variables + ["nParticlesInList(Xsd:Kpipipi_ch" + str(index) + ")"]
-
-        variables = variables + ["nParticlesInList(Xsu:1270)", "nParticlesInList(Xsu:1430)"]
-
+        for index in range(1,9):
+            variables = variables + ["nParticlesInList(Xsu:Kpipi_ch" + str(index) + ")"]
+        for index in range(1,26):
+            variables = variables + ["nParticlesInList(Xsu:Kpipipi_ch" + str(index) + ")"]
+        for index in range(1,9):
+            variables = variables + ["nParticlesInList(Xsd:Kpipi_ch" + str(index) + ")"]
+        for index in range(1,24):
+            variables = variables + ["nParticlesInList(Xsd:Kpipipi_ch" + str(index) + ")"]
+
+        variables = variables + ["nParticlesInList(Xsu:1270)", "nParticlesInList(Xsu:1430)"]
+
         variables = variables + ["averageValueInList(Xsu:PrimaryMC, M)", "averageValueInList(Xsd:PrimaryMC, M)", "daughter(0, daughter(0, M))"]
     
         ma.variablesToNtuple(decayString="Upsilon(4S):withoutneutrino",variables=decay_num+systematics+variables,filename=output_file,treename="Xs",path=my_path)
