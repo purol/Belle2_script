@@ -20,7 +20,7 @@ Corrector corrector;
 Corrector_Knn corrector_Knn;
 Corrector_Fragmentation corrector_Fragmentation;
 
-# define MCTYPE "MC15rd"
+# define MCTYPE "MC15ri"
 
 # define Scale_Kplus_here (N_Kplus_nunubar_LS1/1000000.0)
 # define Scale_Kplusstar_here (N_Kplusstar_nunubar_LS1/1000000.0)
@@ -860,80 +860,80 @@ int main(int argc, char* argv[]) {
     // function to calculate efficiency as a function of MXs
     INDEX = std::atoi(argv[1]);
 
-    const char* dirname_CHG_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v008/before_Mbc_cut";
-    const char* dirname_MIX_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v008/before_Mbc_cut";
-    const char* dirname_UUBAR_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_v008/before_Mbc_cut";
-    const char* dirname_DDBAR_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_v008/before_Mbc_cut";
-    const char* dirname_SSBAR_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_v008/before_Mbc_cut";
-    const char* dirname_CHARM_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_v008/before_Mbc_cut";
+    const char* dirname_CHG_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/CHG_analysis/test_v000/before_Mbc_cut";
+    const char* dirname_MIX_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/MIX_analysis/test_v000/before_Mbc_cut";
+    const char* dirname_UUBAR_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/UUBAR_analysis/test_v000/before_Mbc_cut";
+    const char* dirname_DDBAR_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/DDBAR_analysis/test_v000/before_Mbc_cut";
+    const char* dirname_SSBAR_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/SSBAR_analysis/test_v000/before_Mbc_cut";
+    const char* dirname_CHARM_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/CHARM_analysis/test_v000/before_Mbc_cut";
 
-    const char* dirname_CHG_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v008/final_output";
-    const char* dirname_MIX_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v008/final_output";
-    const char* dirname_UUBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_v008/final_output";
-    const char* dirname_DDBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_v008/final_output";
-    const char* dirname_SSBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_v008/final_output";
-    const char* dirname_CHARM_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_v008/final_output";
+    const char* dirname_CHG_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/CHG_analysis/test_v000/final_output";
+    const char* dirname_MIX_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/MIX_analysis/test_v000/final_output";
+    const char* dirname_UUBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/UUBAR_analysis/test_v000/final_output";
+    const char* dirname_DDBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/DDBAR_analysis/test_v000/final_output";
+    const char* dirname_SSBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/SSBAR_analysis/test_v000/final_output";
+    const char* dirname_CHARM_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/CHARM_analysis/test_v000/final_output";
 
-    const char* dirname_CHG_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_MIX_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_UUBAR_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_DDBAR_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_SSBAR_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_CHARM_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_CHG_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/CHG_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_MIX_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/MIX_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_UUBAR_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/UUBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_DDBAR_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/DDBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_SSBAR_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_CHARM_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
 
-    const char* dirname_SIGNAL_initial = "/home/belle2/junewoo/storage_ghi/20220929_SIGNAL_decayInfo_again/small";
-    const char* dirname_SIGNAL_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/before_Mbc_cut";
-    const char* dirname_SIGNAL_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/final_output";
-    const char* dirname_SIGNAL_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_SIGNAL_initial = "/home/belle2/junewoo/storage_ghi/20220929_SIGNAL_gsim_CWR_Karim/output/Ntuple";
+    const char* dirname_SIGNAL_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/SIGNAL_analysis/test_v000/before_Mbc_cut";
+    const char* dirname_SIGNAL_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/SIGNAL_analysis/test_v000/final_output";
+    const char* dirname_SIGNAL_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/CWR/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
     /*
-    FillBKG(dirname_CHG_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("CHG", MCTYPE, "validation", "CHG"));
-    FillBKG(dirname_MIX_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("MIX", MCTYPE, "validation", "MIX"));
-    FillBKG(dirname_UUBAR_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"));
-    FillBKG(dirname_DDBAR_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"));
-    FillBKG(dirname_SSBAR_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"));
-    FillBKG(dirname_CHARM_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"));
+    FillBKG(dirname_CHG_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("CHG", MCTYPE, "test", "CHG"));
+    FillBKG(dirname_MIX_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("MIX", MCTYPE, "test", "MIX"));
+    FillBKG(dirname_UUBAR_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("UUBAR", MCTYPE, "test", "UUBAR"));
+    FillBKG(dirname_DDBAR_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("DDBAR", MCTYPE, "test", "DDBAR"));
+    FillBKG(dirname_SSBAR_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("SSBAR", MCTYPE, "test", "SSBAR"));
+    FillBKG(dirname_CHARM_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("CHARM", MCTYPE, "test", "CHARM"));
 
-    FillBKG(dirname_CHG_after_before_FBDT_cut, "root", Nevt_BKG_before_FBDT_cut, ObtainWeight("CHG", MCTYPE, "validation", "CHG"));
-    FillBKG(dirname_MIX_after_before_FBDT_cut, "root", Nevt_BKG_before_FBDT_cut, ObtainWeight("MIX", MCTYPE, "validation", "MIX"));
-    FillBKG(dirname_UUBAR_after_before_FBDT_cut, "root", Nevt_BKG_before_FBDT_cut, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"));
-    FillBKG(dirname_DDBAR_after_before_FBDT_cut, "root", Nevt_BKG_before_FBDT_cut, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"));
-    FillBKG(dirname_SSBAR_after_before_FBDT_cut, "root", Nevt_BKG_before_FBDT_cut, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"));
-    FillBKG(dirname_CHARM_after_before_FBDT_cut, "root", Nevt_BKG_before_FBDT_cut, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"));
+    FillBKG(dirname_CHG_after_before_FBDT_cut, "root", Nevt_BKG_before_FBDT_cut, ObtainWeight("CHG", MCTYPE, "test", "CHG"));
+    FillBKG(dirname_MIX_after_before_FBDT_cut, "root", Nevt_BKG_before_FBDT_cut, ObtainWeight("MIX", MCTYPE, "test", "MIX"));
+    FillBKG(dirname_UUBAR_after_before_FBDT_cut, "root", Nevt_BKG_before_FBDT_cut, ObtainWeight("UUBAR", MCTYPE, "test", "UUBAR"));
+    FillBKG(dirname_DDBAR_after_before_FBDT_cut, "root", Nevt_BKG_before_FBDT_cut, ObtainWeight("DDBAR", MCTYPE, "test", "DDBAR"));
+    FillBKG(dirname_SSBAR_after_before_FBDT_cut, "root", Nevt_BKG_before_FBDT_cut, ObtainWeight("SSBAR", MCTYPE, "test", "SSBAR"));
+    FillBKG(dirname_CHARM_after_before_FBDT_cut, "root", Nevt_BKG_before_FBDT_cut, ObtainWeight("CHARM", MCTYPE, "test", "CHARM"));
 
-    FillBKG(dirname_CHG_after_selection, "root", Nevt_BKG_after_selection, ObtainWeight("CHG", MCTYPE, "validation", "CHG"));
-    FillBKG(dirname_MIX_after_selection, "root", Nevt_BKG_after_selection, ObtainWeight("MIX", MCTYPE, "validation", "MIX"));
-    FillBKG(dirname_UUBAR_after_selection, "root", Nevt_BKG_after_selection, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"));
-    FillBKG(dirname_DDBAR_after_selection, "root", Nevt_BKG_after_selection, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"));
-    FillBKG(dirname_SSBAR_after_selection, "root", Nevt_BKG_after_selection, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"));
-    FillBKG(dirname_CHARM_after_selection, "root", Nevt_BKG_after_selection, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"));
+    FillBKG(dirname_CHG_after_selection, "root", Nevt_BKG_after_selection, ObtainWeight("CHG", MCTYPE, "test", "CHG"));
+    FillBKG(dirname_MIX_after_selection, "root", Nevt_BKG_after_selection, ObtainWeight("MIX", MCTYPE, "test", "MIX"));
+    FillBKG(dirname_UUBAR_after_selection, "root", Nevt_BKG_after_selection, ObtainWeight("UUBAR", MCTYPE, "test", "UUBAR"));
+    FillBKG(dirname_DDBAR_after_selection, "root", Nevt_BKG_after_selection, ObtainWeight("DDBAR", MCTYPE, "test", "DDBAR"));
+    FillBKG(dirname_SSBAR_after_selection, "root", Nevt_BKG_after_selection, ObtainWeight("SSBAR", MCTYPE, "test", "SSBAR"));
+    FillBKG(dirname_CHARM_after_selection, "root", Nevt_BKG_after_selection, ObtainWeight("CHARM", MCTYPE, "test", "CHARM"));
 
-    FillSIGNAL(dirname_SIGNAL_after_preselection, "B2Knunu", "Bplus", Ncandidate_SIGNAL_after_preselection, Nevt_SIGNAL_after_preselection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    FillSIGNAL(dirname_SIGNAL_after_preselection, "B2Kstarnunu", "Bplus", Ncandidate_SIGNAL_after_preselection, Nevt_SIGNAL_after_preselection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    FillSIGNAL(dirname_SIGNAL_after_preselection, "B2Xsnunu", "Bplus", Ncandidate_SIGNAL_after_preselection, Nevt_SIGNAL_after_preselection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    FillSIGNAL(dirname_SIGNAL_after_preselection, "B02K0nunu", "Bzero", Ncandidate_SIGNAL_after_preselection, Nevt_SIGNAL_after_preselection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    FillSIGNAL(dirname_SIGNAL_after_preselection, "B02Kstar0nunu", "Bzero", Ncandidate_SIGNAL_after_preselection, Nevt_SIGNAL_after_preselection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    FillSIGNAL(dirname_SIGNAL_after_preselection, "B02Xsnunu", "Bzero", Ncandidate_SIGNAL_after_preselection, Nevt_SIGNAL_after_preselection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    FillSIGNAL(dirname_SIGNAL_after_preselection, "B2Knunu", "Bplus", Ncandidate_SIGNAL_after_preselection, Nevt_SIGNAL_after_preselection_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B2Knunu"), "B2Knunu");
+    FillSIGNAL(dirname_SIGNAL_after_preselection, "B2Kstarnunu", "Bplus", Ncandidate_SIGNAL_after_preselection, Nevt_SIGNAL_after_preselection_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B2Kstarnunu"), "otherwise");
+    FillSIGNAL(dirname_SIGNAL_after_preselection, "B2Xsnunu", "Bplus", Ncandidate_SIGNAL_after_preselection, Nevt_SIGNAL_after_preselection_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B2Xsnunu"), "B2Xsnunu");
+    FillSIGNAL(dirname_SIGNAL_after_preselection, "B02K0nunu", "Bzero", Ncandidate_SIGNAL_after_preselection, Nevt_SIGNAL_after_preselection_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B02K0nunu"), "B02K0nunu");
+    FillSIGNAL(dirname_SIGNAL_after_preselection, "B02Kstar0nunu", "Bzero", Ncandidate_SIGNAL_after_preselection, Nevt_SIGNAL_after_preselection_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B02Kstar0nunu"), "otherwise");
+    FillSIGNAL(dirname_SIGNAL_after_preselection, "B02Xsnunu", "Bzero", Ncandidate_SIGNAL_after_preselection, Nevt_SIGNAL_after_preselection_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B02Xsnunu"), "B02Xsnunu");
 
-    FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B2Knunu", "Bplus", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B2Kstarnunu", "Bplus", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B2Xsnunu", "Bplus", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B02K0nunu", "Bzero", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B02Kstar0nunu", "Bzero", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B02Xsnunu", "Bzero", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B2Knunu", "Bplus", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B2Knunu"), "B2Knunu");
+    FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B2Kstarnunu", "Bplus", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B2Kstarnunu"), "otherwise");
+    FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B2Xsnunu", "Bplus", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B2Xsnunu"), "B2Xsnunu");
+    FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B02K0nunu", "Bzero", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B02K0nunu"), "B02K0nunu");
+    FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B02Kstar0nunu", "Bzero", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B02Kstar0nunu"), "otherwise");
+    FillSIGNAL(dirname_SIGNAL_after_before_FBDT_cut, "B02Xsnunu", "Bzero", Nevt_SIGNAL_before_FBDT_cut, Nevt_SIGNAL_before_FBDT_cut_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B02Xsnunu"), "B02Xsnunu");
     */
-    FillSIGNAL(dirname_SIGNAL_after_selection, "B2Knunu", "Bplus", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    FillSIGNAL(dirname_SIGNAL_after_selection, "B2Kstarnunu", "Bplus", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    FillSIGNAL(dirname_SIGNAL_after_selection, "B2Xsnunu", "Bplus", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    FillSIGNAL(dirname_SIGNAL_after_selection, "B02K0nunu", "Bzero", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    FillSIGNAL(dirname_SIGNAL_after_selection, "B02Kstar0nunu", "Bzero", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    FillSIGNAL(dirname_SIGNAL_after_selection, "B02Xsnunu", "Bzero", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    FillSIGNAL(dirname_SIGNAL_after_selection, "B2Knunu", "Bplus", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B2Knunu"), "B2Knunu");
+    FillSIGNAL(dirname_SIGNAL_after_selection, "B2Kstarnunu", "Bplus", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B2Kstarnunu"), "otherwise");
+    FillSIGNAL(dirname_SIGNAL_after_selection, "B2Xsnunu", "Bplus", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B2Xsnunu"), "B2Xsnunu");
+    FillSIGNAL(dirname_SIGNAL_after_selection, "B02K0nunu", "Bzero", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B02K0nunu"), "B02K0nunu");
+    FillSIGNAL(dirname_SIGNAL_after_selection, "B02Kstar0nunu", "Bzero", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B02Kstar0nunu"), "otherwise");
+    FillSIGNAL(dirname_SIGNAL_after_selection, "B02Xsnunu", "Bzero", Nevt_SIGNAL_after_selection, Nevt_SIGNAL_after_selection_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B02Xsnunu"), "B02Xsnunu");
     /*
-    FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B2Knunu", "Bplus", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B2Kstarnunu", "Bplus", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B2Xsnunu", "Bplus", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B02K0nunu", "Bzero", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B02Kstar0nunu", "Bzero", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B02Xsnunu", "Bzero", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+    FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B2Knunu", "Bplus", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B2Knunu"), "B2Knunu");
+    FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B2Kstarnunu", "Bplus", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B2Kstarnunu"), "otherwise");
+    FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B2Xsnunu", "Bplus", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B2Xsnunu"), "B2Xsnunu");
+    FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B02K0nunu", "Bzero", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B02K0nunu"), "B02K0nunu");
+    FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B02Kstar0nunu", "Bzero", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B02Kstar0nunu"), "otherwise");
+    FillSIGNAL_q2(dirname_SIGNAL_after_selection, "B02Xsnunu", "Bzero", Nevt_SIGNAL_after_selection_q2_true, ObtainWeight("SIGNAL", MCTYPE, "test", "B02Xsnunu"), "B02Xsnunu");
     */
     ReadDecayInfo(dirname_SIGNAL_initial, "B2Knunu", "Bplus", Nevt_SIGNAL_initial_true, Scale_Kplus_here, "B2Knunu");
     ReadDecayInfo(dirname_SIGNAL_initial, "B2Kstarnunu", "Bplus", Nevt_SIGNAL_initial_true, Scale_Kplusstar_here, "otherwise");
