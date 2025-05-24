@@ -363,6 +363,9 @@ void FillBKG(const char* dirname, const char* included_string, TH1D* hist, const
     int __ncandidates__;
     double Bsig_M = -1;
 
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -386,6 +389,9 @@ void FillBKG(const char* dirname, const char* included_string, TH1D* hist, const
         tree_upsilon->SetBranchAddress("__event__", &__event__);
         tree_upsilon->SetBranchAddress("__candidate__", &__candidate__);
         tree_upsilon->SetBranchAddress("__ncandidates__", &__ncandidates__);
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         tree_Bsig->SetBranchAddress("Bsig_M", &Bsig_M);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
@@ -479,6 +485,9 @@ void FillSIGNAL_q2(const char* dirname, const char* included_string, const char*
     double Mxs_MC = -1.0;
     double invM = -1.0;
 
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -503,6 +512,9 @@ void FillSIGNAL_q2(const char* dirname, const char* included_string, const char*
         tree_upsilon->SetBranchAddress("__event__", &__event__);
         tree_upsilon->SetBranchAddress("__candidate__", &__candidate__);
         tree_upsilon->SetBranchAddress("__ncandidates__", &__ncandidates__);
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         tree_Bsig->SetBranchAddress("Bsig_M", &Bsig_M);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
@@ -654,6 +666,9 @@ void FillSIGNAL(const char* dirname, const char* included_string, const char* ty
     double Mxs_MC = -1.0;
     double invM = -1.0;
 
+    double Upsilon_ID = -1;
+    double Bsig_ID = -1;
+    double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
@@ -678,6 +693,9 @@ void FillSIGNAL(const char* dirname, const char* included_string, const char* ty
         tree_upsilon->SetBranchAddress("__event__", &__event__);
         tree_upsilon->SetBranchAddress("__candidate__", &__candidate__);
         tree_upsilon->SetBranchAddress("__ncandidates__", &__ncandidates__);
+        tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
+        tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &Btag_ID);
         tree_Bsig->SetBranchAddress("Bsig_M", &Bsig_M);
         for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKtruebin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[0][i_PID]);
