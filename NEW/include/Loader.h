@@ -1023,10 +1023,10 @@ void Loader::GetData(TFile* input_file) {
         tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp.Decay_syst_ff[index_MXs_B0]);
         tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp.Decay_syst_ff[5]);
         tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp.Decay_syst_ff[6]);
-        for (int i = 0; i < N_Xsu_Kpipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &temp.Xsu_Kpipi[i]);
-        for (int i = 0; i < N_Xsu_Kpipipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &temp.Xsu_Kpipipi[i]);
-        for (int i = 0; i < N_Xsd_Kpipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &temp.Xsd_Kpipi[i]);
-        for (int i = 0; i < N_Xsd_Kpipipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &temp.Xsd_Kpipipi[i]);
+        for (int i = 0; i < N_Xsu_Kpipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp.Xsu_Kpipi[i]);
+        for (int i = 0; i < N_Xsu_Kpipipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp.Xsu_Kpipipi[i]);
+        for (int i = 0; i < N_Xsd_Kpipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp.Xsd_Kpipi[i]);
+        for (int i = 0; i < N_Xsd_Kpipipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp.Xsd_Kpipipi[i]);
     }
     else {
         for (int i = 0; i < N_decay; i++) temp.Decay[i] = -1;
@@ -3048,10 +3048,10 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &DecaySystFFDataToTree[4]);
         tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &DecaySystFFDataToTree[5]);
         tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &DecaySystFFDataToTree[6]);
-        for (int i = 0; i < N_Xsu_Kpipi; i++) tree_Xs->Branch(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsu_KpipiToTree[i]);
-        for (int i = 0; i < N_Xsu_Kpipipi; i++) tree_Xs->Branch(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsu_KpipipiToTree[i]);
-        for (int i = 0; i < N_Xsd_Kpipi; i++) tree_Xs->Branch(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsd_KpipiToTree[i]);
-        for (int i = 0; i < N_Xsd_Kpipipi; i++) tree_Xs->Branch(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsd_KpipipiToTree[i]);
+        for (int i = 0; i < N_Xsu_Kpipi; i++) tree_Xs->Branch(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &Xsu_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsu_Kpipipi; i++) tree_Xs->Branch(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &Xsu_KpipipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipi; i++) tree_Xs->Branch(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &Xsd_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipipi; i++) tree_Xs->Branch(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &Xsd_KpipipiToTree[i]);
 
         tree_upsilon->Branch("MVA_BB", &MVA_BB_DataToTree);
         tree_upsilon->Branch("MVA_Continuum", &MVA_Continuum_DataToTree);
@@ -3635,10 +3635,10 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[4]);
         temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[5]);
         temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
-        for (int i = 0; i < N_Xsu_Kpipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsu_KpipiToTree[i]);
-        for (int i = 0; i < N_Xsu_Kpipipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsu_KpipipiToTree[i]);
-        for (int i = 0; i < N_Xsd_Kpipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsd_KpipiToTree[i]);
-        for (int i = 0; i < N_Xsd_Kpipipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsd_KpipipiToTree[i]);
+        for (int i = 0; i < N_Xsu_Kpipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsu_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsu_Kpipipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsu_KpipipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsd_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsd_KpipipiToTree[i]);
     }
     else {
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
@@ -4212,10 +4212,10 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
         temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[4]);
         temp_tree->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[5]);
         temp_tree->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
-        for (int i = 0; i < N_Xsu_Kpipi; i++) temp_tree->Branch(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsu_KpipiToTree[i]);
-        for (int i = 0; i < N_Xsu_Kpipipi; i++) temp_tree->Branch(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsu_KpipipiToTree[i]);
-        for (int i = 0; i < N_Xsd_Kpipi; i++) temp_tree->Branch(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsd_KpipiToTree[i]);
-        for (int i = 0; i < N_Xsd_Kpipipi; i++) temp_tree->Branch(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsd_KpipipiToTree[i]);
+        for (int i = 0; i < N_Xsu_Kpipi; i++) temp_tree->Branch(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsu_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsu_Kpipipi; i++) temp_tree->Branch(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsu_KpipipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipi; i++) temp_tree->Branch(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsd_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipipi; i++) temp_tree->Branch(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsd_KpipipiToTree[i]);
     }
     else {
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;

@@ -521,10 +521,10 @@ int main(int argc, char* argv[]){
                 temp_tree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[4]);
                 temp_tree->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[5]);
                 temp_tree->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
-                for (int i = 0; i < N_Xsu_Kpipi; i++) temp_tree->SetBranchAddress(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsu_KpipiToTree[i]);
-                for (int i = 0; i < N_Xsu_Kpipipi; i++) temp_tree->SetBranchAddress(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsu_KpipipiToTree[i]);
-                for (int i = 0; i < N_Xsd_Kpipi; i++) temp_tree->SetBranchAddress(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsd_KpipiToTree[i]);
-                for (int i = 0; i < N_Xsd_Kpipipi; i++) temp_tree->SetBranchAddress(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsd_KpipipiToTree[i]);
+                for (int i = 0; i < N_Xsu_Kpipi; i++) temp_tree->SetBranchAddress(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsu_KpipiToTree[i]);
+                for (int i = 0; i < N_Xsu_Kpipipi; i++) temp_tree->SetBranchAddress(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsu_KpipipiToTree[i]);
+                for (int i = 0; i < N_Xsd_Kpipi; i++) temp_tree->SetBranchAddress(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsd_KpipiToTree[i]);
+                for (int i = 0; i < N_Xsd_Kpipipi; i++) temp_tree->SetBranchAddress(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsd_KpipipiToTree[i]);
             }
 
             // flag
@@ -986,10 +986,10 @@ int main(int argc, char* argv[]){
                 temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &temp_DecaySystFFDataToTree[4]);
                 temp_tree_Xs->Branch("averageValueInList__boB__pl__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[5]);
                 temp_tree_Xs->Branch("averageValueInList__boB0__clMC_signal_total_e__cm__spM__bc", &temp_DecaySystFFDataToTree[6]);
-                for (int i = 0; i < N_Xsu_Kpipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsu_KpipiToTree[i]);
-                for (int i = 0; i < N_Xsu_Kpipipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsu_KpipipiToTree[i]);
-                for (int i = 0; i < N_Xsd_Kpipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsd_KpipiToTree[i]);
-                for (int i = 0; i < N_Xsd_Kpipipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &temp_Xsd_KpipipiToTree[i]);
+                for (int i = 0; i < N_Xsu_Kpipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsu_KpipiToTree[i]);
+                for (int i = 0; i < N_Xsu_Kpipipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsu_KpipipiToTree[i]);
+                for (int i = 0; i < N_Xsd_Kpipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsd_KpipiToTree[i]);
+                for (int i = 0; i < N_Xsd_Kpipipi; i++) temp_tree_Xs->Branch(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i + 1) + "__bc").c_str(), &temp_Xsd_KpipipiToTree[i]);
             }
 
             temp_tree_upsilon->Branch("MVA_BB", &temp_BB_output);

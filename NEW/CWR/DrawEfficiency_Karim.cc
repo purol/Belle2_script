@@ -31,6 +31,86 @@ Corrector_Fragmentation corrector_Fragmentation;
 
 /* ====================================== */
 
+bool AcceptIt(int Decay[N_decay], int Xsu_KpipiToTree[N_Xsu_Kpipi], int Xsu_KpipipiToTree[N_Xsu_Kpipipi], int Xsd_KpipiToTree[N_Xsd_Kpipi], int Xsd_KpipipiToTree[N_Xsd_Kpipipi], int index) {
+
+    // accept decay with index. Only works for non-resonant Xs sample
+
+    if (Decay[7] > 0.5) { // B+ -> K+ pi- pi+
+        if (Xsu_KpipiToTree[0] > 0.5) { // B+ -> rho0 K+
+            if (index == 0) return true;
+            else return false;
+        }
+        else if (Xsu_KpipiToTree[1] > 0.5) { // B+ -> pi+ K*0
+            if (index == 1) return true;
+            else return false;
+        }
+        else if (Xsu_KpipiToTree[2] > 0.5) { // B+ -> K+ pi- pi+
+            if (index == 2) return true;
+            else return false;
+        }
+        else if (Xsu_KpipiToTree[3] > 0.5) { // B+ -> K+ omega
+            if (index == 3) return true;
+            else return false;
+        }
+    }
+    else if (Decay[8] > 0.5) { // B+ -> K0 pi- pi0
+        if (Xsu_KpipiToTree[4] > 0.5) { // B+ -> rho+ K0
+            if (index == 4) return true;
+            else return false;
+        }
+        else if (Xsu_KpipiToTree[5] > 0.5) { // B+ -> pi+ K*0
+            if (index == 5) return true;
+            else return false;
+        }
+        else if (Xsu_KpipiToTree[6] > 0.5) { // B+ -> K0 pi0 pi+
+            if (index == 6) return true;
+            else return false;
+        }
+        else if (Xsu_KpipiToTree[7] > 0.5) { // B+ -> pi0 K*+
+            if (index == 7) return true;
+            else return false;
+        }
+    }
+    else if (Decay[27] > 0.5) { // B0 -> K0 pi+ pi-
+        if (Xsd_KpipiToTree[4] > 0.5) { // B+ -> rho0 K0
+            if (index == 8) return true;
+            else return false;
+        }
+        else if (Xsd_KpipiToTree[5] > 0.5) { // B+ -> pi- K*+
+            if (index == 9) return true;
+            else return false;
+        }
+        else if (Xsd_KpipiToTree[6] > 0.5) { // B+ -> pi- pi+ K0
+            if (index == 10) return true;
+            else return false;
+        }
+        else if (Xsd_KpipiToTree[7] > 0.5) { // B+ -> omega K0
+            if (index == 11) return true;
+            else return false;
+        }
+    }
+    else if (Decay[26] > 0.5) { // B0 -> K+ pi- pi0
+        if (Xsd_KpipiToTree[0] > 0.5) { // B+ -> rho- K+
+            if (index == 12) return true;
+            else return false;
+        }
+        else if (Xsd_KpipiToTree[1] > 0.5) { // B+ -> pi- K*+
+            if (index == 13) return true;
+            else return false;
+        }
+        else if (Xsd_KpipiToTree[2] > 0.5) { // B+ -> K+ pi- pi0
+            if (index == 14) return true;
+            else return false;
+        }
+        else if (Xsd_KpipiToTree[3] > 0.5) { // B+ -> pi0 K*0:
+            if (index == 15) return true;
+            else return false;
+        }
+    }
+
+    return false;
+}
+
 TH1D* Ncandidate_BKG_after_preselection = new TH1D("Ncandidate_BKG_after_preselection", ";M_{X_{s}}^{reco} [GeV/c^{2}]", 9, 0.45, 3.0);
 TH1D* Nevt_BKG_before_FBDT_cut = new TH1D("Nevt_BKG_before_FBDT_cut", ";M_{X_{s}}^{reco} [GeV/c^{2}]", 9, 0.45, 3.0);
 TH1D* Nevt_BKG_after_selection = new TH1D("Nevt_BKG_after_selection", ";M_{X_{s}}^{reco} [GeV/c^{2}]", 9, 0.45, 3.0);
@@ -122,6 +202,10 @@ void FillSIGNAL_q2(const char* dirname, const char* included_string, const char*
     int __ncandidates__;
     double Bsig_M = -1.0;
     int Decay[N_decay] = { 0 };
+    int Xsu_KpipiToTree[N_Xsu_Kpipi] = { 0 };
+    int Xsu_KpipipiToTree[N_Xsu_Kpipipi] = { 0 };
+    int Xsd_KpipiToTree[N_Xsd_Kpipi] = { 0 };
+    int Xsd_KpipipiToTree[N_Xsd_Kpipipi] = { 0 };
     double Mxs_MC = -1.0;
     double invM = -1.0;
 
@@ -183,6 +267,10 @@ void FillSIGNAL_q2(const char* dirname, const char* included_string, const char*
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &Decay[35]);
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &Decay[36]);
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &Decay[37]);
+        for (int i = 0; i < N_Xsu_Kpipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsu_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsu_Kpipipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsu_KpipipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsd_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsd_KpipipiToTree[i]);
         if (strcmp(type, "Bplus") == 0) tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_MC);
         else tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_MC);
         tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
@@ -236,6 +324,10 @@ void FillSIGNAL(const char* dirname, const char* included_string, const char* ty
     int __ncandidates__;
     double Bsig_M = -1.0;
     int Decay[N_decay] = { 0 };
+    int Xsu_KpipiToTree[N_Xsu_Kpipi] = { 0 };
+    int Xsu_KpipipiToTree[N_Xsu_Kpipipi] = { 0 };
+    int Xsd_KpipiToTree[N_Xsd_Kpipi] = { 0 };
+    int Xsd_KpipipiToTree[N_Xsd_Kpipipi] = { 0 };
     double Mxs_MC = -1.0;
     double invM = -1.0;
 
@@ -297,6 +389,10 @@ void FillSIGNAL(const char* dirname, const char* included_string, const char* ty
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &Decay[35]);
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &Decay[36]);
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &Decay[37]);
+        for (int i = 0; i < N_Xsu_Kpipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsu_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsu_Kpipipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsu_KpipipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsd_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsd_KpipipiToTree[i]);
         if(strcmp(type, "Bplus") == 0) tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_MC);
         else tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_MC);
         tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
@@ -342,6 +438,10 @@ void ReadDecayInfo(const char* dirname, const char* included_string, const char*
     }
 
     int Decay[N_decay] = { 0 };
+    int Xsu_KpipiToTree[N_Xsu_Kpipi] = { 0 };
+    int Xsu_KpipipiToTree[N_Xsu_Kpipipi] = { 0 };
+    int Xsd_KpipiToTree[N_Xsd_Kpipi] = { 0 };
+    int Xsd_KpipipiToTree[N_Xsd_Kpipipi] = { 0 };
     double Mxs_MC = -1.0;
     double invM = -1.0;
 
@@ -359,41 +459,45 @@ void ReadDecayInfo(const char* dirname, const char* included_string, const char*
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clcomb__bc", &Decay[3]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch1__bc", &Decay[4]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch2__bc", &Decay[5]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch3__bc", &Decay[6]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch4__bc", &Decay[7]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch5__bc", &Decay[8]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch6__bc", &Decay[9]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch7__bc", &Decay[10]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch8__bc", &Decay[11]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch9__bc", &Decay[12]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch10__bc", &Decay[13]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch11__bc", &Decay[14]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch12__bc", &Decay[15]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch13__bc", &Decay[16]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch14__bc", &Decay[17]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch15__bc", &Decay[18]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &Decay[3]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch1__bc", &Decay[4]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch2__bc", &Decay[5]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch3__bc", &Decay[6]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch4__bc", &Decay[7]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch5__bc", &Decay[8]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch6__bc", &Decay[9]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch7__bc", &Decay[10]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch8__bc", &Decay[11]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch9__bc", &Decay[12]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch10__bc", &Decay[13]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch11__bc", &Decay[14]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch12__bc", &Decay[15]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch13__bc", &Decay[16]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch14__bc", &Decay[17]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch15__bc", &Decay[18]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &Decay[19]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &Decay[20]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay[21]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clcomb__bc", &Decay[22]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch16__bc", &Decay[23]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch17__bc", &Decay[24]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch18__bc", &Decay[25]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch19__bc", &Decay[26]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch20__bc", &Decay[27]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch21__bc", &Decay[28]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch22__bc", &Decay[29]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch23__bc", &Decay[30]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch24__bc", &Decay[31]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch25__bc", &Decay[32]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch26__bc", &Decay[33]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch27__bc", &Decay[34]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch28__bc", &Decay[35]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch29__bc", &Decay[36]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch30__bc", &Decay[37]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &Decay[22]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch16__bc", &Decay[23]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch17__bc", &Decay[24]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch18__bc", &Decay[25]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch19__bc", &Decay[26]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch20__bc", &Decay[27]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch21__bc", &Decay[28]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch22__bc", &Decay[29]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch23__bc", &Decay[30]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch24__bc", &Decay[31]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch25__bc", &Decay[32]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch26__bc", &Decay[33]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch27__bc", &Decay[34]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &Decay[35]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &Decay[36]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &Decay[37]);
+        for (int i = 0; i < N_Xsu_Kpipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsu_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsu_Kpipipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsu_KpipipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsd_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsd_KpipipiToTree[i]);
         if (strcmp(type, "Bplus") == 0) tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_MC);
         else tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_MC);
         tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
@@ -439,6 +543,10 @@ void ReadDecayInfo_q2(const char* dirname, const char* included_string, const ch
     }
 
     int Decay[N_decay] = { 0 };
+    int Xsu_KpipiToTree[N_Xsu_Kpipi] = { 0 };
+    int Xsu_KpipipiToTree[N_Xsu_Kpipipi] = { 0 };
+    int Xsd_KpipiToTree[N_Xsd_Kpipi] = { 0 };
+    int Xsd_KpipipiToTree[N_Xsd_Kpipipi] = { 0 };
     double Mxs_MC = -1.0;
     double invM = -1.0;
 
@@ -456,41 +564,45 @@ void ReadDecayInfo_q2(const char* dirname, const char* included_string, const ch
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch2_total__bc", &Decay[2]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clcomb__bc", &Decay[3]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch1__bc", &Decay[4]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch2__bc", &Decay[5]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch3__bc", &Decay[6]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch4__bc", &Decay[7]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch5__bc", &Decay[8]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch6__bc", &Decay[9]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch7__bc", &Decay[10]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch8__bc", &Decay[11]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch9__bc", &Decay[12]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch10__bc", &Decay[13]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch11__bc", &Decay[14]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch12__bc", &Decay[15]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch13__bc", &Decay[16]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch14__bc", &Decay[17]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clch15__bc", &Decay[18]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCcomb__bc", &Decay[3]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch1__bc", &Decay[4]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch2__bc", &Decay[5]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch3__bc", &Decay[6]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch4__bc", &Decay[7]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch5__bc", &Decay[8]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch6__bc", &Decay[9]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch7__bc", &Decay[10]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch8__bc", &Decay[11]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch9__bc", &Decay[12]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch10__bc", &Decay[13]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch11__bc", &Decay[14]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch12__bc", &Decay[15]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch13__bc", &Decay[16]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch14__bc", &Decay[17]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsu__clMCch15__bc", &Decay[18]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKneutral_total__bc", &Decay[19]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch1_total__bc", &Decay[20]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB0__clKstarneutral_ch2_total__bc", &Decay[21]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clcomb__bc", &Decay[22]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch16__bc", &Decay[23]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch17__bc", &Decay[24]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch18__bc", &Decay[25]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch19__bc", &Decay[26]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch20__bc", &Decay[27]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch21__bc", &Decay[28]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch22__bc", &Decay[29]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch23__bc", &Decay[30]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch24__bc", &Decay[31]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch25__bc", &Decay[32]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch26__bc", &Decay[33]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch27__bc", &Decay[34]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch28__bc", &Decay[35]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch29__bc", &Decay[36]);
-        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clch30__bc", &Decay[37]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCcomb__bc", &Decay[22]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch16__bc", &Decay[23]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch17__bc", &Decay[24]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch18__bc", &Decay[25]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch19__bc", &Decay[26]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch20__bc", &Decay[27]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch21__bc", &Decay[28]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch22__bc", &Decay[29]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch23__bc", &Decay[30]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch24__bc", &Decay[31]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch25__bc", &Decay[32]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch26__bc", &Decay[33]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch27__bc", &Decay[34]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &Decay[35]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &Decay[36]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &Decay[37]);
+        for (int i = 0; i < N_Xsu_Kpipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsu__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsu_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsu_Kpipipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsu__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsu_KpipipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsd__clKpipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsd_KpipiToTree[i]);
+        for (int i = 0; i < N_Xsd_Kpipipi; i++) tree_Xs->SetBranchAddress(("nParticlesInList__boXsd__clKpipipi_ch" + std::to_string(i) + "__bc").c_str(), &Xsd_KpipipiToTree[i]);
         if (strcmp(type, "Bplus") == 0) tree_Xs->SetBranchAddress("averageValueInList__boB__pl__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_MC);
         else tree_Xs->SetBranchAddress("averageValueInList__boB0__clMC_signal_total_e__cm__spdaughter__bo0__cm__spM__bc__bc", &Mxs_MC);
         tree_Xs->SetBranchAddress("invMassInLists__bonu_e__clMC_signal__bc", &invM);
