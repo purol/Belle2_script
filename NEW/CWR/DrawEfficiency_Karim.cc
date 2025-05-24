@@ -282,8 +282,9 @@ void FillSIGNAL_q2(const char* dirname, const char* included_string, const char*
             tree_Btag->GetEntry(j);
             tree_Xs->GetEntry(j);
 
-            // Here we get only B+ -> K+ pi- pi+
-            if (Decay[7] < 0.5) continue;
+            // Here we get only 
+            if (AcceptIt(Decay, Xsu_KpipiToTree, Xsu_KpipipiToTree, Xsd_KpipiToTree, Xsd_KpipipiToTree, 0)) {}
+            else continue;
 
             double total_weight = weight_var;
 
@@ -404,8 +405,9 @@ void FillSIGNAL(const char* dirname, const char* included_string, const char* ty
             tree_Btag->GetEntry(j);
             tree_Xs->GetEntry(j);
 
-            // Here we get only B+ -> K+ pi- pi+
-            if (Decay[7] < 0.5) continue;
+            // Here we get only 
+            if (AcceptIt(Decay, Xsu_KpipiToTree, Xsu_KpipipiToTree, Xsd_KpipiToTree, Xsd_KpipipiToTree, 0)) {}
+            else continue;
 
             double total_weight = weight_var;
 
@@ -506,8 +508,9 @@ void ReadDecayInfo(const char* dirname, const char* included_string, const char*
         for (unsigned int j = 0; j < tree_Xs->GetEntries(); j++) { // Fill
             tree_Xs->GetEntry(j);
 
-            // Here we get only B+ -> K+ pi- pi+
-            if (Decay[7] < 0.5) continue;
+            // Here we get only 
+            if (AcceptIt(Decay, Xsu_KpipiToTree, Xsu_KpipipiToTree, Xsd_KpipiToTree, Xsd_KpipipiToTree, 0)) {}
+            else continue;
 
             double total_weight = weight_var;
 
@@ -611,8 +614,9 @@ void ReadDecayInfo_q2(const char* dirname, const char* included_string, const ch
         for (unsigned int j = 0; j < tree_Xs->GetEntries(); j++) { // Fill
             tree_Xs->GetEntry(j);
 
-            // Here we get only B+ -> K+ pi- pi+
-            if (Decay[7] < 0.5) continue;
+            // Here we get only 
+            if (AcceptIt(Decay, Xsu_KpipiToTree, Xsu_KpipipiToTree, Xsd_KpipiToTree, Xsd_KpipipiToTree, 0)) {}
+            else continue;
 
             double total_weight = weight_var;
 
