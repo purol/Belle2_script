@@ -138,7 +138,7 @@ private:
     std::vector<TH1D*> TH1Ds_THStack[Loader::MAX_NUM_DECAYMODE];
     int current_THStack;
 
-    std::vector<double> N_MC_modes[Loader::MAX_NUM_DECAYMODE_MC];
+    std::vector<TH1D*> N_MC_modes[Loader::MAX_NUM_DECAYMODE_MC];
 
     bool TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymodeMC);
 
@@ -345,7 +345,10 @@ void Loader::PrintInformation(std::string title, std::string filename) {
         N_events.push_back(0);
         N_candidates.push_back(0);
         titles.push_back(title);
-        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) N_MC_modes[i].push_back(0);
+        for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) {
+            TH1D* temp = new TH1D(std::to_string(i + static_cast<int>(MAX_NUM_DECAYMODE_MC) * current_N_event).c_str(), "", 1, 0.0, 100.0);
+            N_MC_modes[i].push_back(temp);
+        }
     }
     else if (N_events.size() > current_N_event && N_candidates.size() > current_N_candidate && N_events.size() == N_candidates.size() && current_N_event == current_N_candidate) { // use what I have
     }
@@ -415,7 +418,7 @@ void Loader::PrintInformation(std::string title, std::string filename) {
                 printf("ERROR 265\n");
                 exit(1);
             }
-            N_MC_modes[decaymodeid_MC].at(current_N_event) = N_MC_modes[decaymodeid_MC].at(current_N_event) + temp_N;
+            N_MC_modes[decaymodeid_MC].at(current_N_event)->Fill(1.0, temp_N);
         }
     }
     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + TotalData.size();
@@ -430,60 +433,71 @@ void Loader::End() {
         printf("%s\n", titles.at(i).c_str());
         printf("Number of event: %d\n", N_events.at(i));
         printf("Number of candidate: %d\n", N_candidates.at(i));
-        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i));
+        for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i)->GetBinContent(1));
 
         printf("To run python code, copy-paste the following lines:\n");
-        printf("decay 0: %lf\n", N_MC_modes[Loader::Xsu2Kc_MC].at(i));
-        printf("decay 1: %lf\n", N_MC_modes[Loader::Xsu2Kcstar2KcPi0_MC].at(i) + N_MC_modes[Loader::Xsu2KcPi0_MC].at(i));
-        printf("decay 2: %lf\n", N_MC_modes[Loader::Xsu2Kcstar2K0Pic_MC].at(i) + N_MC_modes[Loader::Xsu2K0Pic_MC].at(i));
-        printf("decay 3: %lf\n", N_MC_modes[Loader::Xsu2KcPicPic_MC].at(i));
-        printf("decay 4: %lf\n", N_MC_modes[Loader::Xsu2K0PicPi0_MC].at(i));
-        printf("decay 5: %lf\n", N_MC_modes[Loader::Xsu2KcPicPicPi0_MC].at(i));
-        printf("decay 6: %lf\n", N_MC_modes[Loader::Xsu2K0PicPicPic_MC].at(i));
-        printf("decay 7: %lf\n", N_MC_modes[Loader::Xsu2KcPicPicPicPic_MC].at(i));
-        printf("decay 8: %lf\n", N_MC_modes[Loader::Xsu2K0PicPicPicPi0_MC].at(i));
-        printf("decay 9: %lf\n", N_MC_modes[Loader::Xsu2KcPi0Pi0_MC].at(i));
-        printf("decay 10: %lf\n", N_MC_modes[Loader::Xsu2K0PicPi0Pi0_MC].at(i));
-        printf("decay 11: %lf\n", N_MC_modes[Loader::Xsu2KcPicPicPi0Pi0_MC].at(i));
-        printf("decay 12: %lf\n", N_MC_modes[Loader::Xsu2KcKcKc_MC].at(i));
-        printf("decay 13: %lf\n", N_MC_modes[Loader::Xsu2KcKcK0Pic_MC].at(i));
-        printf("decay 14: %lf\n", N_MC_modes[Loader::Xsu2KcKcKcPi0_MC].at(i));
+        printf("decay 0: %lf\n", N_MC_modes[Loader::Xsu2Kc_MC].at(i)->GetBinContent(1));
+        printf("decay 1: %lf\n", N_MC_modes[Loader::Xsu2Kcstar2KcPi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsu2KcPi0_MC].at(i)->GetBinContent(1));
+        printf("decay 2: %lf\n", N_MC_modes[Loader::Xsu2Kcstar2K0Pic_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsu2K0Pic_MC].at(i)->GetBinContent(1));
+        printf("decay 3: %lf\n", N_MC_modes[Loader::Xsu2KcPicPic_MC].at(i)->GetBinContent(1));
+        printf("decay 4: %lf\n", N_MC_modes[Loader::Xsu2K0PicPi0_MC].at(i)->GetBinContent(1));
+        printf("decay 5: %lf\n", N_MC_modes[Loader::Xsu2KcPicPicPi0_MC].at(i)->GetBinContent(1));
+        printf("decay 6: %lf\n", N_MC_modes[Loader::Xsu2K0PicPicPic_MC].at(i)->GetBinContent(1));
+        printf("decay 7: %lf\n", N_MC_modes[Loader::Xsu2KcPicPicPicPic_MC].at(i)->GetBinContent(1));
+        printf("decay 8: %lf\n", N_MC_modes[Loader::Xsu2K0PicPicPicPi0_MC].at(i)->GetBinContent(1));
+        printf("decay 9: %lf\n", N_MC_modes[Loader::Xsu2KcPi0Pi0_MC].at(i)->GetBinContent(1));
+        printf("decay 10: %lf\n", N_MC_modes[Loader::Xsu2K0PicPi0Pi0_MC].at(i)->GetBinContent(1));
+        printf("decay 11: %lf\n", N_MC_modes[Loader::Xsu2KcPicPicPi0Pi0_MC].at(i)->GetBinContent(1));
+        printf("decay 12: %lf\n", N_MC_modes[Loader::Xsu2KcKcKc_MC].at(i)->GetBinContent(1));
+        printf("decay 13: %lf\n", N_MC_modes[Loader::Xsu2KcKcK0Pic_MC].at(i)->GetBinContent(1));
+        printf("decay 14: %lf\n", N_MC_modes[Loader::Xsu2KcKcKcPi0_MC].at(i)->GetBinContent(1));
 
-        printf("decay 15: %lf\n", N_MC_modes[Loader::Xsd2K0_MC].at(i));
-        printf("decay 16: %lf\n", N_MC_modes[Loader::Xsd2K0star2KcPic_MC].at(i) + N_MC_modes[Loader::Xsd2KcPic_MC].at(i));
-        printf("decay 17: %lf\n", N_MC_modes[Loader::Xsd2K0star2K0Pi0_MC].at(i) + N_MC_modes[Loader::Xsd2K0Pi0_MC].at(i));
-        printf("decay 18: %lf\n", N_MC_modes[Loader::Xsd2KcPicPi0_MC].at(i));
-        printf("decay 19: %lf\n", N_MC_modes[Loader::Xsd2K0PicPic_MC].at(i));
-        printf("decay 20: %lf\n", N_MC_modes[Loader::Xsd2KcPicPicPic_MC].at(i));
-        printf("decay 21: %lf\n", N_MC_modes[Loader::Xsd2K0PicPicPi0_MC].at(i));
-        printf("decay 22: %lf\n", N_MC_modes[Loader::Xsd2KcPicPicPicPi0_MC].at(i));
-        printf("decay 23: %lf\n", N_MC_modes[Loader::Xsd2K0PicPicPicPic_MC].at(i));
-        printf("decay 24: %lf\n", N_MC_modes[Loader::Xsd2K0Pi0Pi0_MC].at(i));
-        printf("decay 25: %lf\n", N_MC_modes[Loader::Xsd2KcPicPi0Pi0_MC].at(i));
-        printf("decay 26: %lf\n", N_MC_modes[Loader::Xsd2K0PicPicPi0Pi0_MC].at(i));
-        printf("decay 27: %lf\n", N_MC_modes[Loader::Xsd2KcKcK0_MC].at(i));
-        printf("decay 28: %lf\n", N_MC_modes[Loader::Xsd2KcKcKcPic_MC].at(i));
-        printf("decay 29: %lf\n", N_MC_modes[Loader::Xsd2KcKcK0Pi0_MC].at(i));
-        printf("decay 30: %lf\n", N_MC_modes[Loader::other].at(i));
+        printf("decay 15: %lf\n", N_MC_modes[Loader::Xsd2K0_MC].at(i)->GetBinContent(1));
+        printf("decay 16: %lf\n", N_MC_modes[Loader::Xsd2K0star2KcPic_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2KcPic_MC].at(i)->GetBinContent(1));
+        printf("decay 17: %lf\n", N_MC_modes[Loader::Xsd2K0star2K0Pi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2K0Pi0_MC].at(i)->GetBinContent(1));
+        printf("decay 18: %lf\n", N_MC_modes[Loader::Xsd2KcPicPi0_MC].at(i)->GetBinContent(1));
+        printf("decay 19: %lf\n", N_MC_modes[Loader::Xsd2K0PicPic_MC].at(i)->GetBinContent(1));
+        printf("decay 20: %lf\n", N_MC_modes[Loader::Xsd2KcPicPicPic_MC].at(i)->GetBinContent(1));
+        printf("decay 21: %lf\n", N_MC_modes[Loader::Xsd2K0PicPicPi0_MC].at(i)->GetBinContent(1));
+        printf("decay 22: %lf\n", N_MC_modes[Loader::Xsd2KcPicPicPicPi0_MC].at(i)->GetBinContent(1));
+        printf("decay 23: %lf\n", N_MC_modes[Loader::Xsd2K0PicPicPicPic_MC].at(i)->GetBinContent(1));
+        printf("decay 24: %lf\n", N_MC_modes[Loader::Xsd2K0Pi0Pi0_MC].at(i)->GetBinContent(1));
+        printf("decay 25: %lf\n", N_MC_modes[Loader::Xsd2KcPicPi0Pi0_MC].at(i)->GetBinContent(1));
+        printf("decay 26: %lf\n", N_MC_modes[Loader::Xsd2K0PicPicPi0Pi0_MC].at(i)->GetBinContent(1));
+        printf("decay 27: %lf\n", N_MC_modes[Loader::Xsd2KcKcK0_MC].at(i)->GetBinContent(1));
+        printf("decay 28: %lf\n", N_MC_modes[Loader::Xsd2KcKcKcPic_MC].at(i)->GetBinContent(1));
+        printf("decay 29: %lf\n", N_MC_modes[Loader::Xsd2KcKcK0Pi0_MC].at(i)->GetBinContent(1));
+        printf("decay 30: %lf\n", N_MC_modes[Loader::other].at(i)->GetBinContent(1));
 
         const int NCategory = 9;
         double N_evt_Category[NCategory] = { 0.0 };
+        double N_evt_Category_Error[NCategory] = { 0.0 };
         double Sum_N_evt_Category = 0.0;
 
-        N_evt_Category[0] = N_MC_modes[Loader::Xsu2Kcstar2K0Pic_MC].at(i) + N_MC_modes[Loader::Xsu2K0Pic_MC].at(i) + N_MC_modes[Loader::Xsd2K0star2KcPic_MC].at(i) + N_MC_modes[Loader::Xsd2KcPic_MC].at(i); // K1pi without pi0
-        N_evt_Category[1] = N_MC_modes[Loader::Xsu2Kcstar2KcPi0_MC].at(i) + N_MC_modes[Loader::Xsu2KcPi0_MC].at(i) + N_MC_modes[Loader::Xsd2K0star2K0Pi0_MC].at(i) + N_MC_modes[Loader::Xsd2K0Pi0_MC].at(i); // K1pi with one pi0
-        N_evt_Category[2] = N_MC_modes[Loader::Xsu2KcPicPic_MC].at(i) + N_MC_modes[Loader::Xsd2K0PicPic_MC].at(i); // K2pi without pi0
-        N_evt_Category[3] = N_MC_modes[Loader::Xsu2K0PicPi0_MC].at(i) + N_MC_modes[Loader::Xsd2KcPicPi0_MC].at(i); // K2pi with one pi0
-        N_evt_Category[4] = N_MC_modes[Loader::Xsu2K0PicPicPic_MC].at(i) + N_MC_modes[Loader::Xsd2KcPicPicPic_MC].at(i); // K3pi without pi0
-        N_evt_Category[5] = N_MC_modes[Loader::Xsu2KcPicPicPi0_MC].at(i) + N_MC_modes[Loader::Xsd2K0PicPicPi0_MC].at(i); // K3pi with one pi0
-        N_evt_Category[6] = N_MC_modes[Loader::Xsu2KcPicPicPicPic_MC].at(i) + N_MC_modes[Loader::Xsu2K0PicPicPicPi0_MC].at(i) + N_MC_modes[Loader::Xsd2KcPicPicPicPi0_MC].at(i) + N_MC_modes[Loader::Xsd2K0PicPicPicPic_MC].at(i); // K4pi at most one pi0
-        N_evt_Category[7] = N_MC_modes[Loader::Xsu2KcPi0Pi0_MC].at(i) + N_MC_modes[Loader::Xsu2K0PicPi0Pi0_MC].at(i) + N_MC_modes[Loader::Xsu2KcPicPicPi0Pi0_MC].at(i) + N_MC_modes[Loader::Xsd2K0Pi0Pi0_MC].at(i) + N_MC_modes[Loader::Xsd2KcPicPi0Pi0_MC].at(i) + N_MC_modes[Loader::Xsd2K0PicPicPi0Pi0_MC].at(i); // including 2pi0
-        N_evt_Category[8] = N_MC_modes[Loader::Xsu2KcKcKc_MC].at(i) + N_MC_modes[Loader::Xsu2KcKcK0Pic_MC].at(i) + N_MC_modes[Loader::Xsu2KcKcKcPi0_MC].at(i) + N_MC_modes[Loader::Xsd2KcKcK0_MC].at(i) + N_MC_modes[Loader::Xsd2KcKcKcPic_MC].at(i) + N_MC_modes[Loader::Xsd2KcKcK0Pi0_MC].at(i); // including 3K
+        N_evt_Category[0] = N_MC_modes[Loader::Xsu2Kcstar2K0Pic_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsu2K0Pic_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2K0star2KcPic_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2KcPic_MC].at(i)->GetBinContent(1); // K1pi without pi0
+        N_evt_Category[1] = N_MC_modes[Loader::Xsu2Kcstar2KcPi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsu2KcPi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2K0star2K0Pi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2K0Pi0_MC].at(i)->GetBinContent(1); // K1pi with one pi0
+        N_evt_Category[2] = N_MC_modes[Loader::Xsu2KcPicPic_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2K0PicPic_MC].at(i)->GetBinContent(1); // K2pi without pi0
+        N_evt_Category[3] = N_MC_modes[Loader::Xsu2K0PicPi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2KcPicPi0_MC].at(i)->GetBinContent(1); // K2pi with one pi0
+        N_evt_Category[4] = N_MC_modes[Loader::Xsu2K0PicPicPic_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2KcPicPicPic_MC].at(i)->GetBinContent(1); // K3pi without pi0
+        N_evt_Category[5] = N_MC_modes[Loader::Xsu2KcPicPicPi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2K0PicPicPi0_MC].at(i)->GetBinContent(1); // K3pi with one pi0
+        N_evt_Category[6] = N_MC_modes[Loader::Xsu2KcPicPicPicPic_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsu2K0PicPicPicPi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2KcPicPicPicPi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2K0PicPicPicPic_MC].at(i)->GetBinContent(1); // K4pi at most one pi0
+        N_evt_Category[7] = N_MC_modes[Loader::Xsu2KcPi0Pi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsu2K0PicPi0Pi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsu2KcPicPicPi0Pi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2K0Pi0Pi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2KcPicPi0Pi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2K0PicPicPi0Pi0_MC].at(i)->GetBinContent(1); // including 2pi0
+        N_evt_Category[8] = N_MC_modes[Loader::Xsu2KcKcKc_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsu2KcKcK0Pic_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsu2KcKcKcPi0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2KcKcK0_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2KcKcKcPic_MC].at(i)->GetBinContent(1) + N_MC_modes[Loader::Xsd2KcKcK0Pi0_MC].at(i)->GetBinContent(1); // including 3K
         for (int j = 0; j < NCategory; j++) Sum_N_evt_Category = Sum_N_evt_Category + N_evt_Category[j];
+
+        N_evt_Category_Error[0] = std::sqrt(N_MC_modes[Loader::Xsu2Kcstar2K0Pic_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2Kcstar2K0Pic_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsu2K0Pic_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2K0Pic_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2K0star2KcPic_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2K0star2KcPic_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2KcPic_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2KcPic_MC].at(i)->GetBinError(1)); // K1pi without pi0
+        N_evt_Category_Error[1] = std::sqrt(N_MC_modes[Loader::Xsu2Kcstar2KcPi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2Kcstar2KcPi0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsu2KcPi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2KcPi0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2K0star2K0Pi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2K0star2K0Pi0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2K0Pi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2K0Pi0_MC].at(i)->GetBinError(1)); // K1pi with one pi0
+        N_evt_Category_Error[2] = std::sqrt(N_MC_modes[Loader::Xsu2KcPicPic_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2KcPicPic_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2K0PicPic_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2K0PicPic_MC].at(i)->GetBinError(1)); // K2pi without pi0
+        N_evt_Category_Error[3] = std::sqrt(N_MC_modes[Loader::Xsu2K0PicPi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2K0PicPi0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2KcPicPi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2KcPicPi0_MC].at(i)->GetBinError(1)); // K2pi with one pi0
+        N_evt_Category_Error[4] = std::sqrt(N_MC_modes[Loader::Xsu2K0PicPicPic_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2K0PicPicPic_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2KcPicPicPic_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2KcPicPicPic_MC].at(i)->GetBinError(1)); // K3pi without pi0
+        N_evt_Category_Error[5] = std::sqrt(N_MC_modes[Loader::Xsu2KcPicPicPi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2KcPicPicPi0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2K0PicPicPi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2K0PicPicPi0_MC].at(i)->GetBinError(1)); // K3pi with one pi0
+        N_evt_Category_Error[6] = std::sqrt(N_MC_modes[Loader::Xsu2KcPicPicPicPic_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2KcPicPicPicPic_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsu2K0PicPicPicPi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2K0PicPicPicPi0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2KcPicPicPicPi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2KcPicPicPicPi0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2K0PicPicPicPic_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2K0PicPicPicPic_MC].at(i)->GetBinError(1)); // K4pi at most one pi0
+        N_evt_Category_Error[7] = std::sqrt(N_MC_modes[Loader::Xsu2KcPi0Pi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2KcPi0Pi0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsu2K0PicPi0Pi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2K0PicPi0Pi0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsu2KcPicPicPi0Pi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2KcPicPicPi0Pi0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2K0Pi0Pi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2K0Pi0Pi0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2KcPicPi0Pi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2KcPicPi0Pi0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2K0PicPicPi0Pi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2K0PicPicPi0Pi0_MC].at(i)->GetBinError(1)); // including 2pi0
+        N_evt_Category_Error[8] = std::sqrt(N_MC_modes[Loader::Xsu2KcKcKc_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2KcKcKc_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsu2KcKcK0Pic_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2KcKcK0Pic_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsu2KcKcKcPi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsu2KcKcKcPi0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2KcKcK0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2KcKcK0_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2KcKcKcPic_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2KcKcKcPic_MC].at(i)->GetBinError(1) + N_MC_modes[Loader::Xsd2KcKcK0Pi0_MC].at(i)->GetBinError(1) * N_MC_modes[Loader::Xsd2KcKcK0Pi0_MC].at(i)->GetBinError(1)); // including 3K
 
         printf("\n");
         printf("visible fraction:\n");
-        for (int j = 0; j < NCategory; j++) printf("fraction %d: %lf\n", j, N_evt_Category[j] / Sum_N_evt_Category);
+        for (int j = 0; j < NCategory; j++) printf("fraction %d: %lf +- %lf\n", j, N_evt_Category[j] / Sum_N_evt_Category, N_evt_Category_Error[j] / Sum_N_evt_Category);
     }
 
     for (int i = 0; i < THStacks.size(); i++) {
