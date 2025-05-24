@@ -16,6 +16,11 @@
 # define index_MXs_Bc 3
 # define index_MXs_B0 4
 
+# define N_Xsu_Kpipi 8
+# define N_Xsu_Kpipipi 25
+# define N_Xsd_Kpipi 8
+# define N_Xsd_Kpipipi 23
+
 # define MyEPSILON 0.000001
 
 // arXiv:1409.4557v2, PhysRevD.107.014511
