@@ -820,7 +820,7 @@ int main(int argc, char* argv[]){
         loader.GetData(input_file);
         if (loader.event_info_is_valid() == false) { printf("error!\n"); return 1; }
 
-        loader.PrintInformation(std::string("========== inital =========="), names.at(i));
+        loader.PrintInformation(std::string("========== inital =========="), names.at(i), mass_region);
         loader.DrawTHStack("Mxs", ";M_{Xs}^{gen} [GeV]; arbitrary unit", 100, 0.45, 3.5, names.at(i), true);
 
     }
