@@ -107,9 +107,211 @@ bool AcceptIt(int Decay[N_decay], int Xsu_KpipiToTree[N_Xsu_Kpipi], int Xsu_Kpip
             else return false;
         }
     }
+    else if (Decay[9] > 0.5) { // B+ -> K+ pi- pi+ pi0
+        if (Xsu_KpipipiToTree[0] > 0.5) { // B+ -> rho+ pi- K+
+            if (index == 16) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[1] > 0.5) { // B+ -> K+ eta
+            if (index == 17) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[2] > 0.5) { // B+ -> omega K+
+            if (index == 18) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[3] > 0.5) { // B+ -> pi- pi+ pi0 K+
+            if (index == 19) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[4] > 0.5) { // B+ -> K+ phi
+            if (index == 20) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[5] > 0.5) { // B+ -> rho+ K*0
+            if (index == 21) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[6] > 0.5) { // B+ -> pi+ pi0 K*0
+            if (index == 22) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[7] > 0.5) { // B+ -> rho- pi+ K+
+            if (index == 23) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[8] > 0.5) { // B+ -> rho0 pi0 K+
+            if (index == 24) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[9] > 0.5) { // B+ -> rho0 K*+
+            if (index == 25) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[10] > 0.5) { // B+ -> pi- pi+ K*+
+            if (index == 26) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[11] > 0.5) { // B+ -> omega K+ pi0
+            if (index == 27) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[12] > 0.5) { // B+ -> omega K*+
+            if (index == 28) return true;
+            else return false;
+        }
+    }
+    else if (Decay[10] > 0.5) { // B+ -> K0 pi+ pi- pi+
+        if (Xsu_KpipipiToTree[13] > 0.5) { // B+ -> K*+ pi- pi+
+            if (index == 29) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[14] > 0.5) { // B+ -> K0 pi+ pi- pi+
+            if (index == 30) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[15] > 0.5) { // B+ -> K*+ rho0
+            if (index == 31) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[17] > 0.5) { // B+ -> K0 pi+ rho0
+            if (index == 32) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[18] > 0.5) { // B+ -> K*+ omega
+            if (index == 33) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[19] > 0.5) { // B+ -> K0 pi+ omega
+            if (index == 34) return true;
+            else return false;
+        }
+    }
+    else if (Decay[14] > 0.5) { // B+ -> K0 pi+ pi0 pi0
+        if (Xsu_KpipipiToTree[20] > 0.5) { // B+ -> pi0 rho+ K0
+            if (index == 35) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[21] > 0.5) { // B+ -> K*0 pi+ pi0
+            if (index == 36) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[22] > 0.5) { // B+ -> K*0 rho+
+            if (index == 37) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[23] > 0.5) { // B+ -> K*+ pi0 pi0
+            if (index == 38) return true;
+            else return false;
+        }
+        else if (Xsu_KpipipiToTree[24] > 0.5) { // B+ -> K0 pi+ pi0 pi0
+            if (index == 39) return true;
+            else return false;
+        }
+    }
+    else if (Decay[29] > 0.5) { // B0 -> K0 pi+ pi- pi0
+        if (Xsd_KpipipiToTree[6] > 0.5) { // B0 -> K0 omega
+            if (index == 40) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[7] > 0.5) { // B0 -> K0 pi0 rho0
+            if (index == 41) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[8] > 0.5) { // B0 -> K0 pi+ pi- pi0
+            if (index == 42) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[9] > 0.5) { // B0 -> K*0 pi+ pi-
+            if (index == 43) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[10] > 0.5) { // B0 -> K0 pi- rho+
+            if (index == 44) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[11] > 0.5) { // B0 -> K*+ rho-
+            if (index == 45) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[12] > 0.5) { // B0 -> K0 phi
+            if (index == 46) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[13] > 0.5) { // B0 -> K*+ pi0 pi-
+            if (index == 47) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[14] > 0.5) { // B0 -> K*0 rho0
+            if (index == 48) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[15] > 0.5) { // B0 -> K0 eta
+            if (index == 49) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[16] > 0.5) { // B0 -> K0 pi+ rho-
+            if (index == 50) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[17] > 0.5) { // B0 -> K0 pi0 omega
+            if (index == 51) return true;
+            else return false;
+        }
+    }
+    else if (Decay[28] > 0.5) { // B0 -> K+ pi- pi+ pi-
+        if (Xsd_KpipipiToTree[0] > 0.5) { // B0 -> rho0 K+ pi-
+            if (index == 52) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[1] > 0.5) { // B0 -> K*0 pi+ pi-
+            if (index == 53) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[2] > 0.5) { // B0 -> K*0 rho0
+            if (index == 54) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[3] > 0.5) { // B0 -> pi- pi+ pi- K+
+            if (index == 55) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[4] > 0.5) { // B0 -> omega K*0
+            if (index == 56) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[5] > 0.5) { // B0 -> omega K+ pi-
+            if (index == 57) return true;
+            else return false;
+        }
+    }
+    else if (Decay[33] > 0.5) { // B0 -> K+ pi- pi0 pi0
+        if (Xsd_KpipipiToTree[18] > 0.5) { // B0 -> K+ rho- pi0
+            if (index == 58) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[19] > 0.5) { // B0 -> K*+ pi- pi0
+            if (index == 59) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[20] > 0.5) { // B0 -> K+ pi- pi0 pi0
+            if (index == 60) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[21] > 0.5) { // B0 -> K*+ rho-
+            if (index == 61) return true;
+            else return false;
+        }
+        else if (Xsd_KpipipiToTree[22] > 0.5) { // B0 -> K*0 pi0 pi0
+            if (index == 62) return true;
+            else return false;
+        }
+    }
 
     return false;
 }
+
+int INDEX = -1;
 
 TH1D* Ncandidate_BKG_after_preselection = new TH1D("Ncandidate_BKG_after_preselection", ";M_{X_{s}}^{reco} [GeV/c^{2}]", 9, 0.45, 3.0);
 TH1D* Nevt_BKG_before_FBDT_cut = new TH1D("Nevt_BKG_before_FBDT_cut", ";M_{X_{s}}^{reco} [GeV/c^{2}]", 9, 0.45, 3.0);
@@ -135,6 +337,10 @@ TH1D* BKG_FBDT_efficiency = new TH1D("BKG_FBDT_efficiency", ";M_{X_{s}}^{reco} [
 TH1D* Nevt_SIGNAL_initial_q2_true = new TH1D("Nevt_SIGNAL_initial_q2_true", ";q^{2} [GeV^{2}/c^{4}]", 10, 0.0, 22.9);
 TH1D* Nevt_SIGNAL_after_selection_q2_true = new TH1D("Nevt_SIGNAL_after_selection_q2_true", ";q^{2} [GeV^{2}/c^{4}]", 10, 0.0, 22.9);
 TH1D* SIGNAL_efficiency_q2_true = new TH1D("SIGNAL_efficiency_q2_true", ";q^{2} [GeV^{2}/c^{4}];Efficiency", 10, 0.0, 22.9);
+
+TH1D* Nevt_SIGNAL_initial_true_all = new TH1D("Nevt_SIGNAL_initial_true_all", "", 1, 0.0, 100.0);
+TH1D* Nevt_SIGNAL_after_selection_true_all = new TH1D("Nevt_SIGNAL_after_selection_true_all", "", 1, 0.0, 100.0);
+TH1D* SIGNAL_pre_and_selection_efficiency_true_all = new TH1D("SIGNAL_pre_and_selection_efficiency_true_all", "", 1, 0.0, 100.0);
 
 void FillBKG(const char* dirname, const char* included_string, TH1D* hist, double weight_var = 1.0) { // get nominal PDF with appropriate correction
 
@@ -283,7 +489,7 @@ void FillSIGNAL_q2(const char* dirname, const char* included_string, const char*
             tree_Xs->GetEntry(j);
 
             // Here we get only 
-            if (AcceptIt(Decay, Xsu_KpipiToTree, Xsu_KpipipiToTree, Xsd_KpipiToTree, Xsd_KpipipiToTree, 0)) {}
+            if (AcceptIt(Decay, Xsu_KpipiToTree, Xsu_KpipipiToTree, Xsd_KpipiToTree, Xsd_KpipipiToTree, INDEX)) {}
             else continue;
 
             double total_weight = weight_var;
@@ -406,7 +612,7 @@ void FillSIGNAL(const char* dirname, const char* included_string, const char* ty
             tree_Xs->GetEntry(j);
 
             // Here we get only 
-            if (AcceptIt(Decay, Xsu_KpipiToTree, Xsu_KpipipiToTree, Xsd_KpipiToTree, Xsd_KpipipiToTree, 0)) {}
+            if (AcceptIt(Decay, Xsu_KpipiToTree, Xsu_KpipipiToTree, Xsd_KpipiToTree, Xsd_KpipipiToTree, INDEX)) {}
             else continue;
 
             double total_weight = weight_var;
@@ -420,6 +626,8 @@ void FillSIGNAL(const char* dirname, const char* included_string, const char* ty
             hist_true->Fill(Mxs_MC, total_weight);
 
             Nevt = Nevt + total_weight;
+
+            Nevt_SIGNAL_after_selection_true_all->Fill(Mxs_MC, total_weight);
 
         }
         input_file->Close();
@@ -509,7 +717,7 @@ void ReadDecayInfo(const char* dirname, const char* included_string, const char*
             tree_Xs->GetEntry(j);
 
             // Here we get only 
-            if (AcceptIt(Decay, Xsu_KpipiToTree, Xsu_KpipipiToTree, Xsd_KpipiToTree, Xsd_KpipipiToTree, 0)) {}
+            if (AcceptIt(Decay, Xsu_KpipiToTree, Xsu_KpipipiToTree, Xsd_KpipiToTree, Xsd_KpipipiToTree, INDEX)) {}
             else continue;
 
             double total_weight = weight_var;
@@ -526,6 +734,8 @@ void ReadDecayInfo(const char* dirname, const char* included_string, const char*
             hist_true->Fill(Mxs_MC, total_weight);
 
             Nevt = Nevt + total_weight;
+
+            Nevt_SIGNAL_initial_true_all->Fill(Mxs_MC, total_weight);
 
         }
         input_file->Close();
@@ -615,7 +825,7 @@ void ReadDecayInfo_q2(const char* dirname, const char* included_string, const ch
             tree_Xs->GetEntry(j);
 
             // Here we get only 
-            if (AcceptIt(Decay, Xsu_KpipiToTree, Xsu_KpipipiToTree, Xsd_KpipiToTree, Xsd_KpipipiToTree, 0)) {}
+            if (AcceptIt(Decay, Xsu_KpipiToTree, Xsu_KpipipiToTree, Xsd_KpipiToTree, Xsd_KpipipiToTree, INDEX)) {}
             else continue;
 
             double total_weight = weight_var;
@@ -648,6 +858,7 @@ void ReadDecayInfo_q2(const char* dirname, const char* included_string, const ch
 
 int main(int argc, char* argv[]) {
     // function to calculate efficiency as a function of MXs
+    INDEX = std::atoi(argv[1]);
 
     const char* dirname_CHG_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v008/before_Mbc_cut";
     const char* dirname_MIX_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v008/before_Mbc_cut";
@@ -785,7 +996,7 @@ int main(int argc, char* argv[]) {
     // draw SIGNAL preselection + selection efficiency true
     SIGNAL_pre_and_selection_efficiency_true->Draw("P");
     pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for preselection + selection"); pt->Draw();
-    c_temp->SaveAs("Efficiency.png");
+    c_temp->SaveAs(("Efficiency_index_" + std::to_string(INDEX) + ".png").c_str());
     /*
     // draw SIGNAL FBDT efficiency reco
     SIGNAL_FBDT_efficiency->Draw("P");
@@ -817,5 +1028,10 @@ int main(int argc, char* argv[]) {
     pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency"); pt->Draw();
     c_temp->SaveAs("Efficiency_q2.png");
     */
+
+    // calculate entire eff
+    SIGNAL_pre_and_selection_efficiency_true_all->Divide(Nevt_SIGNAL_after_selection_true_all, Nevt_SIGNAL_initial_true_all, 1.0, 1.0, "B");
+    printf("eff: %lf +- %lf\n", SIGNAL_pre_and_selection_efficiency_true_all->GetBinContent(1), SIGNAL_pre_and_selection_efficiency_true_all->GetBinError(1));
+
     return 0;
 }
