@@ -800,9 +800,10 @@ bool Loader::TrueIfDecayModeMatch_MC(Data temp_data, Loader::DecayModeMC decaymo
     return false;
 }
 
-int main(){
+int main(int argc, char* argv[]){
 
     int mass_region = 0;
+    if (argc > 1) mass_region = std::atoi(argv[1]);
 
     std::vector<std::string> names;
     const char* dirname = "/home/belle2/junewoo/storage_ghi/20220929_SIGNAL_decayInfo_again/small";
