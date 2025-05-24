@@ -664,7 +664,7 @@ void ReadDecayInfo(const char* dirname, const char* included_string, const char*
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
         printf("%s (%d/%zu)\n", ("Read " + names.at(i) + "... ").c_str(), i, names.size());
 
-        TTree* tree_Xs = (TTree*)input_file->Get("Xs");
+        TTree* tree_Xs = (TTree*)input_file->Get("decay");
 
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
