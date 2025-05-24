@@ -3777,6 +3777,10 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     int temp_DecayDataToTree[N_decay];
     int temp_DecayNparticlesDataToTree[N_decay_nparticles];
     double temp_DecaySystFFDataToTree[N_decay_syst_ff];
+    int temp_Xsu_KpipiToTree[N_Xsu_Kpipi];
+    int temp_Xsu_KpipipiToTree[N_Xsu_Kpipipi];
+    int temp_Xsd_KpipiToTree[N_Xsd_Kpipi];
+    int temp_Xsd_KpipipiToTree[N_Xsd_Kpipipi];
     double temp_Upsilon_decayIDToTree;
     double temp_Bsig_decayIDToTree;
     int temp_flag;
