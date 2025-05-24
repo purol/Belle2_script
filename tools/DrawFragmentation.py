@@ -36,6 +36,35 @@ def plot_and_save_data(x, y1, yerr1, y2, yerr2, filename, y1_label, y2_label, ti
     #plt.show()
     plt.close()  # Close the figure to release resources
 
+def plot_noJpsi_and_save_data(x, y1, yerr1, filename, y1_label, title):
+    fig, ax = plt.subplots(figsize=(8, 7))
+
+    er1 = ax.errorbar(x, y1, yerr=yerr1, marker="v", color="#ff7f0e", linestyle="none", label=y1_label)
+
+    y1_top = [y + err for y, err in zip(y1, yerr1)]
+    y_max = max(y1_top)
+    ax.set_ylim(-1, y_max * 1.2)
+    ax.set_xlim(-0.5, len(x) - 0.5)
+    
+    # Rotate the x-axis labels by 45 degrees
+    ax.set_xticks(x)
+    ax.set_xticklabels(x, rotation=30, ha='right', fontsize=14)
+
+    # Add a title and labels for the axes
+    ax.set_xlabel('Decay Mode', fontsize=14)
+    ax.set_ylabel('Fraction at 9 decays[%]', fontsize=14)
+
+    ax.legend(loc='best', fontsize=15)
+
+    ax.text(0.02, 0.95, title, transform=ax.transAxes, color='black', fontsize=16)
+
+    plt.tight_layout()
+
+    # Save the figure as a PNG image
+    plt.savefig(filename, dpi=300)
+    #plt.show()
+    plt.close()  # Close the figure to release resources
+
 def print_ratio(y1, yerr1, y2, filename):
     ratios = [y1_value / y2_value for y1_value, y2_value in zip(y1, y2)]
     relative_uncertainties = [yerr1_value / y1_value if y1_value != 0 else 0 for yerr1_value, y1_value in zip(yerr1, y1)]
@@ -63,10 +92,16 @@ y2_2 = [20.40, 10.20, 15.18, 19.65, 3.63, 13.90, 5.20, 8.54, 3.31] # sigal MC [1
 yerr2_2 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 y2_3 = [12.75, 6.37, 12.14, 15.17, 5.89, 15.95, 12.49, 14.19, 5.07] # sigal MC [2.0, 2.4]
 yerr2_3 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+y2_4 = [39.00, 19.48, 16.61, 17.04, 0.40, 3.03, 0.05, 4.40, 0.0] # sigal MC [1.1, 1.15]
+yerr2_4 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+y2_5 = [9.91, 4.97, 10.80, 13.22, 6.59, 16.09, 16.46, 16.80, 5.16] # sigal MC [2.4, inf]
+yerr2_5 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
+plot_noJpsi_and_save_data(x, y2_4, yerr2_4, "fraction_1.1_1.15.png", r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$1.1 < M_{X_{s}} < 1.15$ GeV')
 plot_and_save_data(x, y1_1, yerr1_1, y2_1, yerr2_1, "fraction_1.15_1.5.png", r'$B \rightarrow X_{s} \gamma$ [bn1480_v4]', r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$1.15 < M_{X_{s}} < 1.5$ GeV')
 plot_and_save_data(x, y1_2, yerr1_2, y2_2, yerr2_2, "fraction_1.5_2.0.png", r'$B \rightarrow X_{s} \gamma$ [bn1480_v4]', r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$1.5 < M_{X_{s}} < 2.0$ GeV')
 plot_and_save_data(x, y1_3, yerr1_3, y2_3, yerr2_3, "fraction_2.0_2.4.png", r'$B \rightarrow X_{s} \gamma$ [bn1480_v4]', r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$2.0 < M_{X_{s}} < 2.4$ GeV')
+plot_noJpsi_and_save_data(x, y2_5, yerr2_5, "fraction_2.4.png", r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$2.4$ GeV $< M_{X_{s}}$')
 
 print_ratio(y1_1, yerr1_1, y2_1, "weight_fragmentation_1.15_1.5.txt")
 print_ratio(y1_2, yerr1_2, y2_2, "weight_fragmentation_1.5_2.0.txt")
