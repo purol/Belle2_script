@@ -41,6 +41,9 @@ bool AcceptIt(int Decay[N_decay], int Xsu_KpipiToTree[N_Xsu_Kpipi], int Xsu_Kpip
     // accept decay with index. Only works for non-resonant Xs sample
 
     if (Decay[7] > 0.5) { // B+ -> K+ pi- pi+
+
+        if (index == 63) return true;
+
         if (Xsu_KpipiToTree[0] > 0.5) { // B+ -> rho0 K+
             if (index == 0) return true;
             else return false;
@@ -59,6 +62,9 @@ bool AcceptIt(int Decay[N_decay], int Xsu_KpipiToTree[N_Xsu_Kpipi], int Xsu_Kpip
         }
     }
     else if (Decay[8] > 0.5) { // B+ -> K0 pi- pi0
+
+        if (index == 64) return true;
+
         if (Xsu_KpipiToTree[4] > 0.5) { // B+ -> rho+ K0
             if (index == 4) return true;
             else return false;
@@ -77,6 +83,9 @@ bool AcceptIt(int Decay[N_decay], int Xsu_KpipiToTree[N_Xsu_Kpipi], int Xsu_Kpip
         }
     }
     else if (Decay[27] > 0.5) { // B0 -> K0 pi+ pi-
+
+        if (index == 65) return true;
+
         if (Xsd_KpipiToTree[4] > 0.5) { // B+ -> rho0 K0
             if (index == 8) return true;
             else return false;
@@ -95,6 +104,9 @@ bool AcceptIt(int Decay[N_decay], int Xsu_KpipiToTree[N_Xsu_Kpipi], int Xsu_Kpip
         }
     }
     else if (Decay[26] > 0.5) { // B0 -> K+ pi- pi0
+
+        if (index == 66) return true;
+
         if (Xsd_KpipiToTree[0] > 0.5) { // B+ -> rho- K+
             if (index == 12) return true;
             else return false;
@@ -113,6 +125,9 @@ bool AcceptIt(int Decay[N_decay], int Xsu_KpipiToTree[N_Xsu_Kpipi], int Xsu_Kpip
         }
     }
     else if (Decay[9] > 0.5) { // B+ -> K+ pi- pi+ pi0
+
+        if (index == 67) return true;
+
         if (Xsu_KpipipiToTree[0] > 0.5) { // B+ -> rho+ pi- K+
             if (index == 16) return true;
             else return false;
@@ -167,6 +182,9 @@ bool AcceptIt(int Decay[N_decay], int Xsu_KpipiToTree[N_Xsu_Kpipi], int Xsu_Kpip
         }
     }
     else if (Decay[10] > 0.5) { // B+ -> K0 pi+ pi- pi+
+
+        if (index == 68) return true;
+
         if (Xsu_KpipipiToTree[13] > 0.5) { // B+ -> K*+ pi- pi+
             if (index == 29) return true;
             else return false;
@@ -193,6 +211,9 @@ bool AcceptIt(int Decay[N_decay], int Xsu_KpipiToTree[N_Xsu_Kpipi], int Xsu_Kpip
         }
     }
     else if (Decay[14] > 0.5) { // B+ -> K0 pi+ pi0 pi0
+
+        if (index == 69) return true;
+
         if (Xsu_KpipipiToTree[20] > 0.5) { // B+ -> pi0 rho+ K0
             if (index == 35) return true;
             else return false;
@@ -215,6 +236,9 @@ bool AcceptIt(int Decay[N_decay], int Xsu_KpipiToTree[N_Xsu_Kpipi], int Xsu_Kpip
         }
     }
     else if (Decay[29] > 0.5) { // B0 -> K0 pi+ pi- pi0
+
+        if (index == 70) return true;
+
         if (Xsd_KpipipiToTree[6] > 0.5) { // B0 -> K0 omega
             if (index == 40) return true;
             else return false;
@@ -265,6 +289,9 @@ bool AcceptIt(int Decay[N_decay], int Xsu_KpipiToTree[N_Xsu_Kpipi], int Xsu_Kpip
         }
     }
     else if (Decay[28] > 0.5) { // B0 -> K+ pi- pi+ pi-
+
+        if (index == 71) return true;
+
         if (Xsd_KpipipiToTree[0] > 0.5) { // B0 -> rho0 K+ pi-
             if (index == 52) return true;
             else return false;
@@ -291,6 +318,9 @@ bool AcceptIt(int Decay[N_decay], int Xsu_KpipiToTree[N_Xsu_Kpipi], int Xsu_Kpip
         }
     }
     else if (Decay[33] > 0.5) { // B0 -> K+ pi- pi0 pi0
+
+        if (index == 72) return true;
+
         if (Xsd_KpipipiToTree[18] > 0.5) { // B0 -> K+ rho- pi0
             if (index == 58) return true;
             else return false;
