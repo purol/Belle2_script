@@ -380,6 +380,37 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
         options_->dataMC = true;
         options_->uncorrelated = true;
     }
+    else if (std::string(tested_param) == std::string("not-MCstat")) {
+        options_->track = true;
+        options_->PID = true;
+        options_->KID = true;
+        options_->KS0 = true;
+        options_->pi0 = true;
+        options_->FBDT = true;
+        options_->FEI = true;
+        options_->qqbar = true;
+        options_->multiplicity = true;
+        options_->Kff = true;
+        options_->Kstarff = true;
+        options_->pf = true;
+        options_->Transition = true;
+        options_->mb = true;
+        options_->fraction = true;
+        options_->Fragmentation = true;
+        options_->mKstar = true;
+        options_->BKGNorm = true;
+        options_->BDTc = true;
+        options_->BBcounting = true;
+        options_->BBBR = true;
+        options_->BRBtoXKLKL = true;
+        options_->EffECLKL = true;
+        options_->NEWFEICAL = true;
+        options_->BRXnn = true;
+        options_->BRDKL0 = true;
+        options_->fitter = true;
+        options_->dataMC = true;
+        options_->uncorrelated = true;
+    }
     else {
         printf("inappropriate parameter name\n");
         exit(1);
