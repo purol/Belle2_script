@@ -8,6 +8,7 @@
 # define N_decay 38 // five decay mode + others
 # define N_decay_nparticles 5 // # of nu_e, B->Xs nu_e nu_e_bar, B0->Xs nu_e nu_e_bar, B+-, B0
 # define N_decay_syst_ff 7 // helicity angle + q2
+# define N_decay_B 32
 # define N_PID_syst 73
 # define N_fakeE_syst 37
 # define N_fakeMU_syst 49

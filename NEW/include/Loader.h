@@ -148,8 +148,9 @@ typedef struct data {
     // 35: decayhash, 36: decayhash_extended
 
     int Decay[N_decay]; // MC level info
+    int DecayB[N_decay_B];
     int Decay_nparticles[N_decay_nparticles]; // MC level info for # particle
-    double Decay_syst_ff[N_decay_syst_ff]; // MC level info for helicity angle + q2
+    double Decay_syst_ff[N_decay_syst_ff]; // MC level info for helicity angle + q2 
 
     int Xsu_Kpipi[N_Xsu_Kpipi];
     int Xsu_Kpipipi[N_Xsu_Kpipipi];
@@ -373,6 +374,7 @@ private:
     double BsigDataToTree[N_Bsig_info];
     double BtagDataToTree[N_Btag_info];
     int DecayDataToTree[N_decay];
+    int DecayBDataToTree[N_decay_B];
     int DecayNparticlesDataToTree[N_decay_nparticles];
     double DecaySystFFDataToTree[N_decay_syst_ff];
     int Xsu_KpipiToTree[N_Xsu_Kpipi];
@@ -1011,6 +1013,38 @@ void Loader::GetData(TFile* input_file) {
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch28__bc", &temp.Decay[35]);
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch29__bc", &temp.Decay[36]);
         tree_Xs->SetBranchAddress("nParticlesInList__boXsd__clMCch30__bc", &temp.Decay[37]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCcomb__bc", &temp.DecayB[0]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch1__bc", &temp.DecayB[1]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch2__bc", &temp.DecayB[2]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch3__bc", &temp.DecayB[3]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch4__bc", &temp.DecayB[4]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch5__bc", &temp.DecayB[5]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch6__bc", &temp.DecayB[6]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch7__bc", &temp.DecayB[7]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch8__bc", &temp.DecayB[8]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch9__bc", &temp.DecayB[9]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch10__bc", &temp.DecayB[10]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch11__bc", &temp.DecayB[11]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch12__bc", &temp.DecayB[12]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch13__bc", &temp.DecayB[13]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch14__bc", &temp.DecayB[14]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMCch15__bc", &temp.DecayB[15]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCcomb__bc", &temp.DecayB[16]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch16__bc", &temp.DecayB[17]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch17__bc", &temp.DecayB[18]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch18__bc", &temp.DecayB[29]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch19__bc", &temp.DecayB[20]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch20__bc", &temp.DecayB[21]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch21__bc", &temp.DecayB[22]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch22__bc", &temp.DecayB[23]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch23__bc", &temp.DecayB[24]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch24__bc", &temp.DecayB[25]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch25__bc", &temp.DecayB[26]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch26__bc", &temp.DecayB[27]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch27__bc", &temp.DecayB[28]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch28__bc", &temp.DecayB[29]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch29__bc", &temp.DecayB[30]);
+        tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMCch30__bc", &temp.DecayB[31]);
         tree_Xs->SetBranchAddress("nParticlesInList__bonu_e__clMC_signal__bc", &temp.Decay_nparticles[0]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp.Decay_nparticles[1]);
         tree_Xs->SetBranchAddress("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp.Decay_nparticles[2]);
@@ -1030,6 +1064,7 @@ void Loader::GetData(TFile* input_file) {
     }
     else {
         for (int i = 0; i < N_decay; i++) temp.Decay[i] = -1;
+        for (int i = 0; i < N_decay_B; i++) temp.DecayB[i] = -1;
         for (int i = 0; i < N_decay_nparticles; i++) temp.Decay_nparticles[i] = -1;
         for (int i = 0; i < N_decay_syst_ff; i++) temp.Decay_syst_ff[i] = -1;
         for (int i = 0; i < N_Xsu_Kpipi; i++) temp.Xsu_Kpipi[i] = -1;
@@ -3036,6 +3071,38 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch28__bc", &DecayDataToTree[35]);
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &DecayDataToTree[36]);
         tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &DecayDataToTree[37]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCcomb__bc", &DecayBDataToTree[0]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch1__bc", &DecayBDataToTree[1]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch2__bc", &DecayBDataToTree[2]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch3__bc", &DecayBDataToTree[3]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch4__bc", &DecayBDataToTree[4]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch5__bc", &DecayBDataToTree[5]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch6__bc", &DecayBDataToTree[6]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch7__bc", &DecayBDataToTree[7]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch8__bc", &DecayBDataToTree[8]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch9__bc", &DecayBDataToTree[9]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch10__bc", &DecayBDataToTree[10]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch11__bc", &DecayBDataToTree[11]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch12__bc", &DecayBDataToTree[12]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch13__bc", &DecayBDataToTree[13]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch14__bc", &DecayBDataToTree[14]);
+        tree_Xs->Branch("nParticlesInList__boB__pl__clMCch15__bc", &DecayBDataToTree[15]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCcomb__bc", &DecayBDataToTree[16]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch16__bc", &DecayBDataToTree[17]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch17__bc", &DecayBDataToTree[18]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch18__bc", &DecayBDataToTree[29]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch19__bc", &DecayBDataToTree[20]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch20__bc", &DecayBDataToTree[21]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch21__bc", &DecayBDataToTree[22]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch22__bc", &DecayBDataToTree[23]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch23__bc", &DecayBDataToTree[24]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch24__bc", &DecayBDataToTree[25]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch25__bc", &DecayBDataToTree[26]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch26__bc", &DecayBDataToTree[27]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch27__bc", &DecayBDataToTree[28]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch28__bc", &DecayBDataToTree[29]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch29__bc", &DecayBDataToTree[30]);
+        tree_Xs->Branch("nParticlesInList__boB0__clMCch30__bc", &DecayBDataToTree[31]);
         tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &DecayNparticlesDataToTree[0]);
         tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &DecayNparticlesDataToTree[1]);
         tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &DecayNparticlesDataToTree[2]);
@@ -3115,6 +3182,9 @@ void Loader::PrintRootFile(std::string output_name) {
         for (int i = 0; i < N_decay; i++) {
             DecayDataToTree[i] = temp.Decay[i];
         }
+        for (int i = 0; i < N_decay_B; i++) {
+            DecayBDataToTree[i] = temp.DecayB[i];
+        }
         for (int i = 0; i < N_decay_nparticles; i++) {
             DecayNparticlesDataToTree[i] = temp.Decay_nparticles[i];
         }
@@ -3189,6 +3259,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     double temp_BsigDataToTree[N_Bsig_info];
     double temp_BtagDataToTree[N_Btag_info];
     int temp_DecayDataToTree[N_decay];
+    int temp_DecayBDataToTree[N_decay_B];
     int temp_DecayNparticlesDataToTree[N_decay_nparticles];
     double temp_DecaySystFFDataToTree[N_decay_syst_ff];
     int temp_Xsu_KpipiToTree[N_Xsu_Kpipi];
@@ -3623,6 +3694,38 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
         temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
         temp_tree_Xs->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCcomb__bc", &temp_DecayBDataToTree[0]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch1__bc", &temp_DecayBDataToTree[1]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch2__bc", &temp_DecayBDataToTree[2]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch3__bc", &temp_DecayBDataToTree[3]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch4__bc", &temp_DecayBDataToTree[4]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch5__bc", &temp_DecayBDataToTree[5]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch6__bc", &temp_DecayBDataToTree[6]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch7__bc", &temp_DecayBDataToTree[7]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch8__bc", &temp_DecayBDataToTree[8]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch9__bc", &temp_DecayBDataToTree[9]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch10__bc", &temp_DecayBDataToTree[10]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch11__bc", &temp_DecayBDataToTree[11]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch12__bc", &temp_DecayBDataToTree[12]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch13__bc", &temp_DecayBDataToTree[13]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch14__bc", &temp_DecayBDataToTree[14]);
+        temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMCch15__bc", &temp_DecayBDataToTree[15]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCcomb__bc", &temp_DecayBDataToTree[16]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch16__bc", &temp_DecayBDataToTree[17]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch17__bc", &temp_DecayBDataToTree[18]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch18__bc", &temp_DecayBDataToTree[29]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch19__bc", &temp_DecayBDataToTree[20]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch20__bc", &temp_DecayBDataToTree[21]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch21__bc", &temp_DecayBDataToTree[22]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch22__bc", &temp_DecayBDataToTree[23]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch23__bc", &temp_DecayBDataToTree[24]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch24__bc", &temp_DecayBDataToTree[25]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch25__bc", &temp_DecayBDataToTree[26]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch26__bc", &temp_DecayBDataToTree[27]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch27__bc", &temp_DecayBDataToTree[28]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch28__bc", &temp_DecayBDataToTree[29]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch29__bc", &temp_DecayBDataToTree[30]);
+        temp_tree_Xs->Branch("nParticlesInList__boB0__clMCch30__bc", &temp_DecayBDataToTree[31]);
         temp_tree_Xs->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
         temp_tree_Xs->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
         temp_tree_Xs->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
@@ -3642,6 +3745,7 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     }
     else {
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
+        for (int i = 0; i < N_decay_B; i++)  temp_DecayBDataToTree[i] = -1;
         for (int i = 0; i < N_decay_nparticles; i++)  temp_DecayNparticlesDataToTree[i] = -1;
         for (int i = 0; i < N_decay_syst_ff; i++)  temp_DecaySystFFDataToTree[i] = -1;
         for (int i = 0; i < N_Xsu_Kpipi; i++) temp_Xsu_KpipiToTree[i] = -1;
@@ -3707,6 +3811,9 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
         }
         for (int i = 0; i < N_decay; i++) {
             if (DoesItHaveXsBranch) temp_DecayDataToTree[i] = temp.Decay[i];
+        }
+        for (int i = 0; i < N_decay_B; i++) {
+            if (DoesItHaveXsBranch) temp_DecayBDataToTree[i] = temp.DecayB[i];
         }
         for (int i = 0; i < N_decay_nparticles; i++) {
             if (DoesItHaveXsBranch) temp_DecayNparticlesDataToTree[i] = temp.Decay_nparticles[i];
@@ -3775,6 +3882,7 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     double temp_BtagDataToTree[N_Btag_info];
     double temp_DataToTree[N_Needed_info];
     int temp_DecayDataToTree[N_decay];
+    int temp_DecayBDataToTree[N_decay_B];
     int temp_DecayNparticlesDataToTree[N_decay_nparticles];
     double temp_DecaySystFFDataToTree[N_decay_syst_ff];
     int temp_Xsu_KpipiToTree[N_Xsu_Kpipi];
@@ -4200,6 +4308,38 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
         temp_tree->Branch("nParticlesInList__boXsd__clMCch28__bc", &temp_DecayDataToTree[35]);
         temp_tree->Branch("nParticlesInList__boXsd__clMCch29__bc", &temp_DecayDataToTree[36]);
         temp_tree->Branch("nParticlesInList__boXsd__clMCch30__bc", &temp_DecayDataToTree[37]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCcomb__bc", &temp_DecayBDataToTree[0]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch1__bc", &temp_DecayBDataToTree[1]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch2__bc", &temp_DecayBDataToTree[2]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch3__bc", &temp_DecayBDataToTree[3]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch4__bc", &temp_DecayBDataToTree[4]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch5__bc", &temp_DecayBDataToTree[5]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch6__bc", &temp_DecayBDataToTree[6]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch7__bc", &temp_DecayBDataToTree[7]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch8__bc", &temp_DecayBDataToTree[8]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch9__bc", &temp_DecayBDataToTree[9]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch10__bc", &temp_DecayBDataToTree[10]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch11__bc", &temp_DecayBDataToTree[11]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch12__bc", &temp_DecayBDataToTree[12]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch13__bc", &temp_DecayBDataToTree[13]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch14__bc", &temp_DecayBDataToTree[14]);
+        temp_tree->Branch("nParticlesInList__boB__pl__clMCch15__bc", &temp_DecayBDataToTree[15]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCcomb__bc", &temp_DecayBDataToTree[16]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch16__bc", &temp_DecayBDataToTree[17]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch17__bc", &temp_DecayBDataToTree[18]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch18__bc", &temp_DecayBDataToTree[29]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch19__bc", &temp_DecayBDataToTree[20]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch20__bc", &temp_DecayBDataToTree[21]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch21__bc", &temp_DecayBDataToTree[22]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch22__bc", &temp_DecayBDataToTree[23]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch23__bc", &temp_DecayBDataToTree[24]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch24__bc", &temp_DecayBDataToTree[25]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch25__bc", &temp_DecayBDataToTree[26]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch26__bc", &temp_DecayBDataToTree[27]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch27__bc", &temp_DecayBDataToTree[28]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch28__bc", &temp_DecayBDataToTree[29]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch29__bc", &temp_DecayBDataToTree[30]);
+        temp_tree->Branch("nParticlesInList__boB0__clMCch30__bc", &temp_DecayBDataToTree[31]);
         temp_tree->Branch("nParticlesInList__bonu_e__clMC_signal__bc", &temp_DecayNparticlesDataToTree[0]);
         temp_tree->Branch("nParticlesInList__boB__pl__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[1]);
         temp_tree->Branch("nParticlesInList__boB0__clMC_signal_total_e__bc", &temp_DecayNparticlesDataToTree[2]);
@@ -4219,6 +4359,7 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     }
     else {
         for (int i = 0; i < N_decay; i++)  temp_DecayDataToTree[i] = -1;
+        for (int i = 0; i < N_decay_B; i++)  temp_DecayBDataToTree[i] = -1;
     }
 
     if (DoesItHaveMVAOutput) {
@@ -4274,6 +4415,9 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
         }
         for (int i = 0; i < N_decay; i++) {
             if (DoesItHaveXsBranch) temp_DecayDataToTree[i] = temp.Decay[i];
+        }
+        for (int i = 0; i < N_decay_B; i++) {
+            if (DoesItHaveXsBranch) temp_DecayBDataToTree[i] = temp.DecayB[i];
         }
         for (int i = 0; i < N_decay_nparticles; i++) {
             if (DoesItHaveXsBranch) temp_DecayNparticlesDataToTree[i] = temp.Decay_nparticles[i];
