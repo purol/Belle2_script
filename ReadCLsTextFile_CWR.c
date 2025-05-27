@@ -94,7 +94,8 @@ TMultiGraph* ExpectedGraph(std::vector<double> mu_values, std::vector<double> Ex
 }
 
 void DrawPlots(TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, double conf = 0.9) {
-    TCanvas* c = new TCanvas("c", "c", 700, 420);
+    //TCanvas* c = new TCanvas("c", "c", 700, 420);
+    TCanvas* c = new TCanvas("c", "c", 696, 472);
 
     //GraphObservedCLs->SetMaximum(1.2);
 
