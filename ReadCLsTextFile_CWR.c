@@ -73,7 +73,7 @@ TMultiGraph* ExpectedGraph(std::vector<double> mu_values, std::vector<double> Ex
     }
 
     TString name = "CLs" + TString("_expected");
-    TString title = TString("CLs scan");
+    TString title = TString("0.0 < M_{Xs} < 0.6 GeV/c^{2}");
     TMultiGraph* graph = new TMultiGraph(name, title);
 
     // set the graphics options and add in multi graph
@@ -156,11 +156,11 @@ void DrawPlots(TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, do
 
     // draw luminosity
     TPaveText* pt_lumi = new TPaveText(0.5, 0.3, 0.8, 0.37, "NDC NB");
-    pt_lumi->SetTextSize(0.05); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("Belle II #int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
+    pt_lumi->SetTextSize(0.05); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("Belle II preliminary"); pt_lumi->Draw();
 
     // draw MXs range
     TPaveText* pt_MXs = new TPaveText(0.5, 0.4, 0.9, 0.6, "NDC NB");
-    pt_MXs->SetTextSize(0.05); pt_MXs->SetFillStyle(0); pt_MXs->SetLineWidth(0); pt_MXs->SetTextAlign(11); pt_MXs->AddText("0.0 < M_{Xs} < 0.6 GeV/c^{2}"); pt_MXs->Draw();
+    pt_MXs->SetTextSize(0.05); pt_MXs->SetFillStyle(0); pt_MXs->SetLineWidth(0); pt_MXs->SetTextAlign(11); pt_MXs->AddText("#int L dt = 365.4 fb^{-1}"); pt_MXs->Draw();
 
     // set margin
     gPad->SetTopMargin(0.05);
