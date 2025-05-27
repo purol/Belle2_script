@@ -1523,7 +1523,7 @@ void GetPlotTemplate_compact(RooWorkspace* w, RooDataSet* data = nullptr, const 
 
     c_temp->cd();
     TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.25); pad2->SetBottomMargin(0.35); pad2->SetLeftMargin(0.15); pad2->SetTopMargin(0.05); pad2->Draw(); pad2->cd();
-    Ratio_hist->SetMinimum(0.77); Ratio_hist->SetMaximum(1.23); Ratio_hist->SetLineWidth(2);
+    Ratio_hist->SetMinimum(0.7); Ratio_hist->SetMaximum(1.23); Ratio_hist->SetLineWidth(2);
     Ratio_hist->Draw("E X0 P");
     Ratio_hist->GetYaxis()->SetTitleSize(0.15); Ratio_hist->GetYaxis()->SetTitleOffset(0.4); Ratio_hist->GetYaxis()->SetLabelSize(0.15);
     Ratio_hist->GetXaxis()->SetLabelSize(0.15); Ratio_hist->GetXaxis()->SetTitleSize(0.15);
