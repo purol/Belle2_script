@@ -73,7 +73,7 @@ TMultiGraph* ExpectedGraph(std::vector<double> mu_values, std::vector<double> Ex
     }
 
     TString name = "CLs" + TString("_expected");
-    TString title = TString("0.0 < M_{Xs} < 0.6 GeV/c^{2}");
+    TString title = TString("CLs scan");
     TMultiGraph* graph = new TMultiGraph(name, title);
 
     // set the graphics options and add in multi graph
@@ -101,8 +101,8 @@ void DrawPlots(TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, do
     // draw observed CLs first
     GraphObservedCLs->Draw("APL");
     TGraphErrors* gplot = GraphObservedCLs;
-    gplot->GetHistogram()->SetTitle("");
-    gplot->GetHistogram()->SetTitleSize(0.0);
+    gplot->GetHistogram()->SetTitle("0.0 < M_{Xs} < 0.6 GeV/c^{2}");
+    //gplot->GetHistogram()->SetTitleSize(0.0);
 
     // draw Expected
     GraphExpectedCLs->Draw();
