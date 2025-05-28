@@ -562,7 +562,7 @@ void THStack_Jpsi_FEI_efficiency() {
     LetsFillKonlyMC(Jpsi_MC_DDBAR_before_dirname, "DDBAR", 0, 1.0, true);
     LetsFillKonlyMC(Jpsi_MC_SSBAR_before_dirname, "SSBAR", 0, 1.0, true);
     LetsFillKonlyMC(Jpsi_MC_CHARM_before_dirname, "CHARM", 0, 1.0, true);
-    LetsFillKonlydata(Jpsi_data_before_dirname, 0, 1.0, true);
+    LetsFillKonlydata(Jpsi_data_before_dirname, "root", 0, 1.0, true);
 
     for (int i = 0; i < 36; i++) ratio_Bplus->Divide(Nevt_data_Bplus, Nevt_MC_Bplus);
     for (int i = 0; i < 32; i++) ratio_Bzero->Divide(Nevt_data_Bzero, Nevt_MC_Bzero);
