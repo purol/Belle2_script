@@ -102,8 +102,8 @@ void DrawPlots(TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, do
     // draw observed CLs first
     GraphObservedCLs->Draw("APL");
     TGraphErrors* gplot = GraphObservedCLs;
-    gplot->GetHistogram()->SetTitle("0.0 < M_{Xs} < 0.6 GeV/c^{2}");
-    //gplot->GetHistogram()->SetTitleSize(0.0);
+    gplot->GetHistogram()->SetTitle("");
+    gplot->GetHistogram()->SetTitleSize(0.0);
 
     // draw Expected
     GraphExpectedCLs->Draw();
@@ -155,13 +155,17 @@ void DrawPlots(TGraphErrors* GraphObservedCLs, TMultiGraph* GraphExpectedCLs, do
     l->SetFillStyle(0); l->SetLineWidth(0);
     l->Draw();
 
-    // draw luminosity
-    TPaveText* pt_lumi = new TPaveText(0.5, 0.3, 0.8, 0.37, "NDC NB");
+    // draw Belle II
+    TPaveText* pt_lumi = new TPaveText(0.5, 0.36, 0.8, 0.43, "NDC NB");
     pt_lumi->SetTextSize(0.05); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("Belle II preliminary"); pt_lumi->Draw();
 
-    // draw MXs range
+    // draw luminosity
     TPaveText* pt_MXs = new TPaveText(0.5, 0.4, 0.9, 0.6, "NDC NB");
     pt_MXs->SetTextSize(0.05); pt_MXs->SetFillStyle(0); pt_MXs->SetLineWidth(0); pt_MXs->SetTextAlign(11); pt_MXs->AddText("#int L dt = 365.4 fb^{-1}"); pt_MXs->Draw();
+
+    // draw MXs range
+    TPaveText* pt_range = new TPaveText(0.5, 0.28, 0.8, 0.35, "NDC NB");
+    pt_range->SetTextSize(0.05); pt_range->SetFillStyle(0); pt_range->SetLineWidth(0); pt_range->SetTextAlign(11); pt_range->AddText("0.0 < M_{Xs} < 0.6 GeV/c^{2}"); pt_range->Draw();
 
     // set margin
     gPad->SetTopMargin(0.05);
