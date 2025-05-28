@@ -132,6 +132,7 @@ typedef struct Options
     int NEntrypi0;
     int NEntryMultiplicity;
     int NEntryFragmentation;
+    int NEntryNEWFEICAL;
 
     int Nsyst = 25;
 } OPTIONS;
@@ -241,6 +242,25 @@ int ReadNFragmentationEigenVector(const char* dirname) {
     while (true) {
         if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
         for (int i = 0; i < RarityBins * 5; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    return Nentry;
+}
+
+int ReadNNEWFEICALEigenVector(const char* dirname) {
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 3; i++) {
             if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
         }
         Nentry++;
@@ -424,6 +444,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
     options_->NEntrypi0 = ReadNpi0EigenVector((std::string(path) + "/pi0_selected.txt").c_str());
     options_->NEntryMultiplicity = ReadMultiplicityInfo((std::string(path) + "/multiplicity_selected.txt").c_str());
     options_->NEntryFragmentation = ReadNFragmentationEigenVector((std::string(path) + "/Fragmentation_selected.txt").c_str());
+    options_->NEntryNEWFEICAL = ReadNNEWFEICALEigenVector((std::string(path) + "/NEWFEICAL_selected.txt").c_str());
 }
 
 void FixParameters(RooWorkspace* w, OPTIONS* options_) {
@@ -574,7 +595,12 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->EffECLKL) w->var("alpha_EffECLKL_uncer")->setConstant(options_->EffECLKL);
 
     // New FEI CAL
-    if (options_->NEWFEICAL) w->var("alpha_NEWFEICAL_uncer")->setConstant(options_->NEWFEICAL);
+    if (options_->NEWFEICAL) for (int i = 0; i < options_->NEntryNEWFEICAL; i++) {
+        if (w->var("alpha_NEWFEICAL" + std::to_string(i) + "_uncer").c_str()) {
+            w->var(("alpha_NEWFEICAL" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->NEWFEICAL);
+        }
+    }
+
 
     // B->Xnn BR
     if (options_->BRXnn) w->var("alpha_Xnn_BR_uncer")->setConstant(options_->BRXnn);
