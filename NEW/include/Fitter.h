@@ -596,7 +596,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // New FEI CAL
     if (options_->NEWFEICAL) for (int i = 0; i < options_->NEntryNEWFEICAL; i++) {
-        if (w->var("alpha_NEWFEICAL" + std::to_string(i) + "_uncer").c_str()) {
+        if (w->var(("alpha_NEWFEICAL" + std::to_string(i) + "_uncer").c_str())) {
             w->var(("alpha_NEWFEICAL" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->NEWFEICAL);
         }
     }

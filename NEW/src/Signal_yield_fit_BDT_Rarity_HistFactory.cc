@@ -3596,14 +3596,14 @@ int main()
 
     /* ====================================== */
     // define path for Ntuple
-    const char* MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
 
-    const char* MC_dirname_CHG = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHG_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_dirname_MIX = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/MIX_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_dirname_UUBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/UUBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_dirname_DDBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/DDBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_dirname_SSBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_dirname_CHARM = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_CHG = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_MIX = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_UUBAR = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_DDBAR = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_SSBAR = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_CHARM = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
  
     // for FEI
     const char* FEI_correlated_info = "./FEI_selected.txt";
@@ -4477,7 +4477,7 @@ int main()
 
     /* ====================================== */
     // define path for Data
-    const char* DATA_dirname = "/home/jwpark/storage/BKG_gbasf2/Izayoi_again/SIGNAL_analysis/validation_v000/final_output_root_after_MVA_Application_after_cut/BCS_only/Merge/B2Knunu";
+    const char* DATA_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_data/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut";
     /* ====================================== */
 
 
