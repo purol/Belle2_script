@@ -936,6 +936,9 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
                 total_weight = total_weight * ECLKL_correction;
             }
             else if (pdftype == PDFtype::ControlFEICAL) {
+                printf("[GetPDFs] do not use `GetPDFs` to calculate the systematic uncertainty from FEI calbiration factor anymore.\n");
+                exit(1);
+
                 if (strcmp(sample, "SIGNAL") == 0) { // it works only when the sample is signal
                     if (std::abs(Btag_isSignal - 1.0) < MyEPSILON) { // it is applied only when Btag is correct
                         double New_Correction_FEI = 1.0;
@@ -1268,6 +1271,75 @@ void GetBRUncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, 
     for (int i = 0; i < RarityBins; i++) Signal_hist_MXs1->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
     for (int i = 0; i < RarityBins; i++) Signal_hist_MXs2->SetBinContent(i + 1, weight_sys[3 * RarityBins + i]);
     for (int i = 0; i < RarityBins; i++) Signal_hist_MXs3->SetBinContent(i + 1, weight_sys[4 * RarityBins + i]);
+}
+
+int GetNEWFEICALcorrelatedPDFs(const char* dirname, TH1D* Signal_nominal_hist_MXs1, TH1D* Signal_nominal_hist_MXs2, TH1D* Signal_nominal_hist_MXs3, TH1D*** Signal_hists_MXs1, TH1D*** Signal_hists_MXs2, TH1D*** Signal_hists_MXs3) { // get shape sys histogram from txt file
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 3; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    *Signal_hists_MXs1 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs2 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs3 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+
+    for (int i = 0; i < Nentry; i++) {
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs1_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs2_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs3_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    }
+
+    for (int i = Nentry; i < 2 * Nentry; i++) {
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_NEWFEICAL_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs1_NEWFEICAL_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_NEWFEICAL_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs2_NEWFEICAL_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_NEWFEICAL_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs3_NEWFEICAL_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    }
+
+    fp = fopen(dirname, "r");
+    for (int i = 0; i < Nentry; i++) {
+        fscanf(fp, "%lf\n", &eigen_value);
+        for (int j = 0; j < RarityBins * 3; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
+
+        for (int k = 0; k < RarityBins; k++) {
+            (*Signal_hists_MXs1)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
+            (*Signal_hists_MXs2)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 1 * RarityBins]));
+            (*Signal_hists_MXs3)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
+
+            (*Signal_hists_MXs1)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 0 * RarityBins]));
+            (*Signal_hists_MXs2)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 1 * RarityBins]));
+            (*Signal_hists_MXs3)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
+        }
+
+    }
+
+    fclose(fp);
+
+    return Nentry;
+}
+
+void GetNEWFEICALUncorrelatedPDFs(const char* dirname, TH1D* Signal_hist_MXs1, TH1D* Signal_hist_MXs2, TH1D* Signal_hist_MXs3) { // get shape sys histogram from txt file
+    FILE* fp;
+    fp = fopen(dirname, "r");
+
+    double weight_sys[RarityBins * 3] = { 0.0 };
+    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    fclose(fp);
+
+    for (int i = 0; i < RarityBins * 3; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
+
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs1->SetBinContent(i + 1, weight_sys[0 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs2->SetBinContent(i + 1, weight_sys[1 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs3->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
 }
 
 int GetFragmentationcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist_MXs1, TH1D* Signal_nominal_hist_MXs2, TH1D* Signal_nominal_hist_MXs3, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists_MXs1, TH1D*** Signal_hists_MXs2, TH1D*** Signal_hists_MXs3) { // get shape sys histogram from txt file
@@ -3463,15 +3535,16 @@ int main()
     TH1D* SSBAR_EffECLKL_m = new TH1D("SSBAR_EffECLKL_m", "SSBAR_EffECLKL_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_EffECLKL_m = new TH1D("CHARM_EffECLKL_m", "CHARM_EffECLKL_m", RarityBins, BinMIN, BinMAX);
 
-    // New FEI CAL
-    TH1D* Signal_NEWFEICAL_p = new TH1D("Signal_NEWFEICAL_p", "Signal_NEWFEICAL_p", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs1_NEWFEICAL_p = new TH1D("Signal_MXs1_NEWFEICAL_p", "Signal_MXs1_NEWFEICAL_p", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs2_NEWFEICAL_p = new TH1D("Signal_MXs2_NEWFEICAL_p", "Signal_MXs2_NEWFEICAL_p", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs3_NEWFEICAL_p = new TH1D("Signal_MXs3_NEWFEICAL_p", "Signal_MXs3_NEWFEICAL_p", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_NEWFEICAL_m = new TH1D("Signal_NEWFEICAL_m", "Signal_NEWFEICAL_m", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs1_NEWFEICAL_m = new TH1D("Signal_MXs1_NEWFEICAL_m", "Signal_MXs1_NEWFEICAL_m", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs2_NEWFEICAL_m = new TH1D("Signal_MXs2_NEWFEICAL_m", "Signal_MXs2_NEWFEICAL_m", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs3_NEWFEICAL_m = new TH1D("Signal_MXs3_NEWFEICAL_m", "Signal_MXs3_NEWFEICAL_m", RarityBins, BinMIN, BinMAX);
+    // NEWFEICAL uncertainty(correlated)
+    TH1D** Signal_NEWFEICAL_correlated;
+    TH1D** Signal_MXs1_NEWFEICAL_correlated;
+    TH1D** Signal_MXs2_NEWFEICAL_correlated;
+    TH1D** Signal_MXs3_NEWFEICAL_correlated;
+
+    // NEWFEICAL uncertainty (uncorrelated)
+    TH1D* Signal_MXs1_NEWFEICAL_uncorrelated = new TH1D("Signal_MXs1_NEWFEICAL_uncorrelated", "Signal_MXs1_NEWFEICAL_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_NEWFEICAL_uncorrelated = new TH1D("Signal_MXs2_NEWFEICAL_uncorrelated", "Signal_MXs2_NEWFEICAL_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_NEWFEICAL_uncorrelated = new TH1D("Signal_MXs3_NEWFEICAL_uncorrelated", "Signal_MXs3_NEWFEICAL_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // all of uncorrelated uncertainties
     TH1D* Signal_MXs1_all_uncorrelated = new TH1D("Signal_MXs1_all_uncorrelated", "Signal_MXs1_all_uncorrelated", RarityBins, BinMIN, BinMAX);
@@ -3557,6 +3630,10 @@ int main()
     // for fragmentation
     const char* Fragmentation_correlated_info = "./Fragmentation_selected.txt";
     const char* Fragmentation_uncorrelated_info = "./Fragmentation_cov_remain_truncated.txt";
+
+    // for New FEI CAL
+    const char* NEWFEICAL_correlated_info = "./NEWFEICAL_selected.txt";
+    const char* NEWFEICAL_uncorrelated_info = "./NEWFEICAL_cov_remain_truncated.txt";
 
     // for additional relative uncertainty
     const char* relative_uncertainty_file = "./dataMCratio_sideband.txt";
@@ -4274,31 +4351,11 @@ int main()
     GetPDFs(MC_dirname_SSBAR, "root", SSBAR_EffECLKL_m, "Continuum", "SSBAR", PDFtype::EffKLECLDOWN, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
     GetPDFs(MC_dirname_CHARM, "root", CHARM_EffECLKL_m, "Continuum", "CHARM", PDFtype::EffKLECLDOWN, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
 
-    // New FEI CAL
-    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_NEWFEICAL_p, "Bplus", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_NEWFEICAL_p, "Bplus", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_NEWFEICAL_p, "Bplus", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_NEWFEICAL_p, "Bzero", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_NEWFEICAL_p, "Bzero", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_NEWFEICAL_p, "Bzero", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
+    // get New FEI CAL uncertainty pdfs (correlated)
+    int NPDFs_NEWFEICAL = GetNEWFEICALcorrelatedPDFs(NEWFEICAL_correlated_info, Signal_MXs1_nominal, Signal_MXs2_nominal, Signal_MXs3_nominal, &Signal_MXs1_NEWFEICAL_correlated, &Signal_MXs2_NEWFEICAL_correlated, &Signal_MXs3_NEWFEICAL_correlated);
 
-    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_NEWFEICAL_p, "Bplus", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_NEWFEICAL_p, "Bplus", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_NEWFEICAL_p, "Bplus", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_NEWFEICAL_p, "Bzero", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_NEWFEICAL_p, "Bzero", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_NEWFEICAL_p, "Bzero", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
-
-    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_NEWFEICAL_p, "Bplus", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_NEWFEICAL_p, "Bplus", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_NEWFEICAL_p, "Bplus", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_NEWFEICAL_p, "Bzero", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_NEWFEICAL_p, "Bzero", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_NEWFEICAL_p, "Bzero", "SIGNAL", PDFtype::ControlFEICAL, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
-
-    GetNegativeChangePDFs(Signal_MXs1_nominal, Signal_MXs1_NEWFEICAL_p, Signal_MXs1_NEWFEICAL_m);
-    GetNegativeChangePDFs(Signal_MXs2_nominal, Signal_MXs2_NEWFEICAL_p, Signal_MXs2_NEWFEICAL_m);
-    GetNegativeChangePDFs(Signal_MXs3_nominal, Signal_MXs3_NEWFEICAL_p, Signal_MXs3_NEWFEICAL_m);
+    // get New FEI CAL uncertainty pdfs (uncorrelated)
+    GetNEWFEICALUncorrelatedPDFs(NEWFEICAL_uncorrelated_info, Signal_MXs1_NEWFEICAL_uncorrelated, Signal_MXs2_NEWFEICAL_uncorrelated, Signal_MXs3_NEWFEICAL_uncorrelated);
 
     // calculate all uncorrelated pdfs
     ClearHist(Signal_MXs1_all_uncorrelated);
@@ -4368,6 +4425,10 @@ int main()
     AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_Fragmentation_uncorrelated, RarityBins);
     AddSQRTHist(CHG_all_uncorrelated, CHG_Fragmentation_uncorrelated, RarityBins);
     AddSQRTHist(MIX_all_uncorrelated, MIX_Fragmentation_uncorrelated, RarityBins);
+
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_NEWFEICAL_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_NEWFEICAL_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_NEWFEICAL_uncorrelated, RarityBins);
 
     // read additional relative uncertainty 
     GetRelativeError(relative_uncertainty_file, CHG_rel_uncer, RarityBins);
@@ -4666,12 +4727,14 @@ int main()
     AddPDFs(Signal_EffECLKL_m, Signal_MXs2_EffECLKL_m);
     AddPDFs(Signal_EffECLKL_m, Signal_MXs3_EffECLKL_m);
 
-    AddPDFs(Signal_NEWFEICAL_p, Signal_MXs1_NEWFEICAL_p);
-    AddPDFs(Signal_NEWFEICAL_p, Signal_MXs2_NEWFEICAL_p);
-    AddPDFs(Signal_NEWFEICAL_p, Signal_MXs3_NEWFEICAL_p);
-    AddPDFs(Signal_NEWFEICAL_m, Signal_MXs1_NEWFEICAL_m);
-    AddPDFs(Signal_NEWFEICAL_m, Signal_MXs2_NEWFEICAL_m);
-    AddPDFs(Signal_NEWFEICAL_m, Signal_MXs3_NEWFEICAL_m);
+    Signal_NEWFEICAL_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_NEWFEICAL * 2);
+    for (int i = 0; i < NPDFs_NEWFEICAL; i++) Signal_NEWFEICAL_correlated[i] = new TH1D(("Signal_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_NEWFEICAL; i < 2 * NPDFs_NEWFEICAL; i++) Signal_NEWFEICAL_correlated[i] = new TH1D(("Signal_NEWFEICAL_correlated" + std::to_string(i - NPDFs_NEWFEICAL) + "_m").c_str(), ("Signal_NEWFEICAL_correlated" + std::to_string(i - NPDFs_NEWFEICAL) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_NEWFEICAL; i++) {
+        AddPDFs(Signal_NEWFEICAL_correlated[i], Signal_MXs1_NEWFEICAL_correlated[i]);
+        AddPDFs(Signal_NEWFEICAL_correlated[i], Signal_MXs2_NEWFEICAL_correlated[i]);
+        AddPDFs(Signal_NEWFEICAL_correlated[i], Signal_MXs3_NEWFEICAL_correlated[i]);
+    }
     /* ====================================== */
 
 
@@ -5084,15 +5147,18 @@ int main()
     SaveSpecificMXsBin(SSBAR_EffECLKL_m, MXsBin);
     SaveSpecificMXsBin(CHARM_EffECLKL_m, MXsBin);
 
-    // New FEI CAL
-    SaveSpecificMXsBin(Signal_NEWFEICAL_p, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs1_NEWFEICAL_p, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs2_NEWFEICAL_p, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs3_NEWFEICAL_p, MXsBin);
-    SaveSpecificMXsBin(Signal_NEWFEICAL_m, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs1_NEWFEICAL_m, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs2_NEWFEICAL_m, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs3_NEWFEICAL_m, MXsBin);
+    // New FEI CAL (correlated)
+    for (int i = 0; i < 2 * NPDFs_NEWFEICAL; i++) {
+        SaveSpecificMXsBin(Signal_NEWFEICAL_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs1_NEWFEICAL_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs2_NEWFEICAL_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs3_NEWFEICAL_correlated[i], MXsBin);
+    }
+
+    // New FEI CAL (uncorrelated)
+    SaveSpecificMXsBin(Signal_MXs1_NEWFEICAL_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_NEWFEICAL_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_NEWFEICAL_uncorrelated, MXsBin);
 
     // all uncorrelated uncertainties
     SaveSpecificMXsBin(Signal_MXs1_all_uncorrelated, MXsBin);
@@ -5549,15 +5615,18 @@ int main()
     SSBAR_EffECLKL_m->Write();
     CHARM_EffECLKL_m->Write();
 
-    // New FEI CAL
-    Signal_NEWFEICAL_p->Write();
-    Signal_MXs1_NEWFEICAL_p->Write();
-    Signal_MXs2_NEWFEICAL_p->Write();
-    Signal_MXs3_NEWFEICAL_p->Write();
-    Signal_NEWFEICAL_m->Write();
-    Signal_MXs1_NEWFEICAL_m->Write();
-    Signal_MXs2_NEWFEICAL_m->Write();
-    Signal_MXs3_NEWFEICAL_m->Write();
+    // New FEI CAL (correlated)
+    for (int i = 0; i < 2 * NPDFs_NEWFEICAL; i++) {
+        Signal_NEWFEICAL_correlated[i]->Write();
+        Signal_MXs1_NEWFEICAL_correlated[i]->Write();
+        Signal_MXs2_NEWFEICAL_correlated[i]->Write();
+        Signal_MXs3_NEWFEICAL_correlated[i]->Write();
+    }
+
+    // New FEI CAL (uncorrelated)
+    Signal_MXs1_NEWFEICAL_uncorrelated->Write();
+    Signal_MXs2_NEWFEICAL_uncorrelated->Write();
+    Signal_MXs3_NEWFEICAL_uncorrelated->Write();
 
     // all uncorrelated uncertainties
     Signal_MXs1_all_uncorrelated->Write();
