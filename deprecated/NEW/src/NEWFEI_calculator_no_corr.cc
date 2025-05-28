@@ -69,7 +69,8 @@ double ratio_error_Bzero_My[1] = { 0.0 };
 double ratio_Bplus_My_fluctuated[3] = { 0.0 };
 double ratio_Bzero_My_fluctuated[1] = { 0.0 };
 
-double size_My[1] = { 0.0 };
+double size_Bplus_My[3] = { 0.0 };
+double size_Bzero_My[1] = { 0.0 };
 
 void ReadNEWFEIFile() {
     const char* NEWFEI_file = "NEWFEIcal.txt";
@@ -710,20 +711,20 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
                     double New_Correction_FEI = 1.0;
 
                     if (strcmp(type, "Bplus") == 0) {
-                        if (std::abs(Btag_ID - 0.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[0]);
-                        else if (std::abs(Btag_ID - 1.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[0]);
-                        else if (std::abs(Btag_ID - 3.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[0]);
-                        else if (std::abs(Btag_ID - 4.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[0]);
-                        else if (std::abs(Btag_ID - 15.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[1]);
-                        else if (std::abs(Btag_ID - 16.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[1]);
-                        else if (std::abs(Btag_ID - 18.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[1]);
-                        else if (std::abs(Btag_ID - 19.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[1]);
-                        else if (std::abs(Btag_ID - 23.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[2]);
-                        else if (std::abs(Btag_ID - 24.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[2]);
-                        else if (std::abs(Btag_ID - 30.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[2]);
-                        else New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[2]);
+                        if (std::abs(Btag_ID - 0.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_Bplus_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[0]);
+                        else if (std::abs(Btag_ID - 1.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_Bplus_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[0]);
+                        else if (std::abs(Btag_ID - 3.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_Bplus_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[0]);
+                        else if (std::abs(Btag_ID - 4.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_Bplus_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[0]);
+                        else if (std::abs(Btag_ID - 15.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_Bplus_My[1] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[1]);
+                        else if (std::abs(Btag_ID - 16.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_Bplus_My[1] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[1]);
+                        else if (std::abs(Btag_ID - 18.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_Bplus_My[1] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[1]);
+                        else if (std::abs(Btag_ID - 19.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_Bplus_My[1] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[1]);
+                        else if (std::abs(Btag_ID - 23.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_Bplus_My[2] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[2]);
+                        else if (std::abs(Btag_ID - 24.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_Bplus_My[2] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[2]);
+                        else if (std::abs(Btag_ID - 30.0) < MyEPSILON) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_Bplus_My[2] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[2]);
+                        else New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_Bplus_My[2] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bplus_My_fluctuated[2]);
                     }
-                    else if (strcmp(type, "Bzero") == 0) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bzero_My_fluctuated[0]);
+                    else if (strcmp(type, "Bzero") == 0) New_Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) + size_Bzero_My[0] * (corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE) - ratio_Bzero_My_fluctuated[0]);
 
                     // we also need to cancel out the previous FEI correction factor
                     total_weight = total_weight * (New_Correction_FEI / Correction_FEI);
@@ -774,13 +775,13 @@ void FluctuateFEIcal() {
 
     for (int i = 0; i < 3; i++) {
         ratio_Bplus_My_fluctuated[i] = ratio_Bplus_My[i] + ratio_error_Bplus_My[i] * normal_generator(generator);
+        size_Bplus_My[i] = normal_generator(generator);
     }
 
     for (int i = 0; i < 1; i++) {
         ratio_Bzero_My_fluctuated[i] = ratio_Bzero_My[i] + ratio_error_Bzero_My[i] * normal_generator(generator);
+        size_Bzero_My[i] = normal_generator(generator);
     }
-
-    size_My[0] = normal_generator(generator);
 
 }
 
