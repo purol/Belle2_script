@@ -240,6 +240,25 @@ int ReadNFragmentationEigenVector(const char* dirname) {
 	return Nentry;
 }
 
+int ReadNNEWFEICALEigenVector(const char* dirname) {
+	int Nentry = 0; // number of eigen values/vectors
+	double eigen_value = 0; // eigen value
+	double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+
+	FILE* fp;
+	fp = fopen(dirname, "r");
+	while (true) {
+		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+		for (int i = 0; i < RarityBins * 3; i++) {
+			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+		}
+		Nentry++;
+	}
+	fclose(fp);
+
+	return Nentry;
+}
+
 bool IsThereAnyChange(const char* fname, const char* nominal_hist_name, const char* hist_m_name, const char* hist_p_name) {
 	TFile* file = new TFile(fname);
 	file->cd();
@@ -378,6 +397,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	int NEntrypi0 = ReadNpi0EigenVector("./pi0_selected.txt");
 	int NEntryMultiplicity = ReadMultiplicityInfo("./multiplicity_selected.txt");
 	int NEntryFragmentation = ReadNFragmentationEigenVector("./Fragmentation_selected.txt");
+	int NEntryNEWFEICAL = ReadNNEWFEICALEigenVector("./NEWFEICAL_selected.txt");
 
 	std::string bin_name = "";
 	if (MXs_bin == 1) bin_name = std::string("MXs1");
@@ -399,7 +419,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_BtoDtoXKL_m", "Signal_MXs1_BtoDtoXKL_p")) sig_temp_MXs1.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs1_BtoDtoXKL_m", fname, "", "Signal_MXs1_BtoDtoXKL_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_BRBtoXKLKL_m", "Signal_MXs1_BRBtoXKLKL_p")) sig_temp_MXs1.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs1_BRBtoXKLKL_m", fname, "", "Signal_MXs1_BRBtoXKLKL_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_EffECLKL_m", "Signal_MXs1_EffECLKL_p")) sig_temp_MXs1.AddHistoSys("EffECLKL_uncer", "Signal_MXs1_EffECLKL_m", fname, "", "Signal_MXs1_EffECLKL_p", fname, "");
-	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_NEWFEICAL_m", "Signal_MXs1_NEWFEICAL_p")) sig_temp_MXs1.AddHistoSys("NEWFEICAL_uncer", "Signal_MXs1_NEWFEICAL_m", fname, "", "Signal_MXs1_NEWFEICAL_p", fname, "");
+	for (int i = 0; i < NEntryNEWFEICAL; i++) if (IsThereAnyChange(fname, "Signal_MXs1_nominal", ("Signal_MXs1_NEWFEICAL_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs1_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs1.AddHistoSys(("NEWFEICAL" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_NEWFEICAL_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_Xnn_m", "Signal_MXs1_Xnn_p")) sig_temp_MXs1.AddHistoSys("Xnn_BR_uncer", "Signal_MXs1_Xnn_m", fname, "", "Signal_MXs1_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, "Signal_MXs1_nominal", ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs1.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFEI; i++) if (IsThereAnyChange(fname, "Signal_MXs1_nominal", ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs1.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -428,7 +448,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_BtoDtoXKL_m", "Signal_MXs2_BtoDtoXKL_p")) sig_temp_MXs2.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs2_BtoDtoXKL_m", fname, "", "Signal_MXs2_BtoDtoXKL_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_BRBtoXKLKL_m", "Signal_MXs2_BRBtoXKLKL_p")) sig_temp_MXs2.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs2_BRBtoXKLKL_m", fname, "", "Signal_MXs2_BRBtoXKLKL_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_EffECLKL_m", "Signal_MXs2_EffECLKL_p")) sig_temp_MXs2.AddHistoSys("EffECLKL_uncer", "Signal_MXs2_EffECLKL_m", fname, "", "Signal_MXs2_EffECLKL_p", fname, "");
-	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_NEWFEICAL_m", "Signal_MXs2_NEWFEICAL_p")) sig_temp_MXs2.AddHistoSys("NEWFEICAL_uncer", "Signal_MXs2_NEWFEICAL_m", fname, "", "Signal_MXs2_NEWFEICAL_p", fname, "");
+	for (int i = 0; i < NEntryNEWFEICAL; i++) if (IsThereAnyChange(fname, "Signal_MXs2_nominal", ("Signal_MXs2_NEWFEICAL_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs2_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs2.AddHistoSys(("NEWFEICAL" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_NEWFEICAL_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_Xnn_m", "Signal_MXs2_Xnn_p")) sig_temp_MXs2.AddHistoSys("Xnn_BR_uncer", "Signal_MXs2_Xnn_m", fname, "", "Signal_MXs2_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, "Signal_MXs2_nominal", ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs2.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFEI; i++) if (IsThereAnyChange(fname, "Signal_MXs2_nominal", ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs2.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -465,7 +485,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_BtoDtoXKL_m", "Signal_MXs3_BtoDtoXKL_p")) sig_temp_MXs3.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs3_BtoDtoXKL_m", fname, "", "Signal_MXs3_BtoDtoXKL_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_BRBtoXKLKL_m", "Signal_MXs3_BRBtoXKLKL_p")) sig_temp_MXs3.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs3_BRBtoXKLKL_m", fname, "", "Signal_MXs3_BRBtoXKLKL_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_EffECLKL_m", "Signal_MXs3_EffECLKL_p")) sig_temp_MXs3.AddHistoSys("EffECLKL_uncer", "Signal_MXs3_EffECLKL_m", fname, "", "Signal_MXs3_EffECLKL_p", fname, "");
-	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_NEWFEICAL_m", "Signal_MXs3_NEWFEICAL_p")) sig_temp_MXs3.AddHistoSys("NEWFEICAL_uncer", "Signal_MXs3_NEWFEICAL_m", fname, "", "Signal_MXs3_NEWFEICAL_p", fname, "");
+	for (int i = 0; i < NEntryNEWFEICAL; i++) if (IsThereAnyChange(fname, "Signal_MXs3_nominal", ("Signal_MXs3_NEWFEICAL_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs3_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs3.AddHistoSys(("NEWFEICAL" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_NEWFEICAL_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_NEWFEICAL_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_Xnn_m", "Signal_MXs3_Xnn_p")) sig_temp_MXs3.AddHistoSys("Xnn_BR_uncer", "Signal_MXs3_Xnn_m", fname, "", "Signal_MXs3_Xnn_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, "Signal_MXs3_nominal", ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs3.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryFEI; i++) if (IsThereAnyChange(fname, "Signal_MXs3_nominal", ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs3.AddHistoSys(("FEI" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_FEI_correlated" + std::to_string(i) + "_p").c_str(), fname, "");

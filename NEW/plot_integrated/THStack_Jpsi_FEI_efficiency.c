@@ -546,23 +546,23 @@ void THStack_Jpsi_FEI_efficiency() {
 
 
     // dirnames
-    const char* Jpsi_MC_SIGNAL_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/SIGNAL_analysis/validation_v004/final_output_root_after_MVA_Application";
-    const char* Jpsi_MC_CHG_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/CHG_analysis/validation_v004/final_output_root_after_MVA_Application";
-    const char* Jpsi_MC_MIX_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/MIX_analysis/validation_v004/final_output_root_after_MVA_Application";
-    const char* Jpsi_MC_UUBAR_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/UUBAR_analysis/validation_v004/final_output_root_after_MVA_Application";
-    const char* Jpsi_MC_DDBAR_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/DDBAR_analysis/validation_v004/final_output_root_after_MVA_Application";
-    const char* Jpsi_MC_SSBAR_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/SSBAR_analysis/validation_v004/final_output_root_after_MVA_Application";
-    const char* Jpsi_MC_CHARM_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/CHARM_analysis/validation_v004/final_output_root_after_MVA_Application";
-    const char* Jpsi_data_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_data_Jpsi/SIGNAL_analysis/validation_v004/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_SIGNAL_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_CHG_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHG_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_MIX_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/MIX_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_UUBAR_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_DDBAR_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_SSBAR_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_CHARM_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_MC_Jpsi/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_data_before_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD_LS_data_Jpsi/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application";
 
-    LetsFillKonlyMC(Jpsi_MC_SIGNAL_before_dirname, "SIGNAL");
-    LetsFillKonlyMC(Jpsi_MC_CHG_before_dirname, "CHG");
-    LetsFillKonlyMC(Jpsi_MC_MIX_before_dirname, "MIX");
-    LetsFillKonlyMC(Jpsi_MC_UUBAR_before_dirname, "UUBAR");
-    LetsFillKonlyMC(Jpsi_MC_DDBAR_before_dirname, "DDBAR");
-    LetsFillKonlyMC(Jpsi_MC_SSBAR_before_dirname, "SSBAR");
-    LetsFillKonlyMC(Jpsi_MC_CHARM_before_dirname, "CHARM");
-    LetsFillKonlydata(Jpsi_data_before_dirname);
+    LetsFillKonlyMC(Jpsi_MC_SIGNAL_before_dirname, "SIGNAL", 0, 1.0, true);
+    LetsFillKonlyMC(Jpsi_MC_CHG_before_dirname, "CHG", 0, 1.0, true);
+    LetsFillKonlyMC(Jpsi_MC_MIX_before_dirname, "MIX", 0, 1.0, true);
+    LetsFillKonlyMC(Jpsi_MC_UUBAR_before_dirname, "UUBAR", 0, 1.0, true);
+    LetsFillKonlyMC(Jpsi_MC_DDBAR_before_dirname, "DDBAR", 0, 1.0, true);
+    LetsFillKonlyMC(Jpsi_MC_SSBAR_before_dirname, "SSBAR", 0, 1.0, true);
+    LetsFillKonlyMC(Jpsi_MC_CHARM_before_dirname, "CHARM", 0, 1.0, true);
+    LetsFillKonlydata(Jpsi_data_before_dirname, "root", 0, true);
 
     for (int i = 0; i < 36; i++) ratio_Bplus->Divide(Nevt_data_Bplus, Nevt_MC_Bplus);
     for (int i = 0; i < 32; i++) ratio_Bzero->Divide(Nevt_data_Bzero, Nevt_MC_Bzero);
@@ -675,4 +675,10 @@ void THStack_Jpsi_FEI_efficiency() {
     printf("=== data/MC for Bzero ===\n");
     for (int i = 0; i < 1; i++) printf("My category %d: %lf +- %lf\n", i, ratio_Bzero_My->GetBinContent(i + 1), ratio_Bzero_My->GetBinError(i + 1));
     printf("==========================\n");
+
+    // print into file
+    FILE* fp = fopen("NEWFEIcal.txt", "w");
+    for (int i = 0; i < 3; i++) fprintf(fp, "%lf,%lf\n", ratio_Bplus_My->GetBinContent(i + 1), ratio_Bplus_My->GetBinError(i + 1));
+    for (int i = 0; i < 1; i++) fprintf(fp, "%lf,%lf\n", ratio_Bzero_My->GetBinContent(i + 1), ratio_Bzero_My->GetBinError(i + 1));
+    fclose(fp);
 }
