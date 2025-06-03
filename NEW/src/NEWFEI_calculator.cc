@@ -81,6 +81,12 @@ void ReadNEWFEIFile() {
     fscanf(fp, "%lf,%lf\n", &ratio_Bplus_My[2], &ratio_error_Bplus_My[2]);
     fscanf(fp, "%lf,%lf\n", &ratio_Bzero_My[0], &ratio_error_Bzero_My[0]);
 
+    // for the projection
+    ratio_error_Bplus_My[0] = ratio_error_Bplus_My[0] / std::sqrt(projection_multiplication);
+    ratio_error_Bplus_My[1] = ratio_error_Bplus_My[1] / std::sqrt(projection_multiplication);
+    ratio_error_Bplus_My[2] = ratio_error_Bplus_My[2] / std::sqrt(projection_multiplication);
+    ratio_error_Bzero_My[0] = ratio_error_Bzero_My[0] / std::sqrt(projection_multiplication);
+
     fclose(fp);
 }
 

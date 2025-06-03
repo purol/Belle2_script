@@ -182,7 +182,11 @@ const double B2Knn_dn_uncer[N_Knn_type] = { // relative uncertainty
 # define Scale_Xsu_nonresonant_syst (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_nunubar_syst)
 # define Scale_Xsd_nonresonant_syst (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar_syst)
 
-// for the projection of analysis
-# define projection_multiplication 1.0 // If it is 1.0, the result is based on before LS1. If it is 2.0, then we get the projection if we have 2 times of the data from LS1.
+/* for the projection of analysis
+* This factor is included at `corrector`, `NEWFEI_calculator`, and `Signal_yield_fit_BDT_Rarity_HistFactory`
+* Because we are not interested in plots, we do not touch anything on `plot_integrated`.
+* Therefore, `NEWFEIcal.txt` value does not change. The projection is applied on `NEWFEI_calculator`.
+*/
+# define projection_multiplication 1.0 // If it is 1.0, the result is based on MC before LS1. If it is 2.0, then we get the projection if we have 2 times of the MC before LS1.
 
 #endif 

@@ -702,7 +702,7 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
                 exit(1);
             }
 
-            Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight, Bsig_M);
+            Nevt = Nevt + FillTemplate(hist, MVA_var, total_weight * projection_multiplication, Bsig_M);
 
         }
         input_file->Close();
@@ -1579,7 +1579,7 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
                 double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * (value[k] / value[0]);
                 if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(q2, "Bplus");
                 else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(q2, "Bzero");
-                FillTemplate(hist[k], MVA_var, total_weight, Bsig_M);
+                FillTemplate(hist[k], MVA_var, total_weight * projection_multiplication, Bsig_M);
                 Nevts[k] = Nevts[k] + total_weight;
             }
 
@@ -1988,7 +1988,7 @@ double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hi
                 value[k] = (3.0 / 4.0) * (Amp_vertical * Amp_vertical + Amp_parallel * Amp_parallel) * (1 - costheta * costheta) + (3.0 / 2.0) * Amp_0 * Amp_0 * costheta * costheta;
                 double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn* Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * (value[k] / value[0]);
                 if (q2 < MyEPSILON) total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL; // Makeshift
-                FillTemplate(hist[k], MVA_var, total_weight, Bsig_M);
+                FillTemplate(hist[k], MVA_var, total_weight * projection_multiplication, Bsig_M);
                 Nevts[k] = Nevts[k] + total_weight;
             }
         }
@@ -2374,7 +2374,7 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
             else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
-            Nevt = Nevt + DoesNotFillTemplate(MVA_var, total_weight, Bsig_M);
+            Nevt = Nevt + DoesNotFillTemplate(MVA_var, total_weight * projection_multiplication, Bsig_M);
 
         }
         input_file->Close();
@@ -2736,7 +2736,7 @@ void GetMCstatisticalRelativeError(TH1D* nominal_hist, TH1D * MCstat_hist, int N
         double error = nominal_hist->GetBinError(i + 1);
         if(value < MyEPSILON) MCstat_hist->SetBinContent(i + 1, 0.0);
         else {
-            double relative_error = error / value;
+            double relative_error = (error / std::sqrt(projection_multiplication)) / value;
             MCstat_hist->SetBinContent(i + 1, relative_error);
         }
     }
