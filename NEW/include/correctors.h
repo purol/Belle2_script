@@ -1513,8 +1513,8 @@ public:
 
 Corrector_pi0::Corrector_pi0() {
     // for the projection
-    for (int i = 0; i < N_pi0_syst; i++) pi0_stat_uncer_MC15ri[0][i] = pi0_stat_uncer_MC15ri[0][i] / std::sqrt(projection_multiplication);
-    for (int i = 0; i < N_pi0_syst; i++) pi0_stat_uncer_MC15rd[0][i] = pi0_stat_uncer_MC15rd[0][i] / std::sqrt(projection_multiplication);
+    for (int i = 0; i < N_pi0_syst; i++) pi0_stat_uncer_MC15ri[i] = pi0_stat_uncer_MC15ri[i] / std::sqrt(projection_multiplication);
+    for (int i = 0; i < N_pi0_syst; i++) pi0_stat_uncer_MC15rd[i] = pi0_stat_uncer_MC15rd[i] / std::sqrt(projection_multiplication);
 }
 
 double Corrector_pi0::GetCorrectionFactor(int bin_pi0, std::string type) {
