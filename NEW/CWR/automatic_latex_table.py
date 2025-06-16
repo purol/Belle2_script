@@ -224,4 +224,60 @@ print("\n".join(latex_rows))
 print("\n")
 # ===================================================================================================== #
 
+# ========================================= Belle note mu ========================================= #
+print("Belle note free_all_mu:")
 
+# Extract base errors
+param_mu = "mu"
+param_MXs1 = "mu_MXs1"
+param_MXs2 = "mu_MXs2"
+param_MXs3 = "mu_MXs3"
+
+fix_none_mu = extract_minos_for_param("./free_all_fitter_bias_mu/fix_none/log/FIX_1.log", param_mu)
+fix_all_mu = extract_minos_for_param("./free_all_fitter_bias_mu/fix_all/log/FIX_1.log", param_mu)
+fix_none_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs1)
+fix_all_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs1)
+fix_none_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs2)
+fix_all_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs2)
+fix_none_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs3)
+fix_all_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs3)
+
+# Generate LaTeX table rows
+unsorted_rows = []
+sorted_rows = []
+latex_rows = []
+
+for label_note, label_paper, systype, syssize, dir in systematics:
+    fix_dir_mu = extract_minos_for_param(f"./free_all_fitter_bias_mu/{dir}/log/FIX_1.log", param_mu)
+    contrib_mu = compute_uncertainty_contribution(fix_none_mu, fix_dir_mu)
+    fix_dir_MXs1 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs1)
+    contrib_MXs1 = compute_uncertainty_contribution(fix_none_MXs1, fix_dir_MXs1)
+    fix_dir_MXs2 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs2)
+    contrib_MXs2 = compute_uncertainty_contribution(fix_none_MXs2, fix_dir_MXs2)
+    fix_dir_MXs3 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs3)
+    contrib_MXs3 = compute_uncertainty_contribution(fix_none_MXs3, fix_dir_MXs3)
+    
+    if contrib is not None:
+        unsorted_rows.append((label_note, systype, contrib_MXs1, contrib_MXs2, contrib_MXs3))
+
+# lets sort
+sorted_rows = sorted(unsorted_rows, key=lambda x: x[4], reverse=True)
+
+# convert into latex rows
+for label_note, systype, contrib_MXs1, contrib_MXs2, contrib_MXs3 in sorted_rows:
+    row = f"{label_note} & {systype} & {contrib_MXs1:.2f} & {contrib_MXs2:.2f} & {contrib_MXs3:.2f} \\\\"
+    latex_rows.append(row)
+
+# Append statistical uncertainty from fix_all
+if fix_all_MXs1[0] is not None and fix_all_MXs1[1] is not None and fix_all_MXs2[0] is not None and fix_all_MXs2[1] is not None and fix_all_MXs3[0] is not None and fix_all_MXs3[1] is not None:
+    value_mu = (abs(fix_all_mu[0]) + abs(fix_all_mu[1]))/2.0
+    value_MXs1 = (abs(fix_all_MXs1[0]) + abs(fix_all_MXs1[1]))/2.0
+    value_MXs2 = (abs(fix_all_MXs2[0]) + abs(fix_all_MXs2[1]))/2.0
+    value_MXs3 = (abs(fix_all_MXs3[0]) + abs(fix_all_MXs3[1]))/2.0
+    stat_row = f"\\hline\nStatistical uncertainty & & {value_MXs1:.2f} & {value_MXs2:.2f} & {value_MXs3:.2f} \\\\"
+    latex_rows.append(stat_row)
+
+# Print LaTeX table
+print("\n".join(latex_rows))
+print("\n")
+# ===================================================================================================== #
