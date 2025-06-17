@@ -53,231 +53,329 @@ systematics = [
     ("fitter bias", "Fitting bias", "$\\texttt{OverallSys}$", "$O(5\\%)$", "fix_fitter"),
 ]
 
-# in full_unblind directory
+IsItFullUnblindedDir = True
 
-# ========================================= paper mu in main text ========================================= #
-print("paper free_all_mu in main text:")
+if (IsItFullUnblindedDir == False):
+    # ========================================= Belle note one mu ========================================= #
+    print("Belle note one mu:")
 
-# Extract base errors
-param = "mu"
-BR_mu = 0.000029
-Scale = 100000.0
+    # Extract base errors
+    param = "mu"
+    fix_none = extract_minos_for_param("./one_mu/fix_none/log/FIX_1.log", param)
+    fix_all = extract_minos_for_param("./one_mu/fix_all/log/FIX_1.log", param)
 
-fix_none = extract_minos_for_param("./free_all_fitter_bias_mu/fix_none/log/FIX_1.log", param)
-fix_all = extract_minos_for_param("./free_all_fitter_bias_mu/fix_all/log/FIX_1.log", param)
-fix_minor = extract_minos_for_param("./free_all_fitter_bias_mu/fix_minor/log/FIX_1.log", param)
+    # Generate LaTeX table rows
+    unsorted_rows = []
+    sorted_rows = []
+    latex_rows = []
 
-# Generate LaTeX table rows
-unsorted_rows = []
-sorted_rows = []
-latex_rows = []
+    for label_note, label_paper, systype, syssize, dir in systematics:
+        fix_dir = extract_minos_for_param(f"./one_mu/{dir}/log/FIX_1.log", param)
+        contrib = compute_uncertainty_contribution(fix_none, fix_dir)
+        if contrib is not None:
+            unsorted_rows.append((label_note, systype, contrib))
 
-for label_note, label_paper, systype, syssize, dir in systematics:
-    fix_dir = extract_minos_for_param(f"./free_all_fitter_bias_mu/{dir}/log/FIX_1.log", param)
-    contrib = compute_uncertainty_contribution(fix_none, fix_dir)
-    if contrib is not None:
-        value = Scale * BR_mu * contrib
-        unsorted_rows.append((label_paper, value))
+    # lets sort
+    sorted_rows = sorted(unsorted_rows, key=lambda x: x[2], reverse=True)
 
-# lets sort
-sorted_rows = sorted(unsorted_rows, key=lambda x: x[1], reverse=True)
-
-# convert into latex rows (only 7 element)
-for label_paper, impact in sorted_rows[:7]:
-    row = f"{label_paper} & {impact:.1f}\\\\"
-    latex_rows.append(row)
-
-# minor uncertainty
-if fix_minor[0] is not None and fix_minor[1] is not None:
-    contrib = compute_uncertainty_contribution(fix_none, fix_minor)
-    if contrib is not None:
-        value = Scale * BR_mu * contrib
-        row = f"Other subdominant contributions & {value:.1f}\\\\"
+    # convert into latex rows
+    for label_note, systype, contrib in sorted_rows:
+        row = f"{label_note} & ${systype}$ & {contrib:.2f} \\\\"
         latex_rows.append(row)
 
-# Append total systematic uncertainty from fix_all
-if fix_all[0] is not None and fix_all[1] is not None:
-    contrib = compute_uncertainty_contribution(fix_none, fix_all)
-    if contrib is not None:
-        value = Scale * BR_mu * contrib
-        row = f"\\hline\nTotal systematic sources & {value:.1f}\\\\"
+    # Append statistical uncertainty from fix_all
+    if fix_all[0] is not None and fix_all[1] is not None:
+        value = (abs(fix_all[0]) + abs(fix_all[1]))/2.0
+        stat_row = f"\\hline\nstatistical uncertainty & & {value:.2f}\\\\"
+        latex_rows.append(stat_row)
+
+    # Print LaTeX table
+    print("\n".join(latex_rows))
+    print("\n")
+    # ===================================================================================================== #
+
+    # ========================================= Belle note mu ========================================= #
+    print("Belle note free_all_mu:")
+
+    # Extract base errors
+    param_mu = "mu"
+    param_MXs1 = "mu_MXs1"
+    param_MXs2 = "mu_MXs2"
+    param_MXs3 = "mu_MXs3"
+
+    fix_none_mu = extract_minos_for_param("./free_all_mu/fix_none/log/FIX_1.log", param_mu)
+    fix_all_mu = extract_minos_for_param("./free_all_mu/fix_all/log/FIX_1.log", param_mu)
+    fix_none_MXs1 = extract_minos_for_param("./free_all/fix_none/log/FIX_1.log", param_MXs1)
+    fix_all_MXs1 = extract_minos_for_param("./free_all/fix_all/log/FIX_1.log", param_MXs1)
+    fix_none_MXs2 = extract_minos_for_param("./free_all/fix_none/log/FIX_1.log", param_MXs2)
+    fix_all_MXs2 = extract_minos_for_param("./free_all/fix_all/log/FIX_1.log", param_MXs2)
+    fix_none_MXs3 = extract_minos_for_param("./free_all/fix_none/log/FIX_1.log", param_MXs3)
+    fix_all_MXs3 = extract_minos_for_param("./free_all/fix_all/log/FIX_1.log", param_MXs3)
+
+    # Generate LaTeX table rows
+    unsorted_rows = []
+    sorted_rows = []
+    latex_rows = []
+
+    for label_note, label_paper, systype, syssize, dir in systematics:
+        fix_dir_mu = extract_minos_for_param(f"./free_all_mu/{dir}/log/FIX_1.log", param_mu)
+        contrib_mu = compute_uncertainty_contribution(fix_none_mu, fix_dir_mu)
+        fix_dir_MXs1 = extract_minos_for_param(f"./free_all/{dir}/log/FIX_1.log", param_MXs1)
+        contrib_MXs1 = compute_uncertainty_contribution(fix_none_MXs1, fix_dir_MXs1)
+        fix_dir_MXs2 = extract_minos_for_param(f"./free_all/{dir}/log/FIX_1.log", param_MXs2)
+        contrib_MXs2 = compute_uncertainty_contribution(fix_none_MXs2, fix_dir_MXs2)
+        fix_dir_MXs3 = extract_minos_for_param(f"./free_all/{dir}/log/FIX_1.log", param_MXs3)
+        contrib_MXs3 = compute_uncertainty_contribution(fix_none_MXs3, fix_dir_MXs3)
+        
+        if contrib_MXs1 is not None:
+            unsorted_rows.append((label_note, systype, contrib_MXs1, contrib_MXs2, contrib_MXs3))
+
+    # lets sort
+    sorted_rows = sorted(unsorted_rows, key=lambda x: x[4], reverse=True)
+
+    # convert into latex rows
+    for label_note, systype, contrib_MXs1, contrib_MXs2, contrib_MXs3 in sorted_rows:
+        row = f"{label_note} & {systype} & {contrib_MXs1:.2f} & {contrib_MXs2:.2f} & {contrib_MXs3:.2f} \\\\"
         latex_rows.append(row)
 
-# Print LaTeX table
-print("\n".join(latex_rows))
-print("\n")
-# ===================================================================================================== #
+    # Append statistical uncertainty from fix_all
+    if fix_all_MXs1[0] is not None and fix_all_MXs1[1] is not None and fix_all_MXs2[0] is not None and fix_all_MXs2[1] is not None and fix_all_MXs3[0] is not None and fix_all_MXs3[1] is not None:
+        value_MXs1 = (abs(fix_all_MXs1[0]) + abs(fix_all_MXs1[1]))/2.0
+        value_MXs2 = (abs(fix_all_MXs2[0]) + abs(fix_all_MXs2[1]))/2.0
+        value_MXs3 = (abs(fix_all_MXs3[0]) + abs(fix_all_MXs3[1]))/2.0
+        stat_row = f"\\hline\nStatistical uncertainty & & {value_MXs1:.2f} & {value_MXs2:.2f} & {value_MXs3:.2f} \\\\"
+        latex_rows.append(stat_row)
 
-# ========================================= Belle note one mu ========================================= #
-print("Belle note one mu:")
-
-# Extract base errors
-param = "mu"
-fix_none = extract_minos_for_param("./one_mu_fitter_bias/fix_none/log/FIX_1.log", param)
-fix_all = extract_minos_for_param("./one_mu_fitter_bias/fix_all/log/FIX_1.log", param)
-
-# Generate LaTeX table rows
-unsorted_rows = []
-sorted_rows = []
-latex_rows = []
-
-for label_note, label_paper, systype, syssize, dir in systematics:
-    fix_dir = extract_minos_for_param(f"./one_mu_fitter_bias/{dir}/log/FIX_1.log", param)
-    contrib = compute_uncertainty_contribution(fix_none, fix_dir)
-    if contrib is not None:
-        unsorted_rows.append((label_note, systype, contrib))
-
-# lets sort
-sorted_rows = sorted(unsorted_rows, key=lambda x: x[2], reverse=True)
-
-# convert into latex rows
-for label_note, systype, contrib in sorted_rows:
-    row = f"{label_note} & ${systype}$ & {contrib:.2f} \\\\"
-    latex_rows.append(row)
-
-# Append statistical uncertainty from fix_all
-if fix_all[0] is not None and fix_all[1] is not None:
-    value = (abs(fix_all[0]) + abs(fix_all[1]))/2.0
-    stat_row = f"\\hline\nstatistical uncertainty & & {value:.2f}\\\\"
-    latex_rows.append(stat_row)
-
-# Print LaTeX table
-print("\n".join(latex_rows))
-print("\n")
-# ===================================================================================================== #
-
-# ========================================= paper mu in supplemental material ========================================= #
-print("paper free_all_mu in supplemental material:")
-
-# Extract base errors
-param_mu = "mu"
-param_MXs1 = "mu_MXs1"
-param_MXs2 = "mu_MXs2"
-param_MXs3 = "mu_MXs3"
-
-BR_mu = 0.000029
-BR_MXs1 = 0.0000048502
-BR_MXs2 = 0.0000085007
-BR_MXs3 = 0.0000156683
-Scale = 100000.0
-
-fix_none_mu = extract_minos_for_param("./free_all_fitter_bias_mu/fix_none/log/FIX_1.log", param_mu)
-fix_all_mu = extract_minos_for_param("./free_all_fitter_bias_mu/fix_all/log/FIX_1.log", param_mu)
-fix_none_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs1)
-fix_all_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs1)
-fix_none_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs2)
-fix_all_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs2)
-fix_none_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs3)
-fix_all_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs3)
-
-# Generate LaTeX table rows
-unsorted_rows = []
-sorted_rows = []
-latex_rows = []
-
-for label_note, label_paper, systype, syssize, dir in systematics:
-    fix_dir_mu = extract_minos_for_param(f"./free_all_fitter_bias_mu/{dir}/log/FIX_1.log", param_mu)
-    contrib_mu = compute_uncertainty_contribution(fix_none_mu, fix_dir_mu)
-    fix_dir_MXs1 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs1)
-    contrib_MXs1 = compute_uncertainty_contribution(fix_none_MXs1, fix_dir_MXs1)
-    fix_dir_MXs2 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs2)
-    contrib_MXs2 = compute_uncertainty_contribution(fix_none_MXs2, fix_dir_MXs2)
-    fix_dir_MXs3 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs3)
-    contrib_MXs3 = compute_uncertainty_contribution(fix_none_MXs3, fix_dir_MXs3)
-
-    value_mu = Scale * BR_mu * contrib_mu
-    value_MXs1 = Scale * BR_MXs1 * contrib_MXs1
-    value_MXs2 = Scale * BR_MXs2 * contrib_MXs2
-    value_MXs3 = Scale * BR_MXs3 * contrib_MXs3
+    # Print LaTeX table
+    print("\n".join(latex_rows))
+    print("\n")
+    # ===================================================================================================== #
     
-    if contrib is not None:
-        unsorted_rows.append((label_paper, syssize, value_mu, value_MXs1, value_MXs2, value_MXs3))
+else:# in full_unblind directory
+    # ========================================= paper mu in main text ========================================= #
+    print("paper free_all_mu in main text:")
 
-# lets sort
-sorted_rows = sorted(unsorted_rows, key=lambda x: x[2], reverse=True)
+    # Extract base errors
+    param = "mu"
+    BR_mu = 0.000029
+    Scale = 100000.0
 
-# convert into latex rows
-for label_paper, syssize, impact_mu, impact_MXs1, impact_MXs2, impact_MXs3 in sorted_rows:
-    row = f"{label_paper} & {syssize} & {impact_mu:.1f} & {impact_MXs1:.1f} & {impact_MXs2:.1f} & {impact_MXs3:.1f} \\\\"
-    latex_rows.append(row)
+    fix_none = extract_minos_for_param("./free_all_fitter_bias_mu/fix_none/log/FIX_1.log", param)
+    fix_all = extract_minos_for_param("./free_all_fitter_bias_mu/fix_all/log/FIX_1.log", param)
+    fix_minor = extract_minos_for_param("./free_all_fitter_bias_mu/fix_minor/log/FIX_1.log", param)
 
-# Append all systematic uncertainty from fix_all
-if fix_all_mu[0] is not None and fix_all_mu[1] is not None and fix_all_MXs1[0] is not None and fix_all_MXs1[1] is not None and fix_all_MXs2[0] is not None and fix_all_MXs2[1] is not None and fix_all_MXs3[0] is not None and fix_all_MXs3[1] is not None:
-    value_mu = Scale * BR_mu * compute_uncertainty_contribution(fix_none_mu, fix_all_mu)
-    value_MXs1 = Scale * BR_MXs1 * compute_uncertainty_contribution(fix_none_MXs1, fix_all_MXs1)
-    value_MXs2 = Scale * BR_MXs2 * compute_uncertainty_contribution(fix_none_MXs2, fix_all_MXs2)
-    value_MXs3 = Scale * BR_MXs3 * compute_uncertainty_contribution(fix_none_MXs3, fix_all_MXs3)
-    syst_row = f"\\hline\nTotal systematic sources & & {value_mu:.1f} & {value_MXs1:.1f} & {value_MXs2:.1f} & {value_MXs3:.1f} \\\\"
-    latex_rows.append(syst_row)
+    # Generate LaTeX table rows
+    unsorted_rows = []
+    sorted_rows = []
+    latex_rows = []
 
-# Append statistical uncertainty from fix_all
-if fix_all_mu[0] is not None and fix_all_mu[1] is not None and fix_all_MXs1[0] is not None and fix_all_MXs1[1] is not None and fix_all_MXs2[0] is not None and fix_all_MXs2[1] is not None and fix_all_MXs3[0] is not None and fix_all_MXs3[1] is not None:
-    value_mu = Scale * BR_mu * (abs(fix_all_mu[0]) + abs(fix_all_mu[1]))/2.0
-    value_MXs1 = Scale * BR_MXs1 * (abs(fix_all_MXs1[0]) + abs(fix_all_MXs1[1]))/2.0
-    value_MXs2 = Scale * BR_MXs2 * (abs(fix_all_MXs2[0]) + abs(fix_all_MXs2[1]))/2.0
-    value_MXs3 = Scale * BR_MXs3 * (abs(fix_all_MXs3[0]) + abs(fix_all_MXs3[1]))/2.0
-    stat_row = f"\\hline\nStatistical uncertainty & & {value_mu:.1f} & {value_MXs1:.1f} & {value_MXs2:.1f} & {value_MXs3:.1f} \\\\"
-    latex_rows.append(stat_row)
+    for label_note, label_paper, systype, syssize, dir in systematics:
+        fix_dir = extract_minos_for_param(f"./free_all_fitter_bias_mu/{dir}/log/FIX_1.log", param)
+        contrib = compute_uncertainty_contribution(fix_none, fix_dir)
+        if contrib is not None:
+            value = Scale * BR_mu * contrib
+            unsorted_rows.append((label_paper, value))
 
-# Print LaTeX table
-print("\n".join(latex_rows))
-print("\n")
-# ===================================================================================================== #
+    # lets sort
+    sorted_rows = sorted(unsorted_rows, key=lambda x: x[1], reverse=True)
 
-# ========================================= Belle note mu ========================================= #
-print("Belle note free_all_mu:")
+    # convert into latex rows (only 7 element)
+    for label_paper, impact in sorted_rows[:7]:
+        row = f"{label_paper} & {impact:.1f}\\\\"
+        latex_rows.append(row)
 
-# Extract base errors
-param_mu = "mu"
-param_MXs1 = "mu_MXs1"
-param_MXs2 = "mu_MXs2"
-param_MXs3 = "mu_MXs3"
+    # minor uncertainty
+    if fix_minor[0] is not None and fix_minor[1] is not None:
+        contrib = compute_uncertainty_contribution(fix_none, fix_minor)
+        if contrib is not None:
+            value = Scale * BR_mu * contrib
+            row = f"Other subdominant contributions & {value:.1f}\\\\"
+            latex_rows.append(row)
 
-fix_none_mu = extract_minos_for_param("./free_all_fitter_bias_mu/fix_none/log/FIX_1.log", param_mu)
-fix_all_mu = extract_minos_for_param("./free_all_fitter_bias_mu/fix_all/log/FIX_1.log", param_mu)
-fix_none_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs1)
-fix_all_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs1)
-fix_none_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs2)
-fix_all_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs2)
-fix_none_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs3)
-fix_all_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs3)
+    # Append total systematic uncertainty from fix_all
+    if fix_all[0] is not None and fix_all[1] is not None:
+        contrib = compute_uncertainty_contribution(fix_none, fix_all)
+        if contrib is not None:
+            value = Scale * BR_mu * contrib
+            row = f"\\hline\nTotal systematic sources & {value:.1f}\\\\"
+            latex_rows.append(row)
 
-# Generate LaTeX table rows
-unsorted_rows = []
-sorted_rows = []
-latex_rows = []
+    # Print LaTeX table
+    print("\n".join(latex_rows))
+    print("\n")
+    # ===================================================================================================== #
 
-for label_note, label_paper, systype, syssize, dir in systematics:
-    fix_dir_mu = extract_minos_for_param(f"./free_all_fitter_bias_mu/{dir}/log/FIX_1.log", param_mu)
-    contrib_mu = compute_uncertainty_contribution(fix_none_mu, fix_dir_mu)
-    fix_dir_MXs1 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs1)
-    contrib_MXs1 = compute_uncertainty_contribution(fix_none_MXs1, fix_dir_MXs1)
-    fix_dir_MXs2 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs2)
-    contrib_MXs2 = compute_uncertainty_contribution(fix_none_MXs2, fix_dir_MXs2)
-    fix_dir_MXs3 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs3)
-    contrib_MXs3 = compute_uncertainty_contribution(fix_none_MXs3, fix_dir_MXs3)
-    
-    if contrib is not None:
-        unsorted_rows.append((label_note, systype, contrib_MXs1, contrib_MXs2, contrib_MXs3))
+    # ========================================= Belle note one mu ========================================= #
+    print("Belle note one mu:")
 
-# lets sort
-sorted_rows = sorted(unsorted_rows, key=lambda x: x[4], reverse=True)
+    # Extract base errors
+    param = "mu"
+    fix_none = extract_minos_for_param("./one_mu_fitter_bias/fix_none/log/FIX_1.log", param)
+    fix_all = extract_minos_for_param("./one_mu_fitter_bias/fix_all/log/FIX_1.log", param)
 
-# convert into latex rows
-for label_note, systype, contrib_MXs1, contrib_MXs2, contrib_MXs3 in sorted_rows:
-    row = f"{label_note} & {systype} & {contrib_MXs1:.2f} & {contrib_MXs2:.2f} & {contrib_MXs3:.2f} \\\\"
-    latex_rows.append(row)
+    # Generate LaTeX table rows
+    unsorted_rows = []
+    sorted_rows = []
+    latex_rows = []
 
-# Append statistical uncertainty from fix_all
-if fix_all_MXs1[0] is not None and fix_all_MXs1[1] is not None and fix_all_MXs2[0] is not None and fix_all_MXs2[1] is not None and fix_all_MXs3[0] is not None and fix_all_MXs3[1] is not None:
-    value_mu = (abs(fix_all_mu[0]) + abs(fix_all_mu[1]))/2.0
-    value_MXs1 = (abs(fix_all_MXs1[0]) + abs(fix_all_MXs1[1]))/2.0
-    value_MXs2 = (abs(fix_all_MXs2[0]) + abs(fix_all_MXs2[1]))/2.0
-    value_MXs3 = (abs(fix_all_MXs3[0]) + abs(fix_all_MXs3[1]))/2.0
-    stat_row = f"\\hline\nStatistical uncertainty & & {value_MXs1:.2f} & {value_MXs2:.2f} & {value_MXs3:.2f} \\\\"
-    latex_rows.append(stat_row)
+    for label_note, label_paper, systype, syssize, dir in systematics:
+        fix_dir = extract_minos_for_param(f"./one_mu_fitter_bias/{dir}/log/FIX_1.log", param)
+        contrib = compute_uncertainty_contribution(fix_none, fix_dir)
+        if contrib is not None:
+            unsorted_rows.append((label_note, systype, contrib))
 
-# Print LaTeX table
-print("\n".join(latex_rows))
-print("\n")
-# ===================================================================================================== #
+    # lets sort
+    sorted_rows = sorted(unsorted_rows, key=lambda x: x[2], reverse=True)
+
+    # convert into latex rows
+    for label_note, systype, contrib in sorted_rows:
+        row = f"{label_note} & ${systype}$ & {contrib:.2f} \\\\"
+        latex_rows.append(row)
+
+    # Append statistical uncertainty from fix_all
+    if fix_all[0] is not None and fix_all[1] is not None:
+        value = (abs(fix_all[0]) + abs(fix_all[1]))/2.0
+        stat_row = f"\\hline\nstatistical uncertainty & & {value:.2f}\\\\"
+        latex_rows.append(stat_row)
+
+    # Print LaTeX table
+    print("\n".join(latex_rows))
+    print("\n")
+    # ===================================================================================================== #
+
+    # ========================================= paper mu in supplemental material ========================================= #
+    print("paper free_all_mu in supplemental material:")
+
+    # Extract base errors
+    param_mu = "mu"
+    param_MXs1 = "mu_MXs1"
+    param_MXs2 = "mu_MXs2"
+    param_MXs3 = "mu_MXs3"
+
+    BR_mu = 0.000029
+    BR_MXs1 = 0.0000048502
+    BR_MXs2 = 0.0000085007
+    BR_MXs3 = 0.0000156683
+    Scale = 100000.0
+
+    fix_none_mu = extract_minos_for_param("./free_all_fitter_bias_mu/fix_none/log/FIX_1.log", param_mu)
+    fix_all_mu = extract_minos_for_param("./free_all_fitter_bias_mu/fix_all/log/FIX_1.log", param_mu)
+    fix_none_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs1)
+    fix_all_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs1)
+    fix_none_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs2)
+    fix_all_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs2)
+    fix_none_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs3)
+    fix_all_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs3)
+
+    # Generate LaTeX table rows
+    unsorted_rows = []
+    sorted_rows = []
+    latex_rows = []
+
+    for label_note, label_paper, systype, syssize, dir in systematics:
+        fix_dir_mu = extract_minos_for_param(f"./free_all_fitter_bias_mu/{dir}/log/FIX_1.log", param_mu)
+        contrib_mu = compute_uncertainty_contribution(fix_none_mu, fix_dir_mu)
+        fix_dir_MXs1 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs1)
+        contrib_MXs1 = compute_uncertainty_contribution(fix_none_MXs1, fix_dir_MXs1)
+        fix_dir_MXs2 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs2)
+        contrib_MXs2 = compute_uncertainty_contribution(fix_none_MXs2, fix_dir_MXs2)
+        fix_dir_MXs3 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs3)
+        contrib_MXs3 = compute_uncertainty_contribution(fix_none_MXs3, fix_dir_MXs3)
+        
+        if contrib is not None:
+            value_mu = Scale * BR_mu * contrib_mu
+            value_MXs1 = Scale * BR_MXs1 * contrib_MXs1
+            value_MXs2 = Scale * BR_MXs2 * contrib_MXs2
+            value_MXs3 = Scale * BR_MXs3 * contrib_MXs3
+        
+            unsorted_rows.append((label_paper, syssize, value_mu, value_MXs1, value_MXs2, value_MXs3))
+
+    # lets sort
+    sorted_rows = sorted(unsorted_rows, key=lambda x: x[2], reverse=True)
+
+    # convert into latex rows
+    for label_paper, syssize, impact_mu, impact_MXs1, impact_MXs2, impact_MXs3 in sorted_rows:
+        row = f"{label_paper} & {syssize} & {impact_mu:.1f} & {impact_MXs1:.1f} & {impact_MXs2:.1f} & {impact_MXs3:.1f} \\\\"
+        latex_rows.append(row)
+
+    # Append all systematic uncertainty from fix_all
+    if fix_all_mu[0] is not None and fix_all_mu[1] is not None and fix_all_MXs1[0] is not None and fix_all_MXs1[1] is not None and fix_all_MXs2[0] is not None and fix_all_MXs2[1] is not None and fix_all_MXs3[0] is not None and fix_all_MXs3[1] is not None:
+        value_mu = Scale * BR_mu * compute_uncertainty_contribution(fix_none_mu, fix_all_mu)
+        value_MXs1 = Scale * BR_MXs1 * compute_uncertainty_contribution(fix_none_MXs1, fix_all_MXs1)
+        value_MXs2 = Scale * BR_MXs2 * compute_uncertainty_contribution(fix_none_MXs2, fix_all_MXs2)
+        value_MXs3 = Scale * BR_MXs3 * compute_uncertainty_contribution(fix_none_MXs3, fix_all_MXs3)
+        syst_row = f"\\hline\nTotal systematic sources & & {value_mu:.1f} & {value_MXs1:.1f} & {value_MXs2:.1f} & {value_MXs3:.1f} \\\\"
+        latex_rows.append(syst_row)
+
+    # Append statistical uncertainty from fix_all
+    if fix_all_mu[0] is not None and fix_all_mu[1] is not None and fix_all_MXs1[0] is not None and fix_all_MXs1[1] is not None and fix_all_MXs2[0] is not None and fix_all_MXs2[1] is not None and fix_all_MXs3[0] is not None and fix_all_MXs3[1] is not None:
+        value_mu = Scale * BR_mu * (abs(fix_all_mu[0]) + abs(fix_all_mu[1]))/2.0
+        value_MXs1 = Scale * BR_MXs1 * (abs(fix_all_MXs1[0]) + abs(fix_all_MXs1[1]))/2.0
+        value_MXs2 = Scale * BR_MXs2 * (abs(fix_all_MXs2[0]) + abs(fix_all_MXs2[1]))/2.0
+        value_MXs3 = Scale * BR_MXs3 * (abs(fix_all_MXs3[0]) + abs(fix_all_MXs3[1]))/2.0
+        stat_row = f"\\hline\nStatistical uncertainty & & {value_mu:.1f} & {value_MXs1:.1f} & {value_MXs2:.1f} & {value_MXs3:.1f} \\\\"
+        latex_rows.append(stat_row)
+
+    # Print LaTeX table
+    print("\n".join(latex_rows))
+    print("\n")
+    # ===================================================================================================== #
+
+    # ========================================= Belle note mu ========================================= #
+    print("Belle note free_all_mu:")
+
+    # Extract base errors
+    param_mu = "mu"
+    param_MXs1 = "mu_MXs1"
+    param_MXs2 = "mu_MXs2"
+    param_MXs3 = "mu_MXs3"
+
+    fix_none_mu = extract_minos_for_param("./free_all_fitter_bias_mu/fix_none/log/FIX_1.log", param_mu)
+    fix_all_mu = extract_minos_for_param("./free_all_fitter_bias_mu/fix_all/log/FIX_1.log", param_mu)
+    fix_none_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs1)
+    fix_all_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs1)
+    fix_none_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs2)
+    fix_all_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs2)
+    fix_none_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs3)
+    fix_all_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs3)
+
+    # Generate LaTeX table rows
+    unsorted_rows = []
+    sorted_rows = []
+    latex_rows = []
+
+    for label_note, label_paper, systype, syssize, dir in systematics:
+        fix_dir_mu = extract_minos_for_param(f"./free_all_fitter_bias_mu/{dir}/log/FIX_1.log", param_mu)
+        contrib_mu = compute_uncertainty_contribution(fix_none_mu, fix_dir_mu)
+        fix_dir_MXs1 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs1)
+        contrib_MXs1 = compute_uncertainty_contribution(fix_none_MXs1, fix_dir_MXs1)
+        fix_dir_MXs2 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs2)
+        contrib_MXs2 = compute_uncertainty_contribution(fix_none_MXs2, fix_dir_MXs2)
+        fix_dir_MXs3 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs3)
+        contrib_MXs3 = compute_uncertainty_contribution(fix_none_MXs3, fix_dir_MXs3)
+        
+        if contrib is not None:
+            unsorted_rows.append((label_note, systype, contrib_MXs1, contrib_MXs2, contrib_MXs3))
+
+    # lets sort
+    sorted_rows = sorted(unsorted_rows, key=lambda x: x[4], reverse=True)
+
+    # convert into latex rows
+    for label_note, systype, contrib_MXs1, contrib_MXs2, contrib_MXs3 in sorted_rows:
+        row = f"{label_note} & {systype} & {contrib_MXs1:.2f} & {contrib_MXs2:.2f} & {contrib_MXs3:.2f} \\\\"
+        latex_rows.append(row)
+
+    # Append statistical uncertainty from fix_all
+    if fix_all_MXs1[0] is not None and fix_all_MXs1[1] is not None and fix_all_MXs2[0] is not None and fix_all_MXs2[1] is not None and fix_all_MXs3[0] is not None and fix_all_MXs3[1] is not None:
+        value_mu = (abs(fix_all_mu[0]) + abs(fix_all_mu[1]))/2.0
+        value_MXs1 = (abs(fix_all_MXs1[0]) + abs(fix_all_MXs1[1]))/2.0
+        value_MXs2 = (abs(fix_all_MXs2[0]) + abs(fix_all_MXs2[1]))/2.0
+        value_MXs3 = (abs(fix_all_MXs3[0]) + abs(fix_all_MXs3[1]))/2.0
+        stat_row = f"\\hline\nStatistical uncertainty & & {value_MXs1:.2f} & {value_MXs2:.2f} & {value_MXs3:.2f} \\\\"
+        latex_rows.append(stat_row)
+
+    # Print LaTeX table
+    print("\n".join(latex_rows))
+    print("\n")
+    # ===================================================================================================== #
+
