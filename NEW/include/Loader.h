@@ -2349,6 +2349,7 @@ bool Loader::IsBCSValid(const char* MC_version) { // modified for makeshift.
 
     bool IsItValid = true;
     bool Mbc_tagsame = false;
+    bool E_sigsame = false;
 
     typedef struct labels {
         int __experiment__;
