@@ -387,7 +387,7 @@ void AddEmptySample(HistFactory::Channel* channel, int MXs_bin) {
 	/* ================================ CHARM ================================ */
 }
 
-void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, const double expmu, double qq_CAL, double qq_CAL_relativeuncer, double FBDT_CAL, double FBDT_CAL_relativeuncer, double bkg_norm_relativeuncer) {
+void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, const double expmu, double qq_CAL, double qq_CAL_relativeuncer, double FBDT_CAL, double FBDT_CAL_relativeuncer, double bkg_norm_relativeuncer, double bkg_norm = 1.0) {
 	// MXs_bin: reco bin
 
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
@@ -565,6 +565,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (MXs_bin != 1) for (int i = 0; i < NEntryPID; i++) if (IsThereAnyChange(fname, "CHG_nominal", ("CHG_PID_correlated" + std::to_string(i) + "_m").c_str(), ("CHG_PID_correlated" + std::to_string(i) + "_p").c_str())) CHG_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("CHG_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryBR; i++) if (IsThereAnyChange(fname, "CHG_nominal", ("CHG_BR_correlated" + std::to_string(i) + "_m").c_str(), ("CHG_BR_correlated" + std::to_string(i) + "_p").c_str())) CHG_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("CHG_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (MXs_bin != 1) for (int i = 0; i < NEntrypi0; i++) if (IsThereAnyChange(fname, "CHG_nominal", ("CHG_pi0_correlated" + std::to_string(i) + "_m").c_str(), ("CHG_pi0_correlated" + std::to_string(i) + "_p").c_str())) CHG_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("CHG_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	if (std::abs(bkg_norm - 1.0) > MyEPSILON) CHG_temp.AddNormFactor(("bkg_norm_CHG_" + bin_name).c_str(), bkg_norm, bkg_norm, bkg_norm);
 	//CHG_temp.AddHistoSys("BDTc_shape_BB", "CHG_BDTc_m", fname, "", "CHG_BDTc_p", fname, "");
 	CHG_temp.AddOverallSys(("mu_CHG_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	CHG_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
@@ -588,6 +589,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (MXs_bin != 1) for (int i = 0; i < NEntryPID; i++) if (IsThereAnyChange(fname, "MIX_nominal", ("MIX_PID_correlated" + std::to_string(i) + "_m").c_str(), ("MIX_PID_correlated" + std::to_string(i) + "_p").c_str())) MIX_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("MIX_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryBR; i++) if (IsThereAnyChange(fname, "MIX_nominal", ("MIX_BR_correlated" + std::to_string(i) + "_m").c_str(), ("MIX_BR_correlated" + std::to_string(i) + "_p").c_str())) MIX_temp.AddHistoSys(("BBBR" + std::to_string(i) + "_uncer").c_str(), ("MIX_BR_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_BR_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (MXs_bin != 1) for (int i = 0; i < NEntrypi0; i++) if (IsThereAnyChange(fname, "MIX_nominal", ("MIX_pi0_correlated" + std::to_string(i) + "_m").c_str(), ("MIX_pi0_correlated" + std::to_string(i) + "_p").c_str())) MIX_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("MIX_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
+	if (std::abs(bkg_norm - 1.0) > MyEPSILON) MIX_temp.AddNormFactor(("bkg_norm_MIX_" + bin_name).c_str(), bkg_norm, bkg_norm, bkg_norm);
 	//MIX_temp.AddHistoSys("BDTc_shape_BB", "MIX_BDTc_m", fname, "", "MIX_BDTc_p", fname, "");
 	MIX_temp.AddOverallSys(("mu_MIX_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	MIX_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
@@ -607,6 +609,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (MXs_bin != 1) for (int i = 0; i < NEntryPID; i++) if (IsThereAnyChange(fname, "UUBAR_nominal", ("UUBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), ("UUBAR_PID_correlated" + std::to_string(i) + "_p").c_str())) UUBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (MXs_bin != 1) for (int i = 0; i < NEntrypi0; i++) if (IsThereAnyChange(fname, "UUBAR_nominal", ("UUBAR_pi0_correlated" + std::to_string(i) + "_m").c_str(), ("UUBAR_pi0_correlated" + std::to_string(i) + "_p").c_str())) UUBAR_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "UUBAR_nominal", "UUBAR_BDTc_m", "UUBAR_BDTc_p")) UUBAR_temp.AddHistoSys("BDTc_shape_qq", "UUBAR_BDTc_m", fname, "", "UUBAR_BDTc_p", fname, "");
+	if (std::abs(bkg_norm - 1.0) > MyEPSILON) UUBAR_temp.AddNormFactor(("bkg_norm_UUBAR_" + bin_name).c_str(), bkg_norm, bkg_norm, bkg_norm);
 	UUBAR_temp.AddNormFactor(("qq_CAL_UUBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	UUBAR_temp.AddOverallSys(("qq_CAL_UUBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	UUBAR_temp.AddOverallSys(("mu_UUBAR_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
@@ -626,6 +629,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (MXs_bin != 1) for (int i = 0; i < NEntryPID; i++) if (IsThereAnyChange(fname, "DDBAR_nominal", ("DDBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), ("DDBAR_PID_correlated" + std::to_string(i) + "_p").c_str())) DDBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (MXs_bin != 1) for (int i = 0; i < NEntrypi0; i++) if (IsThereAnyChange(fname, "DDBAR_nominal", ("DDBAR_pi0_correlated" + std::to_string(i) + "_m").c_str(), ("DDBAR_pi0_correlated" + std::to_string(i) + "_p").c_str())) DDBAR_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "DDBAR_nominal", "DDBAR_BDTc_m", "DDBAR_BDTc_p")) DDBAR_temp.AddHistoSys("BDTc_shape_qq", "DDBAR_BDTc_m", fname, "", "DDBAR_BDTc_p", fname, "");
+	if (std::abs(bkg_norm - 1.0) > MyEPSILON) DDBAR_temp.AddNormFactor(("bkg_norm_DDBAR_" + bin_name).c_str(), bkg_norm, bkg_norm, bkg_norm);
 	DDBAR_temp.AddNormFactor(("qq_CAL_DDBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	DDBAR_temp.AddOverallSys(("qq_CAL_DDBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	DDBAR_temp.AddOverallSys(("mu_DDBAR_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
@@ -645,6 +649,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (MXs_bin != 1) for (int i = 0; i < NEntryPID; i++) if (IsThereAnyChange(fname, "SSBAR_nominal", ("SSBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), ("SSBAR_PID_correlated" + std::to_string(i) + "_p").c_str())) SSBAR_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (MXs_bin != 1) for (int i = 0; i < NEntrypi0; i++) if (IsThereAnyChange(fname, "SSBAR_nominal", ("SSBAR_pi0_correlated" + std::to_string(i) + "_m").c_str(), ("SSBAR_pi0_correlated" + std::to_string(i) + "_p").c_str())) SSBAR_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "SSBAR_nominal", "SSBAR_BDTc_m", "SSBAR_BDTc_p")) SSBAR_temp.AddHistoSys("BDTc_shape_qq", "SSBAR_BDTc_m", fname, "", "SSBAR_BDTc_p", fname, "");
+	if (std::abs(bkg_norm - 1.0) > MyEPSILON) SSBAR_temp.AddNormFactor(("bkg_norm_SSBAR_" + bin_name).c_str(), bkg_norm, bkg_norm, bkg_norm);
 	SSBAR_temp.AddNormFactor(("qq_CAL_SSBAR_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	SSBAR_temp.AddOverallSys(("qq_CAL_SSBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	SSBAR_temp.AddOverallSys(("mu_SSBAR_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
@@ -664,6 +669,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (MXs_bin != 1) for (int i = 0; i < NEntryPID; i++) if (IsThereAnyChange(fname, "CHARM_nominal", ("CHARM_PID_correlated" + std::to_string(i) + "_m").c_str(), ("CHARM_PID_correlated" + std::to_string(i) + "_p").c_str())) CHARM_temp.AddHistoSys(("PID" + std::to_string(i) + "_uncer").c_str(), ("CHARM_PID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_PID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (MXs_bin != 1) for (int i = 0; i < NEntrypi0; i++) if (IsThereAnyChange(fname, "CHARM_nominal", ("CHARM_pi0_correlated" + std::to_string(i) + "_m").c_str(), ("CHARM_pi0_correlated" + std::to_string(i) + "_p").c_str())) CHARM_temp.AddHistoSys(("pi0" + std::to_string(i) + "_uncer").c_str(), ("CHARM_pi0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_pi0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "CHARM_nominal", "CHARM_BDTc_m", "CHARM_BDTc_p")) CHARM_temp.AddHistoSys("BDTc_shape_qq", "CHARM_BDTc_m", fname, "", "CHARM_BDTc_p", fname, "");
+	if (std::abs(bkg_norm - 1.0) > MyEPSILON) CHARM_temp.AddNormFactor(("bkg_norm_CHARM_" + bin_name).c_str(), bkg_norm, bkg_norm, bkg_norm);
 	CHARM_temp.AddNormFactor(("qq_CAL_CHARM_" + bin_name).c_str(), qq_CAL, qq_CAL, qq_CAL);
 	CHARM_temp.AddOverallSys(("qq_CAL_CHARM_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 	CHARM_temp.AddOverallSys(("mu_CHARM_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
