@@ -274,6 +274,11 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             tree_Btag->GetEntry(j);
             if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
 
+            if (tight) {
+                if (MVA_var > 0.83) {}
+                else continue;
+            }
+
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -407,6 +412,11 @@ void GetDataNevt(const char* dirname, const char* included_string, TH1D* hist, b
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
+
+            if (tight) {
+                if (MVA_var > 0.83) {}
+                else continue;
+            }
 
             if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) hist->Fill(0.5, 1.0);
             else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) hist->Fill(1.5, 1.0);
