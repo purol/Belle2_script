@@ -343,24 +343,6 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             int MXs_reco_index = -1;
             int MXs_true_index = -1;
 
-            // find true index
-            double MC_MXs = -1;
-
-            if (strcmp(type, "Bplus") == 0) MC_MXs = Mxs_Bc_MC;
-            else if (strcmp(type, "Bzero") == 0) MC_MXs = Mxs_B0_MC;
-
-            // sanity check
-            if ((MC_MXs > 0.0) && (MC_MXs < 6.0)) {}
-            else { // mass is NaN. try to find true mass region by file name
-                if ((strcmp(included_string, "B2Knunu") == 0) || (strcmp(included_string, "B02K0nunu") == 0)) MC_MXs = 0.4868;
-                else if ((strcmp(included_string, "B2Kstarnunu") == 0) || (strcmp(included_string, "B02Kstar0nunu") == 0)) MC_MXs = 0.8916;
-                else if ((strcmp(included_string, "B2Xsnunu") == 0) || (strcmp(included_string, "B02Xsnunu") == 0)) MC_MXs = 1.5;
-                else {
-                    printf("MC Mass of Xs cannot be found and the file name is not expected\n");
-                    exit(1);
-                }
-            }
-
             if ((Bsig_M > 0.0) && (Bsig_M < 0.6)) hist->Fill(0.5, total_weight);
             else if ((Bsig_M > 0.6) && (Bsig_M < 1.0)) hist->Fill(1.5, total_weight);
             else if ((Bsig_M > 1.0) && (Bsig_M < 6.0)) hist->Fill(2.5, total_weight);
