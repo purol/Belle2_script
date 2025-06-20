@@ -400,11 +400,12 @@ void GetFlucNevt(double Nevt_nominal[RarityBins * 5], double*** Nevt_WhenPlusOne
 
     std::normal_distribution<double> nuisance_distribution(0.0, 1.0);
 
-    for (int i = 0; i < RarityBins * 5; i++) { // fluctuate `Nevt_fluc`
-        for (int j = 0; j < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); j++) {
-            for (int k = 0; k < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); k++) {
+    for (int j = 0; j < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); j++) {
+        for (int k = 0; k < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); k++) {
 
-                double nuisance_parameter = nuisance_distribution(generator);
+            double nuisance_parameter = nuisance_distribution(generator);
+
+            for (int i = 0; i < RarityBins * 5; i++) { // fluctuate `Nevt_fluc`
 
                 double OneSigmaRelativeChange = 1.0;
                 if (std::abs(Nevt_nominal[i]) < MyEPSILON) OneSigmaRelativeChange = 0.0;
