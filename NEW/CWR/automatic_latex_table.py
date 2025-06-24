@@ -44,7 +44,7 @@ systematics = [
     ("BB counting", "The number of $B\\bar{B}$ pair", "\\texttt{OverallSys}", "1.45\\%", "fix_BBcounting"),
     ("Pion ID", "Charged pion identification", "\\texttt{HistoSys}", "$O(1\\%)$", "fix_PID"),
     ("Kaon ID", "Charged kaon identification", "\\texttt{HistoSys}", "$O(1\\%)$", "fix_KID"),
-    ("BR of $D \\rightarrow K_{L}^{0} X$ from B meson", "Branching ratio for $B \\to X_{s} K_{L}^{0} K_{L}^{0}$", "\\texttt{HistoSys}", "7.7\\%", "fix_BtoDtoXKL"),
+    ("BR of $D \\rightarrow K_{L}^{0} X$ from B meson", "Branching ratio for $D \\to X K_{L}^{0}$ from B meson", "\\texttt{HistoSys}", "7.7\\%", "fix_BtoDtoXKL"),
     ("BR of $B\\rightarrow X_{s} n\\bar{n}$ decay", "Branching ratio for $B \\to X_{s} n\\bar{n}$", "\\texttt{HistoSys}", "100\\%", "fix_BRXnn"),
     ("Fermi motion momentum", "Fermi motion momentum", "\\texttt{HistoSys}", "$O(8\\%)$", "fix_pf"),
     ("b-quark mass", "b-quark mass parameter", "\\texttt{HistoSys}", "3.2\\%", "fix_mb"),
