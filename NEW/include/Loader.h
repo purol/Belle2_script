@@ -2349,6 +2349,7 @@ bool Loader::IsBCSValid(const char* MC_version) { // modified for makeshift.
 
     bool IsItValid = true;
     bool Mbc_tagsame = false;
+    bool E_sigsame = false;
 
     typedef struct labels {
         int __experiment__;
@@ -2356,6 +2357,7 @@ bool Loader::IsBCSValid(const char* MC_version) { // modified for makeshift.
         unsigned int __event__;
         int __ncandidates__;
         double Mbc_tag; // Makeshift
+        double E_sig; // Makeshift
     } Labels;
 
     std::vector<Labels> label_list;
@@ -2369,6 +2371,7 @@ bool Loader::IsBCSValid(const char* MC_version) { // modified for makeshift.
             if (label_list.at(i).__experiment__ == temp.__experiment__ && label_list.at(i).__run__ == temp.__run__ && label_list.at(i).__event__ == temp.__event__ && label_list.at(i).__ncandidates__ == temp.__ncandidates__) {
                 IsItValid = false;
                 if (label_list.at(i).Mbc_tag == temp.Btag_info[1]) Mbc_tagsame = true; // makeshift
+                if (label_list.at(i).E_sig == temp.Bsig_info[0]) E_sigsame = true; // makeshift
             }
         }
         Labels temp_Labels;
@@ -2377,14 +2380,15 @@ bool Loader::IsBCSValid(const char* MC_version) { // modified for makeshift.
         temp_Labels.__event__ = temp.__event__;
         temp_Labels.__ncandidates__ = temp.__ncandidates__;
         temp_Labels.Mbc_tag = temp.Btag_info[1];
+        temp_Labels.E_sig = temp.Bsig_info[0];
         label_list.push_back(temp_Labels);
 
         if (IsItValid == true) TotalData.push(temp);
-        else if ((IsItValid == false) && (Mbc_tagsame == true) && (std::string(MC_version) == "data")) { // for the safety net, the makeshift only works for data
+        else if ((IsItValid == false) && (Mbc_tagsame == true) && (E_sigsame == true) && (std::string(MC_version) == "data")) { // for the safety net, the makeshift only works for data
             printf("[Loader::IsBCSValid] There seems to be duplicated events. We drop the event.\n");
             IsItValid = true; // makeshift
         }
-        else if ((IsItValid == false) && (Mbc_tagsame == false) && (std::string(MC_version) == "data")) { // for the safety net, the makeshift only works for data
+        else if ((IsItValid == false) && ((Mbc_tagsame == false) || (E_sigsame == false)) && (std::string(MC_version) == "data")) { // for the safety net, the makeshift only works for data
             printf("[Loader::IsBCSValid] There seems to be duplicated events. We catch the event. Generally it does not happend. Please check it.\n");
             IsItValid = true; // makeshift
             TotalData.push(temp);

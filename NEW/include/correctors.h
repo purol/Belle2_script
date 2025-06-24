@@ -261,6 +261,12 @@ void Corrector_PID::ReadPIDFile_MC15ri() {
             PID_correction_sys_uncer_MC15ri[3][i] = 0.0;
         }
 
+        // for the projection
+        PID_correction_stat_uncer_MC15ri[0][i] = PID_correction_stat_uncer_MC15ri[0][i] / std::sqrt(projection_multiplication);
+        PID_correction_stat_uncer_MC15ri[1][i] = PID_correction_stat_uncer_MC15ri[1][i] / std::sqrt(projection_multiplication);
+        PID_correction_stat_uncer_MC15ri[2][i] = PID_correction_stat_uncer_MC15ri[2][i] / std::sqrt(projection_multiplication);
+        PID_correction_stat_uncer_MC15ri[3][i] = PID_correction_stat_uncer_MC15ri[3][i] / std::sqrt(projection_multiplication);
+
         PID_correction_uncer_MC15ri[0][i] = std::sqrt(PID_correction_stat_uncer_MC15ri[0][i] * PID_correction_stat_uncer_MC15ri[0][i] + PID_correction_sys_uncer_MC15ri[0][i] * PID_correction_sys_uncer_MC15ri[0][i]);
         PID_correction_uncer_MC15ri[1][i] = std::sqrt(PID_correction_stat_uncer_MC15ri[1][i] * PID_correction_stat_uncer_MC15ri[1][i] + PID_correction_sys_uncer_MC15ri[1][i] * PID_correction_sys_uncer_MC15ri[1][i]);
         PID_correction_uncer_MC15ri[2][i] = std::sqrt(PID_correction_stat_uncer_MC15ri[2][i] * PID_correction_stat_uncer_MC15ri[2][i] + PID_correction_sys_uncer_MC15ri[2][i] * PID_correction_sys_uncer_MC15ri[2][i]);
@@ -356,6 +362,12 @@ void Corrector_PID::ReadPIDFile_MC15rd() {
             PID_correction_stat_uncer_MC15rd[3][i] = 0.0;
             PID_correction_sys_uncer_MC15rd[3][i] = 0.0;
         }
+
+        // for the projection
+        PID_correction_stat_uncer_MC15rd[0][i] = PID_correction_stat_uncer_MC15rd[0][i] / std::sqrt(projection_multiplication);
+        PID_correction_stat_uncer_MC15rd[1][i] = PID_correction_stat_uncer_MC15rd[1][i] / std::sqrt(projection_multiplication);
+        PID_correction_stat_uncer_MC15rd[2][i] = PID_correction_stat_uncer_MC15rd[2][i] / std::sqrt(projection_multiplication);
+        PID_correction_stat_uncer_MC15rd[3][i] = PID_correction_stat_uncer_MC15rd[3][i] / std::sqrt(projection_multiplication);
 
         PID_correction_uncer_MC15rd[0][i] = std::sqrt(PID_correction_stat_uncer_MC15rd[0][i] * PID_correction_stat_uncer_MC15rd[0][i] + PID_correction_sys_uncer_MC15rd[0][i] * PID_correction_sys_uncer_MC15rd[0][i]);
         PID_correction_uncer_MC15rd[1][i] = std::sqrt(PID_correction_stat_uncer_MC15rd[1][i] * PID_correction_stat_uncer_MC15rd[1][i] + PID_correction_sys_uncer_MC15rd[1][i] * PID_correction_sys_uncer_MC15rd[1][i]);
@@ -553,6 +565,10 @@ void Corrector_FakePID::ReadPIDFile_MC15ri() {
             exit(1);
         }
 
+        // for the projection
+        temp_data_MC_uncertainty_stat_up = temp_data_MC_uncertainty_stat_up / std::sqrt(projection_multiplication);
+        temp_data_MC_uncertainty_stat_dn = temp_data_MC_uncertainty_stat_dn / std::sqrt(projection_multiplication);
+
         int bin = theta_bin + 6 * p_bin;
 
         if (temp_charge == '+') {
@@ -614,6 +630,10 @@ void Corrector_FakePID::ReadPIDFile_MC15ri() {
             printf("[ERROR] unknown theta bin!\n");
             exit(1);
         }
+
+        // for the projection
+        temp_data_MC_uncertainty_stat_up = temp_data_MC_uncertainty_stat_up / std::sqrt(projection_multiplication);
+        temp_data_MC_uncertainty_stat_dn = temp_data_MC_uncertainty_stat_dn / std::sqrt(projection_multiplication);
 
         int bin = theta_bin + 6 * p_bin;
 
@@ -679,6 +699,10 @@ void Corrector_FakePID::ReadPIDFile_MC15ri() {
             exit(1);
         }
 
+        // for the projection
+        temp_data_MC_uncertainty_stat_up = temp_data_MC_uncertainty_stat_up / std::sqrt(projection_multiplication);
+        temp_data_MC_uncertainty_stat_dn = temp_data_MC_uncertainty_stat_dn / std::sqrt(projection_multiplication);
+
         int bin = theta_bin + 8 * p_bin;
 
         if (temp_charge == '+') {
@@ -742,6 +766,10 @@ void Corrector_FakePID::ReadPIDFile_MC15ri() {
             printf("[ERROR] unknown theta bin!\n");
             exit(1);
         }
+
+        // for the projection
+        temp_data_MC_uncertainty_stat_up = temp_data_MC_uncertainty_stat_up / std::sqrt(projection_multiplication);
+        temp_data_MC_uncertainty_stat_dn = temp_data_MC_uncertainty_stat_dn / std::sqrt(projection_multiplication);
 
         int bin = theta_bin + 8 * p_bin;
 
@@ -869,6 +897,10 @@ void Corrector_FakePID::ReadPIDFile_MC15rd() {
             exit(1);
         }
 
+        // for the projection
+        temp_data_MC_uncertainty_stat_up = temp_data_MC_uncertainty_stat_up / std::sqrt(projection_multiplication);
+        temp_data_MC_uncertainty_stat_dn = temp_data_MC_uncertainty_stat_dn / std::sqrt(projection_multiplication);
+
         int bin = theta_bin + 6 * p_bin;
 
         if (temp_charge == '+') {
@@ -930,6 +962,10 @@ void Corrector_FakePID::ReadPIDFile_MC15rd() {
             printf("[ERROR] unknown theta bin!\n");
             exit(1);
         }
+
+        // for the projection
+        temp_data_MC_uncertainty_stat_up = temp_data_MC_uncertainty_stat_up / std::sqrt(projection_multiplication);
+        temp_data_MC_uncertainty_stat_dn = temp_data_MC_uncertainty_stat_dn / std::sqrt(projection_multiplication);
 
         int bin = theta_bin + 6 * p_bin;
 
@@ -995,6 +1031,10 @@ void Corrector_FakePID::ReadPIDFile_MC15rd() {
             exit(1);
         }
 
+        // for the projection
+        temp_data_MC_uncertainty_stat_up = temp_data_MC_uncertainty_stat_up / std::sqrt(projection_multiplication);
+        temp_data_MC_uncertainty_stat_dn = temp_data_MC_uncertainty_stat_dn / std::sqrt(projection_multiplication);
+
         int bin = theta_bin + 8 * p_bin;
 
         if (temp_charge == '+') {
@@ -1058,6 +1098,10 @@ void Corrector_FakePID::ReadPIDFile_MC15rd() {
             printf("[ERROR] unknown theta bin!\n");
             exit(1);
         }
+
+        // for the projection
+        temp_data_MC_uncertainty_stat_up = temp_data_MC_uncertainty_stat_up / std::sqrt(projection_multiplication);
+        temp_data_MC_uncertainty_stat_dn = temp_data_MC_uncertainty_stat_dn / std::sqrt(projection_multiplication);
 
         int bin = theta_bin + 8 * p_bin;
 
@@ -1232,6 +1276,8 @@ void Corrector_LID::ReadPIDFile_MC15rd() {
             continue;
         }
 
+        // In principle, we also need to scale the uncertainty by `projection_multiplication`. However, LID does not affec the result of main analysis, we just skip it.
+
         int bin = theta_bin + 6 * p_bin;
 
         if (temp_charge == '+') {
@@ -1292,6 +1338,8 @@ void Corrector_LID::ReadPIDFile_MC15rd() {
             printf("[ERROR] just ignore it: [%lf, %lf]!\n", temp_theta_min, temp_theta_max);
             continue;
         }
+
+        // In principle, we also need to scale the uncertainty by `projection_multiplication`. However, LID does not affec the result of main analysis, we just skip it.
 
         int bin = theta_bin + 8 * p_bin;
 
@@ -1412,6 +1460,9 @@ void Corrector_ProtonID::ReadPIDFile_MC15rd() {
             PID_correction_sys_uncer_MC15rd[0][i] = 0.0;
         }
 
+        // for the projection
+        PID_correction_stat_uncer_MC15rd[0][i] = PID_correction_stat_uncer_MC15rd[0][i] / std::sqrt(projection_multiplication);
+
         PID_correction_uncer_MC15rd[0][i] = std::sqrt(PID_correction_stat_uncer_MC15rd[0][i] * PID_correction_stat_uncer_MC15rd[0][i] + PID_correction_sys_uncer_MC15rd[0][i] * PID_correction_sys_uncer_MC15rd[0][i]);
     }
 
@@ -1442,16 +1493,16 @@ double Corrector_ProtonID::GetUncertainty(int PID_type, int bin_PID, std::string
 # define N_pi0_syst 8
 class Corrector_pi0 {
 private:
-    static constexpr double pi0_correction_MC15ri[N_pi0_syst] = { 0.917, 0.965, 0.988, 1.013, 1.042, 1.044, 1.011, 1.0 };
-    static constexpr double pi0_stat_uncer_MC15ri[N_pi0_syst] = { 0.004, 0.004, 0.004, 0.005, 0.004, 0.005, 0.005, 0.0 };
-    static constexpr double pi0_sys_uncer1_MC15ri[N_pi0_syst] = { 0.049, 0.036, 0.079, 0.058, 0.045, 0.041, 0.040, 0.0 };
-    static constexpr double pi0_sys_uncer2_MC15ri[N_pi0_syst] = { 0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0 };
+    double pi0_correction_MC15ri[N_pi0_syst] = { 0.917, 0.965, 0.988, 1.013, 1.042, 1.044, 1.011, 1.0 };
+    double pi0_stat_uncer_MC15ri[N_pi0_syst] = { 0.004, 0.004, 0.004, 0.005, 0.004, 0.005, 0.005, 0.0 };
+    double pi0_sys_uncer1_MC15ri[N_pi0_syst] = { 0.049, 0.036, 0.079, 0.058, 0.045, 0.041, 0.040, 0.0 };
+    double pi0_sys_uncer2_MC15ri[N_pi0_syst] = { 0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0 };
 
     // it is MC15ri correction factor. It should be fixed
-    static constexpr double pi0_correction_MC15rd[N_pi0_syst] = { 0.917, 0.965, 0.988, 1.013, 1.042, 1.044, 1.011, 1.0 };
-    static constexpr double pi0_stat_uncer_MC15rd[N_pi0_syst] = { 0.004, 0.004, 0.004, 0.005, 0.004, 0.005, 0.005, 0.0 };
-    static constexpr double pi0_sys_uncer1_MC15rd[N_pi0_syst] = { 0.049, 0.036, 0.079, 0.058, 0.045, 0.041, 0.040, 0.0 };
-    static constexpr double pi0_sys_uncer2_MC15rd[N_pi0_syst] = { 0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0 };
+    double pi0_correction_MC15rd[N_pi0_syst] = { 0.917, 0.965, 0.988, 1.013, 1.042, 1.044, 1.011, 1.0 };
+    double pi0_stat_uncer_MC15rd[N_pi0_syst] = { 0.004, 0.004, 0.004, 0.005, 0.004, 0.005, 0.005, 0.0 };
+    double pi0_sys_uncer1_MC15rd[N_pi0_syst] = { 0.049, 0.036, 0.079, 0.058, 0.045, 0.041, 0.040, 0.0 };
+    double pi0_sys_uncer2_MC15rd[N_pi0_syst] = { 0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0 };
 public:
     Corrector_pi0();
     double GetCorrectionFactor(int bin_pi0, std::string type);
@@ -1460,7 +1511,11 @@ public:
     double GetSystUncertainty2(int bin_pi0, std::string type);
 };
 
-Corrector_pi0::Corrector_pi0() {}
+Corrector_pi0::Corrector_pi0() {
+    // for the projection
+    for (int i = 0; i < N_pi0_syst; i++) pi0_stat_uncer_MC15ri[i] = pi0_stat_uncer_MC15ri[i] / std::sqrt(projection_multiplication);
+    for (int i = 0; i < N_pi0_syst; i++) pi0_stat_uncer_MC15rd[i] = pi0_stat_uncer_MC15rd[i] / std::sqrt(projection_multiplication);
+}
 
 double Corrector_pi0::GetCorrectionFactor(int bin_pi0, std::string type) {
     if (type == "MC15ri") return pi0_correction_MC15ri[bin_pi0];
