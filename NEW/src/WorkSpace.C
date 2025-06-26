@@ -126,6 +126,25 @@ void CheckInterpolation(RooWorkspace* ws) {
 	}
 }
 
+int ReadNKS0EigenVector(const char* dirname) {
+	int Nentry = 0; // number of eigen values/vectors
+	double eigen_value = 0; // eigen value
+	double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
+
+	FILE* fp;
+	fp = fopen(dirname, "r");
+	while (true) {
+		if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+		for (int i = 0; i < RarityBins * 9; i++) {
+			if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+		}
+		Nentry++;
+	}
+	fclose(fp);
+
+	return Nentry;
+}
+
 int ReadNFEIEigenVector(const char* dirname) {
 	int Nentry = 0; // number of eigen values/vectors
 	double eigen_value = 0; // eigen value
@@ -390,6 +409,7 @@ void AddEmptySample(HistFactory::Channel* channel, int MXs_bin) {
 void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, const double expmu, double qq_CAL, double qq_CAL_relativeuncer, double FBDT_CAL, double FBDT_CAL_relativeuncer, double bkg_norm_relativeuncer, double bkg_norm = 1.0) {
 	// MXs_bin: reco bin
 
+	int NEntryKS0 = ReadNKS0EigenVector("./KS0_selected.txt");
 	int NEntryFEI = ReadNFEIEigenVector("./FEI_selected.txt");
 	int NEntryKID = ReadNPIDEigenVector("./KID_selected.txt");
 	int NEntryPID = ReadNPIDEigenVector("./PID_selected.txt");
@@ -415,7 +435,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ SIGNAL with true MXs1 ================================ */
 	RooStats::HistFactory::Sample sig_temp_MXs1(("Signal_MXs1_nominal_" + bin_name).c_str(), "Signal_MXs1_nominal", fname);
 	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_track_m", "Signal_MXs1_track_p")) sig_temp_MXs1.AddHistoSys("track_eff_uncer", "Signal_MXs1_track_m", fname, "", "Signal_MXs1_track_p", fname, "");
-	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_KS0_m", "Signal_MXs1_KS0_p")) sig_temp_MXs1.AddHistoSys("KS0_reco_uncer", "Signal_MXs1_KS0_m", fname, "", "Signal_MXs1_KS0_p", fname, "");
+	for (int i = 0; i < NEntryKS0; i++) if (IsThereAnyChange(fname, "Signal_MXs1_nominal", ("Signal_MXs1_KS0_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs1_KS0_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs1.AddHistoSys(("KS0" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs1_KS0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs1_KS0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_BtoDtoXKL_m", "Signal_MXs1_BtoDtoXKL_p")) sig_temp_MXs1.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs1_BtoDtoXKL_m", fname, "", "Signal_MXs1_BtoDtoXKL_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_BRBtoXKLKL_m", "Signal_MXs1_BRBtoXKLKL_p")) sig_temp_MXs1.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs1_BRBtoXKLKL_m", fname, "", "Signal_MXs1_BRBtoXKLKL_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs1_nominal", "Signal_MXs1_EffECLKL_m", "Signal_MXs1_EffECLKL_p")) sig_temp_MXs1.AddHistoSys("EffECLKL_uncer", "Signal_MXs1_EffECLKL_m", fname, "", "Signal_MXs1_EffECLKL_p", fname, "");
@@ -444,7 +464,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ SIGNAL with true MXs2 ================================ */
 	RooStats::HistFactory::Sample sig_temp_MXs2(("Signal_MXs2_nominal_" + bin_name).c_str(), "Signal_MXs2_nominal", fname);
 	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_track_m", "Signal_MXs2_track_p")) sig_temp_MXs2.AddHistoSys("track_eff_uncer", "Signal_MXs2_track_m", fname, "", "Signal_MXs2_track_p", fname, "");
-	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_KS0_m", "Signal_MXs2_KS0_p")) sig_temp_MXs2.AddHistoSys("KS0_reco_uncer", "Signal_MXs2_KS0_m", fname, "", "Signal_MXs2_KS0_p", fname, "");
+	for (int i = 0; i < NEntryKS0; i++) if (IsThereAnyChange(fname, "Signal_MXs2_nominal", ("Signal_MXs2_KS0_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs2_KS0_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs2.AddHistoSys(("KS0" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs2_KS0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs2_KS0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_BtoDtoXKL_m", "Signal_MXs2_BtoDtoXKL_p")) sig_temp_MXs2.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs2_BtoDtoXKL_m", fname, "", "Signal_MXs2_BtoDtoXKL_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_BRBtoXKLKL_m", "Signal_MXs2_BRBtoXKLKL_p")) sig_temp_MXs2.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs2_BRBtoXKLKL_m", fname, "", "Signal_MXs2_BRBtoXKLKL_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_EffECLKL_m", "Signal_MXs2_EffECLKL_p")) sig_temp_MXs2.AddHistoSys("EffECLKL_uncer", "Signal_MXs2_EffECLKL_m", fname, "", "Signal_MXs2_EffECLKL_p", fname, "");
@@ -481,7 +501,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ SIGNAL with true MXs3 ================================ */
 	RooStats::HistFactory::Sample sig_temp_MXs3(("Signal_MXs3_nominal_" + bin_name).c_str(), "Signal_MXs3_nominal", fname);
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_track_m", "Signal_MXs3_track_p")) sig_temp_MXs3.AddHistoSys("track_eff_uncer", "Signal_MXs3_track_m", fname, "", "Signal_MXs3_track_p", fname, "");
-	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_KS0_m", "Signal_MXs3_KS0_p")) sig_temp_MXs3.AddHistoSys("KS0_reco_uncer", "Signal_MXs3_KS0_m", fname, "", "Signal_MXs3_KS0_p", fname, "");
+	for (int i = 0; i < NEntryKS0; i++) if (IsThereAnyChange(fname, "Signal_MXs3_nominal", ("Signal_MXs3_KS0_correlated" + std::to_string(i) + "_m").c_str(), ("Signal_MXs3_KS0_correlated" + std::to_string(i) + "_p").c_str())) sig_temp_MXs3.AddHistoSys(("KS0" + std::to_string(i) + "_uncer").c_str(), ("Signal_MXs3_KS0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("Signal_MXs3_KS0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_BtoDtoXKL_m", "Signal_MXs3_BtoDtoXKL_p")) sig_temp_MXs3.AddHistoSys("BtoDtoXKL_uncer", "Signal_MXs3_BtoDtoXKL_m", fname, "", "Signal_MXs3_BtoDtoXKL_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_BRBtoXKLKL_m", "Signal_MXs3_BRBtoXKLKL_p")) sig_temp_MXs3.AddHistoSys("BRBtoXKLKL_uncer", "Signal_MXs3_BRBtoXKLKL_m", fname, "", "Signal_MXs3_BRBtoXKLKL_p", fname, "");
 	if (IsThereAnyChange(fname, "Signal_MXs3_nominal", "Signal_MXs3_EffECLKL_m", "Signal_MXs3_EffECLKL_p")) sig_temp_MXs3.AddHistoSys("EffECLKL_uncer", "Signal_MXs3_EffECLKL_m", fname, "", "Signal_MXs3_EffECLKL_p", fname, "");
@@ -554,7 +574,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ CHG ================================ */
 	RooStats::HistFactory::Sample CHG_temp(("CHG_nominal_" + bin_name).c_str(), "CHG_nominal", fname);
 	if (IsThereAnyChange(fname, "CHG_nominal", "CHG_track_m", "CHG_track_p")) CHG_temp.AddHistoSys("track_eff_uncer", "CHG_track_m", fname, "", "CHG_track_p", fname, "");
-	if (IsThereAnyChange(fname, "CHG_nominal", "CHG_KS0_m", "CHG_KS0_p")) CHG_temp.AddHistoSys("KS0_reco_uncer", "CHG_KS0_m", fname, "", "CHG_KS0_p", fname, "");
+	for (int i = 0; i < NEntryKS0; i++) if (IsThereAnyChange(fname, "CHG_nominal", ("CHG_KS0_correlated" + std::to_string(i) + "_m").c_str(), ("CHG_KS0_correlated" + std::to_string(i) + "_p").c_str())) CHG_temp.AddHistoSys(("KS0" + std::to_string(i) + "_uncer").c_str(), ("CHG_KS0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHG_KS0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "CHG_nominal", "CHG_BtoDtoXKL_m", "CHG_BtoDtoXKL_p")) CHG_temp.AddHistoSys("BtoDtoXKL_uncer", "CHG_BtoDtoXKL_m", fname, "", "CHG_BtoDtoXKL_p", fname, "");
 	if (IsThereAnyChange(fname, "CHG_nominal", "CHG_BRBtoXKLKL_m", "CHG_BRBtoXKLKL_p")) CHG_temp.AddHistoSys("BRBtoXKLKL_uncer", "CHG_BRBtoXKLKL_m", fname, "", "CHG_BRBtoXKLKL_p", fname, "");
 	if (IsThereAnyChange(fname, "CHG_nominal", "CHG_EffECLKL_m", "CHG_EffECLKL_p")) CHG_temp.AddHistoSys("EffECLKL_uncer", "CHG_EffECLKL_m", fname, "", "CHG_EffECLKL_p", fname, "");
@@ -578,7 +598,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ MIX ================================ */
 	RooStats::HistFactory::Sample MIX_temp(("MIX_nominal_" + bin_name).c_str(), "MIX_nominal", fname);
 	if (IsThereAnyChange(fname, "MIX_nominal", "MIX_track_m", "MIX_track_p")) MIX_temp.AddHistoSys("track_eff_uncer", "MIX_track_m", fname, "", "MIX_track_p", fname, "");
-	if (IsThereAnyChange(fname, "MIX_nominal", "MIX_KS0_m", "MIX_KS0_p")) MIX_temp.AddHistoSys("KS0_reco_uncer", "MIX_KS0_m", fname, "", "MIX_KS0_p", fname, "");
+	for (int i = 0; i < NEntryKS0; i++) if (IsThereAnyChange(fname, "MIX_nominal", ("MIX_KS0_correlated" + std::to_string(i) + "_m").c_str(), ("MIX_KS0_correlated" + std::to_string(i) + "_p").c_str())) MIX_temp.AddHistoSys(("KS0" + std::to_string(i) + "_uncer").c_str(), ("MIX_KS0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("MIX_KS0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "MIX_nominal", "MIX_BtoDtoXKL_m", "MIX_BtoDtoXKL_p")) MIX_temp.AddHistoSys("BtoDtoXKL_uncer", "MIX_BtoDtoXKL_m", fname, "", "MIX_BtoDtoXKL_p", fname, "");
 	if (IsThereAnyChange(fname, "MIX_nominal", "MIX_BRBtoXKLKL_m", "MIX_BRBtoXKLKL_p")) MIX_temp.AddHistoSys("BRBtoXKLKL_uncer", "MIX_BRBtoXKLKL_m", fname, "", "MIX_BRBtoXKLKL_p", fname, "");
 	if (IsThereAnyChange(fname, "MIX_nominal", "MIX_EffECLKL_m", "MIX_EffECLKL_p")) MIX_temp.AddHistoSys("EffECLKL_uncer", "MIX_EffECLKL_m", fname, "", "MIX_EffECLKL_p", fname, "");
@@ -602,7 +622,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ UUBAR ================================ */
 	RooStats::HistFactory::Sample UUBAR_temp(("UUBAR_nominal_" + bin_name).c_str(), "UUBAR_nominal", fname);
 	if (IsThereAnyChange(fname, "UUBAR_nominal", "UUBAR_track_m", "UUBAR_track_p")) UUBAR_temp.AddHistoSys("track_eff_uncer", "UUBAR_track_m", fname, "", "UUBAR_track_p", fname, "");
-	if (IsThereAnyChange(fname, "UUBAR_nominal", "UUBAR_KS0_m", "UUBAR_KS0_p")) UUBAR_temp.AddHistoSys("KS0_reco_uncer", "UUBAR_KS0_m", fname, "", "UUBAR_KS0_p", fname, "");
+	for (int i = 0; i < NEntryKS0; i++) if (IsThereAnyChange(fname, "UUBAR_nominal", ("UUBAR_KS0_correlated" + std::to_string(i) + "_m").c_str(), ("UUBAR_KS0_correlated" + std::to_string(i) + "_p").c_str())) UUBAR_temp.AddHistoSys(("KS0" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_KS0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_KS0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "UUBAR_nominal", "UUBAR_EffECLKL_m", "UUBAR_EffECLKL_p")) UUBAR_temp.AddHistoSys("EffECLKL_uncer", "UUBAR_EffECLKL_m", fname, "", "UUBAR_EffECLKL_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, "UUBAR_nominal", ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) UUBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryKID; i++) if (IsThereAnyChange(fname, "UUBAR_nominal", ("UUBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), ("UUBAR_KID_correlated" + std::to_string(i) + "_p").c_str())) UUBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("UUBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("UUBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -622,7 +642,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ DDBAR ================================ */
 	RooStats::HistFactory::Sample DDBAR_temp(("DDBAR_nominal_" + bin_name).c_str(), "DDBAR_nominal", fname);
 	if (IsThereAnyChange(fname, "DDBAR_nominal", "DDBAR_track_m", "DDBAR_track_p")) DDBAR_temp.AddHistoSys("track_eff_uncer", "DDBAR_track_m", fname, "", "DDBAR_track_p", fname, "");
-	if (IsThereAnyChange(fname, "DDBAR_nominal", "DDBAR_KS0_m", "DDBAR_KS0_p")) DDBAR_temp.AddHistoSys("KS0_reco_uncer", "DDBAR_KS0_m", fname, "", "DDBAR_KS0_p", fname, "");
+	for (int i = 0; i < NEntryKS0; i++) if (IsThereAnyChange(fname, "DDBAR_nominal", ("DDBAR_KS0_correlated" + std::to_string(i) + "_m").c_str(), ("DDBAR_KS0_correlated" + std::to_string(i) + "_p").c_str())) DDBAR_temp.AddHistoSys(("KS0" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_KS0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_KS0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "DDBAR_nominal", "DDBAR_EffECLKL_m", "DDBAR_EffECLKL_p")) DDBAR_temp.AddHistoSys("EffECLKL_uncer", "DDBAR_EffECLKL_m", fname, "", "DDBAR_EffECLKL_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, "DDBAR_nominal", ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) DDBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryKID; i++) if (IsThereAnyChange(fname, "DDBAR_nominal", ("DDBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), ("DDBAR_KID_correlated" + std::to_string(i) + "_p").c_str())) DDBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("DDBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("DDBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -642,7 +662,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ SSBAR ================================ */
 	RooStats::HistFactory::Sample SSBAR_temp(("SSBAR_nominal_" + bin_name).c_str(), "SSBAR_nominal", fname);
 	if (IsThereAnyChange(fname, "SSBAR_nominal", "SSBAR_track_m", "SSBAR_track_p")) SSBAR_temp.AddHistoSys("track_eff_uncer", "SSBAR_track_m", fname, "", "SSBAR_track_p", fname, "");
-	if (IsThereAnyChange(fname, "SSBAR_nominal", "SSBAR_KS0_m", "SSBAR_KS0_p")) SSBAR_temp.AddHistoSys("KS0_reco_uncer", "SSBAR_KS0_m", fname, "", "SSBAR_KS0_p", fname, "");
+	for (int i = 0; i < NEntryKS0; i++) if (IsThereAnyChange(fname, "SSBAR_nominal", ("SSBAR_KS0_correlated" + std::to_string(i) + "_m").c_str(), ("SSBAR_KS0_correlated" + std::to_string(i) + "_p").c_str())) SSBAR_temp.AddHistoSys(("KS0" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_KS0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_KS0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "SSBAR_nominal", "SSBAR_EffECLKL_m", "SSBAR_EffECLKL_p")) SSBAR_temp.AddHistoSys("EffECLKL_uncer", "SSBAR_EffECLKL_m", fname, "", "SSBAR_EffECLKL_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, "SSBAR_nominal", ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) SSBAR_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryKID; i++) if (IsThereAnyChange(fname, "SSBAR_nominal", ("SSBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), ("SSBAR_KID_correlated" + std::to_string(i) + "_p").c_str())) SSBAR_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("SSBAR_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("SSBAR_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
@@ -662,7 +682,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	/* ================================ CHARM ================================ */
 	RooStats::HistFactory::Sample CHARM_temp(("CHARM_nominal_" + bin_name).c_str(), "CHARM_nominal", fname);
 	if (IsThereAnyChange(fname, "CHARM_nominal", "CHARM_track_m", "CHARM_track_p")) CHARM_temp.AddHistoSys("track_eff_uncer", "CHARM_track_m", fname, "", "CHARM_track_p", fname, "");
-	if (IsThereAnyChange(fname, "CHARM_nominal", "CHARM_KS0_m", "CHARM_KS0_p")) CHARM_temp.AddHistoSys("KS0_reco_uncer", "CHARM_KS0_m", fname, "", "CHARM_KS0_p", fname, "");
+	for (int i = 0; i < NEntryKS0; i++) if (IsThereAnyChange(fname, "CHARM_nominal", ("CHARM_KS0_correlated" + std::to_string(i) + "_m").c_str(), ("CHARM_KS0_correlated" + std::to_string(i) + "_p").c_str())) CHARM_temp.AddHistoSys(("KS0" + std::to_string(i) + "_uncer").c_str(), ("CHARM_KS0_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_KS0_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	if (IsThereAnyChange(fname, "CHARM_nominal", "CHARM_EffECLKL_m", "CHARM_EffECLKL_p")) CHARM_temp.AddHistoSys("EffECLKL_uncer", "CHARM_EffECLKL_m", fname, "", "CHARM_EffECLKL_p", fname, "");
 	for (int i = 0; i < NEntryMultiplicity; i++) if (IsThereAnyChange(fname, "CHARM_nominal", ("CHARM_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), ("CHARM_multiplicity_correlated" + std::to_string(i) + "_p").c_str())) CHARM_temp.AddHistoSys(("multiplicity" + std::to_string(i) + "_uncer").c_str(), ("CHARM_multiplicity_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_multiplicity_correlated" + std::to_string(i) + "_p").c_str(), fname, "");
 	for (int i = 0; i < NEntryKID; i++) if (IsThereAnyChange(fname, "CHARM_nominal", ("CHARM_KID_correlated" + std::to_string(i) + "_m").c_str(), ("CHARM_KID_correlated" + std::to_string(i) + "_p").c_str())) CHARM_temp.AddHistoSys(("KID" + std::to_string(i) + "_uncer").c_str(), ("CHARM_KID_correlated" + std::to_string(i) + "_m").c_str(), fname, "", ("CHARM_KID_correlated" + std::to_string(i) + "_p").c_str(), fname, "");

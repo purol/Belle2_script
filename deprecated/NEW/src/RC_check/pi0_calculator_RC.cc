@@ -51,15 +51,17 @@ Corrector_phiKL corrector_phiKL;
 Corrector_KstarKLKL corrector_KstarKLKL;
 Corrector_XsKLKL corrector_XsKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
+Corrector_KS0 corrector_KS0;
 Corrector_Fragmentation corrector_Fragmentation;
 
 # define MCTYPE "MC15rd"
 
 const bool KnunuOnly = false;
 
-double PID_correction_fluctuated[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
-double PID_fakeE_correction_fluctuated[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-double PID_fakeMU_correction_fluctuated[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+double pi0_correction_fluctuation_uncer[N_pi0_syst_MC15rd] = { 0.0 }; // it is additive!
+double pi0_correction_fluctuation_stat_uncer[N_pi0_syst] = { 0.0 }; // it is additive!
+double pi0_correction_fluctuation_sys_uncer1[N_pi0_syst] = { 0.0 }; // it is additive!
+double pi0_correction_fluctuation_sys_uncer2[N_pi0_syst] = { 0.0 }; // it is additive!
 
 std::random_device rd;
 std::default_random_engine generator(rd());
@@ -104,8 +106,14 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
     double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
+    double temp_N_pi0_syst_MC15ri[N_pi0_syst_MC15ri] = { 0.0 };
+    double temp_N_pi0_syst_MC15rd[N_pi0_syst_MC15rd] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    double KS0_flight_distance = 0;
+    double KS0_costheta = 0;
+    double KS0_p = 0;
 
     int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
@@ -186,6 +194,8 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15ri; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15ribin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15ri[i_pi0]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15rdbin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15rd[i_pi0]);
         for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
@@ -198,6 +208,9 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &KS0_flight_distance);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_costheta", &KS0_costheta);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_p", &KS0_p);
         if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
@@ -305,13 +318,15 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             double Correction_PID = 1;
             double Correction_pi0 = 1;
             double Correction_fake = 1;
+            double Correction_KS0 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
             }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            if (std::string(MCTYPE) == "MC15ri") for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            else if (std::string(MCTYPE) == "MC15rd") for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_pi0_syst_MC15rd[i_pi0]);
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
@@ -324,6 +339,8 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
+            if (std::string(MCTYPE) == "MC15ri") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE);
+            else if (std::string(MCTYPE) == "MC15rd") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE);
 
             // Knn correction factor
             double Correction_Knn = corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn, names.at(i), MCTYPE, true);
@@ -352,7 +369,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             double Correction_BtoDtoXKL = 1.0;
             if ((strcmp(sample, "CHG") == 0) || (strcmp(sample, "MIX") == 0) || (strcmp(sample, "SIGNAL") == 0)) Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL;
+            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_KS0 * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
@@ -401,7 +418,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
     return;
 }
 
-void GetFlucNevt(const char* dirname, const char* included_string, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 9], int ToyNum, bool IsItKID, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+void GetFlucNevt(const char* dirname, const char* included_string, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 9], int ToyNum, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -437,8 +454,14 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
     double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
+    double temp_N_pi0_syst_MC15ri[N_pi0_syst_MC15ri] = { 0.0 };
+    double temp_N_pi0_syst_MC15rd[N_pi0_syst_MC15rd] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    double KS0_flight_distance = 0;
+    double KS0_costheta = 0;
+    double KS0_p = 0;
 
     int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
@@ -519,6 +542,8 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15ri; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15ribin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15ri[i_pi0]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15rdbin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15rd[i_pi0]);
         for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
@@ -531,6 +556,9 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &KS0_flight_distance);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_costheta", &KS0_costheta);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_p", &KS0_p);
         if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
@@ -638,51 +666,46 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
             double Correction_PID = 1;
             double Correction_pi0 = 1;
             double Correction_fake = 1;
+            double Correction_KS0 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
-
-                if (IsItKID) {
-                    Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE) * PID_correction_fluctuated[0][i_PID], temp_N_bin_PID[0][i_PID]); // true KID
-                    Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE) * PID_correction_fluctuated[1][i_PID], temp_N_bin_PID[1][i_PID]); // mis KID
-                    Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
-                    Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
-                }
-                else {
-                    Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
-                    Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
-                    Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE) * PID_correction_fluctuated[2][i_PID], temp_N_bin_PID[2][i_PID]); // true PID
-                    Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE) * PID_correction_fluctuated[3][i_PID], temp_N_bin_PID[3][i_PID]); // mis PID
-                }
-
+                Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
+                Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
+                Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
+                Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
             }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            if (std::string(MCTYPE) == "MC15ri") {
+                for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) {
+                    Correction_pi0 = Correction_pi0 * std::pow(
+                        corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE) +
+                        pi0_correction_fluctuation_stat_uncer[i_pi0] +
+                        pi0_correction_fluctuation_sys_uncer1[i_pi0] +
+                        pi0_correction_fluctuation_sys_uncer2[i_pi0],
+                        temp_N_bin_pi0[i_pi0]);
+
+                }
+            }
+            else if (std::string(MCTYPE) == "MC15rd") {
+                for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) {
+                    Correction_pi0 = Correction_pi0 * std::pow(
+                        corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE) +
+                        pi0_correction_fluctuation_uncer[i_pi0],
+                        temp_N_pi0_syst_MC15rd[i_pi0]);
+                }
+            }
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
-                if (IsItKID) {
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE) * PID_fakeE_correction_fluctuated[0][i_fake], temp_N_bin_fakeE[0][i_fake]); // K- from e
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE) * PID_fakeE_correction_fluctuated[1][i_fake], temp_N_bin_fakeE[1][i_fake]); // K+ from e
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE), temp_N_bin_fakeE[2][i_fake]); // pi- from e
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE), temp_N_bin_fakeE[3][i_fake]); // pi+ from e
-                }
-                else {
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE) * PID_fakeE_correction_fluctuated[2][i_fake], temp_N_bin_fakeE[2][i_fake]); // pi- from e
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE) * PID_fakeE_correction_fluctuated[3][i_fake], temp_N_bin_fakeE[3][i_fake]); // pi+ from e
-                }
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE), temp_N_bin_fakeE[2][i_fake]); // pi- from e
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE), temp_N_bin_fakeE[3][i_fake]); // pi+ from e
             }
             for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-                if (IsItKID) {
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE) * PID_fakeMU_correction_fluctuated[0][i_fake], temp_N_bin_fakeMU[0][i_fake]); // K- from mu
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE) * PID_fakeMU_correction_fluctuated[1][i_fake], temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
-                }
-                else {
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE), temp_N_bin_fakeMU[0][i_fake]); // K- from mu
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE), temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE) * PID_fakeMU_correction_fluctuated[2][i_fake], temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
-                    Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE) * PID_fakeMU_correction_fluctuated[3][i_fake], temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
-                }
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE), temp_N_bin_fakeMU[0][i_fake]); // K- from mu
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE), temp_N_bin_fakeMU[1][i_fake]); // K+ from mu
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
+                Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
+            if (std::string(MCTYPE) == "MC15ri") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE);
+            else if (std::string(MCTYPE) == "MC15rd") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE);
 
             // Knn correction factor
             double Correction_Knn = corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn, names.at(i), MCTYPE, true);
@@ -711,7 +734,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
             double Correction_BtoDtoXKL = 1.0;
             if ((strcmp(sample, "CHG") == 0) || (strcmp(sample, "MIX") == 0) || (strcmp(sample, "SIGNAL") == 0)) Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL;
+            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_KS0 * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
@@ -760,93 +783,32 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
     return;
 }
 
-void FluctuatePIDCorrection(bool IsItKID) {
+void Fluctuatepi0Correction() {
 
-    for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
+    if (std::string(MCTYPE) == "MC15ri") {
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) {
 
-        std::normal_distribution<double> KID_true_distribution(1.0, std::min(corrector_PID.GetUncertainty(0, i_PID, MCTYPE) / corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), 2.0));
-        std::normal_distribution<double> KID_mis_distribution(1.0, std::min(corrector_PID.GetUncertainty(1, i_PID, MCTYPE) / corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), 2.0));
-        std::normal_distribution<double> PID_true_distribution(1.0, std::min(corrector_PID.GetUncertainty(2, i_PID, MCTYPE) / corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), 2.0));
-        std::normal_distribution<double> PID_mis_distribution(1.0, std::min(corrector_PID.GetUncertainty(3, i_PID, MCTYPE) / corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), 2.0));
+            std::normal_distribution<double> pi0_stat_distribution(0.0, corrector_pi0.GetStatUncertainty(i_pi0, MCTYPE));
+            pi0_correction_fluctuation_stat_uncer[i_pi0] = pi0_stat_distribution(generator);
 
-        if (IsItKID) {
-            if (std::abs(corrector_PID.GetUncertainty(0, i_PID, MCTYPE) / corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[0][i_PID] = 1.0; // true KID
-            else if (std::abs(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[0][i_PID] = 1.0;
-            else PID_correction_fluctuated[0][i_PID] = KID_true_distribution(generator);
-            if (std::abs(corrector_PID.GetUncertainty(1, i_PID, MCTYPE) / corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[1][i_PID] = 1.0; // mis KID
-            else if (std::abs(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[1][i_PID] = 1.0;
-            else PID_correction_fluctuated[1][i_PID] = KID_mis_distribution(generator);
-            PID_correction_fluctuated[2][i_PID] = 1.0;
-            PID_correction_fluctuated[3][i_PID] = 1.0;
-        }
-        else {
-            PID_correction_fluctuated[0][i_PID] = 1.0;
-            PID_correction_fluctuated[1][i_PID] = 1.0;
-            if (std::abs(corrector_PID.GetUncertainty(2, i_PID, MCTYPE) / corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[2][i_PID] = 1.0; // true PID
-            else if (std::abs(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[2][i_PID] = 1.0;
-            else PID_correction_fluctuated[2][i_PID] = PID_true_distribution(generator);
-            if (std::abs(corrector_PID.GetUncertainty(3, i_PID, MCTYPE) / corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[3][i_PID] = 1.0; // mis PID
-            else if (std::abs(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE)) < MyEPSILON) PID_correction_fluctuated[3][i_PID] = 1.0;
-            else PID_correction_fluctuated[3][i_PID] = PID_mis_distribution(generator);
         }
 
+        std::normal_distribution<double> pi0_sys_distribution(0.0, 1.0);
+        double alpha = 0.0;
+
+        alpha = pi0_sys_distribution(generator);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) pi0_correction_fluctuation_sys_uncer1[i_pi0] = alpha * corrector_pi0.GetSystUncertainty1(i_pi0, MCTYPE);
+
+        alpha = pi0_sys_distribution(generator);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) pi0_correction_fluctuation_sys_uncer2[i_pi0] = alpha * corrector_pi0.GetSystUncertainty2(i_pi0, MCTYPE);
     }
+    else if (std::string(MCTYPE) == "MC15rd") {
+        std::normal_distribution<double> pi0_uncer_distribution(0.0, 1.0);
 
-    for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) {
+            double alpha = pi0_uncer_distribution(generator);
 
-        std::normal_distribution<double> Kp_fakeE_distribution(1.0, std::min(corrector_FakePID.GetUncertaintyfakeE(1, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), 2.0));
-        std::normal_distribution<double> Kn_fakeE_distribution(1.0, std::min(corrector_FakePID.GetUncertaintyfakeE(0, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), 2.0));
-        std::normal_distribution<double> pip_fakeE_distribution(1.0, std::min(corrector_FakePID.GetUncertaintyfakeE(3, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE), 2.0));
-        std::normal_distribution<double> pin_fakeE_distribution(1.0, std::min(corrector_FakePID.GetUncertaintyfakeE(2, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE), 2.0));
-
-        if (IsItKID) {
-            if (std::abs(corrector_FakePID.GetUncertaintyfakeE(1, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[1][i_fake] = 1.0;
-            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[1][i_fake] = 1.0;
-            else PID_fakeE_correction_fluctuated[1][i_fake] = Kp_fakeE_distribution(generator);
-            if (std::abs(corrector_FakePID.GetUncertaintyfakeE(0, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[0][i_fake] = 1.0;
-            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[0][i_fake] = 1.0;
-            else PID_fakeE_correction_fluctuated[0][i_fake] = Kn_fakeE_distribution(generator);
-            PID_fakeE_correction_fluctuated[3][i_fake] = 1.0;
-            PID_fakeE_correction_fluctuated[2][i_fake] = 1.0;
-        }
-        else {
-            PID_fakeE_correction_fluctuated[1][i_fake] = 1.0;
-            PID_fakeE_correction_fluctuated[0][i_fake] = 1.0;
-            if (std::abs(corrector_FakePID.GetUncertaintyfakeE(3, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[3][i_fake] = 1.0;
-            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeE(3, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[3][i_fake] = 1.0;
-            else PID_fakeE_correction_fluctuated[3][i_fake] = pip_fakeE_distribution(generator);
-            if (std::abs(corrector_FakePID.GetUncertaintyfakeE(2, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[2][i_fake] = 1.0;
-            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeE(2, i_fake, MCTYPE)) < MyEPSILON) PID_fakeE_correction_fluctuated[2][i_fake] = 1.0;
-            else PID_fakeE_correction_fluctuated[2][i_fake] = pin_fakeE_distribution(generator);
-        }
-    }
-
-    for (int i_fake = 0; i_fake < N_fakeMU_syst; i_fake++) {
-
-        std::normal_distribution<double> Kp_fakeMU_distribution(1.0, std::min(corrector_FakePID.GetUncertaintyfakeMU(1, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE), 2.0));
-        std::normal_distribution<double> Kn_fakeMU_distribution(1.0, std::min(corrector_FakePID.GetUncertaintyfakeMU(0, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE), 2.0));
-        std::normal_distribution<double> pip_fakeMU_distribution(1.0, std::min(corrector_FakePID.GetUncertaintyfakeMU(3, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), 2.0));
-        std::normal_distribution<double> pin_fakeMU_distribution(1.0, std::min(corrector_FakePID.GetUncertaintyfakeMU(2, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), 2.0));
-
-        if (IsItKID) {
-            if (std::abs(corrector_FakePID.GetUncertaintyfakeMU(1, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[1][i_fake] = 1.0;
-            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeMU(1, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[1][i_fake] = 1.0;
-            else PID_fakeMU_correction_fluctuated[1][i_fake] = Kp_fakeMU_distribution(generator);
-            if (std::abs(corrector_FakePID.GetUncertaintyfakeMU(0, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[0][i_fake] = 1.0;
-            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeMU(0, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[0][i_fake] = 1.0;
-            else PID_fakeMU_correction_fluctuated[0][i_fake] = Kn_fakeMU_distribution(generator);
-            PID_fakeMU_correction_fluctuated[3][i_fake] = 1.0;
-            PID_fakeMU_correction_fluctuated[2][i_fake] = 1.0;
-        }
-        else {
-            PID_fakeMU_correction_fluctuated[1][i_fake] = 1.0;
-            PID_fakeMU_correction_fluctuated[0][i_fake] = 1.0;
-            if (std::abs(corrector_FakePID.GetUncertaintyfakeMU(3, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[3][i_fake] = 1.0;
-            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[3][i_fake] = 1.0;
-            else PID_fakeMU_correction_fluctuated[3][i_fake] = pip_fakeMU_distribution(generator);
-            if (std::abs(corrector_FakePID.GetUncertaintyfakeMU(2, i_fake, MCTYPE) / corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[2][i_fake] = 1.0;
-            else if (std::abs(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE)) < MyEPSILON) PID_fakeMU_correction_fluctuated[2][i_fake] = 1.0;
-            else PID_fakeMU_correction_fluctuated[2][i_fake] = pin_fakeMU_distribution(generator);
+            pi0_correction_fluctuation_uncer[i_pi0] = alpha * corrector_pi0.GetUncertainty(i_pi0, MCTYPE);
         }
     }
 
@@ -863,10 +825,8 @@ int main(int argc, char* argv[])
     RooRandom::randomGenerator()->SetSeed(rd());
 
     double Nevt_nominal[RarityBins * 9] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL_1 SIGNAL_2 SIGNAL_3
-    double Nevt_fluc_KID[NToys][RarityBins * 9] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL_1 SIGNAL_2 SIGNAL_3
-    double Nevt_fluc_PID[NToys][RarityBins * 9] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL_1 SIGNAL_2 SIGNAL_3
-    double Relative_Uncertainty_KID[NToys][RarityBins * 9] = { 0.0 };
-    double Relative_Uncertainty_PID[NToys][RarityBins * 9] = { 0.0 };
+    double Nevt_fluc_pi0[NToys][RarityBins * 9] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL_1 SIGNAL_2 SIGNAL_3
+    double Relative_Uncertainty_pi0[NToys][RarityBins * 9] = { 0.0 };
 
 
 
@@ -904,62 +864,34 @@ int main(int argc, char* argv[])
 
 
     /* ====================================== */
-    // get fluctuated Nevt for KID
+    // get fluctuated Nevt for pi0
     for (int i = 0; i < NToys; i++) {
-        FluctuatePIDCorrection(true);
+        Fluctuatepi0Correction();
 
-        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B2Knunu", "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B2Xsnunu", "Bplus", "SIGNAL", Nevt_fluc_KID, i, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B02K0nunu", "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B02Xsnunu", "Bzero", "SIGNAL", Nevt_fluc_KID, i, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B2Knunu", "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B2Xsnunu", "Bplus", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B02K0nunu", "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B02Xsnunu", "Bzero", "SIGNAL", Nevt_fluc_pi0, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
-        GetFlucNevt(MC_dirname_CHG.c_str(), "root", "Bplus", "CHG", Nevt_fluc_KID, i, true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-        GetFlucNevt(MC_dirname_MIX.c_str(), "root", "Bzero", "MIX", Nevt_fluc_KID, i, true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-        GetFlucNevt(MC_dirname_UUBAR.c_str(), "root", "Continuum", "UUBAR", Nevt_fluc_KID, i, true, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-        GetFlucNevt(MC_dirname_DDBAR.c_str(), "root", "Continuum", "DDBAR", Nevt_fluc_KID, i, true, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-        GetFlucNevt(MC_dirname_SSBAR.c_str(), "root", "Continuum", "SSBAR", Nevt_fluc_KID, i, true, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-        GetFlucNevt(MC_dirname_CHARM.c_str(), "root", "Continuum", "CHARM", Nevt_fluc_KID, i, true, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
+        GetFlucNevt(MC_dirname_CHG.c_str(), "root", "Bplus", "CHG", Nevt_fluc_pi0, i, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+        GetFlucNevt(MC_dirname_MIX.c_str(), "root", "Bzero", "MIX", Nevt_fluc_pi0, i, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+        GetFlucNevt(MC_dirname_UUBAR.c_str(), "root", "Continuum", "UUBAR", Nevt_fluc_pi0, i, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_DDBAR.c_str(), "root", "Continuum", "DDBAR", Nevt_fluc_pi0, i, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_SSBAR.c_str(), "root", "Continuum", "SSBAR", Nevt_fluc_pi0, i, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_CHARM.c_str(), "root", "Continuum", "CHARM", Nevt_fluc_pi0, i, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     }
     /* ====================================== */
 
-
-
-    /* ====================================== */
-    // get fluctuated Nevt for PID
-    for (int i = 0; i < NToys; i++) {
-        FluctuatePIDCorrection(false);
-
-        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B2Knunu", "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B2Xsnunu", "Bplus", "SIGNAL", Nevt_fluc_PID, i, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B02K0nunu", "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-        GetFlucNevt(MC_dirname_SIGNAL.c_str(), "B02Xsnunu", "Bzero", "SIGNAL", Nevt_fluc_PID, i, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
-
-        GetFlucNevt(MC_dirname_CHG.c_str(), "root", "Bplus", "CHG", Nevt_fluc_PID, i, false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-        GetFlucNevt(MC_dirname_MIX.c_str(), "root", "Bzero", "MIX", Nevt_fluc_PID, i, false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-        GetFlucNevt(MC_dirname_UUBAR.c_str(), "root", "Continuum", "UUBAR", Nevt_fluc_PID, i, false, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
-        GetFlucNevt(MC_dirname_DDBAR.c_str(), "root", "Continuum", "DDBAR", Nevt_fluc_PID, i, false, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
-        GetFlucNevt(MC_dirname_SSBAR.c_str(), "root", "Continuum", "SSBAR", Nevt_fluc_PID, i, false, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
-        GetFlucNevt(MC_dirname_CHARM.c_str(), "root", "Continuum", "CHARM", Nevt_fluc_PID, i, false, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
-    }
-    /* ====================================== */
 
 
     /* ====================================== */
     // get relative uncertainty
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 9; j++) {
-            if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty_KID[i][j] = 1.0;
-            else Relative_Uncertainty_KID[i][j] = Nevt_fluc_KID[i][j] / Nevt_nominal[j];
-        }
-    }
-    for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 9; j++) {
-            if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty_PID[i][j] = 1.0;
-            else Relative_Uncertainty_PID[i][j] = Nevt_fluc_PID[i][j] / Nevt_nominal[j];
+            if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty_pi0[i][j] = 1.0;
+            else Relative_Uncertainty_pi0[i][j] = Nevt_fluc_pi0[i][j] / Nevt_nominal[j];
         }
     }
     /* ====================================== */
@@ -970,19 +902,10 @@ int main(int argc, char* argv[])
     // file output
     FILE* fp;
     
-    fp = fopen((std::string(argv[3]) + "/KID_toys_" + std::string(argv[1]) + ".txt").c_str(), "w");
+    fp = fopen((std::string(argv[3]) + "/pi0_toys_" + std::string(argv[1]) + ".txt").c_str(),"w");
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 9; j++) {
-            fprintf(fp, "%lf ", Relative_Uncertainty_KID[i][j]);
-        }
-        fprintf(fp, "\n");
-    }
-    fclose(fp);
-
-    fp = fopen((std::string(argv[3]) + "/PID_toys_" + std::string(argv[1]) + ".txt").c_str(), "w");
-    for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 9; j++) {
-            fprintf(fp, "%lf ", Relative_Uncertainty_PID[i][j]);
+            fprintf(fp, "%lf ", Relative_Uncertainty_pi0[i][j]);
         }
         fprintf(fp, "\n");
     }

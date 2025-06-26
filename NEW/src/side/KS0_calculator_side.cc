@@ -59,7 +59,8 @@ Corrector_Fragmentation corrector_Fragmentation;
 
 # define MCTYPE "MC15rd"
 
-const bool KnunuOnly = false;
+std::vector<double> KS0_correction_fluctuation_stat_uncer; // it is additive!
+std::vector<double> KS0_correction_fluctuation_sys_uncer; // it is additive!
 
 std::random_device rd;
 std::default_random_engine generator(rd());
@@ -68,7 +69,7 @@ std::default_random_engine generator(rd());
 
 /* ====================================== */
 
-void GetNominalNevt(const char* dirname, const char* included_string, const char* type, const char* sample, double Nevt_nominal[RarityBins * 5], double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+void GetNominalNevt(const char* dirname, const char* included_string, const char* type, const char* sample, double Nevt_nominal[RarityBins * 9], double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -87,6 +88,10 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
 
     if (strcmp(sample, "CHG") == 0) {}
     else if (strcmp(sample, "MIX") == 0) {}
+    else if (strcmp(sample, "UUBAR") == 0) {}
+    else if (strcmp(sample, "DDBAR") == 0) {}
+    else if (strcmp(sample, "SSBAR") == 0) {}
+    else if (strcmp(sample, "CHARM") == 0) {}
     else if (strcmp(sample, "SIGNAL") == 0) {}
     else {
         printf("[ERROR] unexpected sample name\n");
@@ -297,12 +302,6 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
-
-            if (KnunuOnly) {
-                // select B+ --> K+ nu nubar reconstruction only
-                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
-                else continue;
-            }
 
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -372,6 +371,10 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             int ArrayBinID = -1;
             if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
             else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
+            else if (strcmp(sample, "UUBAR") == 0) ArrayBinID = 2;
+            else if (strcmp(sample, "DDBAR") == 0) ArrayBinID = 3;
+            else if (strcmp(sample, "SSBAR") == 0) ArrayBinID = 4;
+            else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
             else if (strcmp(sample, "SIGNAL") == 0) {
                 double MC_MXs = -1;
 
@@ -390,9 +393,9 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
                     }
                 }
 
-                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) ArrayBinID = 2;
-                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) ArrayBinID = 3;
-                else if (MC_MXs > 1.0) ArrayBinID = 4;
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) ArrayBinID = 6;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) ArrayBinID = 7;
+                else if (MC_MXs > 1.0) ArrayBinID = 8;
             }
 
             int BinIndex = (int)std::floor(ReturnBinIndex(MVA_var, Bsig_M));
@@ -408,35 +411,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
     return;
 }
 
-void GetFlucNevt(double Nevt_nominal[RarityBins * 5], double*** Nevt_WhenPlusOneSigma, double*** Nevt_WhenMinusOneSigma, double Nevt_fluc[NToys][RarityBins * 5], int ToyNum) {
-
-    for (int i = 0; i < RarityBins * 5; i++) { // copy Nevt_nominal -> Nevt_fluc
-        Nevt_fluc[ToyNum][i] = Nevt_nominal[i];
-    }
-
-    std::normal_distribution<double> nuisance_distribution(0.0, 1.0);
-
-    for (int j = 0; j < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); j++) {
-        for (int k = 0; k < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); k++) {
-
-            double nuisance_parameter = nuisance_distribution(generator);
-
-            for (int i = 0; i < RarityBins * 5; i++) { // fluctuate `Nevt_fluc`
-
-                double OneSigmaRelativeChange = 1.0;
-                if (std::abs(Nevt_nominal[i]) < MyEPSILON) OneSigmaRelativeChange = 0.0;
-                else if (nuisance_parameter > 0) OneSigmaRelativeChange = (Nevt_WhenPlusOneSigma[i][j][k] - Nevt_nominal[i]) / Nevt_nominal[i];
-                else OneSigmaRelativeChange = (Nevt_WhenMinusOneSigma[i][j][k] - Nevt_nominal[i]) / Nevt_nominal[i];
-
-                Nevt_fluc[ToyNum][i] = Nevt_fluc[ToyNum][i] * (1.0 + OneSigmaRelativeChange * std::abs(nuisance_parameter));
-
-            }
-        }
-    }
-
-}
-
-void GetOneSigmaNevt(const char* dirname, const char* included_string, const char* type, const char* sample, double*** Nevt_WhenOneSigma, int TargetMxsBin, int TargetCategory, bool IsItUp, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // calculate Nevt when -1sigma for Bin, and Category
+void GetFlucNevt(const char* dirname, const char* included_string, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 9], int ToyNum, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -455,6 +430,10 @@ void GetOneSigmaNevt(const char* dirname, const char* included_string, const cha
 
     if (strcmp(sample, "CHG") == 0) {}
     else if (strcmp(sample, "MIX") == 0) {}
+    else if (strcmp(sample, "UUBAR") == 0) {}
+    else if (strcmp(sample, "DDBAR") == 0) {}
+    else if (strcmp(sample, "SSBAR") == 0) {}
+    else if (strcmp(sample, "CHARM") == 0) {}
     else if (strcmp(sample, "SIGNAL") == 0) {}
     else {
         printf("[ERROR] unexpected sample name\n");
@@ -666,12 +645,6 @@ void GetOneSigmaNevt(const char* dirname, const char* included_string, const cha
             tree_Btag->GetEntry(j);
             if (strcmp(sample, "SIGNAL") == 0) tree_Xs->GetEntry(j);
 
-            if (KnunuOnly) {
-                // select B+ --> K+ nu nubar reconstruction only
-                if ((std::abs(Upsilon_ID) < MyEPSILON) && (std::abs(Bsig_ID) < MyEPSILON)) {}
-                else continue;
-            }
-
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             else if (strcmp(type, "Bzero") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
@@ -687,8 +660,25 @@ void GetOneSigmaNevt(const char* dirname, const char* included_string, const cha
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
             }
-            if (std::string(MCTYPE) == "MC15ri") for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
-            else if (std::string(MCTYPE) == "MC15rd") for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_pi0_syst_MC15rd[i_pi0]);
+            if (std::string(MCTYPE) == "MC15ri") {
+                for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) {
+                    Correction_pi0 = Correction_pi0 * std::pow(
+                        corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE) +
+                        pi0_correction_fluctuation_stat_uncer[i_pi0] +
+                        pi0_correction_fluctuation_sys_uncer1[i_pi0] +
+                        pi0_correction_fluctuation_sys_uncer2[i_pi0],
+                        temp_N_bin_pi0[i_pi0]);
+
+                }
+            }
+            else if (std::string(MCTYPE) == "MC15rd") {
+                for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) {
+                    Correction_pi0 = Correction_pi0 * std::pow(
+                        corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE) +
+                        pi0_correction_fluctuation_uncer[i_pi0],
+                        temp_N_pi0_syst_MC15rd[i_pi0]);
+                }
+            }
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
@@ -701,8 +691,20 @@ void GetOneSigmaNevt(const char* dirname, const char* included_string, const cha
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
-            if (std::string(MCTYPE) == "MC15ri") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE);
-            else if (std::string(MCTYPE) == "MC15rd") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE);
+            if (std::string(MCTYPE) == "MC15ri") {
+                std::normal_distribution<double> normal_distribution(0.0, 1.0);
+                double alpha = normal_distribution(generator);
+
+                Correction_KS0 = Correction_KS0 * alpha * (corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE) + corrector_KS0.GetAbsoluteUncertainty(KS0_flight_distance, MCTYPE));
+            }
+            else if (std::string(MCTYPE) == "MC15rd") {
+                int KS0_bin = corrector_KS0.GetBin(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE)
+
+                    Correction_KS0 = Correction_KS0 * (
+                        corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE) +
+                        KS0_correction_fluctuation_stat_uncer.at(KS0_bin) +
+                        KS0_correction_fluctuation_sys_uncer.at(KS0_bin));
+            }
 
             // Knn correction factor
             double Correction_Knn = corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn, names.at(i), MCTYPE, true);
@@ -734,12 +736,16 @@ void GetOneSigmaNevt(const char* dirname, const char* included_string, const cha
             double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_KS0 * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
-            else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE) * corrector_Fragmentation.FluctuateCorrection(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, TargetMxsBin, TargetCategory, IsItUp, Corrector_Fragmentation::Sample::gamma, MCTYPE);
-            else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE) * corrector_Fragmentation.FluctuateCorrection(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, TargetMxsBin, TargetCategory, IsItUp, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+            else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
+            else if (CorrectionType == "B02Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_B0_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
 
             int ArrayBinID = -1;
             if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
             else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
+            else if (strcmp(sample, "UUBAR") == 0) ArrayBinID = 2;
+            else if (strcmp(sample, "DDBAR") == 0) ArrayBinID = 3;
+            else if (strcmp(sample, "SSBAR") == 0) ArrayBinID = 4;
+            else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
             else if (strcmp(sample, "SIGNAL") == 0) {
                 double MC_MXs = -1;
 
@@ -758,13 +764,13 @@ void GetOneSigmaNevt(const char* dirname, const char* included_string, const cha
                     }
                 }
 
-                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) ArrayBinID = 2;
-                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) ArrayBinID = 3;
-                else if (MC_MXs > 1.0) ArrayBinID = 4;
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) ArrayBinID = 6;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) ArrayBinID = 7;
+                else if (MC_MXs > 1.0) ArrayBinID = 8;
             }
 
             int BinIndex = (int)std::floor(ReturnBinIndex(MVA_var, Bsig_M));
-            Nevt_WhenOneSigma[ArrayBinID * RarityBins + BinIndex][TargetMxsBin][TargetCategory] = Nevt_WhenOneSigma[ArrayBinID * RarityBins + BinIndex][TargetMxsBin][TargetCategory] + total_weight;
+            Nevt_fluc[ToyNum][ArrayBinID * RarityBins + BinIndex] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins + BinIndex] + total_weight;
             Nevt = Nevt + total_weight;
         }
         input_file->Close();
@@ -776,126 +782,73 @@ void GetOneSigmaNevt(const char* dirname, const char* included_string, const cha
     return;
 }
 
+void FluctuateKS0Correction() {
+
+    if (std::string(MCTYPE) == "MC15ri") {} // fluctuation in FlucNevt
+    else if (std::string(MCTYPE) == "MC15rd") {
+        for (int i_KS0 = 0; i_KS0 < corrector_KS0.GetNBins(MCTYPE); i_KS0++) {
+
+            std::normal_distribution<double> KS0_stat_distribution(0.0, corrector_KS0.GetAbsoluteStatUncertaintyFromBin(i_KS0, MCTYPE));
+            KS0_correction_fluctuation_stat_uncer.push_back(KS0_stat_distribution(generator));
+
+        }
+
+        std::normal_distribution<double> KS0_sys_distribution(0.0, 1.0);
+        double alpha = 0.0;
+
+        alpha = KS0_sys_distribution(generator);
+        for (int i_KS0 = 0; i_KS0 < corrector_KS0.GetNBins(MCTYPE); i_KS0++) KS0_correction_fluctuation_sys_uncer.push_back(alpha * corrector_KS0.GetAbsoluteSystUncertaintyFromBin(i_KS0, MCTYPE));
+    }
+
+}
+
 int main(int argc, char* argv[])
 {
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
-    double Nevt_nominal[RarityBins * 5] = { 0.0 }; // CHG MIX SIGNAL_1 SIGNAL_2 SIGNAL_3
-    double Nevt_fluc[NToys][RarityBins * 5] = { 0.0 }; // CHG MIX SIGNAL_1 SIGNAL_2 SIGNAL_3
-    double Relative_Uncertainty[NToys][RarityBins * 5] = { 0.0 };
-
-    double*** Nevt_WhenPlusOneSigma; // [CHG|MIX|SIGNA][Nbin][Ncategory], Nevt when Nbin/Ncategory is +1sigma
-    Nevt_WhenPlusOneSigma = (double***)malloc(sizeof(double**) * (RarityBins * 5));
-    for (int i = 0; i < (RarityBins * 5); i++) {
-        Nevt_WhenPlusOneSigma[i] = (double**)malloc(sizeof(double*) * corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma));
-    }
-    for (int i = 0; i < (RarityBins * 5); i++) {
-        for (int j = 0; j < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); j++) {
-            Nevt_WhenPlusOneSigma[i][j] = (double*)malloc(sizeof(double) * corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma));
-        }
-    }
-
-    double*** Nevt_WhenMinusOneSigma; // [CHG|MIX|SIGNA][Nbin][Ncategory], Nevt when Nbin/Ncategory is -1sigma
-    Nevt_WhenMinusOneSigma = (double***)malloc(sizeof(double**) * (RarityBins * 5));
-    for (int i = 0; i < (RarityBins * 5); i++) {
-        Nevt_WhenMinusOneSigma[i] = (double**)malloc(sizeof(double*) * corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma));
-    }
-    for (int i = 0; i < (RarityBins * 5); i++) {
-        for (int j = 0; j < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); j++) {
-            Nevt_WhenMinusOneSigma[i][j] = (double*)malloc(sizeof(double) * corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma));
-        }
-    }
-
-    for (int i = 0; i < (RarityBins * 5); i++) {
-        for (int bin = 0; bin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); bin++) {
-            for (int category = 0; category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); category++) {
-                Nevt_WhenPlusOneSigma[i][bin][category] = 0.0;
-                Nevt_WhenMinusOneSigma[i][bin][category] = 0.0;
-            }
-        }
-    }
-
-
-    /* ====================================== */
-    // define TH1D for temporary usage
-    TH1D* temp_hist = new TH1D("temp_hist", "temp_hist", RarityBins, BinMIN, BinMAX);
-    temp_hist->Reset();
-    /* ====================================== */
+    double Nevt_nominal[RarityBins * 9] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL_1 SIGNAL_2 SIGNAL_3
+    double Nevt_fluc_KS0[NToys][RarityBins * 9] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL_1 SIGNAL_2 SIGNAL_3
+    double Relative_Uncertainty_KS0[NToys][RarityBins * 9] = { 0.0 };
 
 
 
     /* ====================================== */
     // define path for Ntuple
-    const char* MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
-
-    const char* MC_dirname_CHG = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHG_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
-    const char* MC_dirname_MIX = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/MIX_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
-    const char* MC_dirname_UUBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/UUBAR_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
-    const char* MC_dirname_DDBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/DDBAR_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
-    const char* MC_dirname_SSBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SSBAR_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
-    const char* MC_dirname_CHARM = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHARM_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
+    const char* MC_dirname_CHG = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_side/CHG_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
+    const char* MC_dirname_MIX = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_side/MIX_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
+    const char* MC_dirname_UUBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_side/UUBAR_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
+    const char* MC_dirname_DDBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_side/DDBAR_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
+    const char* MC_dirname_SSBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_side/SSBAR_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
+    const char* MC_dirname_CHARM = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_side/CHARM_analysis/validation_v004/final_output_root_after_MVA_Application_after_cut";
     /* ====================================== */
 
 
 
     /* ====================================== */
     // get nominal Nevt
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-    GetNominalNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-    GetNominalNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_nominal, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
     GetNominalNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_nominal, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
     GetNominalNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_nominal, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetNominalNevt(MC_dirname_UUBAR, "root", "Continuum", "UUBAR", Nevt_nominal, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+    GetNominalNevt(MC_dirname_DDBAR, "root", "Continuum", "DDBAR", Nevt_nominal, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+    GetNominalNevt(MC_dirname_SSBAR, "root", "Continuum", "SSBAR", Nevt_nominal, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+    GetNominalNevt(MC_dirname_CHARM, "root", "Continuum", "CHARM", Nevt_nominal, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     /* ====================================== */
 
 
 
     /* ====================================== */
-    // get +1sigma Nevt
-    for (int bin = 0; bin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); bin++) {
-        for (int category = 0; category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); category++) {
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
-
-            GetOneSigmaNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-            GetOneSigmaNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_WhenPlusOneSigma, bin, category, true, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-        }
-    }
-    /* ====================================== */
-
-
-
-    /* ====================================== */
-    // get -1sigma Nevt
-    for (int bin = 0; bin < corrector_Fragmentation.GetNMxsBin(Corrector_Fragmentation::Sample::gamma); bin++) {
-        for (int category = 0; category < corrector_Fragmentation.GetNCategory(Corrector_Fragmentation::Sample::gamma); category++) {
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-            GetOneSigmaNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
-
-            GetOneSigmaNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-            GetOneSigmaNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_WhenMinusOneSigma, bin, category, false, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
-        }
-    }
-    /* ====================================== */
-
-
-
-    /* ====================================== */
-    // get fluctuated Nevt for Fragmentation
+    // get fluctuated Nevt for KS0
     for (int i = 0; i < NToys; i++) {
-        GetFlucNevt(Nevt_nominal, Nevt_WhenPlusOneSigma, Nevt_WhenMinusOneSigma, Nevt_fluc, i);
+        FluctuateKS0Correction();
+
+        GetFlucNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_fluc_KS0, i, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+        GetFlucNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_fluc_KS0, i, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+        GetFlucNevt(MC_dirname_UUBAR, "root", "Continuum", "UUBAR", Nevt_fluc_KS0, i, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_DDBAR, "root", "Continuum", "DDBAR", Nevt_fluc_KS0, i, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_SSBAR, "root", "Continuum", "SSBAR", Nevt_fluc_KS0, i, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_CHARM, "root", "Continuum", "CHARM", Nevt_fluc_KS0, i, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     }
     /* ====================================== */
 
@@ -904,9 +857,9 @@ int main(int argc, char* argv[])
     /* ====================================== */
     // get relative uncertainty
     for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 5; j++) {
-            if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty[i][j] = 1.0;
-            else Relative_Uncertainty[i][j] = Nevt_fluc[i][j] / Nevt_nominal[j];
+        for (int j = 0; j < RarityBins * 9; j++) {
+            if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty_KS0[i][j] = 1.0;
+            else Relative_Uncertainty_KS0[i][j] = Nevt_fluc_KS0[i][j] / Nevt_nominal[j];
         }
     }
     /* ====================================== */
@@ -917,10 +870,10 @@ int main(int argc, char* argv[])
     // file output
     FILE* fp;
     
-    fp = fopen(("Fragmentation_toys_" + std::string(argv[1]) + ".txt").c_str(),"w");
+    fp = fopen(("KS0_toys_" + std::string(argv[1]) + ".txt").c_str(),"w");
     for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 5; j++) {
-            fprintf(fp, "%lf ", Relative_Uncertainty[i][j]);
+        for (int j = 0; j < RarityBins * 9; j++) {
+            fprintf(fp, "%lf ", Relative_Uncertainty_KS0[i][j]);
         }
         fprintf(fp, "\n");
     }

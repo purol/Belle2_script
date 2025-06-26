@@ -88,6 +88,7 @@ Corrector_phiKL corrector_phiKL;
 Corrector_KstarKLKL corrector_KstarKLKL;
 Corrector_XsKLKL corrector_XsKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
+Corrector_KS0 corrector_KS0;
 Corrector_Fragmentation corrector_Fragmentation;
 
 # define MCTYPE "MC15rd"
@@ -242,9 +243,14 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
     double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
+    double temp_N_pi0_syst_MC15ri[N_pi0_syst_MC15ri] = { 0.0 };
+    double temp_N_pi0_syst_MC15rd[N_pi0_syst_MC15rd] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-    double temp_KS0_3D_distance = -1;
+    
+    double KS0_flight_distance = 0;
+    double KS0_costheta = 0;
+    double KS0_p = 0;
 
     int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
@@ -329,6 +335,8 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15ri; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15ribin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15ri[i_pi0]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15rdbin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15rd[i_pi0]);
         for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
@@ -341,7 +349,9 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &temp_KS0_3D_distance);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &KS0_flight_distance);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_costheta", &KS0_costheta);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_p", &KS0_p);
         if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
@@ -485,13 +495,15 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
             double Correction_PID = 1;
             double Correction_pi0 = 1;
             double Correction_fake = 1;
+            double Correction_KS0 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
             }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            if (std::string(MCTYPE) == "MC15ri") for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            else if (std::string(MCTYPE) == "MC15rd") for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_pi0_syst_MC15rd[i_pi0]);
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
@@ -504,6 +516,8 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
+            if (std::string(MCTYPE) == "MC15ri") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE);
+            else if (std::string(MCTYPE) == "MC15rd") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE);
 
             // Knn correction factor
             double Correction_Knn = corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn, names.at(i), MCTYPE, true);
@@ -532,7 +546,7 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
             double Correction_BtoDtoXKL = 1.0;
             if ((strcmp(sample, "CHG") == 0) || (strcmp(sample, "MIX") == 0) || (strcmp(sample, "SIGNAL") == 0)) Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL;
+            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_KS0 * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
@@ -542,21 +556,25 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
             if (pdftype == PDFtype::nominal) {}
             else if (pdftype == PDFtype::trackUP) {
                 double Ntrack = GetNtracks(Upsilon_ID, Bsig_ID);
-                double track_correction = (1 + (Ntrack * track_rel_uncertainty / 100.0));
+                double track_correction = 1.0;
+                if (std::string(MCTYPE) == "MC15ri") track_correction = (1 + (Ntrack * track_rel_uncertainty_MC15ri / 100.0));
+                else if (std::string(MCTYPE) == "MC15rd") track_correction = (1 + (Ntrack * track_rel_uncertainty_MC15rd / 100.0));
                 total_weight = total_weight * track_correction;
             }
             else if (pdftype == PDFtype::trackDOWN) {
                 double Ntrack = GetNtracks(Upsilon_ID, Bsig_ID);
-                double track_correction = (1 - (Ntrack * track_rel_uncertainty / 100.0));
+                double track_correction = 1.0;
+                if (std::string(MCTYPE) == "MC15ri") track_correction = (1 - (Ntrack * track_rel_uncertainty_MC15ri / 100.0));
+                else if (std::string(MCTYPE) == "MC15rd") track_correction = (1 - (Ntrack * track_rel_uncertainty_MC15rd / 100.0));
                 total_weight = total_weight * track_correction;
             }
             else if (pdftype == PDFtype::KS0UP) {
-                double KS0_correction = 1 + (KS0_rel_uncertainty * temp_KS0_3D_distance / 100.0);
-                total_weight = total_weight * KS0_correction;
+                printf("[GetPDFs] do not use `GetPDFs` to calculate the systematic uncertainty from KS0 efficiency calbiration factor anymore.\n");
+                exit(1);
             }
             else if (pdftype == PDFtype::KS0DOWN) {
-                double KS0_correction = 1 - (KS0_rel_uncertainty * temp_KS0_3D_distance / 100.0);
-                total_weight = total_weight * KS0_correction;
+                printf("[GetPDFs] do not use `GetPDFs` to calculate the systematic uncertainty from KS0 efficiency calbiration factor anymore.\n");
+                exit(1);
             }
             else if (pdftype == PDFtype::BDTc) {
                 double BDTc_weight = BDTcToWeight(BDTc_var);
@@ -711,6 +729,111 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
     printf("%s has %lf events (with correction)\n", dirname, Nevt);
 
     return Nevt;
+}
+
+int GetKS0correlatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* UUBAR_nominal_hist, TH1D* DDBAR_nominal_hist, TH1D* SSBAR_nominal_hist, TH1D* CHARM_nominal_hist, TH1D* Signal_nominal_hist_MXs1, TH1D* Signal_nominal_hist_MXs2, TH1D* Signal_nominal_hist_MXs3, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** UUBAR_hists, TH1D*** DDBAR_hists, TH1D*** SSBAR_hists, TH1D*** CHARM_hists, TH1D*** Signal_hists_MXs1, TH1D*** Signal_hists_MXs2, TH1D*** Signal_hists_MXs3) { // get shape sys histogram from txt file
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 9; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    *CHG_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *MIX_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *UUBAR_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *DDBAR_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *SSBAR_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *CHARM_hists = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs1 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs2 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+    *Signal_hists_MXs3 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
+
+    for (int i = 0; i < Nentry; i++) {
+        (*CHG_hists)[i] = new TH1D(("CHG_KS0_correlated" + std::to_string(i) + "_p").c_str(), ("CHG_KS0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*MIX_hists)[i] = new TH1D(("MIX_KS0_correlated" + std::to_string(i) + "_p").c_str(), ("MIX_KS0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*UUBAR_hists)[i] = new TH1D(("UUBAR_KS0_correlated" + std::to_string(i) + "_p").c_str(), ("UUBAR_KS0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*DDBAR_hists)[i] = new TH1D(("DDBAR_KS0_correlated" + std::to_string(i) + "_p").c_str(), ("DDBAR_KS0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*SSBAR_hists)[i] = new TH1D(("SSBAR_KS0_correlated" + std::to_string(i) + "_p").c_str(), ("SSBAR_KS0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*CHARM_hists)[i] = new TH1D(("CHARM_KS0_correlated" + std::to_string(i) + "_p").c_str(), ("CHARM_KS0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_KS0_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs1_KS0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_KS0_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs2_KS0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_KS0_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_MXs3_KS0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    }
+
+    for (int i = Nentry; i < 2 * Nentry; i++) {
+        (*CHG_hists)[i] = new TH1D(("CHG_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHG_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*MIX_hists)[i] = new TH1D(("MIX_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("MIX_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*UUBAR_hists)[i] = new TH1D(("UUBAR_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("UUBAR_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*DDBAR_hists)[i] = new TH1D(("DDBAR_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("DDBAR_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*SSBAR_hists)[i] = new TH1D(("SSBAR_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("SSBAR_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*CHARM_hists)[i] = new TH1D(("CHARM_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("CHARM_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs1)[i] = new TH1D(("Signal_MXs1_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs1_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs2)[i] = new TH1D(("Signal_MXs2_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs2_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+        (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs3_KS0_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    }
+
+    fp = fopen(dirname, "r");
+    for (int i = 0; i < Nentry; i++) {
+        fscanf(fp, "%lf\n", &eigen_value);
+        for (int j = 0; j < RarityBins * 9; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
+
+        for (int k = 0; k < RarityBins; k++) {
+            (*CHG_hists)[i]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
+            (*MIX_hists)[i]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 1 * RarityBins]));
+            (*UUBAR_hists)[i]->SetBinContent(k + 1, UUBAR_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*DDBAR_hists)[i]->SetBinContent(k + 1, DDBAR_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 3 * RarityBins]));
+            (*SSBAR_hists)[i]->SetBinContent(k + 1, SSBAR_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 4 * RarityBins]));
+            (*CHARM_hists)[i]->SetBinContent(k + 1, CHARM_nominal_hist->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 5 * RarityBins]));
+            (*Signal_hists_MXs1)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs2)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 7 * RarityBins]));
+            (*Signal_hists_MXs3)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 8 * RarityBins]));
+
+            (*CHG_hists)[i + Nentry]->SetBinContent(k + 1, CHG_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 0 * RarityBins]));
+            (*MIX_hists)[i + Nentry]->SetBinContent(k + 1, MIX_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 1 * RarityBins]));
+            (*UUBAR_hists)[i + Nentry]->SetBinContent(k + 1, UUBAR_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 2 * RarityBins]));
+            (*DDBAR_hists)[i + Nentry]->SetBinContent(k + 1, DDBAR_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 3 * RarityBins]));
+            (*SSBAR_hists)[i + Nentry]->SetBinContent(k + 1, SSBAR_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 4 * RarityBins]));
+            (*CHARM_hists)[i + Nentry]->SetBinContent(k + 1, CHARM_nominal_hist->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 5 * RarityBins]));
+            (*Signal_hists_MXs1)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 6 * RarityBins]));
+            (*Signal_hists_MXs2)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs2->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 7 * RarityBins]));
+            (*Signal_hists_MXs3)[i + Nentry]->SetBinContent(k + 1, Signal_nominal_hist_MXs3->GetBinContent(k + 1) * (1 - eigen_value * weight_sys[k + 8 * RarityBins]));
+        }
+
+    }
+
+    fclose(fp);
+
+    return Nentry;
+}
+
+void GetKS0UncorrelatedPDFs(const char* dirname, TH1D* CHG_hist, TH1D* MIX_hist, TH1D* UUBAR_hist, TH1D* DDBAR_hist, TH1D* SSBAR_hist, TH1D* CHARM_hist, TH1D* Signal_hist_MXs1, TH1D* Signal_hist_MXs2, TH1D* Signal_hist_MXs3) { // get shape sys histogram from txt file
+    FILE* fp;
+    fp = fopen(dirname, "r");
+
+    double weight_sys[RarityBins * 9] = { 0.0 };
+    for (int i = 0; i < RarityBins * 9; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    fclose(fp);
+
+    for (int i = 0; i < RarityBins * 9; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
+
+    for (int i = 0; i < RarityBins; i++) CHG_hist->SetBinContent(i + 1, weight_sys[i]);
+    for (int i = 0; i < RarityBins; i++) MIX_hist->SetBinContent(i + 1, weight_sys[RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) UUBAR_hist->SetBinContent(i + 1, weight_sys[2 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) DDBAR_hist->SetBinContent(i + 1, weight_sys[3 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) SSBAR_hist->SetBinContent(i + 1, weight_sys[4 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) CHARM_hist->SetBinContent(i + 1, weight_sys[5 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs1->SetBinContent(i + 1, weight_sys[6 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs2->SetBinContent(i + 1, weight_sys[7 * RarityBins + i]);
+    for (int i = 0; i < RarityBins; i++) Signal_hist_MXs3->SetBinContent(i + 1, weight_sys[8 * RarityBins + i]);
 }
 
 int GetFEIcorrelatedPDFs(const char* dirname, TH1D* CHG_nominal_hist, TH1D* MIX_nominal_hist, TH1D* Signal_nominal_hist_MXs1, TH1D* Signal_nominal_hist_MXs2, TH1D* Signal_nominal_hist_MXs3, TH1D*** CHG_hists, TH1D*** MIX_hists, TH1D*** Signal_hists_MXs1, TH1D*** Signal_hists_MXs2, TH1D*** Signal_hists_MXs3) { // get shape sys histogram from txt file
@@ -1345,8 +1468,14 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
     double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
+    double temp_N_pi0_syst_MC15ri[N_pi0_syst_MC15ri] = { 0.0 };
+    double temp_N_pi0_syst_MC15rd[N_pi0_syst_MC15rd] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    double KS0_flight_distance = 0;
+    double KS0_costheta = 0;
+    double KS0_p = 0;
 
     double invM_Knn = 0;
     double invM_Kstarnn = 0;
@@ -1417,6 +1546,8 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15ri; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15ribin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15ri[i_pi0]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15rdbin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15rd[i_pi0]);
         for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
@@ -1429,6 +1560,9 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &KS0_flight_distance);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_costheta", &KS0_costheta);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_p", &KS0_p);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
@@ -1515,13 +1649,15 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
             double Correction_PID = 1;
             double Correction_pi0 = 1;
             double Correction_fake = 1;
+            double Correction_KS0 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
             }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            if (std::string(MCTYPE) == "MC15ri") for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            else if (std::string(MCTYPE) == "MC15rd") for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_pi0_syst_MC15rd[i_pi0]);
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
@@ -1534,6 +1670,8 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
+            if (std::string(MCTYPE) == "MC15ri") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE);
+            else if (std::string(MCTYPE) == "MC15rd") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE);
 
             // Knn correction factor
             double Correction_Knn = corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn, names.at(i), MCTYPE, true);
@@ -1578,7 +1716,7 @@ void GetKffPDFs(const char* dirname, const char* included_string, TH1D* hist[7],
                 double lambda = (m_b * m_b * m_b * m_b) + (m_k * m_k * m_k * m_k) + (q2 * q2) - 2 * (m_b * m_b * m_k * m_k + m_b * m_b * q2 + m_k * m_k * q2);
 
                 value[k] = std::pow(lambda, 1.5) * fp * fp;
-                double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * (value[k] / value[0]);
+                double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_KS0 * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * (value[k] / value[0]);
                 if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(q2, "Bplus");
                 else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(q2, "Bzero");
                 FillTemplate(hist[k], MVA_var, total_weight, Bsig_M);
@@ -1735,8 +1873,14 @@ double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hi
     double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
+    double temp_N_pi0_syst_MC15ri[N_pi0_syst_MC15ri] = { 0.0 };
+    double temp_N_pi0_syst_MC15rd[N_pi0_syst_MC15rd] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    double KS0_flight_distance = 0;
+    double KS0_costheta = 0;
+    double KS0_p = 0;
 
     double invM_Knn = 0;
     double invM_Kstarnn = 0;
@@ -1807,6 +1951,8 @@ double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hi
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15ri; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15ribin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15ri[i_pi0]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15rdbin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15rd[i_pi0]);
         for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
@@ -1819,6 +1965,9 @@ double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hi
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &KS0_flight_distance);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_costheta", &KS0_costheta);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_p", &KS0_p);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
@@ -1907,13 +2056,15 @@ double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hi
             double Correction_PID = 1;
             double Correction_pi0 = 1;
             double Correction_fake = 1;
+            double Correction_KS0 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
             }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            if (std::string(MCTYPE) == "MC15ri") for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            else if (std::string(MCTYPE) == "MC15rd") for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_pi0_syst_MC15rd[i_pi0]);
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
@@ -1926,6 +2077,8 @@ double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hi
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
+            if (std::string(MCTYPE) == "MC15ri") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE);
+            else if (std::string(MCTYPE) == "MC15rd") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE);
 
             // Knn correction factor
             double Correction_Knn = corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn, names.at(i), MCTYPE, true);
@@ -1988,8 +2141,8 @@ double GetKstarffPDFs(const char* dirname, const char* included_string, TH1D* hi
                 double Amp_0 = -1 * (std::sqrt(sB)) * (std::pow(Lambda, 1.0 / 4.0)) * (1.0 / m_k_tilda) * (1.0 / std::pow(sB, 0.5)) * ((1 - m_k_tilda * m_k_tilda - sB) * (1 + m_k_tilda) * A1 - Lambda * A2 / (1 + m_k_tilda));
 
                 value[k] = (3.0 / 4.0) * (Amp_vertical * Amp_vertical + Amp_parallel * Amp_parallel) * (1 - costheta * costheta) + (3.0 / 2.0) * Amp_0 * Amp_0 * costheta * costheta;
-                double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn* Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * (value[k] / value[0]);
-                if (q2 < MyEPSILON) total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL; // Makeshift
+                double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_KS0 * Correction_Knn * Correction_Xnn* Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * (value[k] / value[0]);
+                if (q2 < MyEPSILON) total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_KS0 * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL; // Makeshift
                 FillTemplate(hist[k], MVA_var, total_weight, Bsig_M);
                 Nevts[k] = Nevts[k] + total_weight;
             }
@@ -2100,8 +2253,14 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
     double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
+    double temp_N_pi0_syst_MC15ri[N_pi0_syst_MC15ri] = { 0.0 };
+    double temp_N_pi0_syst_MC15rd[N_pi0_syst_MC15rd] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
+
+    double KS0_flight_distance = 0;
+    double KS0_costheta = 0;
+    double KS0_p = 0;
 
     int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
@@ -2182,6 +2341,8 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15ri; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15ribin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15ri[i_pi0]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15rdbin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15rd[i_pi0]);
         for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[0][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_nKfakeEbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeE[1][i_fake]);
@@ -2194,6 +2355,9 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &KS0_flight_distance);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_costheta", &KS0_costheta);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_p", &KS0_p);
         if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
@@ -2321,13 +2485,15 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
             double Correction_PID = 1;
             double Correction_pi0 = 1;
             double Correction_fake = 1;
+            double Correction_KS0 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
             }
-            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            if (std::string(MCTYPE) == "MC15ri") for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            else if (std::string(MCTYPE) == "MC15rd") for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_pi0_syst_MC15rd[i_pi0]);
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
@@ -2340,6 +2506,8 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
+            if (std::string(MCTYPE) == "MC15ri") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE);
+            else if (std::string(MCTYPE) == "MC15rd") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE);
 
             // Knn correction factor
             double Correction_Knn = corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn, names.at(i), MCTYPE, true);
@@ -2370,7 +2538,7 @@ double GetNevtWithBDTc(const char* dirname, const char* included_string, const c
 
             double BDTc_weight = BDTcToWeight(BDTc_var);
 
-            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_weight;
+            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_KS0 * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * BDTc_weight;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
@@ -2932,27 +3100,28 @@ int main()
     TH1D* SSBAR_track_m = new TH1D("SSBAR_track_m", "SSBAR_track_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_track_m = new TH1D("CHARM_track_m", "CHARM_track_m", RarityBins, BinMIN, BinMAX);
 
-    // KS0 uncertainty
-    TH1D* Signal_KS0_p = new TH1D("Signal_KS0_p", "Signal_KS0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs1_KS0_p = new TH1D("Signal_MXs1_KS0_p", "Signal_MXs1_KS0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs2_KS0_p = new TH1D("Signal_MXs2_KS0_p", "Signal_MXs2_KS0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs3_KS0_p = new TH1D("Signal_MXs3_KS0_p", "Signal_MXs3_KS0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* CHG_KS0_p = new TH1D("CHG_KS0_p", "CHG_KS0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* MIX_KS0_p = new TH1D("MIX_KS0_p", "MIX_KS0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* UUBAR_KS0_p = new TH1D("UUBAR_KS0_p", "UUBAR_KS0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* DDBAR_KS0_p = new TH1D("DDBAR_KS0_p", "DDBAR_KS0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* SSBAR_KS0_p = new TH1D("SSBAR_KS0_p", "SSBAR_KS0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* CHARM_KS0_p = new TH1D("CHARM_KS0_p", "CHARM_KS0_p", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_KS0_m = new TH1D("Signal_KS0_m", "Signal_KS0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs1_KS0_m = new TH1D("Signal_MXs1_KS0_m", "Signal_MXs1_KS0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs2_KS0_m = new TH1D("Signal_MXs2_KS0_m", "Signal_MXs2_KS0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* Signal_MXs3_KS0_m = new TH1D("Signal_MXs3_KS0_m", "Signal_MXs3_KS0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* CHG_KS0_m = new TH1D("CHG_KS0_m", "CHG_KS0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* MIX_KS0_m = new TH1D("MIX_KS0_m", "MIX_KS0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* UUBAR_KS0_m = new TH1D("UUBAR_KS0_m", "UUBAR_KS0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* DDBAR_KS0_m = new TH1D("DDBAR_KS0_m", "DDBAR_KS0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* SSBAR_KS0_m = new TH1D("SSBAR_KS0_m", "SSBAR_KS0_m", RarityBins, BinMIN, BinMAX);
-    TH1D* CHARM_KS0_m = new TH1D("CHARM_KS0_m", "CHARM_KS0_m", RarityBins, BinMIN, BinMAX);
+    // KS0 uncertainty (correlated)
+    TH1D** Signal_KS0_correlated;
+    TH1D** Signal_MXs1_KS0_correlated;
+    TH1D** Signal_MXs2_KS0_correlated;
+    TH1D** Signal_MXs3_KS0_correlated;
+    TH1D** CHG_KS0_correlated;
+    TH1D** MIX_KS0_correlated;
+    TH1D** UUBAR_KS0_correlated;
+    TH1D** DDBAR_KS0_correlated;
+    TH1D** SSBAR_KS0_correlated;
+    TH1D** CHARM_KS0_correlated;
+
+    // KS0 uncertainty (uncorrelated)
+    TH1D* Signal_MXs1_KS0_uncorrelated = new TH1D("Signal_MXs1_KS0_uncorrelated", "Signal_MXs1_KS0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_KS0_uncorrelated = new TH1D("Signal_MXs2_KS0_uncorrelated", "Signal_MXs2_KS0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_KS0_uncorrelated = new TH1D("Signal_MXs3_KS0_uncorrelated", "Signal_MXs3_KS0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_KS0_uncorrelated = new TH1D("CHG_KS0_uncorrelated", "CHG_KS0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_KS0_uncorrelated = new TH1D("MIX_KS0_uncorrelated", "MIX_KS0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_KS0_uncorrelated = new TH1D("UUBAR_KS0_uncorrelated", "UUBAR_KS0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_KS0_uncorrelated = new TH1D("DDBAR_KS0_uncorrelated", "DDBAR_KS0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_KS0_uncorrelated = new TH1D("SSBAR_KS0_uncorrelated", "SSBAR_KS0_uncorrelated", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_KS0_uncorrelated = new TH1D("CHARM_KS0_uncorrelated", "CHARM_KS0_uncorrelated", RarityBins, BinMIN, BinMAX);
 
     // FEI uncertainty (correlated)
     TH1D** Signal_FEI_correlated;
@@ -3355,6 +3524,10 @@ int main()
     const char* MC_dirname_SSBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_side/SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
     const char* MC_dirname_CHARM = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_side/CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
  
+    // for KS0
+    const char* KS0_correlated_info = "./KS0_selected.txt";
+    const char* KS0_uncorrelated_info = "./KS0_cov_remain_truncated.txt";
+
     // for FEI
     const char* FEI_correlated_info = "./FEI_selected.txt";
     const char* FEI_uncorrelated_info = "./FEI_cov_remain_truncated.txt";
@@ -3477,62 +3650,11 @@ int main()
     GetPDFs(MC_dirname_SSBAR, "root", SSBAR_track_m, "Continuum", "SSBAR", PDFtype::trackDOWN, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
     GetPDFs(MC_dirname_CHARM, "root", CHARM_track_m, "Continuum", "CHARM", PDFtype::trackDOWN, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
 
-    // get KS0 uncertainty pdfs
-    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
+    // get KS0 uncertainty pdfs (correlated)
+    int NPDFs_KS0 = GetKS0correlatedPDFs(KS0_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_MXs1_nominal, Signal_MXs2_nominal, Signal_MXs3_nominal, &CHG_KS0_correlated, &MIX_KS0_correlated, &UUBAR_KS0_correlated, &DDBAR_KS0_correlated, &SSBAR_KS0_correlated, &CHARM_KS0_correlated, &Signal_MXs1_KS0_correlated, &Signal_MXs2_KS0_correlated, &Signal_MXs3_KS0_correlated);
 
-    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
-
-    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
-
-    GetPDFs(MC_dirname_CHG, "root", CHG_KS0_p, "Bplus", "CHG", PDFtype::KS0UP, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
-    GetPDFs(MC_dirname_MIX, "root", MIX_KS0_p, "Bzero", "MIX", PDFtype::KS0UP, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
-    GetPDFs(MC_dirname_UUBAR, "root", UUBAR_KS0_p, "Continuum", "UUBAR", PDFtype::KS0UP, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise", 0);
-    GetPDFs(MC_dirname_DDBAR, "root", DDBAR_KS0_p, "Continuum", "DDBAR", PDFtype::KS0UP, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise", 0);
-    GetPDFs(MC_dirname_SSBAR, "root", SSBAR_KS0_p, "Continuum", "SSBAR", PDFtype::KS0UP, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
-    GetPDFs(MC_dirname_CHARM, "root", CHARM_KS0_p, "Continuum", "CHARM", PDFtype::KS0UP, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
-
-    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_KS0_m, "Bplus", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_KS0_m, "Bplus", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_KS0_m, "Bplus", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_KS0_m, "Bzero", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_KS0_m, "Bzero", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
-    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_KS0_m, "Bzero", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
-
-    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_KS0_m, "Bplus", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_KS0_m, "Bplus", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_KS0_m, "Bplus", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_KS0_m, "Bzero", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_KS0_m, "Bzero", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
-    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_KS0_m, "Bzero", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
-
-    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_KS0_m, "Bplus", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_KS0_m, "Bplus", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_KS0_m, "Bplus", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_KS0_m, "Bzero", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_KS0_m, "Bzero", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
-    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_KS0_m, "Bzero", "SIGNAL", PDFtype::KS0DOWN, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
-
-    GetPDFs(MC_dirname_CHG, "root", CHG_KS0_m, "Bplus", "CHG", PDFtype::KS0DOWN, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
-    GetPDFs(MC_dirname_MIX, "root", MIX_KS0_m, "Bzero", "MIX", PDFtype::KS0DOWN, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
-    GetPDFs(MC_dirname_UUBAR, "root", UUBAR_KS0_m, "Continuum", "UUBAR", PDFtype::KS0DOWN, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise", 0);
-    GetPDFs(MC_dirname_DDBAR, "root", DDBAR_KS0_m, "Continuum", "DDBAR", PDFtype::KS0DOWN, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise", 0);
-    GetPDFs(MC_dirname_SSBAR, "root", SSBAR_KS0_m, "Continuum", "SSBAR", PDFtype::KS0DOWN, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
-    GetPDFs(MC_dirname_CHARM, "root", CHARM_KS0_m, "Continuum", "CHARM", PDFtype::KS0DOWN, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
+    // get KS0 uncertainty pdfs (uncorrelated)
+    GetKS0UncorrelatedPDFs(KS0_uncorrelated_info, CHG_KS0_uncorrelated, MIX_KS0_uncorrelated, UUBAR_KS0_uncorrelated, DDBAR_KS0_uncorrelated, SSBAR_KS0_uncorrelated, CHARM_KS0_uncorrelated, Signal_MXs1_KS0_uncorrelated, Signal_MXs2_KS0_uncorrelated, Signal_MXs3_KS0_uncorrelated);
 
     // get FEI uncertainty pdfs (correlated)
     int NPDFs_FEI = GetFEIcorrelatedPDFs(FEI_correlated_info, CHG_nominal, MIX_nominal, Signal_MXs1_nominal, Signal_MXs2_nominal, Signal_MXs3_nominal, &CHG_FEI_correlated, &MIX_FEI_correlated, &Signal_MXs1_FEI_correlated, &Signal_MXs2_FEI_correlated, &Signal_MXs3_FEI_correlated);
@@ -4115,6 +4237,16 @@ int main()
     ClearHist(SSBAR_all_uncorrelated);
     ClearHist(CHARM_all_uncorrelated);
 
+    AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_KS0_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_KS0_uncorrelated, RarityBins);
+    AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_KS0_uncorrelated, RarityBins);
+    AddSQRTHist(CHG_all_uncorrelated, CHG_KS0_uncorrelated, RarityBins);
+    AddSQRTHist(MIX_all_uncorrelated, MIX_KS0_uncorrelated, RarityBins);
+    AddSQRTHist(UUBAR_all_uncorrelated, UUBAR_KS0_uncorrelated, RarityBins);
+    AddSQRTHist(DDBAR_all_uncorrelated, DDBAR_KS0_uncorrelated, RarityBins);
+    AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_KS0_uncorrelated, RarityBins);
+    AddSQRTHist(CHARM_all_uncorrelated, CHARM_KS0_uncorrelated, RarityBins);
+
     AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_FEI_uncorrelated, RarityBins);
     AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_FEI_uncorrelated, RarityBins);
     AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_FEI_uncorrelated, RarityBins);
@@ -4248,12 +4380,14 @@ int main()
     AddPDFs(Signal_track_m, Signal_MXs2_track_m);
     AddPDFs(Signal_track_m, Signal_MXs3_track_m);
 
-    AddPDFs(Signal_KS0_p, Signal_MXs1_KS0_p);
-    AddPDFs(Signal_KS0_p, Signal_MXs2_KS0_p);
-    AddPDFs(Signal_KS0_p, Signal_MXs3_KS0_p);
-    AddPDFs(Signal_KS0_m, Signal_MXs1_KS0_m);
-    AddPDFs(Signal_KS0_m, Signal_MXs2_KS0_m);
-    AddPDFs(Signal_KS0_m, Signal_MXs3_KS0_m);
+    Signal_KS0_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_KS0 * 2);
+    for (int i = 0; i < NPDFs_KS0; i++) Signal_KS0_correlated[i] = new TH1D(("Signal_KS0_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_KS0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = NPDFs_KS0; i < 2 * NPDFs_KS0; i++) Signal_KS0_correlated[i] = new TH1D(("Signal_KS0_correlated" + std::to_string(i - NPDFs_KS0) + "_m").c_str(), ("Signal_KS0_correlated" + std::to_string(i - NPDFs_KS0) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
+    for (int i = 0; i < 2 * NPDFs_KS0; i++) {
+        AddPDFs(Signal_KS0_correlated[i], Signal_MXs1_KS0_correlated[i]);
+        AddPDFs(Signal_KS0_correlated[i], Signal_MXs2_KS0_correlated[i]);
+        AddPDFs(Signal_KS0_correlated[i], Signal_MXs3_KS0_correlated[i]);
+    }
 
     Signal_FEI_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_FEI * 2);
     for (int i = 0; i < NPDFs_FEI; i++) Signal_FEI_correlated[i] = new TH1D(("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
@@ -4523,27 +4657,30 @@ int main()
     SaveSpecificMXsBin(SSBAR_track_m, MXsBin);
     SaveSpecificMXsBin(CHARM_track_m, MXsBin);
 
-    // KS0 uncertainty
-    SaveSpecificMXsBin(Signal_KS0_p, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs1_KS0_p, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs2_KS0_p, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs3_KS0_p, MXsBin);
-    SaveSpecificMXsBin(CHG_KS0_p, MXsBin);
-    SaveSpecificMXsBin(MIX_KS0_p, MXsBin);
-    SaveSpecificMXsBin(UUBAR_KS0_p, MXsBin);
-    SaveSpecificMXsBin(DDBAR_KS0_p, MXsBin);
-    SaveSpecificMXsBin(SSBAR_KS0_p, MXsBin);
-    SaveSpecificMXsBin(CHARM_KS0_p, MXsBin);
-    SaveSpecificMXsBin(Signal_KS0_m, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs1_KS0_m, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs2_KS0_m, MXsBin);
-    SaveSpecificMXsBin(Signal_MXs3_KS0_m, MXsBin);
-    SaveSpecificMXsBin(CHG_KS0_m, MXsBin);
-    SaveSpecificMXsBin(MIX_KS0_m, MXsBin);
-    SaveSpecificMXsBin(UUBAR_KS0_m, MXsBin);
-    SaveSpecificMXsBin(DDBAR_KS0_m, MXsBin);
-    SaveSpecificMXsBin(SSBAR_KS0_m, MXsBin);
-    SaveSpecificMXsBin(CHARM_KS0_m, MXsBin);
+    // KS0 uncertainty (correlated)
+    for (int i = 0; i < 2 * NPDFs_KS0; i++) {
+        SaveSpecificMXsBin(Signal_KS0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs1_KS0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs2_KS0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(Signal_MXs3_KS0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(CHG_KS0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(MIX_KS0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(UUBAR_KS0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(DDBAR_KS0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(SSBAR_KS0_correlated[i], MXsBin);
+        SaveSpecificMXsBin(CHARM_KS0_correlated[i], MXsBin);
+    }
+
+    // KS0 uncertainty (uncorrelated)
+    SaveSpecificMXsBin(Signal_MXs1_KS0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_KS0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_KS0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(CHG_KS0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(MIX_KS0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(UUBAR_KS0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(DDBAR_KS0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(SSBAR_KS0_uncorrelated, MXsBin);
+    SaveSpecificMXsBin(CHARM_KS0_uncorrelated, MXsBin);
 
     // FEI uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_FEI; i++) {
@@ -4987,27 +5124,30 @@ int main()
     SSBAR_track_m->Write();
     CHARM_track_m->Write();
 
-    // KS0 uncertainty
-    Signal_KS0_p->Write();
-    Signal_MXs1_KS0_p->Write();
-    Signal_MXs2_KS0_p->Write();
-    Signal_MXs3_KS0_p->Write();
-    CHG_KS0_p->Write();
-    MIX_KS0_p->Write();
-    UUBAR_KS0_p->Write();
-    DDBAR_KS0_p->Write();
-    SSBAR_KS0_p->Write();
-    CHARM_KS0_p->Write();
-    Signal_KS0_m->Write();
-    Signal_MXs1_KS0_m->Write();
-    Signal_MXs2_KS0_m->Write();
-    Signal_MXs3_KS0_m->Write();
-    CHG_KS0_m->Write();
-    MIX_KS0_m->Write();
-    UUBAR_KS0_m->Write();
-    DDBAR_KS0_m->Write();
-    SSBAR_KS0_m->Write();
-    CHARM_KS0_m->Write();
+    // KS0 uncertainty (correlated)
+    for (int i = 0; i < 2 * NPDFs_KS0; i++) {
+        Signal_KS0_correlated[i]->Write();
+        Signal_MXs1_KS0_correlated[i]->Write();
+        Signal_MXs2_KS0_correlated[i]->Write();
+        Signal_MXs3_KS0_correlated[i]->Write();
+        CHG_KS0_correlated[i]->Write();
+        MIX_KS0_correlated[i]->Write();
+        UUBAR_KS0_correlated[i]->Write();
+        DDBAR_KS0_correlated[i]->Write();
+        SSBAR_KS0_correlated[i]->Write();
+        CHARM_KS0_correlated[i]->Write();
+    }
+
+    // KS0 uncertainty (uncorrelated)
+    Signal_MXs1_KS0_uncorrelated->Write();
+    Signal_MXs2_KS0_uncorrelated->Write();
+    Signal_MXs3_KS0_uncorrelated->Write();
+    CHG_KS0_uncorrelated->Write();
+    MIX_KS0_uncorrelated->Write();
+    UUBAR_KS0_uncorrelated->Write();
+    DDBAR_KS0_uncorrelated->Write();
+    SSBAR_KS0_uncorrelated->Write();
+    CHARM_KS0_uncorrelated->Write();
 
     // FEI uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_FEI; i++) {

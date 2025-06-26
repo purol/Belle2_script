@@ -3,7 +3,7 @@
 
 # define N_Needed_info 37
 # define N_Upsilon_info 189
-# define N_Bsig_info 760
+# define N_Bsig_info 869
 # define N_Btag_info 12
 # define N_decay 38 // five decay mode + others
 # define N_decay_nparticles 5 // # of nu_e, B->Xs nu_e nu_e_bar, B0->Xs nu_e nu_e_bar, B+-, B0
@@ -12,6 +12,8 @@
 # define N_fakeE_syst 37
 # define N_fakeMU_syst 49
 # define N_pi0_syst 8
+# define N_pi0_syst_MC15ri 56
+# define N_pi0_syst_MC15rd 49
 # define index_q2 0
 # define index_MXs_Bc 3
 # define index_MXs_B0 4
@@ -163,8 +165,9 @@
 # define N_Xsu_nonresonant_nunubar_syst 10000000.0
 # define N_Xsd_nonresonant_nunubar_syst 10000000.0
 
-# define KS0_rel_uncertainty 0.6 // %/cm
-# define track_rel_uncertainty 0.24 // %
+//# define KS0_rel_uncertainty 0.6 // %/cm
+# define track_rel_uncertainty_MC15ri 0.24 // %
+# define track_rel_uncertainty_MC15rd 0.27 // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
 
 # define BR_KpKLKL_uncertainty (0.04/1.05) // not percentage. relative uncertainty

@@ -125,6 +125,7 @@ typedef struct Options
     bool dataMC;
     bool uncorrelated;
 
+    int NEntryKS0;
     int NEntryFEI;
     int NEntryKID;
     int NEntryPID;
@@ -136,6 +137,25 @@ typedef struct Options
 
     int Nsyst = 25;
 } OPTIONS;
+
+int ReadNKS0EigenVector(const char* dirname) {
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 9; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    return Nentry;
+}
 
 int ReadNFEIEigenVector(const char* dirname) {
     int Nentry = 0; // number of eigen values/vectors
@@ -437,6 +457,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
     }
 
     // read entry for nuisance parameters
+    options_->NEntryKS0 = ReadNKS0EigenVector((std::string(path) + "/KS0_selected.txt").c_str());
     options_->NEntryFEI = ReadNFEIEigenVector((std::string(path) + "/FEI_selected.txt").c_str());
     options_->NEntryKID = ReadNPIDEigenVector((std::string(path) + "/KID_selected.txt").c_str());
     options_->NEntryPID = ReadNPIDEigenVector((std::string(path) + "/PID_selected.txt").c_str());
@@ -471,7 +492,11 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     if (options_->KID) for (int i = 0; i < options_->NEntryKID; i++) w->var(("alpha_KID" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->KID);
 
     // KS0
-    if (options_->KS0) w->var("alpha_KS0_reco_uncer")->setConstant(options_->KS0);
+    if (options_->KS0) for (int i = 0; i < options_->NEntryKS0; i++) {
+        if (w->var(("alpha_KS0" + std::to_string(i) + "_uncer").c_str())) {
+            w->var(("alpha_KS0" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->KS0);
+        }
+    }
 
     // pi0
     if (options_->pi0) for (int i = 0; i < options_->NEntrypi0; i++) {

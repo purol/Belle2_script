@@ -126,6 +126,7 @@ typedef struct data {
     // 750: Dcsimpleveto_dr_yespizero, 751: Dcsimpleveto_dz_yespizero, 752: Dcsimpleveto_M_yespizero
     // 753: nD0_yespizero, 754: D0_pValue_med_yespizero, 755: D0_pValue:std_yespizero, 756: D0simpleveto_chiProb_yespizero
     // 757: D0simpleveto_dr_yespizero, 758: D0simpleveto_dz_yespizero, 759: D0simpleveto_M_yespizero
+    // 760-815: N_pi0_syst_MC15ri, 816-864: N_pi0_syst_MC15rd, 865: KS0_costheta, 866: KS0_p, 867: KS0_D1p, 868: KS0_D2p
 
     double Btag_info[N_Btag_info];
     // 0: Btag_dmID, 1: Btag_Mbc, 2: Btag_deltaE
@@ -908,6 +909,12 @@ void Loader::GetData(TFile* input_file) {
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &temp.Bsig_info[757]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &temp.Bsig_info[758]);
     tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &temp.Bsig_info[759]);
+    for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15ri; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15ribin" + std::to_string(i_pi0)).c_str(), &temp.Bsig_info[760 + i_pi0]);
+    for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15rdbin" + std::to_string(i_pi0)).c_str(), &temp.Bsig_info[816 + i_pi0]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_costheta", &temp.Bsig_info[865]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_p", &temp.Bsig_info[866]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_D1p", &temp.Bsig_info[867]);
+    tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_D2p", &temp.Bsig_info[868]);
 
     // get Btag_info
     tree_Btag->SetBranchAddress("Btag_extraInfo_decayModeID", &temp.Btag_info[0]);
@@ -2930,6 +2937,12 @@ void Loader::PrintRootFile(std::string output_name) {
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &BsigDataToTree[757]);
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &BsigDataToTree[758]);
         tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &BsigDataToTree[759]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15ri; i_pi0++) tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npi0MC15ribin" + std::to_string(i_pi0)).c_str(), &BsigDataToTree[760 + i_pi0]);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npi0MC15rdbin" + std::to_string(i_pi0)).c_str(), &BsigDataToTree[816 + i_pi0]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_costheta", &BsigDataToTree[865]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_p", &BsigDataToTree[866]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_D1p", &BsigDataToTree[867]);
+        tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_D2p", &BsigDataToTree[868]);
 
         // get Btag_info
         tree_Btag->Branch("Btag_extraInfo_decayModeID", &BtagDataToTree[0]);
@@ -3496,6 +3509,12 @@ void Loader::PrintSeparateRootFile(std::string output_name) {
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &temp_BsigDataToTree[757]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &temp_BsigDataToTree[758]);
     temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &temp_BsigDataToTree[759]);
+    for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15ri; i_pi0++) temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npi0MC15ribin" + std::to_string(i_pi0)).c_str(), &temp_BsigDataToTree[760 + i_pi0]);
+    for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) temp_tree_Bsig->Branch(("Bsig_daughter_0_extraInfo_npi0MC15rdbin" + std::to_string(i_pi0)).c_str(), &temp_BsigDataToTree[816 + i_pi0]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_costheta", &temp_BsigDataToTree[865]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_p", &temp_BsigDataToTree[866]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_D1p", &temp_BsigDataToTree[867]);
+    temp_tree_Bsig->Branch("Bsig_daughter_0_extraInfo_KS0_D2p", &temp_BsigDataToTree[868]);
 
     // get Btag_info
     temp_tree_Btag->Branch("Btag_extraInfo_decayModeID", &temp_BtagDataToTree[0]);
@@ -4048,6 +4067,12 @@ void Loader::ConvertIntoSeparateDataFile(std::string output_name, int flag) {
     temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dr_yespizero", &temp_BsigDataToTree[757]);
     temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_dz_yespizero", &temp_BsigDataToTree[758]);
     temp_tree->Branch("Bsig_daughter_0_extraInfo_D0simpleveto_M_yespizero", &temp_BsigDataToTree[759]);
+    for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15ri; i_pi0++) temp_tree->Branch(("Bsig_daughter_0_extraInfo_npi0MC15ribin" + std::to_string(i_pi0)).c_str(), &temp_BsigDataToTree[760 + i_pi0]);
+    for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) temp_tree->Branch(("Bsig_daughter_0_extraInfo_npi0MC15rdbin" + std::to_string(i_pi0)).c_str(), &temp_BsigDataToTree[816 + i_pi0]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_KS0_costheta", &temp_BsigDataToTree[865]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_KS0_p", &temp_BsigDataToTree[866]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_KS0_D1p", &temp_BsigDataToTree[867]);
+    temp_tree->Branch("Bsig_daughter_0_extraInfo_KS0_D2p", &temp_BsigDataToTree[868]);
 
 
     // get Btag_info

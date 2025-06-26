@@ -3,6 +3,9 @@
 
 #include <cmath>
 #include <stdio.h>
+#include <vector>
+#include "TFile.h"
+#include "TTree.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "constants.h"
@@ -20,11 +23,11 @@ private:
     static constexpr double FEI_cal_B0_modeID_MC15ri[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0, 18.0, 19.0, 26.0, -1.0 };
 
     // it is MC15ri correction factor. It should be fixed
-    static constexpr double FEI_cal_Bc_MC15rd[FEI_cal_Bc_num] = { 1.04, 0.79, 0.69, 0.56, 0.97, 0.95, 0.74, 0.57, 0.91, 0.51, 0.34, 0.59 };
-    static constexpr double FEI_cal_Bc_uncertainty_MC15rd[FEI_cal_Bc_num] = { 0.03, 0.03, 0.05, 0.11, 0.03, 0.03, 0.02, 0.06, 0.1, 0.13, 0.07, 0.02 }; // not relative uncertainty. absolute uncertainty
+    static constexpr double FEI_cal_Bc_MC15rd[FEI_cal_Bc_num] = { 1.0563843143394622, 0.824350934769151, 0.7821931102725646, 0.6720352787461095, 1.003394557399459, 1.0056643773735399, 0.8369671783480447, 0.6783049826281483, 0.88198076213399, 0.6437129465475984, 0.3840523705585905, 0.7727764587488754 };
+    static constexpr double FEI_cal_Bc_uncertainty_MC15rd[FEI_cal_Bc_num] = { 0.029112659708673237, 0.061272260861712384, 0.0686254854670932, 0.1594569267928963, 0.028165156667679287, 0.028379916542260016, 0.027153130014423914, 0.08008729127106695, 0.1985684611368228, 0.09017947779294383, 0.12049932626953824, 0.03556587244419456 }; // not relative uncertainty. absolute uncertainty
     static constexpr double FEI_cal_Bc_modeID_MC15rd[FEI_cal_Bc_num] = { 0.0, 1.0, 3.0, 4.0, 15.0, 16.0, 18.0, 19.0, 23.0, 24.0, 30.0, -1.0 };
-    static constexpr double FEI_cal_B0_MC15rd[FEI_cal_B0_num] = { 1.16, 0.94, 0.81, 0.79, 0.99, 1.03, 0.67, 0.66, 0.69, 0.49, 0.79 };
-    static constexpr double FEI_cal_B0_uncertainty_MC15rd[FEI_cal_B0_num] = { 0.04, 0.05, 0.06, 0.02, 0.03, 0.06, 0.02, 0.03, 0.02, 0.02, 0.12 }; // not relative uncertainty. absolute uncertainty
+    static constexpr double FEI_cal_B0_MC15rd[FEI_cal_B0_num] = { 1.1351815678693125, 1.0152536119073212, 0.900827789502242, 0.820330582165554, 0.9601307310429825, 1.0287495457230427, 0.6565638369059716, 0.6884022887870119, 0.7376123919921236, 0.6379774334598569, 0.9912539950874157 };
+    static constexpr double FEI_cal_B0_uncertainty_MC15rd[FEI_cal_B0_num] = { 0.03616790985932927, 0.031621512590247744, 0.027763030442755705, 0.026388965159170368, 0.03181259001191749, 0.03308978800268333, 0.020328451739706932, 0.021159300223306747, 0.022951063339037594, 0.026623990893496787, 0.08285314589226657 }; // not relative uncertainty. absolute uncertainty
     static constexpr double FEI_cal_B0_modeID_MC15rd[FEI_cal_B0_num] = { 0.0, 1.0, 3.0, 4.0, 5.0, 15.0, 16.0, 18.0, 19.0, 26.0, -1.0 };
 public:
     Corrector_FEI();
@@ -1490,7 +1493,6 @@ double Corrector_ProtonID::GetUncertainty(int PID_type, int bin_PID, std::string
     }
 }
 
-# define N_pi0_syst 8
 class Corrector_pi0 {
 private:
     double pi0_correction_MC15ri[N_pi0_syst] = { 0.917, 0.965, 0.988, 1.013, 1.042, 1.044, 1.011, 1.0 };
@@ -1499,22 +1501,35 @@ private:
     double pi0_sys_uncer2_MC15ri[N_pi0_syst] = { 0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0 };
 
     // it is MC15ri correction factor. It should be fixed
-    double pi0_correction_MC15rd[N_pi0_syst] = { 0.917, 0.965, 0.988, 1.013, 1.042, 1.044, 1.011, 1.0 };
-    double pi0_stat_uncer_MC15rd[N_pi0_syst] = { 0.004, 0.004, 0.004, 0.005, 0.004, 0.005, 0.005, 0.0 };
-    double pi0_sys_uncer1_MC15rd[N_pi0_syst] = { 0.049, 0.036, 0.079, 0.058, 0.045, 0.041, 0.040, 0.0 };
-    double pi0_sys_uncer2_MC15rd[N_pi0_syst] = { 0.0, 0.0, 0.0, 0.0, 0.039, 0.051, 0.030, 0.0 };
+    double pi0_correction_MC15rd[N_pi0_syst_MC15rd] = { // [p bin][cos theta bin]
+        0.8177, 0.8264, 0.9408, 0.9295, 0.9032, 0.9162, 0.9697,
+        0.6807, 0.9019, 0.9858, 0.9686, 0.9386, 0.9412, 0.8913,
+        0.6577, 0.9311, 0.9766, 0.9707, 0.9709, 0.9598, 0.8908,
+        0.6536, 0.9307, 1.0012, 0.9923, 0.9867, 0.9701, 0.8755,
+        0.6293, 0.9510, 0.9885, 0.9899, 0.9808, 0.9683, 0.8940,
+        0.6707, 0.9558, 0.9927, 0.9875, 0.9779, 0.9599, 0.8989,
+        0.6503, 0.9786, 0.9995, 0.9982, 0.9894, 0.9656, 0.9054 };
+    double pi0_uncer_MC15rd[N_pi0_syst_MC15rd] = {
+        0.0294, 0.0161, 0.0154, 0.0171, 0.0513, 0.0220, 0.0436,
+        0.0232, 0.0094, 0.0085, 0.0199, 0.0365, 0.0133, 0.0138,
+        0.0105, 0.0091, 0.0167, 0.0297, 0.0172, 0.0116, 0.0187,
+        0.0123, 0.0200, 0.0082, 0.0090, 0.0103, 0.0119, 0.0291,
+        0.0385, 0.0110, 0.0113, 0.0108, 0.0213, 0.0119, 0.0127,
+        0.0211, 0.0150, 0.0089, 0.0144, 0.0128, 0.0165, 0.0120,
+        0.0297, 0.0117, 0.0100, 0.0085, 0.0079, 0.0117, 0.0102 };
 public:
     Corrector_pi0();
     double GetCorrectionFactor(int bin_pi0, std::string type);
     double GetStatUncertainty(int bin_pi0, std::string type);
     double GetSystUncertainty1(int bin_pi0, std::string type);
     double GetSystUncertainty2(int bin_pi0, std::string type);
+    double GetUncertainty(int bin_pi0, std::string type);
 };
 
 Corrector_pi0::Corrector_pi0() {
     // for the projection
     for (int i = 0; i < N_pi0_syst; i++) pi0_stat_uncer_MC15ri[i] = pi0_stat_uncer_MC15ri[i] / std::sqrt(projection_multiplication);
-    for (int i = 0; i < N_pi0_syst; i++) pi0_stat_uncer_MC15rd[i] = pi0_stat_uncer_MC15rd[i] / std::sqrt(projection_multiplication);
+    for (int i = 0; i < N_pi0_syst_MC15rd; i++) pi0_uncer_MC15rd[i] = pi0_uncer_MC15rd[i];
 }
 
 double Corrector_pi0::GetCorrectionFactor(int bin_pi0, std::string type) {
@@ -1528,7 +1543,10 @@ double Corrector_pi0::GetCorrectionFactor(int bin_pi0, std::string type) {
 
 double Corrector_pi0::GetStatUncertainty(int bin_pi0, std::string type) {
     if (type == "MC15ri") return pi0_stat_uncer_MC15ri[bin_pi0];
-    else if (type == "MC15rd") return pi0_stat_uncer_MC15rd[bin_pi0];
+    else if (type == "MC15rd") {
+        printf("[Corrector_pi0] stat uncertainty is not possible in MC15rd\n");
+        exit(1);
+    }
     else {
         printf("[Corrector_pi0] Invalid type!\n");
         exit(1);
@@ -1537,7 +1555,10 @@ double Corrector_pi0::GetStatUncertainty(int bin_pi0, std::string type) {
 
 double Corrector_pi0::GetSystUncertainty1(int bin_pi0, std::string type) {
     if (type == "MC15ri") return pi0_sys_uncer1_MC15ri[bin_pi0];
-    else if (type == "MC15rd") return pi0_sys_uncer1_MC15rd[bin_pi0];
+    else if (type == "MC15rd") {
+        printf("[Corrector_pi0] syst uncertainty is not possible in MC15rd\n");
+        exit(1);
+    }
     else {
         printf("[Corrector_pi0] Invalid type!\n");
         exit(1);
@@ -1546,7 +1567,22 @@ double Corrector_pi0::GetSystUncertainty1(int bin_pi0, std::string type) {
 
 double Corrector_pi0::GetSystUncertainty2(int bin_pi0, std::string type) {
     if (type == "MC15ri") return pi0_sys_uncer2_MC15ri[bin_pi0];
-    else if (type == "MC15rd") return pi0_sys_uncer2_MC15rd[bin_pi0];
+    else if (type == "MC15rd") {
+        printf("[Corrector_pi0] syst uncertainty is not possible in MC15rd\n");
+        exit(1);
+    }
+    else {
+        printf("[Corrector_pi0] Invalid type!\n");
+        exit(1);
+    }
+}
+
+double Corrector_pi0::GetUncertainty(int bin_pi0, std::string type) {
+    if (type == "MC15ri") return {
+        printf("[Corrector_pi0] entire uncertainty is not possible in MC15rd\n");
+        exit(1);
+    }
+    else if (type == "MC15rd") return pi0_uncer_MC15rd[bin_pi0];
     else {
         printf("[Corrector_pi0] Invalid type!\n");
         exit(1);
@@ -2825,6 +2861,261 @@ int Corrector_Fragmentation::GetNCategory(Sample sample) {
         printf("[Corrector_Fragmentation::GetMxBin] cannot find sample");
         exit(1);
         return 1;
+    }
+}
+
+class Corrector_KS0 {
+private:
+    const char* ROOT_file_MC15rd_KS0_correction = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15rd_KS0/K_S0_calib_mc15rd_ks_M_laperm.root";
+    const double KS0_MC15ri_uncertainty = 0.55; // %/cm
+
+    struct KS0_bin {
+        double w;
+        double w_e_stat;
+        double w_e_syst;
+        double cmin;
+        double cmax;
+        double pmin;
+        double pmax;
+        double dmin;
+        double dmax;
+        double __index__;
+    };
+    std::vector<KS0_bin> KS0_bins;
+
+public:
+    Corrector_KS0();
+    void ReadROOTFile_MC15rd();
+    double GetCorrectionFactor(double flight_distance, std::string type);
+    double GetCorrectionFactor(double momentum, double cos_theta, double flight_distance, std::string type);
+    double GetCorrectionFactorFromBin(int bin, std::string type);
+    double GetAbsoluteUncertainty(double flight_distance, std::string type); // absolute uncertainty
+    double GetAbsoluteStatUncertainty(double momentum, double cos_theta, double flight_distance, std::string type); // absolute uncertainty
+    double GetAbsoluteStatUncertaintyFromBin(int bin, std::string type); // absolute uncertainty
+    double GetAbsoluteSystUncertainty(double momentum, double cos_theta, double flight_distance, std::string type); // absolute uncertainty
+    double GetAbsoluteSystUncertaintyFromBin(int bin, std::string type); // absolute uncertainty
+    int GetNBins(std::string type);
+    int GetBin(double momentum, double cos_theta, double flight_distance, std::string type);
+};
+
+Corrector_KS0::Corrector_KS0() {
+    ReadROOTFile_MC15rd();
+
+    // for the projection
+    for (int i = 0; i < KS0_bins.size(); i++) KS0_bins.at(i).w_e_stat = KS0_bins.at(i).w_e_stat / std::sqrt(projection_multiplication);
+}
+
+void Corrector_KS0::ReadROOTFile_MC15rd() {
+
+    KS0_bin temp_KS0_bin = { 0.0 };
+
+    printf("[Corrector_KS0] read root file\n");
+    TFile* correction_file = new TFile(ROOT_file_MC15rd_KS0_correction, "read");
+    TTree* tree_corr = (TTree*)correction_file->Get("corr");
+
+    tree_corr->SetBranchAddress("w", &temp_KS0_bin.w);
+    tree_corr->SetBranchAddress("w_e_stat", &temp_KS0_bin.w_e_stat);
+    tree_corr->SetBranchAddress("w_e_syst", &temp_KS0_bin.w_e_syst);
+    tree_corr->SetBranchAddress("cmin", &temp_KS0_bin.cmin);
+    tree_corr->SetBranchAddress("cmax", &temp_KS0_bin.cmax);
+    tree_corr->SetBranchAddress("pmin", &temp_KS0_bin.pmin);
+    tree_corr->SetBranchAddress("pmax", &temp_KS0_bin.pmax);
+    tree_corr->SetBranchAddress("dmin", &temp_KS0_bin.dmin);
+    tree_corr->SetBranchAddress("dmax", &temp_KS0_bin.dmax);
+    tree_corr->SetBranchAddress("__index__", &temp_KS0_bin.__index__);
+
+    for (unsigned int i = 0; i < tree_corr->GetEntries(); i++) {
+        tree_corr->GetEntry(i);
+        KS0_bins.push_back(temp_KS0_bin);
+    }
+
+    correction_file->Close();
+}
+
+double Corrector_KS0::GetCorrectionFactor(double flight_distance, std::string type) {
+    if (type == "MC15ri") {
+        if (flight_distance == 0) return 1.0; // probably without KS0
+        else return (1 + 0.01 * (flight_distance * KS0_MC15ri_uncertainty));
+    }
+    else if (type == "MC15rd") {
+        printf("[Corrector_KS0] 1 bin correction is not possible in MC15rd\n");
+        exit(1);
+    }
+    else {
+        printf("[Corrector_KS0] Invalid type!\n");
+        exit(1);
+    }
+}
+
+double Corrector_KS0::GetCorrectionFactor(double momentum, double cos_theta, double flight_distance, std::string type) {
+    if (type == "MC15ri") {
+        printf("[Corrector_KS0] 3 dim correction is not possible in MC15ri\n");
+        exit(1);
+    }
+    else if (type == "MC15rd") {
+        if ((cos_theta == 0) && (flight_distance == 0)) return 1.0; // probably without KS0
+        else {
+            for (int i = 0; i < KS0_bins.size(); i++) {
+                if ((KS0_bins.at(i).cmin < cos_theta) && (cos_theta < KS0_bins.at(i).cmax) && (KS0_bins.at(i).pmin < momentum) && (momentum < KS0_bins.at(i).pmax) && (KS0_bins.at(i).dmin < flight_distance) && (flight_distance < KS0_bins.at(i).dmax)) {
+                    return KS0_bins.at(i).w;
+                }
+            }
+            return 1.0;
+        }
+    }
+    else {
+        printf("[Corrector_KS0] Invalid type!\n");
+        exit(1);
+    }
+}
+
+double Corrector_KS0::GetCorrectionFactorFromBin(int bin, std::string type) {
+    if (type == "MC15ri") {
+        printf("[Corrector_KS0] calculation of correction factor from bin is not possible in MC15ri\n");
+        exit(1);
+    }
+    else if (type == "MC15rd") {
+        if (bin == -1) return 1.0;
+        else if ((0 <= bin) && (bin < KS0_bins.size())) return KS0_bins.at(bin).w;
+        else {
+            printf("[Corrector_KS0] Unexpected bin\n");
+            exit(1);
+        }
+    }
+    else {
+        printf("[Corrector_KS0] Invalid type!\n");
+        exit(1);
+    }
+}
+
+double Corrector_KS0::GetAbsoluteUncertainty(double flight_distance, std::string type) {
+    if (type == "MC15ri") {
+        if (flight_distance == 0) return 0.0; // probably without KS0
+        else return (0.01 * flight_distance * KS0_MC15ri_uncertainty);
+    }
+    else if (type == "MC15rd") {
+        printf("[Corrector_KS0] 1 bin correction is not possible in MC15rd\n");
+        exit(1);
+    }
+    else {
+        printf("[Corrector_KS0] Invalid type!\n");
+        exit(1);
+    }
+}
+
+double Corrector_KS0::GetAbsoluteStatUncertainty(double momentum, double cos_theta, double flight_distance, std::string type) {
+    if (type == "MC15ri") {
+        printf("[Corrector_KS0] 3 dim correction is not possible in MC15ri\n");
+        exit(1);
+    }
+    else if (type == "MC15rd") {
+        if ((cos_theta == 0) && (flight_distance == 0)) return 0.0; // probably without KS0
+        else {
+            for (int i = 0; i < KS0_bins.size(); i++) {
+                if ((KS0_bins.at(i).cmin < cos_theta) && (cos_theta < KS0_bins.at(i).cmax) && (KS0_bins.at(i).pmin < momentum) && (momentum < KS0_bins.at(i).pmax) && (KS0_bins.at(i).dmin < flight_distance) && (flight_distance < KS0_bins.at(i).dmax)) {
+                    return KS0_bins.at(i).w_e_stat;
+                }
+            }
+            return 0.0;
+        }
+    }
+    else {
+        printf("[Corrector_KS0] Invalid type!\n");
+        exit(1);
+    }
+}
+
+double Corrector_KS0::GetAbsoluteStatUncertaintyFromBin(int bin, std::string type) {
+    if (type == "MC15ri") {
+        printf("[Corrector_KS0] calculation of correction factor from bin is not possible in MC15ri\n");
+        exit(1);
+    }
+    else if (type == "MC15rd") {
+        if (bin == -1) return 1.0;
+        else if ((0 <= bin) && (bin < KS0_bins.size())) return KS0_bins.at(bin).w_e_stat;
+        else {
+            printf("[Corrector_KS0] Unexpected bin\n");
+            exit(1);
+        }
+    }
+    else {
+        printf("[Corrector_KS0] Invalid type!\n");
+        exit(1);
+    }
+}
+
+double Corrector_KS0::GetAbsoluteSystUncertainty(double momentum, double cos_theta, double flight_distance, std::string type) {
+    if (type == "MC15ri") {
+        printf("[Corrector_KS0] 3 dim correction is not possible in MC15ri\n");
+        exit(1);
+    }
+    else if (type == "MC15rd") {
+        if ((cos_theta == 0) && (flight_distance == 0)) return 0.0; // probably without KS0
+        else {
+            for (int i = 0; i < KS0_bins.size(); i++) {
+                if ((KS0_bins.at(i).cmin < cos_theta) && (cos_theta < KS0_bins.at(i).cmax) && (KS0_bins.at(i).pmin < momentum) && (momentum < KS0_bins.at(i).pmax) && (KS0_bins.at(i).dmin < flight_distance) && (flight_distance < KS0_bins.at(i).dmax)) {
+                    return KS0_bins.at(i).w_e_syst;
+                }
+            }
+            return 0.0;
+        }
+    }
+    else {
+        printf("[Corrector_KS0] Invalid type!\n");
+        exit(1);
+    }
+}
+
+double Corrector_KS0::GetAbsoluteSystUncertaintyFromBin(int bin, std::string type) {
+    if (type == "MC15ri") {
+        printf("[Corrector_KS0] calculation of correction factor from bin is not possible in MC15ri\n");
+        exit(1);
+    }
+    else if (type == "MC15rd") {
+        if (bin == -1) return 1.0;
+        else if ((0 <= bin) && (bin < KS0_bins.size())) return KS0_bins.at(bin).w_e_syst;
+        else {
+            printf("[Corrector_KS0] Unexpected bin\n");
+            exit(1);
+        }
+    }
+    else {
+        printf("[Corrector_KS0] Invalid type!\n");
+        exit(1);
+    }
+}
+
+int Corrector_KS0::GetNBins(std::string type) {
+    if (type == "MC15ri") {
+        printf("[Corrector_KS0] binned correction is not possible in MC15ri\n");
+        exit(1);
+    }
+    else if (type == "MC15rd") return KS0_bins.size();
+    else {
+        printf("[Corrector_KS0] Invalid type!\n");
+        exit(1);
+    }
+}
+
+int Corrector_KS0::GetBin(double momentum, double cos_theta, double flight_distance, std::string type) {
+    if (type == "MC15ri") {
+        printf("[Corrector_KS0] binned correction is not possible in MC15ri\n");
+        exit(1);
+    }
+    else if (type == "MC15rd") {
+        if ((cos_theta == 0) && (flight_distance == 0)) return -1; // probably without KS0
+        else {
+            for (int i = 0; i < KS0_bins.size(); i++) {
+                if ((KS0_bins.at(i).cmin < cos_theta) && (cos_theta < KS0_bins.at(i).cmax) && (KS0_bins.at(i).pmin < momentum) && (momentum < KS0_bins.at(i).pmax) && (KS0_bins.at(i).dmin < flight_distance) && (flight_distance < KS0_bins.at(i).dmax)) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+    }
+    else {
+        printf("[Corrector_KS0] Invalid type!\n");
+        exit(1);
     }
 }
 
