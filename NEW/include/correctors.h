@@ -1578,7 +1578,7 @@ double Corrector_pi0::GetSystUncertainty2(int bin_pi0, std::string type) {
 }
 
 double Corrector_pi0::GetUncertainty(int bin_pi0, std::string type) {
-    if (type == "MC15ri") return {
+    if (type == "MC15ri") {
         printf("[Corrector_pi0] entire uncertainty is not possible in MC15rd\n");
         exit(1);
     }
