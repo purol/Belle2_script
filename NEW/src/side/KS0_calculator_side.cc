@@ -660,25 +660,8 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
             }
-            if (std::string(MCTYPE) == "MC15ri") {
-                for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) {
-                    Correction_pi0 = Correction_pi0 * std::pow(
-                        corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE) +
-                        pi0_correction_fluctuation_stat_uncer[i_pi0] +
-                        pi0_correction_fluctuation_sys_uncer1[i_pi0] +
-                        pi0_correction_fluctuation_sys_uncer2[i_pi0],
-                        temp_N_bin_pi0[i_pi0]);
-
-                }
-            }
-            else if (std::string(MCTYPE) == "MC15rd") {
-                for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) {
-                    Correction_pi0 = Correction_pi0 * std::pow(
-                        corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE) +
-                        pi0_correction_fluctuation_uncer[i_pi0],
-                        temp_N_pi0_syst_MC15rd[i_pi0]);
-                }
-            }
+            if (std::string(MCTYPE) == "MC15ri") for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+            else if (std::string(MCTYPE) == "MC15rd") for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_pi0_syst_MC15rd[i_pi0]);
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
