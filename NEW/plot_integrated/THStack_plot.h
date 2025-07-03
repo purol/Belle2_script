@@ -13,6 +13,8 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 # include <algorithm>
 # include <float.h>
+# include <vector>
+# include <string>
 
 #include "constants.h"
 #include "ObtainWeight.h"
@@ -515,7 +517,7 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
 
     double Bsig_M = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -873,7 +875,7 @@ void LetsFilldata(const char* dirname, std::vector<std::string> variable_names, 
 
     double Bsig_M = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names, included_string);
 
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -986,7 +988,7 @@ void LetsFillembeddedMC(const char* dirname, std::vector<std::string> variable_n
 
     double Bsig_M = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -1236,7 +1238,7 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
     float BDTc = -1;
     double BDTc_correction = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -1685,7 +1687,7 @@ void LetsFillMC_ESide(const char* dirname, std::vector<std::string> variable_nam
 
     double Bsig_M = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -2078,7 +2080,7 @@ void LetsFillMC_MUSide(const char* dirname, std::vector<std::string> variable_na
 
     double Bsig_M = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -2475,7 +2477,7 @@ void LetsCountMC(const char* dirname, std::string SampleName, int option = 0, do
 
     double Bsig_M = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -2721,7 +2723,7 @@ void LetsCountdata(const char* dirname, const char* included_string = "root", in
 
     double Bsig_M = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names, included_string);
 
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -2790,7 +2792,7 @@ void LetsCountembeddedMC(const char* dirname, std::string SampleName, int option
 
     double Bsig_M = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -2978,7 +2980,7 @@ void LetsCountMC_correction(const char* dirname, std::string SampleName, double 
     float BDTc = -1;
     double BDTc_correction = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -3313,7 +3315,7 @@ void LetsCountMC_ESide(const char* dirname, std::string SampleName, int option =
 
     double Bsig_M = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -3641,7 +3643,7 @@ void LetsCountMC_MUSide(const char* dirname, std::string SampleName, int option 
 
     double Bsig_M = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
@@ -3969,7 +3971,7 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
     float BDTc = -1;
     double BDTc_correction = -1;
 
-    std::vector<string> names;
+    std::vector<std::string> names;
     load_files(dirname, &names);
 
     for (unsigned int i = 0; i < names.size(); i++) {
