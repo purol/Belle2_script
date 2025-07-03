@@ -34,6 +34,7 @@ Corrector_phiKL corrector_phiKL;
 Corrector_KstarKLKL corrector_KstarKLKL;
 Corrector_XsKLKL corrector_XsKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
+Corrector_KS0 corrector_KS0;
 Corrector_LID corrector_LID;
 
 # define MCTYPE "MC15rd"
