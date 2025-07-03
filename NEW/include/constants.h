@@ -170,6 +170,23 @@
 # define track_rel_uncertainty_MC15rd 0.27 // %
 # define Kaon_PID_max_uncertainty 0.1 // not percentage. relative uncertainty
 
+// slow pion
+# define Slow_Pion_correction_1 0.947 
+# define Slow_Pion_correction_2 0.985 
+# define Slow_Pion_correction_3 0.983
+
+# define Slow_Pion_stat_uncorr_1 0.01689545934 // relative uncertainty, 0.016/0.947
+# define Slow_Pion_stat_uncorr_2 0.01319796954 // relative uncertainty, 0.013/0.985
+# define Slow_Pion_stat_uncorr_3 0.01525940996 // relative uncertainty, 0.015/0.983
+
+# define Slow_Pion_stat_corr_1 0.01161562829 // relative uncertainty, 0.011/0.947
+# define Slow_Pion_stat_corr_2 0.01116751269 // relative uncertainty, 0.011/0.985
+# define Slow_Pion_stat_corr_3 0.01119023397 // relative uncertainty, 0.011/0.983
+
+# define Slow_Pion_syst_1 0.00285110876 // relative uncertainty, 0.0027/0.947
+# define Slow_Pion_syst_2 0.00284263959 // relative uncertainty, 0.0028/0.985
+# define Slow_Pion_syst_3 0.00284842319 // relative uncertainty, 0.0028/0.983
+
 # define BR_KpKLKL_uncertainty (0.04/1.05) // not percentage. relative uncertainty
 # define BR_KSKLKL_uncertainty (0.5/6.0) // not percentage. relative uncertainty
 
@@ -186,7 +203,7 @@ const double B2Knn_dn_uncer[N_Knn_type] = { // relative uncertainty
 # define Scale_Xsd_nonresonant_syst (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar_syst)
 
 /* for the projection of analysis
-* This factor is included at `corrector`, `NEWFEI_calculator`, and `Signal_yield_fit_BDT_Rarity_HistFactory`
+* This factor is included at `corrector`, `NEWFEI_calculator`, `KS0_calculator`, and `Signal_yield_fit_BDT_Rarity_HistFactory`
 * Because we are not interested in plots, we do not touch anything on `plot_integrated`.
 * Therefore, `NEWFEIcal.txt` value does not change. The projection is applied on `NEWFEI_calculator`.
 */

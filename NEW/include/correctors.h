@@ -2875,11 +2875,11 @@ private:
         double w_e_syst;
         double cmin;
         double cmax;
-        double pmin;
-        double pmax;
+        Long64_t pmin;
+        Long64_t pmax;
         double dmin;
         double dmax;
-        double __index__;
+        Long64_t __index__;
     };
     std::vector<KS0_bin> KS0_bins;
 
@@ -2887,13 +2887,10 @@ public:
     Corrector_KS0();
     void ReadROOTFile_MC15rd();
     double GetCorrectionFactor(double flight_distance, std::string type);
-    double GetCorrectionFactor(double momentum, double cos_theta, double flight_distance, std::string type);
-    double GetCorrectionFactorFromBin(int bin, std::string type);
+    double GetCorrectionFactor(double momentum, double cos_theta, double flight_distance, double p_D1, double p_D2, std::string type);
     double GetAbsoluteUncertainty(double flight_distance, std::string type); // absolute uncertainty
-    double GetAbsoluteStatUncertainty(double momentum, double cos_theta, double flight_distance, std::string type); // absolute uncertainty
-    double GetAbsoluteStatUncertaintyFromBin(int bin, std::string type); // absolute uncertainty
-    double GetAbsoluteSystUncertainty(double momentum, double cos_theta, double flight_distance, std::string type); // absolute uncertainty
-    double GetAbsoluteSystUncertaintyFromBin(int bin, std::string type); // absolute uncertainty
+    double GetAbsoluteStatUncertaintyFromBinOnlyHigh3D(int bin, std::string type); // absolute uncertainty
+    double GetAbsoluteSystUncertaintyFromBinOnlyHigh3D(int bin, std::string type); // absolute uncertainty
     int GetNBins(std::string type);
     int GetBin(double momentum, double cos_theta, double flight_distance, std::string type);
 };
@@ -2934,7 +2931,7 @@ void Corrector_KS0::ReadROOTFile_MC15rd() {
 
 double Corrector_KS0::GetCorrectionFactor(double flight_distance, std::string type) {
     if (type == "MC15ri") {
-        if (flight_distance == 0) return 1.0; // probably without KS0
+        if (std::abs(flight_distance) < MyEPSILON) return 1.0; // probably without KS0
         else return (1 + 0.01 * (flight_distance * KS0_MC15ri_uncertainty));
     }
     else if (type == "MC15rd") {
@@ -2947,18 +2944,34 @@ double Corrector_KS0::GetCorrectionFactor(double flight_distance, std::string ty
     }
 }
 
-double Corrector_KS0::GetCorrectionFactor(double momentum, double cos_theta, double flight_distance, std::string type) {
+double Corrector_KS0::GetCorrectionFactor(double momentum, double cos_theta, double flight_distance, double p_D1, double p_D2, std::string type) {
     if (type == "MC15ri") {
         printf("[Corrector_KS0] 3 dim correction is not possible in MC15ri\n");
         exit(1);
     }
     else if (type == "MC15rd") {
-        if ((cos_theta == 0) && (flight_distance == 0)) return 1.0; // probably without KS0
+        if ((std::abs(cos_theta) < MyEPSILON) && (std::abs(flight_distance) < MyEPSILON)) return 1.0; // probably without KS0
         else {
             for (int i = 0; i < KS0_bins.size(); i++) {
                 if ((KS0_bins.at(i).cmin < cos_theta) && (cos_theta < KS0_bins.at(i).cmax) && (KS0_bins.at(i).pmin < momentum) && (momentum < KS0_bins.at(i).pmax) && (KS0_bins.at(i).dmin < flight_distance) && (flight_distance < KS0_bins.at(i).dmax)) {
                     return KS0_bins.at(i).w;
                 }
+            }
+            if (flight_distance < 0.5) {
+                double Corr_D1 = 1.0;
+                double Corr_D2 = 1.0;
+
+                if ((0.05 < p_D1) && (p_D1 < 0.12)) Corr_D1 = Slow_Pion_correction_1;
+                else if ((0.12 < p_D1) && (p_D1 < 0.16)) Corr_D1 = Slow_Pion_correction_2;
+                else if ((0.16 < p_D1) && (p_D1 < 0.20)) Corr_D1 = Slow_Pion_correction_3;
+                else if (p_D1 > 0.2) Corr_D1 = 1.0;
+
+                if ((0.05 < p_D2) && (p_D2 < 0.12)) Corr_D2 = Slow_Pion_correction_1;
+                else if ((0.12 < p_D2) && (p_D2 < 0.16)) Corr_D2 = Slow_Pion_correction_2;
+                else if ((0.16 < p_D2) && (p_D2 < 0.20)) Corr_D2 = Slow_Pion_correction_3;
+                else if (p_D2 > 0.2) Corr_D2 = 1.0;
+
+                return (Corr_D1 * Corr_D2);
             }
             return 1.0;
         }
@@ -2969,28 +2982,9 @@ double Corrector_KS0::GetCorrectionFactor(double momentum, double cos_theta, dou
     }
 }
 
-double Corrector_KS0::GetCorrectionFactorFromBin(int bin, std::string type) {
-    if (type == "MC15ri") {
-        printf("[Corrector_KS0] calculation of correction factor from bin is not possible in MC15ri\n");
-        exit(1);
-    }
-    else if (type == "MC15rd") {
-        if (bin == -1) return 1.0;
-        else if ((0 <= bin) && (bin < KS0_bins.size())) return KS0_bins.at(bin).w;
-        else {
-            printf("[Corrector_KS0] Unexpected bin\n");
-            exit(1);
-        }
-    }
-    else {
-        printf("[Corrector_KS0] Invalid type!\n");
-        exit(1);
-    }
-}
-
 double Corrector_KS0::GetAbsoluteUncertainty(double flight_distance, std::string type) {
     if (type == "MC15ri") {
-        if (flight_distance == 0) return 0.0; // probably without KS0
+        if (std::abs(flight_distance) < MyEPSILON) return 0.0; // probably without KS0
         else return (0.01 * flight_distance * KS0_MC15ri_uncertainty);
     }
     else if (type == "MC15rd") {
@@ -3003,29 +2997,11 @@ double Corrector_KS0::GetAbsoluteUncertainty(double flight_distance, std::string
     }
 }
 
-double Corrector_KS0::GetAbsoluteStatUncertainty(double momentum, double cos_theta, double flight_distance, std::string type) {
-    if (type == "MC15ri") {
-        printf("[Corrector_KS0] 3 dim correction is not possible in MC15ri\n");
-        exit(1);
-    }
-    else if (type == "MC15rd") {
-        if ((cos_theta == 0) && (flight_distance == 0)) return 0.0; // probably without KS0
-        else {
-            for (int i = 0; i < KS0_bins.size(); i++) {
-                if ((KS0_bins.at(i).cmin < cos_theta) && (cos_theta < KS0_bins.at(i).cmax) && (KS0_bins.at(i).pmin < momentum) && (momentum < KS0_bins.at(i).pmax) && (KS0_bins.at(i).dmin < flight_distance) && (flight_distance < KS0_bins.at(i).dmax)) {
-                    return KS0_bins.at(i).w_e_stat;
-                }
-            }
-            return 0.0;
-        }
-    }
-    else {
-        printf("[Corrector_KS0] Invalid type!\n");
-        exit(1);
-    }
-}
-
-double Corrector_KS0::GetAbsoluteStatUncertaintyFromBin(int bin, std::string type) {
+double Corrector_KS0::GetAbsoluteStatUncertaintyFromBinOnlyHigh3D(int bin, std::string type) {
+    /*
+    * NOTE: this function only show the uncertainty for KS0 whose 3D distance is large
+    * For the small 3D distance case, you need to care about it yourself
+    */
     if (type == "MC15ri") {
         printf("[Corrector_KS0] calculation of correction factor from bin is not possible in MC15ri\n");
         exit(1);
@@ -3044,29 +3020,11 @@ double Corrector_KS0::GetAbsoluteStatUncertaintyFromBin(int bin, std::string typ
     }
 }
 
-double Corrector_KS0::GetAbsoluteSystUncertainty(double momentum, double cos_theta, double flight_distance, std::string type) {
-    if (type == "MC15ri") {
-        printf("[Corrector_KS0] 3 dim correction is not possible in MC15ri\n");
-        exit(1);
-    }
-    else if (type == "MC15rd") {
-        if ((cos_theta == 0) && (flight_distance == 0)) return 0.0; // probably without KS0
-        else {
-            for (int i = 0; i < KS0_bins.size(); i++) {
-                if ((KS0_bins.at(i).cmin < cos_theta) && (cos_theta < KS0_bins.at(i).cmax) && (KS0_bins.at(i).pmin < momentum) && (momentum < KS0_bins.at(i).pmax) && (KS0_bins.at(i).dmin < flight_distance) && (flight_distance < KS0_bins.at(i).dmax)) {
-                    return KS0_bins.at(i).w_e_syst;
-                }
-            }
-            return 0.0;
-        }
-    }
-    else {
-        printf("[Corrector_KS0] Invalid type!\n");
-        exit(1);
-    }
-}
-
-double Corrector_KS0::GetAbsoluteSystUncertaintyFromBin(int bin, std::string type) {
+double Corrector_KS0::GetAbsoluteSystUncertaintyFromBinOnlyHigh3D(int bin, std::string type) {
+    /*
+    * NOTE: this function only show the uncertainty for KS0 whose 3D distance is large
+    * For the small 3D distance case, you need to care about it yourself
+    */
     if (type == "MC15ri") {
         printf("[Corrector_KS0] calculation of correction factor from bin is not possible in MC15ri\n");
         exit(1);
@@ -3103,7 +3061,7 @@ int Corrector_KS0::GetBin(double momentum, double cos_theta, double flight_dista
         exit(1);
     }
     else if (type == "MC15rd") {
-        if ((cos_theta == 0) && (flight_distance == 0)) return -1; // probably without KS0
+        if ((std::abs(cos_theta) < MyEPSILON) && (std::abs(flight_distance) < MyEPSILON)) return -1; // probably without KS0
         else {
             for (int i = 0; i < KS0_bins.size(); i++) {
                 if ((KS0_bins.at(i).cmin < cos_theta) && (cos_theta < KS0_bins.at(i).cmax) && (KS0_bins.at(i).pmin < momentum) && (momentum < KS0_bins.at(i).pmax) && (KS0_bins.at(i).dmin < flight_distance) && (flight_distance < KS0_bins.at(i).dmax)) {

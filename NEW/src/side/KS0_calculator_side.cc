@@ -62,6 +62,18 @@ Corrector_Fragmentation corrector_Fragmentation;
 std::vector<double> KS0_correction_fluctuation_stat_uncer; // it is additive!
 std::vector<double> KS0_correction_fluctuation_sys_uncer; // it is additive!
 
+double Slow_Pion_stat_uncorr_alpha_1 = 0.0;
+double Slow_Pion_stat_uncorr_alpha_2 = 0.0;
+double Slow_Pion_stat_uncorr_alpha_3 = 0.0;
+
+double Slow_Pion_stat_corr_alpha = 0.0;
+
+double Slow_Pion_syst_uncorr_alpha_1 = 0.0;
+double Slow_Pion_syst_uncorr_alpha_2 = 0.0;
+double Slow_Pion_syst_uncorr_alpha_3 = 0.0;
+
+double Slow_Pion_track_alpha = 0.0;
+
 std::random_device rd;
 std::default_random_engine generator(rd());
 
@@ -113,6 +125,8 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
     double KS0_flight_distance = 0;
     double KS0_costheta = 0;
     double KS0_p = 0;
+    double KS0_D1p = 0;
+    double KS0_D2p = 0;
 
     int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
@@ -210,6 +224,8 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &KS0_flight_distance);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_costheta", &KS0_costheta);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_p", &KS0_p);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_D1p", &KS0_D1p);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_D2p", &KS0_D2p);
         if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
@@ -333,7 +349,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
             if (std::string(MCTYPE) == "MC15ri") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE);
-            else if (std::string(MCTYPE) == "MC15rd") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE);
+            else if (std::string(MCTYPE) == "MC15rd") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, KS0_D1p, KS0_D2p, MCTYPE);
 
             // Knn correction factor
             double Correction_Knn = corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn, names.at(i), MCTYPE, true);
@@ -455,6 +471,8 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
     double KS0_flight_distance = 0;
     double KS0_costheta = 0;
     double KS0_p = 0;
+    double KS0_D1p = 0;
+    double KS0_D2p = 0;
 
     int Decay[N_decay] = { 0 };
     double Mxs_Bc_MC = -1;
@@ -552,6 +570,8 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &KS0_flight_distance);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_costheta", &KS0_costheta);
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_p", &KS0_p);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_D1p", &KS0_D1p);
+        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_D2p", &KS0_D2p);
         if (strcmp(sample, "SIGNAL") == 0) {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKcharge_total__bc", &Decay[0]);
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clKstarcharge_ch1_total__bc", &Decay[1]);
@@ -684,9 +704,21 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
                 int KS0_bin = corrector_KS0.GetBin(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE);
 
                     Correction_KS0 = Correction_KS0 * (
-                        corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE) +
+                        corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, KS0_D1p, KS0_D2p, MCTYPE) +
                         KS0_correction_fluctuation_stat_uncer.at(KS0_bin) +
                         KS0_correction_fluctuation_sys_uncer.at(KS0_bin));
+
+                    if ((KS0_flight_distance < 0.5) && ((std::abs(KS0_costheta) > MyEPSILON) || (std::abs(KS0_flight_distance) > MyEPSILON))) {
+                        if ((0.05 < KS0_D1p) && (KS0_D1p < 0.12)) Correction_KS0 = Correction_KS0 * (1 + Slow_Pion_stat_uncorr_alpha_1 * (Slow_Pion_stat_uncorr_1 / std::sqrt(projection_multiplication)) + Slow_Pion_stat_corr_alpha * (Slow_Pion_stat_corr_1 / std::sqrt(projection_multiplication)) + Slow_Pion_syst_uncorr_alpha_1 * Slow_Pion_syst_1);
+                        else if ((0.12 < KS0_D1p) && (KS0_D1p < 0.16)) Correction_KS0 = Correction_KS0 * (1 + Slow_Pion_stat_uncorr_alpha_2 * (Slow_Pion_stat_uncorr_2 / std::sqrt(projection_multiplication)) + Slow_Pion_stat_corr_alpha * (Slow_Pion_stat_corr_2 / std::sqrt(projection_multiplication)) + Slow_Pion_syst_uncorr_alpha_2 * Slow_Pion_syst_2);
+                        else if ((0.16 < KS0_D1p) && (KS0_D1p < 0.20)) Correction_KS0 = Correction_KS0 * (1 + Slow_Pion_stat_uncorr_alpha_3 * (Slow_Pion_stat_uncorr_3 / std::sqrt(projection_multiplication)) + Slow_Pion_stat_corr_alpha * (Slow_Pion_stat_corr_3 / std::sqrt(projection_multiplication)) + Slow_Pion_syst_uncorr_alpha_3 * Slow_Pion_syst_3);
+                        else if (KS0_D1p > 0.2) Correction_KS0 = Correction_KS0 * (1 + (Slow_Pion_track_alpha * track_rel_uncertainty_MC15rd / 100.0));
+
+                        if ((0.05 < KS0_D2p) && (KS0_D2p < 0.12)) Correction_KS0 = Correction_KS0 * (1 + Slow_Pion_stat_uncorr_alpha_1 * (Slow_Pion_stat_uncorr_1 / std::sqrt(projection_multiplication)) + Slow_Pion_stat_corr_alpha * (Slow_Pion_stat_corr_1 / std::sqrt(projection_multiplication)) + Slow_Pion_syst_uncorr_alpha_1 * Slow_Pion_syst_1);
+                        else if ((0.12 < KS0_D2p) && (KS0_D2p < 0.16)) Correction_KS0 = Correction_KS0 * (1 + Slow_Pion_stat_uncorr_alpha_2 * (Slow_Pion_stat_uncorr_2 / std::sqrt(projection_multiplication)) + Slow_Pion_stat_corr_alpha * (Slow_Pion_stat_corr_2 / std::sqrt(projection_multiplication)) + Slow_Pion_syst_uncorr_alpha_2 * Slow_Pion_syst_2);
+                        else if ((0.16 < KS0_D2p) && (KS0_D2p < 0.20)) Correction_KS0 = Correction_KS0 * (1 + Slow_Pion_stat_uncorr_alpha_3 * (Slow_Pion_stat_uncorr_3 / std::sqrt(projection_multiplication)) + Slow_Pion_stat_corr_alpha * (Slow_Pion_stat_corr_3 / std::sqrt(projection_multiplication)) + Slow_Pion_syst_uncorr_alpha_3 * Slow_Pion_syst_3);
+                        else if (KS0_D2p > 0.2) Correction_KS0 = Correction_KS0 * (1 + (Slow_Pion_track_alpha * track_rel_uncertainty_MC15rd / 100.0));
+                    }
             }
 
             // Knn correction factor
@@ -771,7 +803,7 @@ void FluctuateKS0Correction() {
     else if (std::string(MCTYPE) == "MC15rd") {
         for (int i_KS0 = 0; i_KS0 < corrector_KS0.GetNBins(MCTYPE); i_KS0++) {
 
-            std::normal_distribution<double> KS0_stat_distribution(0.0, corrector_KS0.GetAbsoluteStatUncertaintyFromBin(i_KS0, MCTYPE));
+            std::normal_distribution<double> KS0_stat_distribution(0.0, corrector_KS0.GetAbsoluteStatUncertaintyFromBinOnlyHigh3D(i_KS0, MCTYPE));
             KS0_correction_fluctuation_stat_uncer.push_back(KS0_stat_distribution(generator));
 
         }
@@ -780,7 +812,20 @@ void FluctuateKS0Correction() {
         double alpha = 0.0;
 
         alpha = KS0_sys_distribution(generator);
-        for (int i_KS0 = 0; i_KS0 < corrector_KS0.GetNBins(MCTYPE); i_KS0++) KS0_correction_fluctuation_sys_uncer.push_back(alpha * corrector_KS0.GetAbsoluteSystUncertaintyFromBin(i_KS0, MCTYPE));
+        for (int i_KS0 = 0; i_KS0 < corrector_KS0.GetNBins(MCTYPE); i_KS0++) KS0_correction_fluctuation_sys_uncer.push_back(alpha * corrector_KS0.GetAbsoluteSystUncertaintyFromBinOnlyHigh3D(i_KS0, MCTYPE));
+ 
+        Slow_Pion_stat_uncorr_alpha_1 = KS0_sys_distribution(generator);
+        Slow_Pion_stat_uncorr_alpha_2 = KS0_sys_distribution(generator);
+        Slow_Pion_stat_uncorr_alpha_3 = KS0_sys_distribution(generator);
+
+        Slow_Pion_stat_corr_alpha = KS0_sys_distribution(generator);
+
+        Slow_Pion_syst_uncorr_alpha_1 = KS0_sys_distribution(generator);
+        Slow_Pion_syst_uncorr_alpha_2 = KS0_sys_distribution(generator);
+        Slow_Pion_syst_uncorr_alpha_3 = KS0_sys_distribution(generator);
+
+        Slow_Pion_track_alpha = KS0_sys_distribution(generator);
+    
     }
 
 }
