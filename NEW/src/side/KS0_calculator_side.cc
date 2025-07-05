@@ -709,6 +709,9 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
                         KS0_correction_fluctuation_stat_uncer.at(KS0_bin) +
                         KS0_correction_fluctuation_sys_uncer.at(KS0_bin));
                 }
+                else if (KS0_bin == -1) {
+                    Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, KS0_D1p, KS0_D2p, MCTYPE);
+                }
 
                 if ((KS0_flight_distance < 0.5) && ((std::abs(KS0_costheta) > MyEPSILON) || (std::abs(KS0_flight_distance) > MyEPSILON))) {
                     if ((0.05 < KS0_D1p) && (KS0_D1p < 0.12)) Correction_KS0 = Correction_KS0 * (1 + Slow_Pion_stat_uncorr_alpha_1 * (Slow_Pion_stat_uncorr_1 / std::sqrt(projection_multiplication)) + Slow_Pion_stat_corr_alpha * (Slow_Pion_stat_corr_1 / std::sqrt(projection_multiplication)) + Slow_Pion_syst_uncorr_alpha_1 * Slow_Pion_syst_1);
