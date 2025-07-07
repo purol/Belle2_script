@@ -2,7 +2,7 @@ clear all
 format long
 
 N_total_bins = 15 * 3;
-N_selected_vectors = 4;
+N_selected_vectors = 3;
 
 % NEWFEICAL
 NEWFEICALfileID = fopen('NEWFEICAL_toys.txt','r');

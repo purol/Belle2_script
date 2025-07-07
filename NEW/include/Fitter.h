@@ -402,6 +402,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
         options_->KS0 = true;
         options_->pi0 = true;
         options_->FEI = true;
+        options_->qqbar = true;
         options_->Kff = true;
         options_->Kstarff = true;
         options_->pf = true;
@@ -416,7 +417,6 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
         options_->NEWFEICAL = true;
         options_->BRXnn = true;
         options_->BRDKL0 = true;
-        options_->fitter = true;
         options_->dataMC = true;
         options_->uncorrelated = true;
     }
