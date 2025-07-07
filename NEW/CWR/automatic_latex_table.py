@@ -36,7 +36,7 @@ systematics = [
     ("Fraction of decay modes", "Fraction of $K\\nu\\bar{\\nu}$, $K^{*}\\nu\\bar{\\nu}$ decays", "\\texttt{HistoSys}", "$O(5\\%)$", "fix_fraction"),
     ("Another FEI calibration factor", "Tagging efficiency from $B \\to K^{(*)}J/\\psi$ decay", "\\texttt{HistoSys}", "$O(20 \\text{-} 100\\%)$", "fix_NEWFEICAL"),
     ("FEI calibration for $B\\bar{B}$", "Tagging efficiency", "\\texttt{HistoSys}", "$O(1 \\text{-} 30\\%)$", "fix_FEI"),
-    ("$\\pi^{0}$ reconstruction", "$\\pi^{0}$ reconstruction efficiency", "\\texttt{HistoSys}", "$O(5\\%)$", "fix_pi0"),
+    ("$\\pi^{0}$ reconstruction", "$\\pi^{0}$ reconstruction efficiency", "\\texttt{HistoSys}", "$O(1\\%)$", "fix_pi0"),
     ("$B\\rightarrow K$ form factor", "$B\\to K$ form factor", "\\texttt{HistoSys}", "$O(1\\%)$", "fix_Kff"),
     ("$K_{S}^{0}$ reconstruction", "$K_{S}^{0}$ reconstruction efficiency", "\\texttt{HistoSys}", "$O(5\\%)$", "fix_KS0"),
     ("$B\\rightarrow K^{*}$ form factor", "$B\\to K^{*}$ form factor", "\\texttt{HistoSys}", "$O(10\\%)$", "fix_Kstarff"),
@@ -48,7 +48,7 @@ systematics = [
     ("BR of $B\\rightarrow X_{s} n\\bar{n}$ decay", "Branching ratio for $B \\to X_{s} n\\bar{n}$", "\\texttt{HistoSys}", "100\\%", "fix_BRXnn"),
     ("Fermi motion momentum", "Fermi motion momentum", "\\texttt{HistoSys}", "$O(8\\%)$", "fix_pf"),
     ("b-quark mass", "b-quark mass parameter", "\\texttt{HistoSys}", "3.2\\%", "fix_mb"),
-    ("Tracking efficiency", "Tracking efficiency", "\\texttt{HistoSys}", "0.24\\%", "fix_track"),
+    ("Tracking efficiency", "Tracking efficiency", "\\texttt{HistoSys}", "0.27\\%", "fix_track"),
     ("$K_{L}^{0}$ ECL efficiency", "$K_{L}^{0}$ efficiency in the ECL", "\\texttt{HistoSys}", "17\\%", "fix_EffECLKL"),
     ("fitter bias", "Fitting bias", "$\\texttt{OverallSys}$", "$O(5\\%)$", "fix_fitter"),
 ]
