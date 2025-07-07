@@ -282,7 +282,7 @@ else:# in full_unblind directory
         fix_dir_MXs3 = extract_minos_for_param(f"./free_all/{dir}/log/FIX_1.log", param_MXs3)
         contrib_MXs3 = compute_uncertainty_contribution(fix_none_MXs3, fix_dir_MXs3)
         
-        if contrib is not None:
+        if contrib_mu is not None:
             value_mu = Scale * BR_mu * contrib_mu
             value_MXs1 = Scale * BR_MXs1 * contrib_MXs1
             value_MXs2 = Scale * BR_MXs2 * contrib_MXs2
