@@ -61,44 +61,46 @@ Corrector_Fragmentation corrector_Fragmentation;
 
 const bool KnunuOnly = false;
 
-// FEI_cal_Bc_eigenvalue[0] <---------> FEI_cal_Bc_eigenvector[0][i]
-double FEI_cal_Bc_eigenvalue[FEI_cal_Bc_num] = { 0.0 };
-double FEI_cal_Bc_eigenvector[FEI_cal_Bc_num][FEI_cal_Bc_num] = { 0.0 };
-double FEI_cal_Bc_fluctuated[FEI_cal_Bc_num] = { 0.0 };
-double FEI_cal_B0_eigenvalue[FEI_cal_B0_num] = { 0.0 };
-double FEI_cal_B0_eigenvector[FEI_cal_B0_num][FEI_cal_B0_num] = { 0.0 };
-double FEI_cal_B0_fluctuated[FEI_cal_B0_num] = { 0.0 };
-
 std::random_device rd;
 std::default_random_engine generator(rd());
 
 # define NToys 500
 
+int N_correction_multiplicity_weightfile = -1; // maximum value of Ngamma in weightfile
+
+TH1D* weights_Ngamma_uncer; // multiplication factor. If this number is multiplied to the number of event, result is the number of event with 1 sigma (nominal + 1 sigma)
+TH1D* multiplicity_correction_fluctuation_uncer; // uncertainty for multiplicity correction
+
 /* ====================================== */
 
-double GetFEICalFactor_fluctuated(double UpsilonID, double BtagID) {
-    // UpsilonID => charged: 0, mixed: 1
+void ReadMultiplicityFile() {
 
-    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
-        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
-            if (BtagID > corrector_FEI.GetmodeID(i, true, MCTYPE) - 0.5 && BtagID < corrector_FEI.GetmodeID(i, true, MCTYPE) + 0.5) return FEI_cal_Bc_fluctuated[i];
-        }
-        return FEI_cal_Bc_fluctuated[FEI_cal_Bc_num - 1];
-    }
-    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
-        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
-            if (BtagID > corrector_FEI.GetmodeID(i, false, MCTYPE) - 0.5 && BtagID < corrector_FEI.GetmodeID(i, false, MCTYPE) + 0.5) return FEI_cal_B0_fluctuated[i];
-        }
-        return FEI_cal_B0_fluctuated[FEI_cal_B0_num - 1];
+    FILE* fp;
+    int NgammaMAX = 0;
+    const double CUTOFF = 3.0;
+
+    fp = fopen("./multiplicity_weight_uncertainty.txt", "r");
+    fscanf(fp, "%d\n", &NgammaMAX);
+    weights_Ngamma_uncer = new TH1D("weights_Ngamma_uncer", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    for (int i = 0; i < NgammaMAX + 1; i++) {
+        double temp1;
+        double temp2;
+        double temp3;
+        fscanf(fp, "%lf %lf %lf\n", &temp1, &temp2, &temp3);
+        if (temp3 < CUTOFF) weights_Ngamma_uncer->SetBinContent(i + 1, temp3);
+        else weights_Ngamma_uncer->SetBinContent(i + 1, CUTOFF);
+
+        if (temp2 > MyEPSILON) N_correction_multiplicity_weightfile = i;
     }
 
-    printf("[GetFEICalFactor_fluctuated] error! unexpected decay ID\n");
-    exit(1);
-    return 0;
+    fclose(fp);
+
+    multiplicity_correction_fluctuation_uncer = new TH1D("weights_Ngamma_fluctuation_uncer", ";;", NgammaMAX + 1, -0.5, NgammaMAX + 0.5);
+    for (int i = 0; i < NgammaMAX + 1; i++) multiplicity_correction_fluctuation_uncer->SetBinContent(i + 1, 1.0);
 
 }
 
-void GetNominalNevt(const char* dirname, const char* included_string, const char* type, const char* sample, double Nevt_nominal[RarityBins * 5], double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+void GetNominalNevt(const char* dirname, const char* included_string, const char* type, const char* sample, double Nevt_nominal[RarityBins * 9], double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -117,6 +119,10 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
 
     if (strcmp(sample, "CHG") == 0) {}
     else if (strcmp(sample, "MIX") == 0) {}
+    else if (strcmp(sample, "UUBAR") == 0) {}
+    else if (strcmp(sample, "DDBAR") == 0) {}
+    else if (strcmp(sample, "SSBAR") == 0) {}
+    else if (strcmp(sample, "CHARM") == 0) {}
     else if (strcmp(sample, "SIGNAL") == 0) {}
     else {
         printf("[ERROR] unexpected sample name\n");
@@ -412,6 +418,10 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             int ArrayBinID = -1;
             if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
             else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
+            else if (strcmp(sample, "UUBAR") == 0) ArrayBinID = 2;
+            else if (strcmp(sample, "DDBAR") == 0) ArrayBinID = 3;
+            else if (strcmp(sample, "SSBAR") == 0) ArrayBinID = 4;
+            else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
             else if (strcmp(sample, "SIGNAL") == 0) {
                 double MC_MXs = -1;
 
@@ -430,9 +440,9 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
                     }
                 }
 
-                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) ArrayBinID = 2;
-                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) ArrayBinID = 3;
-                else if (MC_MXs > 1.0) ArrayBinID = 4;
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) ArrayBinID = 6;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) ArrayBinID = 7;
+                else if (MC_MXs > 1.0) ArrayBinID = 8;
             }
 
             int BinIndex = (int)std::floor(ReturnBinIndex(MVA_var, Bsig_M));
@@ -448,7 +458,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
     return;
 }
 
-void GetFlucNevt(const char* dirname, const char* included_string, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 5], int ToyNum, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
+void GetFlucNevt(const char* dirname, const char* included_string, const char* type, const char* sample, double Nevt_fluc[NToys][RarityBins * 9], int ToyNum, double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
     CorrectionType for new form factors
     B2Knunu
@@ -467,11 +477,11 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
 
     if (strcmp(sample, "CHG") == 0) {}
     else if (strcmp(sample, "MIX") == 0) {}
+    else if (strcmp(sample, "UUBAR") == 0) {}
+    else if (strcmp(sample, "DDBAR") == 0) {}
+    else if (strcmp(sample, "SSBAR") == 0) {}
+    else if (strcmp(sample, "CHARM") == 0) {}
     else if (strcmp(sample, "SIGNAL") == 0) {}
-    else if (strcmp(sample, "Knn") == 0) {}
-    else if (strcmp(sample, "Kstarnn") == 0) {}
-    else if (strcmp(sample, "K0nn") == 0) {}
-    else if (strcmp(sample, "K0starnn") == 0) {}
     else {
         printf("[ERROR] unexpected sample name\n");
         exit(1);
@@ -543,12 +553,6 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
     double nD0toXKL = -1;
 
     double Bsig_M = -1;
-
-    int __experiment__ = 0;
-    int __run__ = 0;
-    unsigned int __event__ = 0;
-    int __candidate__ = 0;
-    int __ncandidates__ = 0;
 
     std::vector<string> names;
     load_files(dirname, &names, included_string);
@@ -685,12 +689,6 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
         tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &nDptoXKL);
         tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &nD0toXKL);
 
-        tree_upsilon->SetBranchAddress("__experiment__", &__experiment__);
-        tree_upsilon->SetBranchAddress("__run__", &__run__);
-        tree_upsilon->SetBranchAddress("__event__", &__event__);
-        tree_upsilon->SetBranchAddress("__candidate__", &__candidate__);
-        tree_upsilon->SetBranchAddress("__ncandidates__", &__ncandidates__);
-
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
@@ -705,8 +703,8 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
             }
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor_fluctuated(Upsilon_ID, Btag_ID);
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor_fluctuated(Upsilon_ID, Btag_ID);
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -750,6 +748,8 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
+            int MultiplicityBin = multiplicity_correction_fluctuation_uncer->FindBin(Ngamma_v200);
+            Correction_multiplicity = Correction_multiplicity * multiplicity_correction_fluctuation_uncer->GetBinContent(MultiplicityBin);
 
             // B+ --> K+ KL0 KL0 correction factor
             double Correction_KpKLKL = corrector_KpKLKL.GetCorrectionFactorAtGeneric(s13_KpKLKL, s23_KpKLKL, nB2KpKLKL_all_KpKLKL, nB2KpKLKL_NR_KpKLKL);
@@ -778,6 +778,10 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
             int ArrayBinID = -1;
             if (strcmp(sample, "CHG") == 0) ArrayBinID = 0;
             else if (strcmp(sample, "MIX") == 0) ArrayBinID = 1;
+            else if (strcmp(sample, "UUBAR") == 0) ArrayBinID = 2;
+            else if (strcmp(sample, "DDBAR") == 0) ArrayBinID = 3;
+            else if (strcmp(sample, "SSBAR") == 0) ArrayBinID = 4;
+            else if (strcmp(sample, "CHARM") == 0) ArrayBinID = 5;
             else if (strcmp(sample, "SIGNAL") == 0) {
                 double MC_MXs = -1;
 
@@ -796,9 +800,9 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
                     }
                 }
 
-                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) ArrayBinID = 2;
-                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) ArrayBinID = 3;
-                else if (MC_MXs > 1.0) ArrayBinID = 4;
+                if ((MC_MXs > 0.0) && (MC_MXs < 0.6)) ArrayBinID = 6;
+                else if ((MC_MXs > 0.6) && (MC_MXs < 1.0)) ArrayBinID = 7;
+                else if (MC_MXs > 1.0) ArrayBinID = 8;
             }
 
             int BinIndex = (int)std::floor(ReturnBinIndex(MVA_var, Bsig_M));
@@ -807,96 +811,41 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
         }
         input_file->Close();
 
+        printf("%s has %lf events (with correction)\n", dirname, Nevt);
+
     }
 
     return;
 }
 
-void ReadFEIcalFile() {
-    if (std::string(MCTYPE) == std::string("MC15ri")) {
-        const char* FEI_cal_Bp_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_Bp_eigen.txt";
-        const char* FEI_cal_B0_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_B0_eigen.txt";
+void FluctuateMultiplicityCorrection() {
 
-        FILE* fp_FEI_cal_Bp = fopen(FEI_cal_Bp_file, "r");
-        FILE* fp_FEI_cal_B0 = fopen(FEI_cal_B0_file, "r");
+    for (int i_multiplicity = 0; i_multiplicity < N_correction_multiplicity_weightfile + 1; i_multiplicity++) {
 
-        for (int i = 0; i < FEI_cal_Bc_num; i++) {
-            fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvalue[i]);
-            for (int j = 0; j < FEI_cal_Bc_num; j++) fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvector[i][j]);
+        double relative_uncertainty = std::abs(weights_Ngamma_uncer->GetBinContent(i_multiplicity + 1) - 1.0);
+
+        if (relative_uncertainty > MyEPSILON) {
+            std::normal_distribution<double> multiplicity_correction_distribution(1.0, relative_uncertainty);
+            multiplicity_correction_fluctuation_uncer->SetBinContent(i_multiplicity + 1, multiplicity_correction_distribution(generator));
+        }
+        else {
+            multiplicity_correction_fluctuation_uncer->SetBinContent(i_multiplicity + 1, 1.0);
         }
 
-        for (int i = 0; i < FEI_cal_B0_num; i++) {
-            fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvalue[i]);
-            for (int j = 0; j < FEI_cal_B0_num; j++) fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvector[i][j]);
-        }
-
-        fclose(fp_FEI_cal_Bp);
-        fclose(fp_FEI_cal_B0);
-    }
-    else if (std::string(MCTYPE) == std::string("MC15rd")) {
-#ifdef USE_OLD_FEI_CORRECTION
-        const char* FEI_cal_Bp_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_Bp_eigen.txt";
-        const char* FEI_cal_B0_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_B0_eigen.txt";
-#else
-        const char* FEI_cal_Bp_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15rd_FEI/FEI_cal_Bp_eigen.txt";
-        const char* FEI_cal_B0_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15rd_FEI/FEI_cal_B0_eigen.txt";
-#endif
-
-        FILE* fp_FEI_cal_Bp = fopen(FEI_cal_Bp_file, "r");
-        FILE* fp_FEI_cal_B0 = fopen(FEI_cal_B0_file, "r");
-
-        for (int i = 0; i < FEI_cal_Bc_num; i++) {
-            fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvalue[i]);
-            for (int j = 0; j < FEI_cal_Bc_num; j++) fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvector[i][j]);
-        }
-
-        for (int i = 0; i < FEI_cal_B0_num; i++) {
-            fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvalue[i]);
-            for (int j = 0; j < FEI_cal_B0_num; j++) fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvector[i][j]);
-        }
-
-        fclose(fp_FEI_cal_Bp);
-        fclose(fp_FEI_cal_B0);
-    }
-}
-
-void FluctuateFEIcal() {
-
-    std::normal_distribution<double> FEI_cal_distribution(0.0, 1.0);
-
-    // set nominal value
-    for (int i = 0; i < FEI_cal_Bc_num; i++) FEI_cal_Bc_fluctuated[i] = corrector_FEI.GetFEICalFactor(i, true, MCTYPE);
-    for (int i = 0; i < FEI_cal_B0_num; i++) FEI_cal_B0_fluctuated[i] = corrector_FEI.GetFEICalFactor(i, false, MCTYPE);
-
-    // fluctuate!
-    for (int i = 0; i < FEI_cal_Bc_num; i++) {
-        double temp_normal = FEI_cal_distribution(generator);
-        for (int j = 0; j < FEI_cal_Bc_num; j++) FEI_cal_Bc_fluctuated[j] = FEI_cal_Bc_fluctuated[j] + FEI_cal_Bc_eigenvalue[i] * FEI_cal_Bc_eigenvector[i][j] * temp_normal;
-    }
-    for (int i = 0; i < FEI_cal_B0_num; i++) {
-        double temp_normal = FEI_cal_distribution(generator);
-        for (int j = 0; j < FEI_cal_B0_num; j++) FEI_cal_B0_fluctuated[j] = FEI_cal_B0_fluctuated[j] + FEI_cal_B0_eigenvalue[i] * FEI_cal_B0_eigenvector[i][j] * temp_normal;
     }
 
 }
 
 int main(int argc, char* argv[])
 {
-    ReadFEIcalFile();
+
+    ReadMultiplicityFile();
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
-    double Nevt_nominal[RarityBins * 5] = { 0.0 }; // CHG MIX SIGNAL_1 SIGNAL_2 SIGNAL_3
-    double Nevt_fluc[NToys][RarityBins * 5] = { 0.0 }; // CHG MIX SIGNAL_1 SIGNAL_2 SIGNAL_3
-    double Relative_Uncertainty[NToys][RarityBins * 5] = { 0.0 };
-
-
-
-    /* ====================================== */
-    // define TH1D for temporary usage
-    TH1D* temp_hist = new TH1D("temp_hist", "temp_hist", RarityBins, BinMIN, BinMAX);
-    temp_hist->Reset();
-    /* ====================================== */
+    double Nevt_nominal[RarityBins * 9] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL_1 SIGNAL_2 SIGNAL_3
+    double Nevt_fluc_multiplicity[NToys][RarityBins * 9] = { 0.0 }; // CHG MIX UUBAR DDBAR SSBAR CHARM SIGNAL_1 SIGNAL_2 SIGNAL_3
+    double Relative_Uncertainty_multiplicity[NToys][RarityBins * 9] = { 0.0 };
 
 
 
@@ -925,24 +874,32 @@ int main(int argc, char* argv[])
 
     GetNominalNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_nominal, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
     GetNominalNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_nominal, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+    GetNominalNevt(MC_dirname_UUBAR, "root", "Continuum", "UUBAR", Nevt_nominal, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+    GetNominalNevt(MC_dirname_DDBAR, "root", "Continuum", "DDBAR", Nevt_nominal, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+    GetNominalNevt(MC_dirname_SSBAR, "root", "Continuum", "SSBAR", Nevt_nominal, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+    GetNominalNevt(MC_dirname_CHARM, "root", "Continuum", "CHARM", Nevt_nominal, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     /* ====================================== */
 
 
 
     /* ====================================== */
-    // get fluctuated Nevt for BR
+    // get fluctuated Nevt for multiplicity
     for (int i = 0; i < NToys; i++) {
-        FluctuateFEIcal();
+        FluctuateMultiplicityCorrection();
 
-        GetFlucNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
-        GetFlucNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
-        GetFlucNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
-        GetFlucNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
-        GetFlucNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
-        GetFlucNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_fluc_multiplicity, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_fluc_multiplicity, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL, "B2Xsnunu", "Bplus", "SIGNAL", Nevt_fluc_multiplicity, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B02K0nunu", "Bzero", "SIGNAL", Nevt_fluc_multiplicity, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu");
+        GetFlucNevt(MC_dirname_SIGNAL, "B02Kstar0nunu", "Bzero", "SIGNAL", Nevt_fluc_multiplicity, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise");
+        GetFlucNevt(MC_dirname_SIGNAL, "B02Xsnunu", "Bzero", "SIGNAL", Nevt_fluc_multiplicity, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu");
 
-        GetFlucNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_fluc, i, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
-        GetFlucNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_fluc, i, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+        GetFlucNevt(MC_dirname_CHG, "root", "Bplus", "CHG", Nevt_fluc_multiplicity, i, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise");
+        GetFlucNevt(MC_dirname_MIX, "root", "Bzero", "MIX", Nevt_fluc_multiplicity, i, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise");
+        GetFlucNevt(MC_dirname_UUBAR, "root", "Continuum", "UUBAR", Nevt_fluc_multiplicity, i, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_DDBAR, "root", "Continuum", "DDBAR", Nevt_fluc_multiplicity, i, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_SSBAR, "root", "Continuum", "SSBAR", Nevt_fluc_multiplicity, i, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise");
+        GetFlucNevt(MC_dirname_CHARM, "root", "Continuum", "CHARM", Nevt_fluc_multiplicity, i, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     }
     /* ====================================== */
 
@@ -951,9 +908,9 @@ int main(int argc, char* argv[])
     /* ====================================== */
     // get relative uncertainty
     for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 5; j++) {
-            if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty[i][j] = 1.0;
-            else Relative_Uncertainty[i][j] = Nevt_fluc[i][j] / Nevt_nominal[j];
+        for (int j = 0; j < RarityBins * 9; j++) {
+            if (std::abs(Nevt_nominal[j]) < MyEPSILON) Relative_Uncertainty_multiplicity[i][j] = 1.0;
+            else Relative_Uncertainty_multiplicity[i][j] = Nevt_fluc_multiplicity[i][j] / Nevt_nominal[j];
         }
     }
     /* ====================================== */
@@ -964,10 +921,10 @@ int main(int argc, char* argv[])
     // file output
     FILE* fp;
     
-    fp = fopen(("FEI_toys_" + std::string(argv[1]) + ".txt").c_str(),"w");
+    fp = fopen(("multiplicity_toys_" + std::string(argv[1]) + ".txt").c_str(),"w");
     for (int i = 0; i < NToys; i++) {
-        for (int j = 0; j < RarityBins * 5; j++) {
-            fprintf(fp, "%lf ", Relative_Uncertainty[i][j]);
+        for (int j = 0; j < RarityBins * 9; j++) {
+            fprintf(fp, "%lf ", Relative_Uncertainty_multiplicity[i][j]);
         }
         fprintf(fp, "\n");
     }

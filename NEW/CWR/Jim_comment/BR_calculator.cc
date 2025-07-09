@@ -61,13 +61,189 @@ Corrector_Fragmentation corrector_Fragmentation;
 
 const bool KnunuOnly = false;
 
-// FEI_cal_Bc_eigenvalue[0] <---------> FEI_cal_Bc_eigenvector[0][i]
-double FEI_cal_Bc_eigenvalue[FEI_cal_Bc_num] = { 0.0 };
-double FEI_cal_Bc_eigenvector[FEI_cal_Bc_num][FEI_cal_Bc_num] = { 0.0 };
-double FEI_cal_Bc_fluctuated[FEI_cal_Bc_num] = { 0.0 };
-double FEI_cal_B0_eigenvalue[FEI_cal_B0_num] = { 0.0 };
-double FEI_cal_B0_eigenvector[FEI_cal_B0_num][FEI_cal_B0_num] = { 0.0 };
-double FEI_cal_B0_fluctuated[FEI_cal_B0_num] = { 0.0 };
+// define struct and sorting function for a binary search
+typedef struct EventInformation {
+    int experiment;
+    int run;
+    unsigned int event;
+    int candidate;
+    int ncandidates;
+    int DMID1;
+    int DMID2;
+} EvtInfo;
+
+bool compare(EvtInfo first, EvtInfo second) {
+    if (first.experiment > second.experiment) return true;
+    else if (first.experiment < second.experiment) return false;
+    else {
+        if (first.run > second.run) return true;
+        else if (first.run < second.run) return false;
+        else {
+            if (first.event > second.event) return true;
+            else if (first.event < second.event) return false;
+            else {
+                if (first.candidate > second.candidate) return true;
+                else if (first.candidate < second.candidate) return false;
+                else {
+                    if (first.ncandidates > second.ncandidates) return true;
+                    else return false;
+                }
+            }
+        }
+    }
+}
+
+std::vector<EvtInfo> EvtInfos;
+
+struct _BRuncertainty {
+    std::vector<int> DMID;
+    std::vector<double> RelativeUncertainty;
+    std::vector<double> BR_correction_fluctuated;
+} BRuncertainty = {
+    {
+        -1,
+
+        0, 1, 2, 3, 4,
+        5, 6, 7, 8, 9,
+        10, 11, 12, 13, 14,
+        15, 16, 17, 18, 19,
+        20, 21, 22, 23, 24,
+        25, 26,
+
+        100, 101, 102, 103, 104,
+        105, 106, 107, 108, 109,
+        110, 111, 112, 113, 114,
+        115, 116, 117, 118, 119,
+        120, 121, 122
+    },
+    {
+        0,
+
+        0.03943, 0.03913, 0.03913, 0.13433, 0.03943,
+        0.02778, 0.26316, 0.46667, 0.02896, 0.80000,
+        0.71429, 0.17347, 0.32468, 0.10638, 0.22222,
+        //1.00000, 0.10000, 0.03809, 0.22018, 0.04336, care about BR (B --> K+ KL KL) seperately
+        1.00000, 0.10000, 0.00000, 0.22018, 0.04336,
+        0.11650, 0.29091, 0.21053, 0.07381, 0.16296,
+        0.01863, 0.20732,
+
+        0.02414, 0.02414, 0.04018, 0.33333, 0.04018,
+        0.20769, 0.15789, 0.13235, 0.15341, 0.56140,
+        0.04745, 0.21905, 0.03187, 0.05696, 0.48718,
+        //0.55000, 0.13750, 0.08333, 0.07910, 0.21622, care about BR (B0 --> KS KL KL) seperately
+        0.55000, 0.13750, 0.00000, 0.07910, 0.21622,
+        0.04545, 0.11111, 0.07910
+    },
+    {}
+};
+
+void ReadEvtFile() {
+    const char* CHG_Evt_file = "CHG_Evt";
+    const char* MIX_Evt_file = "MIX_Evt";
+    const char* SIGNAL_Evt_file = "SIGNAL_Evt";
+
+    FILE* fp_CHG_Evt = fopen(CHG_Evt_file, "r");
+    FILE* fp_MIX_Evt = fopen(MIX_Evt_file, "r");
+    FILE* fp_SIGNAL_Evt = fopen(SIGNAL_Evt_file, "r");
+
+    double temp_experiment = -1;
+    double temp_run = -1;
+    double temp_event = -1;
+    double temp_candidate = -1;
+    double temp_ncandidates = -1;
+    int temp_DMID1 = -1;
+    int temp_DMID2 = -1;
+
+    while (true) {
+        if (fscanf(fp_CHG_Evt, "%lf\n", &temp_experiment) == EOF) break;
+        if (fscanf(fp_CHG_Evt, "%lf\n", &temp_run) == EOF) break;
+        if (fscanf(fp_CHG_Evt, "%lf\n", &temp_event) == EOF) break;
+        if (fscanf(fp_CHG_Evt, "%lf\n", &temp_candidate) == EOF) break;
+        if (fscanf(fp_CHG_Evt, "%lf\n", &temp_ncandidates) == EOF) break;
+        if (fscanf(fp_CHG_Evt, "%d\n", &temp_DMID1) == EOF) break;
+        if (fscanf(fp_CHG_Evt, "%d\n", &temp_DMID2) == EOF) break;
+
+        if ((temp_DMID1 > 99) || (temp_DMID2 > 99)) {
+            printf("[ReadEvtFile] DMID for CHG is larger than 99!\n");
+            exit(1);
+        }
+
+        EvtInfo temp_EvtInfo = { (int)lround(temp_experiment), (int)lround(temp_run), (unsigned int)lround(temp_event), (int)lround(temp_candidate), (int)lround(temp_ncandidates), temp_DMID1, temp_DMID2 };
+        EvtInfos.push_back(temp_EvtInfo);
+
+    }
+
+    while (true) {
+        if (fscanf(fp_MIX_Evt, "%lf\n", &temp_experiment) == EOF) break;
+        if (fscanf(fp_MIX_Evt, "%lf\n", &temp_run) == EOF) break;
+        if (fscanf(fp_MIX_Evt, "%lf\n", &temp_event) == EOF) break;
+        if (fscanf(fp_MIX_Evt, "%lf\n", &temp_candidate) == EOF) break;
+        if (fscanf(fp_MIX_Evt, "%lf\n", &temp_ncandidates) == EOF) break;
+        if (fscanf(fp_MIX_Evt, "%d\n", &temp_DMID1) == EOF) break;
+        if (fscanf(fp_MIX_Evt, "%d\n", &temp_DMID2) == EOF) break;
+
+        if (((temp_DMID1 < 100) && (temp_DMID1 >= 0)) || ((temp_DMID2 < 100) && (temp_DMID2 >= 0))) {
+            printf("[ReadEvtFile] DMID for MIX is smaller than 100!\n");
+            exit(1);
+        }
+
+        EvtInfo temp_EvtInfo = { (int)lround(temp_experiment), (int)lround(temp_run), (unsigned int)lround(temp_event), (int)lround(temp_candidate), (int)lround(temp_ncandidates), temp_DMID1, temp_DMID2 };
+        EvtInfos.push_back(temp_EvtInfo);
+
+    }
+
+    while (true) {
+        if (fscanf(fp_SIGNAL_Evt, "%lf\n", &temp_experiment) == EOF) break;
+        if (fscanf(fp_SIGNAL_Evt, "%lf\n", &temp_run) == EOF) break;
+        if (fscanf(fp_SIGNAL_Evt, "%lf\n", &temp_event) == EOF) break;
+        if (fscanf(fp_SIGNAL_Evt, "%lf\n", &temp_candidate) == EOF) break;
+        if (fscanf(fp_SIGNAL_Evt, "%lf\n", &temp_ncandidates) == EOF) break;
+        if (fscanf(fp_SIGNAL_Evt, "%d\n", &temp_DMID1) == EOF) break;
+        if (fscanf(fp_SIGNAL_Evt, "%d\n", &temp_DMID2) == EOF) break;
+
+        if ((temp_DMID1 > 0) && (temp_DMID2 > 0)) {
+            printf("[ReadEvtFile] both DMID for SIGNAL is larger than 0!\n");
+            exit(1);
+        }
+
+        EvtInfo temp_EvtInfo = { (int)lround(temp_experiment), (int)lround(temp_run), (unsigned int)lround(temp_event), (int)lround(temp_candidate), (int)lround(temp_ncandidates), temp_DMID1, temp_DMID2 };
+        EvtInfos.push_back(temp_EvtInfo);
+
+    }
+
+    sort(EvtInfos.begin(), EvtInfos.end(), compare);
+
+    fclose(fp_CHG_Evt);
+    fclose(fp_MIX_Evt);
+    fclose(fp_SIGNAL_Evt);
+}
+
+double GetBRRelativeUncertainty(int experiment, int run, unsigned int event, int candidate, int ncandidates, std::string fname) {
+
+    if (fname.find("B2Knn_flat") != std::string::npos) return 1.0; // it is B+ --> K+ n nbar special MC. We do not fluctuate it
+    else if (fname.find("B2Kstarnn_flat") != std::string::npos) return 1.0; // it is B+ --> K*+ n nbar special MC. We do not fluctuate it
+    else if (fname.find("B02K0nn_flat") != std::string::npos) return 1.0; // it is B0 --> K0 n nbar special MC. We do not fluctuate it
+    else if (fname.find("B02K0starnn_flat") != std::string::npos) return 1.0; // it is B0 --> K0 n nbar special MC. We do not fluctuate it
+
+    int temp_Evt_DMID1 = -100;
+    int temp_Evt_DMID2 = -100;
+
+    EvtInfo temp_EvtInfo = { experiment, run, event, candidate, ncandidates, -100, -100 };
+    int temp_index = lower_bound(EvtInfos.begin(), EvtInfos.end(), temp_EvtInfo, compare) - EvtInfos.begin();
+    temp_Evt_DMID1 = EvtInfos.at(temp_index).DMID1;
+    temp_Evt_DMID2 = EvtInfos.at(temp_index).DMID2;
+
+    if (!((experiment == EvtInfos.at(temp_index).experiment) && (run == EvtInfos.at(temp_index).run) && (event == EvtInfos.at(temp_index).event) && (candidate == EvtInfos.at(temp_index).candidate) && (ncandidates == EvtInfos.at(temp_index).ncandidates))) {
+        printf("[GetBRRelativeUncertainty] Cannot find!\n");
+        exit(1);
+    }
+
+    double temp_Relative_uncertainty1 = BRuncertainty.BR_correction_fluctuated.at(std::find(BRuncertainty.DMID.begin(), BRuncertainty.DMID.end(), temp_Evt_DMID1) - BRuncertainty.DMID.begin());
+    double temp_Relative_uncertainty2 = BRuncertainty.BR_correction_fluctuated.at(std::find(BRuncertainty.DMID.begin(), BRuncertainty.DMID.end(), temp_Evt_DMID2) - BRuncertainty.DMID.begin());
+
+    return temp_Relative_uncertainty1 * temp_Relative_uncertainty2;
+
+}
 
 std::random_device rd;
 std::default_random_engine generator(rd());
@@ -75,28 +251,6 @@ std::default_random_engine generator(rd());
 # define NToys 500
 
 /* ====================================== */
-
-double GetFEICalFactor_fluctuated(double UpsilonID, double BtagID) {
-    // UpsilonID => charged: 0, mixed: 1
-
-    if (UpsilonID > -0.5 && UpsilonID < 0.5) { // charged
-        for (int i = 0; i < FEI_cal_Bc_num - 1; i++) {
-            if (BtagID > corrector_FEI.GetmodeID(i, true, MCTYPE) - 0.5 && BtagID < corrector_FEI.GetmodeID(i, true, MCTYPE) + 0.5) return FEI_cal_Bc_fluctuated[i];
-        }
-        return FEI_cal_Bc_fluctuated[FEI_cal_Bc_num - 1];
-    }
-    else if (UpsilonID > 0.5 && UpsilonID < 1.5) { // mixed
-        for (int i = 0; i < FEI_cal_B0_num - 1; i++) {
-            if (BtagID > corrector_FEI.GetmodeID(i, false, MCTYPE) - 0.5 && BtagID < corrector_FEI.GetmodeID(i, false, MCTYPE) + 0.5) return FEI_cal_B0_fluctuated[i];
-        }
-        return FEI_cal_B0_fluctuated[FEI_cal_B0_num - 1];
-    }
-
-    printf("[GetFEICalFactor_fluctuated] error! unexpected decay ID\n");
-    exit(1);
-    return 0;
-
-}
 
 void GetNominalNevt(const char* dirname, const char* included_string, const char* type, const char* sample, double Nevt_nominal[RarityBins * 5], double weight_var = 1.0, std::string CorrectionType = "otherwise") { // get nominal PDF with appropriate correction
     /*
@@ -438,6 +592,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             int BinIndex = (int)std::floor(ReturnBinIndex(MVA_var, Bsig_M));
             Nevt_nominal[ArrayBinID * RarityBins + BinIndex] = Nevt_nominal[ArrayBinID * RarityBins + BinIndex] + total_weight;
             Nevt = Nevt + total_weight;
+
         }
         input_file->Close();
 
@@ -468,10 +623,6 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
     if (strcmp(sample, "CHG") == 0) {}
     else if (strcmp(sample, "MIX") == 0) {}
     else if (strcmp(sample, "SIGNAL") == 0) {}
-    else if (strcmp(sample, "Knn") == 0) {}
-    else if (strcmp(sample, "Kstarnn") == 0) {}
-    else if (strcmp(sample, "K0nn") == 0) {}
-    else if (strcmp(sample, "K0starnn") == 0) {}
     else {
         printf("[ERROR] unexpected sample name\n");
         exit(1);
@@ -705,8 +856,8 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
             }
 
             double Correction_FEI = 1.0;
-            if (strcmp(type, "Bplus") == 0) Correction_FEI = GetFEICalFactor_fluctuated(Upsilon_ID, Btag_ID);
-            else if (strcmp(type, "Bzero") == 0) Correction_FEI = GetFEICalFactor_fluctuated(Upsilon_ID, Btag_ID);
+            if (strcmp(type, "Bplus") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
+            else if (strcmp(type, "Bzero") == 0) Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
             double Correction_KID = 1;
             double Correction_PID = 1;
@@ -769,7 +920,9 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
             double Correction_BtoDtoXKL = 1.0;
             if ((strcmp(sample, "CHG") == 0) || (strcmp(sample, "MIX") == 0) || (strcmp(sample, "SIGNAL") == 0)) Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_KS0 * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL;
+            double Correction_BR = GetBRRelativeUncertainty(__experiment__, __run__, __event__, __candidate__, __ncandidates__, names.at(i));
+
+            double total_weight = Correction_FEI * weight_var * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_KS0 * Correction_Knn * Correction_Xnn * Correction_multiplicity * Correction_KpKLKL * Correction_KSKLKL * Correction_KstarKLKL * Correction_XKLKL * Correction_BtoDtoXKL * Correction_BR;
             if (CorrectionType == "B2Knunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bplus");
             else if (CorrectionType == "B02K0nunu") total_weight = total_weight * corrector.GetCorrectionFactor(invM * invM, "Bzero");
             else if (CorrectionType == "B2Xsnunu") total_weight = total_weight * corrector_Fragmentation.GetCorrectionFactor(Decay, Mxs_Bc_MC, Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MCTYPE);
@@ -804,99 +957,44 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
             int BinIndex = (int)std::floor(ReturnBinIndex(MVA_var, Bsig_M));
             Nevt_fluc[ToyNum][ArrayBinID * RarityBins + BinIndex] = Nevt_fluc[ToyNum][ArrayBinID * RarityBins + BinIndex] + total_weight;
             Nevt = Nevt + total_weight;
+
         }
         input_file->Close();
+
+        printf("%s has %lf events (with correction)\n", dirname, Nevt);
 
     }
 
     return;
 }
 
-void ReadFEIcalFile() {
-    if (std::string(MCTYPE) == std::string("MC15ri")) {
-        const char* FEI_cal_Bp_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_Bp_eigen.txt";
-        const char* FEI_cal_B0_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_B0_eigen.txt";
+void FluctuateBBBR() {
 
-        FILE* fp_FEI_cal_Bp = fopen(FEI_cal_Bp_file, "r");
-        FILE* fp_FEI_cal_B0 = fopen(FEI_cal_B0_file, "r");
+    BRuncertainty.BR_correction_fluctuated.clear();
 
-        for (int i = 0; i < FEI_cal_Bc_num; i++) {
-            fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvalue[i]);
-            for (int j = 0; j < FEI_cal_Bc_num; j++) fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvector[i][j]);
+    for (unsigned int i = 0; i < BRuncertainty.RelativeUncertainty.size(); i++) {
+        double Correction_BR = 1.0;
+
+        if (std::abs(BRuncertainty.RelativeUncertainty.at(i)) < MyEPSILON) Correction_BR = 1.0;
+        else {
+            std::normal_distribution<double> BR_distribution(1.0, BRuncertainty.RelativeUncertainty.at(i));
+            Correction_BR = BR_distribution(generator);
         }
 
-        for (int i = 0; i < FEI_cal_B0_num; i++) {
-            fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvalue[i]);
-            for (int j = 0; j < FEI_cal_B0_num; j++) fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvector[i][j]);
-        }
-
-        fclose(fp_FEI_cal_Bp);
-        fclose(fp_FEI_cal_B0);
-    }
-    else if (std::string(MCTYPE) == std::string("MC15rd")) {
-#ifdef USE_OLD_FEI_CORRECTION
-        const char* FEI_cal_Bp_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_Bp_eigen.txt";
-        const char* FEI_cal_B0_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15ri_FEI/FEI_cal_B0_eigen.txt";
-#else
-        const char* FEI_cal_Bp_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15rd_FEI/FEI_cal_Bp_eigen.txt";
-        const char* FEI_cal_B0_file = "/home/belle2/junewoo/storage_b1/bsub/systematic/MC15rd_FEI/FEI_cal_B0_eigen.txt";
-#endif
-
-        FILE* fp_FEI_cal_Bp = fopen(FEI_cal_Bp_file, "r");
-        FILE* fp_FEI_cal_B0 = fopen(FEI_cal_B0_file, "r");
-
-        for (int i = 0; i < FEI_cal_Bc_num; i++) {
-            fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvalue[i]);
-            for (int j = 0; j < FEI_cal_Bc_num; j++) fscanf(fp_FEI_cal_Bp, "%lf\n", &FEI_cal_Bc_eigenvector[i][j]);
-        }
-
-        for (int i = 0; i < FEI_cal_B0_num; i++) {
-            fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvalue[i]);
-            for (int j = 0; j < FEI_cal_B0_num; j++) fscanf(fp_FEI_cal_B0, "%lf\n", &FEI_cal_B0_eigenvector[i][j]);
-        }
-
-        fclose(fp_FEI_cal_Bp);
-        fclose(fp_FEI_cal_B0);
-    }
-}
-
-void FluctuateFEIcal() {
-
-    std::normal_distribution<double> FEI_cal_distribution(0.0, 1.0);
-
-    // set nominal value
-    for (int i = 0; i < FEI_cal_Bc_num; i++) FEI_cal_Bc_fluctuated[i] = corrector_FEI.GetFEICalFactor(i, true, MCTYPE);
-    for (int i = 0; i < FEI_cal_B0_num; i++) FEI_cal_B0_fluctuated[i] = corrector_FEI.GetFEICalFactor(i, false, MCTYPE);
-
-    // fluctuate!
-    for (int i = 0; i < FEI_cal_Bc_num; i++) {
-        double temp_normal = FEI_cal_distribution(generator);
-        for (int j = 0; j < FEI_cal_Bc_num; j++) FEI_cal_Bc_fluctuated[j] = FEI_cal_Bc_fluctuated[j] + FEI_cal_Bc_eigenvalue[i] * FEI_cal_Bc_eigenvector[i][j] * temp_normal;
-    }
-    for (int i = 0; i < FEI_cal_B0_num; i++) {
-        double temp_normal = FEI_cal_distribution(generator);
-        for (int j = 0; j < FEI_cal_B0_num; j++) FEI_cal_B0_fluctuated[j] = FEI_cal_B0_fluctuated[j] + FEI_cal_B0_eigenvalue[i] * FEI_cal_B0_eigenvector[i][j] * temp_normal;
+        BRuncertainty.BR_correction_fluctuated.push_back(Correction_BR);
     }
 
 }
 
 int main(int argc, char* argv[])
 {
-    ReadFEIcalFile();
+    ReadEvtFile();
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
     double Nevt_nominal[RarityBins * 5] = { 0.0 }; // CHG MIX SIGNAL_1 SIGNAL_2 SIGNAL_3
     double Nevt_fluc[NToys][RarityBins * 5] = { 0.0 }; // CHG MIX SIGNAL_1 SIGNAL_2 SIGNAL_3
     double Relative_Uncertainty[NToys][RarityBins * 5] = { 0.0 };
-
-
-
-    /* ====================================== */
-    // define TH1D for temporary usage
-    TH1D* temp_hist = new TH1D("temp_hist", "temp_hist", RarityBins, BinMIN, BinMAX);
-    temp_hist->Reset();
-    /* ====================================== */
 
 
 
@@ -932,7 +1030,7 @@ int main(int argc, char* argv[])
     /* ====================================== */
     // get fluctuated Nevt for BR
     for (int i = 0; i < NToys; i++) {
-        FluctuateFEIcal();
+        FluctuateBBBR();
 
         GetFlucNevt(MC_dirname_SIGNAL, "B2Knunu", "Bplus", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu");
         GetFlucNevt(MC_dirname_SIGNAL, "B2Kstarnunu", "Bplus", "SIGNAL", Nevt_fluc, i, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise");
@@ -964,7 +1062,7 @@ int main(int argc, char* argv[])
     // file output
     FILE* fp;
     
-    fp = fopen(("FEI_toys_" + std::string(argv[1]) + ".txt").c_str(),"w");
+    fp = fopen(("BR_toys_" + std::string(argv[1]) + ".txt").c_str(),"w");
     for (int i = 0; i < NToys; i++) {
         for (int j = 0; j < RarityBins * 5; j++) {
             fprintf(fp, "%lf ", Relative_Uncertainty[i][j]);
