@@ -335,7 +335,7 @@ void GetNominalNevt(const char* dirname, const char* included_string, const char
             if (std::string(MCTYPE) == "MC15ri") for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
             else if (std::string(MCTYPE) == "MC15rd") {
 #ifdef USE_OLD_PI0_CORRECTION
-                for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
+                for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, "MC15ri"), temp_N_bin_pi0[i_pi0]);
 #else
                 for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_pi0_syst_MC15rd[i_pi0]);
 #endif
@@ -705,7 +705,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
 #ifdef USE_OLD_PI0_CORRECTION
                 for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) {
                     Correction_pi0 = Correction_pi0 * std::pow(
-                        corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE) +
+                        corrector_pi0.GetCorrectionFactor(i_pi0, "MC15ri") +
                         pi0_correction_fluctuation_stat_uncer[i_pi0] +
                         pi0_correction_fluctuation_sys_uncer1[i_pi0] +
                         pi0_correction_fluctuation_sys_uncer2[i_pi0],
@@ -835,7 +835,7 @@ void Fluctuatepi0Correction() {
 #ifdef USE_OLD_PI0_CORRECTION
         for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) {
 
-            std::normal_distribution<double> pi0_stat_distribution(0.0, corrector_pi0.GetStatUncertainty(i_pi0, MCTYPE));
+            std::normal_distribution<double> pi0_stat_distribution(0.0, corrector_pi0.GetStatUncertainty(i_pi0, "MC15ri"));
             pi0_correction_fluctuation_stat_uncer[i_pi0] = pi0_stat_distribution(generator);
 
         }
@@ -844,10 +844,10 @@ void Fluctuatepi0Correction() {
         double alpha = 0.0;
 
         alpha = pi0_sys_distribution(generator);
-        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) pi0_correction_fluctuation_sys_uncer1[i_pi0] = alpha * corrector_pi0.GetSystUncertainty1(i_pi0, MCTYPE);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) pi0_correction_fluctuation_sys_uncer1[i_pi0] = alpha * corrector_pi0.GetSystUncertainty1(i_pi0, "MC15ri");
 
         alpha = pi0_sys_distribution(generator);
-        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) pi0_correction_fluctuation_sys_uncer2[i_pi0] = alpha * corrector_pi0.GetSystUncertainty2(i_pi0, MCTYPE);
+        for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) pi0_correction_fluctuation_sys_uncer2[i_pi0] = alpha * corrector_pi0.GetSystUncertainty2(i_pi0, "MC15ri");
 #else
         std::normal_distribution<double> pi0_uncer_distribution(0.0, 1.0);
 
