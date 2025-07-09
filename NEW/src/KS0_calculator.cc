@@ -711,7 +711,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
             if (std::string(MCTYPE) == "MC15ri") {
-                Correction_KS0 = Correction_KS0 * Eff_MC15ri_alpha * (corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE) + corrector_KS0.GetAbsoluteUncertainty(KS0_flight_distance, MCTYPE));
+                Correction_KS0 = Correction_KS0 * (corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE) + Eff_MC15ri_alpha * corrector_KS0.GetAbsoluteUncertainty(KS0_flight_distance, MCTYPE));
             }
             else if (std::string(MCTYPE) == "MC15rd") {
                 int KS0_bin = corrector_KS0.GetBin(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE);
