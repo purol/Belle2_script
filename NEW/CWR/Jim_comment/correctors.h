@@ -2693,7 +2693,7 @@ Corrector_Fragmentation::Corrector_Fragmentation() {
     }
 }
 
-int Corrector_Fragmentation::Classify(int Decay[N_decay], Sample sample) {
+int Corrector_Fragmentation::Clasgsify(int Decay[N_decay], Sample sample) {
     if (sample == Corrector_Fragmentation::Sample::gamma) {
         /*
             0: Xs2Kpi_wopi0_MC // Xs -> K pi w/o pi0
