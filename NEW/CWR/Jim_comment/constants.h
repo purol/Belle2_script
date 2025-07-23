@@ -170,7 +170,10 @@
 # define N_Xsu_nonresonant_nunubar_syst 10000000.0
 # define N_Xsd_nonresonant_nunubar_syst 10000000.0
 
-//# define KS0_rel_uncertainty 0.6 // %/cm
+#ifdef USE_OLD_KS0_CORRECTION
+# define KS0_rel_uncertainty 0.6 // %/cm
+#else
+#endif
 # define track_rel_uncertainty_MC15ri 0.24 // %
 #ifdef USE_OLD_TRACK_CORRECTION
 #define track_rel_uncertainty_MC15rd 0.24
