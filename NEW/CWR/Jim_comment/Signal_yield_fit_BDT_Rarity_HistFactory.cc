@@ -579,12 +579,22 @@ double GetPDFs(const char* dirname, const char* included_string, TH1D* hist, con
                 total_weight = total_weight * track_correction;
             }
             else if (pdftype == PDFtype::KS0UP) {
+#ifdef USE_OLD_KS0_CORRECTION
+                double KS0_correction = 1 + (KS0_rel_uncertainty * KS0_flight_distance / 100.0);
+                total_weight = total_weight * KS0_correction;
+#else
                 printf("[GetPDFs] do not use `GetPDFs` to calculate the systematic uncertainty from KS0 efficiency calbiration factor anymore.\n");
                 exit(1);
+#endif
             }
             else if (pdftype == PDFtype::KS0DOWN) {
+#ifdef USE_OLD_KS0_CORRECTION
+                double KS0_correction = 1 - (KS0_rel_uncertainty * KS0_flight_distance / 100.0);
+                total_weight = total_weight * KS0_correction;
+#else
                 printf("[GetPDFs] do not use `GetPDFs` to calculate the systematic uncertainty from KS0 efficiency calbiration factor anymore.\n");
                 exit(1);
+#endif
             }
             else if (pdftype == PDFtype::BDTc) {
                 double BDTc_weight = BDTcToWeight(BDTc_var);
@@ -3123,6 +3133,28 @@ int main()
     TH1D* SSBAR_track_m = new TH1D("SSBAR_track_m", "SSBAR_track_m", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_track_m = new TH1D("CHARM_track_m", "CHARM_track_m", RarityBins, BinMIN, BinMAX);
 
+#ifdef USE_OLD_KS0_CORRECTION
+    TH1D* Signal_KS0_p = new TH1D("Signal_KS0_p", "Signal_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_KS0_p = new TH1D("Signal_MXs1_KS0_p", "Signal_MXs1_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_KS0_p = new TH1D("Signal_MXs2_KS0_p", "Signal_MXs2_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_KS0_p = new TH1D("Signal_MXs3_KS0_p", "Signal_MXs3_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_KS0_p = new TH1D("CHG_KS0_p", "CHG_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_KS0_p = new TH1D("MIX_KS0_p", "MIX_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_KS0_p = new TH1D("UUBAR_KS0_p", "UUBAR_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_KS0_p = new TH1D("DDBAR_KS0_p", "DDBAR_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_KS0_p = new TH1D("SSBAR_KS0_p", "SSBAR_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_KS0_p = new TH1D("CHARM_KS0_p", "CHARM_KS0_p", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_KS0_m = new TH1D("Signal_KS0_m", "Signal_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs1_KS0_m = new TH1D("Signal_MXs1_KS0_m", "Signal_MXs1_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs2_KS0_m = new TH1D("Signal_MXs2_KS0_m", "Signal_MXs2_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_MXs3_KS0_m = new TH1D("Signal_MXs3_KS0_m", "Signal_MXs3_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* CHG_KS0_m = new TH1D("CHG_KS0_m", "CHG_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* MIX_KS0_m = new TH1D("MIX_KS0_m", "MIX_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* UUBAR_KS0_m = new TH1D("UUBAR_KS0_m", "UUBAR_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* DDBAR_KS0_m = new TH1D("DDBAR_KS0_m", "DDBAR_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* SSBAR_KS0_m = new TH1D("SSBAR_KS0_m", "SSBAR_KS0_m", RarityBins, BinMIN, BinMAX);
+    TH1D* CHARM_KS0_m = new TH1D("CHARM_KS0_m", "CHARM_KS0_m", RarityBins, BinMIN, BinMAX);
+#else
     // KS0 uncertainty (correlated)
     TH1D** Signal_KS0_correlated;
     TH1D** Signal_MXs1_KS0_correlated;
@@ -3145,6 +3177,7 @@ int main()
     TH1D* DDBAR_KS0_uncorrelated = new TH1D("DDBAR_KS0_uncorrelated", "DDBAR_KS0_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* SSBAR_KS0_uncorrelated = new TH1D("SSBAR_KS0_uncorrelated", "SSBAR_KS0_uncorrelated", RarityBins, BinMIN, BinMAX);
     TH1D* CHARM_KS0_uncorrelated = new TH1D("CHARM_KS0_uncorrelated", "CHARM_KS0_uncorrelated", RarityBins, BinMIN, BinMAX);
+#endif
 
     // FEI uncertainty (correlated)
     TH1D** Signal_FEI_correlated;
@@ -3676,11 +3709,41 @@ int main()
     GetPDFs(MC_dirname_SSBAR, "root", SSBAR_track_m, "Continuum", "SSBAR", PDFtype::trackDOWN, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
     GetPDFs(MC_dirname_CHARM, "root", CHARM_track_m, "Continuum", "CHARM", PDFtype::trackDOWN, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
 
+#ifdef USE_OLD_KS0_CORRECTION
+    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs1_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs1_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs1_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs1_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs1_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 1);
+    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs1_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 1);
+
+    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs2_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs2_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs2_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs2_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs2_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 2);
+    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs2_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 2);
+
+    GetPDFs(MC_dirname_SIGNAL, "B2Knunu", Signal_MXs3_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Knunu"), "B2Knunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B2Kstarnunu", Signal_MXs3_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Kstarnunu"), "otherwise", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B2Xsnunu", Signal_MXs3_KS0_p, "Bplus", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B2Xsnunu"), "B2Xsnunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B02K0nunu", Signal_MXs3_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02K0nunu"), "B02K0nunu", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B02Kstar0nunu", Signal_MXs3_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Kstar0nunu"), "otherwise", 3);
+    GetPDFs(MC_dirname_SIGNAL, "B02Xsnunu", Signal_MXs3_KS0_p, "Bzero", "SIGNAL", PDFtype::KS0UP, ObtainWeight("SIGNAL", MCTYPE, "validation", "B02Xsnunu"), "B02Xsnunu", 3);
+
+    GetPDFs(MC_dirname_CHG, "root", CHG_KS0_p, "Bplus", "CHG", PDFtype::KS0UP, ObtainWeight("CHG", MCTYPE, "validation", "CHG"), "otherwise", 0);
+    GetPDFs(MC_dirname_MIX, "root", MIX_KS0_p, "Bzero", "MIX", PDFtype::KS0UP, ObtainWeight("MIX", MCTYPE, "validation", "MIX"), "otherwise", 0);
+    GetPDFs(MC_dirname_UUBAR, "root", UUBAR_KS0_p, "Continuum", "UUBAR", PDFtype::KS0UP, ObtainWeight("UUBAR", MCTYPE, "validation", "UUBAR"), "otherwise", 0);
+    GetPDFs(MC_dirname_DDBAR, "root", DDBAR_KS0_p, "Continuum", "DDBAR", PDFtype::KS0UP, ObtainWeight("DDBAR", MCTYPE, "validation", "DDBAR"), "otherwise", 0);
+    GetPDFs(MC_dirname_SSBAR, "root", SSBAR_KS0_p, "Continuum", "SSBAR", PDFtype::KS0UP, ObtainWeight("SSBAR", MCTYPE, "validation", "SSBAR"), "otherwise", 0);
+    GetPDFs(MC_dirname_CHARM, "root", CHARM_KS0_p, "Continuum", "CHARM", PDFtype::KS0UP, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise", 0);
+#else
     // get KS0 uncertainty pdfs (correlated)
     int NPDFs_KS0 = GetKS0correlatedPDFs(KS0_correlated_info, CHG_nominal, MIX_nominal, UUBAR_nominal, DDBAR_nominal, SSBAR_nominal, CHARM_nominal, Signal_MXs1_nominal, Signal_MXs2_nominal, Signal_MXs3_nominal, &CHG_KS0_correlated, &MIX_KS0_correlated, &UUBAR_KS0_correlated, &DDBAR_KS0_correlated, &SSBAR_KS0_correlated, &CHARM_KS0_correlated, &Signal_MXs1_KS0_correlated, &Signal_MXs2_KS0_correlated, &Signal_MXs3_KS0_correlated);
 
     // get KS0 uncertainty pdfs (uncorrelated)
     GetKS0UncorrelatedPDFs(KS0_uncorrelated_info, CHG_KS0_uncorrelated, MIX_KS0_uncorrelated, UUBAR_KS0_uncorrelated, DDBAR_KS0_uncorrelated, SSBAR_KS0_uncorrelated, CHARM_KS0_uncorrelated, Signal_MXs1_KS0_uncorrelated, Signal_MXs2_KS0_uncorrelated, Signal_MXs3_KS0_uncorrelated);
+#endif
 
     // get FEI uncertainty pdfs (correlated)
     int NPDFs_FEI = GetFEIcorrelatedPDFs(FEI_correlated_info, CHG_nominal, MIX_nominal, Signal_MXs1_nominal, Signal_MXs2_nominal, Signal_MXs3_nominal, &CHG_FEI_correlated, &MIX_FEI_correlated, &Signal_MXs1_FEI_correlated, &Signal_MXs2_FEI_correlated, &Signal_MXs3_FEI_correlated);
@@ -4414,6 +4477,14 @@ int main()
     AddPDFs(Signal_track_m, Signal_MXs2_track_m);
     AddPDFs(Signal_track_m, Signal_MXs3_track_m);
 
+#ifdef USE_OLD_KS0_CORRECTION
+    AddPDFs(Signal_KS0_p, Signal_MXs1_KS0_p);
+    AddPDFs(Signal_KS0_p, Signal_MXs2_KS0_p);
+    AddPDFs(Signal_KS0_p, Signal_MXs3_KS0_p);
+    AddPDFs(Signal_KS0_m, Signal_MXs1_KS0_m);
+    AddPDFs(Signal_KS0_m, Signal_MXs2_KS0_m);
+    AddPDFs(Signal_KS0_m, Signal_MXs3_KS0_m);
+#else
     Signal_KS0_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_KS0 * 2);
     for (int i = 0; i < NPDFs_KS0; i++) Signal_KS0_correlated[i] = new TH1D(("Signal_KS0_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_KS0_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
     for (int i = NPDFs_KS0; i < 2 * NPDFs_KS0; i++) Signal_KS0_correlated[i] = new TH1D(("Signal_KS0_correlated" + std::to_string(i - NPDFs_KS0) + "_m").c_str(), ("Signal_KS0_correlated" + std::to_string(i - NPDFs_KS0) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
@@ -4422,6 +4493,7 @@ int main()
         AddPDFs(Signal_KS0_correlated[i], Signal_MXs2_KS0_correlated[i]);
         AddPDFs(Signal_KS0_correlated[i], Signal_MXs3_KS0_correlated[i]);
     }
+#endif
 
     Signal_FEI_correlated = (TH1D**)malloc(sizeof(TH1D*) * NPDFs_FEI * 2);
     for (int i = 0; i < NPDFs_FEI; i++) Signal_FEI_correlated[i] = new TH1D(("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), ("Signal_FEI_correlated" + std::to_string(i) + "_p").c_str(), RarityBins, BinMIN, BinMAX);
@@ -4691,6 +4763,28 @@ int main()
     SaveSpecificMXsBin(SSBAR_track_m, MXsBin);
     SaveSpecificMXsBin(CHARM_track_m, MXsBin);
 
+#ifdef USE_OLD_KS0_CORRECTION
+    SaveSpecificMXsBin(Signal_KS0_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_KS0_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_KS0_p, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_KS0_p, MXsBin);
+    SaveSpecificMXsBin(CHG_KS0_p, MXsBin);
+    SaveSpecificMXsBin(MIX_KS0_p, MXsBin);
+    SaveSpecificMXsBin(UUBAR_KS0_p, MXsBin);
+    SaveSpecificMXsBin(DDBAR_KS0_p, MXsBin);
+    SaveSpecificMXsBin(SSBAR_KS0_p, MXsBin);
+    SaveSpecificMXsBin(CHARM_KS0_p, MXsBin);
+    SaveSpecificMXsBin(Signal_KS0_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs1_KS0_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs2_KS0_m, MXsBin);
+    SaveSpecificMXsBin(Signal_MXs3_KS0_m, MXsBin);
+    SaveSpecificMXsBin(CHG_KS0_m, MXsBin);
+    SaveSpecificMXsBin(MIX_KS0_m, MXsBin);
+    SaveSpecificMXsBin(UUBAR_KS0_m, MXsBin);
+    SaveSpecificMXsBin(DDBAR_KS0_m, MXsBin);
+    SaveSpecificMXsBin(SSBAR_KS0_m, MXsBin);
+    SaveSpecificMXsBin(CHARM_KS0_m, MXsBin);
+#else
     // KS0 uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_KS0; i++) {
         SaveSpecificMXsBin(Signal_KS0_correlated[i], MXsBin);
@@ -4715,6 +4809,7 @@ int main()
     SaveSpecificMXsBin(DDBAR_KS0_uncorrelated, MXsBin);
     SaveSpecificMXsBin(SSBAR_KS0_uncorrelated, MXsBin);
     SaveSpecificMXsBin(CHARM_KS0_uncorrelated, MXsBin);
+#endif
 
     // FEI uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_FEI; i++) {
@@ -5158,6 +5253,28 @@ int main()
     SSBAR_track_m->Write();
     CHARM_track_m->Write();
 
+#ifdef USE_OLD_KS0_CORRECTION
+    Signal_KS0_p->Write();
+    Signal_MXs1_KS0_p->Write();
+    Signal_MXs2_KS0_p->Write();
+    Signal_MXs3_KS0_p->Write();
+    CHG_KS0_p->Write();
+    MIX_KS0_p->Write();
+    UUBAR_KS0_p->Write();
+    DDBAR_KS0_p->Write();
+    SSBAR_KS0_p->Write();
+    CHARM_KS0_p->Write();
+    Signal_KS0_m->Write();
+    Signal_MXs1_KS0_m->Write();
+    Signal_MXs2_KS0_m->Write();
+    Signal_MXs3_KS0_m->Write();
+    CHG_KS0_m->Write();
+    MIX_KS0_m->Write();
+    UUBAR_KS0_m->Write();
+    DDBAR_KS0_m->Write();
+    SSBAR_KS0_m->Write();
+    CHARM_KS0_m->Write();
+#else
     // KS0 uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_KS0; i++) {
         Signal_KS0_correlated[i]->Write();
@@ -5182,6 +5299,7 @@ int main()
     DDBAR_KS0_uncorrelated->Write();
     SSBAR_KS0_uncorrelated->Write();
     CHARM_KS0_uncorrelated->Write();
+#endif
 
     // FEI uncertainty (correlated)
     for (int i = 0; i < 2 * NPDFs_FEI; i++) {

@@ -1,0 +1,2038 @@
+#ifndef FITTER_H
+#define FITTER_H
+
+# include <vector>
+# include <deque>
+# include <string>
+# include <cstring>
+# include <float.h>
+
+# include "template.h"
+# include "correctors.h"
+
+# include "RooFitResult.h"
+# include "THStack.h"
+# include "TStyle.h"
+# include "TLine.h"
+# include "TColor.h"
+# include "TPaveText.h"
+# include "RooErrorVar.h"
+# include "RooWorkspace.h"
+# include "TCanvas.h"
+# include "TPad.h"
+# include "TLegend.h"
+# include "RooSimultaneous.h"
+# include "RooMinimizer.h"
+
+# include "RooStats/ModelConfig.h"
+# include "RooStats/RooStatsUtils.h"
+
+#include "Math/MinimizerOptions.h"
+
+Corrector_Fragmentation corrector_Fragmentation;
+
+std::vector<std::string> scaleFactors_pdf_names = {
+    "Signal_MXs1_nominal_MXs1_channel_MXs1_scaleFactors",
+    "Signal_MXs2_nominal_MXs1_channel_MXs1_scaleFactors",
+    "Signal_MXs3_nominal_MXs1_channel_MXs1_scaleFactors",
+    "Signal_MXs1_nominal_MXs2_channel_MXs2_scaleFactors",
+    "Signal_MXs2_nominal_MXs2_channel_MXs2_scaleFactors",
+    "Signal_MXs3_nominal_MXs2_channel_MXs2_scaleFactors",
+    "Signal_MXs1_nominal_MXs3_channel_MXs3_scaleFactors",
+    "Signal_MXs2_nominal_MXs3_channel_MXs3_scaleFactors",
+    "Signal_MXs3_nominal_MXs3_channel_MXs3_scaleFactors",
+    "CHG_nominal_MXs1_channel_MXs1_scaleFactors",
+    "CHG_nominal_MXs2_channel_MXs2_scaleFactors",
+    "CHG_nominal_MXs3_channel_MXs3_scaleFactors",
+    "MIX_nominal_MXs1_channel_MXs1_scaleFactors",
+    "MIX_nominal_MXs2_channel_MXs2_scaleFactors",
+    "MIX_nominal_MXs3_channel_MXs3_scaleFactors",
+    "UUBAR_nominal_MXs1_channel_MXs1_scaleFactors",
+    "UUBAR_nominal_MXs2_channel_MXs2_scaleFactors",
+    "UUBAR_nominal_MXs3_channel_MXs3_scaleFactors",
+    "DDBAR_nominal_MXs1_channel_MXs1_scaleFactors",
+    "DDBAR_nominal_MXs2_channel_MXs2_scaleFactors",
+    "DDBAR_nominal_MXs3_channel_MXs3_scaleFactors",
+    "SSBAR_nominal_MXs1_channel_MXs1_scaleFactors",
+    "SSBAR_nominal_MXs2_channel_MXs2_scaleFactors",
+    "SSBAR_nominal_MXs3_channel_MXs3_scaleFactors",
+    "CHARM_nominal_MXs1_channel_MXs1_scaleFactors",
+    "CHARM_nominal_MXs2_channel_MXs2_scaleFactors",
+    "CHARM_nominal_MXs3_channel_MXs3_scaleFactors"
+};
+
+std::vector<std::string> shapes_pdf_names = {
+    "Signal_MXs1_nominal_MXs1_channel_MXs1_shapes",
+    "Signal_MXs2_nominal_MXs1_channel_MXs1_shapes",
+    "Signal_MXs3_nominal_MXs1_channel_MXs1_shapes",
+    "Signal_MXs1_nominal_MXs2_channel_MXs2_shapes",
+    "Signal_MXs2_nominal_MXs2_channel_MXs2_shapes",
+    "Signal_MXs3_nominal_MXs2_channel_MXs2_shapes",
+    "Signal_MXs1_nominal_MXs3_channel_MXs3_shapes",
+    "Signal_MXs2_nominal_MXs3_channel_MXs3_shapes",
+    "Signal_MXs3_nominal_MXs3_channel_MXs3_shapes",
+    "CHG_nominal_MXs1_channel_MXs1_shapes",
+    "CHG_nominal_MXs2_channel_MXs2_shapes",
+    "CHG_nominal_MXs3_channel_MXs3_shapes",
+    "MIX_nominal_MXs1_channel_MXs1_shapes",
+    "MIX_nominal_MXs2_channel_MXs2_shapes",
+    "MIX_nominal_MXs3_channel_MXs3_shapes",
+    "UUBAR_nominal_MXs1_channel_MXs1_shapes",
+    "UUBAR_nominal_MXs2_channel_MXs2_shapes",
+    "UUBAR_nominal_MXs3_channel_MXs3_shapes",
+    "DDBAR_nominal_MXs1_channel_MXs1_shapes",
+    "DDBAR_nominal_MXs2_channel_MXs2_shapes",
+    "DDBAR_nominal_MXs3_channel_MXs3_shapes",
+    "SSBAR_nominal_MXs1_channel_MXs1_shapes",
+    "SSBAR_nominal_MXs2_channel_MXs2_shapes",
+    "SSBAR_nominal_MXs3_channel_MXs3_shapes",
+    "CHARM_nominal_MXs1_channel_MXs1_shapes",
+    "CHARM_nominal_MXs2_channel_MXs2_shapes",
+    "CHARM_nominal_MXs3_channel_MXs3_shapes"
+};
+
+typedef struct Options
+{
+    // turn on it?
+    bool track;
+    bool PID;
+    bool KID;
+    bool KS0;
+    bool pi0;
+    bool FBDT;
+    bool FEI;
+    bool qqbar;
+    bool multiplicity;
+    bool Kff;
+    bool Kstarff;
+    bool pf;
+    bool Transition;
+    bool mb;
+    bool fraction;
+    bool MCstat;
+    bool Fragmentation;
+    bool mKstar;
+    bool BKGNorm;
+    bool BDTc;
+    bool BBcounting;
+    bool BBBR;
+    bool BRBtoXKLKL;
+    bool EffECLKL;
+    bool NEWFEICAL;
+    bool BRXnn;
+    bool BRDKL0;
+    bool fitter;
+    bool dataMC;
+    bool uncorrelated;
+
+    int NEntryKS0;
+    int NEntryFEI;
+    int NEntryKID;
+    int NEntryPID;
+    int NEntryBR;
+    int NEntrypi0;
+    int NEntryMultiplicity;
+    int NEntryFragmentation;
+    int NEntryNEWFEICAL;
+
+    int Nsyst = 25;
+} OPTIONS;
+
+int ReadNKS0EigenVector(const char* dirname) {
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 9; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    return Nentry;
+}
+
+int ReadNFEIEigenVector(const char* dirname) {
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 5; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    return Nentry;
+}
+
+int ReadNPIDEigenVector(const char* dirname) {
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 9; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    return Nentry;
+}
+
+int ReadNBREigenVector(const char* dirname) {
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 5; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    return Nentry;
+}
+
+int ReadNpi0EigenVector(const char* dirname) {
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 9; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    return Nentry;
+}
+
+int ReadMultiplicityInfo(const char* dirname) {
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 9] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 9; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    return Nentry;
+}
+
+int ReadNFragmentationEigenVector(const char* dirname) {
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 5] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 5; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    return Nentry;
+}
+
+int ReadNNEWFEICALEigenVector(const char* dirname) {
+    int Nentry = 0; // number of eigen values/vectors
+    double eigen_value = 0; // eigen value
+    double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
+
+    FILE* fp;
+    fp = fopen(dirname, "r");
+    while (true) {
+        if (fscanf(fp, "%lf\n", &eigen_value) == EOF) break;
+        for (int i = 0; i < RarityBins * 3; i++) {
+            if (fscanf(fp, "%lf\n", &weight_sys[i]) == EOF) break;
+        }
+        Nentry++;
+    }
+    fclose(fp);
+
+    return Nentry;
+}
+
+void Initialize_options(OPTIONS* options_, const char* tested_param, const char* path = ".") {
+    // initialize
+    options_->track = false;
+    options_->PID = false;
+    options_->KID = false;
+    options_->KS0 = false;
+    options_->pi0 = false;
+    options_->FBDT = false;
+    options_->FEI = false;
+    options_->qqbar = false;
+    options_->multiplicity = false;
+    options_->Kff = false;
+    options_->Kstarff = false;
+    options_->pf = false;
+    options_->Transition = false;
+    options_->mb = false;
+    options_->fraction = false;
+    options_->MCstat = false;
+    options_->Fragmentation = false;
+    options_->mKstar = false;
+    options_->BKGNorm = false;
+    options_->BDTc = false;
+    options_->BBcounting = false;
+    options_->BBBR = false;
+    options_->BRBtoXKLKL = false;
+    options_->EffECLKL = false;
+    options_->NEWFEICAL = false;
+    options_->BRXnn = false;
+    options_->BRDKL0 = false;
+    options_->fitter = false;
+    options_->dataMC = false;
+    options_->uncorrelated = false;
+
+    if (std::string(tested_param) == std::string("all")) {
+        options_->track = true;
+        options_->PID = true;
+        options_->KID = true;
+        options_->KS0 = true;
+        options_->pi0 = true;
+        options_->FBDT = true;
+        options_->FEI = true;
+        options_->qqbar = true;
+        options_->multiplicity = true;
+        options_->Kff = true;
+        options_->Kstarff = true;
+        options_->pf = true;
+        options_->Transition = true;
+        options_->mb = true;
+        options_->fraction = true;
+        options_->MCstat = true;
+        options_->Fragmentation = true;
+        options_->mKstar = true;
+        options_->BKGNorm = true;
+        options_->BDTc = true;
+        options_->BBcounting = true;
+        options_->BBBR = true;
+        options_->BRBtoXKLKL = true;
+        options_->EffECLKL = true;
+        options_->NEWFEICAL = true;
+        options_->BRXnn = true;
+        options_->BRDKL0 = true;
+        options_->fitter = true;
+        options_->dataMC = true;
+        options_->uncorrelated = true;
+    }
+    else if (std::string(tested_param) == std::string("none")) {}
+    else if (std::string(tested_param) == std::string("track")) options_->track = true;
+    else if (std::string(tested_param) == std::string("PID")) options_->PID = true;
+    else if (std::string(tested_param) == std::string("KID")) options_->KID = true;
+    else if (std::string(tested_param) == std::string("KS0")) options_->KS0 = true;
+    else if (std::string(tested_param) == std::string("pi0")) options_->pi0 = true;
+    else if (std::string(tested_param) == std::string("FBDT_efficiency")) options_->FBDT = true;
+    else if (std::string(tested_param) == std::string("FEI")) options_->FEI = true;
+    else if (std::string(tested_param) == std::string("qqbar_CAL")) options_->qqbar = true;
+    else if (std::string(tested_param) == std::string("photon_multiplicity")) options_->multiplicity = true;
+    else if (std::string(tested_param) == std::string("Kff")) options_->Kff = true;
+    else if (std::string(tested_param) == std::string("Kstarff")) options_->Kstarff = true;
+    else if (std::string(tested_param) == std::string("pf")) options_->pf = true;
+    else if (std::string(tested_param) == std::string("Transition")) options_->Transition = true;
+    else if (std::string(tested_param) == std::string("mb")) options_->mb = true;
+    else if (std::string(tested_param) == std::string("fraction")) options_->fraction = true;
+    else if (std::string(tested_param) == std::string("MCstat")) options_->MCstat = true;
+    else if (std::string(tested_param) == std::string("Fragmentation")) options_->Fragmentation = true;
+    else if (std::string(tested_param) == std::string("mKstar")) options_->mKstar = true;
+    else if (std::string(tested_param) == std::string("BKGNorm")) options_->BKGNorm = true;
+    else if (std::string(tested_param) == std::string("BDTc")) options_->BDTc = true;
+    else if (std::string(tested_param) == std::string("BBcounting")) options_->BBcounting = true;
+    else if (std::string(tested_param) == std::string("BBBR")) options_->BBBR = true;
+    else if (std::string(tested_param) == std::string("BRBtoXKLKL")) options_->BRBtoXKLKL = true;
+    else if (std::string(tested_param) == std::string("EffECLKL")) options_->EffECLKL = true;
+    else if (std::string(tested_param) == std::string("NEWFEICAL")) options_->NEWFEICAL = true;
+    else if (std::string(tested_param) == std::string("BRXnn")) options_->BRXnn = true;
+    else if (std::string(tested_param) == std::string("BtoDtoXKL")) options_->BRDKL0 = true;
+    else if (std::string(tested_param) == std::string("fitter")) options_->fitter = true;
+    else if (std::string(tested_param) == std::string("dataMC")) options_->dataMC = true;
+    else if (std::string(tested_param) == std::string("uncorrelated")) options_->uncorrelated = true;
+    else if (std::string(tested_param) == std::string("major")) {
+        options_->MCstat = true;
+        options_->BKGNorm = true;
+        options_->BBBR = true;
+        options_->multiplicity = true;
+        options_->FBDT = true;
+        options_->Transition = true;
+        options_->qqbar = true;
+    }
+    else if (std::string(tested_param) == std::string("minor")) {
+        options_->track = true;
+        options_->PID = true;
+        options_->KID = true;
+        options_->KS0 = true;
+        options_->pi0 = true;
+        options_->FEI = true;
+        options_->qqbar = true;
+        options_->Kff = true;
+        options_->Kstarff = true;
+        options_->pf = true;
+        options_->mb = true;
+        options_->fraction = true;
+        options_->Fragmentation = true;
+        options_->mKstar = true;
+        options_->BDTc = true;
+        options_->BBcounting = true;
+        options_->BRBtoXKLKL = true;
+        options_->EffECLKL = true;
+        options_->NEWFEICAL = true;
+        options_->BRXnn = true;
+        options_->BRDKL0 = true;
+        options_->dataMC = true;
+        options_->uncorrelated = true;
+    }
+    else if (std::string(tested_param) == std::string("not-MCstat")) {
+        options_->track = true;
+        options_->PID = true;
+        options_->KID = true;
+        options_->KS0 = true;
+        options_->pi0 = true;
+        options_->FBDT = true;
+        options_->FEI = true;
+        options_->qqbar = true;
+        options_->multiplicity = true;
+        options_->Kff = true;
+        options_->Kstarff = true;
+        options_->pf = true;
+        options_->Transition = true;
+        options_->mb = true;
+        options_->fraction = true;
+        options_->Fragmentation = true;
+        options_->mKstar = true;
+        options_->BKGNorm = true;
+        options_->BDTc = true;
+        options_->BBcounting = true;
+        options_->BBBR = true;
+        options_->BRBtoXKLKL = true;
+        options_->EffECLKL = true;
+        options_->NEWFEICAL = true;
+        options_->BRXnn = true;
+        options_->BRDKL0 = true;
+        options_->fitter = true;
+        options_->dataMC = true;
+        options_->uncorrelated = true;
+    }
+    else {
+        printf("inappropriate parameter name\n");
+        exit(1);
+    }
+
+    // read entry for nuisance parameters
+    options_->NEntryKS0 = ReadNKS0EigenVector((std::string(path) + "/KS0_selected.txt").c_str());
+    options_->NEntryFEI = ReadNFEIEigenVector((std::string(path) + "/FEI_selected.txt").c_str());
+    options_->NEntryKID = ReadNPIDEigenVector((std::string(path) + "/KID_selected.txt").c_str());
+    options_->NEntryPID = ReadNPIDEigenVector((std::string(path) + "/PID_selected.txt").c_str());
+    options_->NEntryBR = ReadNBREigenVector((std::string(path) + "/BR_selected.txt").c_str());
+    options_->NEntrypi0 = ReadNpi0EigenVector((std::string(path) + "/pi0_selected.txt").c_str());
+    options_->NEntryMultiplicity = ReadMultiplicityInfo((std::string(path) + "/multiplicity_selected.txt").c_str());
+    options_->NEntryFragmentation = ReadNFragmentationEigenVector((std::string(path) + "/Fragmentation_selected.txt").c_str());
+    options_->NEntryNEWFEICAL = ReadNNEWFEICALEigenVector((std::string(path) + "/NEWFEICAL_selected.txt").c_str());
+}
+
+void FixParameters(RooWorkspace* w, OPTIONS* options_) {
+
+    RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+    std::unique_ptr<RooArgSet> params{model->getParameters(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3))};
+
+    // track
+    if (options_->track) w->var("alpha_track_eff_uncer")->setConstant(options_->track);
+
+    // PID
+    if (options_->PID) for (int i = 0; i < options_->NEntryPID; i++) {
+        if (w->var(("alpha_PID" + std::to_string(i) + "_uncer").c_str())) {
+            w->var(("alpha_PID" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->PID);
+        }
+    }
+
+    // KID
+    if (options_->KID) for (int i = 0; i < options_->NEntryKID; i++) w->var(("alpha_KID" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->KID);
+
+    // KS0
+#ifdef USE_OLD_KS0_CORRECTION
+    if (options_->KS0) w->var("alpha_KS0_reco_uncer")->setConstant(options_->KS0);
+#else
+    if (options_->KS0) for (int i = 0; i < options_->NEntryKS0; i++) {
+        if (w->var(("alpha_KS0" + std::to_string(i) + "_uncer").c_str())) {
+            w->var(("alpha_KS0" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->KS0);
+        }
+    }
+#endif
+
+    // pi0
+    if (options_->pi0) for (int i = 0; i < options_->NEntrypi0; i++) {
+        if (w->var(("alpha_pi0" + std::to_string(i) + "_uncer").c_str())) {
+            w->var(("alpha_pi0" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->pi0);
+        }
+    }
+
+    // FBDT efficiency
+    if (options_->FBDT) {
+        w->var("alpha_FBDT_efficiency_uncer_MXs1")->setConstant(options_->FBDT);
+        if(w->var("alpha_FBDT_efficiency_uncer_MXs2")) w->var("alpha_FBDT_efficiency_uncer_MXs2")->setConstant(options_->FBDT);
+        if(w->var("alpha_FBDT_efficiency_uncer_MXs3")) w->var("alpha_FBDT_efficiency_uncer_MXs3")->setConstant(options_->FBDT);
+    }
+
+    // FEI
+    if (options_->FEI) for (int i = 0; i < options_->NEntryFEI; i++) w->var(("alpha_FEI" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->FEI);
+
+    // qqbar normalization
+    if (options_->qqbar) {
+        w->var("alpha_qq_CAL_UUBAR_uncer_MXs1")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_UUBAR_uncer_MXs2")) w->var("alpha_qq_CAL_UUBAR_uncer_MXs2")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_UUBAR_uncer_MXs3")) w->var("alpha_qq_CAL_UUBAR_uncer_MXs3")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_DDBAR_uncer_MXs1")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_DDBAR_uncer_MXs2")) w->var("alpha_qq_CAL_DDBAR_uncer_MXs2")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_DDBAR_uncer_MXs3")) w->var("alpha_qq_CAL_DDBAR_uncer_MXs3")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_SSBAR_uncer_MXs1")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_SSBAR_uncer_MXs2")) w->var("alpha_qq_CAL_SSBAR_uncer_MXs2")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_SSBAR_uncer_MXs3")) w->var("alpha_qq_CAL_SSBAR_uncer_MXs3")->setConstant(options_->qqbar);
+        w->var("alpha_qq_CAL_CHARM_uncer_MXs1")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_CHARM_uncer_MXs2")) w->var("alpha_qq_CAL_CHARM_uncer_MXs2")->setConstant(options_->qqbar);
+        if(w->var("alpha_qq_CAL_CHARM_uncer_MXs3")) w->var("alpha_qq_CAL_CHARM_uncer_MXs3")->setConstant(options_->qqbar);
+    }
+
+    // photon multiplicity correction
+    if (options_->multiplicity) for (int i = 0; i < options_->NEntryMultiplicity; i++) w->var(("alpha_multiplicity" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->multiplicity);
+
+    // B->K form factor
+    if (options_->Kff) {
+        w->var("alpha_Kff1_uncer")->setConstant(options_->Kff);
+        w->var("alpha_Kff2_uncer")->setConstant(options_->Kff);
+        w->var("alpha_Kff3_uncer")->setConstant(options_->Kff);
+    }
+
+    // B->Kstar form factor
+    if (options_->Kstarff) {
+        w->var("alpha_Kstarff1_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff2_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff3_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff4_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff5_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff6_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff7_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff8_uncer")->setConstant(options_->Kstarff);
+        w->var("alpha_Kstarff9_uncer")->setConstant(options_->Kstarff);
+    }
+
+    // fermi motion moment
+    if (options_->pf) w->var("alpha_pf_uncer")->setConstant(options_->pf);
+
+    // K*-Xs transition point
+    if (options_->Transition) w->var("alpha_transition_uncer")->setConstant(options_->Transition);
+
+    // b-quark mass
+    if (options_->mb) w->var("alpha_mb_uncer")->setConstant(options_->mb);
+
+    // relative fraction
+    if (options_->fraction) {
+        w->var("alpha_Kfrac_uncer")->setConstant(options_->fraction);
+        w->var("alpha_Kstarfrac_uncer")->setConstant(options_->fraction);
+    }
+
+    // MC statistics
+    if (options_->MCstat) {
+        for (int i = 0; i < RarityBins_MX1; i++) w->var(("gamma_stat_channel_MXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+        for (int i = 0; i < RarityBins_MX2; i++) if(w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())) w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+        for (int i = 0; i < RarityBins_MX3; i++) if(w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())) w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+    }
+
+    // Fragmentation
+    if (options_->Fragmentation) for (int i = 0; i < options_->NEntryFragmentation; i++) w->var(("alpha_Xs_fragmentation" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->Fragmentation);
+
+    // mKstar
+    //if (options_->mKstar) w->var("alpha_mKstar_uncer")->setConstant(options_->mKstar);
+
+    // background normalization
+    if (options_->BKGNorm) {
+        w->var("alpha_mu_CHG_MXs1")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_CHG_MXs2")) w->var("alpha_mu_CHG_MXs2")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_CHG_MXs3"))w->var("alpha_mu_CHG_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_MIX_MXs1")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_MIX_MXs2"))w->var("alpha_mu_MIX_MXs2")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_MIX_MXs3")) w->var("alpha_mu_MIX_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_UUBAR_MXs1")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_UUBAR_MXs2")) w->var("alpha_mu_UUBAR_MXs2")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_UUBAR_MXs3")) w->var("alpha_mu_UUBAR_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_DDBAR_MXs1")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_DDBAR_MXs2")) w->var("alpha_mu_DDBAR_MXs2")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_DDBAR_MXs3")) w->var("alpha_mu_DDBAR_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_SSBAR_MXs1")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_SSBAR_MXs2")) w->var("alpha_mu_SSBAR_MXs2")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_SSBAR_MXs3")) w->var("alpha_mu_SSBAR_MXs3")->setConstant(options_->BKGNorm);
+        w->var("alpha_mu_CHARM_MXs1")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_CHARM_MXs2")) w->var("alpha_mu_CHARM_MXs2")->setConstant(options_->BKGNorm);
+        if(w->var("alpha_mu_CHARM_MXs3")) w->var("alpha_mu_CHARM_MXs3")->setConstant(options_->BKGNorm);
+    }
+
+    // BDTc
+    if (options_->BDTc) w->var("alpha_BDTc_shape_qq")->setConstant(options_->BDTc);
+
+    // BB counting
+    if (options_->BBcounting) w->var("alpha_BB_counting_uncer")->setConstant(options_->BBcounting);
+
+    // BB BR
+    if (options_->BBBR) for (int i = 0; i < options_->NEntryBR; i++) w->var(("alpha_BBBR" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->BBBR);
+
+    // B->K KL KL BR
+    if (options_->BRBtoXKLKL) w->var("alpha_BRBtoXKLKL_uncer")->setConstant(options_->BRBtoXKLKL);
+
+    // efficiency for ECL cluster from KL0
+    if (options_->EffECLKL) w->var("alpha_EffECLKL_uncer")->setConstant(options_->EffECLKL);
+
+    // New FEI CAL
+    if (options_->NEWFEICAL) for (int i = 0; i < options_->NEntryNEWFEICAL; i++) {
+        if (w->var(("alpha_NEWFEICAL" + std::to_string(i) + "_uncer").c_str())) {
+            w->var(("alpha_NEWFEICAL" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->NEWFEICAL);
+        }
+    }
+
+
+    // B->Xnn BR
+    if (options_->BRXnn) w->var("alpha_Xnn_BR_uncer")->setConstant(options_->BRXnn);
+
+    // B->(D->X KL0) + anything
+    if (options_->BRDKL0) w->var("alpha_BtoDtoXKL_uncer")->setConstant(options_->BRDKL0);
+
+    // fitter bias
+    if (options_->fitter) {
+        if (w->var("alpha_mu1_fitter_bias_mean")) w->var("alpha_mu1_fitter_bias_mean")->setConstant(options_->fitter);
+        if (w->var("alpha_mu1_fitter_bias_sigma")) w->var("alpha_mu1_fitter_bias_sigma")->setConstant(options_->fitter);
+        if (w->var("alpha_mu2_fitter_bias_mean")) w->var("alpha_mu2_fitter_bias_mean")->setConstant(options_->fitter);
+        if (w->var("alpha_mu2_fitter_bias_sigma")) w->var("alpha_mu2_fitter_bias_sigma")->setConstant(options_->fitter);
+        if (w->var("alpha_mu3_fitter_bias_mean")) w->var("alpha_mu3_fitter_bias_mean")->setConstant(options_->fitter);
+        if (w->var("alpha_mu3_fitter_bias_sigma")) w->var("alpha_mu3_fitter_bias_sigma")->setConstant(options_->fitter);
+
+        if (w->var("alpha_mu_fitter_bias_mean")) w->var("alpha_mu_fitter_bias_mean")->setConstant(options_->fitter);
+        if (w->var("alpha_mu_fitter_bias_sigma")) w->var("alpha_mu_fitter_bias_sigma")->setConstant(options_->fitter);
+    }
+
+    // data MC discrepancy
+    if (options_->dataMC) {
+        /*
+        for (int i = 0; i < RarityBins_MX1; i++) {
+            w->var(("gamma_CHG_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_MIX_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_UUBAR_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_DDBAR_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_SSBAR_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_CHARM_additional_uncorr_uncerMXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+        }
+        for (int i = 0; i < RarityBins_MX2; i++) {
+            w->var(("gamma_CHG_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_MIX_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_UUBAR_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_DDBAR_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_SSBAR_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_CHARM_additional_uncorr_uncerMXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+        }
+        for (int i = 0; i < RarityBins_MX3; i++) {
+            w->var(("gamma_CHG_additional_uncorr_uncerMXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_MIX_additional_uncorr_uncerMXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_UUBAR_additional_uncorr_uncerMXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_DDBAR_additional_uncorr_uncerMXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_SSBAR_additional_uncorr_uncerMXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+            w->var(("gamma_CHARM_additional_uncorr_uncerMXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->dataMC);
+        }
+        */
+    }
+
+    // save snapshot
+    w->saveSnapshot("ParamValues", *params, true);
+}
+
+double GetNumEvts(RooWorkspace* w, const char* sample_type) {
+
+    double Nevt = 0.0;
+
+    RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
+    RooRealVar* x_val;
+    if (std::strstr(sample_type, "MX1") != nullptr) x_val = w->var("obs_x_channel_MXs1");
+    else if (std::strstr(sample_type, "MX2") != nullptr) x_val = w->var("obs_x_channel_MXs2");
+    else if (std::strstr(sample_type, "MX3") != nullptr) x_val = w->var("obs_x_channel_MXs3");
+    else {
+        printf("[ERROR] unexpected sample type!\n");
+        exit(1);
+    }
+
+    std::vector<int> indices;
+    if (strcmp(sample_type, "Signal_MX1") == 0) {
+        indices.push_back(0);
+        indices.push_back(1);
+        indices.push_back(2);
+    }
+    else if (strcmp(sample_type, "Signal_MX2") == 0) {
+        indices.push_back(3);
+        indices.push_back(4);
+        indices.push_back(5);
+    }
+    else if (strcmp(sample_type, "Signal_MX3") == 0) {
+        indices.push_back(6);
+        indices.push_back(7);
+        indices.push_back(8);
+    }
+    else if (strcmp(sample_type, "CHG_MX1") == 0) indices.push_back(9);
+    else if (strcmp(sample_type, "CHG_MX2") == 0) indices.push_back(10);
+    else if (strcmp(sample_type, "CHG_MX3") == 0) indices.push_back(11);
+    else if (strcmp(sample_type, "MIX_MX1") == 0) indices.push_back(12);
+    else if (strcmp(sample_type, "MIX_MX2") == 0) indices.push_back(13);
+    else if (strcmp(sample_type, "MIX_MX3") == 0) indices.push_back(14);
+    else if (strcmp(sample_type, "UUBAR_MX1") == 0) indices.push_back(15);
+    else if (strcmp(sample_type, "UUBAR_MX2") == 0) indices.push_back(16);
+    else if (strcmp(sample_type, "UUBAR_MX3") == 0) indices.push_back(17);
+    else if (strcmp(sample_type, "DDBAR_MX1") == 0) indices.push_back(18);
+    else if (strcmp(sample_type, "DDBAR_MX2") == 0) indices.push_back(19);
+    else if (strcmp(sample_type, "DDBAR_MX3") == 0) indices.push_back(20);
+    else if (strcmp(sample_type, "SSBAR_MX1") == 0) indices.push_back(21);
+    else if (strcmp(sample_type, "SSBAR_MX2") == 0) indices.push_back(22);
+    else if (strcmp(sample_type, "SSBAR_MX3") == 0) indices.push_back(23);
+    else if (strcmp(sample_type, "CHARM_MX1") == 0) indices.push_back(24);
+    else if (strcmp(sample_type, "CHARM_MX2") == 0) indices.push_back(25);
+    else if (strcmp(sample_type, "CHARM_MX3") == 0) indices.push_back(26);
+    else {
+        printf("[ERROR] unexpected sample type!\n");
+        exit(1);
+    }
+
+
+    /* ================================ cal Nexpected ================================*/
+    for (int i = 0; i < indices.size(); i++) {
+        int index = indices.at(i);
+
+        RooAbsBinning const& binning = x_val->getBinning();
+        const double oldVal = x_val->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val = binCenter; // set x value
+
+            RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(index).c_str());
+            RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(index).c_str());
+            Nevt = Nevt + (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+            //if (temp_func->getValV() < 0) {
+            //    printf("[ERROR] negative count!\n");
+            //    exit(1);
+            //}
+
+        }
+
+        *x_val = oldVal;
+    }
+
+    return Nevt;
+
+}
+
+RooFitResult* MyMinimizeNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true, int MaxCall = -1) {
+    // what we have done
+    w->loadSnapshot("ParamValues");
+    RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    // get nll
+    RooArgSet* allParams = model->getParameters(*data);
+    RooStats::RemoveConstantParameters(allParams);
+    RooArgSet fGlobalObs = *mc->GetGlobalObservables();
+    RooArgSet fConditionalObs;
+    //Bool_t fLOffset = RooStats::IsNLLOffset();
+    std::string fLOffset = "bin";
+    (*nll) = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
+
+    // minimizer option
+    TString fMinimizer = ::ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str();
+    TString minimizer = fMinimizer;
+
+    TString algorithm = ::ROOT::Math::MinimizerOptions::DefaultMinimizerAlgo();
+
+    Int_t fStrategy = ::ROOT::Math::MinimizerOptions::DefaultStrategy();
+
+    Double_t fTolerance;
+    if (tolerance < 0) fTolerance = TMath::Max(1., ::ROOT::Math::MinimizerOptions::DefaultTolerance());
+    else fTolerance = tolerance;
+
+    Int_t fPrintLevel = ::ROOT::Math::MinimizerOptions::DefaultPrintLevel();
+    //LM: RooMinimizer.setPrintLevel has +1 offset - so subtract  here -1 + an extra -1
+    int level = (fPrintLevel == 0) ? -1 : fPrintLevel - 2;
+
+
+    // follow what ProfileLikelihoodTestStat.cxx does
+    const auto& config = RooStats::GetGlobalRooStatsConfig();
+    RooMinimizer minim(*(*nll));
+    minim.setStrategy(fStrategy);
+    minim.setEvalErrorWall(config.useEvalErrorWall);
+    minim.setEps(fTolerance);
+    minim.setPrintLevel(level);
+    // this causes a memory leak
+    minim.optimizeConst(2);
+    minim.migrad();
+    if (Minos) {
+        // minim.minos(RooArgSet(*w->var("mu")));
+        minim.minos(RooArgSet(*w->var("mu_MXs1")));
+        minim.minos(RooArgSet(*w->var("mu_MXs2")));
+        minim.minos(RooArgSet(*w->var("mu_MXs3")));
+    }
+    
+    // put by myself
+    if (MaxCall != -1) {
+        minim.setMaxFunctionCalls(MaxCall);
+        minim.setMaxIterations(MaxCall);
+    }
+
+    // fit!
+    int status;
+    status = minim.minimize(minimizer, algorithm);
+
+    return minim.save();
+}
+
+RooFitResult* MyMinimizeNLLReuse(RooWorkspace* w, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true) {
+    // minimizer option
+    TString fMinimizer = ::ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str();
+    TString minimizer = fMinimizer;
+
+    TString algorithm = ::ROOT::Math::MinimizerOptions::DefaultMinimizerAlgo();
+
+    Int_t fStrategy = ::ROOT::Math::MinimizerOptions::DefaultStrategy();
+
+    Double_t fTolerance;
+    if (tolerance < 0) fTolerance = TMath::Max(1., ::ROOT::Math::MinimizerOptions::DefaultTolerance());
+    else fTolerance = tolerance;
+
+    Int_t fPrintLevel = ::ROOT::Math::MinimizerOptions::DefaultPrintLevel();
+    //LM: RooMinimizer.setPrintLevel has +1 offset - so subtract  here -1 + an extra -1
+    int level = (fPrintLevel == 0) ? -1 : fPrintLevel - 2;
+
+
+    // follow what ProfileLikelihoodTestStat.cxx does
+    const auto& config = RooStats::GetGlobalRooStatsConfig();
+    RooMinimizer minim(*(*nll));
+    minim.setStrategy(fStrategy);
+    minim.setEvalErrorWall(config.useEvalErrorWall);
+    minim.setEps(fTolerance);
+    minim.setPrintLevel(level);
+    // this causes a memory leak
+    minim.optimizeConst(2);
+    minim.migrad();
+    if (Minos) {
+        minim.minos(RooArgSet(*w->var("mu_MXs1")));
+        minim.minos(RooArgSet(*w->var("mu_MXs2")));
+        minim.minos(RooArgSet(*w->var("mu_MXs3")));
+    }
+
+    // fit!
+    int status;
+    status = minim.minimize(minimizer, algorithm);
+
+    return minim.save();
+}
+
+RooFitResult* MyMinimizeNLLWithAsymError(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll, double tolerance = -1.0, bool Minos = true) {
+    // what we have done
+    w->loadSnapshot("ParamValues");
+    RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    // get nll
+    RooArgSet* allParams = model->getParameters(*data);
+    RooStats::RemoveConstantParameters(allParams);
+    RooArgSet fGlobalObs = *mc->GetGlobalObservables();
+    RooArgSet fConditionalObs;
+    //Bool_t fLOffset = RooStats::IsNLLOffset();
+    std::string fLOffset = "bin";
+    (*nll) = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
+
+    // minimizer option
+    TString fMinimizer = ::ROOT::Math::MinimizerOptions::DefaultMinimizerType().c_str();
+    TString minimizer = fMinimizer;
+
+    TString algorithm = ::ROOT::Math::MinimizerOptions::DefaultMinimizerAlgo();
+
+    Int_t fStrategy = ::ROOT::Math::MinimizerOptions::DefaultStrategy();
+
+    Double_t fTolerance;
+    if (tolerance < 0) fTolerance = TMath::Max(1., ::ROOT::Math::MinimizerOptions::DefaultTolerance());
+    else fTolerance = tolerance;
+
+    Int_t fPrintLevel = ::ROOT::Math::MinimizerOptions::DefaultPrintLevel();
+    //LM: RooMinimizer.setPrintLevel has +1 offset - so subtract  here -1 + an extra -1
+    int level = (fPrintLevel == 0) ? -1 : fPrintLevel - 2;
+
+
+    // follow what ProfileLikelihoodTestStat.cxx does
+    const auto& config = RooStats::GetGlobalRooStatsConfig();
+    RooMinimizer minim(*(*nll));
+    minim.setStrategy(fStrategy);
+    minim.setEvalErrorWall(config.useEvalErrorWall);
+    minim.setEps(fTolerance);
+    minim.setPrintLevel(level);
+    // this causes a memory leak
+    minim.optimizeConst(2);
+    minim.migrad();
+    if (Minos) {
+        minim.minos(RooArgSet(*w->var("mu_MXs1")));
+        minim.minos(RooArgSet(*w->var("mu_MXs2")));
+        minim.minos(RooArgSet(*w->var("mu_MXs3")));
+    }
+
+    // fit!
+    int status;
+    status = minim.minimize(minimizer, algorithm);
+
+    // save snapshot at global minimum
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+    std::unique_ptr<RooArgSet> params{model->getParameters(RooArgSet(*x_val_MXs1, *x_val_MXs2, *x_val_MXs3))};
+    w->saveSnapshot("GlobalMinimumParamValues", *params, true);
+    w->saveSnapshot("CurrentMinimumParamValues_MXs1", *params, true);
+    w->saveSnapshot("CurrentMinimumParamValues_MXs2", *params, true);
+    w->saveSnapshot("CurrentMinimumParamValues_MXs3", *params, true);
+
+    // get global minimum
+    double Global_mu_MXs1 = -100;
+    double Global_mu_MXs2 = -100;
+    double Global_mu_MXs3 = -100;
+    double mu_MXs1_HI_error = -100;
+    double mu_MXs2_HI_error = -100;
+    double mu_MXs3_HI_error = -100;
+    double mu_MXs1_LO_error = -100;
+    double mu_MXs2_LO_error = -100;
+    double mu_MXs3_LO_error = -100;
+    double Global_MinusLogLikelihood = (*nll)->getVal();
+    RooFitResult* fitres = minim.save();
+    RooArgSet fitargs = fitres->floatParsFinal();
+    TIterator* iter(fitargs.createIterator());
+    for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        if (name == std::string("mu_MXs1")) {
+            Global_mu_MXs1 = rrv->getVal();
+            mu_MXs1_HI_error = rrv->getAsymErrorHi();
+            mu_MXs1_LO_error = rrv->getAsymErrorLo();
+        }
+        else if (name == std::string("mu_MXs2")) {
+            Global_mu_MXs2 = rrv->getVal();
+            mu_MXs2_HI_error = rrv->getAsymErrorHi();
+            mu_MXs2_LO_error = rrv->getAsymErrorLo();
+        }
+        else if (name == std::string("mu_MXs3")) {
+            Global_mu_MXs3 = rrv->getVal();
+            mu_MXs3_HI_error = rrv->getAsymErrorHi();
+            mu_MXs3_LO_error = rrv->getAsymErrorLo();
+        }
+    }
+
+    // vector to save mu
+    std::deque<double> mu_MXs1; mu_MXs1.push_back(Global_mu_MXs1);
+    std::deque<double> mu_MXs2; mu_MXs2.push_back(Global_mu_MXs2);
+    std::deque<double> mu_MXs3; mu_MXs3.push_back(Global_mu_MXs3);
+
+    // vector to save -log(L)
+    std::deque<double> MinusLogLikelihood_MXs1; MinusLogLikelihood_MXs1.push_back(Global_MinusLogLikelihood);
+    std::deque<double> MinusLogLikelihood_MXs2; MinusLogLikelihood_MXs2.push_back(Global_MinusLogLikelihood);
+    std::deque<double> MinusLogLikelihood_MXs3; MinusLogLikelihood_MXs3.push_back(Global_MinusLogLikelihood);
+
+    double delta = 0.1;
+
+    // re-define minimizer to remove MINOS option
+    RooMinimizer MyMinim(*(*nll));
+    MyMinim.setStrategy(fStrategy);
+    MyMinim.setEvalErrorWall(config.useEvalErrorWall);
+    MyMinim.setEps(fTolerance);
+    MyMinim.setPrintLevel(level - 1);
+    // this causes a memory leak
+    MyMinim.optimizeConst(2);
+    MyMinim.migrad();
+
+    // get asym error for mu_MXs1
+    for (int i = 1; i < 15; i++) {
+        w->loadSnapshot("CurrentMinimumParamValues_MXs1");
+        w->var("mu_MXs1")->setVal(Global_mu_MXs1 + i * delta * mu_MXs1_HI_error);
+        w->var("mu_MXs1")->setConstant(true);
+
+        // fit with fixed mu
+        MyMinim.minimize(minimizer, algorithm);
+
+        // save snapshot
+        w->saveSnapshot("CurrentMinimumParamValues_MXs1", *params, true);
+
+        // save result
+        mu_MXs1.push_back(Global_mu_MXs1 + i * delta * mu_MXs1_HI_error);
+        MinusLogLikelihood_MXs1.push_back((*nll)->getVal());
+    }
+    w->loadSnapshot("GlobalMinimumParamValues");
+    w->saveSnapshot("CurrentMinimumParamValues_MXs1", *params, true);
+
+    for (int i = 1; i < 15; i++) {
+        w->loadSnapshot("CurrentMinimumParamValues_MXs1");
+        w->var("mu_MXs1")->setVal(Global_mu_MXs1 + i * delta * mu_MXs1_LO_error);
+        w->var("mu_MXs1")->setConstant(true);
+
+        // fit with fixed mu
+        MyMinim.minimize(minimizer, algorithm);
+
+        // save snapshot
+        w->saveSnapshot("CurrentMinimumParamValues_MXs1", *params, true);
+
+        // save result
+        mu_MXs1.push_front(Global_mu_MXs1 + i * delta * mu_MXs1_LO_error);
+        MinusLogLikelihood_MXs1.push_front((*nll)->getVal());
+    }
+    w->loadSnapshot("GlobalMinimumParamValues");
+    w->saveSnapshot("CurrentMinimumParamValues_MXs1", *params, true);
+
+    // get asym error for mu_MXs2
+    for (int i = 1; i < 15; i++) {
+        w->loadSnapshot("CurrentMinimumParamValues_MXs2");
+        w->var("mu_MXs2")->setVal(Global_mu_MXs2 + i * delta * mu_MXs2_HI_error);
+        w->var("mu_MXs2")->setConstant(true);
+
+        // fit with fixed mu
+        MyMinim.minimize(minimizer, algorithm);
+
+        // save snapshot
+        w->saveSnapshot("CurrentMinimumParamValues_MXs2", *params, true);
+
+        // save result
+        mu_MXs2.push_back(Global_mu_MXs2 + i * delta * mu_MXs2_HI_error);
+        MinusLogLikelihood_MXs2.push_back((*nll)->getVal());
+    }
+    w->loadSnapshot("GlobalMinimumParamValues");
+    w->saveSnapshot("CurrentMinimumParamValues_MXs2", *params, true);
+
+    for (int i = 1; i < 15; i++) {
+        w->loadSnapshot("CurrentMinimumParamValues_MXs2");
+        w->var("mu_MXs2")->setVal(Global_mu_MXs2 + i * delta * mu_MXs2_LO_error);
+        w->var("mu_MXs2")->setConstant(true);
+
+        // fit with fixed mu
+        MyMinim.minimize(minimizer, algorithm);
+
+        // save snapshot
+        w->saveSnapshot("CurrentMinimumParamValues_MXs2", *params, true);
+
+        // save result
+        mu_MXs2.push_front(Global_mu_MXs2 + i * delta * mu_MXs2_LO_error);
+        MinusLogLikelihood_MXs2.push_front((*nll)->getVal());
+    }
+    w->loadSnapshot("GlobalMinimumParamValues");
+    w->saveSnapshot("CurrentMinimumParamValues_MXs2", *params, true);
+
+    // get asym error for mu_MXs3
+    for (int i = 1; i < 15; i++) {
+        w->loadSnapshot("CurrentMinimumParamValues_MXs3");
+        w->var("mu_MXs3")->setVal(Global_mu_MXs3 + i * delta * mu_MXs3_HI_error);
+        w->var("mu_MXs3")->setConstant(true);
+
+        // fit with fixed mu
+        MyMinim.minimize(minimizer, algorithm);
+
+        // save snapshot
+        w->saveSnapshot("CurrentMinimumParamValues_MXs3", *params, true);
+
+        // save result
+        mu_MXs3.push_back(Global_mu_MXs3 + i * delta * mu_MXs3_HI_error);
+        MinusLogLikelihood_MXs3.push_back((*nll)->getVal());
+    }
+    w->loadSnapshot("GlobalMinimumParamValues");
+    w->saveSnapshot("CurrentMinimumParamValues_MXs3", *params, true);
+
+    for (int i = 1; i < 15; i++) {
+        w->loadSnapshot("CurrentMinimumParamValues_MXs3");
+        w->var("mu_MXs3")->setVal(Global_mu_MXs3 + i * delta * mu_MXs3_LO_error);
+        w->var("mu_MXs3")->setConstant(true);
+
+        // fit with fixed mu
+        MyMinim.minimize(minimizer, algorithm);
+
+        // save snapshot
+        w->saveSnapshot("CurrentMinimumParamValues_MXs3", *params, true);
+
+        // save result
+        mu_MXs3.push_front(Global_mu_MXs3 + i * delta * mu_MXs3_LO_error);
+        MinusLogLikelihood_MXs3.push_front((*nll)->getVal());
+    }
+    w->loadSnapshot("GlobalMinimumParamValues");
+    w->saveSnapshot("CurrentMinimumParamValues_MXs3", *params, true);
+
+    // calculate asym error
+    double My_mu_MXs1_HI_error = -100;
+    double My_mu_MXs2_HI_error = -100;
+    double My_mu_MXs3_HI_error = -100;
+    double My_mu_MXs1_LO_error = -100;
+    double My_mu_MXs2_LO_error = -100;
+    double My_mu_MXs3_LO_error = -100;
+
+    for (int i = 0; i < mu_MXs1.size() - 1; i++) {
+        double previous_profile_likelihood = MinusLogLikelihood_MXs1.at(i) - Global_MinusLogLikelihood;
+        double current_profile_likelihood = MinusLogLikelihood_MXs1.at(i + 1) - Global_MinusLogLikelihood;
+        double previous_mu = mu_MXs1.at(i);
+        double current_mu = mu_MXs1.at(i + 1);
+        if ((previous_profile_likelihood > 0.5) && (current_profile_likelihood < 0.5)) { // we just passed -1 sigma point
+            double mu_nominal_minus_sigma = current_mu - (0.5 - current_profile_likelihood) * (current_mu - previous_mu) / (previous_profile_likelihood - current_profile_likelihood);
+            double minus_sigma = mu_nominal_minus_sigma - Global_mu_MXs1; // it is negative value
+            My_mu_MXs1_LO_error = minus_sigma;
+        }
+        else if ((previous_profile_likelihood < 0.5) && (current_profile_likelihood > 0.5)) { // we just passed +1 sigma point
+            double mu_nominal_plus_sigma = previous_mu + (0.5 - previous_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood);
+            double plus_sigma = mu_nominal_plus_sigma - Global_mu_MXs1; // it is positive value
+            My_mu_MXs1_HI_error = plus_sigma;
+        }
+    }
+
+    for (int i = 0; i < mu_MXs2.size() - 1; i++) {
+        double previous_profile_likelihood = MinusLogLikelihood_MXs2.at(i) - Global_MinusLogLikelihood;
+        double current_profile_likelihood = MinusLogLikelihood_MXs2.at(i + 1) - Global_MinusLogLikelihood;
+        double previous_mu = mu_MXs2.at(i);
+        double current_mu = mu_MXs2.at(i + 1);
+        if ((previous_profile_likelihood > 0.5) && (current_profile_likelihood < 0.5)) { // we just passed -1 sigma point
+            double mu_nominal_minus_sigma = current_mu - (0.5 - current_profile_likelihood) * (current_mu - previous_mu) / (previous_profile_likelihood - current_profile_likelihood);
+            double minus_sigma = mu_nominal_minus_sigma - Global_mu_MXs2; // it is negative value
+            My_mu_MXs2_LO_error = minus_sigma;
+        }
+        else if ((previous_profile_likelihood < 0.5) && (current_profile_likelihood > 0.5)) { // we just passed +1 sigma point
+            double mu_nominal_plus_sigma = previous_mu + (0.5 - previous_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood);
+            double plus_sigma = mu_nominal_plus_sigma - Global_mu_MXs2; // it is positive value
+            My_mu_MXs2_HI_error = plus_sigma;
+        }
+    }
+
+    for (int i = 0; i < mu_MXs3.size() - 1; i++) {
+        double previous_profile_likelihood = MinusLogLikelihood_MXs3.at(i) - Global_MinusLogLikelihood;
+        double current_profile_likelihood = MinusLogLikelihood_MXs3.at(i + 1) - Global_MinusLogLikelihood;
+        double previous_mu = mu_MXs3.at(i);
+        double current_mu = mu_MXs3.at(i + 1);
+        if ((previous_profile_likelihood > 0.5) && (current_profile_likelihood < 0.5)) { // we just passed -1 sigma point
+            double mu_nominal_minus_sigma = current_mu - (0.5 - current_profile_likelihood) * (current_mu - previous_mu) / (previous_profile_likelihood - current_profile_likelihood);
+            double minus_sigma = mu_nominal_minus_sigma - Global_mu_MXs3; // it is negative value
+            My_mu_MXs3_LO_error = minus_sigma;
+        }
+        else if ((previous_profile_likelihood < 0.5) && (current_profile_likelihood > 0.5)) { // we just passed +1 sigma point
+            double mu_nominal_plus_sigma = previous_mu + (0.5 - previous_profile_likelihood) * (current_mu - previous_mu) / (current_profile_likelihood - previous_profile_likelihood);
+            double plus_sigma = mu_nominal_plus_sigma - Global_mu_MXs3; // it is positive value
+            My_mu_MXs3_HI_error = plus_sigma;
+        }
+    }
+
+    printf("=======================================\n");
+    printf("Let's compare MINOS and homemade error\n");
+    printf("MINOS:\n");
+    printf("mu MXs1: %lf %lf\n", mu_MXs1_HI_error, mu_MXs1_LO_error);
+    printf("mu MXs2: %lf %lf\n", mu_MXs2_HI_error, mu_MXs2_LO_error);
+    printf("mu MXs3: %lf %lf\n", mu_MXs3_HI_error, mu_MXs3_LO_error);
+    printf("homemade:\n");
+    printf("mu MXs1: %lf %lf\n", My_mu_MXs1_HI_error, My_mu_MXs1_LO_error);
+    printf("mu MXs2: %lf %lf\n", My_mu_MXs2_HI_error, My_mu_MXs2_LO_error);
+    printf("mu MXs3: %lf %lf\n", My_mu_MXs3_HI_error, My_mu_MXs3_LO_error);
+    printf("-Log(L) scan:\n");
+    printf("mu MXs1: ");
+    for(int i = 0; i < MinusLogLikelihood_MXs1.size() - 1; i++) printf("%lf ", MinusLogLikelihood_MXs1.at(i));
+    printf("\n");
+    printf("mu MXs2: ");
+    for (int i = 0; i < MinusLogLikelihood_MXs2.size() - 1; i++) printf("%lf ", MinusLogLikelihood_MXs2.at(i));
+    printf("\n");
+    printf("mu MXs3: ");
+    for (int i = 0; i < MinusLogLikelihood_MXs3.size() - 1; i++) printf("%lf ", MinusLogLikelihood_MXs3.at(i));
+    printf("=======================================\n");
+
+    return minim.save();
+}
+
+void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * plot_name = "hist_data_plot.png") {
+
+    bool Allchargednull = true;
+    bool Allmixednull = true;
+    bool Alluubarnull = true;
+    bool Allddbarnull = true;
+    bool Allssbarnull = true;
+    bool Allccbarnull = true;
+    bool AllSIGANLnull = true;
+
+    THStack* Stack = new THStack("Stack", ";bin index;Events");
+    TH1D* charged_hist = new TH1D("B^{+}B^{-}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* mixed_hist = new TH1D("B^{0}#bar{B}^{0}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* uubar_hist = new TH1D("u#bar{u}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* ddbar_hist = new TH1D("d#bar{d}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* ssbar_hist = new TH1D("s#bar{s}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* ccbar_hist = new TH1D("c#bar{c}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* SIGNAL_hist = new TH1D("SIGNAL", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* all_hist = new TH1D("all", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* data_hist = nullptr;
+    if (data != nullptr) {
+        data_hist = new TH1D("data", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+        data_hist->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+    }
+    TH1D* Ratio_hist = new TH1D("Ratio", ";bin index;data/MC", RarityBins, BinMIN, BinMAX);
+
+    // fill histogram
+    for (int i = 0; i < scaleFactors_pdf_names.size(); i++) {
+
+        RooRealVar* x_val;
+        if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs1") != nullptr) x_val = w->var("obs_x_channel_MXs1");
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs2") != nullptr) x_val = w->var("obs_x_channel_MXs2");
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs3") != nullptr) x_val = w->var("obs_x_channel_MXs3");
+        else {
+            printf("[ERROR] unexpected sample type!\n");
+            exit(1);
+        }
+
+        RooAbsBinning const& binning = x_val->getBinning();
+        const double oldVal = x_val->getVal();
+
+        TH1D* temp_hist;
+        if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "Signal") != nullptr) temp_hist = SIGNAL_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHG") != nullptr) temp_hist = charged_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "MIX") != nullptr) temp_hist = mixed_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "UUBAR") != nullptr) temp_hist = uubar_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "DDBAR") != nullptr) temp_hist = ddbar_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "SSBAR") != nullptr) temp_hist = ssbar_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHARM") != nullptr) temp_hist = ccbar_hist;
+        else {
+            printf("[ERROR] unexpected sample type!\n");
+            exit(1);
+        }
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val = binCenter; // set x value
+
+            RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(i).c_str());
+            RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(i).c_str());
+            if ((temp_func_scaleFactors == nullptr) || (temp_func_shapes == nullptr)) {
+                printf("[WARNING] cannot find %s or %s. Just skip.\n", scaleFactors_pdf_names.at(i).c_str(), shapes_pdf_names.at(i).c_str());
+                break;
+            }
+            else {
+                if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "Signal") != nullptr) AllSIGANLnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHG") != nullptr) Allchargednull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "MIX") != nullptr) Allmixednull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "UUBAR") != nullptr) Alluubarnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "DDBAR") != nullptr) Allddbarnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "SSBAR") != nullptr) Allssbarnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHARM") != nullptr) Allccbarnull = false;
+            }
+            double Nevt = (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+
+            int index = -1;
+            if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs1") != nullptr) index = iBin + 1;
+            else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs2") != nullptr) index = iBin + RarityBins_MX1 + 1;
+            else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs3") != nullptr) index = iBin + RarityBins_MX1 + RarityBins_MX2 + 1;
+            else {
+                printf("[ERROR] unexpected sample type!\n");
+                exit(1);
+            }
+
+            temp_hist->SetBinContent(index, temp_hist->GetBinContent(index) + Nevt);
+            all_hist->Fill(((double)index) - 0.5, Nevt);
+            all_hist->SetBinError(index, 0);
+        }
+
+        *x_val = oldVal;
+
+    }
+
+    // Fill data
+    if (data != nullptr) {
+        for (int i = 0; i < RarityBins; i++) {
+            const RooArgSet* argSet = data->get(i);
+            if (!argSet) data_hist->SetBinContent(i + 1, 0.0);
+            else data_hist->SetBinContent(i + 1, data->weight());
+        }
+    }
+
+    // fill stack
+    if (Allchargednull == false) Stack->Add(charged_hist);
+    if (Allmixednull == false) Stack->Add(mixed_hist);
+    if (Alluubarnull == false) Stack->Add(uubar_hist);
+    if (Allddbarnull == false) Stack->Add(ddbar_hist);
+    if (Allssbarnull == false) Stack->Add(ssbar_hist);
+    if (Allccbarnull == false) Stack->Add(ccbar_hist);
+    if (AllSIGANLnull == false) Stack->Add(SIGNAL_hist);
+
+    // fill ratio
+    Ratio_hist->SetLineColor(kBlack); Ratio_hist->SetMarkerStyle(21); Ratio_hist->Sumw2(); Ratio_hist->SetStats(0);
+    Ratio_hist->Divide(data_hist, all_hist);
+
+    // draw plot
+    TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+
+    TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
+    pad1->SetBottomMargin(0.02); pad1->SetLeftMargin(0.15);
+    pad1->Draw(); pad1->cd();
+
+    gStyle->SetPalette(kPastel);
+
+    Float_t ymax_1 = Stack->GetMaximum();
+    Float_t ymax_2 = data_hist->GetMaximum();
+    double real_max = 0;
+    if (ymax_1 > ymax_2) real_max = ymax_1;
+    else real_max = ymax_2;
+
+    Stack->SetMaximum(real_max * 1.3);
+
+    Stack->Draw("pfc Hist"); Stack->GetXaxis()->SetLabelSize(0.0); Stack->GetXaxis()->SetTitleSize(0.0);
+    if (data != nullptr) {
+        data_hist->SetLineWidth(2);
+        data_hist->SetLineColor(kBlack);
+        data_hist->SetMarkerStyle(8);
+        data_hist->Draw("SAME eP EX0");
+    }
+    TLegend* legend = pad1->BuildLegend(0.95, 0.89, 0.75, 0.55);
+    legend->SetFillStyle(0); legend->SetLineWidth(0);
+
+    // vertical line to separate MXs region
+    c_temp->Update();
+    TLine* line_12 = new TLine((double)RarityBins_MX1, pad1->GetUymin(), (double)RarityBins_MX1, pad1->GetUymax());
+    line_12->SetLineColor(kBlack); line_12->SetLineStyle(2); line_12->SetLineWidth(3);
+    TLine* line_23 = new TLine((double)RarityBins_MX1 + RarityBins_MX2, pad1->GetUymin(), (double)RarityBins_MX1 + RarityBins_MX2, pad1->GetUymax());
+    line_23->SetLineColor(kBlack); line_23->SetLineStyle(2); line_23->SetLineWidth(3);
+    line_12->Draw(); line_23->Draw();
+
+    // write MXs bin text
+    TPaveText* pt_1 = new TPaveText(0.14, 0.85, 0.25 + 0.14, 1.0, "NDC NB");
+    pt_1->SetTextSize(0.035); pt_1->SetFillStyle(0); pt_1->SetLineWidth(0); pt_1->SetTextAlign(11); pt_1->AddText("0.0 < M_{X_{s}}^{reco} < 0.6 GeV/c^{2}"); pt_1->Draw();
+    TPaveText* pt_2 = new TPaveText(0.25 + 0.14, 0.85, 2.0 * 0.25 + 0.14, 1.0, "NDC NB");
+    pt_2->SetTextSize(0.035); pt_2->SetFillStyle(0); pt_2->SetLineWidth(0); pt_2->SetTextAlign(11); pt_2->AddText("0.6 < M_{X_{s}}^{reco} < 1.0 GeV/c^{2}"); pt_2->Draw();
+    TPaveText* pt_3 = new TPaveText(2.0 * 0.25 + 0.14, 0.85, 3.0 * 0.25 + 0.14, 1.0, "NDC NB");
+    pt_3->SetTextSize(0.035); pt_3->SetFillStyle(0); pt_3->SetLineWidth(0); pt_3->SetTextAlign(11); pt_3->AddText("1.0 < M_{X_{s}}^{reco} < 2.0 GeV/c^{2}"); pt_3->Draw();
+
+    // write Belle text
+    TPaveText* pt_belle = new TPaveText(0.16, 0.83, 0.4, 0.88, "NDC NB");
+    pt_belle->SetTextSize(0.035); pt_belle->SetFillStyle(0); pt_belle->SetLineWidth(0); pt_belle->SetTextAlign(11); pt_belle->AddText("Belle II"); pt_belle->Draw();
+    TPaveText* pt_lumi = new TPaveText(0.16, 0.76, 0.4, 0.81, "NDC NB");
+    pt_lumi->SetTextSize(0.035); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("#int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
+
+    c_temp->cd();
+    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.2); pad2->SetLeftMargin(0.15); pad2->SetTopMargin(0.05); pad2->Draw(); pad2->cd();
+    Ratio_hist->SetMinimum(0.5); Ratio_hist->SetMaximum(1.5); Ratio_hist->SetLineWidth(2);
+    Ratio_hist->GetYaxis()->SetTitleSize(0.08); Ratio_hist->GetYaxis()->SetTitleOffset(0.5); Ratio_hist->GetYaxis()->SetLabelSize(0.08);
+    Ratio_hist->GetXaxis()->SetLabelSize(0.08); Ratio_hist->GetXaxis()->SetTitleSize(0.08);
+    Ratio_hist->Draw("E X0 P");
+    TLine* line = new TLine(Ratio_hist->GetXaxis()->GetXmin(), 1.0, Ratio_hist->GetXaxis()->GetXmax(), 1.0);
+    line->SetLineColor(kRed);
+    line->SetLineStyle(1); line->SetLineWidth(3);
+    line->Draw();
+
+    // vertical line to separate MXs region
+    c_temp->Update();
+    TLine* line_12_pad2 = new TLine((double)RarityBins_MX1, pad2->GetUymin(), (double)RarityBins_MX1, pad2->GetUymax());
+    line_12_pad2->SetLineColor(kBlack); line_12_pad2->SetLineStyle(2); line_12_pad2->SetLineWidth(3);
+    TLine* line_23_pad2 = new TLine((double)RarityBins_MX1 + RarityBins_MX2, pad2->GetUymin(), (double)RarityBins_MX1 + RarityBins_MX2, pad2->GetUymax());
+    line_23_pad2->SetLineColor(kBlack); line_23_pad2->SetLineStyle(2); line_23_pad2->SetLineWidth(3);
+    line_12_pad2->Draw(); line_23_pad2->Draw();
+
+    c_temp->SetBottomMargin(0.0);
+    c_temp->SaveAs(plot_name);
+
+    // print values
+    printf("data:\n");
+    for (int i = 0; i < RarityBins; i++) printf("%lf +- %lf\n", data_hist->GetBinContent(i + 1), data_hist->GetBinError(i + 1));
+    printf("\nMC:\n");
+    for (int i = 0; i < RarityBins; i++) printf("%lf +- %lf\n", all_hist->GetBinContent(i + 1), all_hist->GetBinError(i + 1));
+    printf("\n");
+
+    // delete
+    delete c_temp;
+
+    delete Stack;
+    delete charged_hist;
+    delete mixed_hist;
+    delete uubar_hist;
+    delete ddbar_hist;
+    delete ssbar_hist;
+    delete ccbar_hist;
+    delete SIGNAL_hist;
+    delete all_hist;
+    if (data != nullptr) {
+        delete data_hist;
+    }
+    delete Ratio_hist;
+
+    delete line;
+
+    delete line_12;
+    delete line_23;
+
+    delete line_12_pad2;
+    delete line_23_pad2;
+}
+
+void GetPlotTemplate_compact(RooWorkspace* w, RooDataSet* data = nullptr, const char* plot_name = "hist_data_plot.png") {
+    // compact version of plot
+
+    bool Allchargednull = true;
+    bool Allmixednull = true;
+    bool Alluubarnull = true;
+    bool Allddbarnull = true;
+    bool Allssbarnull = true;
+    bool Allccbarnull = true;
+    bool AllSIGANLnull = true;
+
+    THStack* Stack = new THStack("Stack", ";bin index;Events");
+    TH1D* charged_hist = new TH1D("B^{+}B^{-}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* mixed_hist = new TH1D("B^{0}#bar{B}^{0}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* uubar_hist = new TH1D("u#bar{u}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* ddbar_hist = new TH1D("d#bar{d}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* ssbar_hist = new TH1D("s#bar{s}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* ccbar_hist = new TH1D("c#bar{c}", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* SIGNAL_hist = new TH1D("SIGNAL", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* all_hist = new TH1D("all", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+    TH1D* data_hist = nullptr;
+    if (data != nullptr) {
+        data_hist = new TH1D("data", ";bin index;Events", RarityBins, BinMIN, BinMAX);
+        data_hist->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
+    }
+    TH1D* Ratio_hist = new TH1D("Ratio", ";bin index;data/MC", RarityBins, BinMIN, BinMAX);
+
+    // fill histogram
+    for (int i = 0; i < scaleFactors_pdf_names.size(); i++) {
+
+        RooRealVar* x_val;
+        if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs1") != nullptr) x_val = w->var("obs_x_channel_MXs1");
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs2") != nullptr) x_val = w->var("obs_x_channel_MXs2");
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs3") != nullptr) x_val = w->var("obs_x_channel_MXs3");
+        else {
+            printf("[ERROR] unexpected sample type!\n");
+            exit(1);
+        }
+
+        RooAbsBinning const& binning = x_val->getBinning();
+        const double oldVal = x_val->getVal();
+
+        TH1D* temp_hist;
+        if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "Signal") != nullptr) temp_hist = SIGNAL_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHG") != nullptr) temp_hist = charged_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "MIX") != nullptr) temp_hist = mixed_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "UUBAR") != nullptr) temp_hist = uubar_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "DDBAR") != nullptr) temp_hist = ddbar_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "SSBAR") != nullptr) temp_hist = ssbar_hist;
+        else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHARM") != nullptr) temp_hist = ccbar_hist;
+        else {
+            printf("[ERROR] unexpected sample type!\n");
+            exit(1);
+        }
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val = binCenter; // set x value
+
+            RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(i).c_str());
+            RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(i).c_str());
+            if ((temp_func_scaleFactors == nullptr) || (temp_func_shapes == nullptr)) {
+                printf("[WARNING] cannot find %s or %s. Just skip.\n", scaleFactors_pdf_names.at(i).c_str(), shapes_pdf_names.at(i).c_str());
+                break;
+            }
+            else {
+                if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "Signal") != nullptr) AllSIGANLnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHG") != nullptr) Allchargednull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "MIX") != nullptr) Allmixednull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "UUBAR") != nullptr) Alluubarnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "DDBAR") != nullptr) Allddbarnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "SSBAR") != nullptr) Allssbarnull = false;
+                else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "CHARM") != nullptr) Allccbarnull = false;
+            }
+            double Nevt = (temp_func_scaleFactors->getValV() * temp_func_shapes->getValV());
+
+            int index = -1;
+            if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs1") != nullptr) index = iBin + 1;
+            else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs2") != nullptr) index = iBin + RarityBins_MX1 + 1;
+            else if (std::strstr(scaleFactors_pdf_names.at(i).c_str(), "channel_MXs3") != nullptr) index = iBin + RarityBins_MX1 + RarityBins_MX2 + 1;
+            else {
+                printf("[ERROR] unexpected sample type!\n");
+                exit(1);
+            }
+
+            temp_hist->SetBinContent(index, temp_hist->GetBinContent(index) + Nevt);
+            all_hist->Fill(((double)index) - 0.5, Nevt);
+            all_hist->SetBinError(index, 0);
+        }
+
+        *x_val = oldVal;
+
+    }
+
+    // Fill data
+    if (data != nullptr) {
+        for (int i = 0; i < RarityBins; i++) {
+            const RooArgSet* argSet = data->get(i);
+            if (!argSet) data_hist->SetBinContent(i + 1, 0.0);
+            else data_hist->SetBinContent(i + 1, data->weight());
+        }
+    }
+
+    // fill stack
+    if (Allchargednull == false) Stack->Add(charged_hist);
+    if (Allmixednull == false) Stack->Add(mixed_hist);
+    if (Alluubarnull == false) Stack->Add(uubar_hist);
+    if (Allddbarnull == false) Stack->Add(ddbar_hist);
+    if (Allssbarnull == false) Stack->Add(ssbar_hist);
+    if (Allccbarnull == false) Stack->Add(ccbar_hist);
+    if (AllSIGANLnull == false) Stack->Add(SIGNAL_hist);
+
+    // fill ratio
+    Ratio_hist->SetLineColor(kBlack); Ratio_hist->SetMarkerStyle(21); Ratio_hist->Sumw2(); Ratio_hist->SetStats(0);
+    Ratio_hist->Divide(data_hist, all_hist);
+
+    // draw plot
+    TCanvas* c_temp = new TCanvas("c", "", 800, 600); c_temp->cd();
+
+    TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.25, 1.0, 1.0);
+    pad1->SetBottomMargin(0.02); pad1->SetLeftMargin(0.15);
+    pad1->Draw(); pad1->cd();
+
+    gStyle->SetPalette(kPastel);
+
+    Float_t ymax_1 = Stack->GetMaximum();
+    Float_t ymax_2 = data_hist->GetMaximum();
+    double real_max = 0;
+    if (ymax_1 > ymax_2) real_max = ymax_1;
+    else real_max = ymax_2;
+
+    Stack->SetMaximum(real_max * 1.13);
+
+    Stack->Draw("pfc Hist");
+    Stack->GetXaxis()->SetLabelSize(0.0); Stack->GetXaxis()->SetTitleSize(0.0);
+    Stack->GetYaxis()->SetLabelSize(0.05); Stack->GetYaxis()->SetTitleSize(0.05);
+    if (data != nullptr) {
+        data_hist->SetLineWidth(2);
+        data_hist->SetLineColor(kBlack);
+        data_hist->SetMarkerStyle(8);
+        data_hist->Draw("SAME eP EX0");
+    }
+    TLegend* legend = pad1->BuildLegend(0.95, 0.89, 0.75, 0.55);
+    legend->SetFillStyle(0); legend->SetLineWidth(0);
+    legend->SetTextSize(0.045);
+
+    // vertical line to separate MXs region
+    c_temp->Update();
+    TLine* line_12 = new TLine((double)RarityBins_MX1, pad1->GetUymin(), (double)RarityBins_MX1, pad1->GetUymax());
+    line_12->SetLineColor(kBlack); line_12->SetLineStyle(2); line_12->SetLineWidth(3);
+    TLine* line_23 = new TLine((double)RarityBins_MX1 + RarityBins_MX2, pad1->GetUymin(), (double)RarityBins_MX1 + RarityBins_MX2, pad1->GetUymax());
+    line_23->SetLineColor(kBlack); line_23->SetLineStyle(2); line_23->SetLineWidth(3);
+    line_12->Draw(); line_23->Draw();
+
+    // write MXs bin text
+    TPaveText* pt_1 = new TPaveText(0.14, 0.85, 0.25 + 0.14, 1.0, "NDC NB");
+    pt_1->SetTextSize(0.045); pt_1->SetFillStyle(0); pt_1->SetLineWidth(0); pt_1->SetTextAlign(11); pt_1->AddText("0.0 < M_{X_{s}}^{reco} < 0.6 GeV/c^{2}"); pt_1->Draw();
+    TPaveText* pt_2 = new TPaveText(0.25 + 0.14, 0.85, 2.0 * 0.25 + 0.14, 1.0, "NDC NB");
+    pt_2->SetTextSize(0.045); pt_2->SetFillStyle(0); pt_2->SetLineWidth(0); pt_2->SetTextAlign(11); pt_2->AddText("0.6 < M_{X_{s}}^{reco} < 1.0 GeV/c^{2}"); pt_2->Draw();
+    TPaveText* pt_3 = new TPaveText(2.0 * 0.25 + 0.14, 0.85, 3.0 * 0.25 + 0.14, 1.0, "NDC NB");
+    pt_3->SetTextSize(0.045); pt_3->SetFillStyle(0); pt_3->SetLineWidth(0); pt_3->SetTextAlign(11); pt_3->AddText("1.0 < M_{X_{s}}^{reco} < 2.0 GeV/c^{2}"); pt_3->Draw();
+
+    // write Belle text
+    TPaveText* pt_belle = new TPaveText(0.40, 0.83, 0.64, 0.88, "NDC NB");
+    pt_belle->SetTextSize(0.045); pt_belle->SetFillStyle(0); pt_belle->SetLineWidth(0); pt_belle->SetTextAlign(11); pt_belle->AddText("Belle II"); pt_belle->Draw();
+    TPaveText* pt_lumi = new TPaveText(0.40, 0.75, 0.64, 0.80, "NDC NB");
+    pt_lumi->SetTextSize(0.045); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("#int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
+
+    c_temp->cd();
+    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.25); pad2->SetBottomMargin(0.35); pad2->SetLeftMargin(0.15); pad2->SetTopMargin(0.05); pad2->Draw(); pad2->cd();
+    Ratio_hist->SetMinimum(0.7); Ratio_hist->SetMaximum(1.23); Ratio_hist->SetLineWidth(2);
+    Ratio_hist->Draw("E X0 P");
+    Ratio_hist->GetYaxis()->SetTitleSize(0.15); Ratio_hist->GetYaxis()->SetTitleOffset(0.4); Ratio_hist->GetYaxis()->SetLabelSize(0.15);
+    Ratio_hist->GetXaxis()->SetLabelSize(0.15); Ratio_hist->GetXaxis()->SetTitleSize(0.15);
+    TLine* line = new TLine(Ratio_hist->GetXaxis()->GetXmin(), 1.0, Ratio_hist->GetXaxis()->GetXmax(), 1.0);
+    line->SetLineColor(kRed);
+    line->SetLineStyle(1); line->SetLineWidth(3);
+    line->Draw();
+
+    // vertical line to separate MXs region
+    c_temp->Update();
+    TLine* line_12_pad2 = new TLine((double)RarityBins_MX1, pad2->GetUymin(), (double)RarityBins_MX1, pad2->GetUymax());
+    line_12_pad2->SetLineColor(kBlack); line_12_pad2->SetLineStyle(2); line_12_pad2->SetLineWidth(3);
+    TLine* line_23_pad2 = new TLine((double)RarityBins_MX1 + RarityBins_MX2, pad2->GetUymin(), (double)RarityBins_MX1 + RarityBins_MX2, pad2->GetUymax());
+    line_23_pad2->SetLineColor(kBlack); line_23_pad2->SetLineStyle(2); line_23_pad2->SetLineWidth(3);
+    line_12_pad2->Draw(); line_23_pad2->Draw();
+
+    c_temp->SetBottomMargin(0.0);
+    c_temp->SaveAs(plot_name);
+
+    // print values
+    printf("data:\n");
+    for (int i = 0; i < RarityBins; i++) printf("%lf +- %lf\n", data_hist->GetBinContent(i + 1), data_hist->GetBinError(i + 1));
+    printf("\nMC:\n");
+    for (int i = 0; i < RarityBins; i++) printf("%lf +- %lf\n", all_hist->GetBinContent(i + 1), all_hist->GetBinError(i + 1));
+    printf("\n");
+
+    // delete
+    delete c_temp;
+
+    delete Stack;
+    delete charged_hist;
+    delete mixed_hist;
+    delete uubar_hist;
+    delete ddbar_hist;
+    delete ssbar_hist;
+    delete ccbar_hist;
+    delete SIGNAL_hist;
+    delete all_hist;
+    if (data != nullptr) {
+        delete data_hist;
+    }
+    delete Ratio_hist;
+
+    delete line;
+
+    delete line_12;
+    delete line_23;
+
+    delete line_12_pad2;
+    delete line_23_pad2;
+}
+
+void ObtainNLL(RooWorkspace* w, RooDataSet* data, RooAbsReal** nll) {
+    // what we have done
+    RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+
+    // get nll
+    RooArgSet* allParams = model->getParameters(*data);
+    RooStats::RemoveConstantParameters(allParams);
+    RooArgSet fGlobalObs = *mc->GetGlobalObservables();
+    RooArgSet fConditionalObs;
+    //Bool_t fLOffset = RooStats::IsNLLOffset();
+    std::string fLOffset = "bin";
+    (*nll) = model->createNLL(*data, RooFit::CloneData(kFALSE), RooFit::Constrain(*allParams), RooFit::GlobalObservables(fGlobalObs), RooFit::ConditionalObservables(fConditionalObs), RooFit::Offset(fLOffset));
+}
+
+void Drawpull(RooWorkspace* w, TIterator* iter, const char* fname, int type = 0) {
+    /*
+    * type = 0:
+    * center = (postfit_value - prefit_value) / prefit_error
+    * error = postfit_error / prefit_error
+    *
+    * type = 1:
+    * center = (postfit_value - prefit_value) / sqrt(prefit_error^2 - postfit_error^2)
+    * error = 1
+    * https://arxiv.org/abs/0911.0884
+    */
+
+    if (type == 0) {}
+    else if (type == 1) {}
+    else {
+        printf("[Drawpull] type should be {0|1}\n");
+        exit(1);
+    }
+
+    const RooArgSet* nominal_argset = w->getSnapshot("NominalParamValues");
+
+    std::vector<double> pulls;
+    std::vector<double> pull_errors;
+    std::vector<std::string> names;
+
+    for (TObject* Tobj = iter->Next(); Tobj != 0; Tobj = iter->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(Tobj);
+        std::string name = rrv->GetName();
+        double val = rrv->getVal();
+        double err = rrv->getError();
+
+        std::cout.width(25);
+        std::cout << name;
+        std::cout.width(15);
+        std::cout << val;
+        std::cout.width(5);
+        std::cout << "+-" << err << std::endl;
+
+        if (name.find("alpha") != std::string::npos) {
+            RooRealVar* nominal_var = (RooRealVar*)nominal_argset->find(name.c_str());
+
+            if (type == 0) {
+                pulls.push_back((val - nominal_var->getValV()) / nominal_var->errorVar()->getValV());
+                pull_errors.push_back(err / nominal_var->errorVar()->getValV());
+                names.push_back(name);
+            }
+            else if (type == 1) {
+                pulls.push_back((val - nominal_var->getValV()) / std::sqrt(nominal_var->errorVar()->getValV() * nominal_var->errorVar()->getValV() - err * err));
+                pull_errors.push_back(1.0);
+                names.push_back(name);
+            }
+        }
+        else if (name.find("gamma_stat") != std::string::npos) {
+            RooRealVar* nominal_var = (RooRealVar*)nominal_argset->find(name.c_str());
+
+            /* poisson */
+            //RooRealVar* norm = w->var(("nom_" + names->at(i)).c_str());
+            //std::poisson_distribution<> distribution(norm->getValV());
+            //w->var(names->at(i).c_str())->setVal(distribution(generator) / norm->getValV());
+
+            /* gaussian */
+            if (type == 0) {
+                pulls.push_back((val - nominal_var->getValV()) / nominal_var->errorVar()->getValV());
+                pull_errors.push_back(err / nominal_var->errorVar()->getValV());
+                names.push_back(name);
+            }
+            else if (type == 1) {
+                pulls.push_back((val - nominal_var->getValV()) / std::sqrt(nominal_var->errorVar()->getValV() * nominal_var->errorVar()->getValV() - err * err));
+                pull_errors.push_back(1.0);
+                names.push_back(name);
+            }
+        }
+        else if ((name.find("gamma") != std::string::npos) && (name.find("uncorr") != std::string::npos)) {
+            RooRealVar* nominal_var = (RooRealVar*) nominal_argset->find(name.c_str());
+
+            if (type == 0) {
+                pulls.push_back((val - nominal_var->getValV()) / nominal_var->errorVar()->getValV());
+                pull_errors.push_back(err / nominal_var->errorVar()->getValV());
+                names.push_back(name);
+            }
+            else if (type == 1) {
+                pulls.push_back((val - nominal_var->getValV()) / std::sqrt(nominal_var->errorVar()->getValV() * nominal_var->errorVar()->getValV() - err * err));
+                pull_errors.push_back(1.0);
+                names.push_back(name);
+            }
+
+        }
+    }
+
+    for (unsigned int i = 0; i < names.size(); i++) {
+        std::cout << names.at(i) << " " << pulls.at(i) << "+-" << pull_errors.at(i) << std::endl;
+    }
+
+    // draw pull
+    int size_pull = pulls.size();
+
+    TH1D* pull_ht = new TH1D("pull data hist", "pull of parameters;;", size_pull, 0, size_pull);
+    for (int i = 0; i < size_pull; i++) {
+        pull_ht->SetBinContent(i + 1, pulls.at(i));
+        pull_ht->SetBinError(i + 1, pull_errors.at(i));
+    }
+    pull_ht->SetLineWidth(2.0);
+    pull_ht->SetMarkerColor(1);
+    pull_ht->SetMarkerStyle(21);
+    pull_ht->SetLineColor(1);
+    char** label_name = (char**)malloc(sizeof(char*) * size_pull);
+    for (int i = 0; i < size_pull; i++) {
+        label_name[i] = (char*)malloc(sizeof(char) * names.at(i).size() + 1);
+        memcpy(label_name[i], names.at(i).c_str(), names.at(i).size() + 1);
+    }
+
+    TH1D* pull_one_sigma = new TH1D("1sig hist", "1sig;;", size_pull, 0.0, size_pull);
+    for (int i = 0; i < size_pull; i++) {
+        pull_one_sigma->SetBinContent(i + 1, 0.0);
+        pull_one_sigma->SetBinError(i + 1, 1.0);
+    }
+    pull_one_sigma->SetFillColor(kGreen);
+    pull_one_sigma->SetFillStyle(1001);
+
+    TH1D* pull_two_sigma = new TH1D("2sig hist", "2sig;;", size_pull, 0.0, size_pull);
+    for (int i = 0; i < size_pull; i++) {
+        pull_two_sigma->SetBinContent(i + 1, 0.0);
+        pull_two_sigma->SetBinError(i + 1, 2.0);
+    }
+    pull_two_sigma->SetFillColor(kYellow);
+    pull_two_sigma->SetFillStyle(1001);
+    for (int i = 0; i < size_pull; i++) {
+        pull_two_sigma->GetXaxis()->SetBinLabel(i + 1, names.at(i).c_str());
+    }
+    pull_two_sigma->SetStats(false);
+    if (type == 0) pull_two_sigma->GetYaxis()->SetTitle("(#hat{#theta}-#theta)/#Delta#theta");
+    else if (type == 1) pull_two_sigma->GetYaxis()->SetTitle("(#hat{#theta}-#theta)/#sigma");
+    pull_two_sigma->GetYaxis()->SetTitleOffset(1.4);
+    pull_two_sigma->GetXaxis()->LabelsOption("v");
+
+    TLine* line = new TLine(0.0, 0.0, size_pull, 0.0);
+    line->SetLineColor(kBlack);
+    line->SetLineStyle(2); line->SetLineWidth(1);
+
+    TCanvas* cpull = new TCanvas("pull_Plot", "pull Plot", 2200, 800); cpull->SetBottomMargin(0.3);
+    pull_two_sigma->Draw("E2");
+    pull_one_sigma->Draw("E2 same");
+    pull_ht->Draw("e0 e1 same");
+    line->Draw();
+
+    cpull->SaveAs(fname);
+
+    delete pull_ht;
+    delete pull_one_sigma;
+    delete pull_two_sigma;
+    delete line;
+    delete cpull;
+}
+
+void PrintNevtFile(RooWorkspace* w, const char* filename) {
+    // for `LetsDrawFitPlot` in `THStack_plot.h, and `MyToyMCStudyWithNevts`
+
+    // Nevts for each samples
+    std::vector<double> Signal_MXs1_Nevts; // Nevt for signal whose MXs^true is within [0.0, 0.6]
+    std::vector<double> Signal_MXs2_Nevts; // Nevt for signal whose MXs^true is within [0.6, 1.0]
+    std::vector<double> Signal_MXs3_Nevts; // Nevt for signal whose MXs^true is within [1.0, infty)
+    std::vector<double> CHG_Nevts; // Nevt for CHG
+    std::vector<double> MIX_Nevts; // Nevt for MIX
+    std::vector<double> UUBAR_Nevts; // Nevt for UUBAR
+    std::vector<double> DDBAR_Nevts; // Nevt for DDBAR
+    std::vector<double> SSBAR_Nevts; // Nevt for SSBAR
+    std::vector<double> CHARM_Nevts; // Nevt for CHARM
+
+    RooStats::ModelConfig* mc = (RooStats::ModelConfig*)w->obj("ModelConfig"); // Get model manually
+    RooSimultaneous* model = (RooSimultaneous*)mc->GetPdf();
+    RooArgSet* obs = (RooArgSet*)mc->GetObservables();
+    RooRealVar* x_val_MXs1 = w->var("obs_x_channel_MXs1");
+    RooRealVar* x_val_MXs2 = w->var("obs_x_channel_MXs2");
+    RooRealVar* x_val_MXs3 = w->var("obs_x_channel_MXs3");
+
+    {
+        RooAbsBinning const& binning = x_val_MXs1->getBinning();
+        const double oldVal = x_val_MXs1->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs1 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs1") == nullptr) continue; // skip non-MXs1
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+
+                double Nevt = temp_func_scaleFactors->getValV() * temp_func_shapes->getValV();
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs1") != nullptr) Signal_MXs1_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs2") != nullptr) Signal_MXs2_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs3") != nullptr) Signal_MXs3_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "CHG") != nullptr) CHG_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "MIX") != nullptr) MIX_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "UUBAR") != nullptr) UUBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "DDBAR") != nullptr) DDBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "SSBAR") != nullptr) SSBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "CHARM") != nullptr) CHARM_Nevts.push_back(Nevt);
+                else {
+                    printf("[ERROR] unexpected sample\n");
+                    exit(1);
+                }
+
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs1 = oldVal;
+    }
+
+    {
+        RooAbsBinning const& binning = x_val_MXs2->getBinning();
+        const double oldVal = x_val_MXs2->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs2 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs2") == nullptr) continue; // skip non-MXs2
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+
+                double Nevt = temp_func_scaleFactors->getValV() * temp_func_shapes->getValV();
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs1") != nullptr) Signal_MXs1_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs2") != nullptr) Signal_MXs2_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs3") != nullptr) Signal_MXs3_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "CHG") != nullptr) CHG_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "MIX") != nullptr) MIX_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "UUBAR") != nullptr) UUBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "DDBAR") != nullptr) DDBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "SSBAR") != nullptr) SSBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "CHARM") != nullptr) CHARM_Nevts.push_back(Nevt);
+                else {
+                    printf("[ERROR] unexpected sample\n");
+                    exit(1);
+                }
+
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs2 = oldVal;
+    }
+
+    {
+        RooAbsBinning const& binning = x_val_MXs3->getBinning();
+        const double oldVal = x_val_MXs3->getVal();
+
+        for (std::size_t iBin = 0; iBin < binning.numBins(); ++iBin) {
+            double binCenter = binning.binCenter(iBin);
+            double binWidth = binning.binWidth(iBin);
+
+            *x_val_MXs3 = binCenter; // set x value
+
+            for (unsigned int j = 0; j < scaleFactors_pdf_names.size(); j++) {
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "channel_MXs3") == nullptr) continue; // skip non-MXs3
+
+                RooAbsReal* temp_func_scaleFactors = w->function(scaleFactors_pdf_names.at(j).c_str());
+                RooAbsReal* temp_func_shapes = w->function(shapes_pdf_names.at(j).c_str());
+
+                double Nevt = temp_func_scaleFactors->getValV() * temp_func_shapes->getValV();
+                if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs1") != nullptr) Signal_MXs1_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs2") != nullptr) Signal_MXs2_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "Signal_MXs3") != nullptr) Signal_MXs3_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "CHG") != nullptr) CHG_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "MIX") != nullptr) MIX_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "UUBAR") != nullptr) UUBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "DDBAR") != nullptr) DDBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "SSBAR") != nullptr) SSBAR_Nevts.push_back(Nevt);
+                else if (std::strstr(scaleFactors_pdf_names.at(j).c_str(), "CHARM") != nullptr) CHARM_Nevts.push_back(Nevt);
+                else {
+                    printf("[ERROR] unexpected sample\n");
+                    exit(1);
+                }
+
+                if ((temp_func_scaleFactors->getValV() * temp_func_shapes->getValV()) < 0) {
+                    printf("[ERROR] negative count!\n");
+                    exit(1);
+                }
+            }
+
+        }
+
+        *x_val_MXs3 = oldVal;
+    }
+
+    FILE* fp;
+    fp = fopen(filename, "w");
+
+    fprintf(fp, "Signal_MXs1:\n");
+    for (int i = 0; i < Signal_MXs1_Nevts.size(); i++) fprintf(fp, "%lf ", Signal_MXs1_Nevts.at(i));
+    fprintf(fp, "\n");
+
+    fprintf(fp, "Signal_MXs2:\n");
+    for (int i = 0; i < Signal_MXs2_Nevts.size(); i++) fprintf(fp, "%lf ", Signal_MXs2_Nevts.at(i));
+    fprintf(fp, "\n");
+
+    fprintf(fp, "Signal_MXs3:\n");
+    for (int i = 0; i < Signal_MXs3_Nevts.size(); i++) fprintf(fp, "%lf ", Signal_MXs3_Nevts.at(i));
+    fprintf(fp, "\n");
+
+    fprintf(fp, "CHG:\n");
+    for (int i = 0; i < CHG_Nevts.size(); i++) fprintf(fp, "%lf ", CHG_Nevts.at(i));
+    fprintf(fp, "\n");
+
+    fprintf(fp, "MIX:\n");
+    for (int i = 0; i < MIX_Nevts.size(); i++) fprintf(fp, "%lf ", MIX_Nevts.at(i));
+    fprintf(fp, "\n");
+
+    fprintf(fp, "UUBAR:\n");
+    for (int i = 0; i < UUBAR_Nevts.size(); i++) fprintf(fp, "%lf ", UUBAR_Nevts.at(i));
+    fprintf(fp, "\n");
+
+    fprintf(fp, "DDBAR:\n");
+    for (int i = 0; i < DDBAR_Nevts.size(); i++) fprintf(fp, "%lf ", DDBAR_Nevts.at(i));
+    fprintf(fp, "\n");
+
+    fprintf(fp, "SSBAR:\n");
+    for (int i = 0; i < SSBAR_Nevts.size(); i++) fprintf(fp, "%lf ", SSBAR_Nevts.at(i));
+    fprintf(fp, "\n");
+
+    fprintf(fp, "CHARM:\n");
+    for (int i = 0; i < CHARM_Nevts.size(); i++) fprintf(fp, "%lf ", CHARM_Nevts.at(i));
+    fprintf(fp, "\n");
+
+    fclose(fp);
+
+}
+
+void PrintNuisanceParameters(RooArgSet* fitargs) {
+
+    FILE* fp = fopen("nuisance.txt", "w");
+
+    TIterator* iter(fitargs->createIterator());
+
+    for (TObject* a = iter->Next(); a != 0; a = iter->Next()) {
+        RooRealVar* rrv = dynamic_cast<RooRealVar*>(a);
+        std::string name = rrv->GetName();
+        double val = rrv->getVal();
+        double err = rrv->getError();
+        double HIerr = rrv->getAsymErrorHi();
+        double LOerr = rrv->getAsymErrorLo();
+
+        if ((name.find("alpha") != std::string::npos) || (name.find("gamma") != std::string::npos)) { // it is nuisance parameter
+            fprintf(fp, "%s\n", name.c_str());
+            fprintf(fp, "%lf\n", val);
+        }
+
+    }
+
+    fclose(fp);
+
+}
+
+void LoadNuisanceParameter(RooWorkspace* w, const char* fname) {
+
+    FILE* fp = fopen(fname, "r");
+
+    while (true) {
+
+        char variable_name[100];
+        double variable_value = -1;
+
+        if (fscanf(fp, "%s\n", variable_name) == EOF) break;
+        if (fscanf(fp, "%lf\n", &variable_value) == EOF) break;
+
+        w->var(variable_name)->setVal(variable_value);
+
+    }
+
+    fclose(fp);
+
+}
+
+#endif 
