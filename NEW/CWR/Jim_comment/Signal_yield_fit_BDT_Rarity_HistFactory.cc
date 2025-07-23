@@ -4326,6 +4326,8 @@ int main()
     ClearHist(SSBAR_all_uncorrelated);
     ClearHist(CHARM_all_uncorrelated);
 
+#ifdef USE_OLD_KS0_CORRECTION
+#else
     AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_KS0_uncorrelated, RarityBins);
     AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_KS0_uncorrelated, RarityBins);
     AddSQRTHist(Signal_MXs3_all_uncorrelated, Signal_MXs3_KS0_uncorrelated, RarityBins);
@@ -4335,6 +4337,7 @@ int main()
     AddSQRTHist(DDBAR_all_uncorrelated, DDBAR_KS0_uncorrelated, RarityBins);
     AddSQRTHist(SSBAR_all_uncorrelated, SSBAR_KS0_uncorrelated, RarityBins);
     AddSQRTHist(CHARM_all_uncorrelated, CHARM_KS0_uncorrelated, RarityBins);
+#endif
 
     AddSQRTHist(Signal_MXs1_all_uncorrelated, Signal_MXs1_FEI_uncorrelated, RarityBins);
     AddSQRTHist(Signal_MXs2_all_uncorrelated, Signal_MXs2_FEI_uncorrelated, RarityBins);
