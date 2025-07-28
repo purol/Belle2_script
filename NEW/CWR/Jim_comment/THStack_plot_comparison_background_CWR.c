@@ -18,7 +18,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 /* ====================================== */
 
-void THStack_plot_comparison_background() {
+void THStack_plot_comparison_background_CWR() {
 
     const char* el7_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHG_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
     const char* el7_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
