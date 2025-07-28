@@ -20,9 +20,9 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 void THStack_plot_comparison_signal_CWR() {
 
-    const char* el7_signal_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* el7_signal_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut";
 
-    const char* el9_signal_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* el9_signal_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;

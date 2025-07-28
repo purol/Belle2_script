@@ -20,19 +20,19 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 void THStack_plot_comparison_background_CWR() {
 
-    const char* el7_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHG_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* el7_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* el7_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* el7_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* el7_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* el7_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* el7_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHG_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
+    const char* el7_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
+    const char* el7_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
+    const char* el7_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
+    const char* el7_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
+    const char* el7_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
 
-    const char* el9_CHG_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/CHG_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* el9_MIX_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* el9_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* el9_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* el9_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* el9_CHARM_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* el9_CHG_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/CHG_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
+    const char* el9_MIX_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
+    const char* el9_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
+    const char* el9_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
+    const char* el9_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
+    const char* el9_CHARM_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/ByakurenRD/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
