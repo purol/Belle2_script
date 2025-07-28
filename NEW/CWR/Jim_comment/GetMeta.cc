@@ -84,8 +84,6 @@ void GetNominalNevt(const char* dirname, const char* included_string, std::vecto
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
-            tree_Bsig->GetEntry(j);
-            tree_Btag->GetEntry(j);
 
             Meta meta = { __experiment__, __run__, __event__, __candidate__, __ncandidates__, names.at(i) };
             metas->push_back(meta);
