@@ -642,7 +642,6 @@ void THStack_plot_dmID() {
         if (variable_names.at(k) == "bin index") {
             PrintDataMCRatio(Stack[k], data_hist[k], Ratio_hist[k], "dataMCratio_sideband.txt");
             PrintDataMC(Stack[k], data_hist[k]);
-            Printchi2(Stack[k], data_hist[k]);
         }
 
         delete c_temp;
