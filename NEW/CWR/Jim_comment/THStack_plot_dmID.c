@@ -23,14 +23,14 @@ void THStack_plot_dmID() {
 
     NormalizeAtEachMXs = true;
 
-    const char* MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/MizuhashiRD/CHG_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/MizuhashiRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application_after_cutM/Merge";
-    const char* MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/MizuhashiRD/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/MizuhashiRD/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/MizuhashiRD/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_CHARM_validation_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/MizuhashiRD/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHG_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application_after_cutM/Merge";
+    const char* MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
 
-    const char* data_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/MizuhashiRD_LS_data/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
+    const char* data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_data/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/";
 
     // Count event to normalize at each MXs region
     LetsCountMC(MC_CHG_validation_dirname, "CHG");
