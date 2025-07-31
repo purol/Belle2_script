@@ -24,7 +24,7 @@ void THStack_plot_dmID() {
     NormalizeAtEachMXs = true;
 
     const char* MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHG_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application_after_cutM/Merge";
+    const char* MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
     const char* MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
     const char* MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
     const char* MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
@@ -202,7 +202,7 @@ void THStack_plot_dmID() {
     variable_names.push_back("MVA_BB"); branch_names.push_back("Upsilon");
     variable_names.push_back("bin index"); branch_names.push_back("Upsilon");
     variable_names.push_back("extraInfo__bodecayModeID__bc"); branch_names.push_back("Upsilon");
-    variable_names.push_back("Bsig_daughter_0_extraInfo_decayModeID"); branch_names.push_back("Bsig");
+    variable_names.push_back("Btag_extraInfo_decayModeID"); branch_names.push_back("Btag");
 
     Nvar_num = static_cast<int>(variable_names.size());
 
