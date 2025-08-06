@@ -62,6 +62,8 @@ Corrector_Fragmentation corrector_Fragmentation;
 std::vector<double> KS0_correction_fluctuation_stat_uncer; // it is additive!
 std::vector<double> KS0_correction_fluctuation_sys_uncer; // it is additive!
 
+double Eff_MC15ri_alpha = 0.0;
+
 double Slow_Pion_stat_uncorr_alpha_1 = 0.0;
 double Slow_Pion_stat_uncorr_alpha_2 = 0.0;
 double Slow_Pion_stat_uncorr_alpha_3 = 0.0;
@@ -695,10 +697,7 @@ void GetFlucNevt(const char* dirname, const char* included_string, const char* t
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
             if (std::string(MCTYPE) == "MC15ri") {
-                std::normal_distribution<double> normal_distribution(0.0, 1.0);
-                double alpha = normal_distribution(generator);
-
-                Correction_KS0 = Correction_KS0 * alpha * (corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE) + corrector_KS0.GetAbsoluteUncertainty(KS0_flight_distance, MCTYPE));
+                Correction_KS0 = Correction_KS0 * (corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE) + Eff_MC15ri_alpha * corrector_KS0.GetAbsoluteUncertainty(KS0_flight_distance, MCTYPE));
             }
             else if (std::string(MCTYPE) == "MC15rd") {
                 int KS0_bin = corrector_KS0.GetBin(KS0_p, KS0_costheta, KS0_flight_distance, MCTYPE);
@@ -808,7 +807,11 @@ void FluctuateKS0Correction() {
     KS0_correction_fluctuation_stat_uncer.clear();
     KS0_correction_fluctuation_sys_uncer.clear();
 
-    if (std::string(MCTYPE) == "MC15ri") {} // fluctuation in FlucNevt
+    if (std::string(MCTYPE) == "MC15ri") {
+        std::normal_distribution<double> KS0_sys_distribution(0.0, 1.0);
+
+        Eff_MC15ri_alpha = KS0_sys_distribution(generator);
+    }
     else if (std::string(MCTYPE) == "MC15rd") {
         for (int i_KS0 = 0; i_KS0 < corrector_KS0.GetNBins(MCTYPE); i_KS0++) {
 
