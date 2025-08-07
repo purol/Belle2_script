@@ -1138,6 +1138,7 @@ int GetNEWFEICALcorrelatedPDFs(const char* dirname, TH1D* Signal_nominal_hist_MX
     double eigen_value = 0; // eigen value
     double weight_sys[RarityBins * 3] = { 0.0 }; // eigen vector
 
+    /*
     FILE* fp;
     fp = fopen(dirname, "r");
     while (true) {
@@ -1148,6 +1149,7 @@ int GetNEWFEICALcorrelatedPDFs(const char* dirname, TH1D* Signal_nominal_hist_MX
         Nentry++;
     }
     fclose(fp);
+    */
 
     *Signal_hists_MXs1 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
     *Signal_hists_MXs2 = (TH1D**)malloc(sizeof(TH1D*) * Nentry * 2);
@@ -1165,10 +1167,10 @@ int GetNEWFEICALcorrelatedPDFs(const char* dirname, TH1D* Signal_nominal_hist_MX
         (*Signal_hists_MXs3)[i] = new TH1D(("Signal_MXs3_NEWFEICAL_correlated" + std::to_string(i - Nentry) + "_m").c_str(), ("Signal_MXs3_NEWFEICAL_correlated" + std::to_string(i - Nentry) + "_m").c_str(), RarityBins, BinMIN, BinMAX);
     }
 
-    fp = fopen(dirname, "r");
+    //fp = fopen(dirname, "r");
     for (int i = 0; i < Nentry; i++) {
-        fscanf(fp, "%lf\n", &eigen_value);
-        for (int j = 0; j < RarityBins * 3; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
+        //fscanf(fp, "%lf\n", &eigen_value);
+        //for (int j = 0; j < RarityBins * 3; j++) fscanf(fp, "%lf\n", &weight_sys[j]);
 
         for (int k = 0; k < RarityBins; k++) {
             (*Signal_hists_MXs1)[i]->SetBinContent(k + 1, Signal_nominal_hist_MXs1->GetBinContent(k + 1) * (1 + eigen_value * weight_sys[k + 0 * RarityBins]));
@@ -1182,18 +1184,18 @@ int GetNEWFEICALcorrelatedPDFs(const char* dirname, TH1D* Signal_nominal_hist_MX
 
     }
 
-    fclose(fp);
+    //fclose(fp);
 
     return Nentry;
 }
 
 void GetNEWFEICALUncorrelatedPDFs(const char* dirname, TH1D* Signal_hist_MXs1, TH1D* Signal_hist_MXs2, TH1D* Signal_hist_MXs3) { // get shape sys histogram from txt file
-    FILE* fp;
-    fp = fopen(dirname, "r");
+    //FILE* fp;
+    //fp = fopen(dirname, "r");
 
     double weight_sys[RarityBins * 3] = { 0.0 };
-    for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
-    fclose(fp);
+    //for (int i = 0; i < RarityBins * 3; i++) fscanf(fp, "%lf\n", &weight_sys[i]);
+    //fclose(fp);
 
     for (int i = 0; i < RarityBins * 3; i++) weight_sys[i] = std::sqrt(weight_sys[i]);
 
