@@ -847,6 +847,12 @@ void LetsFillMC(const char* dirname, std::vector<std::string> variable_names, st
                 fitfactor = GetFitWeight(bin_index, MC_MXs, SampleName);
                 CALfactor = GetFitCAL(bin_index, MC_MXs, SampleName);
             }
+            else {
+                auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
+                int index_FBDT_raw = std::distance(variable_names.begin(), it);
+                double bin_index = ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M);
+                CALfactor = GetFitCAL(bin_index, MC_MXs, SampleName);
+            }
 
             weights->push_back(FEI_calibration_factor* CAL* weight_ri* Correction_pi0* Correction_KID* Correction_PID* Correction_fake * Correction_KS0 * Correction_Knn * Correction_Xnn* Correction_multiplicity* Correction_KpKLKL* Correction_KSKLKL* Correction_KstarKLKL* Correction_XKLKL* Correction_BtoDtoXKL* additional_weight * normfactor_MXs * fitfactor * CALfactor);
 
@@ -1570,6 +1576,12 @@ void LetsFillMC_correction(const char* dirname, std::vector<std::string> variabl
                 int index_FBDT_raw = std::distance(variable_names.begin(), it);
                 double bin_index = ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M);
                 fitfactor = GetFitWeight(bin_index, MC_MXs, SampleName);
+                CALfactor = GetFitCAL(bin_index, MC_MXs, SampleName);
+            }
+            else {
+                auto it = std::find(variable_names.begin(), variable_names.end(), "MVA_BB");
+                int index_FBDT_raw = std::distance(variable_names.begin(), it);
+                double bin_index = ReturnBinIndex(var_float[index_FBDT_raw], Bsig_M);
                 CALfactor = GetFitCAL(bin_index, MC_MXs, SampleName);
             }
 
@@ -4225,6 +4237,10 @@ void NevtCount_ri(const char* dirname, std::string SampleName, Nevt* nevt, doubl
             if (DrawFitPlots == true) {
                 double bin_index = ReturnBinIndex(MVA_BB, Bsig_M);
                 fitfactor = GetFitWeight(bin_index, MC_MXs, SampleName);
+                CALfactor = GetFitCAL(bin_index, MC_MXs, SampleName);
+            }
+            else {
+                double bin_index = ReturnBinIndex(MVA_BB, Bsig_M);
                 CALfactor = GetFitCAL(bin_index, MC_MXs, SampleName);
             }
 
