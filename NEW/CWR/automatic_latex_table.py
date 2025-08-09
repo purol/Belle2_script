@@ -160,9 +160,9 @@ else:# in full_unblind directory
     BR_mu = 0.000029
     Scale = 100000.0
 
-    fix_none = extract_minos_for_param("./free_all_mu/fix_none/log/FIX_1.log", param)
-    fix_all = extract_minos_for_param("./free_all_mu/fix_all/log/FIX_1.log", param)
-    fix_minor = extract_minos_for_param("./free_all_mu/fix_minor/log/FIX_1.log", param)
+    fix_none = extract_minos_for_param("./free_all_mu_fitter_bias/fix_none/log/FIX_1.log", param)
+    fix_all = extract_minos_for_param("./free_all_mu_fitter_bias/fix_all/log/FIX_1.log", param)
+    fix_minor = extract_minos_for_param("./free_all_mu_fitter_bias/fix_minor/log/FIX_1.log", param)
 
     # Generate LaTeX table rows
     unsorted_rows = []
@@ -170,7 +170,7 @@ else:# in full_unblind directory
     latex_rows = []
 
     for label_note, label_paper, systype, syssize, dir in systematics:
-        fix_dir = extract_minos_for_param(f"./free_all_mu/{dir}/log/FIX_1.log", param)
+        fix_dir = extract_minos_for_param(f"./free_all_mu_fitter_bias/{dir}/log/FIX_1.log", param)
         contrib = compute_uncertainty_contribution(fix_none, fix_dir)
         if contrib is not None:
             value = Scale * BR_mu * contrib
@@ -210,8 +210,8 @@ else:# in full_unblind directory
 
     # Extract base errors
     param = "mu"
-    fix_none = extract_minos_for_param("./one_mu/fix_none/log/FIX_1.log", param)
-    fix_all = extract_minos_for_param("./one_mu/fix_all/log/FIX_1.log", param)
+    fix_none = extract_minos_for_param("./one_mu_fitter_bias/fix_none/log/FIX_1.log", param)
+    fix_all = extract_minos_for_param("./one_mu_fitter_bias/fix_all/log/FIX_1.log", param)
 
     # Generate LaTeX table rows
     unsorted_rows = []
@@ -219,7 +219,7 @@ else:# in full_unblind directory
     latex_rows = []
 
     for label_note, label_paper, systype, syssize, dir in systematics:
-        fix_dir = extract_minos_for_param(f"./one_mu/{dir}/log/FIX_1.log", param)
+        fix_dir = extract_minos_for_param(f"./one_mu_fitter_bias/{dir}/log/FIX_1.log", param)
         contrib = compute_uncertainty_contribution(fix_none, fix_dir)
         if contrib is not None:
             unsorted_rows.append((label_note, systype, contrib))
@@ -258,14 +258,14 @@ else:# in full_unblind directory
     BR_MXs3 = 0.0000156683
     Scale = 100000.0
 
-    fix_none_mu = extract_minos_for_param("./free_all_mu/fix_none/log/FIX_1.log", param_mu)
-    fix_all_mu = extract_minos_for_param("./free_all_mu/fix_all/log/FIX_1.log", param_mu)
-    fix_none_MXs1 = extract_minos_for_param("./free_all/fix_none/log/FIX_1.log", param_MXs1)
-    fix_all_MXs1 = extract_minos_for_param("./free_all/fix_all/log/FIX_1.log", param_MXs1)
-    fix_none_MXs2 = extract_minos_for_param("./free_all/fix_none/log/FIX_1.log", param_MXs2)
-    fix_all_MXs2 = extract_minos_for_param("./free_all/fix_all/log/FIX_1.log", param_MXs2)
-    fix_none_MXs3 = extract_minos_for_param("./free_all/fix_none/log/FIX_1.log", param_MXs3)
-    fix_all_MXs3 = extract_minos_for_param("./free_all/fix_all/log/FIX_1.log", param_MXs3)
+    fix_none_mu = extract_minos_for_param("./free_all_mu_fitter_bias/fix_none/log/FIX_1.log", param_mu)
+    fix_all_mu = extract_minos_for_param("./free_all_mu_fitter_bias/fix_all/log/FIX_1.log", param_mu)
+    fix_none_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs1)
+    fix_all_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs1)
+    fix_none_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs2)
+    fix_all_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs2)
+    fix_none_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs3)
+    fix_all_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs3)
 
     # Generate LaTeX table rows
     unsorted_rows = []
@@ -273,13 +273,13 @@ else:# in full_unblind directory
     latex_rows = []
 
     for label_note, label_paper, systype, syssize, dir in systematics:
-        fix_dir_mu = extract_minos_for_param(f"./free_all_mu/{dir}/log/FIX_1.log", param_mu)
+        fix_dir_mu = extract_minos_for_param(f"./free_all_mu_fitter_bias/{dir}/log/FIX_1.log", param_mu)
         contrib_mu = compute_uncertainty_contribution(fix_none_mu, fix_dir_mu)
-        fix_dir_MXs1 = extract_minos_for_param(f"./free_all/{dir}/log/FIX_1.log", param_MXs1)
+        fix_dir_MXs1 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs1)
         contrib_MXs1 = compute_uncertainty_contribution(fix_none_MXs1, fix_dir_MXs1)
-        fix_dir_MXs2 = extract_minos_for_param(f"./free_all/{dir}/log/FIX_1.log", param_MXs2)
+        fix_dir_MXs2 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs2)
         contrib_MXs2 = compute_uncertainty_contribution(fix_none_MXs2, fix_dir_MXs2)
-        fix_dir_MXs3 = extract_minos_for_param(f"./free_all/{dir}/log/FIX_1.log", param_MXs3)
+        fix_dir_MXs3 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs3)
         contrib_MXs3 = compute_uncertainty_contribution(fix_none_MXs3, fix_dir_MXs3)
         
         if contrib_mu is not None:
@@ -330,14 +330,14 @@ else:# in full_unblind directory
     param_MXs2 = "mu_MXs2"
     param_MXs3 = "mu_MXs3"
 
-    fix_none_mu = extract_minos_for_param("./free_all_mu/fix_none/log/FIX_1.log", param_mu)
-    fix_all_mu = extract_minos_for_param("./free_all_mu/fix_all/log/FIX_1.log", param_mu)
-    fix_none_MXs1 = extract_minos_for_param("./free_all/fix_none/log/FIX_1.log", param_MXs1)
-    fix_all_MXs1 = extract_minos_for_param("./free_all/fix_all/log/FIX_1.log", param_MXs1)
-    fix_none_MXs2 = extract_minos_for_param("./free_all/fix_none/log/FIX_1.log", param_MXs2)
-    fix_all_MXs2 = extract_minos_for_param("./free_all/fix_all/log/FIX_1.log", param_MXs2)
-    fix_none_MXs3 = extract_minos_for_param("./free_all/fix_none/log/FIX_1.log", param_MXs3)
-    fix_all_MXs3 = extract_minos_for_param("./free_all/fix_all/log/FIX_1.log", param_MXs3)
+    fix_none_mu = extract_minos_for_param("./free_all_mu_fitter_bias/fix_none/log/FIX_1.log", param_mu)
+    fix_all_mu = extract_minos_for_param("./free_all_mu_fitter_bias/fix_all/log/FIX_1.log", param_mu)
+    fix_none_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs1)
+    fix_all_MXs1 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs1)
+    fix_none_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs2)
+    fix_all_MXs2 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs2)
+    fix_none_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_none/log/FIX_1.log", param_MXs3)
+    fix_all_MXs3 = extract_minos_for_param("./free_all_fitter_bias/fix_all/log/FIX_1.log", param_MXs3)
 
     # Generate LaTeX table rows
     unsorted_rows = []
@@ -345,13 +345,13 @@ else:# in full_unblind directory
     latex_rows = []
 
     for label_note, label_paper, systype, syssize, dir in systematics:
-        fix_dir_mu = extract_minos_for_param(f"./free_all_mu/{dir}/log/FIX_1.log", param_mu)
+        fix_dir_mu = extract_minos_for_param(f"./free_all_mu_fitter_bias/{dir}/log/FIX_1.log", param_mu)
         contrib_mu = compute_uncertainty_contribution(fix_none_mu, fix_dir_mu)
-        fix_dir_MXs1 = extract_minos_for_param(f"./free_all/{dir}/log/FIX_1.log", param_MXs1)
+        fix_dir_MXs1 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs1)
         contrib_MXs1 = compute_uncertainty_contribution(fix_none_MXs1, fix_dir_MXs1)
-        fix_dir_MXs2 = extract_minos_for_param(f"./free_all/{dir}/log/FIX_1.log", param_MXs2)
+        fix_dir_MXs2 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs2)
         contrib_MXs2 = compute_uncertainty_contribution(fix_none_MXs2, fix_dir_MXs2)
-        fix_dir_MXs3 = extract_minos_for_param(f"./free_all/{dir}/log/FIX_1.log", param_MXs3)
+        fix_dir_MXs3 = extract_minos_for_param(f"./free_all_fitter_bias/{dir}/log/FIX_1.log", param_MXs3)
         contrib_MXs3 = compute_uncertainty_contribution(fix_none_MXs3, fix_dir_MXs3)
         
         if contrib is not None:

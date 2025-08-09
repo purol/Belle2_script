@@ -629,6 +629,11 @@ void THStack_plot_fit() {
         c_temp->SetBottomMargin(0.0);
         c_temp->SaveAs((variable_names.at(k) + ".png").c_str());
 
+        // print chi2
+        if (variable_names.at(k) == "bin index") {
+            Printchi2(Stack[k], data_hist[k]);
+        }
+
         delete c_temp;
 
     }
