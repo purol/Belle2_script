@@ -202,11 +202,46 @@ const double B2Knn_dn_uncer[N_Knn_type] = { // relative uncertainty
 # define Scale_Xsu_nonresonant_syst (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_nunubar_syst)
 # define Scale_Xsd_nonresonant_syst (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar_syst)
 
-/* for the projection of analysis
+/* ========================================================================================================================================= 
+* for the projection of analysis
 * This factor is included at `corrector`, `NEWFEI_calculator`, `KS0_calculator`, and `Signal_yield_fit_BDT_Rarity_HistFactory`
 * Because we are not interested in plots, we do not touch anything on `plot_integrated`.
 * Therefore, `NEWFEIcal.txt` value does not change. The projection is applied on `NEWFEI_calculator`.
+* =========================================================================================================================================
 */
-# define projection_multiplication 1.0 // If it is 1.0, the result is based on MC before LS1. If it is 2.0, then we get the projection if we have 2 times of the MC before LS1.
+
+/*
+* If it is 1.0, the result is based on MC before LS1. If it is 2.0, then we get the projection if we have 2 times of the MC before LS1. Following parts are affected:
+* 1. stat uncertainty for KID/PID
+* 2. stat uncertainty of NEW FEI calibration factor
+* 3. stat uncertainty of KS0 efficiency correction factor
+* 4. When histogram templates are produced, events are `projection_multiplication` times larger. Their uncertainties are carefully calculated
+* (NOTE) for MC15rd, stat and syst uncertainty for pi0 efficiency correction is not seperated. Therefore, we do not apply to them
+*/
+# define projection_multiplication 1.0 
+
+/*
+* If it is true, assume we use off-resonance data for histogram template. Here, we DO NOT actually use off-resonance MC or data. Instead,
+* 1. remove all systematic uncertaintys for qqbar background
+* 2. MC statistical uncertainty is assigned as (42.74 * projection_multiplication)/fb
+*/
+# define projection_offresonance false
+
+/*
+* If it is true, remove the systematic from NEW FEI CAL
+*/
+# define projection_NEWFEICAL false
+
+/*
+* If it is true, background normalization factor is reduced
+*/
+# define projection_bkgnorm false
+const double central_values[3] = { (1.122010 + 1.108595) / 2.0, (1.036281 + 1.019127) / 2.0, (1.095090 + 1.098706) / 2.0 };
+const double error_values[3] = { std::abs((1.122010 + 1.108595) / 2.0 - (1.108595 - 0.055704)), std::abs((1.036281 + 1.019127) / 2.0 - (1.019127 - 0.071599)), std::abs((1.095090 + 1.098706) / 2.0 - (1.098706 - 0.039951)) };
+
+/*
+* If it is true, relative uncertainty for BR(B+ -> D0bar pi+ pi- pi+) becomes 10%
+*/
+# define projection_BR false
 
 #endif 

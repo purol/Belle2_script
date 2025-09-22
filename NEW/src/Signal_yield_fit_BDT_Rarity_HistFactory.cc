@@ -2920,8 +2920,23 @@ void GetMCstatisticalRelativeError(TH1D* nominal_hist, TH1D * MCstat_hist, int N
         double error = nominal_hist->GetBinError(i + 1);
         if(value < MyEPSILON) MCstat_hist->SetBinContent(i + 1, 0.0);
         else {
-            double relative_error = (error / std::sqrt(projection_multiplication)) / value;
-            MCstat_hist->SetBinContent(i + 1, relative_error);
+            if (projection_offresonance == false) {
+                double relative_error = (error / std::sqrt(projection_multiplication)) / value;
+                MCstat_hist->SetBinContent(i + 1, relative_error);
+            }
+            else {
+                const char* hist_name = nominal_hist->GetName();
+
+                if ((std::string(hist_name).find("UUBAR") == std::string::npos) && (std::string(hist_name).find("DDBAR") == std::string::npos) && (std::string(hist_name).find("SSBAR") == std::string::npos) && (std::string(hist_name).find("CHARM") == std::string::npos)) {
+                    double relative_error = (error / std::sqrt(projection_multiplication)) / value;
+                    MCstat_hist->SetBinContent(i + 1, relative_error);
+                }
+                else {
+                    double avg_scale_qqbar_4S = (Scale_UUBAR_validation_MC15rd + Scale_DDBAR_validation_MC15rd + Scale_SSBAR_validation_MC15rd + Scale_CHARM_validation_MC15rd) / 4.0;
+                    double relative_error = (sqrt(0.36537 / 0.04274) * std::sqrt(1.0 / avg_scale_qqbar_4S)) * (error / std::sqrt(projection_multiplication)) / value;
+                    MCstat_hist->SetBinContent(i + 1, relative_error);
+                }
+            }
         }
     }
 }
