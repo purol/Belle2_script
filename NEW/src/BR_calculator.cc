@@ -977,7 +977,7 @@ void FluctuateBBBR() {
 int main(int argc, char* argv[])
 {
     ReadEvtFile();
-    if (projection_BR) BRuncertainty.RelativeUncertainty(10) = 0.1;
+    if (projection_BR) BRuncertainty.RelativeUncertainty.at(10) = 0.1;
 
     RooRandom::randomGenerator()->SetSeed(rd());
 
