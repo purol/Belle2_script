@@ -517,18 +517,20 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // qqbar normalization
     if (options_->qqbar) {
-        w->var("alpha_qq_CAL_UUBAR_uncer_MXs1")->setConstant(options_->qqbar);
-        if(w->var("alpha_qq_CAL_UUBAR_uncer_MXs2")) w->var("alpha_qq_CAL_UUBAR_uncer_MXs2")->setConstant(options_->qqbar);
-        if(w->var("alpha_qq_CAL_UUBAR_uncer_MXs3")) w->var("alpha_qq_CAL_UUBAR_uncer_MXs3")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_DDBAR_uncer_MXs1")->setConstant(options_->qqbar);
-        if(w->var("alpha_qq_CAL_DDBAR_uncer_MXs2")) w->var("alpha_qq_CAL_DDBAR_uncer_MXs2")->setConstant(options_->qqbar);
-        if(w->var("alpha_qq_CAL_DDBAR_uncer_MXs3")) w->var("alpha_qq_CAL_DDBAR_uncer_MXs3")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_SSBAR_uncer_MXs1")->setConstant(options_->qqbar);
-        if(w->var("alpha_qq_CAL_SSBAR_uncer_MXs2")) w->var("alpha_qq_CAL_SSBAR_uncer_MXs2")->setConstant(options_->qqbar);
-        if(w->var("alpha_qq_CAL_SSBAR_uncer_MXs3")) w->var("alpha_qq_CAL_SSBAR_uncer_MXs3")->setConstant(options_->qqbar);
-        w->var("alpha_qq_CAL_CHARM_uncer_MXs1")->setConstant(options_->qqbar);
-        if(w->var("alpha_qq_CAL_CHARM_uncer_MXs2")) w->var("alpha_qq_CAL_CHARM_uncer_MXs2")->setConstant(options_->qqbar);
-        if(w->var("alpha_qq_CAL_CHARM_uncer_MXs3")) w->var("alpha_qq_CAL_CHARM_uncer_MXs3")->setConstant(options_->qqbar);
+        if (projection_offresonance == false) {
+            w->var("alpha_qq_CAL_UUBAR_uncer_MXs1")->setConstant(options_->qqbar);
+            if (w->var("alpha_qq_CAL_UUBAR_uncer_MXs2")) w->var("alpha_qq_CAL_UUBAR_uncer_MXs2")->setConstant(options_->qqbar);
+            if (w->var("alpha_qq_CAL_UUBAR_uncer_MXs3")) w->var("alpha_qq_CAL_UUBAR_uncer_MXs3")->setConstant(options_->qqbar);
+            w->var("alpha_qq_CAL_DDBAR_uncer_MXs1")->setConstant(options_->qqbar);
+            if (w->var("alpha_qq_CAL_DDBAR_uncer_MXs2")) w->var("alpha_qq_CAL_DDBAR_uncer_MXs2")->setConstant(options_->qqbar);
+            if (w->var("alpha_qq_CAL_DDBAR_uncer_MXs3")) w->var("alpha_qq_CAL_DDBAR_uncer_MXs3")->setConstant(options_->qqbar);
+            w->var("alpha_qq_CAL_SSBAR_uncer_MXs1")->setConstant(options_->qqbar);
+            if (w->var("alpha_qq_CAL_SSBAR_uncer_MXs2")) w->var("alpha_qq_CAL_SSBAR_uncer_MXs2")->setConstant(options_->qqbar);
+            if (w->var("alpha_qq_CAL_SSBAR_uncer_MXs3")) w->var("alpha_qq_CAL_SSBAR_uncer_MXs3")->setConstant(options_->qqbar);
+            w->var("alpha_qq_CAL_CHARM_uncer_MXs1")->setConstant(options_->qqbar);
+            if (w->var("alpha_qq_CAL_CHARM_uncer_MXs2")) w->var("alpha_qq_CAL_CHARM_uncer_MXs2")->setConstant(options_->qqbar);
+            if (w->var("alpha_qq_CAL_CHARM_uncer_MXs3")) w->var("alpha_qq_CAL_CHARM_uncer_MXs3")->setConstant(options_->qqbar);
+        }
     }
 
     // photon multiplicity correction
@@ -590,18 +592,20 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
         w->var("alpha_mu_MIX_MXs1")->setConstant(options_->BKGNorm);
         if(w->var("alpha_mu_MIX_MXs2"))w->var("alpha_mu_MIX_MXs2")->setConstant(options_->BKGNorm);
         if(w->var("alpha_mu_MIX_MXs3")) w->var("alpha_mu_MIX_MXs3")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_UUBAR_MXs1")->setConstant(options_->BKGNorm);
-        if(w->var("alpha_mu_UUBAR_MXs2")) w->var("alpha_mu_UUBAR_MXs2")->setConstant(options_->BKGNorm);
-        if(w->var("alpha_mu_UUBAR_MXs3")) w->var("alpha_mu_UUBAR_MXs3")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_DDBAR_MXs1")->setConstant(options_->BKGNorm);
-        if(w->var("alpha_mu_DDBAR_MXs2")) w->var("alpha_mu_DDBAR_MXs2")->setConstant(options_->BKGNorm);
-        if(w->var("alpha_mu_DDBAR_MXs3")) w->var("alpha_mu_DDBAR_MXs3")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_SSBAR_MXs1")->setConstant(options_->BKGNorm);
-        if(w->var("alpha_mu_SSBAR_MXs2")) w->var("alpha_mu_SSBAR_MXs2")->setConstant(options_->BKGNorm);
-        if(w->var("alpha_mu_SSBAR_MXs3")) w->var("alpha_mu_SSBAR_MXs3")->setConstant(options_->BKGNorm);
-        w->var("alpha_mu_CHARM_MXs1")->setConstant(options_->BKGNorm);
-        if(w->var("alpha_mu_CHARM_MXs2")) w->var("alpha_mu_CHARM_MXs2")->setConstant(options_->BKGNorm);
-        if(w->var("alpha_mu_CHARM_MXs3")) w->var("alpha_mu_CHARM_MXs3")->setConstant(options_->BKGNorm);
+        if (projection_offresonance == false) {
+            w->var("alpha_mu_UUBAR_MXs1")->setConstant(options_->BKGNorm);
+            if (w->var("alpha_mu_UUBAR_MXs2")) w->var("alpha_mu_UUBAR_MXs2")->setConstant(options_->BKGNorm);
+            if (w->var("alpha_mu_UUBAR_MXs3")) w->var("alpha_mu_UUBAR_MXs3")->setConstant(options_->BKGNorm);
+            w->var("alpha_mu_DDBAR_MXs1")->setConstant(options_->BKGNorm);
+            if (w->var("alpha_mu_DDBAR_MXs2")) w->var("alpha_mu_DDBAR_MXs2")->setConstant(options_->BKGNorm);
+            if (w->var("alpha_mu_DDBAR_MXs3")) w->var("alpha_mu_DDBAR_MXs3")->setConstant(options_->BKGNorm);
+            w->var("alpha_mu_SSBAR_MXs1")->setConstant(options_->BKGNorm);
+            if (w->var("alpha_mu_SSBAR_MXs2")) w->var("alpha_mu_SSBAR_MXs2")->setConstant(options_->BKGNorm);
+            if (w->var("alpha_mu_SSBAR_MXs3")) w->var("alpha_mu_SSBAR_MXs3")->setConstant(options_->BKGNorm);
+            w->var("alpha_mu_CHARM_MXs1")->setConstant(options_->BKGNorm);
+            if (w->var("alpha_mu_CHARM_MXs2")) w->var("alpha_mu_CHARM_MXs2")->setConstant(options_->BKGNorm);
+            if (w->var("alpha_mu_CHARM_MXs3")) w->var("alpha_mu_CHARM_MXs3")->setConstant(options_->BKGNorm);
+        }
     }
 
     // BDTc
@@ -621,8 +625,10 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // New FEI CAL
     if (options_->NEWFEICAL) for (int i = 0; i < options_->NEntryNEWFEICAL; i++) {
-        if (w->var(("alpha_NEWFEICAL" + std::to_string(i) + "_uncer").c_str())) {
-            w->var(("alpha_NEWFEICAL" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->NEWFEICAL);
+        if (projection_NEWFEICAL == false) {
+            if (w->var(("alpha_NEWFEICAL" + std::to_string(i) + "_uncer").c_str())) {
+                w->var(("alpha_NEWFEICAL" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->NEWFEICAL);
+            }
         }
     }
 
