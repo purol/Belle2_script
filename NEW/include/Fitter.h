@@ -402,7 +402,6 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
         options_->KS0 = true;
         options_->pi0 = true;
         options_->FEI = true;
-        options_->qqbar = true;
         options_->Kff = true;
         options_->Kstarff = true;
         options_->pf = true;
@@ -417,6 +416,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
         options_->NEWFEICAL = true;
         options_->BRXnn = true;
         options_->BRDKL0 = true;
+        options_->fitter = true;
         options_->dataMC = true;
         options_->uncorrelated = true;
     }
@@ -1211,7 +1211,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
         data_hist = new TH1D("data", ";bin index;Events", RarityBins, BinMIN, BinMAX);
         data_hist->SetBinErrorOption(TH1::EBinErrorOpt::kPoisson);
     }
-    TH1D* Ratio_hist = new TH1D("Ratio", ";bin index;data/MC", RarityBins, BinMIN, BinMAX);
+    TH1D* Ratio_hist = new TH1D("Ratio", ";bin index;#frac{data}{simulation}", RarityBins, BinMIN, BinMAX);
 
     // fill histogram
     for (int i = 0; i < scaleFactors_pdf_names.size(); i++) {
@@ -1349,7 +1349,7 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
 
     // write Belle text
     TPaveText* pt_belle = new TPaveText(0.16, 0.83, 0.4, 0.88, "NDC NB");
-    pt_belle->SetTextSize(0.035); pt_belle->SetFillStyle(0); pt_belle->SetLineWidth(0); pt_belle->SetTextAlign(11); pt_belle->AddText("Belle II"); pt_belle->Draw();
+    pt_belle->SetTextSize(0.035); pt_belle->SetFillStyle(0); pt_belle->SetLineWidth(0); pt_belle->SetTextAlign(11); pt_belle->AddText("Belle II preliminary"); pt_belle->Draw();
     TPaveText* pt_lumi = new TPaveText(0.16, 0.76, 0.4, 0.81, "NDC NB");
     pt_lumi->SetTextSize(0.035); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("#int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
 
@@ -1574,7 +1574,7 @@ void GetPlotTemplate_compact(RooWorkspace* w, RooDataSet* data = nullptr, const 
 
     // write Belle text
     TPaveText* pt_belle = new TPaveText(0.40, 0.83, 0.64, 0.88, "NDC NB");
-    pt_belle->SetTextSize(0.045); pt_belle->SetFillStyle(0); pt_belle->SetLineWidth(0); pt_belle->SetTextAlign(11); pt_belle->AddText("Belle II"); pt_belle->Draw();
+    pt_belle->SetTextSize(0.045); pt_belle->SetFillStyle(0); pt_belle->SetLineWidth(0); pt_belle->SetTextAlign(11); pt_belle->AddText("Belle II preliminary"); pt_belle->Draw();
     TPaveText* pt_lumi = new TPaveText(0.40, 0.75, 0.64, 0.80, "NDC NB");
     pt_lumi->SetTextSize(0.045); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("#int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
 
