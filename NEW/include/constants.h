@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
+#include <cmath>
+
 # define N_Needed_info 37
 # define N_Upsilon_info 189
 # define N_Bsig_info 869
