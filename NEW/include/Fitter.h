@@ -609,7 +609,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
     }
 
     // BDTc
-    if (options_->BDTc) w->var("alpha_BDTc_shape_qq")->setConstant(options_->BDTc);
+    if (projection_offresonance == false) if (options_->BDTc) w->var("alpha_BDTc_shape_qq")->setConstant(options_->BDTc);
 
     // BB counting
     if (options_->BBcounting) w->var("alpha_BB_counting_uncer")->setConstant(options_->BBcounting);
