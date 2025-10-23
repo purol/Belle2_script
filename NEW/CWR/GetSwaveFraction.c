@@ -106,7 +106,7 @@ void GetSwaveFraction(){
             else if ((11.0 < list.at(i).q_square) && (list.at(i).q_square < 12.5)) NS_total_796_996 = NS_total_796_996 + 1.0 * 0.021 / (1 - 0.021);
             else if ((12.5 < list.at(i).q_square) && (list.at(i).q_square < 15.0)) NS_total_796_996 = NS_total_796_996 + 1.0 * 0.0065 / (1 - 0.0065); // interpolate
             else if ((15.0 < list.at(i).q_square) && (list.at(i).q_square < 17.0)) NS_total_796_996 = NS_total_796_996 + 1.0 * (-0.008) / (1 + 0.008);
-            else if (17.0 < list.at(i).q_square) NS_total_796_996 = NS_total_796_996 + 1.0 * 0.144 / (1 - 0.144); // assume
+            else if (17.0 < list.at(i).q_square) NS_total_796_996 = NS_total_796_996 + 1.0 * 0.018 / (1 - 0.018); // assume
 
         }
 
@@ -115,17 +115,17 @@ void GetSwaveFraction(){
         if ((0.644 < list.at(i).MKstar) && (list.at(i).MKstar < 1.200)) {
             NP_total_644_1200 = NP_total_644_1200 + 1.0;
 
-            if ((list.at(i).q_square < 0.98)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.021 / (1 - 0.021); // assume
-            else if ((0.98 < list.at(i).q_square) && (list.at(i).q_square < 1.1)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.0825 / (1 - 0.0825); // interpolate
-            else if ((1.1 < list.at(i).q_square) && (list.at(i).q_square < 2.5)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.144 / (1 - 0.144);
-            else if ((2.5 < list.at(i).q_square) && (list.at(i).q_square < 4.0)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.029 / (1 - 0.029);
-            else if ((4.0 < list.at(i).q_square) && (list.at(i).q_square < 6.0)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.117 / (1 - 0.117);
-            else if ((6.0 < list.at(i).q_square) && (list.at(i).q_square < 8.0)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.033 / (1 - 0.033);
-            else if ((8.0 < list.at(i).q_square) && (list.at(i).q_square < 11.0)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.027 / (1 - 0.027); // interpolate
-            else if ((11.0 < list.at(i).q_square) && (list.at(i).q_square < 12.5)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.021 / (1 - 0.021);
-            else if ((12.5 < list.at(i).q_square) && (list.at(i).q_square < 15.0)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.0065 / (1 - 0.0065); // interpolate
-            else if ((15.0 < list.at(i).q_square) && (list.at(i).q_square < 17.0)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * (-0.008) / (1 + 0.008);
-            else if (17.0 < list.at(i).q_square) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.144 / (1 - 0.144); // assume
+            if ((list.at(i).q_square < 0.98)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.052 / (1 - 0.052); // assume
+            else if ((0.98 < list.at(i).q_square) && (list.at(i).q_square < 1.1)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.178 / (1 - 0.178); // interpolate
+            else if ((1.1 < list.at(i).q_square) && (list.at(i).q_square < 2.5)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.304 / (1 - 0.304);
+            else if ((2.5 < list.at(i).q_square) && (list.at(i).q_square < 4.0)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.071 / (1 - 0.071);
+            else if ((4.0 < list.at(i).q_square) && (list.at(i).q_square < 6.0)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.254 / (1 - 0.254);
+            else if ((6.0 < list.at(i).q_square) && (list.at(i).q_square < 8.0)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.082 / (1 - 0.082);
+            else if ((8.0 < list.at(i).q_square) && (list.at(i).q_square < 11.0)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.0655 / (1 - 0.0655); // interpolate
+            else if ((11.0 < list.at(i).q_square) && (list.at(i).q_square < 12.5)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.049 / (1 - 0.049);
+            else if ((12.5 < list.at(i).q_square) && (list.at(i).q_square < 15.0)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.0165 / (1 - 0.0165); // interpolate
+            else if ((15.0 < list.at(i).q_square) && (list.at(i).q_square < 17.0)) NS_total_644_1200 = NS_total_644_1200 + 1.0 * (-0.016) / (1 + 0.016);
+            else if (17.0 < list.at(i).q_square) NS_total_644_1200 = NS_total_644_1200 + 1.0 * 0.034 / (1 - 0.034); // assume
         }
 
     }
