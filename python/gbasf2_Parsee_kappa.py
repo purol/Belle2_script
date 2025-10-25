@@ -22,6 +22,14 @@ from glob import glob
 
 import argparse
 
+import pdg
+pdg.add_particle(name='kappa+', pdgCode=777, mass=0.838, width=0.463, charge=1, spin=0, lifetime=0)
+pdg.add_particle(name='kappa-', pdgCode=-777, mass=0.838, width=0.463, charge=-1, spin=0, lifetime=0)
+pdg.add_particle(name='kappa0', pdgCode=778, mass=0.838, width=0.463, charge=0, spin=0, lifetime=0)
+pdg.add_particle(name='anti-kappa0', pdgCode=-778, mass=0.838, width=0.463, charge=0, spin=0, lifetime=0)
+pdg.get("kappa+").SetAntiParticle(pdg.get("kappa-"))
+pdg.get("kappa0").SetAntiParticle(pdg.get("anti-kappa0"))
+
 # get data type
 parser = argparse.ArgumentParser(description='Sample type')
 
@@ -1982,8 +1990,8 @@ for analysistype in Options:
         ma.fillParticleListFromMC("B+:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
         ma.fillParticleListFromMC("B0:PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
         ma.fillParticleListFromMC("Upsilon(4S):PrimaryMC", cut = "mcPrimary", addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
-        ma.fillParticleListFromMC("B_c0*+:PrimaryMC", cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
-        ma.fillParticleListFromMC("chi_b0(3P):PrimaryMC", cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+        ma.fillParticleListFromMC("kappa+:PrimaryMC", cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
+        ma.fillParticleListFromMC("kappa0:PrimaryMC", cut = 'mcPrimary', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path)
     
         ma.reconstructMCDecay('K*+:MC_ch1 =direct=> K0:PrimaryMC pi+:PrimaryMC ?gamma', cut='', dmID = 0, path=my_path)
         ma.reconstructMCDecay('K*+:MC_ch2 =direct=> K+:PrimaryMC pi0:PrimaryMC ?gamma', cut='', dmID = 0, path=my_path)
@@ -2070,7 +2078,7 @@ for analysistype in Options:
         # B+:Kcharge_e
         ma.reconstructMCDecay('B+:MC_Kstarcharge_e =direct=> K*+:PrimaryMC nu_e:PrimaryMC anti-nu_e:PrimaryMC ?gamma', cut='', path=my_path)
         ma.reconstructMCDecay('B+:MC_Xsu_e =direct=> Xsu:PrimaryMC nu_e:PrimaryMC anti-nu_e:PrimaryMC ?gamma', cut='', path=my_path)
-        ma.reconstructMCDecay('B+:MC_kappa_e =direct=> B_c0*+:PrimaryMC nu_e:PrimaryMC anti-nu_e:PrimaryMC ?gamma', cut='', path=my_path)
+        ma.reconstructMCDecay('B+:MC_kappa_e =direct=> kappa+:PrimaryMC nu_e:PrimaryMC anti-nu_e:PrimaryMC ?gamma', cut='', path=my_path)
         ma.variablesToExtraInfo("B+:Kcharge_e", {"constant(0)":"helicityangle"}, path=my_path)
         ma.variablesToExtraInfo("B+:MC_Kstarcharge_e", {"cosHelicityAngle(0,0)":"helicityangle"}, path=my_path)
         ma.variablesToExtraInfo("B+:MC_Xsu_e", {"constant(0)":"helicityangle"}, path=my_path)
@@ -2080,7 +2088,7 @@ for analysistype in Options:
         ma.copyLists(outputListName="B0:MC_Kneutral_total_e", inputListNames=["B0:Kneutral_e", "B0:Kneutral_e_oppose"], path=my_path)
         ma.reconstructMCDecay('B0:MC_Kstarneutral_e =direct=> K*0:PrimaryMC nu_e:PrimaryMC anti-nu_e:PrimaryMC ?gamma', cut='', path=my_path)
         ma.reconstructMCDecay('B0:MC_Xsd_e =direct=> Xsd:PrimaryMC nu_e:PrimaryMC anti-nu_e:PrimaryMC ?gamma', cut='', path=my_path)
-        ma.reconstructMCDecay('B0:MC_kappa_e =direct=> chi_b0(3P):PrimaryMC nu_e:PrimaryMC anti-nu_e:PrimaryMC ?gamma', cut='', path=my_path)
+        ma.reconstructMCDecay('B0:MC_kappa_e =direct=> kappa0:PrimaryMC nu_e:PrimaryMC anti-nu_e:PrimaryMC ?gamma', cut='', path=my_path)
         ma.variablesToExtraInfo("B0:MC_Kneutral_total_e", {"constant(0)":"helicityangle"}, path=my_path)
         ma.variablesToExtraInfo("B0:MC_Kstarneutral_e", {"cosHelicityAngle(0,0)":"helicityangle"}, path=my_path)
         ma.variablesToExtraInfo("B0:MC_Xsd_e", {"constant(0)":"helicityangle"}, path=my_path)
