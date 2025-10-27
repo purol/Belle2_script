@@ -180,6 +180,7 @@ double** GetPDFs(const char* dirname, const char* included_string, const char* t
     double** Nevt = nullptr;
     Nevt = (double**)malloc(sizeof(double*) * 13);
     for (int i = 0; i < 13; i++) Nevt[i] = (double*)malloc(sizeof(double) * 5);
+    for (int i = 0; i < 13; i++) for (int j = 0; j < 5; j++) Nevt[i][j] = 0.0;
     for (unsigned int i = 0; i < names.size(); i++) {
 
         TFile* input_file = new TFile((dirname + std::string("/") + names.at(i)).c_str(), "read");
