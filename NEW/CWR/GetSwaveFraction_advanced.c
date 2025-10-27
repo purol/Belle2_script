@@ -678,6 +678,8 @@ void GetSwaveFraction_advanced(){
         printf("\n");
     }
 
+    printf("\n");
+
     for (int i = 0; i < 13; i++) {
         for (int j = 0; j < 5; j++) {
             printf("%lf", (N_kappa_after[i][j] * (TBp / TB0) + N_kappa0_after[i][j]) / (N_kappaplus[i][j] * (TBp / TB0) + N_kappa0[i][j]));
