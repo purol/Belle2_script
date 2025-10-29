@@ -204,6 +204,10 @@ const double B2Knn_dn_uncer[N_Knn_type] = { // relative uncertainty
 # define Scale_Xsu_nonresonant_syst (N_Xsu_nonresonant_nunubar_LS1/N_Xsu_nonresonant_nunubar_syst)
 # define Scale_Xsd_nonresonant_syst (N_Xsd_nunubar_LS1/N_Xsd_nonresonant_nunubar_syst)
 
+// for K*(700) systematic uncertainty 
+const double eff_increase = (0.001260840 / 0.001235578); // if we average K*(892) eff and K*(700), efficiency increases
+const double shape_change[15] = { 0.975622,0.980083,1.006702,0.996723,1.025186,0.965642,0.972710,0.981979,0.993622,1.038463,0.975798,0.987139,0.966232,0.974514,1.005617 };
+
 /* ========================================================================================================================================= 
 * for the projection of analysis
 * This factor is included at `corrector`, `NEWFEI_calculator`, `KS0_calculator`, and `Signal_yield_fit_BDT_Rarity_HistFactory`
