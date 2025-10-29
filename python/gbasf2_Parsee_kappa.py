@@ -2082,7 +2082,7 @@ for analysistype in Options:
         ma.variablesToExtraInfo("B+:Kcharge_e", {"constant(0)":"helicityangle"}, path=my_path)
         ma.variablesToExtraInfo("B+:MC_Kstarcharge_e", {"cosHelicityAngle(0,0)":"helicityangle"}, path=my_path)
         ma.variablesToExtraInfo("B+:MC_Xsu_e", {"constant(0)":"helicityangle"}, path=my_path)
-        ma.variablesToExtraInfo("B+:MC_kappa_e", {"constant(0)":"helicityangle"}, path=my_path)
+        ma.variablesToExtraInfo("B+:MC_kappa_e", {"cosHelicityAngle(0,0)":"helicityangle"}, path=my_path)
         ma.copyLists(outputListName="B+:MC_signal_total_e", inputListNames=["B+:Kcharge_e", "B+:MC_Kstarcharge_e", "B+:MC_Xsu_e", "B+:MC_kappa_e"], path=my_path)
     
         ma.copyLists(outputListName="B0:MC_Kneutral_total_e", inputListNames=["B0:Kneutral_e", "B0:Kneutral_e_oppose"], path=my_path)
@@ -2092,7 +2092,7 @@ for analysistype in Options:
         ma.variablesToExtraInfo("B0:MC_Kneutral_total_e", {"constant(0)":"helicityangle"}, path=my_path)
         ma.variablesToExtraInfo("B0:MC_Kstarneutral_e", {"cosHelicityAngle(0,0)":"helicityangle"}, path=my_path)
         ma.variablesToExtraInfo("B0:MC_Xsd_e", {"constant(0)":"helicityangle"}, path=my_path)
-        ma.variablesToExtraInfo("B0:MC_kappa_e", {"constant(0)":"helicityangle"}, path=my_path)
+        ma.variablesToExtraInfo("B0:MC_kappa_e", {"cosHelicityAngle(0,0)":"helicityangle"}, path=my_path)
         ma.copyLists(outputListName="B0:MC_signal_total_e", inputListNames=["B0:MC_Kneutral_total_e", "B0:MC_Kstarneutral_e", "B0:MC_Xsd_e", "B0:MC_kappa_e"], path=my_path)
     
         ma.fillParticleListFromMC('nu_e:MC_signal', cut = 'mcPrimary and [isDescendantOfList(B+:MC_signal_total_e,1) or isDescendantOfList(B0:MC_signal_total_e,1)]', addDaughters=True, skipNonPrimaryDaughters=True, path=my_path) 
