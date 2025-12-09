@@ -579,9 +579,11 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // MC statistics
     if (options_->MCstat) {
-        for (int i = 0; i < RarityBins_MX1; i++) w->var(("gamma_stat_channel_MXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
-        for (int i = 0; i < RarityBins_MX2; i++) if(w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())) w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
-        for (int i = 0; i < RarityBins_MX3; i++) if(w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())) w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+        if (Inf_MCstat == false) {
+            for (int i = 0; i < RarityBins_MX1; i++) w->var(("gamma_stat_channel_MXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+            for (int i = 0; i < RarityBins_MX2; i++) if (w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())) w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+            for (int i = 0; i < RarityBins_MX3; i++) if (w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())) w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+        }
     }
 
     // Fragmentation
@@ -640,7 +642,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // K700 resonance
     if (options_->K700) {
-        w->var("alpha_K700_uncer")->setConstant(options_->K700);
+        if (Swave_syst == false) w->var("alpha_K700_uncer")->setConstant(options_->K700);
     }
 
 

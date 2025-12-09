@@ -246,8 +246,18 @@ const double central_values[3] = { (1.122010 + 1.108595) / 2.0, (1.036281 + 1.01
 const double error_values[3] = { std::abs((1.122010 + 1.108595) / 2.0 - (1.108595 - 0.055704)), std::abs((1.036281 + 1.019127) / 2.0 - (1.019127 - 0.071599)), std::abs((1.095090 + 1.098706) / 2.0 - (1.098706 - 0.039951)) };
 
 /*
-* If it is true, relative uncertainty for BR(B+ -> D0bar pi+ pi- pi+) becomes 10%
+* If it is true, relative uncertainty for BR(B+ -> D0bar pi+ pi- pi+) and BR(B+ -> D0bar rho0 pi+) becomes 10%
 */
 # define projection_BR false
+
+/*
+* If it is true, turn off K*(700) syst
+*/
+# define Swave_syst false
+
+/*
+* If it is true, turn off MC stat syst
+*/
+# define Inf_MCstat false
 
 #endif 
