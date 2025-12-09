@@ -490,7 +490,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (MXs_bin == 2) sig_temp_MXs2.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL);
 	if (MXs_bin == 2) sig_temp_MXs2.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
 	sig_temp_MXs2.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
-	if (Swave_syst == false) {
+	if (Swave_syst) {
 		if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_Swave_m", "Signal_MXs2_Swave_p")) sig_temp_MXs2.AddHistoSys("K700_uncer", "Signal_MXs2_Swave_m", fname, "", "Signal_MXs2_Swave_p", fname, "");
 		sig_temp_MXs2.AddOverallSys("K700_uncer", 1.0 / eff_increase, eff_increase);
 	}

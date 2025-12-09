@@ -251,7 +251,7 @@ const double error_values[3] = { std::abs((1.122010 + 1.108595) / 2.0 - (1.10859
 # define projection_BR false
 
 /*
-* If it is true, turn off K*(700) syst
+* If it is true, turn on K*(700) syst
 */
 # define Swave_syst false
 

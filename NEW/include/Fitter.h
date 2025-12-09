@@ -642,7 +642,7 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // K700 resonance
     if (options_->K700) {
-        if (Swave_syst == false) w->var("alpha_K700_uncer")->setConstant(options_->K700);
+        if (Swave_syst) w->var("alpha_K700_uncer")->setConstant(options_->K700);
     }
 
 
