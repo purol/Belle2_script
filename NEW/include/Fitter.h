@@ -119,6 +119,7 @@ typedef struct Options
     bool BRBtoXKLKL;
     bool EffECLKL;
     bool NEWFEICAL;
+    bool K700;
     bool BRXnn;
     bool BRDKL0;
     bool fitter;
@@ -317,6 +318,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
     options_->BRBtoXKLKL = false;
     options_->EffECLKL = false;
     options_->NEWFEICAL = false;
+    options_->K700 = false;
     options_->BRXnn = false;
     options_->BRDKL0 = false;
     options_->fitter = false;
@@ -349,6 +351,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
         options_->BRBtoXKLKL = true;
         options_->EffECLKL = true;
         options_->NEWFEICAL = true;
+        options_->K700 = true;
         options_->BRXnn = true;
         options_->BRDKL0 = true;
         options_->fitter = true;
@@ -381,6 +384,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
     else if (std::string(tested_param) == std::string("BRBtoXKLKL")) options_->BRBtoXKLKL = true;
     else if (std::string(tested_param) == std::string("EffECLKL")) options_->EffECLKL = true;
     else if (std::string(tested_param) == std::string("NEWFEICAL")) options_->NEWFEICAL = true;
+    else if (std::string(tested_param) == std::string("K700")) options_->K700 = true;
     else if (std::string(tested_param) == std::string("BRXnn")) options_->BRXnn = true;
     else if (std::string(tested_param) == std::string("BtoDtoXKL")) options_->BRDKL0 = true;
     else if (std::string(tested_param) == std::string("fitter")) options_->fitter = true;
@@ -414,6 +418,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
         options_->BRBtoXKLKL = true;
         options_->EffECLKL = true;
         options_->NEWFEICAL = true;
+        options_->K700 = true;
         options_->BRXnn = true;
         options_->BRDKL0 = true;
         options_->fitter = true;
@@ -445,6 +450,7 @@ void Initialize_options(OPTIONS* options_, const char* tested_param, const char*
         options_->BRBtoXKLKL = true;
         options_->EffECLKL = true;
         options_->NEWFEICAL = true;
+        options_->K700 = true;
         options_->BRXnn = true;
         options_->BRDKL0 = true;
         options_->fitter = true;
@@ -573,9 +579,11 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
 
     // MC statistics
     if (options_->MCstat) {
-        for (int i = 0; i < RarityBins_MX1; i++) w->var(("gamma_stat_channel_MXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
-        for (int i = 0; i < RarityBins_MX2; i++) if(w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())) w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
-        for (int i = 0; i < RarityBins_MX3; i++) if(w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())) w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+        if (Inf_MCstat == false) {
+            for (int i = 0; i < RarityBins_MX1; i++) w->var(("gamma_stat_channel_MXs1_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+            for (int i = 0; i < RarityBins_MX2; i++) if (w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())) w->var(("gamma_stat_channel_MXs2_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+            for (int i = 0; i < RarityBins_MX3; i++) if (w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())) w->var(("gamma_stat_channel_MXs3_bin_" + std::to_string(i)).c_str())->setConstant(options_->MCstat);
+        }
     }
 
     // Fragmentation
@@ -630,6 +638,11 @@ void FixParameters(RooWorkspace* w, OPTIONS* options_) {
                 w->var(("alpha_NEWFEICAL" + std::to_string(i) + "_uncer").c_str())->setConstant(options_->NEWFEICAL);
             }
         }
+    }
+
+    // K700 resonance
+    if (options_->K700) {
+        if (Swave_syst) w->var("alpha_K700_uncer")->setConstant(options_->K700);
     }
 
 

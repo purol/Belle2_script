@@ -456,7 +456,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp_MXs1.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	//sig_temp_MXs1.AddOverallSys("mu1_fitter_bias_mean", 0.8615, 1.1385);
 	//sig_temp_MXs1.AddOverallSys("mu1_fitter_bias_sigma", 0.9937, 1.0063);
-	sig_temp_MXs1.ActivateStatError("Signal_MXs1_all_uncorrelated_MC_stat", fname, "");
+	if(Inf_MCstat == false) sig_temp_MXs1.ActivateStatError("Signal_MXs1_all_uncorrelated_MC_stat", fname, "");
 	sig_temp_MXs1.SetNormalizeByTheory(kFALSE);
 	sig_temp_MXs1.AddNormFactor("mu_MXs1", expmu, -100.0, 100.0);
 	channel->AddSample(sig_temp_MXs1);
@@ -490,9 +490,13 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	if (MXs_bin == 2) sig_temp_MXs2.AddNormFactor(("FBDT_efficiency_CAL_" + bin_name).c_str(), FBDT_CAL, FBDT_CAL, FBDT_CAL);
 	if (MXs_bin == 2) sig_temp_MXs2.AddOverallSys(("FBDT_efficiency_uncer_" + bin_name).c_str(), 1.0 - FBDT_CAL_relativeuncer, 1.0 + FBDT_CAL_relativeuncer);
 	sig_temp_MXs2.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
+	if (Swave_syst) {
+		if (IsThereAnyChange(fname, "Signal_MXs2_nominal", "Signal_MXs2_Swave_m", "Signal_MXs2_Swave_p")) sig_temp_MXs2.AddHistoSys("K700_uncer", "Signal_MXs2_Swave_m", fname, "", "Signal_MXs2_Swave_p", fname, "");
+		sig_temp_MXs2.AddOverallSys("K700_uncer", 1.0 / eff_increase, eff_increase);
+	}
 	//sig_temp_MXs2.AddOverallSys("mu2_fitter_bias_mean", 0.9715, 1.0284);
 	//sig_temp_MXs2.AddOverallSys("mu2_fitter_bias_sigma", 0.9830, 1.0170);
-	sig_temp_MXs2.ActivateStatError("Signal_MXs2_all_uncorrelated_MC_stat", fname, "");
+	if (Inf_MCstat == false) sig_temp_MXs2.ActivateStatError("Signal_MXs2_all_uncorrelated_MC_stat", fname, "");
 	sig_temp_MXs2.SetNormalizeByTheory(kFALSE);
 	if (KnunuOnly) sig_temp_MXs2.AddNormFactor("mu_MXs2", expmu, 1.0, 1.0);
 	else sig_temp_MXs2.AddNormFactor("mu_MXs2", expmu, -100.0, 100.0);
@@ -564,7 +568,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	sig_temp_MXs3.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
 	//sig_temp_MXs3.AddOverallSys("mu3_fitter_bias_mean", 0.9197, 1.0803);
 	//sig_temp_MXs3.AddOverallSys("mu3_fitter_bias_sigma", 0.9757, 1.0243);
-	sig_temp_MXs3.ActivateStatError("Signal_MXs3_all_uncorrelated_MC_stat", fname, "");
+	if (Inf_MCstat == false) sig_temp_MXs3.ActivateStatError("Signal_MXs3_all_uncorrelated_MC_stat", fname, "");
 	sig_temp_MXs3.SetNormalizeByTheory(kFALSE);
 	if (KnunuOnly) sig_temp_MXs3.AddNormFactor("mu_MXs3", expmu, 1.0, 1.0);
 	else sig_temp_MXs3.AddNormFactor("mu_MXs3", expmu, -100.0, 100.0);
@@ -589,7 +593,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	//CHG_temp.AddHistoSys("BDTc_shape_BB", "CHG_BDTc_m", fname, "", "CHG_BDTc_p", fname, "");
 	CHG_temp.AddOverallSys(("mu_CHG_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	CHG_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
-	CHG_temp.ActivateStatError("CHG_all_uncorrelated_MC_stat", fname, "");
+	if (Inf_MCstat == false) CHG_temp.ActivateStatError("CHG_all_uncorrelated_MC_stat", fname, "");
 	//if (MXs_bin == 1) CHG_temp.AddShapeSys(("CHG_additional_uncorr_uncer" + bin_name).c_str(), RooStats::HistFactory::Constraint::Type::Gaussian, "CHG_rel_uncer", fname, "");
 	CHG_temp.SetNormalizeByTheory(kFALSE);
 	channel->AddSample(CHG_temp);
@@ -613,7 +617,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 	//MIX_temp.AddHistoSys("BDTc_shape_BB", "MIX_BDTc_m", fname, "", "MIX_BDTc_p", fname, "");
 	MIX_temp.AddOverallSys(("mu_MIX_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	MIX_temp.AddOverallSys("BB_counting_uncer", 0.9855, 1.0145);
-	MIX_temp.ActivateStatError("MIX_all_uncorrelated_MC_stat", fname, "");
+	if (Inf_MCstat == false) MIX_temp.ActivateStatError("MIX_all_uncorrelated_MC_stat", fname, "");
 	//if (MXs_bin == 1) MIX_temp.AddShapeSys(("MIX_additional_uncorr_uncer" + bin_name).c_str(), RooStats::HistFactory::Constraint::Type::Gaussian, "MIX_rel_uncer", fname, "");
 	MIX_temp.SetNormalizeByTheory(kFALSE);
 	channel->AddSample(MIX_temp);
@@ -637,7 +641,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 		UUBAR_temp.AddOverallSys(("qq_CAL_UUBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 		UUBAR_temp.AddOverallSys(("mu_UUBAR_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	}
-	if (projection_offresonance == false) UUBAR_temp.ActivateStatError("UUBAR_all_uncorrelated_MC_stat", fname, "");
+	if (projection_offresonance == false) if (Inf_MCstat == false) UUBAR_temp.ActivateStatError("UUBAR_all_uncorrelated_MC_stat", fname, "");
 	else UUBAR_temp.ActivateStatError("UUBAR_MC_stat", fname, "");
 	//if (MXs_bin == 1) UUBAR_temp.AddShapeSys(("UUBAR_additional_uncorr_uncer" + bin_name).c_str(), RooStats::HistFactory::Constraint::Type::Gaussian, "UUBAR_rel_uncer", fname, "");
 	UUBAR_temp.SetNormalizeByTheory(kFALSE);
@@ -662,7 +666,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 		DDBAR_temp.AddOverallSys(("qq_CAL_DDBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 		DDBAR_temp.AddOverallSys(("mu_DDBAR_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	}
-	if (projection_offresonance == false) DDBAR_temp.ActivateStatError("DDBAR_all_uncorrelated_MC_stat", fname, "");
+	if (projection_offresonance == false) if (Inf_MCstat == false) DDBAR_temp.ActivateStatError("DDBAR_all_uncorrelated_MC_stat", fname, "");
 	else DDBAR_temp.ActivateStatError("DDBAR_MC_stat", fname, "");
 	//if (MXs_bin == 1) DDBAR_temp.AddShapeSys(("DDBAR_additional_uncorr_uncer" + bin_name).c_str(), RooStats::HistFactory::Constraint::Type::Gaussian, "DDBAR_rel_uncer", fname, "");
 	DDBAR_temp.SetNormalizeByTheory(kFALSE);
@@ -687,7 +691,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 		SSBAR_temp.AddOverallSys(("qq_CAL_SSBAR_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 		SSBAR_temp.AddOverallSys(("mu_SSBAR_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	}
-	if (projection_offresonance == false) SSBAR_temp.ActivateStatError("SSBAR_all_uncorrelated_MC_stat", fname, "");
+	if (projection_offresonance == false) if (Inf_MCstat == false) SSBAR_temp.ActivateStatError("SSBAR_all_uncorrelated_MC_stat", fname, "");
 	else SSBAR_temp.ActivateStatError("SSBAR_MC_stat", fname, "");
 	//if (MXs_bin == 1) SSBAR_temp.AddShapeSys(("SSBAR_additional_uncorr_uncer" + bin_name).c_str(), RooStats::HistFactory::Constraint::Type::Gaussian, "SSBAR_rel_uncer", fname, "");
 	SSBAR_temp.SetNormalizeByTheory(kFALSE);
@@ -712,7 +716,7 @@ void AddSample(HistFactory::Channel* channel, const char* fname, int MXs_bin, co
 		CHARM_temp.AddOverallSys(("qq_CAL_CHARM_uncer_" + bin_name).c_str(), 1.0 - qq_CAL_relativeuncer, 1.0 + qq_CAL_relativeuncer);
 		CHARM_temp.AddOverallSys(("mu_CHARM_" + bin_name).c_str(), 1.0 - bkg_norm_relativeuncer, 1.0 + bkg_norm_relativeuncer);
 	}
-	if (projection_offresonance == false) CHARM_temp.ActivateStatError("CHARM_all_uncorrelated_MC_stat", fname, "");
+	if (projection_offresonance == false) if (Inf_MCstat == false) CHARM_temp.ActivateStatError("CHARM_all_uncorrelated_MC_stat", fname, "");
 	else CHARM_temp.ActivateStatError("CHARM_MC_stat", fname, "");
 	//if (MXs_bin == 1) CHARM_temp.AddShapeSys(("CHARM_additional_uncorr_uncer" + bin_name).c_str(), RooStats::HistFactory::Constraint::Type::Gaussian, "CHARM_rel_uncer", fname, "");
 	CHARM_temp.SetNormalizeByTheory(kFALSE);

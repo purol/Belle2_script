@@ -1111,7 +1111,7 @@ void GetRatioPlot(TH1D* first_, TH1D* second_, const char* name_) {
 
     printf("ratio: ");
     for (int i = 0; i < RarityBins; i++) {
-        printf("%f,", Signal_ratio->GetBinContent(i + 1));
+        printf("%f,", 1.0 / Signal_ratio->GetBinContent(i + 1));
     }
     printf("\n");
 }
