@@ -510,8 +510,6 @@ double ReadWeightHist(TH1D* hist, double value) {
 int main()
 {
 
-    ReadSignalModelingFile();
-
 
 
     /* ====================================== */
