@@ -1490,7 +1490,7 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
             // save local Nevt/Ncandidate
             double local_multiplicity = 0;
             if (local_N_events != 0) local_multiplicity = local_N_candidates / local_N_events;
-            if (avg_multiplicity != -1.0) multiplicity_uncer_numerator.at(current_N_event) = multiplicity_uncer_numerator.(current_N_event) + local_N_events * local_N_events * (local_multiplicity - avg_multiplicity) * (local_multiplicity - avg_multiplicity);
+            if (avg_multiplicity != -1.0) multiplicity_uncer_numerator.at(current_N_event) = multiplicity_uncer_numerator.at(current_N_event) + local_N_events * local_N_events * (local_multiplicity - avg_multiplicity) * (local_multiplicity - avg_multiplicity);
 
             // initialize local Nevt/Ncandidate
             local_N_events = 0;
@@ -1680,7 +1680,7 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
     // save local Nevt/Ncandidate
     double local_multiplicity = 0;
     if (local_N_events != 0) local_multiplicity = local_N_candidates / local_N_events;
-    if (avg_multiplicity != -1.0) multiplicity_uncer_numerator.at(current_N_event) = multiplicity_uncer_numerator.(current_N_event)+local_N_events * local_N_events * (local_multiplicity - avg_multiplicity) * (local_multiplicity - avg_multiplicity);
+    if (avg_multiplicity != -1.0) multiplicity_uncer_numerator.at(current_N_event) = multiplicity_uncer_numerator.at(current_N_event)+local_N_events * local_N_events * (local_multiplicity - avg_multiplicity) * (local_multiplicity - avg_multiplicity);
 
     // initialize local Nevt/Ncandidate
     local_N_events = 0;
