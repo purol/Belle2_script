@@ -2463,7 +2463,7 @@ void Loader::End() {
         printf("%s\n", titles.at(i).c_str());
         printf("Number of event: %lf\n", N_events.at(i));
         printf("Number of candidate: %lf\n", N_candidates.at(i));
-        if (multiplicity_uncer_numerator.at(i) != 0) printf("error of multiplicity: %lf", std::abs(multiplicity_uncer_numerator.at(i)) / N_events.at(i));
+        if (multiplicity_uncer_numerator.at(i) != 0) printf("error of multiplicity: %lf\n", std::sqrt(multiplicity_uncer_numerator.at(i)) / N_events.at(i));
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %lf\n", j, N_candidates_modes[j].at(i));
         if (AllOfThemHaveXsBranch) for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i));
     }
