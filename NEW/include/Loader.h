@@ -293,6 +293,7 @@ private:
 
     std::vector<double> N_events;
     std::vector<double> N_candidates;
+    std::vector<double> multiplicity_uncer_numerator;
     std::vector<double> N_candidates_modes[Loader::MAX_NUM_DECAYMODE];
     std::vector<double> N_MC_modes[Loader::MAX_NUM_DECAYMODE_MC];
     std::vector<std::string> titles;
@@ -398,7 +399,7 @@ public:
     void DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j);
     void DrawTH2F(const char* name, const char* title, int nbinsx, double xlow, double xup, int nbinsy, double ylow, double yup, Loader::Variable variable_1, int i, Loader::Variable variable_2, int j, Loader::Qualifier qualifier, Loader::DecayMode decaymode);
     void DrawTHStack(const char* name, const char* title, int nbins, double x_low, double x_high, Loader::Variable variable, int i, Loader::ValueOption dr = Loader::Linear);
-    void PrintInformation(std::string title, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true);
+    void PrintInformation(std::string title, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode = true, double avg_multiplicity = -1.0);
     void PrintInformationAboutMXs(std::string title, std::string filename, const char* MC_version, const char* category);
     void PrintVariablebin(std::string title, Loader::Variable variable, int variable_index, int Nbin, double Var_hist_min, double Var_hist_max, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode);
     void Cut(Loader::Variable variable, int i, Loader::Inequality inq, double value);
@@ -1431,7 +1432,7 @@ void Loader::DrawTHStack(const char* name, const char* title, int nbins, double 
     current_THStack++;
 }
 
-void Loader::PrintInformation(std::string title, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode) {
+void Loader::PrintInformation(std::string title, std::string filename, const char* type, const char* MC_version, const char* category, bool smartmode, double avg_multiplicity) {
     typedef struct labels {
         int __experiment__;
         int __run__;
@@ -1444,6 +1445,7 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
     if (N_events.size() == current_N_event && N_candidates.size() == current_N_candidate && N_events.size() == N_candidates.size()) { // allocate new int
         N_events.push_back(0);
         N_candidates.push_back(0);
+        multiplicity_uncer_numerator.push_back(0.0);
         titles.push_back(title);
         for (int i = 0; i < Loader::MAX_NUM_DECAYMODE; i++) N_candidates_modes[i].push_back(0);
         for (int i = 0; i < Loader::MAX_NUM_DECAYMODE_MC; i++) N_MC_modes[i].push_back(0);
@@ -1454,6 +1456,9 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
         printf("ERROR! 028\n");
         exit(1);
     }
+
+    double local_N_events = 0;
+    double local_N_candidates = 0;
 
     std::queue<Data> temp_queue;
     temp_queue.swap(TotalData);
@@ -1481,31 +1486,60 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
             }
         }
         if (overlap == false) {
+
+            // save local Nevt/Ncandidate
+            double local_multiplicity = 0;
+            if (local_N_events != 0) local_multiplicity = local_N_candidates / local_N_events;
+            if (avg_multiplicity != -1.0) multiplicity_uncer_numerator.at(current_N_event) = multiplicity_uncer_numerator.(current_N_event) + local_N_events * local_N_events * (local_multiplicity - avg_multiplicity) * (local_multiplicity - avg_multiplicity);
+
+            // initialize local Nevt/Ncandidate
+            local_N_events = 0;
+            local_N_candidates = 0;
+
             // Number of event
-            if (smartmode == false) N_events.at(current_N_event) = N_events.at(current_N_event) + 1;
+            if (smartmode == false) {
+                N_events.at(current_N_event) = N_events.at(current_N_event) + 1;
+                local_N_events = 1;
+            }
             else {
                 if (strcmp(type, "SIGNAL") == 0) {
                     if (filename.find("B2Knunu") != std::string::npos) {
                         double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
                         N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
+                        local_N_events = ObtainWeight(type, MC_version, category, filename) * correction_weight;
                     }
-                    else if (filename.find("B2Kstarnunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename);
+                    else if (filename.find("B2Kstarnunu") != std::string::npos) {
+                        N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename);
+                        local_N_events = ObtainWeight(type, MC_version, category, filename);
+                    }
                     else if (filename.find("B2Xsnunu") != std::string::npos) {
                         double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                         N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
+                        local_N_events = ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                     }
                     else if (filename.find("B02K0nunu") != std::string::npos) {
                         double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
                         N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
+                        local_N_events = ObtainWeight(type, MC_version, category, filename) * correction_weight;
                     }
-                    else if (filename.find("B02Kstar0nunu") != std::string::npos) N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename);
+                    else if (filename.find("B02Kstar0nunu") != std::string::npos) {
+                        N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename);
+                        local_N_events = ObtainWeight(type, MC_version, category, filename);
+                    }
                     else if (filename.find("B02Xsnunu") != std::string::npos) {
                         double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                         N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
+                        local_N_events = ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                     }
-                    else { N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename); }
+                    else { 
+                        N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename); 
+                        local_N_events = ObtainWeight(type, MC_version, category, filename);
+                    }
                 }
-                else N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
+                else {
+                    N_events.at(current_N_event) = N_events.at(current_N_event) + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
+                    local_N_events = ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
+                }
             }
             Labels temp_Labels;
             temp_Labels.__experiment__ = temp.__experiment__;
@@ -1587,6 +1621,7 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
         if (smartmode == false) {
             N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + 1.0;
             N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + 1.0;
+            local_N_candidates = local_N_candidates + 1.0;
         }
         else {
             if (strcmp(type, "SIGNAL") == 0) {
@@ -1594,44 +1629,62 @@ void Loader::PrintInformation(std::string title, std::string filename, const cha
                     double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bplus");
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
+                    local_N_candidates = local_N_candidates + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                 }
                 else if (filename.find("B2Kstarnunu") != std::string::npos) {
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
+                    local_N_candidates = local_N_candidates + ObtainWeight(type, MC_version, category, filename);
                 }
                 else if (filename.find("B2Xsnunu") != std::string::npos) {
                     double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_Bc], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
+                    local_N_candidates = local_N_candidates + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                 }
                 else if (filename.find("B02K0nunu") != std::string::npos) {
                     double correction_weight = corrector.GetCorrectionFactor(temp.Decay_syst_ff[index_q2] * temp.Decay_syst_ff[index_q2], "Bzero");
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_weight;
+                    local_N_candidates = local_N_candidates + ObtainWeight(type, MC_version, category, filename) * correction_weight;
                 }
                 else if (filename.find("B02Kstar0nunu") != std::string::npos) {
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
+                    local_N_candidates = local_N_candidates + ObtainWeight(type, MC_version, category, filename);
                 }
                 else if (filename.find("B02Xsnunu") != std::string::npos) {
                     double correction_fragmentation = corrector_Fragmentation.GetCorrectionFactor(temp.Decay, temp.Decay_syst_ff[index_MXs_B0], Corrector_Fragmentation::SystType::Nominal, Corrector_Fragmentation::Sample::gamma, MC_version);
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
+                    local_N_candidates = local_N_candidates + ObtainWeight(type, MC_version, category, filename) * correction_fragmentation;
                 }
                 else {
                     N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
                     N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename);
+                    local_N_candidates = local_N_candidates + ObtainWeight(type, MC_version, category, filename);
                 }
             }
             else {
                 N_candidates_modes[decaymodeid].at(current_N_candidate) = N_candidates_modes[decaymodeid].at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
                 N_candidates.at(current_N_candidate) = N_candidates.at(current_N_candidate) + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
+                local_N_candidates = local_N_candidates + ObtainWeight(type, MC_version, category, filename) * corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, filename, MC_version, false);
             }
 
         }
 
         TotalData.push(temp);
     }
+
+    // care about the last event
+    // save local Nevt/Ncandidate
+    double local_multiplicity = 0;
+    if (local_N_events != 0) local_multiplicity = local_N_candidates / local_N_events;
+    if (avg_multiplicity != -1.0) multiplicity_uncer_numerator.at(current_N_event) = multiplicity_uncer_numerator.(current_N_event)+local_N_events * local_N_events * (local_multiplicity - avg_multiplicity) * (local_multiplicity - avg_multiplicity);
+
+    // initialize local Nevt/Ncandidate
+    local_N_events = 0;
+    local_N_candidates = 0;
 
     current_N_event++;
     current_N_candidate++;
@@ -2410,6 +2463,7 @@ void Loader::End() {
         printf("%s\n", titles.at(i).c_str());
         printf("Number of event: %lf\n", N_events.at(i));
         printf("Number of candidate: %lf\n", N_candidates.at(i));
+        if (multiplicity_uncer_numerator.at(i) != 0) printf("error of multiplicity: %lf", std::abs(multiplicity_uncer_numerator.at(i)) / N_events.at(i));
         for (int j = 0; j < Loader::MAX_NUM_DECAYMODE; j++) printf("Number of candidate of decayID %d: %lf\n", j, N_candidates_modes[j].at(i));
         if (AllOfThemHaveXsBranch) for (int j = 0; j < Loader::MAX_NUM_DECAYMODE_MC; j++) printf("Number of event with MC decayID %d(scaled): %lf\n", j, N_MC_modes[j].at(i));
     }
