@@ -7,7 +7,7 @@ This repository contains the comprehensive research codebase for the rare decay 
 
 **This is the codebase that produced the results for the publication: [arXiv:2511.10980](https://arxiv.org/abs/2511.10980).**
 
-Over the course of multiple years (**2,250+ commits**), this project evolved to handle complex, high-dimensional physics data. It utilizes advanced Machine Learning techniques (FastBDT) and rigorous statistical modeling to extract incredibly faint signal signatures from massive background noise.
+Over the course of multiple years of continuous development, this project evolved to handle complex, high-dimensional physics data. It utilizes advanced Machine Learning techniques (FastBDT) and rigorous statistical modeling to extract incredibly faint signal signatures from massive background noise.
 
 ## Tech Stack & Core Competencies
 - **Machine Learning:** `FastBDT` (Boosted Decision Trees) for binary classification of highly imbalanced data.
@@ -37,4 +37,4 @@ The project is structured into modular components for scalability and maintainab
 
 ## Impact & Achievements
 - **Scientific Publication:** The codebase successfully processed Petabyte-scale experiment data and produced the robust statistical results published in **[arXiv:2511.10980](https://arxiv.org/abs/2511.10980)**.
-- **Project Persistence:** Built and maintained a highly complex computational framework from scratch with over 2,250+ commits, demonstrating a profound capability to drive a long-term, large-scale data science project to a successful conclusion.
+- **Long-term Engineering & Persistence:** Built and iteratively refined a complex computational framework from scratch. Successfully drove a multi-year, large-scale data science project from initial data exploration to a final result.
