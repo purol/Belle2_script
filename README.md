@@ -1,6 +1,8 @@
 # Belle II $B \to X_s \nu \bar{\nu}$ Search: Advanced Statistical Modeling & ML Codebase
 
 [![arXiv](https://img.shields.io/badge/arXiv-2511.10980-b31b1b.svg)](https://arxiv.org/abs/2511.10980)
+[![Published in PRL](https://img.shields.io/badge/Published%20in-Physical%20Review%20Letters-blue)](https://journals.aps.org/prl/abstract/10.1103/kf73-hw61)
+[![DOI](https://img.shields.io/badge/DOI-10.1103%2Fkf73--hw61-blue)](https://doi.org/10.1103/kf73-hw61)
 
 ## Overview
 This repository contains the comprehensive research codebase for the rare decay search $B \to X_s \nu \bar{\nu}$ at the Belle II experiment. 
