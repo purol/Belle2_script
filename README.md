@@ -38,5 +38,5 @@ The project is structured into modular components for scalability and maintainab
 - Designed and executed thousands of "Toy MC" pseudo-experiments to validate the mathematical stability of the fitting algorithms and calculate precise Upper Limits (CLs method).
 
 ## Impact & Achievements
-- **Scientific Publication:** The codebase successfully processed Petabyte-scale experiment data and produced the robust statistical results published in **[arXiv:2511.10980](https://arxiv.org/abs/2511.10980)**.
+- **Scientific Publication:** The codebase produced the statistical results published in **Physical Review Letters**: **[First Search for $B \to X_s \nu \bar{\nu}$ Decays](https://journals.aps.org/prl/abstract/10.1103/kf73-hw61)**.
 - **Long-term Engineering & Persistence:** Built and iteratively refined a complex computational framework from scratch. Successfully drove a multi-year, large-scale data science project from initial data exploration to a final result.
