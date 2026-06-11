@@ -7,7 +7,7 @@
 ## Overview
 This repository contains the comprehensive research codebase for the rare decay search $B \to X_s \nu \bar{\nu}$ at the Belle II experiment. 
 
-**This is the codebase that produced the results for the publication: [arXiv:2511.10980](https://arxiv.org/abs/2511.10980).**
+**This is the codebase that produced the results for the publication in Physical Review Letters: [DOI: 10.1103/kf73-hw61](https://doi.org/10.1103/kf73-hw61).**
 
 Over the course of multiple years of continuous development, this project evolved to handle complex, high-dimensional physics data. It utilizes advanced Machine Learning techniques (FastBDT) and rigorous statistical modeling to extract incredibly faint signal signatures from massive background noise.
 
