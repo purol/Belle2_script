@@ -351,7 +351,7 @@ void ReadInfoFiles_r_sp(){
     gr->SetMinimum(0.0);
     gr->SetTitle(";q^{2} [GeV^{2}];arbitrary unit");
 
-    TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
+    TCanvas* c_temp = new TCanvas("c", "", 1200, 830); c_temp->cd();
     TLegend *legend = new TLegend(0.35, 0.35, 0.1, 0.1);
     legend->AddEntry(gr_MC,"MC","lpfe");
     legend->AddEntry(gr,"[PHYS. REV. D 107, 014511]","f");

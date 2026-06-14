@@ -94,7 +94,7 @@ void ReadInfoFiles_r_sp(){
 
     // create the error arrays
     Float_t ex[6] = { 2, 2, 2, 2, 3.45 };
-    Float_t ey[6] = { 0.19, 0.15, 0.13, 0.10, 0.09 };
+    Float_t ey[6] = { sqrt(0.14 * 0.14 + 0.05 * 0.05), sqrt(0.11 * 0.11 + 0.04 * 0.04), sqrt(0.09 * 0.09 + 0.04 * 0.04), sqrt(0.07 * 0.07 + 0.03 * 0.03), sqrt(0.05 * 0.05 + 0.04 * 0.04) };
     // uncertainty by form factor
 
     // create the TGraphErrors and draw it
@@ -106,7 +106,7 @@ void ReadInfoFiles_r_sp(){
     gr->SetMinimum(0.0);
     gr->SetTitle(";q^{2} [GeV^{2}];arbitrary unit");
 
-    TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
+    TCanvas* c_temp = new TCanvas("c", "", 1200, 830); c_temp->cd();
     TLegend *legend = new TLegend(0.35, 0.35, 0.1, 0.1);
     legend->AddEntry(gr_MC,"MC","lpfe");
     legend->AddEntry(gr,"[JHEP 02 (2015) 184]","f");
