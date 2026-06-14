@@ -17,7 +17,23 @@ void load_files(const char *dirname, std::vector<string>* names){
    }
 }
 
-void ReadInfoFiles_r_sp(){
+void load_files(const char* dirname, std::vector<std::string>* names, const char* included_string) {
+    TSystemDirectory dir(dirname, dirname);
+    TList* files = dir.GetListOfFiles();
+    if (files) {
+        TSystemFile* file;
+        TString fname;
+        TIter next(files);
+        while ((file = (TSystemFile*)next())) {
+            fname = file->GetName();
+            if (!file->IsDirectory() && fname.EndsWith(".root") && fname.Contains(included_string)) {
+                names->push_back(fname.Data());
+            }
+        }
+    }
+}
+
+void ReadInfoFiles_r_sp_old(){
     
     std::vector<string> names;
     const char* dirname = "./";
@@ -41,11 +57,11 @@ void ReadInfoFiles_r_sp(){
         printf("%s (%d/%zu)\n",("Read "+names.at(i) + "... ").c_str(), i, names.size());
 
         // Get Data
-        TTree* tree_info = (TTree*)input_file->Get("info");
+        TTree* tree_info = (TTree*)input_file->Get("Xs");
 
         int __experiment__;
         int __run__;
-        int __event__;
+        unsigned int __event__;
         int __candidate__;
         int __ncandidates__;
         double s;
@@ -89,12 +105,12 @@ void ReadInfoFiles_r_sp(){
     //Plot->SetMarkerSize(2);
 
     // draw theoratical data
-    Float_t x[5] = { 2, 6, 10, 14, 19.45 };
-    Float_t y[5] = { 0.93, 0.92, 0.86, 0.71, 0.55 };
+    Double_t x[5] = { 2, 6, 10, 14, 19.45 };
+    Double_t y[5] = { 0.93, 0.92, 0.86, 0.71, 0.55 };
 
     // create the error arrays
-    Float_t ex[6] = { 2, 2, 2, 2, 3.45 };
-    Float_t ey[6] = { sqrt(0.14 * 0.14 + 0.05 * 0.05), sqrt(0.11 * 0.11 + 0.04 * 0.04), sqrt(0.09 * 0.09 + 0.04 * 0.04), sqrt(0.07 * 0.07 + 0.03 * 0.03), sqrt(0.05 * 0.05 + 0.04 * 0.04) };
+    Double_t ex[6] = { 2, 2, 2, 2, 3.45 };
+    Double_t ey[6] = { sqrt(0.14 * 0.14 + 0.05 * 0.05), sqrt(0.11 * 0.11 + 0.04 * 0.04), sqrt(0.09 * 0.09 + 0.04 * 0.04), sqrt(0.07 * 0.07 + 0.03 * 0.03), sqrt(0.05 * 0.05 + 0.04 * 0.04) };
     // uncertainty by form factor
 
     // create the TGraphErrors and draw it
