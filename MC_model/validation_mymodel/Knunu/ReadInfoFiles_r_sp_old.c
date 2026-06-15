@@ -124,7 +124,7 @@ void ReadInfoFiles_r_sp_old(){
 
     TCanvas* c_temp = new TCanvas("c", "", 1200, 830); c_temp->cd();
     TLegend *legend = new TLegend(0.35, 0.35, 0.1, 0.1);
-    legend->AddEntry(gr_MC,"MC","lpfe");
+    legend->AddEntry(gr_MC,"B#rightarrowK#nu#bar{#nu} MC","lpfe");
     legend->AddEntry(gr,"[JHEP 02 (2015) 184]","f");
     gr->Draw("a2");
     //Plot->Draw("E1 SAME");

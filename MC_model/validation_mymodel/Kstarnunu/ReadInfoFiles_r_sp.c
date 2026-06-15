@@ -17,6 +17,22 @@ void load_files(const char *dirname, std::vector<string>* names){
    }
 }
 
+void load_files(const char* dirname, std::vector<std::string>* names, const char* included_string) {
+    TSystemDirectory dir(dirname, dirname);
+    TList* files = dir.GetListOfFiles();
+    if (files) {
+        TSystemFile* file;
+        TString fname;
+        TIter next(files);
+        while ((file = (TSystemFile*)next())) {
+            fname = file->GetName();
+            if (!file->IsDirectory() && fname.EndsWith(".root") && fname.Contains(included_string)) {
+                names->push_back(fname.Data());
+            }
+        }
+    }
+}
+
 TH1D* Kstar_delta_weight;
 TH1D* K0star_delta_weight;
 double ReadWeightHist(TH1D* hist, double value);
@@ -134,12 +150,12 @@ void ReadInfoFiles_r_sp(){
     //Plot->SetMarkerSize(2);
 
     // draw theoratical data
-    Float_t x[5] = { 2, 6, 10, 14, 17.6 };
-    Float_t y[5] = { 1.38, 1.88, 2.27, 2.36, 1.30 };
+    Double_t x[5] = { 2, 6, 10, 14, 17.6 };
+    Double_t y[5] = { 1.38, 1.88, 2.27, 2.36, 1.30 };
 
     // create the error arrays
-    Float_t ex[5] = { 2, 2, 2, 2, 1.6 };
-    Float_t ey[5] = { 0.28, 0.32, 0.34, 0.31, 0.17 };
+    Double_t ex[5] = { 2, 2, 2, 2, 1.6 };
+    Double_t ey[5] = { sqrt(0.21 * 0.21 + 0.07 * 0.07), sqrt(0.22 * 0.22 + 0.10 * 0.10), sqrt(0.22 * 0.22 + 0.12 * 0.12), sqrt(0.18 * 0.18 + 0.13 * 0.13), sqrt(0.10 * 0.10 + 0.07 * 0.07) };
     // uncertainty by form factor
 
     // create the TGraphErrors and draw it
@@ -151,10 +167,10 @@ void ReadInfoFiles_r_sp(){
     gr->SetMinimum(0.0);
     gr->SetTitle(";q^{2} [GeV^{2}];arbitrary unit");
 
-    TCanvas* c_temp = new TCanvas("c", "", 1200, 800); c_temp->cd();
+    TCanvas* c_temp = new TCanvas("c", "", 1200, 830); c_temp->cd();
     TLegend *legend = new TLegend(0.35, 0.35, 0.1, 0.1);
-    legend->AddEntry(gr_MC,"MC","lpfe");
-    legend->AddEntry(gr,"[arXiv:1409.4557]","f");
+    legend->AddEntry(gr_MC,"B#rightarrowK^{*}#nu#bar{#nu} MC","lpfe");
+    legend->AddEntry(gr,"[JHEP 02 (2015) 184]","f");
     gr->Draw("a2");
     //Plot->Draw("E1 SAME");
     gr_MC->Draw("SAMEP");
