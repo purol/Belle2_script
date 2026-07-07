@@ -87,11 +87,11 @@ typedef struct info {
 
 std::vector<Information> Infos;
 
-TH2D* N_evt = new TH2D("N_evt", ";s_{max};s_{min}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
+TH2D* N_evt = new TH2D("N_evt", ";s_{max} [(GeV/c^{2})^{2}];s_{min} [(GeV/c^{2})^{2}];arbitrary unit", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
-TH2D* Prob_PHSP = new TH2D("Prob_PHSP", ";s_{max};s_{min}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
+TH2D* Prob_PHSP = new TH2D("Prob_PHSP", ";s_{max} [(GeV/c^{2})^{2}];s_{min} [(GeV/c^{2})^{2}];arbitrary unit", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
-TH2D* Prob = new TH2D("Prob", ";s_{max};s_{min}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
+TH2D* Prob = new TH2D("Prob", ";s_{max} [(GeV/c^{2})^{2}];s_{min} [(GeV/c^{2})^{2}];arbitrary unit", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
 TH1D* Prob_1D_sqrt_smin = new TH1D("Prob_1D_sqrt_smin", ";#sqrt{s_{min}};", 20, 1.0, 3.3);
 TH1D* Prob_1D_sqrt_smax = new TH1D("Prob_1D_sqrt_smax", ";#sqrt{s_{max}};", 20, 3.1, 4.8);

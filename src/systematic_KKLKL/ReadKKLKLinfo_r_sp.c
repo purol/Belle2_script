@@ -103,14 +103,14 @@ typedef struct info {
 
 std::vector<Information> Infos;
 
-TH2D* N_evt = new TH2D("N_evt", ";s13;s23", NBin, s13_min, s13_max, NBin, s23_min, s23_max);
+TH2D* N_evt = new TH2D("N_evt", ";s13 [(GeV/c^{2})^{2}];s23 [(GeV/c^{2})^{2}];arbitrary unit", NBin, s13_min, s13_max, NBin, s23_min, s23_max);
 TH2D* N_evt_conv = new TH2D("N_evt_conv", ";s12;s13", NBin, s12_min, s12_max, NBin, s13_min, s13_max);
 
 TH2D* Prob_PHSP = new TH2D("Prob_PHSP", ";s13;s23", NBin, s13_min, s13_max, NBin, s23_min, s23_max);
 TH2D* Prob_PHSP_conv = new TH2D("Prob_PHSP_conv", ";s12;s13", NBin, s12_min, s12_max, NBin, s13_min, s13_max);
 
-TH2D* Prob = new TH2D("Prob", ";s13;s23", NBin, s13_min, s13_max, NBin, s23_min, s23_max);
-TH2D* Prob_conv = new TH2D("Prob_conv", ";s12;s13", NBin, s12_min, s12_max, NBin, s13_min, s13_max);
+TH2D* Prob = new TH2D("Prob", ";s13 [(GeV/c^{2})^{2}];s23 [(GeV/c^{2})^{2}];arbitrary unit", NBin, s13_min, s13_max, NBin, s23_min, s23_max);
+TH2D* Prob_conv = new TH2D("Prob_conv", ";s12 [(GeV/c^{2})^{2}];s13 [(GeV/c^{2})^{2}];arbitrary unit", NBin, s12_min, s12_max, NBin, s13_min, s13_max);
 
 TH1D* Prob_1D_s12 = new TH1D("Prob_1D_s12", ";m_{K_{S}K_{S}};", 32, 4.77 - 0.06 * 63, 4.77 + 0.06);
 TH1D* Prob_1D_s13 = new TH1D("Prob_1D_s13", ";m_{K^{+}K_{S},low};", 29, 0.99, 3.74);
