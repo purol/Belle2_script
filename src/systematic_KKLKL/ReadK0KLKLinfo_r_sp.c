@@ -510,7 +510,14 @@ void DrawDalitz(TH2D* Dalitz, const char* name = "Dalitz.png") {
 
     Dalitz->SetStats(0);
 
-    TCanvas* c = new TCanvas("c", "", 700, 700);
+    TCanvas* c = new TCanvas("c", "", 800, 700);
+
+    c->SetRightMargin(0.18);
+
+    c->SetLeftMargin(0.12);
+    c->SetBottomMargin(0.12);
+    c->SetTopMargin(0.08);
+
     Dalitz->Draw("COLZ");
 
     c->SaveAs(name);
@@ -645,6 +652,8 @@ int main(){
     MC:   B+ --> K+ KL0 KL0
     */
     
+    // /home/belle2/junewoo/storage_ghi/20240201_B02K0KLKL_model_check/output/Ntuple
+    // /home/belle2/junewoo/storage_ghi/20230924_B02KKLKL_generator_level_info/output/Ntuple
     const char* dirname = "./files";
 
     FillInfo(dirname);

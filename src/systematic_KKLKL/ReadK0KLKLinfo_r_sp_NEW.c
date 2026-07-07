@@ -89,15 +89,15 @@ std::vector<Information> Infos_PHSP;
 std::vector<Information> Infos_PHSP_another;
 std::vector<Information> Infos_phi;
 
-TH2D* N_evt = new TH2D("N_evt", ";s_{max} [(GeV/c^{2})^{2}];s_{min} [(GeV/c^{2})^{2}];arbitrary unit", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
+TH2D* N_evt = new TH2D("N_evt", ";s_{max} [(GeV/c^{2})^{2}];s_{min} [(GeV/c^{2})^{2}];", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 TH2D* N_evt_another = new TH2D("N_evt_another", ";max M_{K_{s}^{0}K_{L}^{0}};min M_{K_{s}^{0}K_{L}^{0}}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
-TH2D* Prob_PHSP = new TH2D("Prob_PHSP", ";s_{max} [(GeV/c^{2})^{2}];s_{min} [(GeV/c^{2})^{2}];arbitrary unit", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
+TH2D* Prob_PHSP = new TH2D("Prob_PHSP", ";s_{max} [(GeV/c^{2})^{2}];s_{min} [(GeV/c^{2})^{2}];", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 TH2D* Prob_PHSP_another = new TH2D("Prob_PHSP_another", ";max M_{K_{s}^{0}K_{L}^{0}};min M_{K_{s}^{0}K_{L}^{0}}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
 TH2D* Prob_phi = new TH2D("Prob_phi", ";max M_{K_{s}^{0}K_{L}^{0}};min M_{K_{s}^{0}K_{L}^{0}}", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
-TH2D* Prob = new TH2D("Prob", ";s_{max} [(GeV/c^{2})^{2}];s_{min} [(GeV/c^{2})^{2}];arbitrary unit", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
+TH2D* Prob = new TH2D("Prob", ";s_{max} [(GeV/c^{2})^{2}];s_{min} [(GeV/c^{2})^{2}];", NBin, smax_min, smax_max, NBin, smin_min, smin_max);
 
 TH1D* Prob_1D_sqrt_smin = new TH1D("Prob_1D_sqrt_smin", ";#sqrt{s_{min}};", 20, 1.0, 3.3);
 TH1D* Prob_1D_sqrt_smax = new TH1D("Prob_1D_sqrt_smax", ";#sqrt{s_{max}};", 20, 3.1, 4.8);
@@ -516,7 +516,14 @@ void DrawDalitz(TH2D* Dalitz, const char* name = "Dalitz.png") {
 
     Dalitz->SetStats(0);
 
-    TCanvas* c = new TCanvas("c", "", 700, 700);
+    TCanvas* c = new TCanvas("c", "", 800, 700);
+
+    c->SetRightMargin(0.18);
+
+    c->SetLeftMargin(0.12);
+    c->SetBottomMargin(0.12);
+    c->SetTopMargin(0.08);
+
     Dalitz->Draw("COLZ");
 
     c->SaveAs(name);
