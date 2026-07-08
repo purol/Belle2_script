@@ -14,7 +14,7 @@ offset = 0.0
 
 # Plotting the histograms as points with offset and x-error bars
 plt.errorbar(x - offset, y1, xerr=x_error, yerr=y1_error, fmt='bo', label='Data', capsize=5, elinewidth=2, alpha=0.7)
-plt.errorbar(x + offset, y2, xerr=x_error, yerr=y2_error, fmt='ro', label=r'$B \rightarrow X_{s} p \bar{p}$ MC with correction', capsize=5, elinewidth=2, alpha=0.7)
+plt.errorbar(x + offset, y2, xerr=x_error, yerr=y2_error, fmt='ro', label=r'$B \rightarrow X_{s} p \bar{p}$ MC', capsize=5, elinewidth=2, alpha=0.7)
 
 plt.title(r'$B \rightarrow X_{s} p \bar{p}$ analysis')
 plt.xlabel(r'$M_{p\bar{p}}$ [GeV/$c^{2}$]')
