@@ -25,9 +25,8 @@ import argparse
 # get data type
 parser = argparse.ArgumentParser(description='Sample type')
 
-parser.add_argument('--inputpath', required=True, type=str, help='Directory containing input ROOT files')
+parser.add_argument('--inputfile', required=False, type=str, help='destination of output files for local run. ex) /home/belle2/junewoo/storage_b1/input_Jpsi/B02XJpsi_SKIM_00012_job227326565_00.udst.root')
 parser.add_argument('--destination', required=False, type=str, help='destination of output files for local run. ex) /home/belle2/junewoo/storage_b1/output')
-parser.add_argument( '--filter', required=False, type=str, default="", help='Only read ROOT files containing this string' )
 
 args = parser.parse_args()
 
@@ -37,18 +36,18 @@ basf2.conditions.prepend_globaltag(ma.getAnalysisGlobaltag())
 basf2.set_random_seed(42)
 
 # set output name
-inputpath = args.inputpath
+inputfile = args.inputfile
 
-# Get all ROOT files in the directory
-inputfiles = sorted(glob(os.path.join(inputpath, f"*{args.filter}*.root")))
+basename = os.path.basename(inputfile)
+name = os.path.splitext(basename)[0]
 
 outputpath = args.destination
-
-output_file = outputpath + "/output_Ntuple.root"
+output_file = "Ntuple"
+output_file = outputpath + "/" + name + "_" + output_file + ".root"
 
 # Read uDST
 my_path = basf2.create_path()
-ma.inputMdstList(environmentType='default', filelist=inputfiles, path=my_path)
+ma.inputMdst(environmentType='default', filename=inputfile, path=my_path)
 
 # select only 1/100
 ma.applyEventCuts("eventRandom < 0.01", path=my_path)
