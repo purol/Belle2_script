@@ -61,7 +61,7 @@ vertex.treeFit("K_S0:preliminary", conf_level=0.0, path=my_path, updateAllDaught
 
 ma.fillParticleList(decayString="gamma:all", cut="", path=my_path)
 
-stdPhotons('pi0eff30_May2020', path=my_path)
+stdPhotons.stdPhotons('pi0eff30_May2020', path=my_path)
 ma.reconstructDecay('pi0:preliminary -> gamma:pi0eff30_May2020 gamma:pi0eff30_May2020', cut = '', ignoreIfTooManyCandidates=False, path=my_path)
 
 # MC match
