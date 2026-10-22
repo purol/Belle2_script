@@ -56,11 +56,13 @@ ma.applyEventCuts("eventRandom < 0.01", path=my_path)
 ma.fillParticleList(decayString="K+:all", cut="", path=my_path)
 ma.fillParticleList(decayString="pi+:all", cut="", path=my_path)
 
-ma.reconstructDecay('K_S0:preliminary -> pi+:all pi-:all', '', 1, path=my_path)
+ma.reconstructDecay('K_S0:preliminary -> pi+:all pi-:all', cut = '', ignoreIfTooManyCandidates=False, path=my_path)
 vertex.treeFit("K_S0:preliminary", conf_level=0.0, path=my_path, updateAllDaughters=False)
 
 ma.fillParticleList(decayString="gamma:all", cut="", path=my_path)
-ma.reconstructDecay('pi0:preliminary -> gamma:all gamma:all', '', 1, path=my_path)
+
+stdPhotons('pi0eff30_May2020', path=my_path)
+ma.reconstructDecay('pi0:preliminary -> gamma:pi0eff30_May2020 gamma:pi0eff30_May2020', cut = '', ignoreIfTooManyCandidates=False, path=my_path)
 
 # MC match
 ma.matchMCTruth("K+:all", path=my_path)
@@ -76,10 +78,11 @@ ma.variablesToNtuple(decayString="pi+:all",variables = ["pionID", "nCDCHits", "n
 # for KS0
 ma.variablesToNtuple(decayString="K_S0:preliminary",variables = ["M", "significanceOfDistance", "isSignal", "mcPDG"], filename=output_file, treename="KSzero", path=my_path)
 
+# for gamma
+ma.variablesToNtuple(decayString="gamma:all",variables = ["clusterNHits", "thetaInCDCAcceptance", "clusterReg", "E", "theta", "isSignal", "mcPDG"], filename=output_file, treename="gamma", path=my_path)
+
 # for pi0
-var1 = ["daughter(0," + v + ")" for v in ["clusterNHits", "thetaInCDCAcceptance", "clusterReg", "E"]]
-var2 = ["daughter(1," + v + ")" for v in ["clusterNHits", "thetaInCDCAcceptance", "clusterReg", "E"]]
-ma.variablesToNtuple(decayString="pi0:preliminary",variables = ["InvM", "daughterDiffOf(0,1,phi)", "daughterAngle(0,1)", "p", "isSignal", "mcPDG"] + var1 + var2, filename=output_file, treename="pizero", path=my_path)
+ma.variablesToNtuple(decayString="pi0:preliminary",variables = ["InvM", "p", "isSignal", "mcPDG"], filename=output_file, treename="pizero", path=my_path)
 
 # progress
 basf2.process(my_path)
