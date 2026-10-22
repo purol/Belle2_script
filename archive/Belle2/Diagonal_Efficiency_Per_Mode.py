@@ -87,7 +87,7 @@ for i in range(0,30):
 
 for i in range(0,30):
     for j in range(0,30):
-        Efficiency[i][j] = (values[i][j] / correction[i])
+        Efficiency[i][j] = (values[i][j] / correction[j])
 
 for i in range(0,30):
     for j in range(0,30):
