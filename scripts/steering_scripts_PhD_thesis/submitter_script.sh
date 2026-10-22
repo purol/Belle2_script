@@ -15,6 +15,5 @@ do
   -e "./err_particles/${basename}.err" \
   ${code} \
   --inputfile "${file}" \
-  --destination "./output_particles" \
-    sleep 0.5
+  --destination "./output_particles"
 done
