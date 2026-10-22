@@ -82,7 +82,7 @@ ma.variablesToNtuple(decayString="K_S0:preliminary",variables = ["M", "significa
 ma.variablesToNtuple(decayString="gamma:all",variables = ["clusterNHits", "thetaInCDCAcceptance", "clusterReg", "E", "theta", "isSignal", "mcPDG"], filename=output_file, treename="gamma", path=my_path)
 
 # for pi0
-ma.variablesToNtuple(decayString="pi0:preliminary",variables = ["InvM", "p", "isSignal", "mcPDG"], filename=output_file, treename="pizero", path=my_path)
+ma.variablesToNtuple(decayString="pi0:preliminary",variables = ["InvM", "daughterDiffOf(0,1,phi)", "daughterAngle(0,1)", "p", "isSignal", "mcPDG"], filename=output_file, treename="pizero", path=my_path)
 
 # progress
 basf2.process(my_path)
