@@ -50,7 +50,7 @@ my_path = basf2.create_path()
 ma.inputMdst(environmentType='default', filename=inputfile, path=my_path)
 
 # select only 1/100
-ma.applyEventCuts("eventRandom < 0.01", path=my_path)
+ma.applyEventCuts("eventRandom < 0.1", path=my_path)
 
 # define basic particles
 ma.fillParticleList(decayString="K+:all", cut="", path=my_path)
