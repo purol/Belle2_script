@@ -49,7 +49,7 @@ plt.text(0.70, 0.80, desc,
          verticalalignment='top')
 
 # Labels and legend
-plt.xlabel(r'$M_{X_{s}}^{true}$ [GeV]')
+plt.xlabel(r'$M_{X_{s}}^{true}$ [GeV/$c^{2}$]')
 plt.ylabel('efficiency')
 plt.title('')
 plt.legend()
