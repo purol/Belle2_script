@@ -165,7 +165,7 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
     canvas = ROOT.TCanvas(f"canvas_{spec.number}", "", 920, 600)
     canvas.SetLeftMargin(0.13)
     canvas.SetBottomMargin(0.12)
-    canvas.SetRightMargin(0.23)  # Keep the legend outside the histogram frame
+    canvas.SetRightMargin(0.07)
     canvas.SetTicks(1, 1)
     log_y = (
         (spec.tree == "KSzero" and spec.variable == "significanceOfDistance")
@@ -187,7 +187,7 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
     background_hatch.SetLineWidth(1)
     background_hatch.Draw("HIST SAME")
 
-    legend = ROOT.TLegend(0.78, 0.77, 0.98, 0.89)
+    legend = ROOT.TLegend(0.17, 0.76, 0.41, 0.89)
     legend.SetBorderSize(0)
     legend.SetFillStyle(0)
     legend.SetTextSize(0.033)
@@ -200,7 +200,9 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
     }
     particle = particle_names[spec.tree]
     legend.AddEntry(signal, f"true {particle}", "f")
-    legend.AddEntry(background_hatch, f"fake {particle}", "f")
+    # Use the solid-fill histogram for a colored legend swatch.  The hatch
+    # overlay remains on the plotted fake component itself.
+    legend.AddEntry(background, f"fake {particle}", "f")
     legend.Draw()
 
     output = outdir / f"{spec.number:02d}_{spec.tree}_{spec.variable}_stack.png"
