@@ -85,7 +85,7 @@ def build_plots():
     ]
 
     tracking_binning = {
-        "dr": (100, -1.0, 1.0, "dr [cm]"),
+        "dr": (100, 0.0, 1.0, "dr [cm]"),
         "dz": (100, -5.0, 5.0, "dz [cm]"),
         "nCDCHits": (80, -0.5, 79.5, "N CDC hits"),
         "nPXDHits": (6, -0.5, 5.5, "N PXD hits"),
