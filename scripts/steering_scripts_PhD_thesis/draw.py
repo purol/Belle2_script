@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""Plot 19 signal/background stacked, N-1-style ROOT distributions.
+"""Plot 19 stacked distributions with one RDataFrame event loop per TTree.
 
 Usage:
     python plot_19_stacks.py /path/to/root_files --outdir selection_plots
     python plot_19_stacks.py /path/to/root_files --recursive
 
-Each ROOT file must contain TTree objects named pizero, gamma, KSzero,
-pion, and kaon, each with an isSignal branch. A single ROOT file is also
-accepted for backwards compatibility.
+Each ROOT file should contain TTree objects named pizero, gamma, KSzero,
+pion, and kaon, each with an isSignal branch. File/tree validation is
+deferred to data processing for faster startup with many small ROOT files.
 """
 
 import argparse
@@ -118,30 +118,29 @@ def build_plots():
     return plots
 
 
-def make_plot(tree, spec, outdir, pdf_filename, is_first, is_last):
-    background_name = f"hist_background_{spec.number}"
-    signal_name = f"hist_signal_{spec.number}"
-    args = (spec.nbins, spec.xmin, spec.xmax)
-    background = ROOT.TH1D(background_name, "", *args)
-    signal = ROOT.TH1D(signal_name, "", *args)
-    background.Sumw2()
-    signal.Sumw2()
-
-    cut_background = all_of(spec.selection, "isSignal < 0.5")
-    cut_signal = all_of(spec.selection, "isSignal >= 0.5")
-
-    # '+': keep the pre-created binning and fill the existing histogram.
-    n_background = tree.Draw(
-        f"{spec.variable}>>+{background_name}", cut_background, "goff"
-    )
-    n_signal = tree.Draw(
-        f"{spec.variable}>>+{signal_name}", cut_signal, "goff"
-    )
-    if n_background < 0 or n_signal < 0:
-        raise RuntimeError(
-            f"TTree.Draw failed: {spec.tree}.{spec.variable}. "
-            "Check that all required branches exist."
+def book_histograms(dataframes, plots):
+    """Book all actions before reading any results (one loop per TTree)."""
+    booked = {}
+    for spec in plots:
+        selected = dataframes[spec.tree].Filter(spec.selection)
+        args = (spec.nbins, spec.xmin, spec.xmax)
+        h_bkg = selected.Filter("isSignal < 0.5").Histo1D(
+            (f"hist_background_{spec.number}", "", *args), spec.variable
         )
+        h_sig = selected.Filter("isSignal >= 0.5").Histo1D(
+            (f"hist_signal_{spec.number}", "", *args), spec.variable
+        )
+        booked[spec.number] = (h_bkg, h_sig)
+    return booked
+
+
+def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
+    # All actions are already booked. The first GetValue triggers the event
+    # loop for this TTree and fills every booked histogram on that dataframe.
+    background = booked_histograms[0].GetValue()
+    signal = booked_histograms[1].GetValue()
+    n_background = int(background.GetEntries())
+    n_signal = int(signal.GetEntries())
 
     background.SetFillColor(ROOT.kBlue - 9)
     background.SetLineColor(ROOT.kBlue + 1)
@@ -191,7 +190,7 @@ def find_input_files(input_path, recursive=False):
         raise FileNotFoundError(f"Input path does not exist: {input_path}")
 
     pattern = "**/*.root" if recursive else "*.root"
-    files = sorted(p.resolve() for p in input_path.glob(pattern) if p.is_file())
+    files = sorted(p for p in input_path.glob(pattern) if p.is_file())
     if not files:
         raise FileNotFoundError(f"No .root files found in: {input_path}")
     return files
@@ -205,26 +204,37 @@ def main():
                         help="Also read .root files in subdirectories")
     parser.add_argument("--outdir", type=Path, default=Path("selection_plots"),
                         help="Directory for 19 PNG files and all_stacks.pdf")
+    parser.add_argument("--threads", type=int, default=1,
+                        help="RDataFrame worker threads (default: 1)")
     args = parser.parse_args()
 
     plots = build_plots()
     input_files = find_input_files(args.input_path, args.recursive)
     args.outdir.mkdir(parents=True, exist_ok=True)
 
+    if args.threads < 1:
+        parser.error("--threads must be at least 1")
+    if args.threads > 1:
+        ROOT.EnableImplicitMT(args.threads)
+
     print(f"Reading {len(input_files)} ROOT file(s) from {args.input_path}")
-    trees = {}
+    # Keep each chain alive while its RDataFrame is in use.
+    chains = {}
+    dataframes = {}
     for tree_name in ("pizero", "gamma", "KSzero", "pion", "kaon"):
         chain = ROOT.TChain(tree_name)
         for filepath in input_files:
-            # nentries=0 forces ROOT to check the file and the named tree.
-            if chain.Add(str(filepath), 0) == 0:
-                raise RuntimeError(f"Missing or unreadable '{tree_name}' in {filepath}")
-        trees[tree_name] = chain
-        print(f"  {tree_name}: {chain.GetEntries()} entries")
+            # Default Add() defers file/tree checks until the event loop.
+            chain.Add(str(filepath))
+        chains[tree_name] = chain
+        dataframes[tree_name] = ROOT.RDataFrame(chain)
+
+    # IMPORTANT: book all 38 lazy Histo1D actions before GetValue().
+    booked = book_histograms(dataframes, plots)
 
     pdf_filename = args.outdir / "all_stacks.pdf"
     for i, spec in enumerate(plots):
-        make_plot(trees[spec.tree], spec, args.outdir, pdf_filename,
+        make_plot(spec, booked[spec.number], args.outdir, pdf_filename,
                   is_first=(i == 0), is_last=(i == len(plots) - 1))
 
     print(f"Saved {len(plots)} PNG files and {pdf_filename}")
