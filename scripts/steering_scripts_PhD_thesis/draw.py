@@ -187,10 +187,6 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
     background_hatch.SetLineWidth(1)
     background_hatch.Draw("HIST SAME")
 
-    legend = ROOT.TLegend(0.17, 0.76, 0.41, 0.89)
-    legend.SetBorderSize(0)
-    legend.SetFillStyle(0)
-    legend.SetTextSize(0.033)
     particle_names = {
         "pizero": "#pi^{0}",
         "gamma": "#gamma",
@@ -199,11 +195,45 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
         "kaon": "kaon",
     }
     particle = particle_names[spec.tree]
-    legend.AddEntry(signal, f"true {particle}", "f")
-    # Use the solid-fill histogram for a colored legend swatch.  The hatch
-    # overlay remains on the plotted fake component itself.
-    legend.AddEntry(background, f"fake {particle}", "f")
-    legend.Draw()
+
+    # A standard TLegend fill sample can show either a solid background or a
+    # hatch, but not both at once.  Paint paired NDC paves instead, so the fake
+    # legend swatch looks exactly like its filled + hatched histogram segment.
+    # Keep references alive through SaveAs/Print for older PyROOT builds.
+    legend_primitives = []
+    for y, label, fill_color, border_color, is_fake in (
+        (0.854, f"true {particle}", signal.GetFillColor(),
+         signal.GetLineColor(), False),
+        (0.793, f"fake {particle}", background.GetFillColor(),
+         background.GetLineColor(), True),
+    ):
+        x1, x2, half_height = 0.180, 0.226, 0.015
+        swatch = ROOT.TPave(x1, y - half_height, x2, y + half_height, 0, "NDC")
+        swatch.SetFillColor(fill_color)
+        swatch.SetFillStyle(1001)
+        swatch.SetLineColor(border_color)
+        swatch.SetLineWidth(1)
+        swatch.Draw()
+        legend_primitives.append(swatch)
+
+        if is_fake:
+            swatch_hatch = ROOT.TPave(
+                x1, y - half_height, x2, y + half_height, 0, "NDC"
+            )
+            swatch_hatch.SetFillColor(background_hatch.GetFillColor())
+            swatch_hatch.SetFillStyle(3645)
+            swatch_hatch.SetLineColor(border_color)
+            swatch_hatch.SetLineWidth(1)
+            swatch_hatch.Draw()
+            legend_primitives.append(swatch_hatch)
+
+        label_text = ROOT.TLatex(0.237, y, label)
+        label_text.SetNDC(True)
+        label_text.SetTextAlign(12)
+        label_text.SetTextFont(42)
+        label_text.SetTextSize(0.033)
+        label_text.Draw()
+        legend_primitives.append(label_text)
 
     output = outdir / f"{spec.number:02d}_{spec.tree}_{spec.variable}_stack.png"
     canvas.SaveAs(str(output))
