@@ -20,6 +20,7 @@ import ROOT
 
 ROOT.gROOT.SetBatch(True)
 ROOT.gStyle.SetOptStat(0)
+ROOT.gStyle.SetHatchesLineWidth(1)
 
 
 @dataclass(frozen=True)
@@ -52,11 +53,13 @@ def build_plots():
         PlotSpec(1, "pizero", "InvM", all_of(phi_window, angle_cut, momentum_cut),
                  100, 0.08, 0.20, "M_{#gamma#gamma} [GeV/c^{2}]"),
         PlotSpec(2, "pizero", phi, all_of(mass_window, angle_cut, momentum_cut),
-                 100, -math.pi, math.pi, "#Delta#phi [rad]"),
+                 100, -math.pi / 2.0, math.pi / 2.0,
+                 "#Delta#phi_{#gamma#gamma} [rad]"),
         PlotSpec(3, "pizero", angle, all_of(mass_window, phi_window, momentum_cut),
-                 100, 0.0, math.pi, "Daughter opening angle [rad]"),
+                 100, 0.0, math.pi / 2.0,
+                 "#Delta#theta_{#gamma#gamma} [rad]"),
         PlotSpec(4, "pizero", "p", all_of(mass_window, phi_window, angle_cut),
-                 100, 0.0, 5.0, "#pi^{0} momentum [GeV/c]"),
+                 100, 0.0, 3.0, "p_{#pi^{0}} [GeV/c]"),
     ]
 
     gamma_energy = (
@@ -69,16 +72,16 @@ def build_plots():
 
     plots += [
         PlotSpec(5, "gamma", "clusterNHits", all_of(gamma_theta, gamma_energy),
-                 100, -0.5, 99.5, "Cluster N Hits"),
+                 100, -0.5, 20.5, "clusterNHits"),
         PlotSpec(6, "gamma", "theta", all_of(gamma_hits, gamma_energy),
-                 100, 0.0, math.pi, "Cluster #theta [rad]"),
+                 100, 0.0, math.pi, "#theta [rad]"),
         PlotSpec(7, "gamma", "E", all_of(gamma_hits, gamma_theta),
-                 100, 0.0, 3.0, "Cluster energy [GeV]"),
+                 100, 0.0, 2.0, "E [GeV]"),
         PlotSpec(8, "KSzero", "M", "significanceOfDistance > 50",
-                 100, 0.45, 0.55, "M_{K_{S}^{0}} [GeV/c^{2}]"),
+                 100, 0.45, 0.55, "Mass of K_{S}^{0} [GeV/c^{2}]"),
         PlotSpec(9, "KSzero", "significanceOfDistance",
                  all_of("M > 0.4876", "M < 0.5076"),
-                 100, 0.0, 500.0, "Significance of distance"),
+                 100, 0.0, 500.0, "significanceOfDistance"),
     ]
 
     tracking_binning = {
@@ -142,28 +145,52 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
     n_background = int(background.GetEntries())
     n_signal = int(signal.GetEntries())
 
-    background.SetFillColor(ROOT.kBlue - 9)
-    background.SetLineColor(ROOT.kBlue + 1)
-    signal.SetFillColor(ROOT.kRed - 9)
-    signal.SetLineColor(ROOT.kRed + 1)
+    # Calm, colorblind-accessible styling: solid signal versus sparse hatching.
+    # Their different patterns also distinguish the groups in grayscale.
+    background.SetFillColor(ROOT.TColor.GetColor("#A76C44"))
+    background.SetFillStyle(3745)  # Widely spaced 45-degree hatching
+    background.SetLineColor(ROOT.TColor.GetColor("#8A5D40"))
+    background.SetLineWidth(1)
+    signal.SetFillColor(ROOT.TColor.GetColor("#B8D8EA"))
+    signal.SetFillStyle(1001)  # Solid pastel blue
+    signal.SetLineColor(ROOT.TColor.GetColor("#376586"))
+    signal.SetLineWidth(1)
 
     stack = ROOT.THStack(
-        f"stack_{spec.number}", f";{spec.xlabel};Entries / bin"
+        f"stack_{spec.number}", f";{spec.xlabel};Arbitrary units"
     )
     stack.Add(background)
     stack.Add(signal)
 
-    canvas = ROOT.TCanvas(f"canvas_{spec.number}", "", 800, 600)
+    canvas = ROOT.TCanvas(f"canvas_{spec.number}", "", 920, 600)
     canvas.SetLeftMargin(0.13)
     canvas.SetBottomMargin(0.12)
+    canvas.SetRightMargin(0.23)  # Keep the legend outside the histogram frame
+    canvas.SetTicks(1, 1)
+    log_y = (
+        (spec.tree == "KSzero" and spec.variable == "significanceOfDistance")
+        or (spec.tree in ("pion", "kaon") and
+            spec.variable in ("dr", "dz", "pionID", "kaonID"))
+    )
+    if log_y:
+        canvas.SetLogy()
     stack.Draw("HIST")
-    stack.SetMinimum(0.0)
+    stack.SetMinimum(0.5 if log_y else 0.0)
 
-    legend = ROOT.TLegend(0.62, 0.75, 0.88, 0.88)
+    legend = ROOT.TLegend(0.78, 0.77, 0.98, 0.89)
     legend.SetBorderSize(0)
     legend.SetFillStyle(0)
-    legend.AddEntry(background, f"Background ({n_background})", "f")
-    legend.AddEntry(signal, f"Signal ({n_signal})", "f")
+    legend.SetTextSize(0.033)
+    particle_names = {
+        "pizero": "#pi^{0}",
+        "gamma": "#gamma",
+        "KSzero": "K_{S}^{0}",
+        "pion": "pion",
+        "kaon": "kaon",
+    }
+    particle = particle_names[spec.tree]
+    legend.AddEntry(signal, f"true {particle}", "f")
+    legend.AddEntry(background, f"fake {particle}", "f")
     legend.Draw()
 
     output = outdir / f"{spec.number:02d}_{spec.tree}_{spec.variable}_stack.png"
