@@ -145,10 +145,10 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
     n_background = int(background.GetEntries())
     n_signal = int(signal.GetEntries())
 
-    # Calm, colorblind-accessible styling: solid signal versus sparse hatching.
-    # Their different patterns also distinguish the groups in grayscale.
-    background.SetFillColor(ROOT.TColor.GetColor("#A76C44"))
-    background.SetFillStyle(3745)  # Widely spaced 45-degree hatching
+    # Use a pale solid base for both components so hatching leaves no white gaps.
+    # A second, patterned copy of the background will be overlaid after stacking.
+    background.SetFillColor(ROOT.TColor.GetColor("#E9C29A"))
+    background.SetFillStyle(1001)
     background.SetLineColor(ROOT.TColor.GetColor("#8A5D40"))
     background.SetLineWidth(1)
     signal.SetFillColor(ROOT.TColor.GetColor("#B8D8EA"))
@@ -177,6 +177,16 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
     stack.Draw("HIST")
     stack.SetMinimum(0.5 if log_y else 0.0)
 
+    # Draw hatching only on the *background portion* of the stack.  This is
+    # a visual overlay, not another THStack component or counted histogram.
+    background_hatch = background.Clone(f"background_hatch_{spec.number}")
+    background_hatch.SetDirectory(0)
+    background_hatch.SetFillColor(ROOT.TColor.GetColor("#986745"))
+    background_hatch.SetFillStyle(3645)  # Slightly denser diagonal hatching
+    background_hatch.SetLineColor(ROOT.TColor.GetColor("#8A5D40"))
+    background_hatch.SetLineWidth(1)
+    background_hatch.Draw("HIST SAME")
+
     legend = ROOT.TLegend(0.78, 0.77, 0.98, 0.89)
     legend.SetBorderSize(0)
     legend.SetFillStyle(0)
@@ -190,7 +200,7 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
     }
     particle = particle_names[spec.tree]
     legend.AddEntry(signal, f"true {particle}", "f")
-    legend.AddEntry(background, f"fake {particle}", "f")
+    legend.AddEntry(background_hatch, f"fake {particle}", "f")
     legend.Draw()
 
     output = outdir / f"{spec.number:02d}_{spec.tree}_{spec.variable}_stack.png"
