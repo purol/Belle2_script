@@ -85,7 +85,7 @@ def build_plots():
     ]
 
     tracking_binning = {
-        "dr": (100, 0.0, 1.0, "dr [cm]"),
+        "dr": (100, -1.0, 1.0, "dr [cm]"),
         "dz": (100, -5.0, 5.0, "dz [cm]"),
         "nCDCHits": (80, -0.5, 79.5, "N CDC hits"),
         "nPXDHits": (6, -0.5, 5.5, "N PXD hits"),
@@ -135,6 +135,63 @@ def book_histograms(dataframes, plots):
         )
         booked[spec.number] = (h_bkg, h_sig)
     return booked
+
+
+def choose_legend_position(background, signal, log_y):
+    """Pick an in-frame corner/side position with the least histogram overlap.
+
+    Work only with already-filled bins: no additional RDataFrame event loop.
+    Approximate the displayed stack height, including its logarithmic y scale,
+    and minimize the area hidden by the legend's bounding rectangle.
+    """
+    nbins = background.GetNbinsX()
+    totals = [background.GetBinContent(i) + signal.GetBinContent(i)
+              for i in range(1, nbins + 1)]
+    peak = max(totals, default=0.0)
+    if peak <= 0.0:
+        return 0.160, 0.745
+
+    x_left, x_right = 0.13, 0.93  # Canvas left/right margins
+    y_bottom, y_top = 0.12, 0.90  # Canvas bottom/top margins
+    legend_width, legend_height = 0.265, 0.130
+    # The legend stays fully inside the plot frame; prefer upper positions
+    # when scores tie, since those usually interfere least with the data.
+    positions = [
+        (x, y)
+        for y in (0.745, 0.535, 0.325, 0.160)
+        for x in (0.160, 0.655)
+    ]
+
+    if log_y:
+        minimum, maximum = 0.5, max(1.0, peak * 1.6)
+        log_span = math.log(maximum / minimum)
+        heights = [
+            y_bottom + (y_top - y_bottom)
+            * min(1.0, max(0.0, math.log(max(value, minimum) / minimum)
+                           / log_span))
+            for value in totals
+        ]
+    else:
+        maximum = peak * 1.15
+        heights = [y_bottom + (y_top - y_bottom) * value / maximum
+                   for value in totals]
+
+    bin_width = (x_right - x_left) / nbins
+
+    def overlap_score(position):
+        legend_x, legend_y = position
+        score = 0.0
+        for i, height in enumerate(heights):
+            bx0 = x_left + i * bin_width
+            bx1 = bx0 + bin_width
+            overlap_x = max(0.0, min(bx1, legend_x + legend_width)
+                            - max(bx0, legend_x))
+            overlap_y = max(0.0, min(height, legend_y + legend_height)
+                            - legend_y)
+            score += overlap_x * overlap_y
+        return score
+
+    return min(positions, key=overlap_score)
 
 
 def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
@@ -195,6 +252,7 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
         "kaon": "kaon",
     }
     particle = particle_names[spec.tree]
+    legend_x, legend_y = choose_legend_position(background, signal, log_y)
 
     # A standard TLegend fill sample can show either a solid background or a
     # hatch, but not both at once.  Paint paired NDC paves instead, so the fake
@@ -202,12 +260,12 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
     # Keep references alive through SaveAs/Print for older PyROOT builds.
     legend_primitives = []
     for y, label, fill_color, border_color, is_fake in (
-        (0.854, f"true {particle}", signal.GetFillColor(),
+        (legend_y + 0.096, f"true {particle}", signal.GetFillColor(),
          signal.GetLineColor(), False),
-        (0.793, f"fake {particle}", background.GetFillColor(),
+        (legend_y + 0.035, f"fake {particle}", background.GetFillColor(),
          background.GetLineColor(), True),
     ):
-        x1, x2, half_height = 0.180, 0.226, 0.015
+        x1, x2, half_height = legend_x + 0.017, legend_x + 0.063, 0.015
         swatch = ROOT.TPave(x1, y - half_height, x2, y + half_height, 0, "NDC")
         swatch.SetFillColor(fill_color)
         swatch.SetFillStyle(1001)
@@ -227,11 +285,11 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
             swatch_hatch.Draw()
             legend_primitives.append(swatch_hatch)
 
-        label_text = ROOT.TLatex(0.237, y, label)
+        label_text = ROOT.TLatex(legend_x + 0.074, y, label)
         label_text.SetNDC(True)
         label_text.SetTextAlign(12)
         label_text.SetTextFont(42)
-        label_text.SetTextSize(0.033)
+        label_text.SetTextSize(0.039)
         label_text.Draw()
         legend_primitives.append(label_text)
 
