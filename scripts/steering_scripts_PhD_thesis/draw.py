@@ -20,6 +20,7 @@ import ROOT
 
 ROOT.gROOT.SetBatch(True)
 ROOT.gStyle.SetOptStat(0)
+ROOT.gStyle.SetHatchesLineWidth(1)
 
 
 @dataclass(frozen=True)
@@ -52,11 +53,13 @@ def build_plots():
         PlotSpec(1, "pizero", "InvM", all_of(phi_window, angle_cut, momentum_cut),
                  100, 0.08, 0.20, "M_{#gamma#gamma} [GeV/c^{2}]"),
         PlotSpec(2, "pizero", phi, all_of(mass_window, angle_cut, momentum_cut),
-                 100, -math.pi, math.pi, "#Delta#phi [rad]"),
+                 100, -math.pi / 2.0, math.pi / 2.0,
+                 "#Delta#phi_{#gamma#gamma} [rad]"),
         PlotSpec(3, "pizero", angle, all_of(mass_window, phi_window, momentum_cut),
-                 100, 0.0, math.pi, "Daughter opening angle [rad]"),
+                 100, 0.0, math.pi / 2.0,
+                 "#Delta#theta_{#gamma#gamma} [rad]"),
         PlotSpec(4, "pizero", "p", all_of(mass_window, phi_window, angle_cut),
-                 100, 0.0, 5.0, "#pi^{0} momentum [GeV/c]"),
+                 100, 0.0, 3.0, "p_{#pi^{0}} [GeV/c]"),
     ]
 
     gamma_energy = (
@@ -69,23 +72,23 @@ def build_plots():
 
     plots += [
         PlotSpec(5, "gamma", "clusterNHits", all_of(gamma_theta, gamma_energy),
-                 100, -0.5, 99.5, "Cluster N Hits"),
+                 100, -0.5, 20.5, "clusterNHits"),
         PlotSpec(6, "gamma", "theta", all_of(gamma_hits, gamma_energy),
-                 100, 0.0, math.pi, "Cluster #theta [rad]"),
+                 100, 0.0, math.pi, "#theta [rad]"),
         PlotSpec(7, "gamma", "E", all_of(gamma_hits, gamma_theta),
-                 100, 0.0, 3.0, "Cluster energy [GeV]"),
+                 100, 0.0, 2.0, "E [GeV]"),
         PlotSpec(8, "KSzero", "M", "significanceOfDistance > 50",
-                 100, 0.45, 0.55, "M_{K_{S}^{0}} [GeV/c^{2}]"),
+                 100, 0.45, 0.55, "Mass of K_{S}^{0} [GeV/c^{2}]"),
         PlotSpec(9, "KSzero", "significanceOfDistance",
                  all_of("M > 0.4876", "M < 0.5076"),
-                 100, 0.0, 500.0, "Significance of distance"),
+                 100, 0.0, 500.0, "significanceOfDistance"),
     ]
 
     tracking_binning = {
-        "dr": (100, -1.0, 1.0, "dr [cm]"),
+        "dr": (100, 0.0, 1.0, "dr [cm]"),
         "dz": (100, -5.0, 5.0, "dz [cm]"),
-        "nCDCHits": (80, -0.5, 79.5, "N CDC hits"),
-        "nPXDHits": (6, -0.5, 5.5, "N PXD hits"),
+        "nCDCHits": (80, -0.5, 79.5, "NCDChits"),
+        "nPXDHits": (6, -0.5, 5.5, "NPXDhits"),
     }
 
     for tree_name, pid, first_number in (
@@ -134,6 +137,63 @@ def book_histograms(dataframes, plots):
     return booked
 
 
+def choose_legend_position(background, signal, log_y):
+    """Pick an in-frame corner/side position with the least histogram overlap.
+
+    Work only with already-filled bins: no additional RDataFrame event loop.
+    Approximate the displayed stack height, including its logarithmic y scale,
+    and minimize the area hidden by the legend's bounding rectangle.
+    """
+    nbins = background.GetNbinsX()
+    totals = [background.GetBinContent(i) + signal.GetBinContent(i)
+              for i in range(1, nbins + 1)]
+    peak = max(totals, default=0.0)
+    if peak <= 0.0:
+        return 0.160, 0.745
+
+    x_left, x_right = 0.13, 0.93  # Canvas left/right margins
+    y_bottom, y_top = 0.12, 0.90  # Canvas bottom/top margins
+    legend_width, legend_height = 0.265, 0.130
+    # The legend stays fully inside the plot frame; prefer upper positions
+    # when scores tie, since those usually interfere least with the data.
+    positions = [
+        (x, y)
+        for y in (0.745, 0.535, 0.325, 0.160)
+        for x in (0.160, 0.655)
+    ]
+
+    if log_y:
+        minimum, maximum = 0.5, max(1.0, peak * 1.6)
+        log_span = math.log(maximum / minimum)
+        heights = [
+            y_bottom + (y_top - y_bottom)
+            * min(1.0, max(0.0, math.log(max(value, minimum) / minimum)
+                           / log_span))
+            for value in totals
+        ]
+    else:
+        maximum = peak * 1.15
+        heights = [y_bottom + (y_top - y_bottom) * value / maximum
+                   for value in totals]
+
+    bin_width = (x_right - x_left) / nbins
+
+    def overlap_score(position):
+        legend_x, legend_y = position
+        score = 0.0
+        for i, height in enumerate(heights):
+            bx0 = x_left + i * bin_width
+            bx1 = bx0 + bin_width
+            overlap_x = max(0.0, min(bx1, legend_x + legend_width)
+                            - max(bx0, legend_x))
+            overlap_y = max(0.0, min(height, legend_y + legend_height)
+                            - legend_y)
+            score += overlap_x * overlap_y
+        return score
+
+    return min(positions, key=overlap_score)
+
+
 def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
     # All actions are already booked. The first GetValue triggers the event
     # loop for this TTree and fills every booked histogram on that dataframe.
@@ -142,29 +202,96 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
     n_background = int(background.GetEntries())
     n_signal = int(signal.GetEntries())
 
-    background.SetFillColor(ROOT.kBlue - 9)
-    background.SetLineColor(ROOT.kBlue + 1)
-    signal.SetFillColor(ROOT.kRed - 9)
-    signal.SetLineColor(ROOT.kRed + 1)
+    # Use a pale solid base for both components so hatching leaves no white gaps.
+    # A second, patterned copy of the background will be overlaid after stacking.
+    background.SetFillColor(ROOT.TColor.GetColor("#E9C29A"))
+    background.SetFillStyle(1001)
+    background.SetLineColor(ROOT.TColor.GetColor("#8A5D40"))
+    background.SetLineWidth(1)
+    signal.SetFillColor(ROOT.TColor.GetColor("#B8D8EA"))
+    signal.SetFillStyle(1001)  # Solid pastel blue
+    signal.SetLineColor(ROOT.TColor.GetColor("#376586"))
+    signal.SetLineWidth(1)
 
     stack = ROOT.THStack(
-        f"stack_{spec.number}", f";{spec.xlabel};Entries / bin"
+        f"stack_{spec.number}", f";{spec.xlabel};Arbitrary units"
     )
     stack.Add(background)
     stack.Add(signal)
 
-    canvas = ROOT.TCanvas(f"canvas_{spec.number}", "", 800, 600)
+    canvas = ROOT.TCanvas(f"canvas_{spec.number}", "", 920, 600)
     canvas.SetLeftMargin(0.13)
     canvas.SetBottomMargin(0.12)
+    canvas.SetRightMargin(0.07)
+    canvas.SetTicks(1, 1)
+    log_y = (
+        (spec.tree == "KSzero" and spec.variable == "significanceOfDistance")
+        or (spec.tree in ("pion", "kaon") and
+            spec.variable in ("dr", "dz", "pionID", "kaonID"))
+    )
+    if log_y:
+        canvas.SetLogy()
     stack.Draw("HIST")
-    stack.SetMinimum(0.0)
+    stack.SetMinimum(0.5 if log_y else 0.0)
 
-    legend = ROOT.TLegend(0.62, 0.75, 0.88, 0.88)
-    legend.SetBorderSize(0)
-    legend.SetFillStyle(0)
-    legend.AddEntry(background, f"Background ({n_background})", "f")
-    legend.AddEntry(signal, f"Signal ({n_signal})", "f")
-    legend.Draw()
+    # Draw hatching only on the *background portion* of the stack.  This is
+    # a visual overlay, not another THStack component or counted histogram.
+    background_hatch = background.Clone(f"background_hatch_{spec.number}")
+    background_hatch.SetDirectory(0)
+    background_hatch.SetFillColor(ROOT.TColor.GetColor("#986745"))
+    background_hatch.SetFillStyle(3645)  # Slightly denser diagonal hatching
+    background_hatch.SetLineColor(ROOT.TColor.GetColor("#8A5D40"))
+    background_hatch.SetLineWidth(1)
+    background_hatch.Draw("HIST SAME")
+
+    particle_names = {
+        "pizero": "#pi^{0}",
+        "gamma": "#gamma",
+        "KSzero": "K_{S}^{0}",
+        "pion": "pion",
+        "kaon": "kaon",
+    }
+    particle = particle_names[spec.tree]
+    legend_x, legend_y = choose_legend_position(background, signal, log_y)
+
+    # A standard TLegend fill sample can show either a solid background or a
+    # hatch, but not both at once.  Paint paired NDC paves instead, so the fake
+    # legend swatch looks exactly like its filled + hatched histogram segment.
+    # Keep references alive through SaveAs/Print for older PyROOT builds.
+    legend_primitives = []
+    for y, label, fill_color, border_color, is_fake in (
+        (legend_y + 0.096, f"true {particle}", signal.GetFillColor(),
+         signal.GetLineColor(), False),
+        (legend_y + 0.035, f"fake {particle}", background.GetFillColor(),
+         background.GetLineColor(), True),
+    ):
+        x1, x2, half_height = legend_x + 0.017, legend_x + 0.063, 0.015
+        swatch = ROOT.TPave(x1, y - half_height, x2, y + half_height, 0, "NDC")
+        swatch.SetFillColor(fill_color)
+        swatch.SetFillStyle(1001)
+        swatch.SetLineColor(border_color)
+        swatch.SetLineWidth(1)
+        swatch.Draw()
+        legend_primitives.append(swatch)
+
+        if is_fake:
+            swatch_hatch = ROOT.TPave(
+                x1, y - half_height, x2, y + half_height, 0, "NDC"
+            )
+            swatch_hatch.SetFillColor(background_hatch.GetFillColor())
+            swatch_hatch.SetFillStyle(3645)
+            swatch_hatch.SetLineColor(border_color)
+            swatch_hatch.SetLineWidth(1)
+            swatch_hatch.Draw()
+            legend_primitives.append(swatch_hatch)
+
+        label_text = ROOT.TLatex(legend_x + 0.074, y, label)
+        label_text.SetNDC(True)
+        label_text.SetTextAlign(12)
+        label_text.SetTextFont(42)
+        label_text.SetTextSize(0.039)
+        label_text.Draw()
+        legend_primitives.append(label_text)
 
     output = outdir / f"{spec.number:02d}_{spec.tree}_{spec.variable}_stack.png"
     canvas.SaveAs(str(output))
