@@ -91,7 +91,7 @@ def main():
             f"$\\pm${row.data_MC_ratio_err:.2f}"
         )
 
-    fig, ax = plt.subplots(figsize=(8.5, 6.0), dpi=120)
+    fig, ax = plt.subplots(figsize=(12.0, 6.0), dpi=120)
 
     sns.heatmap(
         ratio_array,
@@ -103,6 +103,7 @@ def main():
         cmap="plasma",
         cbar_kws={"fraction": 0.05, "label": ""},
         ax=ax,
+        annot_kws={"fontsize": 15}
     )
 
     # Heatmap cells are centered at 0.5, 1.5, ...; boundary labels are placed
@@ -111,6 +112,9 @@ def main():
     ax.set_xticklabels([f"{value:g}" for value in cos_theta_edges])
     ax.set_yticks(np.arange(len(p_edges)))
     ax.set_yticklabels([f"{value:g}" for value in p_edges], rotation=0)
+
+    ax.tick_params(axis="both", labelsize=15)
+    ax.collections[0].colorbar.ax.tick_params(labelsize=15)
 
     ax.set_xlabel(r"$\cos\theta$ bins", fontsize=14)
     ax.set_ylabel(r"$p$ bins", fontsize=14)
