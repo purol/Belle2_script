@@ -4,7 +4,7 @@ from matplotlib.transforms import ScaledTranslation
 
 # Define a function to plot and save a dataset
 def plot_and_save_data(x, y1, yerr1, y2, yerr2, filename, y1_label, y2_label, title):
-    fig, ax = plt.subplots(figsize=(8, 7))
+    fig, ax = plt.subplots(figsize=(8, 5))
 
     trans1 = ax.transData + ScaledTranslation(-5/72, 0, fig.dpi_scale_trans)
     trans2 = ax.transData + ScaledTranslation(+5/72, 0, fig.dpi_scale_trans)
@@ -14,7 +14,7 @@ def plot_and_save_data(x, y1, yerr1, y2, yerr2, filename, y1_label, y2_label, ti
     y1_top = [y + err for y, err in zip(y1, yerr1)]
     y2_top = [y + err for y, err in zip(y2, yerr2)]
     y_max = max(max(y1_top), max(y2_top))
-    ax.set_ylim(-1, y_max * 1.2)
+    ax.set_ylim(-1, y_max * 1.4)
     ax.set_xlim(-0.5, len(x) - 0.5)
     
     # Rotate the x-axis labels by 45 degrees
@@ -27,7 +27,7 @@ def plot_and_save_data(x, y1, yerr1, y2, yerr2, filename, y1_label, y2_label, ti
 
     ax.legend(loc='best', fontsize=15)
 
-    ax.text(0.02, 0.95, title, transform=ax.transAxes, color='black', fontsize=16)
+    ax.text(0.02, 0.92, title, transform=ax.transAxes, color='black', fontsize=16)
 
     plt.tight_layout()
 
