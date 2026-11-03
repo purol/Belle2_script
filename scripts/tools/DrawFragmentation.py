@@ -97,11 +97,11 @@ yerr2_4 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 y2_5 = [9.91, 4.97, 10.80, 13.22, 6.59, 16.09, 16.46, 16.80, 5.16] # sigal MC [2.4, inf]
 yerr2_5 = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-plot_noJpsi_and_save_data(x, y2_4, yerr2_4, "fraction_1.1_1.15.png", r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$1.1 < M_{X_{s}} < 1.15$ GeV')
-plot_and_save_data(x, y1_1, yerr1_1, y2_1, yerr2_1, "fraction_1.15_1.5.png", r'$B \rightarrow X_{s} \gamma$ [bn1480_v4]', r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$1.15 < M_{X_{s}} < 1.5$ GeV')
-plot_and_save_data(x, y1_2, yerr1_2, y2_2, yerr2_2, "fraction_1.5_2.0.png", r'$B \rightarrow X_{s} \gamma$ [bn1480_v4]', r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$1.5 < M_{X_{s}} < 2.0$ GeV')
-plot_and_save_data(x, y1_3, yerr1_3, y2_3, yerr2_3, "fraction_2.0_2.4.png", r'$B \rightarrow X_{s} \gamma$ [bn1480_v4]', r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$2.0 < M_{X_{s}} < 2.4$ GeV')
-plot_noJpsi_and_save_data(x, y2_5, yerr2_5, "fraction_2.4.png", r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$2.4$ GeV $< M_{X_{s}}$')
+plot_noJpsi_and_save_data(x, y2_4, yerr2_4, "fraction_1.1_1.15.pdf", r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$1.1 < M_{X_{s}} < 1.15$ GeV')
+plot_and_save_data(x, y1_1, yerr1_1, y2_1, yerr2_1, "fraction_1.15_1.5.pdf", r'$B \rightarrow X_{s} \gamma$ [bn1480_v4]', r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$1.15 < M_{X_{s}} < 1.5$ GeV')
+plot_and_save_data(x, y1_2, yerr1_2, y2_2, yerr2_2, "fraction_1.5_2.0.pdf", r'$B \rightarrow X_{s} \gamma$ [bn1480_v4]', r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$1.5 < M_{X_{s}} < 2.0$ GeV')
+plot_and_save_data(x, y1_3, yerr1_3, y2_3, yerr2_3, "fraction_2.0_2.4.pdf", r'$B \rightarrow X_{s} \gamma$ [bn1480_v4]', r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$2.0 < M_{X_{s}} < 2.4$ GeV')
+plot_noJpsi_and_save_data(x, y2_5, yerr2_5, "fraction_2.4.pdf", r'$B \rightarrow X_{s} \nu \bar{\nu}$ signal MC', r'$2.4$ GeV $< M_{X_{s}}$')
 
 print_ratio(y1_1, yerr1_1, y2_1, "weight_fragmentation_1.15_1.5.txt")
 print_ratio(y1_2, yerr1_2, y2_2, "weight_fragmentation_1.5_2.0.txt")
