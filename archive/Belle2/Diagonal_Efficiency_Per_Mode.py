@@ -119,7 +119,7 @@ plt.grid(True, axis = "x", linestyle="--")
 ax.tick_params(axis='x', labelsize=16)  # Change font size of x-axis tick labels
 ax.tick_params(axis='y', labelsize=16)  # Change font size of y-axis tick labels
 
-plt.savefig("Diagonal_Efficiency.png", bbox_inches='tight')
+plt.savefig("Diagonal_Efficiency.pdf", bbox_inches='tight')
 
 # draw cross-feed matrix
 reco_list.reverse()
@@ -132,4 +132,4 @@ ax.set_xticklabels(ax.get_xticklabels(), rotation=45, fontsize = 18, horizontala
 ax.set_yticklabels(ax.get_yticklabels(), fontsize = 18)
 plt.xlabel(r"MC decay modes", fontsize=25)
 plt.ylabel(r"Reconstructed decay modes", fontsize=25)
-plt.savefig("cross_feed_matrix.png", bbox_inches='tight')
+plt.savefig("cross_feed_matrix.pdf", bbox_inches='tight')
