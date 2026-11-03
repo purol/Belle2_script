@@ -1,6 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+plt.rcParams.update({
+    "font.size": 15,
+    "axes.titlesize": 15,
+    "axes.labelsize": 15,
+    "xtick.labelsize": 15,
+    "ytick.labelsize": 15,
+    "legend.fontsize": 15,
+})
+
 # ========================= for B plus ========================= 
 labels = [
     r"All", r"$\bar{D}^0\pi^+$", r"$\bar{D}^0\pi^+\pi^0$", 

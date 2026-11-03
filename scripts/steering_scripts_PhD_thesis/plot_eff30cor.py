@@ -91,7 +91,7 @@ def main():
             f"$\\pm${row.data_MC_ratio_err:.2f}"
         )
 
-    fig, ax = plt.subplots(figsize=(12.0, 6.0), dpi=120)
+    fig, ax = plt.subplots(figsize=(11.0, 6.0), dpi=120)
 
     sns.heatmap(
         ratio_array,
@@ -116,9 +116,9 @@ def main():
     ax.tick_params(axis="both", labelsize=15)
     ax.collections[0].colorbar.ax.tick_params(labelsize=15)
 
-    ax.set_xlabel(r"$\cos\theta$ bins", fontsize=14)
-    ax.set_ylabel(r"$p$ bins", fontsize=14)
-    ax.set_title(r"$\pi^{0}$ Efficiency Data/MC Ratio")
+    ax.set_xlabel(r"$\cos\theta$ bins", fontsize=15)
+    ax.set_ylabel(r"$p$ bins", fontsize=15)
+    ax.set_title(r"$\pi^{0}$ Efficiency Data/MC Ratio", fontsize=15)
 
     fig.tight_layout()
     fig.savefig(output_path, bbox_inches="tight")
