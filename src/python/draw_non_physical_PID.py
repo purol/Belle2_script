@@ -1,6 +1,15 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+plt.rcParams.update({
+    'font.size': 13,          # 기본 글자 크기
+    'axes.titlesize': 13,     # 제목
+    'axes.labelsize': 13,     # x축, y축 라벨
+    'xtick.labelsize': 13,    # x축 눈금 숫자
+    'ytick.labelsize': 13,    # y축 눈금 숫자
+    'legend.fontsize': 13,    # 범례
+})
+
 # Data
 x = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
 x_error = np.array([0.500000, 0.500000, 0.500000, 0.500000, 0.500000, 0.500000, 0.500000, 0.500000, 0.500000, 0.500000, 0.500000, 0.500000, 0.500000, 0.500000, 0.500000])
@@ -13,7 +22,7 @@ offset = 0.0
 # Plotting the histograms as points with offset and x-error bars
 plt.errorbar(x, y1, xerr=x_error, yerr=y1_error, fmt='bo', label='', capsize=5, elinewidth=2, alpha=0.7)
 
-plt.title(r'ratio of event with unphysical PID correction')
+plt.title(r'ratio of event with invalid or undefined PID correction')
 plt.xlabel(r'bin index')
 plt.ylabel('the ratio of event')
 
