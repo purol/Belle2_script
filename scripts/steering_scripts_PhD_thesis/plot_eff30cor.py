@@ -22,8 +22,8 @@ def parse_args():
     parser.add_argument(
         "-o",
         "--output",
-        default="eff30cor.png",
-        help="Output image file (default: eff30cor.png)",
+        default="eff30cor.pdf",
+        help="Output image file (default: eff30cor.pdf)",
     )
     return parser.parse_args()
 
