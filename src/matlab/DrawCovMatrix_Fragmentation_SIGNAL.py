@@ -9,6 +9,15 @@ import matplotlib.pyplot as plt
 
 from matplotlib.ticker import FixedLocator
 
+# Fonts are enlarged to remain readable when scaled to thesis column width.
+plt.rcParams.update({
+    "font.size": 26,
+    "xtick.labelsize": 26,
+    "ytick.labelsize": 26,
+    "axes.labelsize": 26,
+    "axes.titlesize": 26,
+})
+
 plt.figure(figsize=(6.4 * 1.6, 4.8 * 1.6))
 Nbins = 15
 
@@ -25,15 +34,23 @@ ar = np.delete(ar, np.s_[:Nbins * 4], axis = 1) # select SIGNAL only
 ax = sn.heatmap(ar, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-1.0, vmax=1.0)
 ax.tick_params(left=False, bottom=False)
 
-labels = ["Signal_3"]
-ticks = [ i * Nbins for i in range(2)]
-ax.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
-ax.set_yticklabels(labels, rotation=90, va="center")
-ax.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
-ax.set_xticklabels(labels, rotation=0)
+# Show selected bin indices at the centers of their cells.
+bin_labels = np.array([1, 5, 10, 15])
+positions = bin_labels - 0.5
+ax.set_xticks(positions)
+ax.set_yticks(positions)
+ax.set_xticklabels(bin_labels, rotation=0)
+ax.set_yticklabels(bin_labels, rotation=0)
+ax.set_xlabel("Bin index")
+ax.set_ylabel("Bin index")
+ax.set_title(r"$S_{3}$")
 
 #plt.show()
-plt.savefig('Fragmentation_corr_all.png')
+cbar = ax.collections[0].colorbar
+cbar.set_label("Correlation coefficient")
+cbar.set_ticks([-1.0, -0.5, 0.0, 0.5, 1.0])
+plt.tight_layout()
+plt.savefig('Fragmentation_corr_all.pdf', dpi=300, bbox_inches="tight")
 
 plt.clf()
 
@@ -43,14 +60,22 @@ ar_p = np.delete(ar_p, np.s_[:Nbins * 4], axis = 1) # select SIGNAL only
 ax_p = sn.heatmap(ar_p, cmap="viridis", xticklabels=[], yticklabels=[], vmin=-1.0, vmax=1.0)
 ax_p.tick_params(left=False, bottom=False)
 
-labels = ["Signal_3"]
-ticks = [ i * Nbins for i in range(2)]
-ax_p.yaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
-ax_p.set_yticklabels(labels, rotation=90, va="center")
-ax_p.xaxis.set_major_locator(FixedLocator([(t0 + t1) / 2 for t0, t1 in zip(ticks[:-1], ticks[1:])]))
-ax_p.set_xticklabels(labels, rotation=0)
+# Show selected bin indices at the centers of their cells.
+bin_labels = np.array([1, 5, 10, 15])
+positions = bin_labels - 0.5
+ax_p.set_xticks(positions)
+ax_p.set_yticks(positions)
+ax_p.set_xticklabels(bin_labels, rotation=0)
+ax_p.set_yticklabels(bin_labels, rotation=0)
+ax_p.set_xlabel("Bin index")
+ax_p.set_ylabel("Bin index")
+ax_p.set_title(r"$S_{3}$")
 
 #plt.show()
-plt.savefig('Fragmentation_corr_partial.png')
+cbar = ax_p.collections[0].colorbar
+cbar.set_label("Correlation coefficient")
+cbar.set_ticks([-1.0, -0.5, 0.0, 0.5, 1.0])
+plt.tight_layout()
+plt.savefig('Fragmentation_corr_partial.pdf', dpi=300, bbox_inches="tight")
 
 plt.clf()
