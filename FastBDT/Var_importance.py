@@ -67,4 +67,4 @@ plt.xlabel("Variable Importance")
 plt.ylabel("Variable")
 plt.grid(True, axis = "x", linestyle="--")
 
-plt.savefig("Var_importance.png", bbox_inches='tight')
+plt.savefig("Var_importance.pdf", bbox_inches='tight')

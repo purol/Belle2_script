@@ -94,7 +94,7 @@ for i in range(0,30):
         if Efficiency_diagonal[j] != 0:
             cross_feed[i][j] = (Efficiency[i][j] / Efficiency_diagonal[j])
         else:
-            cross_feed[i][j] = 0
+            cross_feed[i][j] = np.nan
 
 
 print(Efficiency_diagonal[0])
@@ -119,7 +119,7 @@ plt.grid(True, axis = "x", linestyle="--")
 ax.tick_params(axis='x', labelsize=16)  # Change font size of x-axis tick labels
 ax.tick_params(axis='y', labelsize=16)  # Change font size of y-axis tick labels
 
-plt.savefig("Diagonal_Efficiency.png", bbox_inches='tight')
+plt.savefig("Diagonal_Efficiency.pdf", bbox_inches='tight')
 
 # draw cross-feed matrix
 reco_list.reverse()
@@ -128,8 +128,9 @@ df_cm = pd.DataFrame(cross_feed, index = [i for i in reco_list], columns = [i fo
 
 plt.figure(figsize = (36,24))
 ax = sn.heatmap(df_cm, annot=True, cmap="YlGnBu", fmt='.1e')
+ax.set_facecolor("lightgray")
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45, fontsize = 18, horizontalalignment='right')
 ax.set_yticklabels(ax.get_yticklabels(), fontsize = 18)
 plt.xlabel(r"MC decay modes", fontsize=25)
 plt.ylabel(r"Reconstructed decay modes", fontsize=25)
-plt.savefig("cross_feed_matrix.png", bbox_inches='tight')
+plt.savefig("cross_feed_matrix.pdf", bbox_inches='tight')

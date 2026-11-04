@@ -15,7 +15,7 @@ from matplotlib.patches import Rectangle
 import math
 
 plot_title = 'e$^{+}$ ratio table for cut "pionID>0.6"'
-fig, ax = plt.subplots(1, 1, figsize=(7, 5), dpi=120)
+fig, ax = plt.subplots(1, 1, figsize=(10, 5), dpi=120)
 
 df = pd.read_csv("./pionID_efficiency_electron.csv")
 
@@ -63,15 +63,20 @@ for charge, p_min, p_max, theta_min, theta_max, data_MC_ratio, data_MC_uncertain
 plot_args = {'linewidths': .5, 'fmt': '', 'cbar_kws': {'fraction': .05}, 'vmin': 0, 'vmax': 1, 'cmap': 'plasma'}
 
 
-sns.heatmap(arr, annot=annot_labels, ax=ax, **plot_args)
+sns.heatmap(arr, annot=annot_labels, annot_kws={"fontsize": 16}, ax=ax, **plot_args)
 
 ax.set_xticks(np.arange(0, len(x_label)))
-ax.set_xticklabels(np.round(x_label, 4))
-ax.set_yticks(np.arange(0, len(y_label)))
-ax.set_yticklabels(np.round(y_label, 4), rotation=0)
-ax.set_xlabel(f'{x_label_name} bins', fontsize=14)
-ax.set_ylabel(f'{y_label_name} bins', fontsize=14)
+ax.set_xticklabels(np.round(x_label, 4), fontsize=14)
 
-ax.set_title(plot_title)
+ax.set_yticks(np.arange(0, len(y_label)))
+ax.set_yticklabels(np.round(y_label, 4), rotation=0, fontsize=14)
+
+ax.set_xlabel(r"$\theta$ [rad]", fontsize=15)
+ax.set_ylabel(r"$p$ [GeV/$c$]", fontsize=15)
+ax.set_title(plot_title, fontsize=16)
+
+ax.collections[0].colorbar.ax.tick_params(labelsize=14)
+
+ax.set_title(plot_title, fontsize=15)
 
 plt.savefig('E_plus_pionID.png')
