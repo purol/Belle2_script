@@ -19,14 +19,14 @@ def plot_and_save_data(x, y1, yerr1, y2, yerr2, filename, y1_label, y2_label, ti
     
     # Rotate the x-axis labels by 45 degrees
     ax.set_xticks(x)
-    ax.set_xticklabels(x, rotation=30, ha='right', fontsize=14)
-    ax.tick_params(axis='y', labelsize=14)
+    ax.set_xticklabels(x, rotation=30, ha='right', fontsize=16)
+    ax.tick_params(axis='y', labelsize=16)
 
     # Add a title and labels for the axes
-    ax.set_xlabel('Decay Mode', fontsize=14)
-    ax.set_ylabel('Fraction at 9 decays[%]', fontsize=14)
+    ax.set_xlabel('Decay Mode', fontsize=16)
+    ax.set_ylabel('Fraction at 9 decays[%]', fontsize=16)
 
-    ax.legend(loc='best', fontsize=15)
+    ax.legend(loc='best', fontsize=16)
 
     ax.text(0.02, 0.92, title, transform=ax.transAxes, color='black', fontsize=16)
 
@@ -49,14 +49,14 @@ def plot_noJpsi_and_save_data(x, y1, yerr1, filename, y1_label, title):
     
     # Rotate the x-axis labels by 45 degrees
     ax.set_xticks(x)
-    ax.set_xticklabels(x, rotation=30, ha='right', fontsize=14)
+    ax.set_xticklabels(x, rotation=30, ha='right', fontsize=16)
     ax.tick_params(axis='y', labelsize=14)
 
     # Add a title and labels for the axes
-    ax.set_xlabel('Decay Mode', fontsize=14)
-    ax.set_ylabel('Fraction at 9 decays[%]', fontsize=14)
+    ax.set_xlabel('Decay Mode', fontsize=16)
+    ax.set_ylabel('Fraction at 9 decays[%]', fontsize=16)
 
-    ax.legend(loc='best', fontsize=15)
+    ax.legend(loc='best', fontsize=16)
 
     ax.text(0.02, 0.95, title, transform=ax.transAxes, color='black', fontsize=16)
 
