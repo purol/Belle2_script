@@ -638,12 +638,12 @@ void THStack_plot_offres() {
             TPaveText* pt = new TPaveText(0.195, 0.90, 0.96, 1.0, "NDC NB");
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
-            pt->SetTextSize(0.06);
+            pt->SetTextSize(0.065);
             pt->AddText(("MC scaled to data, Data/MC= " + to_string_precision(CAL)).c_str());
             pt->Draw();
         }
         else {
-            TPaveText* pt = new TPaveText(0.12, 0.90, 0.96, 1.0, "NDC NB");
+            TPaveText* pt = new TPaveText(0.06, 0.90, 0.98, 1.0, "NDC NB");
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
             // Fit the existing normalization text on one line.
