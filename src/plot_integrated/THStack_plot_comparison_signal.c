@@ -409,13 +409,13 @@ void THStack_plot_comparison_signal() {
         MC15rd_hist[k]->GetYaxis()->SetLabelSize(0.065);
 
         // Axis titles
-        MC15rd_hist[k]->GetXaxis()->SetTitleSize(0.065);
+        MC15rd_hist[k]->GetXaxis()->SetTitleSize(0.055);
         MC15rd_hist[k]->GetYaxis()->SetTitleSize(0.065);
 
         MC15rd_hist[k]->GetXaxis()->SetNdivisions(505);
         MC15rd_hist[k]->GetYaxis()->SetNdivisions(505);
 
-        TLegend* legend = gPad->BuildLegend(0.20, 0.78, 0.96, 0.90);
+        TLegend* legend = gPad->BuildLegend(0.16, 0.78, 0.89, 0.90);
         legend->SetNColumns(2);
         legend->SetTextFont(42);
         legend->SetTextSize(0.06);
