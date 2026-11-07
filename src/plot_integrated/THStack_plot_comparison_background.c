@@ -20,19 +20,19 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 
 void THStack_plot_comparison_background() {
 
-    const char* MC15ri_CHG_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHG_analysis/test_v004/final_output";
-    const char* MC15ri_MIX_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/MIX_analysis/test_v004/final_output";
-    const char* MC15ri_UUBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/UUBAR_analysis/test_v004/final_output";
-    const char* MC15ri_DDBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/DDBAR_analysis/test_v004/final_output";
-    const char* MC15ri_SSBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SSBAR_analysis/test_v004/final_output";
-    const char* MC15ri_CHARM_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHARM_analysis/test_v004/final_output";
+    const char* MC15ri_CHG_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Mizuhashi/CHG_analysis/test_v009/final_output_root_after_MVA_Application";
+    const char* MC15ri_MIX_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Mizuhashi/MIX_analysis/test_v009/final_output_root_after_MVA_Application";
+    const char* MC15ri_UUBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Mizuhashi/UUBAR_analysis/test_v009/final_output_root_after_MVA_Application";
+    const char* MC15ri_DDBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Mizuhashi/DDBAR_analysis/test_v009/final_output_root_after_MVA_Application";
+    const char* MC15ri_SSBAR_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Mizuhashi/SSBAR_analysis/test_v009/final_output_root_after_MVA_Application";
+    const char* MC15ri_CHARM_test_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Mizuhashi/CHARM_analysis/test_v009/final_output_root_after_MVA_Application";
 
-    const char* MC15rd_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHG_analysis/validation_v004/final_output";
-    const char* MC15rd_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/MIX_analysis/validation_v004/final_output";
-    const char* MC15rd_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/UUBAR_analysis/validation_v004/final_output";
-    const char* MC15rd_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/DDBAR_analysis/validation_v004/final_output";
-    const char* MC15rd_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SSBAR_analysis/validation_v004/final_output";
-    const char* MC15rd_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHARM_analysis/validation_v004/final_output";
+    const char* MC15rd_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHG_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* MC15rd_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* MC15rd_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* MC15rd_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* MC15rd_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* MC15rd_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application";
 
     std::vector<std::string> variable_names;
     std::vector<std::string> branch_names;
@@ -192,7 +192,6 @@ void THStack_plot_comparison_background() {
     variable_names.push_back("MsquaredBsig_op4"); branch_names.push_back("Upsilon");
     variable_names.push_back("MsquaredBsig_op7"); branch_names.push_back("Upsilon");
     variable_names.push_back("MVA_BB"); branch_names.push_back("Upsilon");
-    variable_names.push_back("bin index"); branch_names.push_back("Upsilon");
 
     Nvar_num = static_cast<int>(variable_names.size());
 
@@ -631,9 +630,13 @@ void THStack_plot_comparison_background() {
         Ratio_hist[k]->Divide(MC15rd_hist[k], MC15ri_hist[k]);
 
         TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+        c_temp->SetLeftMargin(0.21);
+        c_temp->SetRightMargin(0.04);
 
-        TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
-        pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
+        TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.30, 1.0, 1.0);
+        pad1->SetBottomMargin(0.15);
+        pad1->SetLeftMargin(0.21);
+        pad1->SetRightMargin(0.04);
         pad1->SetGridx(); pad1->Draw(); pad1->cd();
 
         gStyle->SetPalette(kPastel);
@@ -644,22 +647,44 @@ void THStack_plot_comparison_background() {
         if (ymax_1 > ymax_2) real_max = ymax_1;
         else real_max = ymax_2;
 
-        MC15rd_hist[k]->SetMaximum(real_max * 1.1);
+        MC15rd_hist[k]->SetMaximum(real_max * 1.4);
 
         MC15ri_hist[k]->SetStats(0);
         MC15rd_hist[k]->SetStats(0);
 
         MC15rd_hist[k]->SetFillColor(4); MC15rd_hist[k]->SetLineColor(4); MC15rd_hist[k]->SetLineWidth(1); MC15rd_hist[k]->SetFillStyle(3002); MC15rd_hist[k]->Draw("e1 Hist");
         MC15ri_hist[k]->SetFillColor(2); MC15ri_hist[k]->SetLineColor(2); MC15ri_hist[k]->SetLineWidth(1); MC15ri_hist[k]->SetFillStyle(3003); MC15ri_hist[k]->Draw("e1 Hist SAME");
-        TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
+
+        // Axis tick labels
+        MC15rd_hist[k]->GetXaxis()->SetLabelSize(0.065);
+        MC15rd_hist[k]->GetYaxis()->SetLabelSize(0.065);
+
+        // Axis titles
+        MC15rd_hist[k]->GetXaxis()->SetTitleSize(0.055);
+        MC15rd_hist[k]->GetYaxis()->SetTitleSize(0.065);
+
+        MC15rd_hist[k]->GetXaxis()->SetNdivisions(505);
+        MC15rd_hist[k]->GetYaxis()->SetNdivisions(505);
+
+        TLegend* legend = gPad->BuildLegend(0.22, 0.78, 0.95, 0.90);
+        legend->SetNColumns(2);
+        legend->SetTextFont(42);
+        legend->SetTextSize(0.05);
+        legend->SetFillStyle(0);
+        legend->SetBorderSize(0);
         legend->SetFillStyle(0); legend->SetLineWidth(0);
-        TPaveText* pt = new TPaveText(0.135, 0.88, 0.6, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC15ri scaled to MC15rd, MC15rd/MC15ri= " + std::to_string(CAL_MC15ri/ CAL_MC15rd)).c_str()); pt->Draw();
+        TPaveText* pt = new TPaveText(0.195, 0.85, 0.91, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText(("MC15ri scaled to MC15rd, MC15rd/MC15ri= " + std::to_string(CAL_MC15ri/ CAL_MC15rd)).c_str()); pt->Draw();
 
         c_temp->cd();
-        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
+        pad2->SetBottomMargin(0.15);
+        pad2->SetLeftMargin(0.21);
+        pad2->SetRightMargin(0.04);
+        pad2->SetGridx(); pad2->Draw(); pad2->cd();
         Ratio_hist[k]->SetMinimum(0.5); Ratio_hist[k]->SetMaximum(1.5); Ratio_hist[k]->SetLineWidth(2);
         Ratio_hist[k]->GetYaxis()->SetTitleSize(0.08); Ratio_hist[k]->GetYaxis()->SetTitleOffset(0.5);
-        Ratio_hist[k]->GetXaxis()->SetLabelSize(0.08); Ratio_hist[k]->GetYaxis()->SetLabelSize(0.08);
+        Ratio_hist[k]->GetXaxis()->SetLabelSize(0.12); Ratio_hist[k]->GetYaxis()->SetLabelSize(0.12); Ratio_hist[k]->GetYaxis()->SetTitleSize(0.12);
+        Ratio_hist[k]->GetXaxis()->SetNdivisions(505); Ratio_hist[k]->GetYaxis()->SetNdivisions(504, kFALSE);
         Ratio_hist[k]->Draw("e0p");
         TLine* line = new TLine(Ratio_hist[k]->GetXaxis()->GetXmin(), 1.0, Ratio_hist[k]->GetXaxis()->GetXmax(), 1.0);
         line->SetLineColor(kRed);
