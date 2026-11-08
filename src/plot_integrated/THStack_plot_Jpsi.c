@@ -656,7 +656,7 @@ void THStack_plot_Jpsi() {
             pt->SetTextAlign(12);
             pt->SetMargin(0);
             // Keep the normalization and event count on one line.
-            pt->SetTextSize(0.035);
+            pt->SetTextSize(0.037);
             pt->AddText(("MC scaled to data, Data/MC= " + to_string_precision(CAL) + ", Data= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
             pt->Draw();
 
@@ -668,7 +668,7 @@ void THStack_plot_Jpsi() {
             pt->SetTextAlign(12);
             pt->SetMargin(0);
             // Keep the normalization and event count on one line.
-            pt->SetTextSize(0.035);
+            pt->SetTextSize(0.037);
             pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + to_string_precision(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs3->GetBinContent(1)) + ", TotalData= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
             pt->Draw();
         }
