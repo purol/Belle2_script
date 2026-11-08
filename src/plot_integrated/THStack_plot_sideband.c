@@ -609,6 +609,9 @@ void THStack_plot_sideband() {
         Stack[k]->GetYaxis()->SetLabelSize(0.065);
         Stack[k]->GetXaxis()->SetNdivisions(505);
         Stack[k]->GetYaxis()->SetNdivisions(505);
+
+        Stack[k]->GetYaxis()->ChangeLabel(-1, -1, 0);
+
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP EX0");
         TPaveText* pt_lumi = new TPaveText(0.22, 0.81, 0.95, 0.89, "NDC NB");
