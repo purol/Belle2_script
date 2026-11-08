@@ -650,26 +650,23 @@ void THStack_plot_Jpsi() {
         legend->SetBorderSize(0);
         legend->SetLineWidth(0);
         if (NormalizeAtEachMXs == false) {
-            TPaveText* pt = new TPaveText(0.09, 0.90, 0.98, 1.0, "NDC NB");
+            TPaveText* pt = new TPaveText(0.06, 0.90, 0.98, 1.0, "NDC NB");
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
-            pt->SetTextAlign(12);
-            pt->SetMargin(0);
             // Keep the normalization and event count on one line.
-            pt->SetTextSize(0.037);
+            pt->SetTextSize(0);
             pt->AddText(("MC scaled to data, Data/MC= " + to_string_precision(CAL) + ", Data= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
             pt->Draw();
 
         }
         else {
-            TPaveText* pt = new TPaveText(0.09, 0.90, 0.98, 1.0, "NDC NB");
+            TPaveText* pt = new TPaveText(0.06, 0.90, 0.98, 1.0, "NDC NB");
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
-            pt->SetTextAlign(12);
-            pt->SetMargin(0);
             // Keep the normalization and event count on one line.
-            pt->SetTextSize(0.037);
-            pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + to_string_precision(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs3->GetBinContent(1)) + ", TotalData= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
+            pt->SetTextSize(0);
+            //pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + to_string_precision(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs3->GetBinContent(1)) + ", TotalData= " + std::to_string((int)Jpsi_data_values[0].size())).c_str());
+            pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + to_string_precision(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs3->GetBinContent(1))).c_str());
             pt->Draw();
         }
 
