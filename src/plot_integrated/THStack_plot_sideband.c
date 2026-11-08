@@ -18,6 +18,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "base.h"
 #include "THStack_plot.h"
 #include "template.h"
+#include "TGaxis.h"
 
 void THStack_plot_sideband() {
 
@@ -543,6 +544,8 @@ void THStack_plot_sideband() {
     printf("llXX: %d\n", (int)llXX_values[0].size());
     printf("hhISR: %d\n", (int)hhISR_values[0].size());
     printf("data: %d\n", (int)Sideband_data_values[0].size());
+
+    TGaxis::SetExponentOffset(-0.09, -0.04, "y");
 
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
         // Scale the histogram if `NormalizeAtEachMXs` is not turned on
