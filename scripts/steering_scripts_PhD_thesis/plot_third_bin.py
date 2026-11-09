@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+# estimated freq from plot
 EVENT_COUNTS = np.arange(8)
 FREQUENCIES = np.array([1, 8, 63, 215, 362, 211, 35, 5])
 
