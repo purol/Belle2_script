@@ -28,7 +28,7 @@ def make_figure():
     }
     with plt.rc_context(style):
         fig, ax = plt.subplots(figsize=FIGURE_SIZE_INCHES)
-        fig.subplots_adjust(left=0.23, right=0.97, bottom=0.23, top=0.97)
+        fig.subplots_adjust(left=0.18, right=0.97, bottom=0.14, top=0.97)
         ax.stairs(
             FREQUENCIES,
             np.arange(-0.5, 8.0, 1.0),
