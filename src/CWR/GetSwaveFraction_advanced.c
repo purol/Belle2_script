@@ -1065,16 +1065,23 @@ void InitNKstar() {
 }
 
 void GetRatioPlot(TH1D* first_, TH1D* second_, const char* name_) {
-    TH1D* Signal_ratio = new TH1D("Signal_ratio", ";;non-official/official", RarityBins, BinMIN, BinMAX);
+    TH1D* Signal_ratio = new TH1D("Signal_ratio", ";;ratio", RarityBins, BinMIN, BinMAX);
 
     Signal_ratio->Divide(first_, second_);
 
     Signal_ratio->SetLineColor(kBlack); Signal_ratio->SetMarkerStyle(21); Signal_ratio->Sumw2(); Signal_ratio->SetStats(0);
 
+    // Pixel-sized fonts keep the lettering consistent between the two pads.
+    // Target approximately 8--10 pt at 0.7\textwidth in the thesis.
+    const Int_t text_font = 43;
+    const Float_t label_size = 24;
+    const Float_t title_size = 26;
+    const Float_t legend_size = 24;
+
     TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
-    TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
-    pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
+    TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.30, 1.0, 1.0);
+    pad1->SetBottomMargin(0.025); pad1->SetLeftMargin(0.15);
     pad1->SetGridx(); pad1->Draw(); pad1->cd();
 
     gStyle->SetPalette(kPastel);
@@ -1090,16 +1097,50 @@ void GetRatioPlot(TH1D* first_, TH1D* second_, const char* name_) {
     second_->SetStats(0);
     first_->SetStats(0);
 
+    // The second histogram is drawn first and supplies the upper axes.
+    second_->GetYaxis()->SetLabelFont(text_font);
+    second_->GetYaxis()->SetLabelSize(label_size);
+    second_->GetYaxis()->SetTitleFont(text_font);
+    second_->GetYaxis()->SetTitleSize(title_size);
+    second_->GetYaxis()->SetTitleOffset(1.25);
+    // Show the shared x-axis labels only in the ratio panel.
+    second_->GetXaxis()->SetLabelSize(0);
+    second_->GetXaxis()->SetTitleSize(0);
+
     second_->SetFillColor(4); second_->SetLineColor(4); second_->SetLineWidth(1); second_->SetFillStyle(3002); second_->Draw("e1 Hist");
     first_->SetFillColor(2); first_->SetLineColor(2); first_->SetLineWidth(1); first_->SetFillStyle(3003); first_->Draw("e1 Hist SAME");
-    TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
-    legend->SetFillStyle(0); legend->SetLineWidth(0);
+
+    // The upper-left area is clear of the peak near bin index 9.
+    TLegend* legend = new TLegend(0.19, 0.70, 0.57, 0.90);
+    legend->SetFillStyle(0);
+    legend->SetBorderSize(0);
+    legend->SetTextFont(text_font);
+    legend->SetTextSize(legend_size);
+    legend->SetMargin(0.18);
+    legend->AddEntry(second_, "P-wave + S-wave", "f");
+    legend->AddEntry(first_, "P-wave only", "f");
+    legend->Draw();
 
     c_temp->cd();
-    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
+    // Leave room for the larger tick labels and the x-axis title.
+    pad2->SetTopMargin(0.02);
+    pad2->SetBottomMargin(0.32); pad2->SetLeftMargin(0.15);
+    pad2->SetGridx(); pad2->Draw(); pad2->cd();
+
     Signal_ratio->SetMinimum(0.5); Signal_ratio->SetMaximum(1.5); Signal_ratio->SetLineWidth(2);
-    Signal_ratio->GetYaxis()->SetTitleSize(0.08); Signal_ratio->GetYaxis()->SetTitleOffset(0.5);
-    Signal_ratio->GetXaxis()->SetLabelSize(0.08); Signal_ratio->GetYaxis()->SetLabelSize(0.08);
+    Signal_ratio->GetYaxis()->SetLabelFont(text_font);
+    Signal_ratio->GetYaxis()->SetLabelSize(label_size);
+    Signal_ratio->GetYaxis()->SetTitleFont(text_font);
+    Signal_ratio->GetYaxis()->SetTitleSize(title_size);
+    Signal_ratio->GetYaxis()->SetTitleOffset(1.25);
+    Signal_ratio->GetYaxis()->SetNdivisions(505);
+    Signal_ratio->GetXaxis()->SetTitle("bin index");
+    Signal_ratio->GetXaxis()->SetLabelFont(text_font);
+    Signal_ratio->GetXaxis()->SetLabelSize(label_size);
+    Signal_ratio->GetXaxis()->SetTitleFont(text_font);
+    Signal_ratio->GetXaxis()->SetTitleSize(title_size);
+    Signal_ratio->GetXaxis()->SetTitleOffset(1.25);
     Signal_ratio->Draw("e0p");
     TLine* line = new TLine(Signal_ratio->GetXaxis()->GetXmin(), 1.0, Signal_ratio->GetXaxis()->GetXmax(), 1.0);
     line->SetLineColor(kRed);
@@ -1107,7 +1148,18 @@ void GetRatioPlot(TH1D* first_, TH1D* second_, const char* name_) {
     line->Draw();
 
     c_temp->SetBottomMargin(0.0);
+    pad1->Modified();
+    pad2->Modified();
+    c_temp->cd();
+    c_temp->Modified();
+    c_temp->Update();
     c_temp->SaveAs(name_);
+
+    // Keep the existing PNG output and also save a vector PDF.
+    TString pdf_name(name_);
+    if (pdf_name.EndsWith(".png")) pdf_name.Remove(pdf_name.Length() - 4);
+    pdf_name += ".pdf";
+    c_temp->SaveAs(pdf_name.Data());
 
     printf("ratio: ");
     for (int i = 0; i < RarityBins; i++) {
@@ -1348,8 +1400,8 @@ void GetSwaveFraction_advanced(){
     printf("eff_KstarANDkappa = %.9lf\n", (total_N_sum_Kstar_after + total_N_sum_K0_after + total_N_sum_kappa_after + total_N_sum_kappa0_after) / (total_N_sum_Kstar + total_N_sum_K0 + total_N_sum_kappa + total_N_sum_kappa0));
 
     /* =============================== get THD =============================== */
-    TH1D* Kstar892 = new TH1D("Kstar892", "Kstar892", RarityBins, BinMIN, BinMAX);
-    TH1D* Kstar700 = new TH1D("Kstar700+892", "Kstar700", RarityBins, BinMIN, BinMAX);
+    TH1D* Kstar892 = new TH1D("Kstar892", "K*(892)#nu#bar{#nu}", RarityBins, BinMIN, BinMAX);
+    TH1D* Kstar700 = new TH1D("Kstar700+892", ";;arbitrary unit", RarityBins, BinMIN, BinMAX);
     TH1D* Signal_ratio = new TH1D("Signal_ratio", ";;896/700", RarityBins, BinMIN, BinMAX);
 
     GetPDFs(dir_Ntuple, "B2Kstar", Kstar892, "Bplus", "SIGNAL", true, Scale_Kplusstar_here, "otherwise");
@@ -1372,3 +1424,5 @@ void GetSwaveFraction_advanced(){
 
     printf("892 should be scaled to %lf\n", sum_700 / sum_892);
 }
+
+
