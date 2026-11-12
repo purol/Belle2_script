@@ -75,17 +75,17 @@ void THStack_plot_Jpsi_vs_nominal() {
     NormalizeAtEachMXs = true;
 
     // dirnames
-    const char* Jpsi_MC_SIGNAL_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/SIGNAL_analysis/validation_v004/final_output";
-    const char* Jpsi_MC_CHG_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/CHG_analysis/validation_v004/final_output";
-    const char* Jpsi_MC_MIX_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/MIX_analysis/validation_v004/final_output";
-    const char* Jpsi_MC_UUBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/UUBAR_analysis/validation_v004/final_output";
-    const char* Jpsi_MC_DDBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/DDBAR_analysis/validation_v004/final_output";
-    const char* Jpsi_MC_SSBAR_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/SSBAR_analysis/validation_v004/final_output";
-    const char* Jpsi_MC_CHARM_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_MC_Jpsi/CHARM_analysis/validation_v004/final_output";
+    const char* Jpsi_MC_SIGNAL_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_Jpsi/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_CHG_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_Jpsi/CHG_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_MIX_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_Jpsi/MIX_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_UUBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_Jpsi/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_DDBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_Jpsi/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_SSBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_Jpsi/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Jpsi_MC_CHARM_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_Jpsi/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application";
 
-    const char* Jpsi_data_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD_LS_data_Jpsi/SIGNAL_analysis/validation_v004/final_output";
+    const char* Jpsi_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_data_Jpsi/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application";
 
-    const char* Nominal_MC_SIGNAL_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/final_output";
+    const char* Nominal_MC_SIGNAL_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application/Merge";
 
     // Count event to normalize at each MXs region
     LetsCountMC(Jpsi_MC_SIGNAL_dirname, "SIGNAL");
@@ -668,61 +668,117 @@ void THStack_plot_Jpsi_vs_nominal() {
         Ratio_hist[k]->SetLineColor(kBlack); Ratio_hist[k]->SetMarkerStyle(21); Ratio_hist[k]->Sumw2(); Ratio_hist[k]->SetStats(0);
         Ratio_hist[k]->Divide(data_hist[k], stat_error_hist[k]);
 
-        TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+        TCanvas* c_temp = new TCanvas("c", "", 800, 800);
+        c_temp->SetCanvasSize(800, 800);
+        c_temp->SetLeftMargin(0.21);
+        c_temp->SetRightMargin(0.04);
+        c_temp->cd();
 
+        // Match the panel geometry and axis sizes in THStack_plot_Jpsi.c.
         TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
-        pad1->SetBottomMargin(0.13); pad1->SetLeftMargin(0.15);
+        pad1->SetTopMargin(0.10);
+        pad1->SetBottomMargin(0.15);
+        pad1->SetLeftMargin(0.21);
+        pad1->SetRightMargin(0.04);
         pad1->SetGridx(); pad1->Draw(); pad1->cd();
 
         gStyle->SetPalette(kPastel);
 
-        Float_t ymax_1 = Stack[k]->GetMaximum();
-        Float_t ymax_2 = data_hist[k]->GetMaximum();
-        double real_max = 0;
-        if (ymax_1 > ymax_2) real_max = ymax_1;
-        else real_max = ymax_2;
+        // Include data errors, the MC uncertainty band, and the signal overlay.
+        double real_max = std::max(Stack[k]->GetMaximum(), signal_hist_nominal[k]->GetMaximum());
+        for (int bin = 1; bin <= data_hist[k]->GetNbinsX(); ++bin) {
+            const double data_upper = data_hist[k]->GetBinContent(bin)
+                                    + data_hist[k]->GetBinErrorUp(bin);
+            const double mc_upper = stat_error_hist[k]->GetBinContent(bin)
+                                  + stat_error_hist[k]->GetBinError(bin);
+            real_max = std::max(real_max, std::max(data_upper, mc_upper));
+        }
 
-        Stack[k]->SetMaximum(real_max * 1.1);
-
+        // Ten entries need four legend rows, with space below for error bars.
+        Stack[k]->SetMaximum(real_max > 0.0 ? real_max * 2.2 : 1.0);
         Stack[k]->Draw("pfc Hist");
-        Stack[k]->GetXaxis()->SetTitleSize(0.05);
-        Stack[k]->GetYaxis()->SetTitleSize(0.05);
-        Stack[k]->GetXaxis()->SetLabelSize(0.05);
-        Stack[k]->GetYaxis()->SetLabelSize(0.05);
+        Stack[k]->GetXaxis()->SetTitleFont(42);
+        Stack[k]->GetYaxis()->SetTitleFont(42);
+        Stack[k]->GetXaxis()->SetLabelFont(42);
+        Stack[k]->GetYaxis()->SetLabelFont(42);
+        Stack[k]->GetXaxis()->SetTitleSize(0.055);
+        Stack[k]->GetYaxis()->SetTitleSize(0.065);
+        Stack[k]->GetXaxis()->SetLabelSize(0.065);
+        Stack[k]->GetYaxis()->SetLabelSize(0.065);
+        Stack[k]->GetXaxis()->SetNdivisions(505);
+        Stack[k]->GetYaxis()->SetNdivisions(505);
+        Stack[k]->GetYaxis()->ChangeLabel(-1, -1, 0);
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         signal_hist_nominal[k]->SetFillStyle(3004); signal_hist_nominal[k]->SetLineColor(kRed); signal_hist_nominal[k]->SetFillColor(kRed); signal_hist_nominal[k]->Draw("HistSAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP EX0");
-        TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.7, 0.5);
-        legend->SetFillStyle(0); legend->SetLineWidth(0);
-        if (NormalizeAtEachMXs == false) {
-            TPaveText* pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB");
-            pt->SetFillStyle(0);
-            pt->SetLineWidth(0);
-            pt->AddText("B #rightarrow X_{s} J/#psi MC and B #rightarrow X_{s} #nu #bar{#nu} MC are scaled to B #rightarrow X_{s} J/#psi data");
-            pt->Draw();
 
+        TPaveText* pt_lumi = new TPaveText(0.22, 0.81, 0.95, 0.89, "NDC NB");
+        pt_lumi->SetTextFont(42);
+        pt_lumi->SetTextSize(0.05);
+        pt_lumi->SetFillStyle(0);
+        pt_lumi->SetLineWidth(0);
+        pt_lumi->SetTextAlign(12);
+        pt_lumi->AddText("Belle II #scale[0.7]{#int} L dt = 365.4 fb^{-1}");
+        pt_lumi->Draw();
+
+        TLegend* legend = pad1->BuildLegend(0.22, 0.53, 0.95, 0.81);
+        legend->SetNColumns(3);
+        legend->SetTextFont(42);
+        legend->SetTextSize(0.05);
+        legend->SetMargin(0.18);
+        legend->SetFillStyle(0);
+        legend->SetBorderSize(0);
+        legend->SetLineWidth(0);
+
+        // A short, fixed-size label stays readable when the figure is reduced.
+        TPaveText* pt = new TPaveText(0.06, 0.90, 0.98, 1.0, "NDC NB");
+        pt->SetTextFont(42);
+        pt->SetTextSize(0.05);
+        pt->SetTextAlign(22);
+        pt->SetFillStyle(0);
+        pt->SetLineWidth(0);
+        if (NormalizeAtEachMXs == false) {
+            pt->AddText("Both MC samples scaled to data");
         }
         else {
-            TPaveText* pt = new TPaveText(0.135, 0.88, 0.9, 1.0, "NDC NB");
-            pt->SetFillStyle(0);
-            pt->SetLineWidth(0);
-            pt->AddText("B #rightarrow X_{s} J/#psi MC and B #rightarrow X_{s} #nu #bar{#nu} MC are scaled to B #rightarrow X_{s} J/#psi data at each M_{X_{s}} region");
-            pt->Draw();
+            pt->AddText("Both MC samples scaled to data in each M_{X_{s}} region");
         }
+        pt->Draw();
+        pad1->RedrawAxis();
 
         c_temp->cd();
-        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetTopMargin(0.03); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1.0, 0.3);
+        pad2->SetTopMargin(0.03);
+        pad2->SetBottomMargin(0.15);
+        pad2->SetLeftMargin(0.21);
+        pad2->SetRightMargin(0.04);
+        pad2->SetGridx(); pad2->Draw(); pad2->cd();
         Ratio_hist[k]->SetMinimum(0.5); Ratio_hist[k]->SetMaximum(1.5); Ratio_hist[k]->SetLineWidth(2);
-        Ratio_hist[k]->GetYaxis()->SetTitleSize(0.1); Ratio_hist[k]->GetYaxis()->SetTitleOffset(0.5);
-        Ratio_hist[k]->GetXaxis()->SetLabelSize(0.1); Ratio_hist[k]->GetYaxis()->SetLabelSize(0.1);
+        Ratio_hist[k]->GetXaxis()->SetLabelFont(42);
+        Ratio_hist[k]->GetYaxis()->SetLabelFont(42);
+        Ratio_hist[k]->GetYaxis()->SetTitleFont(42);
+        Ratio_hist[k]->GetYaxis()->SetTitleSize(0.12);
+        Ratio_hist[k]->GetYaxis()->SetTitleOffset(0.5);
+        Ratio_hist[k]->GetXaxis()->SetLabelSize(0.12);
+        Ratio_hist[k]->GetYaxis()->SetLabelSize(0.12);
+        Ratio_hist[k]->GetXaxis()->SetNdivisions(505);
+        Ratio_hist[k]->GetYaxis()->SetNdivisions(504, kFALSE);
         Ratio_hist[k]->Draw("e0p");
         TLine* line = new TLine(Ratio_hist[k]->GetXaxis()->GetXmin(), 1.0, Ratio_hist[k]->GetXaxis()->GetXmax(), 1.0);
         line->SetLineColor(kRed);
         line->SetLineStyle(1); line->SetLineWidth(3);
         line->Draw();
+        pad2->RedrawAxis();
 
-        c_temp->SetBottomMargin(0.0);
-        c_temp->SaveAs((variable_names.at(k) + "_Jpsi.png").c_str());
+        // Keep comparison plots separate from the control-only outputs.
+        std::string output_name = variable_names.at(k);
+        std::replace(output_name.begin(), output_name.end(), ' ', '_');
+        output_name += "_Jpsi_compare";
+        c_temp->cd();
+        c_temp->Modified();
+        c_temp->Update();
+        c_temp->SaveAs((output_name + ".png").c_str());
+        c_temp->SaveAs((output_name + ".pdf").c_str());
 
         delete c_temp;
     }
