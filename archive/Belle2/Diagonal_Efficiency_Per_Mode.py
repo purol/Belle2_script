@@ -126,11 +126,61 @@ reco_list.reverse()
 
 df_cm = pd.DataFrame(cross_feed, index = [i for i in reco_list], columns = [i for i in reco_list])
 
-plt.figure(figsize = (36,24))
-ax = sn.heatmap(df_cm, annot=True, cmap="YlGnBu", fmt='.1e')
-ax.set_facecolor("lightgray")
-ax.set_xticklabels(ax.get_xticklabels(), rotation=45, fontsize = 18, horizontalalignment='right')
-ax.set_yticklabels(ax.get_yticklabels(), fontsize = 18)
-plt.xlabel(r"MC decay modes", fontsize=25)
-plt.ylabel(r"Reconstructed decay modes", fontsize=25)
-plt.savefig("cross_feed_matrix.pdf", bbox_inches='tight')
+with plt.rc_context({
+    "pdf.fonttype": 42,
+    "mathtext.fontset": "stix",
+}):
+    # Match the final width: 0.98 * 15.92 cm in the thesis.
+    fig_width_cm = 15.6016
+    fig_height_cm = 15.0
+    # Equal physical width and height for the 30-by-30 matrix.
+    matrix_height = 0.72 * fig_width_cm / fig_height_cm
+    fig = plt.figure(
+        figsize=(fig_width_cm / 2.54, fig_height_cm / 2.54),
+        dpi=300,
+    )
+
+    ax = fig.add_axes([0.21, 0.23, 0.72, matrix_height])
+    cax = fig.add_axes([0.945, 0.23, 0.018, matrix_height])
+
+    sn.heatmap(
+        df_cm,
+        ax=ax,
+        cbar_ax=cax,
+        annot=True,
+        # Preserve the approximately 2.2 pt cell numbers on the thesis page.
+        annot_kws={"fontsize": 2.2},
+        cmap="YlGnBu",
+        fmt=".1e",
+        square=True,
+        xticklabels=True,
+        yticklabels=True,
+    )
+    ax.set_facecolor("lightgray")
+
+    ax.set_xticklabels(
+        ax.get_xticklabels(),
+        rotation=60,
+        rotation_mode="anchor",
+        fontsize=7.5,
+        ha="right",
+        va="top",
+    )
+    ax.set_yticklabels(
+        ax.get_yticklabels(),
+        rotation=0,
+        fontsize=7.5,
+    )
+
+    ax.set_xlabel("MC decay modes", fontsize=9, labelpad=4)
+    ax.set_ylabel(
+        "Reconstructed decay modes",
+        fontsize=9,
+        labelpad=4,
+    )
+
+    ax.tick_params(axis="both", length=1.5, width=0.5, pad=2)
+    cax.tick_params(labelsize=8.2, length=2, width=0.5, pad=2)
+
+    fig.savefig("cross_feed_matrix.pdf", bbox_inches=None)
+    plt.close(fig)
