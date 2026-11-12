@@ -45,14 +45,14 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-THStack* Stack = new THStack("thstack", ";M_{bc}^{sig} [GeV];Candidates");
-TH1F* SIGNAL_hist = new TH1F("signal", ";M_{bc}^{sig} [GeV];Candidates", 100, 5.25, 5.29);
-TH1F* CHG_hist = new TH1F("charge", ";E_{ecl} [GeV];Candidates", 100, 5.25, 5.29);
-TH1F* MIX_hist = new TH1F("mix", ";E_{ecl} [GeV];Candidates", 100, 5.25, 5.29);
-TH1F* UUBAR_hist = new TH1F("uubar", ";E_{ecl} [GeV];Candidates", 100, 5.25, 5.29);
-TH1F* DDBAR_hist = new TH1F("ddbar", ";E_{ecl} [GeV];Candidates", 100, 5.25, 5.29);
-TH1F* SSBAR_hist = new TH1F("ssbar", ";E_{ecl} [GeV];Candidates", 100, 5.25, 5.29);
-TH1F* CHARM_hist = new TH1F("ccbar", ";E_{ecl} [GeV];Candidates", 100, 5.25, 5.29);
+THStack* Stack = new THStack("thstack", ";M_{bc} [GeV/c^{2}];Candidates");
+TH1F* SIGNAL_hist = new TH1F("signal", ";M_{bc} [GeV/c^{2}];Candidates", 40, 5.25, 5.29);
+TH1F* CHG_hist = new TH1F("charge", ";E_{ecl} [GeV];Candidates", 40, 5.25, 5.29);
+TH1F* MIX_hist = new TH1F("mix", ";E_{ecl} [GeV];Candidates", 40, 5.25, 5.29);
+TH1F* UUBAR_hist = new TH1F("uubar", ";E_{ecl} [GeV];Candidates", 40, 5.25, 5.29);
+TH1F* DDBAR_hist = new TH1F("ddbar", ";E_{ecl} [GeV];Candidates", 40, 5.25, 5.29);
+TH1F* SSBAR_hist = new TH1F("ssbar", ";E_{ecl} [GeV];Candidates", 40, 5.25, 5.29);
+TH1F* CHARM_hist = new TH1F("ccbar", ";E_{ecl} [GeV];Candidates", 40, 5.25, 5.29);
 
 void LetsFill(const char* dirname, TH1F* hist, double weight = 1) {
     double var = 0;
@@ -108,13 +108,13 @@ void LetsFill(const char* dirname, TH1F* hist, const char* included_string, doub
 
 void THStack_Mbc_Jpsi() {
 
-    const char* SIGNAL_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/SIGNAL";
-    const char* CHG_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/CHG";
-    const char* MIX_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/MIX";
-    const char* UUBAR_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/UUBAR";
-    const char* DDBAR_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/DDBAR";
-    const char* SSBAR_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/SSBAR";
-    const char* CHARM_dirname = "/home/belle2/junewoo/storage_b2/Ntuple/KumoiRD_LS_MC_Jpsi/Jpsi/CHARM";
+    const char* SIGNAL_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/MizuhashiRD_LS_MC_Jpsi/Jpsi/SIGNAL";
+    const char* CHG_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/MizuhashiRD_LS_MC_Jpsi/Jpsi/CHG";
+    const char* MIX_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/MizuhashiRD_LS_MC_Jpsi/Jpsi/MIX";
+    const char* UUBAR_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/MizuhashiRD_LS_MC_Jpsi/Jpsi/UUBAR";
+    const char* DDBAR_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/MizuhashiRD_LS_MC_Jpsi/Jpsi/DDBAR";
+    const char* SSBAR_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/MizuhashiRD_LS_MC_Jpsi/Jpsi/SSBAR";
+    const char* CHARM_dirname = "/home/belle2/junewoo/storage_ghi/Ntuple/MizuhashiRD_LS_MC_Jpsi/Jpsi/CHARM";
 
     LetsFill(SIGNAL_dirname, SIGNAL_hist, (Scale_CHG_validation_MC15rd + Scale_MIX_validation_MC15rd) / 2.0);
     LetsFill(CHG_dirname, CHG_hist, Scale_CHG_validation_MC15rd);
@@ -156,19 +156,71 @@ void THStack_Mbc_Jpsi() {
     SIGNAL_hist->SetLineColor(2);
     SIGNAL_hist->SetFillStyle(0);
 
-    TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
+    // Target about 8.2 pt when included at 0.33 of a 15.92 cm text width.
+    // SetCanvasSize keeps the drawable canvas square in batch and GUI modes.
+    const double text_size = 0.059;
+    TCanvas* c_temp = new TCanvas("c", "", 1200, 1200);
+    c_temp->SetCanvasSize(1200, 1200);
+    c_temp->SetLeftMargin(0.23);
+    c_temp->SetRightMargin(0.065);
+    c_temp->SetBottomMargin(0.19);
+    c_temp->SetTopMargin(0.05);
+    c_temp->cd();
 
+    gStyle->SetOptStat(0);
     gStyle->SetPalette(kGistEarth);
 
-    Float_t ymax = SIGNAL_hist->GetMaximum(); Stack->SetMaximum(ymax*1.1);
-    Stack->Draw("pfc Hist"); SIGNAL_hist->Draw("HistSAME");
+    // Leave room for four legend rows above both the signal and background.
+    double ymax = SIGNAL_hist->GetMaximum();
+    if (Stack->GetMaximum() > ymax) ymax = Stack->GetMaximum();
+    Stack->SetMinimum(0.0);
+    Stack->SetMaximum(1.65 * ymax);
+    Stack->Draw("pfc Hist");
+    c_temp->Update();
 
-    TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.7, 0.7);
-    legend->SetFillStyle(0); legend->SetLineWidth(0);
+    TAxis* x_axis = Stack->GetXaxis();
+    TAxis* y_axis = Stack->GetYaxis();
+    x_axis->SetLabelFont(42);
+    y_axis->SetLabelFont(42);
+    x_axis->SetTitleFont(42);
+    y_axis->SetTitleFont(42);
+    x_axis->SetLabelSize(text_size);
+    y_axis->SetLabelSize(text_size);
+    x_axis->SetTitleSize(text_size);
+    y_axis->SetTitleSize(text_size);
+    x_axis->SetLabelOffset(0.008);
+    y_axis->SetLabelOffset(0.008);
+    x_axis->SetTitleOffset(1.25);
+    y_axis->SetTitleOffset(1.55);
+    x_axis->CenterTitle();
+    y_axis->CenterTitle();
+    x_axis->SetNdivisions(504);
+    y_axis->SetNdivisions(505);
+    x_axis->SetTickLength(0.025);
+    y_axis->SetTickLength(0.025);
 
+    SIGNAL_hist->Draw("HistSAME");
+
+    TLegend* legend = new TLegend(0.26, 0.70, 0.92, 0.94);
+    legend->SetNColumns(2);
+    legend->SetColumnSeparation(0.05);
+    legend->SetMargin(0.22);
+    legend->SetTextFont(42);
+    legend->SetTextSize(text_size);
+    legend->SetFillStyle(0);
+    legend->SetBorderSize(0);
+    legend->AddEntry(CHG_hist, "charged", "f");
+    legend->AddEntry(MIX_hist, "mixed", "f");
+    legend->AddEntry(UUBAR_hist, "u#bar{u}", "f");
+    legend->AddEntry(DDBAR_hist, "d#bar{d}", "f");
+    legend->AddEntry(SSBAR_hist, "s#bar{s}", "f");
+    legend->AddEntry(CHARM_hist, "c#bar{c}", "f");
+    legend->AddEntry(SIGNAL_hist, "signal", "l");
+    legend->Draw();
+
+    c_temp->Modified();
+    c_temp->Update();
+    c_temp->RedrawAxis();
+    c_temp->SaveAs("Plot_Mbc_Jpsi.pdf");
     c_temp->SaveAs("Plot_Mbc_Jpsi.png");
-
-//    free(line);
-//    gPad->BuildLegend();
-//    c_temp->SaveAs("Plot_with_legend.png");
 }

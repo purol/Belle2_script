@@ -45,7 +45,7 @@ void load_files(const char* dirname, std::vector<string>* names, const char* inc
     }
 }
 
-TH1D* SIGNAL_hist = new TH1D("signal", ";##Upsilon(4S) multiplicity;Fraction of events", 5, 0.5, 5.5);
+TH1D* SIGNAL_hist = new TH1D("signal", ";#Upsilon(4S) multiplicity;Fraction of events", 5, 0.5, 5.5);
 TH1D* CHG_hist = new TH1D("charged", ";#Upsilon(4S) multiplicity;Fraction of events", 5, 0.5, 5.5);
 TH1D* MIX_hist = new TH1D("mixed", ";#Upsilon(4S) multiplicity;Fraction of events", 5, 0.5, 5.5);
 TH1D* UUBAR_hist = new TH1D("u#bar{u}", ";#Upsilon(4S) multiplicity;Fraction of events", 5, 0.5, 5.5);
@@ -195,18 +195,18 @@ void LetsFill(const char* dirname, TH1D* hist, const char* included_string, doub
 
 void THStack_multiplicity() {
 
-    const char* Knunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/before_Dveto_cut";
-    const char* Kstarnunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/before_Dveto_cut";
-    const char* Xsununu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/before_Dveto_cut";
-    const char* K0nunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/before_Dveto_cut";
-    const char* K0starnunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/before_Dveto_cut";
-    const char* Xsdnunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SIGNAL_analysis/validation_v004/before_Dveto_cut";
-    const char* CHG_dirname = "/home/belle2/junewoo/storage_ghi/Analysis/SatoriRD/CHG_analysis/validation_v004/before_Dveto_cut";
-    const char* MIX_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/MIX_analysis/validation_v004/before_Dveto_cut";
-    const char* UUBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/UUBAR_analysis/validation_v004/before_Dveto_cut";
-    const char* DDBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/DDBAR_analysis/validation_v004/before_Dveto_cut";
-    const char* SSBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/SSBAR_analysis/validation_v004/before_Dveto_cut";
-    const char* CHARM_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/SatoriRD/CHARM_analysis/validation_v004/before_Dveto_cut";
+    const char* Knunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/before_Dveto_cut";
+    const char* Kstarnunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/before_Dveto_cut";
+    const char* Xsununu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/before_Dveto_cut";
+    const char* K0nunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/before_Dveto_cut";
+    const char* K0starnunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/before_Dveto_cut";
+    const char* Xsdnunu_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/before_Dveto_cut";
+    const char* CHG_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHG_analysis/validation_v009/before_Dveto_cut";
+    const char* MIX_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/MIX_analysis/validation_v009/before_Dveto_cut";
+    const char* UUBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/UUBAR_analysis/validation_v009/before_Dveto_cut";
+    const char* DDBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/DDBAR_analysis/validation_v009/before_Dveto_cut";
+    const char* SSBAR_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SSBAR_analysis/validation_v009/before_Dveto_cut";
+    const char* CHARM_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHARM_analysis/validation_v009/before_Dveto_cut";
 
     LetsFill(Knunu_dirname, SIGNAL_hist, "B2Knunu", Scale_Kplus_validation_MC15rd);
     LetsFill(Kstarnunu_dirname, SIGNAL_hist, "B2Kstarnunu", Scale_Kplusstar_validation_MC15rd);
@@ -269,33 +269,68 @@ void THStack_multiplicity() {
     SIGNAL_hist->SetLineColor(2);
     SIGNAL_hist->SetFillStyle(0);
 
-    TCanvas* c_temp = new TCanvas("c", "", 1500, 1200); c_temp->cd();
+    TCanvas* c_temp = new TCanvas("c", "", 1500, 1200);
+    c_temp->SetCanvasSize(1500, 1200);
+    c_temp->SetLeftMargin(0.17);
+    c_temp->SetRightMargin(0.04);
+    c_temp->SetBottomMargin(0.16);
+    c_temp->SetTopMargin(0.05);
+    c_temp->cd();
 
     gStyle->SetPalette(kGistEarth);
 
-    CHG_hist->SetStats(false);
-    MIX_hist->SetStats(false);
-    UUBAR_hist->SetStats(false);
-    DDBAR_hist->SetStats(false);
-    SSBAR_hist->SetStats(false);
-    CHARM_hist->SetStats(false);
-    SIGNAL_hist->SetStats(false);
+    // Font sizes are fractions of the pad height. At 0.65 text width in the
+    // thesis, 0.040 corresponds to approximately 9 pt in the final figure.
+    const double label_size = 0.040;
+    const double title_size = 0.045;
+    TH1D* histograms[] = {
+        SSBAR_hist, CHG_hist, MIX_hist, UUBAR_hist,
+        DDBAR_hist, CHARM_hist, SIGNAL_hist
+    };
+    double maximum = 0.0;
+    for (TH1D* hist : histograms) {
+        hist->SetStats(false);
+        hist->GetXaxis()->SetLabelFont(42);
+        hist->GetYaxis()->SetLabelFont(42);
+        hist->GetXaxis()->SetTitleFont(42);
+        hist->GetYaxis()->SetTitleFont(42);
+        hist->GetXaxis()->SetLabelSize(label_size);
+        hist->GetYaxis()->SetLabelSize(label_size);
+        hist->GetXaxis()->SetTitleSize(title_size);
+        hist->GetYaxis()->SetTitleSize(title_size);
+        hist->GetXaxis()->SetTitleOffset(1.25);
+        hist->GetYaxis()->SetTitleOffset(1.40);
+        hist->GetXaxis()->CenterTitle();
+        hist->GetYaxis()->CenterTitle();
+        hist->GetXaxis()->SetNdivisions(5);
+        hist->GetYaxis()->SetNdivisions(505);
+        if (hist->GetMaximum() > maximum) maximum = hist->GetMaximum();
+    }
+    SSBAR_hist->SetMinimum(0.0);
+    SSBAR_hist->SetMaximum(1.15 * maximum);
 
-    CHG_hist->Draw("Hist");
+    SSBAR_hist->Draw("Hist");
+    CHG_hist->Draw("HistSAME");
     MIX_hist->Draw("HistSAME");
     UUBAR_hist->Draw("HistSAME");
     DDBAR_hist->Draw("HistSAME");
-    SSBAR_hist->Draw("HistSAME");
     CHARM_hist->Draw("HistSAME");
     SIGNAL_hist->Draw("HistSAME");
 
-    TLegend* legend = gPad->BuildLegend(0.9, 0.9, 0.7, 0.7);
-    legend->SetFillStyle(0); legend->SetLineWidth(0);
+    TLegend* legend = new TLegend(0.60, 0.53, 0.94, 0.93);
+    legend->SetTextFont(42);
+    legend->SetTextSize(label_size);
+    legend->SetFillStyle(0);
+    legend->SetBorderSize(0);
+    legend->SetMargin(0.20);
+    for (TH1D* hist : histograms) {
+        legend->AddEntry(hist, hist->GetName(), "l");
+    }
     legend->Draw();
 
+    c_temp->RedrawAxis();
+    c_temp->Modified();
+    c_temp->Update();
     c_temp->SaveAs("Plot_multiplicity.png");
-
-//    free(line);
-//    gPad->BuildLegend();
-//    c_temp->SaveAs("Plot_with_legend.png");
+    c_temp->SaveAs("Plot_multiplicity.pdf");
 }
