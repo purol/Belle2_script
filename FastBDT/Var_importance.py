@@ -54,17 +54,46 @@ for i in sorted_list:
 features_sorted.reverse()
 importance_sorted.reverse()
 
-plt.rcParams['figure.figsize'] = [15, 12]
+plt.rcParams.update({
+    "font.size": 9,
+    "pdf.fonttype": 42,
+})
 
-fig, ax = plt.subplots()
-bars = ax.barh(features_sorted,importance_sorted)
-ax.bar_label(bars, fmt = '%.1e')
+# 논문의 0.95\textwidth에 해당하는 폭으로 생성
+fig, ax = plt.subplots(
+    figsize=(15.124 / 2.54, 20.5 / 2.54)
+)
 
-#plt.barh(y, Nevt)
-#plt.yticks(y, decay)
+# 긴 변수명을 위한 왼쪽 공간 확보
+fig.subplots_adjust(
+    left=0.61,
+    right=0.99,
+    bottom=0.065,
+    top=0.99,
+)
 
-plt.xlabel("Variable Importance")
-plt.ylabel("Variable")
-plt.grid(True, axis = "x", linestyle="--")
+bars = ax.barh(
+    features_sorted,
+    importance_sorted,
+    height=0.7,
+)
 
-plt.savefig("Var_importance.pdf", bbox_inches='tight')
+ax.bar_label(
+    bars,
+    fmt="%.1e",
+    padding=3,
+    fontsize=9,
+)
+
+ax.set_xlim(0, 0.45)
+ax.set_xticks([0.0, 0.1, 0.2, 0.3, 0.4])
+ax.set_xlabel("Variable importance", fontsize=10)
+
+ax.tick_params(axis="both", labelsize=9)
+ax.tick_params(axis="y", length=0)
+ax.set_axisbelow(True)
+ax.grid(axis="x", linestyle="--", alpha=0.4)
+
+# 지정한 물리적 크기를 유지
+fig.savefig("Var_importance.pdf", bbox_inches=None)
+plt.close(fig)

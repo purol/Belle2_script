@@ -534,21 +534,48 @@ void CalculateFOM(
         if (MAX_FOM < FOM_Matrix[i]) MAX_FOM = FOM_Matrix[i];
     }
 
-    // draw
+    // Draw for a panel width of 0.32 * 15.92 cm in the thesis.
     TCanvas* c3 = new TCanvas("c3", "Graph Draw Options", 200, 10, 600, 600);
-    c3->SetLeftMargin(0.15);
+    c3->SetCanvasSize(600, 600);
+    c3->SetLeftMargin(0.28);
+    c3->SetRightMargin(0.04);
+    c3->SetBottomMargin(0.16);
+    c3->SetTopMargin(0.05);
 
     TGraph* gr3 = new TGraph(Nstep, FBDT_cut, FOM_Matrix);
     gr3->SetTitle(";FBDT cut;#frac{S}{#sqrt{S+B}}");
     gr3->SetMarkerStyle(0);
+    gr3->SetLineColor(kBlack);
+    gr3->SetLineWidth(2);
     gr3->SetMinimum(MIN_FOM * 0.7);
-    gr3->Draw("");
+
+    TAxis* xaxis = gr3->GetXaxis();
+    TAxis* yaxis = gr3->GetYaxis();
+    xaxis->SetLabelFont(42);
+    yaxis->SetLabelFont(42);
+    xaxis->SetTitleFont(42);
+    yaxis->SetTitleFont(42);
+    // Approximately 8.2 pt in the PDF at the intended insertion width.
+    xaxis->SetLabelSize(0.061);
+    yaxis->SetLabelSize(0.061);
+    xaxis->SetTitleSize(0.061);
+    yaxis->SetTitleSize(0.061);
+    xaxis->SetTitleOffset(1.15);
+    // Leave room for the fraction and the y-axis tick labels.
+    yaxis->SetTitleOffset(1.90);
+    yaxis->CenterTitle();
+    xaxis->SetNdivisions(505);
+    yaxis->SetNdivisions(505);
+    gr3->Draw("AL");
 
     TLine* line = new TLine(0.86, MIN_FOM * 0.7, 0.86, MAX_FOM);
     line->SetLineColor(kRed);
     line->SetLineStyle(5);
+    line->SetLineWidth(2);
     line->Draw();
 
+    c3->Modified();
+    c3->Update();
     c3->SaveAs(filename);
 
     delete c3;
@@ -713,14 +740,14 @@ int main(int argc, char* argv[])
 
     /* ====================================== */
     // define path for Ntuple
-    const char* MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/final_output_root_after_MVA_Application/Merge/";
+    const char* MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application/Merge/";
 
-    const char* MC_dirname_CHG = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/CHG_analysis/validation_v008/final_output_root_after_MVA_Application/Merge/";
-    const char* MC_dirname_MIX = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/MIX_analysis/validation_v008/final_output_root_after_MVA_Application/Merge/";
-    const char* MC_dirname_UUBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/UUBAR_analysis/validation_v008/final_output_root_after_MVA_Application/Merge/";
-    const char* MC_dirname_DDBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/DDBAR_analysis/validation_v008/final_output_root_after_MVA_Application/Merge/";
-    const char* MC_dirname_SSBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/SSBAR_analysis/validation_v008/final_output_root_after_MVA_Application/Merge/";
-    const char* MC_dirname_CHARM = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD/CHARM_analysis/validation_v008/final_output_root_after_MVA_Application/Merge/";
+    const char* MC_dirname_CHG = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHG_analysis/validation_v009/final_output_root_after_MVA_Application/Merge/";
+    const char* MC_dirname_MIX = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application/Merge/";
+    const char* MC_dirname_UUBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application/Merge/";
+    const char* MC_dirname_DDBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application/Merge/";
+    const char* MC_dirname_SSBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application/Merge/";
+    const char* MC_dirname_CHARM = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application/Merge/";
     /* ====================================== */
 
 
@@ -756,8 +783,8 @@ int main(int argc, char* argv[])
     GetNominalNevt(MC_dirname_CHARM, "root", "Continuum", "CHARM", &CHARM_FOM, ObtainWeight("CHARM", MCTYPE, "validation", "CHARM"), "otherwise");
     /* ====================================== */
 
-    CalculateFOM(SIGNAL_FOM, CHG_FOM, MIX_FOM, UUBAR_FOM, DDBAR_FOM, SSBAR_FOM, CHARM_FOM, 1, "FOM_K.png");
-    CalculateFOM(SIGNAL_FOM, CHG_FOM, MIX_FOM, UUBAR_FOM, DDBAR_FOM, SSBAR_FOM, CHARM_FOM, 2, "FOM_Kstar.png");
-    CalculateFOM(SIGNAL_FOM, CHG_FOM, MIX_FOM, UUBAR_FOM, DDBAR_FOM, SSBAR_FOM, CHARM_FOM, 3, "FOM_Xs.png");
+    CalculateFOM(SIGNAL_FOM, CHG_FOM, MIX_FOM, UUBAR_FOM, DDBAR_FOM, SSBAR_FOM, CHARM_FOM, 1, "FOM_K.pdf");
+    CalculateFOM(SIGNAL_FOM, CHG_FOM, MIX_FOM, UUBAR_FOM, DDBAR_FOM, SSBAR_FOM, CHARM_FOM, 2, "FOM_Kstar.pdf");
+    CalculateFOM(SIGNAL_FOM, CHG_FOM, MIX_FOM, UUBAR_FOM, DDBAR_FOM, SSBAR_FOM, CHARM_FOM, 3, "FOM_Xs.pdf");
 
 }
