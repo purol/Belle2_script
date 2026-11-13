@@ -9,6 +9,7 @@
 #include <string>
 
 #include "TCanvas.h"
+#include "TAxis.h"
 #include "RooHist.h"
 #include "TH1.h"
 #include "TH2.h"
@@ -515,22 +516,48 @@ void Draw1DPlots() {
 void DrawDalitz(TH2D* Dalitz, const char* name = "Dalitz.png") {
 
     Dalitz->SetStats(0);
+    Dalitz->SetTitle("");
 
+    // Keep labels readable when two panels share the thesis text width.
     TCanvas* c = new TCanvas("c", "", 800, 700);
+    c->SetCanvasSize(800, 700);
+    c->SetLeftMargin(0.14);
+    c->SetRightMargin(0.16);
+    c->SetBottomMargin(0.14);
+    c->SetTopMargin(0.06);
+    c->cd();
 
-    c->SetRightMargin(0.18);
-
-    c->SetLeftMargin(0.12);
-    c->SetBottomMargin(0.12);
-    c->SetTopMargin(0.08);
+    TAxis* axes[] = {Dalitz->GetXaxis(), Dalitz->GetYaxis(), Dalitz->GetZaxis()};
+    for (TAxis* axis : axes) {
+        axis->SetLabelFont(42);
+        axis->SetTitleFont(42);
+        axis->SetLabelSize(0.045);
+        axis->SetTitleSize(0.050);
+        axis->SetLabelOffset(0.010);
+        axis->SetNdivisions(505);
+    }
+    Dalitz->GetXaxis()->SetTitleOffset(1.05);
+    Dalitz->GetYaxis()->SetTitleOffset(1.10);
+    Dalitz->GetXaxis()->CenterTitle();
+    Dalitz->GetYaxis()->CenterTitle();
+    Dalitz->GetZaxis()->SetLabelSize(0.040);
+    Dalitz->GetZaxis()->SetMaxDigits(3);
 
     Dalitz->Draw("COLZ");
-
+    c->RedrawAxis();
+    c->Modified();
+    c->Update();
     c->SaveAs(name);
 
-    delete c;
+    std::string pdf_name(name);
+    const std::string::size_type extension = pdf_name.find_last_of('.');
+    if (extension != std::string::npos) pdf_name.erase(extension);
+    pdf_name += ".pdf";
+    c->Print(pdf_name.c_str(), "pdf Portrait");
 
+    delete c;
 }
+
 
 void FillHist() {
 
