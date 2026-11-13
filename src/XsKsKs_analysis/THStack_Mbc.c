@@ -266,7 +266,7 @@ void THStack_Mbc() {
     c_temp->Modified();
     c_temp->Update();
     c_temp->SaveAs("Plot_Mbc.png");
-    c_temp->SaveAs("Plot_Mbc.pdf");
+    c_temp->Print("Plot_Mbc.pdf", "pdf Portrait");
 
 //    free(line);
 //    gPad->BuildLegend();
