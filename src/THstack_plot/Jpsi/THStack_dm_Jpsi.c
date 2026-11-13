@@ -215,7 +215,7 @@ void THStack_dm_Jpsi() {
     legend->AddEntry(DDBAR_hist, "d#bar{d}", "f");
     legend->AddEntry(SSBAR_hist, "s#bar{s}", "f");
     legend->AddEntry(CHARM_hist, "c#bar{c}", "f");
-    legend->AddEntry(SIGNAL_hist, "signal", "l");
+    legend->AddEntry(SIGNAL_hist, "B #rightarrow X_{s} J/#psi", "l");
     legend->Draw();
 
     c_temp->Modified();
