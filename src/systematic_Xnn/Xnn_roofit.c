@@ -348,12 +348,12 @@ void Xnn_roofit() {
         printf("%s: %lf +- %lf\n", name_LT.c_str(), val_LT, err_LT);
     }
 
-    // Keep the original marker and curve sizes on a 600-pixel canvas.
+    // Keep the original marker size on a 600-pixel canvas.
     // Draw result
     d_Mbc->plotOn(Mbcframe, DataError(RooAbsData::SumW2), MarkerSize(1.0), LineWidth(1));
-    model.plotOn(Mbcframe, LineColor(kRed), LineWidth(3), Normalization(1.0, RooAbsReal::RelativeExpected));
-    model.plotOn(Mbcframe, Components(pdfARGUS), LineColor(kBlue), LineWidth(3), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
-    model.plotOn(Mbcframe, Components(pdfCRYSTAL), LineColor(kViolet), LineWidth(3), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
+    model.plotOn(Mbcframe, LineColor(kRed), LineWidth(4), Normalization(1.0, RooAbsReal::RelativeExpected));
+    model.plotOn(Mbcframe, Components(pdfARGUS), LineColor(kBlue), LineWidth(4), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
+    model.plotOn(Mbcframe, Components(pdfCRYSTAL), LineColor(kViolet), LineWidth(4), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
 
     // Font sizes account for the 0.32-textwidth panels in the thesis.
     TCanvas* c_temp = new TCanvas("Mbc", "", 600, 600);
