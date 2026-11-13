@@ -9,6 +9,7 @@
 #include <string>
 
 #include "TCanvas.h"
+#include "TAxis.h"
 #include "RooHist.h"
 #include "TH1.h"
 #include "TH2.h"
@@ -103,14 +104,14 @@ typedef struct info {
 
 std::vector<Information> Infos;
 
-TH2D* N_evt = new TH2D("N_evt", ";s13 [(GeV/c^{2})^{2}];s23 [(GeV/c^{2})^{2}];", NBin, s13_min, s13_max, NBin, s23_min, s23_max);
-TH2D* N_evt_conv = new TH2D("N_evt_conv", ";s12;s13", NBin, s12_min, s12_max, NBin, s13_min, s13_max);
+TH2D* N_evt = new TH2D("N_evt", ";s_{13} [(GeV/c^{2})^{2}];s_{23} [(GeV/c^{2})^{2}];", NBin, s13_min, s13_max, NBin, s23_min, s23_max);
+TH2D* N_evt_conv = new TH2D("N_evt_conv", ";s_{12};s_{13}", NBin, s12_min, s12_max, NBin, s13_min, s13_max);
 
-TH2D* Prob_PHSP = new TH2D("Prob_PHSP", ";s13 [(GeV/c^{2})^{2}];s23 [(GeV/c^{2})^{2}]", NBin, s13_min, s13_max, NBin, s23_min, s23_max);
-TH2D* Prob_PHSP_conv = new TH2D("Prob_PHSP_conv", ";s12 [(GeV/c^{2})^{2}];s13 [(GeV/c^{2})^{2}]", NBin, s12_min, s12_max, NBin, s13_min, s13_max);
+TH2D* Prob_PHSP = new TH2D("Prob_PHSP", ";s_{13} [(GeV/c^{2})^{2}];s_{23} [(GeV/c^{2})^{2}]", NBin, s13_min, s13_max, NBin, s23_min, s23_max);
+TH2D* Prob_PHSP_conv = new TH2D("Prob_PHSP_conv", ";s_{12} [(GeV/c^{2})^{2}];s_{13} [(GeV/c^{2})^{2}]", NBin, s12_min, s12_max, NBin, s13_min, s13_max);
 
-TH2D* Prob = new TH2D("Prob", ";s13 [(GeV/c^{2})^{2}];s23 [(GeV/c^{2})^{2}];", NBin, s13_min, s13_max, NBin, s23_min, s23_max);
-TH2D* Prob_conv = new TH2D("Prob_conv", ";s12 [(GeV/c^{2})^{2}];s13 [(GeV/c^{2})^{2}];", NBin, s12_min, s12_max, NBin, s13_min, s13_max);
+TH2D* Prob = new TH2D("Prob", ";s_{13} [(GeV/c^{2})^{2}];s_{23} [(GeV/c^{2})^{2}];", NBin, s13_min, s13_max, NBin, s23_min, s23_max);
+TH2D* Prob_conv = new TH2D("Prob_conv", ";s_{12} [(GeV/c^{2})^{2}];s_{13} [(GeV/c^{2})^{2}];", NBin, s12_min, s12_max, NBin, s13_min, s13_max);
 
 TH1D* Prob_1D_s12 = new TH1D("Prob_1D_s12", ";m_{K_{S}K_{S}};", 32, 4.77 - 0.06 * 63, 4.77 + 0.06);
 TH1D* Prob_1D_s13 = new TH1D("Prob_1D_s13", ";m_{K^{+}K_{S},low};", 29, 0.99, 3.74);
@@ -524,7 +525,7 @@ void GetProbabilityHist() {
             double DalitzValue = s23 * s12 * s12 + (s23 * s23 + (mKp * mKp - mKL0 * mKL0) * (mB * mB - mKL0 * mKL0) - s23 * (mB * mB + mKL0 * mKL0 + mKL0 * mKL0 + mKp * mKp)) * s12 + ((mKL0 * mKL0 * mB * mB - mKL0 * mKL0 * mKp * mKp) * (mB * mB - mKL0 * mKL0 + mKL0 * mKL0 - mKp * mKp));
 
             if (DalitzValue < 0 && s23 >= s13) {
-                if (isnan(Probability_value)) continue;
+                if (std::isnan(Probability_value)) continue;
                 Prob->Fill(s13, s23, Probability_value);
             }
 
@@ -546,7 +547,7 @@ void GetProbabilityHist() {
             double DalitzValue = s23 * s12 * s12 + (s23 * s23 + (mKp * mKp - mKL0 * mKL0) * (mB * mB - mKL0 * mKL0) - s23 * (mB * mB + mKL0 * mKL0 + mKL0 * mKL0 + mKp * mKp)) * s12 + ((mKL0 * mKL0 * mB * mB - mKL0 * mKL0 * mKp * mKp) * (mB * mB - mKL0 * mKL0 + mKL0 * mKL0 - mKp * mKp));
 
             if (DalitzValue < 0 && s23 >= s13) {
-                if (isnan(Probability_value)) continue;
+                if (std::isnan(Probability_value)) continue;
                 Prob_1D_s23->Fill(m23, 4 * m13 * m23 * Probability_value); // multiply Jacobian
             }
 
@@ -565,7 +566,7 @@ void GetProbabilityHist() {
             double DalitzValue = s23 * s12 * s12 + (s23 * s23 + (mKp * mKp - mKL0 * mKL0) * (mB * mB - mKL0 * mKL0) - s23 * (mB * mB + mKL0 * mKL0 + mKL0 * mKL0 + mKp * mKp)) * s12 + ((mKL0 * mKL0 * mB * mB - mKL0 * mKL0 * mKp * mKp) * (mB * mB - mKL0 * mKL0 + mKL0 * mKL0 - mKp * mKp));
 
             if (DalitzValue < 0 && s23 >= s13) {
-                if (isnan(Probability_value)) continue;
+                if (std::isnan(Probability_value)) continue;
                 Prob_conv->Fill(s12, s13, Probability_value);
             }
 
@@ -587,7 +588,7 @@ void GetProbabilityHist() {
             double DalitzValue = s23 * s12 * s12 + (s23 * s23 + (mKp * mKp - mKL0 * mKL0) * (mB * mB - mKL0 * mKL0) - s23 * (mB * mB + mKL0 * mKL0 + mKL0 * mKL0 + mKp * mKp)) * s12 + ((mKL0 * mKL0 * mB * mB - mKL0 * mKL0 * mKp * mKp) * (mB * mB - mKL0 * mKL0 + mKL0 * mKL0 - mKp * mKp));
 
             if (DalitzValue < 0 && s23 >= s13) {
-                if (isnan(Probability_value)) continue;
+                if (std::isnan(Probability_value)) continue;
                 Prob_1D_s12->Fill(m12, 4 * m13 * m12 * Probability_value); // multiply Jacobian
                 Prob_1D_s13->Fill(m13, 4 * m13 * m12 * Probability_value); // multiply Jacobian
             }
@@ -636,22 +637,48 @@ void Draw1DPlots() {
 void DrawDalitz(TH2D* Dalitz, const char* name = "Dalitz.png") {
 
     Dalitz->SetStats(0);
+    Dalitz->SetTitle("");
 
+    // Keep labels readable when two panels share the thesis text width.
     TCanvas* c = new TCanvas("c", "", 800, 700);
+    c->SetCanvasSize(800, 700);
+    c->SetLeftMargin(0.14);
+    c->SetRightMargin(0.16);
+    c->SetBottomMargin(0.14);
+    c->SetTopMargin(0.06);
+    c->cd();
 
-    c->SetRightMargin(0.18);
-
-    c->SetLeftMargin(0.12);
-    c->SetBottomMargin(0.12);
-    c->SetTopMargin(0.08);
+    TAxis* axes[] = {Dalitz->GetXaxis(), Dalitz->GetYaxis(), Dalitz->GetZaxis()};
+    for (TAxis* axis : axes) {
+        axis->SetLabelFont(42);
+        axis->SetTitleFont(42);
+        axis->SetLabelSize(0.045);
+        axis->SetTitleSize(0.050);
+        axis->SetLabelOffset(0.010);
+        axis->SetNdivisions(505);
+    }
+    Dalitz->GetXaxis()->SetTitleOffset(1.05);
+    Dalitz->GetYaxis()->SetTitleOffset(1.10);
+    Dalitz->GetXaxis()->CenterTitle();
+    Dalitz->GetYaxis()->CenterTitle();
+    Dalitz->GetZaxis()->SetLabelSize(0.040);
+    Dalitz->GetZaxis()->SetMaxDigits(3);
 
     Dalitz->Draw("COLZ");
-
+    c->RedrawAxis();
+    c->Modified();
+    c->Update();
     c->SaveAs(name);
 
-    delete c;
+    std::string pdf_name(name);
+    const std::string::size_type extension = pdf_name.find_last_of('.');
+    if (extension != std::string::npos) pdf_name.erase(extension);
+    pdf_name += ".pdf";
+    c->Print(pdf_name.c_str(), "pdf Portrait");
 
+    delete c;
 }
+
 
 void FillHist() {
 
@@ -835,7 +862,7 @@ int main(){
     FillHist();
     GetZeros();
 
-    DrawDalitz(N_evt, "PHSP.png");
+    DrawDalitz(Prob_PHSP, "PHSP.png");
 
     GetProbabilityHist();
 
@@ -848,3 +875,4 @@ int main(){
 
     return 0;
 }
+

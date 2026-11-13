@@ -32,7 +32,116 @@ Corrector_Knn corrector_Knn;
 Corrector_KpKLKL corrector_KpKLKL;
 Corrector_KSKLKL corrector_KSKLKL;
 Corrector_BtoDtoXKL corrector_BtoDtoXKL;
-Corrector_KS0 corrector_KS0;
+
+TH1D* hist = new TH1D("hist", "hist", 1, 0.0, 10.0);
+
+#include <algorithm>
+#include <random>
+#include <cmath>
+
+std::vector<double> calculateMKSKS(double N_KSKS, double avg_E, double avg_px, double avg_py, double avg_pz, double first_E, double first_px, double first_py, double first_pz, double second_E, double second_px, double second_py, double second_pz, double Bsig_E, double Bsig_p, double Bsig_pt, double Bsig_phi){
+
+if((N_KSKS > 1.5) && (N_KSKS < 2.5)){ // only one KSKS pair
+    double sum_E = first_E + second_E;
+    double sum_px = first_px + second_px;
+    double sum_py = first_py + second_py;
+    double sum_pz = first_pz + second_pz;
+    std::vector<double> temp;
+    temp.push_back(std::sqrt(sum_E*sum_E - sum_px*sum_px - sum_py*sum_py - sum_pz*sum_pz));
+    return temp;
+}
+else if ((N_KSKS > 2.5) && (N_KSKS < 3.5)){
+
+    double third_E = 3.0 * avg_E - (first_E + second_E);
+    double third_px = 3.0 * avg_px - (first_px + second_px);
+    double third_py = 3.0 * avg_py - (first_py + second_py);
+    double third_pz = 3.0 * avg_pz - (first_pz + second_pz);
+
+    double Bsig_pz = std::sqrt(Bsig_p * Bsig_p - Bsig_pt * Bsig_pt);
+    double Bsig_py = Bsig_pt * std::sin(Bsig_phi);
+    double Bsig_px = Bsig_pt * std::cos(Bsig_phi);
+
+    double unknown_E = Bsig_E - 3.0 * avg_E;
+    double unknown_px = Bsig_px - 3.0 * avg_px;
+    double unknown_py = Bsig_py - 3.0 * avg_py;
+    double unknown_pz = Bsig_pz - 3.0 * avg_pz;
+    printf("Mass of unkown particle: %lf\n", std::sqrt(unknown_E*unknown_E-unknown_px*unknown_px-unknown_py*unknown_py-unknown_pz*unknown_pz));
+    printf("Mass of B meson: %lf\n", std::sqrt(Bsig_E * Bsig_E - Bsig_px * Bsig_px - Bsig_py * Bsig_py - Bsig_pz * Bsig_pz));
+
+    // variable preparation
+    double spec_E = -1; // MXs_E
+    double spec_px = -1;
+    double spec_py = -1;
+    double spec_pz = -1;
+    double spec_M = -1;
+
+    double KSKS_E = -1; // KSKS_E
+    double KSKS_px = -1;
+    double KSKS_py = -1;
+    double KSKS_pz = -1;
+    double KSKS_M = -1;
+
+    std::vector<double> MKSKSs;
+    // combine with first
+    spec_E = Bsig_E - second_E - third_E;
+    spec_px = Bsig_px - second_px - third_px;
+    spec_py = Bsig_py - second_py - third_py;
+    spec_pz = Bsig_pz - second_pz - third_pz;
+    spec_M = std::sqrt(spec_E * spec_E - spec_px * spec_px - spec_py * spec_py - spec_pz * spec_pz);
+    KSKS_E = second_E + third_E;
+    KSKS_px = second_px + third_px;
+    KSKS_py = second_py + third_py;
+    KSKS_pz = second_pz + third_pz;
+    KSKS_M = std::sqrt(KSKS_E * KSKS_E - KSKS_px * KSKS_px - KSKS_py * KSKS_py - KSKS_pz * KSKS_pz);
+    if((spec_M > 1.0) && (spec_M < 2.0)) {
+        MKSKSs.push_back(KSKS_M);
+    }
+printf("MXs: %lf\n", spec_M);
+printf("MKSKS: %lf\n", KSKS_M);
+
+    // combine with second
+    spec_E = Bsig_E - first_E - third_E;
+    spec_px = Bsig_px - first_px - third_px;
+    spec_py = Bsig_py - first_py - third_py;
+    spec_pz = Bsig_pz - first_pz - third_pz;
+    spec_M = std::sqrt(spec_E * spec_E - spec_px * spec_px - spec_py * spec_py - spec_pz * spec_pz);
+    KSKS_E = first_E + third_E;
+    KSKS_px = first_px + third_px;
+    KSKS_py = first_py + third_py;
+    KSKS_pz = first_pz + third_pz;
+    KSKS_M = std::sqrt(KSKS_E * KSKS_E - KSKS_px * KSKS_px - KSKS_py * KSKS_py - KSKS_pz * KSKS_pz);
+    if((spec_M > 1.0) && (spec_M < 2.0)) {
+        MKSKSs.push_back(KSKS_M);
+    }
+printf("MXs: %lf\n", spec_M);
+printf("MKSKS: %lf\n", KSKS_M);
+
+    // combine with third
+    spec_E = Bsig_E - first_E - second_E;
+    spec_px = Bsig_px - first_px - second_px;
+    spec_py = Bsig_py - first_py - second_py;
+    spec_pz = Bsig_pz - first_pz - second_pz;
+    spec_M = std::sqrt(spec_E * spec_E - spec_px * spec_px - spec_py * spec_py - spec_pz * spec_pz);
+    KSKS_E = first_E + second_E;
+    KSKS_px = first_px + second_px;
+    KSKS_py = first_py + second_py;
+    KSKS_pz = first_pz + second_pz;
+    KSKS_M = std::sqrt(KSKS_E * KSKS_E - KSKS_px * KSKS_px - KSKS_py * KSKS_py - KSKS_pz * KSKS_pz);
+    if((spec_M > 1.0) && (spec_M < 2.0)) {
+        MKSKSs.push_back(KSKS_M);
+    }
+printf("MXs: %lf\n", spec_M);
+printf("MKSKS: %lf\n", KSKS_M);
+
+    return MKSKSs;
+
+}
+else{
+    printf("improper number of KS\n");
+    exit(1);
+}
+
+}
 
 double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mbc_, RooRealVar* weight_, RooDataSet* info_, std::string SampleName, double additional_weight = 1.0) {
     double Nevt = 0;
@@ -43,16 +152,8 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
     double Btag_ID = -1;
     double temp_N_bin_PID[4][N_PID_syst] = { 0.0 }; // K-true, K-mis, pi-true, pi-miss
     double temp_N_bin_pi0[N_pi0_syst] = { 0.0 };
-    double temp_N_pi0_syst_MC15ri[N_pi0_syst_MC15ri] = { 0.0 };
-    double temp_N_pi0_syst_MC15rd[N_pi0_syst_MC15rd] = { 0.0 };
     double temp_N_bin_fakeE[4][N_fakeE_syst] = { 0.0 }; //  K-, K+, pi-, pi+
     double temp_N_bin_fakeMU[4][N_fakeMU_syst] = { 0.0 }; //  K-, K+, pi-, pi+
-
-    double KS0_flight_distance = 0;
-    double KS0_costheta = 0;
-    double KS0_p = 0;
-    double KS0_D1p = 0;
-    double KS0_D2p = 0;
 
     double FEI_calibration_factor = -1;
 
@@ -86,6 +187,32 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
 
     double Bsig_M = -1;
 
+    double isSignal = -1;
+    double nBplusToXKSKS_var = -1;
+    double nBzeroToXKSKS_var = -1;
+
+    double NKS0 = -1;
+
+    double KS0_avg_E = -1;
+    double KS0_avg_px = -1;
+    double KS0_avg_py = -1;
+    double KS0_avg_pz = -1;
+
+    double KS0_1st_E = -1;
+    double KS0_1st_px = -1;
+    double KS0_1st_py = -1;
+    double KS0_1st_pz = -1;
+
+    double KS0_2nd_E = -1;
+    double KS0_2nd_px = -1;
+    double KS0_2nd_py = -1;
+    double KS0_2nd_pz = -1;
+
+    double Bsig_E = -1;
+    double Bsig_p = -1;
+    double Bsig_pt = -1;
+    double Bsig_phi = -1;
+
     std::vector<string> names;
     load_files(dirname, &names, including_string);
 
@@ -101,6 +228,9 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
         if (SampleName == "SIGNAL") tree_Xs = (TTree*)input_file->Get("Xs");
 
         tree_Bsig->SetBranchAddress("Bsig_Mbc", &Mbc_var); // Mbc
+        tree_Bsig->SetBranchAddress("Bsig_isSignal", &isSignal); // isSignal
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clXKSKS__bc", &nBplusToXKSKS_var);
+        tree_upsilon->SetBranchAddress("nParticlesInList__boB0__clXKSKS__bc", &nBzeroToXKSKS_var);
 
         tree_upsilon->SetBranchAddress("extraInfo__bodecayModeID__bc", &Upsilon_ID); // charged: 0, mixed: 1
         tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_decayModeID", &Bsig_ID);
@@ -113,8 +243,6 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npimisbin" + std::to_string(i_PID)).c_str(), &temp_N_bin_PID[3][i_PID]);
         }
         for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0bin" + std::to_string(i_pi0)).c_str(), &temp_N_bin_pi0[i_pi0]);
-        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15ri; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15ribin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15ri[i_pi0]);
-        for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npi0MC15rdbin" + std::to_string(i_pi0)).c_str(), &temp_N_pi0_syst_MC15rd[i_pi0]);
         if (SampleName == "SIGNAL") {
             tree_Xs->SetBranchAddress("nParticlesInList__boB__pl__clPrimaryMC__bc", &nBp);
             tree_Xs->SetBranchAddress("nParticlesInList__boB0__clPrimaryMC__bc", &nB0);
@@ -131,11 +259,6 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_n" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[2][i_fake]);
             tree_Bsig->SetBranchAddress(("Bsig_daughter_0_extraInfo_npifakeMUbin_p" + std::to_string(i_fake)).c_str(), &temp_N_bin_fakeMU[3][i_fake]);
         }
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_3D_distance", &KS0_flight_distance);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_costheta", &KS0_costheta);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_p", &KS0_p);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_D1p", &KS0_D1p);
-        tree_Bsig->SetBranchAddress("Bsig_daughter_0_extraInfo_KS0_D2p", &KS0_D2p);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKnn__bc", &N_Knn);
         tree_upsilon->SetBranchAddress("invMassInLists__bon0__clKnn__bc", &invM_Knn);
         tree_upsilon->SetBranchAddress("nParticlesInList__boB__pl__clKstarnn__bc", &N_Kstarnn);
@@ -161,12 +284,38 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
         tree_upsilon->SetBranchAddress("nParticlesInList__boD__pl__clDecayIntoKL0__bc", &nDptoXKL);
         tree_upsilon->SetBranchAddress("nParticlesInList__boD0__clDecayIntoKL0__bc", &nD0toXKL);
 
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boN_KS_KSKS__bc__bc", &NKS0);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_E__bc__bc", &KS0_avg_E);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_px__bc__bc", &KS0_avg_px);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_py__bc__bc", &KS0_avg_py);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_pz__bc__bc", &KS0_avg_pz);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_E__bc__bc", &KS0_1st_E);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_px__bc__bc", &KS0_1st_px);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_py__bc__bc", &KS0_1st_py);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_pz__bc__bc", &KS0_1st_pz);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_E__bc__bc", &KS0_2nd_E);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_px__bc__bc", &KS0_2nd_px);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_py__bc__bc", &KS0_2nd_py);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_pz__bc__bc", &KS0_2nd_pz);
+
+        tree_Bsig->SetBranchAddress("Bsig_E", &Bsig_E);
+        tree_Bsig->SetBranchAddress("Bsig_p", &Bsig_p);
+        tree_Bsig->SetBranchAddress("Bsig_pt", &Bsig_pt);
+        tree_Bsig->SetBranchAddress("Bsig_phi", &Bsig_phi);
+
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
             tree_Bsig->GetEntry(j);
             tree_Btag->GetEntry(j);
             if (SampleName == "SIGNAL") tree_Xs->GetEntry(j);
+
+// added lines
+if((names.at(i).find("CHG") == std::string::npos) && (names.at(i).find("MIX") == std::string::npos)) continue;
+else{
+    if((nBplusToXKSKS_var > 0.5) || (nBzeroToXKSKS_var > 0.5)) {}
+    else continue;
+}
 
             double weight_ri = 0.0;
             if (SampleName == "CHG") {
@@ -217,15 +366,13 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
             double Correction_PID = 1;
             double Correction_pi0 = 1;
             double Correction_fake = 1;
-            double Correction_KS0 = 1;
             for (int i_PID = 0; i_PID < N_PID_syst; i_PID++) {
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(0, i_PID, MCTYPE), temp_N_bin_PID[0][i_PID]); // true KID
                 Correction_KID = Correction_KID * std::pow(corrector_PID.GetCorrectionFactor(1, i_PID, MCTYPE), temp_N_bin_PID[1][i_PID]); // mis KID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(2, i_PID, MCTYPE), temp_N_bin_PID[2][i_PID]); // true PID
                 Correction_PID = Correction_PID * std::pow(corrector_PID.GetCorrectionFactor(3, i_PID, MCTYPE), temp_N_bin_PID[3][i_PID]); // mis PID
             }
-            if (std::string(MCTYPE) == "MC15ri") for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
-            else if (std::string(MCTYPE) == "MC15rd") for (int i_pi0 = 0; i_pi0 < N_pi0_syst_MC15rd; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_pi0_syst_MC15rd[i_pi0]);
+            for (int i_pi0 = 0; i_pi0 < N_pi0_syst; i_pi0++) Correction_pi0 = Correction_pi0 * std::pow(corrector_pi0.GetCorrectionFactor(i_pi0, MCTYPE), temp_N_bin_pi0[i_pi0]);
             for (int i_fake = 0; i_fake < N_fakeE_syst; i_fake++) {
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(0, i_fake, MCTYPE), temp_N_bin_fakeE[0][i_fake]); // K- from e
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeE(1, i_fake, MCTYPE), temp_N_bin_fakeE[1][i_fake]); // K+ from e
@@ -238,11 +385,9 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(2, i_fake, MCTYPE), temp_N_bin_fakeMU[2][i_fake]); // pi- from mu
                 Correction_fake = Correction_fake * std::pow(corrector_FakePID.GetCorrectionFactorfakeMU(3, i_fake, MCTYPE), temp_N_bin_fakeMU[3][i_fake]); // pi+ from mu
             }
-            if (std::string(MCTYPE) == "MC15ri") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_flight_distance, MCTYPE);
-            else if (std::string(MCTYPE) == "MC15rd") Correction_KS0 = Correction_KS0 * corrector_KS0.GetCorrectionFactor(KS0_p, KS0_costheta, KS0_flight_distance, KS0_D1p, KS0_D2p, MCTYPE);
 
             // Knn correction factor
-            double Correction_Knn = corrector_Knn.GetCorrectionFactorAtGeneric(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn);
+            double Correction_Knn = corrector_Knn.GetCorrectionFactorCancelOutObtainWeight(invM_Knn, invM_Kstarnn, invM_K0nn, invM_K0starnn, N_Knn, N_Kstarnn, N_K0nn, N_K0starnn, names.at(i), MCTYPE, true);
 
             // Multiplicity correction factor, it is not applied now. it is for a systematic uncertainty
             //double Correction_multiplicity = corrector_Multiplicity.GetCorrectionFactor(Ngamma_v200);
@@ -257,12 +402,29 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
             double Correction_BtoDtoXKL = 1.0;
             if (SampleName == "CHG" || SampleName == "MIX" || SampleName == "SIGNAL") Correction_BtoDtoXKL = corrector_BtoDtoXKL.GetCorrectionFactorAtGeneric(nDptoXKL + nD0toXKL);
 
-            double total_weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_KS0 * Correction_Knn * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * additional_weight;
+            double total_weight = FEI_calibration_factor * CAL * weight_ri * Correction_pi0 * Correction_KID * Correction_PID * Correction_fake * Correction_Knn * Correction_KpKLKL * Correction_KSKLKL * Correction_BtoDtoXKL * additional_weight;
 
-            *Mbc_ = Mbc_var;
-            *weight_ = total_weight;
-            info_->add(RooArgSet(*Mbc_, *weight_), weight_->getVal());
-            Nevt = Nevt + total_weight;
+            std::vector<double> MKSKSs = calculateMKSKS(NKS0, KS0_avg_E, KS0_avg_px, KS0_avg_py, KS0_avg_pz, KS0_1st_E, KS0_1st_px, KS0_1st_py, KS0_1st_pz, KS0_2nd_E, KS0_2nd_px, KS0_2nd_py, KS0_2nd_pz, Bsig_E, Bsig_p, Bsig_pt, Bsig_phi);
+
+//            double N_evt = 0;
+//            for(int i_MKSKS = 0; i_MKSKS < MKSKSs.size(); i_MKSKS++){
+//                if((MKSKSs.at(i_MKSKS)> 0.95) && (MKSKSs.at(i_MKSKS) < 2.06666666667)) { // select bin1
+//                    N_evt = N_evt + 1;
+//                }
+//            }
+
+//            double equal_weight = N_evt / MKSKSs.size();
+
+            for(int i_MKSKS = 0; i_MKSKS < MKSKSs.size(); i_MKSKS++){
+                if(true) { // select bin1
+                    *Mbc_ = Mbc_var;
+                    *weight_ = total_weight;
+                    info_->add(RooArgSet(*Mbc_, *weight_), weight_->getVal());
+                    Nevt = Nevt + total_weight;
+                    hist->Fill(2, total_weight);
+                }
+            }
+
         }
         input_file->Close();
 
@@ -274,6 +436,28 @@ double LetsAdd(const char* dirname, const char* including_string, RooRealVar* Mb
 double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar* weight_, RooDataSet* info_) {
     double Nevt = 0;
     double Mbc_var = 0;
+
+    double NKS0 = -1;
+
+    double KS0_avg_E = -1;
+    double KS0_avg_px = -1;
+    double KS0_avg_py = -1;
+    double KS0_avg_pz = -1;
+
+    double KS0_1st_E = -1;
+    double KS0_1st_px = -1;
+    double KS0_1st_py = -1;
+    double KS0_1st_pz = -1;
+
+    double KS0_2nd_E = -1;
+    double KS0_2nd_px = -1;
+    double KS0_2nd_py = -1;
+    double KS0_2nd_pz = -1;
+
+    double Bsig_E = -1;
+    double Bsig_p = -1;
+    double Bsig_pt = -1;
+    double Bsig_phi = -1;
 
     std::vector<string> names;
     load_files(dirname, &names);
@@ -289,6 +473,25 @@ double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar* weight_, RooDa
 
         tree_Bsig->SetBranchAddress("Bsig_Mbc", &Mbc_var); // Mbc
 
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boN_KS_KSKS__bc__bc", &NKS0);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_E__bc__bc", &KS0_avg_E);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_px__bc__bc", &KS0_avg_px);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_py__bc__bc", &KS0_avg_py);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boavg_KS_KSKS_pz__bc__bc", &KS0_avg_pz);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_E__bc__bc", &KS0_1st_E);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_px__bc__bc", &KS0_1st_px);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_py__bc__bc", &KS0_1st_py);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_1st_pz__bc__bc", &KS0_1st_pz);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_E__bc__bc", &KS0_2nd_E);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_px__bc__bc", &KS0_2nd_px);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_py__bc__bc", &KS0_2nd_py);
+        tree_upsilon->SetBranchAddress("daughter__bo1__cmextraInfo__boKS_KSKS_2nd_pz__bc__bc", &KS0_2nd_pz);
+
+        tree_Bsig->SetBranchAddress("Bsig_E", &Bsig_E);
+        tree_Bsig->SetBranchAddress("Bsig_p", &Bsig_p);
+        tree_Bsig->SetBranchAddress("Bsig_pt", &Bsig_pt);
+        tree_Bsig->SetBranchAddress("Bsig_phi", &Bsig_phi);
+
         printf("%lld entries...\n", tree_upsilon->GetEntries());
         for (unsigned int j = 0; j < tree_upsilon->GetEntries(); j++) { // Fill
             tree_upsilon->GetEntry(j);
@@ -297,10 +500,27 @@ double LetsAdd(const char* dirname, RooRealVar* Mbc_, RooRealVar* weight_, RooDa
 
             double total_weight = 1.0;
 
-            *Mbc_ = Mbc_var;
-            *weight_ = total_weight;
-            info_->add(RooArgSet(*Mbc_, *weight_), weight_->getVal());
-            Nevt = Nevt + total_weight;
+            std::vector<double> MKSKSs = calculateMKSKS(NKS0, KS0_avg_E, KS0_avg_px, KS0_avg_py, KS0_avg_pz, KS0_1st_E, KS0_1st_px, KS0_1st_py, KS0_1st_pz, KS0_2nd_E, KS0_2nd_px, KS0_2nd_py, KS0_2nd_pz, Bsig_E, Bsig_p, Bsig_pt, Bsig_phi);
+
+//            double N_evt = 0;
+//            for(int i_MKSKS = 0; i_MKSKS < MKSKSs.size(); i_MKSKS++){
+//                if((MKSKSs.at(i_MKSKS)> 0.95) && (MKSKSs.at(i_MKSKS) < 2.06666666667)) { // select bin1
+//                    N_evt = N_evt + 1;
+//                }
+//            }
+
+//            double equal_weight = N_evt / MKSKSs.size();
+
+            for(int i_MKSKS = 0; i_MKSKS < MKSKSs.size(); i_MKSKS++){
+                if(true) { // select bin1
+                    *Mbc_ = Mbc_var;
+                    *weight_ = total_weight;
+                    info_->add(RooArgSet(*Mbc_, *weight_), weight_->getVal());
+                    Nevt = Nevt + total_weight;
+                    hist->Fill(2, total_weight);
+                }
+            }
+
         }
         input_file->Close();
 
@@ -317,33 +537,28 @@ void Xnn_roofit() {
     RooDataSet info("info", "info", RooArgSet(Mbc, weight), WeightVar("weight"));
 
     const char* dirname = "./";
-    LetsAdd(dirname, "CHG",  & Mbc, &weight, &info, "CHG", 1.0);
-    LetsAdd(dirname, "MIX", &Mbc, &weight, &info, "MIX", 1.0);
-    LetsAdd(dirname, "UUBAR", &Mbc, &weight, &info, "UUBAR", 1.0);
-    LetsAdd(dirname, "DDBAR", &Mbc, &weight, &info, "DDBAR", 1.0);
-    LetsAdd(dirname, "SSBAR", &Mbc, &weight, &info, "SSBAR", 1.0);
-    LetsAdd(dirname, "CHARM", &Mbc, &weight, &info, "CHARM", 1.0);
-    RooPlot* Mbcframe = Mbc.frame(Bins(50), Title("M_{bc}^{sig} fit"));
+    LetsAdd(dirname, & Mbc, &weight, &info);
+    RooPlot* Mbcframe = Mbc.frame(Bins(50), Title(""));
     RooDataSet* d_Mbc = (RooDataSet*)info.reduce(RooArgSet(Mbc));
 
     // ARGUS background
     RooRealVar End("End", "End of Argus", 5.29); // fixed by experimental setting
-    RooRealVar c("curvature", "curvature of ARGUS", -68, -100, 20);
+    RooRealVar c("curvature", "curvature of ARGUS", 90, -100, 120);
     RooRealVar power("power", "power of ARGUS", 0.5); // just fixed
 
     RooArgusBG pdfARGUS("ARGUS", "ARGUS PDF", Mbc, End, c, power);
 
     // crystal ball signal
-    RooRealVar mean("mean", "mean of Crystal ball", 5.27981); // fixed by MC
-    RooRealVar width("width", "width of Crystal ball", 0.003151); // fixed by MC
-    RooRealVar alpha("alpha", "alpha of Crystal ball", 1.327851); // fixed by MC
-    RooRealVar n("n", "n of Crystal ball", 0.9, 0.5, 1.5);
+    RooRealVar mean("mean", "mean of Crystal ball", 5.278730); // fixed by K
+    RooRealVar width("width", "width of Crystal ball", 0.002592); // fixed by K
+    RooRealVar alpha("alpha", "alpha of Crystal ball", 1.263002); // fixed by signal MC
+    RooRealVar n("n", "n of Crystal ball", 1.548863); // fixed by signal MC
 
     RooCrystalBall pdfCRYSTAL("CRYSTAL", "CRYSTAL PDF", Mbc, mean, width, alpha, n);
 
     // Construct a signal and background PDF:
-    RooRealVar nsig("nsig", "nsig", 20, 0, 50);
-    RooRealVar nbkg("nbkg", "nkbkg", 300, 200, 500);
+    RooRealVar nsig("nsig", "nsig", 3, 0, 20);
+    RooRealVar nbkg("nbkg", "nkbkg", 20, 0, 100);
     RooExtendPdf esig("esignal", "extended signal p.d.f", pdfCRYSTAL, nsig);
     RooExtendPdf ebkg("ebkg", "extended background p.d.f", pdfARGUS, nbkg);
 
@@ -364,13 +579,48 @@ void Xnn_roofit() {
         printf("%s: %lf +- %lf\n", name_LT.c_str(), val_LT, err_LT);
     }
 
-    // Draw result
-    d_Mbc->plotOn(Mbcframe, DataError(RooAbsData::SumW2));
-    model.plotOn(Mbcframe, LineColor(kRed), Normalization(1.0, RooAbsReal::RelativeExpected));
-    model.plotOn(Mbcframe, Components(pdfARGUS), LineColor(kBlue), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
-    model.plotOn(Mbcframe, Components(pdfCRYSTAL), LineColor(kViolet), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
+    printf("Nevt: %lf +- %lf\n", hist->GetBinContent(1), hist->GetBinError(1));
 
-    TCanvas* c_temp = new TCanvas("Mbc", "Mbc", 600, 600);
-    gPad->SetLeftMargin(0.15); Mbcframe->GetYaxis()->SetTitleOffset(1.4); Mbcframe->Draw();
+    // Keep the original marker size on a 600-pixel canvas.
+    // Draw result
+    d_Mbc->plotOn(Mbcframe, DataError(RooAbsData::SumW2), MarkerSize(1.0), LineWidth(1));
+    model.plotOn(Mbcframe, LineColor(kRed), LineWidth(4), Normalization(1.0, RooAbsReal::RelativeExpected));
+    model.plotOn(Mbcframe, Components(pdfARGUS), LineColor(kBlue), LineWidth(4), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
+    model.plotOn(Mbcframe, Components(pdfCRYSTAL), LineColor(kViolet), LineWidth(4), LineStyle(kDashed), Normalization(1.0, RooAbsReal::RelativeExpected));
+
+    // Match the typography and margins used in Figure 8.12.
+    TCanvas* c_temp = new TCanvas("Mbc", "", 600, 600);
+    c_temp->SetCanvasSize(600, 600);
+    c_temp->SetLeftMargin(0.23);
+    c_temp->SetRightMargin(0.055);
+    c_temp->SetBottomMargin(0.22);
+    c_temp->SetTopMargin(0.05);
+    c_temp->cd();
+
+    Mbcframe->SetTitle("");
+    Mbcframe->GetXaxis()->SetTitle("M_{bc} [GeV/c^{2}]");
+    Mbcframe->GetYaxis()->SetTitle("Events / (0.002 GeV/c^{2})");
+    Mbcframe->GetXaxis()->SetLabelFont(42);
+    Mbcframe->GetYaxis()->SetLabelFont(42);
+    Mbcframe->GetXaxis()->SetTitleFont(42);
+    Mbcframe->GetYaxis()->SetTitleFont(42);
+    Mbcframe->GetXaxis()->SetLabelSize(0.060);
+    Mbcframe->GetYaxis()->SetLabelSize(0.060);
+    Mbcframe->GetXaxis()->SetTitleSize(0.065);
+    Mbcframe->GetYaxis()->SetTitleSize(0.065);
+    Mbcframe->GetXaxis()->SetLabelOffset(0.010);
+    Mbcframe->GetYaxis()->SetLabelOffset(0.010);
+    Mbcframe->GetXaxis()->SetTitleOffset(1.35);
+    Mbcframe->GetYaxis()->SetTitleOffset(1.50);
+    Mbcframe->GetXaxis()->CenterTitle();
+    Mbcframe->GetYaxis()->CenterTitle();
+    Mbcframe->GetXaxis()->SetNdivisions(502, false);
+    Mbcframe->GetYaxis()->SetNdivisions(505);
+    Mbcframe->Draw();
+
+    c_temp->RedrawAxis();
+    c_temp->Modified();
+    c_temp->Update();
     c_temp->SaveAs("fit_result.png");
+    c_temp->Print("fit_result.pdf", "pdf Portrait");
 }

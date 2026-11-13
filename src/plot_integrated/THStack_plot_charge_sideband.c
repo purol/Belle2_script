@@ -28,14 +28,14 @@ void THStack_plot_charge_sideband() {
     Nevt nevt_SSBAR = { 0.0, 0.0 };
     Nevt nevt_CHARM = { 0.0, 0.0 };
 
-    const char* ChargeSideband_MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_cside/CHG_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* ChargeSideband_MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_cside/MIX_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* ChargeSideband_MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_cside/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* ChargeSideband_MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_cside/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* ChargeSideband_MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_cside/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* ChargeSideband_MC_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_MC_cside/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* ChargeSideband_MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_cside/CHG_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* ChargeSideband_MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_cside/MIX_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* ChargeSideband_MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_cside/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* ChargeSideband_MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_cside/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* ChargeSideband_MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_cside/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* ChargeSideband_MC_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_cside/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application";
 
-    const char* ChargeSideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/KumoiRD_LS_data_cside/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* ChargeSideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_data_cside/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application";
 
     NevtCount_ri(ChargeSideband_MC_CHG_validation_dirname, "CHG", &nevt_CHG);
     NevtCount_ri(ChargeSideband_MC_MIX_validation_dirname, "MIX", &nevt_MIX);
@@ -209,7 +209,7 @@ void THStack_plot_charge_sideband() {
     variable_names.push_back("MsquaredBsig_op4"); branch_names.push_back("Upsilon");
     variable_names.push_back("MsquaredBsig_op7"); branch_names.push_back("Upsilon");
     variable_names.push_back("MVA_BB"); branch_names.push_back("Upsilon");
-    variable_names.push_back("bin index"); branch_names.push_back("Upsilon");
+    //variable_names.push_back("bin index"); branch_names.push_back("Upsilon");
 
     Nvar_num = static_cast<int>(variable_names.size());
 
@@ -570,9 +570,13 @@ void THStack_plot_charge_sideband() {
         Ratio_hist[k]->Divide(data_hist[k], stat_error_hist[k]);
 
         TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+        c_temp->SetLeftMargin(0.21);
+        c_temp->SetRightMargin(0.04);
 
         TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
-        pad1->SetBottomMargin(0.13); pad1->SetLeftMargin(0.15);
+        pad1->SetBottomMargin(0.15);
+        pad1->SetLeftMargin(0.21);
+        pad1->SetRightMargin(0.04);
         pad1->SetGridx(); pad1->Draw(); pad1->cd();
 
         if((variable_names.at(k).find("MVA") != std::string::npos) && (ChargeSideband_MC_values[k].size() > 10000)) pad1->SetLogy(1);
@@ -586,26 +590,49 @@ void THStack_plot_charge_sideband() {
         if (ymax_1 > ymax_2) real_max = ymax_1;
         else real_max = ymax_2;
 
-        Stack[k]->SetMaximum(real_max * 1.2);
+        // Reserve space for the luminosity label and the two-row legend.
+        Stack[k]->SetMaximum(real_max * 1.6);
 
         Stack[k]->Draw("pfc Hist");
-        Stack[k]->GetXaxis()->SetTitleSize(0.05);
-        Stack[k]->GetYaxis()->SetTitleSize(0.05);
-        Stack[k]->GetXaxis()->SetLabelSize(0.05);
-        Stack[k]->GetYaxis()->SetLabelSize(0.05);
+        Stack[k]->GetXaxis()->SetTitleSize(0.055);
+        Stack[k]->GetYaxis()->SetTitleSize(0.065);
+        Stack[k]->GetXaxis()->SetLabelSize(0.065);
+        Stack[k]->GetYaxis()->SetLabelSize(0.065);
+        Stack[k]->GetXaxis()->SetNdivisions(505);
+        Stack[k]->GetYaxis()->SetNdivisions(505);
+
+        Stack[k]->GetYaxis()->ChangeLabel(-1, -1, 0);
+
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP EX0");
-        TPaveText* pt_lumi = new TPaveText(0.18, 0.83, 0.48, 0.85, "NDC NB");
-        pt_lumi->SetTextSize(0.035); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("Belle II #int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
-        TLegend* legend = pad1->BuildLegend(0.92, 0.9, 0.67, 0.5);
-        legend->SetFillStyle(0); legend->SetLineWidth(0);
-        TPaveText* pt = new TPaveText(0.25, 0.88, 0.65, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->SetTextSize(0.06); pt->AddText(("MC scaled to data, Data/MC= " + to_string_precision(CAL)).c_str()); pt->Draw();
+        TPaveText* pt_lumi = new TPaveText(0.22, 0.81, 0.95, 0.89, "NDC NB");
+        pt_lumi->SetTextSize(0.05); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(12); pt_lumi->AddText("Belle II #scale[0.7]{#int} L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
+        TLegend* legend = pad1->BuildLegend(0.22, 0.67, 0.95, 0.81);
+        legend->SetNColumns(4);
+        legend->SetTextFont(42);
+        legend->SetTextSize(0.05);
+        legend->SetFillStyle(0);
+        legend->SetBorderSize(0);
+        legend->SetLineWidth(0);
+        TPaveText* pt = new TPaveText(0.195, 0.90, 0.96, 1.0, "NDC NB");
+        pt->SetFillStyle(0);
+        pt->SetLineWidth(0);
+        pt->SetTextSize(0.065);
+        pt->AddText(("MC scaled to data, Data/MC= " + to_string_precision(CAL)).c_str());
+        pt->Draw();
 
         c_temp->cd();
-        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetTopMargin(0.03); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+        TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
+        pad2->SetTopMargin(0.03);
+        pad2->SetBottomMargin(0.15);
+        pad2->SetLeftMargin(0.21);
+        pad2->SetRightMargin(0.04);
+        pad2->SetGridx(); pad2->Draw(); pad2->cd();
         Ratio_hist[k]->SetMinimum(0.5); Ratio_hist[k]->SetMaximum(1.5); Ratio_hist[k]->SetLineWidth(2);
-        Ratio_hist[k]->GetYaxis()->SetTitleSize(0.1); Ratio_hist[k]->GetYaxis()->SetTitleOffset(0.5);
-        Ratio_hist[k]->GetXaxis()->SetLabelSize(0.1); Ratio_hist[k]->GetYaxis()->SetLabelSize(0.1);
+        Ratio_hist[k]->GetYaxis()->SetTitleSize(0.12); Ratio_hist[k]->GetYaxis()->SetTitleOffset(0.5);
+        Ratio_hist[k]->GetXaxis()->SetLabelSize(0.12); Ratio_hist[k]->GetYaxis()->SetLabelSize(0.12);
+        Ratio_hist[k]->GetXaxis()->SetNdivisions(505);
+        Ratio_hist[k]->GetYaxis()->SetNdivisions(504, kFALSE);
         Ratio_hist[k]->Draw("e0p");
         TLine* line = new TLine(Ratio_hist[k]->GetXaxis()->GetXmin(), 1.0, Ratio_hist[k]->GetXaxis()->GetXmax(), 1.0);
         line->SetLineColor(kRed);
@@ -613,6 +640,7 @@ void THStack_plot_charge_sideband() {
         line->Draw();
 
         c_temp->SetBottomMargin(0.0);
+        c_temp->SaveAs((variable_names.at(k) + "_sideband.pdf").c_str());
         c_temp->SaveAs((variable_names.at(k) + "_sideband.png").c_str());
 
         delete c_temp;

@@ -33,7 +33,6 @@ void ReadKstarnnFiles_r_sp(){
 
     load_files(dirname, &names);
 
-    TH1D* weight_hist = new TH1D("Kstarnn weight", ";weight;", 50, 0.0, 10.0);
     TH1D* Plot = new TH1D("M", ";M [GeV/c^{2}]; evt", Nentry, MIN_invM, MAX_invM);
 
     for(unsigned int i = 0; i<names.size(); i++) {
@@ -123,17 +122,49 @@ void ReadKstarnnFiles_r_sp(){
     double First = f->GetParameter(0);
     double Second = f->GetParameter(1);
 
-    TCanvas* c_temp = new TCanvas("c", "", 1200, 1200); c_temp->cd();
-    TLegend *legend = new TLegend(0.6, 0.7, 0.9, 0.9);
-    legend->AddEntry(Plot,"MC","f");
-    legend->AddEntry(gr,"[Phys. Rev. Lett. 100, 251801]","lpfe");
+    TCanvas* c_temp = new TCanvas("c", "", 1200, 1200);
+    c_temp->SetCanvasSize(1200, 1200);
+    c_temp->SetLeftMargin(0.19);
+    c_temp->SetRightMargin(0.04);
+    c_temp->SetBottomMargin(0.15);
+    c_temp->SetTopMargin(0.05);
+    c_temp->cd();
+
+    // About 9 pt for labels and 10 pt for titles at half the thesis text width.
+    gr->GetXaxis()->SetLabelFont(42);
+    gr->GetYaxis()->SetLabelFont(42);
+    gr->GetXaxis()->SetTitleFont(42);
+    gr->GetYaxis()->SetTitleFont(42);
+    gr->GetXaxis()->SetLabelSize(0.040);
+    gr->GetYaxis()->SetLabelSize(0.040);
+    gr->GetXaxis()->SetTitleSize(0.045);
+    gr->GetYaxis()->SetTitleSize(0.045);
+    gr->GetXaxis()->SetTitleOffset(1.25);
+    gr->GetYaxis()->SetTitleOffset(1.40);
+    gr->GetXaxis()->CenterTitle();
+    gr->GetYaxis()->CenterTitle();
+    gr->GetXaxis()->SetNdivisions(505);
+    gr->GetYaxis()->SetNdivisions(505);
+
+    // Reserve enough horizontal space for the full reference at a fixed size.
+    TLegend* legend = new TLegend(0.28, 0.76, 0.95, 0.94);
+    legend->AddEntry(Plot, "flat model", "f");
+    legend->AddEntry(gr, "[Phys. Rev. Lett. 100, 251801]", "lpfe");
+    legend->SetTextFont(42);
+    legend->SetTextSize(0.040);
+    legend->SetMargin(0.12);
     legend->SetFillStyle(0);
+    legend->SetBorderSize(0);
     legend->SetLineWidth(0);
+
     gr->Draw("AP");
-    //Plot->Draw("E1 SAME");
     Plot->Draw("SAME Hist");
     legend->Draw("SAME");
+    c_temp->RedrawAxis();
+    c_temp->Modified();
+    c_temp->Update();
     c_temp->SaveAs("invMdistribution_Kstarnn.png");
+    c_temp->SaveAs("invMdistribution_Kstarnn.pdf");
 
     FILE* fp;
     fp = fopen("Kstarnn_weight.txt","w");
@@ -149,11 +180,7 @@ void ReadKstarnnFiles_r_sp(){
         else weight = 0;
 
         fprintf(fp, "%lf\n", weight);
-        weight_hist->Fill(weight);
     }
 
     fclose(fp);
-
-    weight_hist->Draw("Hist");
-    c_temp->SaveAs("weights_Kstarnn.png");
 }
