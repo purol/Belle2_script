@@ -524,7 +524,7 @@ void GetProbabilityHist() {
             double DalitzValue = s23 * s12 * s12 + (s23 * s23 + (mKp * mKp - mKL0 * mKL0) * (mB * mB - mKL0 * mKL0) - s23 * (mB * mB + mKL0 * mKL0 + mKL0 * mKL0 + mKp * mKp)) * s12 + ((mKL0 * mKL0 * mB * mB - mKL0 * mKL0 * mKp * mKp) * (mB * mB - mKL0 * mKL0 + mKL0 * mKL0 - mKp * mKp));
 
             if (DalitzValue < 0 && s23 >= s13) {
-                if (isnan(Probability_value)) continue;
+                if (std::isnan(Probability_value)) continue;
                 Prob->Fill(s13, s23, Probability_value);
             }
 
@@ -546,7 +546,7 @@ void GetProbabilityHist() {
             double DalitzValue = s23 * s12 * s12 + (s23 * s23 + (mKp * mKp - mKL0 * mKL0) * (mB * mB - mKL0 * mKL0) - s23 * (mB * mB + mKL0 * mKL0 + mKL0 * mKL0 + mKp * mKp)) * s12 + ((mKL0 * mKL0 * mB * mB - mKL0 * mKL0 * mKp * mKp) * (mB * mB - mKL0 * mKL0 + mKL0 * mKL0 - mKp * mKp));
 
             if (DalitzValue < 0 && s23 >= s13) {
-                if (isnan(Probability_value)) continue;
+                if (std::isnan(Probability_value)) continue;
                 Prob_1D_s23->Fill(m23, 4 * m13 * m23 * Probability_value); // multiply Jacobian
             }
 
@@ -565,7 +565,7 @@ void GetProbabilityHist() {
             double DalitzValue = s23 * s12 * s12 + (s23 * s23 + (mKp * mKp - mKL0 * mKL0) * (mB * mB - mKL0 * mKL0) - s23 * (mB * mB + mKL0 * mKL0 + mKL0 * mKL0 + mKp * mKp)) * s12 + ((mKL0 * mKL0 * mB * mB - mKL0 * mKL0 * mKp * mKp) * (mB * mB - mKL0 * mKL0 + mKL0 * mKL0 - mKp * mKp));
 
             if (DalitzValue < 0 && s23 >= s13) {
-                if (isnan(Probability_value)) continue;
+                if (std::isnan(Probability_value)) continue;
                 Prob_conv->Fill(s12, s13, Probability_value);
             }
 
@@ -587,7 +587,7 @@ void GetProbabilityHist() {
             double DalitzValue = s23 * s12 * s12 + (s23 * s23 + (mKp * mKp - mKL0 * mKL0) * (mB * mB - mKL0 * mKL0) - s23 * (mB * mB + mKL0 * mKL0 + mKL0 * mKL0 + mKp * mKp)) * s12 + ((mKL0 * mKL0 * mB * mB - mKL0 * mKL0 * mKp * mKp) * (mB * mB - mKL0 * mKL0 + mKL0 * mKL0 - mKp * mKp));
 
             if (DalitzValue < 0 && s23 >= s13) {
-                if (isnan(Probability_value)) continue;
+                if (std::isnan(Probability_value)) continue;
                 Prob_1D_s12->Fill(m12, 4 * m13 * m12 * Probability_value); // multiply Jacobian
                 Prob_1D_s13->Fill(m13, 4 * m13 * m12 * Probability_value); // multiply Jacobian
             }
@@ -835,7 +835,7 @@ int main(){
     FillHist();
     GetZeros();
 
-    DrawDalitz(N_evt, "PHSP.png");
+    DrawDalitz(Prob_PHSP, "PHSP.png");
 
     GetProbabilityHist();
 
@@ -848,3 +848,4 @@ int main(){
 
     return 0;
 }
+

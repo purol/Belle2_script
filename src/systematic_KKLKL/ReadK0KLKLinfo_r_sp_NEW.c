@@ -454,7 +454,7 @@ void GetProbabilityHist() {
             double DalitzValue = smax * smin * smin + (smax * smax - smax * (mB0 * mB0 + mKS0 * mKS0 + mKL0 * mKL0 + mKL0 * mKL0)) * smin + (mKL0 * mKL0 * mB0 * mB0 - mKS0 * mKS0 * mKL0 * mKL0) * (mB0 * mB0 - mKS0 * mKS0 + mKL0 * mKL0 - mKL0 * mKL0);
 
             if (DalitzValue < 0 && smax > smin && smax > smed && smin < smed) {
-                if (isnan(Probability_value)) continue;
+                if (std::isnan(Probability_value)) continue;
                 Prob->Fill(smax, smin, Probability_value);
             }
 
@@ -476,7 +476,7 @@ void GetProbabilityHist() {
             double DalitzValue = smax * smin * smin + (smax * smax - smax * (mB0 * mB0 + mKS0 * mKS0 + mKL0 * mKL0 + mKL0 * mKL0)) * smin + (mKL0 * mKL0 * mB0 * mB0 - mKS0 * mKS0 * mKL0 * mKL0) * (mB0 * mB0 - mKS0 * mKS0 + mKL0 * mKL0 - mKL0 * mKL0);
 
             if (DalitzValue < 0 && smax > smin && smax > smed && smin < smed) {
-                if (isnan(Probability_value)) continue;
+                if (std::isnan(Probability_value)) continue;
                 Prob_1D_sqrt_smin->Fill(mmin, 4 * mmax * mmin * Probability_value); // multiply Jacobian
                 Prob_1D_sqrt_smax->Fill(mmax, 4 * mmax * mmin * Probability_value); // multiply Jacobian
             }
@@ -803,3 +803,4 @@ int main(){
 
     return 0;
 }
+
