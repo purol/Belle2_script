@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -13,13 +15,15 @@ y2_error = np.array([1.266299, 1.702811, 1.216369, 0.218832])
 offset = 0.0
 
 # Plotting the histograms as points with offset and x-error bars
+plt.figure(figsize=(6.4, 4.8))
 plt.errorbar(x - offset, y1, xerr=x_error, yerr=y1_error, fmt='bo', label='Data', capsize=5, elinewidth=2, alpha=0.7)
 plt.errorbar(x + offset, y2, xerr=x_error, yerr=y2_error, fmt='ro', label=r'$B \rightarrow X_{s} p \bar{p}$ MC', capsize=5, elinewidth=2, alpha=0.7)
 
-plt.title(r'$B \rightarrow X_{s} p \bar{p}$ analysis')
-plt.xlabel(r'$M_{p\bar{p}}$ [GeV/$c^{2}$]')
-plt.ylabel('the number of events')
-plt.legend()
+plt.xlabel(r'$M_{p\bar{p}}$ [GeV/$c^{2}$]', fontsize=16)
+plt.ylabel('Events', fontsize=16)
+plt.xticks(fontsize=14)
+plt.yticks(fontsize=14)
+plt.legend(fontsize=14)
 
 # Adding a grid
 plt.grid(True)
@@ -28,4 +32,9 @@ plt.grid(True)
 plt.xlim(1.8, 4.3)
 
 plt.tight_layout()
+
+# Save beside this script, independently of the working directory.
+output_dir = Path(__file__).resolve().parent
+plt.savefig(output_dir / "Xsnn.pdf")
+plt.savefig(output_dir / "Xsnn.png", dpi=300)
 plt.show()
