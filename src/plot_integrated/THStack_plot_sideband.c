@@ -604,6 +604,9 @@ void THStack_plot_sideband() {
         Stack[k]->SetMaximum(real_max * 1.6);
 
         Stack[k]->Draw("pfc Hist");
+        if (variable_names.at(k) == "MVA_BB") {
+            Stack[k]->GetXaxis()->SetTitle("#it{O}_{BDT}");
+        }
         Stack[k]->GetXaxis()->SetTitleSize(0.055);
         Stack[k]->GetYaxis()->SetTitleSize(0.065);
         Stack[k]->GetXaxis()->SetLabelSize(0.065);
