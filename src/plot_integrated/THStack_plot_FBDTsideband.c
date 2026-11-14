@@ -19,7 +19,7 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "THStack_plot.h"
 #include "template.h"
 
-void THStack_plot_sideband() {
+void THStack_plot_FBDTsideband() {
 
     NormalizeAtEachMXs = false;
 
