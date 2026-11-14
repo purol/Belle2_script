@@ -18,20 +18,19 @@ revise void Loader::ConvertIntoSeparateDataFile(std::string output_name, double 
 #include "base.h"
 #include "THStack_plot.h"
 #include "template.h"
-#include "TGaxis.h"
 
 void THStack_plot_sideband() {
 
-    NormalizeAtEachMXs = true;
+    NormalizeAtEachMXs = false;
 
-    const char* Sideband_MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_side/CHG_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* Sideband_MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_side/MIX_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* Sideband_MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_side/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* Sideband_MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_side/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* Sideband_MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_side/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application";
-    const char* Sideband_MC_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_side/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Sideband_MC_CHG_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_FBDTside/CHG_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut";
+    const char* Sideband_MC_MIX_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_FBDTside/MIX_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut";
+    const char* Sideband_MC_UUBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_FBDTside/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut";
+    const char* Sideband_MC_DDBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_FBDTside/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut";
+    const char* Sideband_MC_SSBAR_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_FBDTside/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut";
+    const char* Sideband_MC_CHARM_validation_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_FBDTside/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut";
 
-    const char* Sideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_data_side/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application";
+    const char* Sideband_data_dirname = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_data_FBDTside/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut";
 
     // Count event to normalize at each MXs region
     LetsCountMC(Sideband_MC_CHG_validation_dirname, "CHG");
@@ -360,7 +359,7 @@ void THStack_plot_sideband() {
 
         double min = *min_element(temp_v.begin(), temp_v.end());
         double max = *max_element(temp_v.begin(), temp_v.end());
-        int bins = 100;
+        int bins = 20;
 
         if (hasEnding(variable_names.at(k), std::string("dr"))) { // exceptions
             max = 0.2;
@@ -545,8 +544,6 @@ void THStack_plot_sideband() {
     printf("hhISR: %d\n", (int)hhISR_values[0].size());
     printf("data: %d\n", (int)Sideband_data_values[0].size());
 
-    TGaxis::SetExponentOffset(-0.09, -0.04, "y");
-
     for (int k = 0; k < (int)variable_names.size(); k++) { // draw
         // Scale the histogram if `NormalizeAtEachMXs` is not turned on
         if (NormalizeAtEachMXs == false) {
@@ -583,11 +580,11 @@ void THStack_plot_sideband() {
         c_temp->SetRightMargin(0.04);
 
         TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
+        pad1->SetTopMargin(0.10);
         pad1->SetBottomMargin(0.15);
         pad1->SetLeftMargin(0.21);
         pad1->SetRightMargin(0.04);
         pad1->SetGridx(); pad1->Draw(); pad1->cd();
-
         if((variable_names.at(k).find("MVA") != std::string::npos) && (Sideband_MC_values[k].size() > 10000)) pad1->SetLogy(1);
         else pad1->SetLogy(0);
 
@@ -599,7 +596,11 @@ void THStack_plot_sideband() {
         if (ymax_1 > ymax_2) real_max = ymax_1;
         else real_max = ymax_2;
 
-        // Reserve space for the luminosity label and the two-row legend.
+        // Reserve space above the error bars for the luminosity label and legend.
+        for (int bin = 1; bin <= data_hist[k]->GetNbinsX(); ++bin) {
+            real_max = std::max(real_max, data_hist[k]->GetBinContent(bin) + data_hist[k]->GetBinError(bin));
+            real_max = std::max(real_max, stat_error_hist[k]->GetBinContent(bin) + stat_error_hist[k]->GetBinError(bin));
+        }
         Stack[k]->SetMaximum(real_max * 1.6);
 
         Stack[k]->Draw("pfc Hist");
@@ -609,9 +610,6 @@ void THStack_plot_sideband() {
         Stack[k]->GetYaxis()->SetLabelSize(0.065);
         Stack[k]->GetXaxis()->SetNdivisions(505);
         Stack[k]->GetYaxis()->SetNdivisions(505);
-
-        Stack[k]->GetYaxis()->ChangeLabel(-1, -1, 0);
-
         stat_error_hist[k]->SetFillColor(12); stat_error_hist[k]->SetLineWidth(0); stat_error_hist[k]->SetFillStyle(3004); stat_error_hist[k]->Draw("e2 SAME");
         data_hist[k]->SetLineWidth(2); data_hist[k]->SetLineColor(kBlack); data_hist[k]->SetMarkerStyle(8); data_hist[k]->Draw("SAME eP EX0");
         TPaveText* pt_lumi = new TPaveText(0.22, 0.81, 0.95, 0.89, "NDC NB");
@@ -635,7 +633,7 @@ void THStack_plot_sideband() {
             TPaveText* pt = new TPaveText(0.06, 0.90, 0.98, 1.0, "NDC NB");
             pt->SetFillStyle(0);
             pt->SetLineWidth(0);
-            // Fit the existing normalization text on one line.
+            // Fit the full normalization text on one line.
             pt->SetTextSize(0);
             pt->AddText(("MC scaled to data at each MXs region, Data/MC= " + to_string_precision(Ratio_Nevt_MXs1->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs2->GetBinContent(1)) + ", " + to_string_precision(Ratio_Nevt_MXs3->GetBinContent(1)) ).c_str());
             pt->Draw();
@@ -660,12 +658,14 @@ void THStack_plot_sideband() {
         line->Draw();
 
         c_temp->SetBottomMargin(0.0);
+        c_temp->SaveAs((variable_names.at(k) + "_sideband.pdf").c_str());
         c_temp->SaveAs((variable_names.at(k) + "_sideband.png").c_str());
 
         // print data/MC if it is bin-index
         if (variable_names.at(k) == "bin index") {
             PrintDataMCRatio(Stack[k], data_hist[k], Ratio_hist[k], "dataMCratio_sideband.txt");
-            PrintDataMC(Stack[k], data_hist[k]);
+        }
+        else if (variable_names.at(k) == "MVA_BB") {
             Printchi2(Stack[k], data_hist[k]);
         }
 
