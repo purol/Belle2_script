@@ -630,6 +630,9 @@ void THStack_plot_Jpsi() {
         // Leave room above the error bars for the luminosity label and three-row legend.
         Stack[k]->SetMaximum(real_max > 0.0 ? real_max * 1.8 : 1.0);
 
+        if (variable_names.at(k) == "MVA_BB") {
+            Stack[k]->SetTitle(";#it{O}_{BDT};number of candidates");
+        }
         Stack[k]->Draw("pfc Hist");
         Stack[k]->GetXaxis()->SetTitleSize(0.055);
         Stack[k]->GetYaxis()->SetTitleSize(0.065);
@@ -784,3 +787,4 @@ void THStack_plot_Jpsi() {
     delete data_one_bin;
     delete Ratio_one_bin;
 }
+
