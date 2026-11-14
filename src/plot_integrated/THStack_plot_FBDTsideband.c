@@ -661,7 +661,7 @@ void THStack_plot_FBDTsideband() {
         line->Draw();
 
         c_temp->SetBottomMargin(0.0);
-        c_temp->SaveAs((variable_names.at(k) + "_sideband.pdf").c_str());
+        c_temp->Print((variable_names.at(k) + "_sideband.pdf").c_str(), "pdf Portrait");
         c_temp->SaveAs((variable_names.at(k) + "_sideband.png").c_str());
 
         // print data/MC if it is bin-index
