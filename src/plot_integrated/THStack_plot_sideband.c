@@ -603,10 +603,10 @@ void THStack_plot_sideband() {
         }
         Stack[k]->SetMaximum(real_max * 1.6);
 
-        Stack[k]->Draw("pfc Hist");
         if (variable_names.at(k) == "MVA_BB") {
-            Stack[k]->GetXaxis()->SetTitle("#it{O}_{BDT}");
+            Stack[k]->SetTitle(";#it{O}_{BDT};number of candidates");
         }
+        Stack[k]->Draw("pfc Hist");
         Stack[k]->GetXaxis()->SetTitleSize(0.055);
         Stack[k]->GetYaxis()->SetTitleSize(0.065);
         Stack[k]->GetXaxis()->SetLabelSize(0.065);
@@ -644,7 +644,7 @@ void THStack_plot_sideband() {
 
         c_temp->cd();
         TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3);
-        pad2->SetTopMargin(0.03);
+        pad2->SetTopMargin(0.10);
         pad2->SetBottomMargin(0.15);
         pad2->SetLeftMargin(0.21);
         pad2->SetRightMargin(0.04);
