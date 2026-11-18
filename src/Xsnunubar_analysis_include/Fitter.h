@@ -14,6 +14,7 @@
 # include "THStack.h"
 # include "TStyle.h"
 # include "TLine.h"
+# include "TLatex.h"
 # include "TColor.h"
 # include "TPaveText.h"
 # include "RooErrorVar.h"
@@ -1317,11 +1318,28 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     Ratio_hist->SetLineColor(kBlack); Ratio_hist->SetMarkerStyle(21); Ratio_hist->Sumw2(); Ratio_hist->SetStats(0);
     Ratio_hist->Divide(data_hist, all_hist);
 
+    // Pixel fonts keep the two pads legible at 0.6\textwidth.
+    const double label_size = 28.0;
+    const double title_size = 30.0;
+    const double luminosity_size = 26.0;
+    auto style_axis = [=](TAxis* axis) {
+        axis->SetLabelFont(43);
+        axis->SetLabelSize(label_size);
+        axis->SetTitleFont(43);
+        axis->SetTitleSize(title_size);
+        axis->SetLabelOffset(0.008);
+    };
+
     // draw plot
-    TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
+    TCanvas* c_temp = new TCanvas("c", "", 800, 800);
+    c_temp->SetCanvasSize(800, 800);
+    c_temp->cd();
 
     TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.3, 1.0, 1.0);
-    pad1->SetBottomMargin(0.02); pad1->SetLeftMargin(0.15);
+    pad1->SetBottomMargin(0.02);
+    pad1->SetTopMargin(0.12);
+    pad1->SetLeftMargin(0.16);
+    pad1->SetRightMargin(0.04);
     pad1->Draw(); pad1->cd();
 
     gStyle->SetPalette(kPastel);
@@ -1331,53 +1349,88 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     double real_max = 0;
     if (ymax_1 > ymax_2) real_max = ymax_1;
     else real_max = ymax_2;
+    Stack->SetMaximum(real_max * 1.6);
 
-    Stack->SetMaximum(real_max * 1.3);
-
-    Stack->Draw("pfc Hist"); Stack->GetXaxis()->SetLabelSize(0.0); Stack->GetXaxis()->SetTitleSize(0.0);
+    Stack->Draw("pfc Hist");
+    Stack->GetXaxis()->SetLabelSize(0.0);
+    Stack->GetXaxis()->SetTitleSize(0.0);
+    style_axis(Stack->GetYaxis());
+    Stack->GetYaxis()->SetTitle("Events");
+    Stack->GetYaxis()->SetTitleOffset(1.8);
     if (data != nullptr) {
         data_hist->SetLineWidth(2);
         data_hist->SetLineColor(kBlack);
         data_hist->SetMarkerStyle(8);
         data_hist->Draw("SAME eP EX0");
     }
-    TLegend* legend = pad1->BuildLegend(0.95, 0.89, 0.75, 0.55);
-    legend->SetFillStyle(0); legend->SetLineWidth(0);
+    TLegend* legend = pad1->BuildLegend(0.45, 0.62, 0.95, 0.86);
+    legend->SetNColumns(2);
+    legend->SetTextFont(43);
+    legend->SetTextSize(label_size);
+    legend->SetFillStyle(0);
+    legend->SetBorderSize(0);
 
-    // vertical line to separate MXs region
+    // vertical lines separating the reconstructed-mass regions
     c_temp->Update();
-    TLine* line_12 = new TLine((double)RarityBins_MX1, pad1->GetUymin(), (double)RarityBins_MX1, pad1->GetUymax());
+    // Extend each separator to the top of the plotting frame.
+    const double separator_top = pad1->GetUymax();
+    TLine* line_12 = new TLine((double)RarityBins_MX1, pad1->GetUymin(), (double)RarityBins_MX1, separator_top);
     line_12->SetLineColor(kBlack); line_12->SetLineStyle(2); line_12->SetLineWidth(3);
-    TLine* line_23 = new TLine((double)RarityBins_MX1 + RarityBins_MX2, pad1->GetUymin(), (double)RarityBins_MX1 + RarityBins_MX2, pad1->GetUymax());
+    TLine* line_23 = new TLine((double)RarityBins_MX1 + RarityBins_MX2, pad1->GetUymin(), (double)RarityBins_MX1 + RarityBins_MX2, separator_top);
     line_23->SetLineColor(kBlack); line_23->SetLineStyle(2); line_23->SetLineWidth(3);
     line_12->Draw(); line_23->Draw();
 
-    // write MXs bin text
-    TPaveText* pt_1 = new TPaveText(0.14, 0.85, 0.25 + 0.14, 1.0, "NDC NB");
-    pt_1->SetTextSize(0.035); pt_1->SetFillStyle(0); pt_1->SetLineWidth(0); pt_1->SetTextAlign(11); pt_1->AddText("0.0 < M_{X_{s}}^{reco} < 0.6 GeV/c^{2}"); pt_1->Draw();
-    TPaveText* pt_2 = new TPaveText(0.25 + 0.14, 0.85, 2.0 * 0.25 + 0.14, 1.0, "NDC NB");
-    pt_2->SetTextSize(0.035); pt_2->SetFillStyle(0); pt_2->SetLineWidth(0); pt_2->SetTextAlign(11); pt_2->AddText("0.6 < M_{X_{s}}^{reco} < 1.0 GeV/c^{2}"); pt_2->Draw();
-    TPaveText* pt_3 = new TPaveText(2.0 * 0.25 + 0.14, 0.85, 3.0 * 0.25 + 0.14, 1.0, "NDC NB");
-    pt_3->SetTextSize(0.035); pt_3->SetFillStyle(0); pt_3->SetLineWidth(0); pt_3->SetTextAlign(11); pt_3->AddText("1.0 < M_{X_{s}}^{reco} < 2.0 GeV/c^{2}"); pt_3->Draw();
+    // Center MR1--MR3 above their bin ranges, as defined in the thesis.
+    const double region_edges[] = {BinMIN, (double)RarityBins_MX1,
+        (double)RarityBins_MX1 + RarityBins_MX2, BinMAX};
+    const char* region_names[] = {"MR1", "MR2", "MR3"};
+    TLatex region_text;
+    region_text.SetNDC();
+    region_text.SetTextFont(43);
+    region_text.SetTextSize(label_size);
+    region_text.SetTextAlign(22);
+    for (int region = 0; region < 3; ++region) {
+        const double center = 0.5 * (region_edges[region] + region_edges[region + 1]);
+        const double x_ndc = pad1->GetLeftMargin() +
+            (center - BinMIN) / (BinMAX - BinMIN) *
+            (1.0 - pad1->GetLeftMargin() - pad1->GetRightMargin());
+        region_text.DrawLatex(x_ndc, 0.94, region_names[region]);
+    }
 
-    // write Belle text
-    TPaveText* pt_belle = new TPaveText(0.16, 0.83, 0.4, 0.88, "NDC NB");
-    pt_belle->SetTextSize(0.035); pt_belle->SetFillStyle(0); pt_belle->SetLineWidth(0); pt_belle->SetTextAlign(11); pt_belle->AddText("Belle II preliminary"); pt_belle->Draw();
-    TPaveText* pt_lumi = new TPaveText(0.16, 0.76, 0.4, 0.81, "NDC NB");
-    pt_lumi->SetTextSize(0.035); pt_lumi->SetFillStyle(0); pt_lumi->SetLineWidth(0); pt_lumi->SetTextAlign(11); pt_lumi->AddText("#int L dt = 365.4 fb^{-1}"); pt_lumi->Draw();
+    TLatex belle_text;
+    belle_text.SetNDC();
+    belle_text.SetTextFont(43);
+    belle_text.SetTextSize(label_size);
+    belle_text.SetTextAlign(12);
+    belle_text.DrawLatex(0.18, 0.80, "#splitline{Belle II}{preliminary}");
+    TLatex luminosity_text;
+    luminosity_text.SetNDC();
+    luminosity_text.SetTextFont(43);
+    luminosity_text.SetTextSize(luminosity_size);
+    luminosity_text.SetTextAlign(12);
+    luminosity_text.DrawLatex(0.18, 0.66, "#scale[0.7]{#int} L dt = 365.4 fb^{-1}");
 
     c_temp->cd();
-    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.2); pad2->SetLeftMargin(0.15); pad2->SetTopMargin(0.05); pad2->Draw(); pad2->cd();
+    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1.0, 0.3);
+    pad2->SetBottomMargin(0.35);
+    pad2->SetLeftMargin(0.16);
+    pad2->SetRightMargin(0.04);
+    pad2->SetTopMargin(0.05);
+    pad2->Draw(); pad2->cd();
     Ratio_hist->SetMinimum(0.5); Ratio_hist->SetMaximum(1.5); Ratio_hist->SetLineWidth(2);
-    Ratio_hist->GetYaxis()->SetTitleSize(0.08); Ratio_hist->GetYaxis()->SetTitleOffset(0.5); Ratio_hist->GetYaxis()->SetLabelSize(0.08);
-    Ratio_hist->GetXaxis()->SetLabelSize(0.08); Ratio_hist->GetXaxis()->SetTitleSize(0.08);
+    style_axis(Ratio_hist->GetXaxis());
+    style_axis(Ratio_hist->GetYaxis());
+    Ratio_hist->GetXaxis()->SetTitle("Bin index");
+    Ratio_hist->GetXaxis()->SetTitleOffset(1.1);
+    Ratio_hist->GetYaxis()->SetTitle("Data/MC");
+    Ratio_hist->GetYaxis()->SetTitleOffset(1.8);
+    Ratio_hist->GetYaxis()->SetNdivisions(502, kFALSE);
     Ratio_hist->Draw("E X0 P");
     TLine* line = new TLine(Ratio_hist->GetXaxis()->GetXmin(), 1.0, Ratio_hist->GetXaxis()->GetXmax(), 1.0);
     line->SetLineColor(kRed);
     line->SetLineStyle(1); line->SetLineWidth(3);
     line->Draw();
 
-    // vertical line to separate MXs region
     c_temp->Update();
     TLine* line_12_pad2 = new TLine((double)RarityBins_MX1, pad2->GetUymin(), (double)RarityBins_MX1, pad2->GetUymax());
     line_12_pad2->SetLineColor(kBlack); line_12_pad2->SetLineStyle(2); line_12_pad2->SetLineWidth(3);
@@ -1385,8 +1438,17 @@ void GetPlotTemplate(RooWorkspace* w, RooDataSet* data = nullptr, const char * p
     line_23_pad2->SetLineColor(kBlack); line_23_pad2->SetLineStyle(2); line_23_pad2->SetLineWidth(3);
     line_12_pad2->Draw(); line_23_pad2->Draw();
 
-    c_temp->SetBottomMargin(0.0);
-    c_temp->SaveAs(plot_name);
+    // Save both formats, with explicit portrait orientation for the PDF.
+    std::string output_base(plot_name);
+    const auto dot = output_base.find_last_of('.');
+    const auto slash = output_base.find_last_of("/\\");
+    if (dot != std::string::npos && (slash == std::string::npos || dot > slash)) {
+        output_base.resize(dot);
+    }
+    c_temp->Modified();
+    c_temp->Update();
+    c_temp->Print((output_base + ".pdf").c_str(), "pdf Portrait");
+    c_temp->SaveAs((output_base + ".png").c_str());
 
     // print values
     printf("data:\n");
