@@ -7,6 +7,7 @@
 
 #include "TFile.h"
 #include "TH1.h"
+#include "TAxis.h"
 #include "TTree.h"
 
 #include "constants.h"
@@ -39,15 +40,15 @@ TH1D* Ncandidate_SIGNAL_after_preselection = new TH1D("Ncandidate_SIGNAL_after_p
 TH1D* Nevt_SIGNAL_before_FBDT_cut = new TH1D("Nevt_SIGNAL_before_FBDT_cut", ";M_{X_{s}}^{reco} [GeV/c^{2}]", 9, 0.45, 3.0);
 TH1D* Nevt_SIGNAL_after_selection = new TH1D("Nevt_SIGNAL_after_selection", ";M_{X_{s}}^{reco} [GeV/c^{2}]", 9, 0.45, 3.0);
 
-TH1D* Nevt_SIGNAL_initial_true = new TH1D("Nevt_SIGNAL_initial_true", ";M_{X_{s}}^{true} [GeV/c^{2}]", 9, 0.45, 3.0);
-TH1D* Nevt_SIGNAL_after_preselection_true = new TH1D("Nevt_SIGNAL_after_preselection_true", ";M_{X_{s}}^{true} [GeV/c^{2}]", 9, 0.45, 3.0);
-TH1D* Nevt_SIGNAL_before_FBDT_cut_true = new TH1D("Nevt_SIGNAL_before_FBDT_cut_true", ";M_{X_{s}}^{true} [GeV/c^{2}]", 9, 0.45, 3.0);
-TH1D* Nevt_SIGNAL_after_selection_true = new TH1D("Nevt_SIGNAL_after_selection_true", ";M_{X_{s}}^{true} [GeV/c^{2}]", 9, 0.45, 3.0);
+TH1D* Nevt_SIGNAL_initial_true = new TH1D("Nevt_SIGNAL_initial_true", ";M_{X_{s}} [GeV/c^{2}]", 9, 0.45, 3.0);
+TH1D* Nevt_SIGNAL_after_preselection_true = new TH1D("Nevt_SIGNAL_after_preselection_true", ";M_{X_{s}} [GeV/c^{2}]", 9, 0.45, 3.0);
+TH1D* Nevt_SIGNAL_before_FBDT_cut_true = new TH1D("Nevt_SIGNAL_before_FBDT_cut_true", ";M_{X_{s}} [GeV/c^{2}]", 9, 0.45, 3.0);
+TH1D* Nevt_SIGNAL_after_selection_true = new TH1D("Nevt_SIGNAL_after_selection_true", ";M_{X_{s}} [GeV/c^{2}]", 9, 0.45, 3.0);
 
-TH1D* SIGNAL_pre_and_selection_efficiency_true = new TH1D("SIGNAL_pre_and_selection_efficiency_true", ";M_{X_{s}}^{true} [GeV/c^{2}];Efficiency", 9, 0.45, 3.0);
+TH1D* SIGNAL_pre_and_selection_efficiency_true = new TH1D("SIGNAL_pre_and_selection_efficiency_true", ";M_{X_{s}} [GeV/c^{2}];Efficiency", 9, 0.45, 3.0);
 TH1D* SIGNAL_selection_efficiency = new TH1D("SIGNAL_selection_efficiency", ";M_{X_{s}}^{reco} [GeV/c^{2}];Efficiency", 9, 0.45, 3.0);
 TH1D* SIGNAL_FBDT_efficiency = new TH1D("SIGNAL_FBDT_efficiency", ";M_{X_{s}}^{reco} [GeV/c^{2}];FBDT Efficiency", 9, 0.45, 3.0);
-TH1D* SIGNAL_FBDT_efficiency_true = new TH1D("SIGNAL_FBDT_efficiency_true", ";M_{X_{s}}^{true} [GeV/c^{2}];FBDT Efficiency", 9, 0.45, 3.0);
+TH1D* SIGNAL_FBDT_efficiency_true = new TH1D("SIGNAL_FBDT_efficiency_true", ";M_{X_{s}} [GeV/c^{2}];FBDT Efficiency", 9, 0.45, 3.0);
 
 TH1D* BKG_selection_efficiency = new TH1D("BKG_selection_efficiency", ";M_{X_{s}}^{reco} [GeV/c^{2}];1 - (rejection rate)", 9, 0.45, 3.0);
 TH1D* BKG_FBDT_efficiency = new TH1D("BKG_FBDT_efficiency", ";M_{X_{s}}^{reco} [GeV/c^{2}];FBDT 1 - (rejection rate)", 9, 0.45, 3.0);
@@ -518,34 +519,81 @@ void ReadDecayInfo_q2(const char* dirname, const char* included_string, const ch
     return;
 }
 
+// Common plotting style for panels inserted at 0.45\textwidth.
+static void DrawEfficiencyHistogram(TH1D* hist, const char* output_base,
+                                    const char* selection_label) {
+    const std::string base(output_base);
+    TCanvas canvas(("c_" + base).c_str(), "", 1200, 1000);
+    canvas.SetCanvasSize(1200, 1000);
+    canvas.SetLeftMargin(0.22);
+    canvas.SetRightMargin(0.05);
+    canvas.SetBottomMargin(0.18);
+    canvas.SetTopMargin(0.14);
+
+    hist->SetStats(false);
+    hist->SetMarkerStyle(20);
+    hist->SetMarkerSize(1.5);
+    hist->SetMarkerColor(kBlue);
+    hist->SetLineColor(kBlue);
+    hist->SetLineWidth(3);
+
+    TAxis* axes[] = {hist->GetXaxis(), hist->GetYaxis()};
+    for (TAxis* axis : axes) {
+        axis->SetLabelFont(43);
+        axis->SetLabelSize(54);
+        axis->SetTitleFont(43);
+        axis->SetTitleSize(58);
+        axis->SetLabelOffset(0.01);
+    }
+    hist->GetXaxis()->SetTitleOffset(1.25);
+    hist->GetYaxis()->SetTitle("Efficiency");
+    hist->GetYaxis()->SetTitleOffset(1.6);
+    hist->GetYaxis()->SetMaxDigits(3);
+    hist->Draw("E1 P");
+
+    TPaveText heading(0.22, 0.90, 0.95, 0.99, "NDC NB");
+    heading.SetFillStyle(0);
+    heading.SetBorderSize(0);
+    heading.SetTextFont(43);
+    heading.SetTextSize(54);
+    heading.SetTextAlign(22);
+    heading.AddText(selection_label);
+    heading.Draw();
+
+    canvas.Modified();
+    canvas.Update();
+    canvas.SaveAs((base + ".png").c_str());
+    canvas.Print((base + ".pdf").c_str(), "pdf Portrait");
+}
+
 int main(int argc, char* argv[]) {
     // function to calculate efficiency as a function of MXs
 
-    const char* dirname_CHG_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v008/before_Mbc_cut";
-    const char* dirname_MIX_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v008/before_Mbc_cut";
-    const char* dirname_UUBAR_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_v008/before_Mbc_cut";
-    const char* dirname_DDBAR_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_v008/before_Mbc_cut";
-    const char* dirname_SSBAR_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_v008/before_Mbc_cut";
-    const char* dirname_CHARM_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_v008/before_Mbc_cut";
+    const char* dirname_CHG_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHG_analysis/validation_v009/before_Mbc_cut";
+    const char* dirname_MIX_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/MIX_analysis/validation_v009/before_Mbc_cut";
+    const char* dirname_UUBAR_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/UUBAR_analysis/validation_v009/before_Mbc_cut";
+    const char* dirname_DDBAR_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/DDBAR_analysis/validation_v009/before_Mbc_cut";
+    const char* dirname_SSBAR_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SSBAR_analysis/validation_v009/before_Mbc_cut";
+    const char* dirname_CHARM_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHARM_analysis/validation_v009/before_Mbc_cut";
 
-    const char* dirname_CHG_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v008/final_output";
-    const char* dirname_MIX_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v008/final_output";
-    const char* dirname_UUBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_v008/final_output";
-    const char* dirname_DDBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_v008/final_output";
-    const char* dirname_SSBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_v008/final_output";
-    const char* dirname_CHARM_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_v008/final_output";
+    const char* dirname_CHG_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHG_analysis/validation_v009/final_output";
+    const char* dirname_MIX_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/MIX_analysis/validation_v009/final_output";
+    const char* dirname_UUBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/UUBAR_analysis/validation_v009/final_output";
+    const char* dirname_DDBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/DDBAR_analysis/validation_v009/final_output";
+    const char* dirname_SSBAR_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SSBAR_analysis/validation_v009/final_output";
+    const char* dirname_CHARM_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHARM_analysis/validation_v009/final_output";
 
-    const char* dirname_CHG_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHG_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_MIX_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/MIX_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_UUBAR_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/UUBAR_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_DDBAR_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/DDBAR_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_SSBAR_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SSBAR_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* dirname_CHARM_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/CHARM_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_CHG_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHG_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_MIX_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_UUBAR_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_DDBAR_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_SSBAR_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_CHARM_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
 
     const char* dirname_SIGNAL_initial = "/home/belle2/junewoo/storage_ghi/20220929_SIGNAL_decayInfo_again/small";
-    const char* dirname_SIGNAL_after_preselection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/before_Mbc_cut";
-    const char* dirname_SIGNAL_after_before_FBDT_cut = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/final_output";
-    const char* dirname_SIGNAL_after_selection = "/home/belle2/junewoo/storage_ghi/Analysis/KumoiRD/SIGNAL_analysis/validation_v008/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* dirname_SIGNAL_after_preselection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/before_Mbc_cut";
+    const char* dirname_SIGNAL_after_before_FBDT_cut = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/final_output";
+    const char* dirname_SIGNAL_after_selection = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
 
     FillBKG(dirname_CHG_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("CHG", MCTYPE, "validation", "CHG"));
     FillBKG(dirname_MIX_after_preselection, "root", Ncandidate_BKG_after_preselection, ObtainWeight("MIX", MCTYPE, "validation", "MIX"));
@@ -623,70 +671,21 @@ int main(int argc, char* argv[]) {
     SIGNAL_efficiency_q2_true->Divide(Nevt_SIGNAL_after_selection_q2_true, Nevt_SIGNAL_initial_q2_true, 1.0, 1.0, "B");
     SIGNAL_efficiency_q2_true->SetStats(false);
 
-    // define TCanvas
-    TCanvas* c_temp = new TCanvas("c", "", 1200, 1000);
-
-    // set draw option
-    SIGNAL_pre_and_selection_efficiency_true->SetMarkerSize(0.0);
-    SIGNAL_pre_and_selection_efficiency_true->SetLineWidth(2);
-    SIGNAL_pre_and_selection_efficiency_true->SetMarkerColor(4);
-    SIGNAL_pre_and_selection_efficiency_true->SetMarkerStyle(21);
-    SIGNAL_pre_and_selection_efficiency_true->SetStats(false);
-
-    SIGNAL_FBDT_efficiency->SetMarkerSize(0.0);
-    SIGNAL_FBDT_efficiency->SetLineWidth(2);
-    SIGNAL_FBDT_efficiency->SetMarkerColor(4);
-    SIGNAL_FBDT_efficiency->SetMarkerStyle(21);
-    SIGNAL_FBDT_efficiency->SetStats(false);
-
-    BKG_FBDT_efficiency->SetMarkerSize(0.0);
-    BKG_FBDT_efficiency->SetLineWidth(2);
-    BKG_FBDT_efficiency->SetMarkerColor(4);
-    BKG_FBDT_efficiency->SetMarkerStyle(21);
-    BKG_FBDT_efficiency->SetStats(false);
-
-    BKG_selection_efficiency->SetMarkerSize(0.0);
-    BKG_selection_efficiency->SetLineWidth(2);
-    BKG_selection_efficiency->SetMarkerColor(4);
-    BKG_selection_efficiency->SetMarkerStyle(21);
-    BKG_selection_efficiency->SetStats(false);
-
-    TPaveText* pt;
-
-    // draw SIGNAL preselection + selection efficiency true
-    SIGNAL_pre_and_selection_efficiency_true->Draw("P");
-    pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for preselection + selection"); pt->Draw();
-    c_temp->SaveAs("Efficiency.png");
-
-    // draw SIGNAL FBDT efficiency reco
-    SIGNAL_FBDT_efficiency->Draw("P");
-    pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for FBDT"); pt->Draw();
-    c_temp->SaveAs("Signal_FBDT_reco.png");
-
-    // draw SIGNAL FBDT efficiency true
-    SIGNAL_FBDT_efficiency_true->Draw("P");
-    pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for FBDT"); pt->Draw();
-    c_temp->SaveAs("FBDT_Efficiency.png");
-
-    // draw SIGNAL efficiency reco
-    SIGNAL_selection_efficiency->Draw("P");
-    pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency for selection"); pt->Draw();
-    c_temp->SaveAs("Signal_eff_reco.png");
-
-    // draw BKG FBDT efficiency
-    BKG_FBDT_efficiency->Draw("P");
-    pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("(1 - rejection rate) for FBDT"); pt->Draw();
-    c_temp->SaveAs("Background_FBDT.png");
-
-    // draw BKG 1 - (rejection)
-    BKG_selection_efficiency->Draw("P");
-    pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("(1 - rejection rate) for selection"); pt->Draw();
-    c_temp->SaveAs("Background_eff_reco.png");
-
-    // draw efficiency as a function of q2
-    SIGNAL_efficiency_q2_true->Draw("P");
-    pt = new TPaveText(0.135, 0.88, 0.5, 1.0, "NDC NB"); pt->SetFillStyle(0); pt->SetLineWidth(0); pt->AddText("efficiency"); pt->Draw();
-    c_temp->SaveAs("Efficiency_q2.png");
+    // Draw all efficiencies with the same style and save PNG and portrait PDF.
+    DrawEfficiencyHistogram(SIGNAL_pre_and_selection_efficiency_true,
+                            "Efficiency", "Preselection + selection");
+    DrawEfficiencyHistogram(SIGNAL_FBDT_efficiency,
+                            "Signal_FBDT_reco", "FastBDT requirement");
+    DrawEfficiencyHistogram(SIGNAL_FBDT_efficiency_true,
+                            "FBDT_Efficiency", "FastBDT requirement");
+    DrawEfficiencyHistogram(SIGNAL_selection_efficiency,
+                            "Signal_eff_reco", "Selection");
+    DrawEfficiencyHistogram(BKG_FBDT_efficiency,
+                            "Background_FBDT", "FastBDT requirement");
+    DrawEfficiencyHistogram(BKG_selection_efficiency,
+                            "Background_eff_reco", "Selection");
+    DrawEfficiencyHistogram(SIGNAL_efficiency_q2_true,
+                            "Efficiency_q2", "Preselection + selection");
 
     return 0;
 }
