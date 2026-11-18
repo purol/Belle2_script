@@ -5,15 +5,16 @@
 #include "RooPolynomial.h"
 #include "RooHistPdf.h"
 #include "TCanvas.h"
+#include "TLegend.h"
+#include "TStyle.h"
 #include "TAxis.h"
 #include "RooPlot.h"
 
 #include <string>
+#include <algorithm>
 # include <vector>
 
 using namespace RooFit ;
-
-#include "constants.h"
 
 void load_files(const char* dirname, std::vector<string>* names) {
     TSystemDirectory dir(dirname, dirname);
@@ -31,14 +32,14 @@ void load_files(const char* dirname, std::vector<string>* names) {
     }
 }
 
-TH1F* FBDTc_MC_train = new TH1F("MC train", ";BDT_{c};Arbitrary unit", 40, 0.0, 1.0);
-TH1F* FBDTc_MC_test = new TH1F("MC test", ";BDT_{c};Arbitrary unit", 40, 0.0, 1.0);
+TH1F* FBDTc_MC_train = new TH1F("MC train", ";BDT_{c};", 40, 0.0, 1.0);
+TH1F* FBDTc_MC_test = new TH1F("MC test", ";BDT_{c};", 40, 0.0, 1.0);
 
-TH1F* FBDTc_MC_train_correction = new TH1F("MC train with correction", ";BDT_{c};Arbitrary unit", 40, 0.0, 1.0);
-TH1F* FBDTc_MC_test_correction = new TH1F("MC test with correction", ";BDT_{c};Arbitrary unit", 40, 0.0, 1.0);
+TH1F* FBDTc_MC_train_correction = new TH1F("MC train with correction", ";BDT_{c};", 40, 0.0, 1.0);
+TH1F* FBDTc_MC_test_correction = new TH1F("MC test with correction", ";BDT_{c};", 40, 0.0, 1.0);
 
-TH1F* FBDTc_data_train = new TH1F("data train", ";BDT_{c};Arbitrary unit", 40, 0.0, 1.0);
-TH1F* FBDTc_data_test = new TH1F("data test", ";BDT_{c};Arbitrary unit", 40, 0.0, 1.0);
+TH1F* FBDTc_data_train = new TH1F("data train", ";BDT_{c};", 40, 0.0, 1.0);
+TH1F* FBDTc_data_test = new TH1F("data test", ";BDT_{c};", 40, 0.0, 1.0);
 
 typedef struct _Nevt {
     double NevtwithoutCorrection;
@@ -128,17 +129,13 @@ void FastBDT_output_KS_test_BDTc_off()
     Nevt data_all = { 0.0, 0.0, 0.0 };
 
     // dirnames
-    const char* side_data = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_data_off/temp_v000/SIGNAL";
+    const char* side_data = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_data_off/temp_v009/SIGNAL";
 
-    const char* side_MC_UUBAR_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000_train/UUBAR";
-    const char* side_MC_DDBAR_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000_train/DDBAR";
-    const char* side_MC_SSBAR_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000_train/SSBAR";
-    const char* side_MC_CHARM_train = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000_train/CHARM";
+    const char* side_MC_UUBAR_validation = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_off/temp_v009/UUBAR";
+    const char* side_MC_DDBAR_validation = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_off/temp_v009/DDBAR";
+    const char* side_MC_SSBAR_validation = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_off/temp_v009/SSBAR";
+    const char* side_MC_CHARM_validation = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD_LS_MC_off/temp_v009/CHARM";
 
-    const char* side_MC_UUBAR_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000/UUBAR";
-    const char* side_MC_DDBAR_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000/DDBAR";
-    const char* side_MC_SSBAR_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000/SSBAR";
-    const char* side_MC_CHARM_test = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori_LS_MC_off/temp_v000/CHARM";
 
 
     // train sample
@@ -147,35 +144,39 @@ void FastBDT_output_KS_test_BDTc_off()
         load_files(side_data, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
             if (i % 7 == 0) continue;
-            LetsFill((side_data + std::string("/") + names.at(i)).c_str(), FBDTc_data_train, &data_all, 1.0);
+            LetsFill((side_data + std::string("/") + names.at(i)).c_str(), FBDTc_data_train, &data_all, 1.0 / 0.83152260744);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_UUBAR_train, &names);
+        load_files(side_MC_UUBAR_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_UUBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, Scale_UUBAR_train * (0.0361697 / 0.36449));
+            if (i % 7 == 0) continue;
+            LetsFill((side_MC_UUBAR_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, 0.25 / 0.87399429016);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_DDBAR_train, &names);
+        load_files(side_MC_DDBAR_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_DDBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, Scale_DDBAR_train * (0.0361697 / 0.36449));
+            if (i % 7 == 0) continue;
+            LetsFill((side_MC_DDBAR_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, 0.25 / 0.86799468791);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_SSBAR_train, &names);
+        load_files(side_MC_SSBAR_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_SSBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, Scale_SSBAR_train * (0.0361697 / 0.36449));
+            if (i % 7 == 0) continue;
+            LetsFill((side_MC_SSBAR_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, 0.25 / 0.83277800916);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_CHARM_train, &names);
+        load_files(side_MC_CHARM_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_CHARM_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, Scale_CHARM_train * (0.0361697 / 0.36449));
+            if (i % 7 == 0) continue;
+            LetsFill((side_MC_CHARM_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train, &nevt_train, 0.25 / 0.85138558986);
         }
     }
 
@@ -190,30 +191,34 @@ void FastBDT_output_KS_test_BDTc_off()
     }
     {
         std::vector<string> names;
-        load_files(side_MC_UUBAR_test, &names);
+        load_files(side_MC_UUBAR_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_UUBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, Scale_UUBAR_test * (0.0061593 / 0.36449));
+            if (i % 7 != 0) continue;
+            LetsFill((side_MC_UUBAR_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, 0.25 / 0.12600570983);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_DDBAR_test, &names);
+        load_files(side_MC_DDBAR_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_DDBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, Scale_DDBAR_test * (0.0061593 / 0.36449));
+            if (i % 7 != 0) continue;
+            LetsFill((side_MC_DDBAR_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, 0.25 / 0.13200531208);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_SSBAR_test, &names);
+        load_files(side_MC_SSBAR_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_SSBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, Scale_SSBAR_test * (0.0061593 / 0.36449));
+            if (i % 7 != 0) continue;
+            LetsFill((side_MC_SSBAR_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, 0.25 / 0.16722199083);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_CHARM_test, &names);
+        load_files(side_MC_CHARM_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFill((side_MC_CHARM_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, Scale_CHARM_test * (0.0061593 / 0.36449));
+            if (i % 7 != 0) continue;
+            LetsFill((side_MC_CHARM_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test, &nevt_test, 0.25 / 0.14861441013);
         }
     }
 
@@ -225,30 +230,34 @@ void FastBDT_output_KS_test_BDTc_off()
     // Corrected MC train
     {
         std::vector<string> names;
-        load_files(side_MC_UUBAR_train, &names);
+        load_files(side_MC_UUBAR_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_UUBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, Scale_UUBAR_train * (0.0361697 / 0.36449), NormFactorForTrain);
+            if (i % 7 == 0) continue;
+            LetsFillwithCorrection((side_MC_UUBAR_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.25 / 0.87399429016, NormFactorForTrain);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_DDBAR_train, &names);
+        load_files(side_MC_DDBAR_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_DDBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, Scale_DDBAR_train* (0.0361697 / 0.36449), NormFactorForTrain);
+            if (i % 7 == 0) continue;
+            LetsFillwithCorrection((side_MC_DDBAR_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.25 / 0.86799468791, NormFactorForTrain);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_SSBAR_train, &names);
+        load_files(side_MC_SSBAR_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_SSBAR_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, Scale_SSBAR_train* (0.0361697 / 0.36449), NormFactorForTrain);
+            if (i % 7 == 0) continue;
+            LetsFillwithCorrection((side_MC_SSBAR_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.25 / 0.83277800916, NormFactorForTrain);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_CHARM_train, &names);
+        load_files(side_MC_CHARM_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_CHARM_train + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, Scale_CHARM_train* (0.0361697 / 0.36449), NormFactorForTrain);
+            if (i % 7 == 0) continue;
+            LetsFillwithCorrection((side_MC_CHARM_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_train_correction, 0.25 / 0.85138558986, NormFactorForTrain);
         }
     }
 
@@ -256,30 +265,34 @@ void FastBDT_output_KS_test_BDTc_off()
     // Corrected MC test
     {
         std::vector<string> names;
-        load_files(side_MC_UUBAR_test, &names);
+        load_files(side_MC_UUBAR_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_UUBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, Scale_UUBAR_test* (0.0061593 / 0.36449), NormFactorForTest);
+            if (i % 7 != 0) continue;
+            LetsFillwithCorrection((side_MC_UUBAR_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.25 / 0.12600570983, NormFactorForTest);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_DDBAR_test, &names);
+        load_files(side_MC_DDBAR_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_DDBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, Scale_DDBAR_test* (0.0061593 / 0.36449), NormFactorForTest);
+            if (i % 7 != 0) continue;
+            LetsFillwithCorrection((side_MC_DDBAR_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.25 / 0.13200531208, NormFactorForTest);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_SSBAR_test, &names);
+        load_files(side_MC_SSBAR_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_SSBAR_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, Scale_SSBAR_test* (0.0061593 / 0.36449), NormFactorForTest);
+            if (i % 7 != 0) continue;
+            LetsFillwithCorrection((side_MC_SSBAR_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.25 / 0.16722199083, NormFactorForTest);
         }
     }
     {
         std::vector<string> names;
-        load_files(side_MC_CHARM_test, &names);
+        load_files(side_MC_CHARM_validation, &names);
         for (unsigned int i = 0; i < names.size(); ++i) {
-            LetsFillwithCorrection((side_MC_CHARM_test + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, Scale_CHARM_test* (0.0061593 / 0.36449), NormFactorForTest);
+            if (i % 7 != 0) continue;
+            LetsFillwithCorrection((side_MC_CHARM_validation + std::string("/") + names.at(i)).c_str(), FBDTc_MC_test_correction, 0.25 / 0.14861441013, NormFactorForTest);
         }
     }
 
@@ -326,28 +339,76 @@ void FastBDT_output_KS_test_BDTc_off()
 
     gStyle->SetOptStat(0);
 
-    TCanvas* c_temp = new TCanvas("c", "", 600, 600); c_temp->cd(); // gPad->SetLogy();
+    // Use the same vertical scale for both panels.
+    const double plotMax = 1.15 * std::max({
+        FBDTc_MC_train->GetMaximum(),
+        FBDTc_MC_test->GetMaximum(),
+        FBDTc_MC_train_correction->GetMaximum(),
+        FBDTc_MC_test_correction->GetMaximum(),
+        FBDTc_data_train->GetMaximum(),
+        FBDTc_data_test->GetMaximum()
+    });
 
-    double MC_train_max = FBDTc_MC_train->GetMaximum(); double data_train_max = FBDTc_data_train->GetMaximum();
-    if(MC_train_max > data_train_max) FBDTc_MC_train->SetMaximum(1.1 * MC_train_max);
-    else FBDTc_MC_train->SetMaximum(1.1 * data_train_max);
+    auto drawBDTc = [&](const char* canvasName,
+                        TH1F* mcTrain, TH1F* mcTest,
+                        const char* outputName) {
+        auto* canvas = new TCanvas(canvasName, "", 600, 600);
+        canvas->SetCanvasSize(600, 600);
+        canvas->SetLeftMargin(0.16);
+        canvas->SetRightMargin(0.04);
+        canvas->SetBottomMargin(0.14);
+        canvas->SetTopMargin(0.05);
+        canvas->cd();
 
-    FBDTc_MC_train->Draw("Hist"); FBDTc_MC_train->GetYaxis()->SetTitleOffset(1.3);
-    FBDTc_data_train->Draw("HistSAME");
-    FBDTc_MC_test->Draw("AP SAME"); FBDTc_data_test->Draw("AP SAME");
-    gPad->BuildLegend(0.9, 0.9, 0.6, 0.6);
-    c_temp->SaveAs("BDTc_BeforeCorrection.png");
+        mcTrain->SetMinimum(0.0);
+        mcTrain->SetMaximum(plotMax);
 
-    TCanvas* c_temp_2 = new TCanvas("c2", "", 600, 600); c_temp_2->cd(); // gPad->SetLogy();
+        for (TAxis* axis :
+             {mcTrain->GetXaxis(), mcTrain->GetYaxis()}) {
+            axis->SetLabelFont(43);
+            axis->SetLabelSize(26);
+            axis->SetTitleFont(43);
+            axis->SetTitleSize(28);
+            axis->SetLabelOffset(0.008);
+        }
 
-    if (MC_train_max > data_train_max) FBDTc_MC_train_correction->SetMaximum(1.1 * MC_train_max);
-    else FBDTc_MC_train_correction->SetMaximum(1.1 * data_train_max);
+        mcTrain->GetXaxis()->SetTitle("BDT_{c}");
+        mcTrain->GetXaxis()->SetTitleOffset(1.1);
+        mcTrain->GetXaxis()->SetNdivisions(505);
+        mcTrain->GetYaxis()->SetTitle("Arbitrary units");
+        mcTrain->GetYaxis()->SetTitleOffset(1.15);
 
-    FBDTc_MC_train_correction->Draw("Hist"); FBDTc_MC_train_correction->GetYaxis()->SetTitleOffset(1.3);
-    FBDTc_data_train->Draw("HistSAME");
-    FBDTc_MC_test_correction->Draw("AP SAME"); FBDTc_data_test->Draw("AP SAME");
-    gPad->BuildLegend(0.9, 0.9, 0.6, 0.6);
-    c_temp_2->SaveAs("BDTc_AfterCorrection.png");
+        mcTrain->Draw("HIST");
+        FBDTc_data_train->Draw("HIST SAME");
+        mcTest->Draw("E1 SAME");
+        FBDTc_data_test->Draw("E1 SAME");
+
+        auto* legend = new TLegend(0.62, 0.67, 0.95, 0.94);
+        legend->SetBorderSize(0);
+        legend->SetFillStyle(0);
+        legend->SetTextFont(43);
+        legend->SetTextSize(26);
+        legend->SetMargin(0.20);
+        legend->AddEntry(mcTrain,          "MC (train)",   "f");
+        legend->AddEntry(FBDTc_data_train, "Data (train)", "f");
+        legend->AddEntry(mcTest,           "MC (test)",    "lep");
+        legend->AddEntry(FBDTc_data_test,  "Data (test)",  "lep");
+        legend->Draw();
+
+        canvas->RedrawAxis();
+        canvas->Modified();
+        canvas->Update();
+        canvas->Print((std::string(outputName) + ".pdf").c_str(),
+                      "pdf Portrait");
+        canvas->SaveAs((std::string(outputName) + ".png").c_str());
+    };
+
+    drawBDTc("c_BDTc_before",
+             FBDTc_MC_train, FBDTc_MC_test,
+             "BDTc_BeforeCorrection");
+    drawBDTc("c_BDTc_after",
+             FBDTc_MC_train_correction, FBDTc_MC_test_correction,
+             "BDTc_AfterCorrection");
 
     printf("average BDTc of data: %lf\n", data_all.BDTcSum / data_all.NevtwithoutCorrection);
 }
