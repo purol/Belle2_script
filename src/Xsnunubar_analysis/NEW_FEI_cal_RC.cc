@@ -1631,10 +1631,13 @@ int main()
 
     Signal_nominal->SetFillColor(4); Signal_nominal->SetLineColor(4); Signal_nominal->SetLineWidth(1); Signal_nominal->SetFillStyle(3002); Signal_nominal->Draw("e1 Hist");
     Signal_NEW->SetFillColor(2); Signal_NEW->SetLineColor(2); Signal_NEW->SetLineWidth(1); Signal_NEW->SetFillStyle(3003); Signal_NEW->Draw("e1 Hist SAME");
-    TLegend* legend = pad1->BuildLegend(0.56, 0.74, 0.94, 0.90);
+    TLegend* legend = new TLegend(0.56, 0.74, 0.94, 0.90);
+    legend->AddEntry(Signal_nominal, "Nominal", "lf");
+    legend->AddEntry(Signal_NEW, "Alternative", "lf");
     legend->SetFillStyle(0); legend->SetLineWidth(0);
     legend->SetTextFont(42); legend->SetTextSize(upperTextSize);
     legend->SetMargin(0.18);
+    legend->Draw();
 
     c_temp->cd();
     TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1.0, ratioPadFraction);
@@ -1645,6 +1648,7 @@ int main()
     setAxisTextSize(Signal_ratio->GetXaxis(), ratioTextSize);
     setAxisTextSize(Signal_ratio->GetYaxis(), ratioTextSize);
     Signal_ratio->GetXaxis()->SetTitle("bin index");
+    Signal_ratio->GetYaxis()->SetTitle("Alternative / Nominal");
     Signal_ratio->GetXaxis()->SetTitleOffset(1.05);
     Signal_ratio->GetYaxis()->SetTitleOffset(0.60);
     Signal_ratio->GetYaxis()->SetNdivisions(502, kFALSE); // Labels: 0.5, 1.0, 1.5.
