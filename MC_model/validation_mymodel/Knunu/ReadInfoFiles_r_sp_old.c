@@ -120,16 +120,57 @@ void ReadInfoFiles_r_sp_old(){
     gr->SetFillColor(2);
     gr->SetFillStyle(3001);
     gr->SetMinimum(0.0);
-    gr->SetTitle(";q^{2} [GeV^{2}];arbitrary unit");
+    gr->SetTitle(";q^{2} [GeV^{2}];Arbitrary units");
 
-    TCanvas* c_temp = new TCanvas("c", "", 1200, 830); c_temp->cd();
-    TLegend *legend = new TLegend(0.35, 0.35, 0.1, 0.1);
+    // Readable at 0.49 text width, retaining the original wide aspect ratio.
+    TCanvas* c_temp = new TCanvas("c", "", 1200, 830);
+    c_temp->cd();
+    c_temp->SetLeftMargin(0.18);
+    c_temp->SetRightMargin(0.05);
+    c_temp->SetBottomMargin(0.16);
+    c_temp->SetTopMargin(0.06);
+    c_temp->SetTicks(1, 1);
+
+    TAxis* axes[] = {gr->GetXaxis(), gr->GetYaxis()};
+    for (TAxis* axis : axes) {
+        axis->SetTitleFont(42);
+        axis->SetLabelFont(42);
+        axis->SetTitleSize(0.065);
+        axis->SetLabelSize(0.055);
+        axis->SetLabelOffset(0.008);
+        axis->SetNdivisions(505);
+    }
+    gr->GetXaxis()->SetTitleOffset(1.10);
+    gr->GetYaxis()->SetTitleOffset(0.85);
+    // Include the final MC bin beyond the endpoint of the theory band.
+    gr->GetXaxis()->SetLimits(Plot->GetXaxis()->GetXmin(), Plot->GetXaxis()->GetXmax());
+    double plotMaximum = 0.0;
+    for (int i = 0; i < gr->GetN(); ++i) {
+        const double upper = gr->GetY()[i] + gr->GetErrorY(i);
+        if (upper > plotMaximum) plotMaximum = upper;
+    }
+    for (int i = 0; i < gr_MC->GetN(); ++i) {
+        const double upper = gr_MC->GetY()[i] + gr_MC->GetErrorY(i);
+        if (upper > plotMaximum) plotMaximum = upper;
+    }
+    gr->SetMaximum(plotMaximum > 0.0 ? 1.10 * plotMaximum : 1.0);
+    gr_MC->SetMarkerSize(1.3);
+    gr_MC->SetLineWidth(2);
+
+    TLegend* legend = new TLegend(0.21, 0.20, 0.78, 0.40);
+    legend->SetTextFont(42);
+    legend->SetTextSize(0.055);
+    legend->SetMargin(0.12);
+    legend->SetBorderSize(0);
+    legend->SetFillStyle(0);
     legend->AddEntry(gr_MC,"B#rightarrowK#nu#bar{#nu} MC","lpfe");
     legend->AddEntry(gr,"[JHEP 02 (2015) 184]","f");
     gr->Draw("a2");
-    //Plot->Draw("E1 SAME");
     gr_MC->Draw("SAMEP");
     legend->Draw("SAME");
+    c_temp->Modified();
+    c_temp->Update();
+    c_temp->Print("q2distribution.pdf", "pdf Portrait");
     c_temp->SaveAs("q2distribution.png");
     
 }
