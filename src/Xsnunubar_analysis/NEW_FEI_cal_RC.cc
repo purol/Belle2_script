@@ -1624,6 +1624,10 @@ int main()
     setAxisTextSize(Signal_nominal->GetYaxis(), upperTextSize);
     setAxisTextSize(Signal_NEW->GetXaxis(), upperTextSize);
     setAxisTextSize(Signal_NEW->GetYaxis(), upperTextSize);
+    Signal_nominal->GetYaxis()->SetTitle("Number of events");
+    Signal_NEW->GetYaxis()->SetTitle("Number of events");
+    Signal_nominal->GetYaxis()->SetTitleOffset(1.35);
+    Signal_NEW->GetYaxis()->SetTitleOffset(1.35);
 
     Signal_nominal->SetFillColor(4); Signal_nominal->SetLineColor(4); Signal_nominal->SetLineWidth(1); Signal_nominal->SetFillStyle(3002); Signal_nominal->Draw("e1 Hist");
     Signal_NEW->SetFillColor(2); Signal_NEW->SetLineColor(2); Signal_NEW->SetLineWidth(1); Signal_NEW->SetFillStyle(3003); Signal_NEW->Draw("e1 Hist SAME");
