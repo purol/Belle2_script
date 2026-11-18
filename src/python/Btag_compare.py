@@ -2,9 +2,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.transforms import ScaledTranslation
 
+# Figure 9.6 uses 0.49\textwidth per panel (221.12792 PDF points).
+# Keep the saved canvas width fixed for the final font sizes below.
+FIGURE_WIDTH_IN = 8.0
+FINAL_PANEL_WIDTH_PT = 221.12792
+FINAL_FONT_SIZE_PT = 8.2
+FONT_SIZE = FINAL_FONT_SIZE_PT * FIGURE_WIDTH_IN * 72.0 / FINAL_PANEL_WIDTH_PT
+# Use smaller decay-mode labels to fit a shallower 30-degree rotation.
+FINAL_XTICK_FONT_SIZE_PT = 7.0
+XTICK_FONT_SIZE = FINAL_XTICK_FONT_SIZE_PT * FIGURE_WIDTH_IN * 72.0 / FINAL_PANEL_WIDTH_PT
+
 # Define a function to plot and save a dataset
 def plot_and_save_data(x, y1, yerr1, y2, yerr2, filename, y1_label, y2_label, title):
-    fig, ax = plt.subplots(figsize=(8, 7))
+    fig, ax = plt.subplots(figsize=(FIGURE_WIDTH_IN, 7))
 
     trans1 = ax.transData + ScaledTranslation(-5/72, 0, fig.dpi_scale_trans)
     trans2 = ax.transData + ScaledTranslation(+5/72, 0, fig.dpi_scale_trans)
@@ -17,17 +27,19 @@ def plot_and_save_data(x, y1, yerr1, y2, yerr2, filename, y1_label, y2_label, ti
     ax.set_ylim(-1.0, y_max * 1.2)
     ax.set_xlim(-0.5, len(x) - 0.5)
 
-    # Rotate the x-axis labels by 45 degrees
+    # Keep the decay-mode labels readable at a shallower angle.
     ax.set_xticks(x)
-    ax.set_xticklabels(x, rotation=30, ha='right', fontsize=14)
+    ax.set_xticklabels(x, rotation=30, ha='right', rotation_mode='anchor',
+                       fontsize=XTICK_FONT_SIZE)
+    ax.tick_params(axis='y', labelsize=FONT_SIZE)
 
     # Add a title and labels for the axes
-    ax.set_xlabel(r'$B_{tag}$ Decay Mode', fontsize=14)
-    ax.set_ylabel('The number of event', fontsize=14)
+    ax.set_xlabel(r'$B_{tag}$ Decay Mode', fontsize=FONT_SIZE)
+    ax.set_ylabel('The number of event', fontsize=FONT_SIZE)
 
-    ax.legend(loc='best', fontsize=14)
+    ax.legend(loc='best', fontsize=FONT_SIZE)
 
-    ax.text(0.02, 0.95, title, transform=ax.transAxes, color='black', fontsize=16)
+    ax.text(0.02, 0.95, title, transform=ax.transAxes, color='black', fontsize=FONT_SIZE)
 
     plt.tight_layout()
 
