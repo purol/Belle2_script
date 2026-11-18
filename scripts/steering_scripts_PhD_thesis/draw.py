@@ -22,6 +22,17 @@ ROOT.gROOT.SetBatch(True)
 ROOT.gStyle.SetOptStat(0)
 ROOT.gStyle.SetHatchesLineWidth(1)
 
+# Keep text readable when a 920 x 600 canvas is placed in a two-column figure.
+AXIS_TITLE_SIZE = 0.065
+AXIS_LABEL_SIZE = 0.060
+LEGEND_TEXT_SIZE = 0.065
+PLOT_LEFT_MARGIN = 0.20
+PLOT_BOTTOM_MARGIN = 0.20
+PLOT_RIGHT_MARGIN = 0.05
+PLOT_TOP_MARGIN = 0.10
+LEGEND_WIDTH = 0.34
+LEGEND_HEIGHT = 0.19
+
 
 @dataclass(frozen=True)
 class PlotSpec:
@@ -148,19 +159,22 @@ def choose_legend_position(background, signal, log_y):
     totals = [background.GetBinContent(i) + signal.GetBinContent(i)
               for i in range(1, nbins + 1)]
     peak = max(totals, default=0.0)
-    if peak <= 0.0:
-        return 0.160, 0.745
-
-    x_left, x_right = 0.13, 0.93  # Canvas left/right margins
-    y_bottom, y_top = 0.12, 0.90  # Canvas bottom/top margins
-    legend_width, legend_height = 0.265, 0.130
+    x_left, x_right = PLOT_LEFT_MARGIN, 1.0 - PLOT_RIGHT_MARGIN
+    y_bottom, y_top = PLOT_BOTTOM_MARGIN, 1.0 - PLOT_TOP_MARGIN
+    legend_width, legend_height = LEGEND_WIDTH, LEGEND_HEIGHT
+    inset = 0.015
+    lowest_y = y_bottom + inset
+    highest_y = y_top - legend_height - inset
     # The legend stays fully inside the plot frame; prefer upper positions
     # when scores tie, since those usually interfere least with the data.
     positions = [
         (x, y)
-        for y in (0.745, 0.535, 0.325, 0.160)
-        for x in (0.160, 0.655)
+        for y in (highest_y - i * (highest_y - lowest_y) / 3.0
+                  for i in range(4))
+        for x in (x_left + inset, x_right - legend_width - inset)
     ]
+    if peak <= 0.0:
+        return positions[0]
 
     if log_y:
         minimum, maximum = 0.5, max(1.0, peak * 1.6)
@@ -220,9 +234,10 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
     stack.Add(signal)
 
     canvas = ROOT.TCanvas(f"canvas_{spec.number}", "", 920, 600)
-    canvas.SetLeftMargin(0.13)
-    canvas.SetBottomMargin(0.12)
-    canvas.SetRightMargin(0.07)
+    canvas.SetLeftMargin(PLOT_LEFT_MARGIN)
+    canvas.SetBottomMargin(PLOT_BOTTOM_MARGIN)
+    canvas.SetRightMargin(PLOT_RIGHT_MARGIN)
+    canvas.SetTopMargin(PLOT_TOP_MARGIN)
     canvas.SetTicks(1, 1)
     log_y = (
         (spec.tree == "KSzero" and spec.variable == "significanceOfDistance")
@@ -233,6 +248,15 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
         canvas.SetLogy()
     stack.Draw("HIST")
     stack.SetMinimum(0.5 if log_y else 0.0)
+    for axis in (stack.GetXaxis(), stack.GetYaxis()):
+        axis.SetTitleFont(42)
+        axis.SetLabelFont(42)
+        axis.SetTitleSize(AXIS_TITLE_SIZE)
+        axis.SetLabelSize(AXIS_LABEL_SIZE)
+        axis.SetLabelOffset(0.010)
+        axis.SetNdivisions(505)  # Leave room between the enlarged tick labels.
+    stack.GetXaxis().SetTitleOffset(1.15)
+    stack.GetYaxis().SetTitleOffset(1.35)
 
     # Draw hatching only on the *background portion* of the stack.  This is
     # a visual overlay, not another THStack component or counted histogram.
@@ -260,12 +284,12 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
     # Keep references alive through SaveAs/Print for older PyROOT builds.
     legend_primitives = []
     for y, label, fill_color, border_color, is_fake in (
-        (legend_y + 0.096, f"true {particle}", signal.GetFillColor(),
+        (legend_y + 0.135, f"true {particle}", signal.GetFillColor(),
          signal.GetLineColor(), False),
-        (legend_y + 0.035, f"fake {particle}", background.GetFillColor(),
+        (legend_y + 0.045, f"fake {particle}", background.GetFillColor(),
          background.GetLineColor(), True),
     ):
-        x1, x2, half_height = legend_x + 0.017, legend_x + 0.063, 0.015
+        x1, x2, half_height = legend_x + 0.020, legend_x + 0.085, 0.022
         swatch = ROOT.TPave(x1, y - half_height, x2, y + half_height, 0, "NDC")
         swatch.SetFillColor(fill_color)
         swatch.SetFillStyle(1001)
@@ -285,11 +309,11 @@ def make_plot(spec, booked_histograms, outdir, pdf_filename, is_first, is_last):
             swatch_hatch.Draw()
             legend_primitives.append(swatch_hatch)
 
-        label_text = ROOT.TLatex(legend_x + 0.074, y, label)
+        label_text = ROOT.TLatex(legend_x + 0.100, y, label)
         label_text.SetNDC(True)
         label_text.SetTextAlign(12)
         label_text.SetTextFont(42)
-        label_text.SetTextSize(0.039)
+        label_text.SetTextSize(LEGEND_TEXT_SIZE)
         label_text.Draw()
         legend_primitives.append(label_text)
 
