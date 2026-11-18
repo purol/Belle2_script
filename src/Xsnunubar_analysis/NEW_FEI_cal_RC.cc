@@ -1585,13 +1585,18 @@ int main()
     // pad heights so both panels have approximately 8.2 pt text in the thesis.
     const double finalFigureWidthPt = 270.78198;
     const double targetFontSizePt = 8.2;
-    const double ratioPadFraction = 0.30;
+    // The previous 8.2 pt setting matched about 7.5 pt in a same-scale
+    // Helvetica comparison of the final PNG. Compensate for that difference.
+    const double renderingScaleCorrection = 8.2 / 7.5;
+    const double scaledFontSizePt = targetFontSizePt * renderingScaleCorrection;
+    // Give the longer, enlarged ratio-axis title enough vertical room.
+    const double ratioPadFraction = 0.32;
     const double upperPadFraction = 1.0 - ratioPadFraction; // Adjacent pads, no empty strip.
     const double finalFigureHeightPt = finalFigureWidthPt
         * c_temp->GetWh() / c_temp->GetWw();
-    const double upperTextSize = targetFontSizePt
+    const double upperTextSize = scaledFontSizePt
         / (finalFigureHeightPt * upperPadFraction);
-    const double ratioTextSize = targetFontSizePt
+    const double ratioTextSize = scaledFontSizePt
         / (finalFigureHeightPt * ratioPadFraction);
     auto setAxisTextSize = [](TAxis* axis, double size) {
         axis->SetTitleFont(42);
