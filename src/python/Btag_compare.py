@@ -35,7 +35,7 @@ def plot_and_save_data(x, y1, yerr1, y2, yerr2, filename, y1_label, y2_label, ti
 
     # Add a title and labels for the axes
     ax.set_xlabel(r'$B_{tag}$ Decay Mode', fontsize=FONT_SIZE)
-    ax.set_ylabel('The number of event', fontsize=FONT_SIZE)
+    ax.set_ylabel('Number of events', fontsize=FONT_SIZE)
 
     ax.legend(loc='best', fontsize=FONT_SIZE)
 
