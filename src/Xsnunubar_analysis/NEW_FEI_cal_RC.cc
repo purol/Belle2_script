@@ -906,23 +906,23 @@ double GetPDFs_NEW_FEI(const char* dirname, const char* included_string, TH1D* h
             double Correction_FEI = 1.0;
             if (strcmp(type, "Bplus") == 0) {
                 if (std::abs(Btag_isSignal - 1.0) < MyEPSILON) {
-                    if (std::abs(Btag_ID - 0.0) < MyEPSILON) Correction_FEI = 0.871866;
-                    else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Correction_FEI = 0.871866;
-                    else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Correction_FEI = 0.871866;
-                    else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Correction_FEI = 0.871866;
-                    else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Correction_FEI = 0.580409;
-                    else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Correction_FEI = 0.580409;
-                    else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Correction_FEI = 0.580409;
-                    else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Correction_FEI = 0.580409;
-                    else if (std::abs(Btag_ID - 23.0) < MyEPSILON) Correction_FEI = 0.227976;
-                    else if (std::abs(Btag_ID - 24.0) < MyEPSILON) Correction_FEI = 0.227976;
-                    else if (std::abs(Btag_ID - 30.0) < MyEPSILON) Correction_FEI = 0.227976;
-                    else Correction_FEI = 0.227976;
+                    if (std::abs(Btag_ID - 0.0) < MyEPSILON) Correction_FEI = 0.882699;
+                    else if (std::abs(Btag_ID - 1.0) < MyEPSILON) Correction_FEI = 0.882699;
+                    else if (std::abs(Btag_ID - 3.0) < MyEPSILON) Correction_FEI = 0.882699;
+                    else if (std::abs(Btag_ID - 4.0) < MyEPSILON) Correction_FEI = 0.882699;
+                    else if (std::abs(Btag_ID - 15.0) < MyEPSILON) Correction_FEI = 0.581418;
+                    else if (std::abs(Btag_ID - 16.0) < MyEPSILON) Correction_FEI = 0.581418;
+                    else if (std::abs(Btag_ID - 18.0) < MyEPSILON) Correction_FEI = 0.581418;
+                    else if (std::abs(Btag_ID - 19.0) < MyEPSILON) Correction_FEI = 0.581418;
+                    else if (std::abs(Btag_ID - 23.0) < MyEPSILON) Correction_FEI = 0.228217;
+                    else if (std::abs(Btag_ID - 24.0) < MyEPSILON) Correction_FEI = 0.228217;
+                    else if (std::abs(Btag_ID - 30.0) < MyEPSILON) Correction_FEI = 0.228217;
+                    else Correction_FEI = 0.228217;
                 }
                 else Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             }
             else if (strcmp(type, "Bzero") == 0) {
-                if(std::abs(Btag_isSignal - 1.0) < MyEPSILON) Correction_FEI = 0.958304; // true Btag
+                if(std::abs(Btag_isSignal - 1.0) < MyEPSILON) Correction_FEI = 0.964602; // true Btag
                 else Correction_FEI = corrector_FEI.GetFEICalFactor(Upsilon_ID, Btag_ID, MCTYPE);
             }
             else if (strcmp(type, "Continuum") == 0) Correction_FEI = 1.0;
@@ -1450,14 +1450,14 @@ int main()
 
     /* ====================================== */
     // define path for Ntuple
-    const char* MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SIGNAL_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_SIGNAL = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SIGNAL_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
 
-    const char* MC_dirname_CHG = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHG_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_dirname_MIX = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/MIX_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_dirname_UUBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/UUBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_dirname_DDBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/DDBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_dirname_SSBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/SSBAR_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
-    const char* MC_dirname_CHARM = "/home/belle2/junewoo/storage_b1/bsub/Analysis/Satori/CHARM_analysis/test_v000/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_CHG = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHG_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_MIX = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/MIX_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_UUBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/UUBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_DDBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/DDBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_SSBAR = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/SSBAR_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
+    const char* MC_dirname_CHARM = "/home/belle2/junewoo/storage_b1/bsub/Analysis/MizuhashiRD/CHARM_analysis/validation_v009/final_output_root_after_MVA_Application_after_cut/Merge";
 
     /* ====================================== */
 
@@ -1580,11 +1580,33 @@ int main()
 
     TCanvas* c_temp = new TCanvas("c", "", 800, 800); c_temp->cd();
 
-    TPad* pad1 = new TPad("pad1", "pad1", 0.0, 0.35, 1.0, 1.0);
-    pad1->SetBottomMargin(0.08); pad1->SetLeftMargin(0.15);
+    // Figure 9.7 is placed at 0.6\textwidth (270.78198 PDF points).
+    // ROOT font 42 uses a fraction of the pad size. Account for the different
+    // pad heights so both panels have approximately 8.2 pt text in the thesis.
+    const double finalFigureWidthPt = 270.78198;
+    const double targetFontSizePt = 8.2;
+    const double ratioPadFraction = 0.30;
+    const double upperPadFraction = 1.0 - ratioPadFraction; // Adjacent pads, no empty strip.
+    const double finalFigureHeightPt = finalFigureWidthPt
+        * c_temp->GetWh() / c_temp->GetWw();
+    const double upperTextSize = targetFontSizePt
+        / (finalFigureHeightPt * upperPadFraction);
+    const double ratioTextSize = targetFontSizePt
+        / (finalFigureHeightPt * ratioPadFraction);
+    auto setAxisTextSize = [](TAxis* axis, double size) {
+        axis->SetTitleFont(42);
+        axis->SetLabelFont(42);
+        axis->SetTitleSize(size);
+        axis->SetLabelSize(size);
+    };
+
+    TPad* pad1 = new TPad("pad1", "pad1", 0.0, 1.0 - upperPadFraction, 1.0, 1.0);
+    pad1->SetBottomMargin(0.10); pad1->SetLeftMargin(0.18);
+    pad1->SetRightMargin(0.05); pad1->SetTopMargin(0.10);
     pad1->SetGridx(); pad1->Draw(); pad1->cd();
 
     gStyle->SetPalette(kPastel);
+    gStyle->SetOptTitle(0); // Hide the automatic histogram title above the plot.
 
     Float_t ymax_1 = Signal_NEW->GetMaximum();
     Float_t ymax_2 = Signal_nominal->GetMaximum();
@@ -1592,21 +1614,36 @@ int main()
     if (ymax_1 > ymax_2) real_max = ymax_1;
     else real_max = ymax_2;
 
-    Signal_NEW->SetMaximum(real_max * 1.1);
+    // Reserve space above the distributions for the enlarged legend.
+    Signal_nominal->SetMaximum(real_max * 1.35);
+    Signal_NEW->SetMaximum(real_max * 1.35);
 
     Signal_nominal->SetStats(0);
     Signal_NEW->SetStats(0);
+    setAxisTextSize(Signal_nominal->GetXaxis(), upperTextSize);
+    setAxisTextSize(Signal_nominal->GetYaxis(), upperTextSize);
+    setAxisTextSize(Signal_NEW->GetXaxis(), upperTextSize);
+    setAxisTextSize(Signal_NEW->GetYaxis(), upperTextSize);
 
     Signal_nominal->SetFillColor(4); Signal_nominal->SetLineColor(4); Signal_nominal->SetLineWidth(1); Signal_nominal->SetFillStyle(3002); Signal_nominal->Draw("e1 Hist");
     Signal_NEW->SetFillColor(2); Signal_NEW->SetLineColor(2); Signal_NEW->SetLineWidth(1); Signal_NEW->SetFillStyle(3003); Signal_NEW->Draw("e1 Hist SAME");
-    TLegend* legend = pad1->BuildLegend(0.95, 0.9, 0.75, 0.6);
+    TLegend* legend = pad1->BuildLegend(0.56, 0.74, 0.94, 0.90);
     legend->SetFillStyle(0); legend->SetLineWidth(0);
+    legend->SetTextFont(42); legend->SetTextSize(upperTextSize);
+    legend->SetMargin(0.18);
 
     c_temp->cd();
-    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1, 0.3); pad2->SetBottomMargin(0.15); pad2->SetLeftMargin(0.15); pad2->SetGridx(); pad2->Draw(); pad2->cd();
+    TPad* pad2 = new TPad("pad2", "pad2", 0.0, 0.0, 1.0, ratioPadFraction);
+    pad2->SetBottomMargin(0.30); pad2->SetLeftMargin(0.18);
+    pad2->SetRightMargin(0.05); pad2->SetTopMargin(0.06);
+    pad2->SetGridx(); pad2->Draw(); pad2->cd();
     Signal_ratio->SetMinimum(0.5); Signal_ratio->SetMaximum(1.5); Signal_ratio->SetLineWidth(2);
-    Signal_ratio->GetYaxis()->SetTitleSize(0.08); Signal_ratio->GetYaxis()->SetTitleOffset(0.5);
-    Signal_ratio->GetXaxis()->SetLabelSize(0.08); Signal_ratio->GetYaxis()->SetLabelSize(0.08);
+    setAxisTextSize(Signal_ratio->GetXaxis(), ratioTextSize);
+    setAxisTextSize(Signal_ratio->GetYaxis(), ratioTextSize);
+    Signal_ratio->GetXaxis()->SetTitle("bin index");
+    Signal_ratio->GetXaxis()->SetTitleOffset(1.05);
+    Signal_ratio->GetYaxis()->SetTitleOffset(0.60);
+    Signal_ratio->GetYaxis()->SetNdivisions(502, kFALSE); // Labels: 0.5, 1.0, 1.5.
     Signal_ratio->Draw("e0p");
     TLine* line = new TLine(Signal_ratio->GetXaxis()->GetXmin(), 1.0, Signal_ratio->GetXaxis()->GetXmax(), 1.0);
     line->SetLineColor(kRed);
