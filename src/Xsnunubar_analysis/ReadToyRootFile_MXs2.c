@@ -195,7 +195,7 @@ void ReadToyRootFile_MXs2(){
     muframe->GetYaxis()->SetTitle("Toys");
     const double pullFrameMaximum = muframe->GetMaximum();
     muframe->SetMinimum(0.0);
-    muframe->SetMaximum(pullFrameMaximum > 0.0 ? pullFrameMaximum * 1.6 : 1.0);
+    muframe->SetMaximum(pullFrameMaximum > 0.0 ? pullFrameMaximum * 1.3 : 1.0);
 
     TCanvas* c = makeToyCanvas("mu_gauss_fit");
     muframe->Draw();
