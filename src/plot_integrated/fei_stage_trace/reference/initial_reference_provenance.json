@@ -1,0 +1,11 @@
+{
+  "source_full_trace": "C:\\Users\\purol\\OneDrive\\Desktop\\virtualbox\\20261113\\fei_category23_trace_w16",
+  "source_run_info_sha256": "e63510247e500c2186ae087448d1fef46d1c8e8b463e83f887bf20050f117946",
+  "source_stage_summary_sha256": "51670a765f3dbbc98ec7d58da89cc9d7def94d9d2a027b650273ef9a0847af46",
+  "source_audit_issues": 0,
+  "source_files": 24860,
+  "reference_sha256": {
+    "files.csv": "ca406c57e473d035ae5a2963050a8b8d5ee72c05043de2c059553b95c2a5a55b",
+    "before_mbc_reference.csv": "2ae72b6951d26e57597d42eda43847d60e514aa999159b34b524d238efab5d55"
+  }
+}

@@ -1,0 +1,41 @@
+Initial-selection diagnostic validation: 2026-11-20 (Asia/Seoul)
+
+Command: python -X utf8 -m pytest test_trace_fei_initial.py -q
+Result: 7 passed in 11.62 seconds (Windows Python 3.13).
+
+Checked:
+- Exact strict <0.5 and >-0.5 comparisons, with NaN failing comparisons as in C++.
+- Read/preserve NaN kinematics before failed-vertex removal.
+- Missing required branches and cross-tree identifier misalignment are rejected.
+- All eight samples and raw/saved ROOT fixtures; empty samples included.
+- A Data mode-30 event present in raw input but lost at loose-track selection.
+- Mode-30 candidates outside the control signal-mode/mass selection remain visible.
+- Removal of a competitor without removing the target candidate in the same event.
+- Reconstructed initial cuts match the saved before_Mbc identity and payload.
+- Wrong saved-anchor payload leads to REVIEW_REQUIRED, never COMPLETE.
+- The completed earlier full-trace anchor reference is required for every sample/category/view.
+- Unexpected/missing source stems are rejected before the scan.
+- Jpsi companion directories and nested Merge files are not scanned.
+- Serial and two-worker outputs agree for event/candidate traces and summary tables.
+- SHA256 hashes of all synthetic input ROOT/reference CSV files are unchanged after execution.
+- Existing output directories are rejected; preflight-only does not create output.
+
+Reference prepared from the user's completed fei_category23_trace_w16:
+- 24,860 files; scope=full, details=true; audit_issues=0.
+- before_Mbc reference contains all 96 sample/category/view cells.
+- Category 2 control: Data 43, MC raw 250, normalized MC 62.6079965235.
+- Category 3 control: Data 24, MC raw 183, normalized MC 45.8290534552.
+- Original normalization/reference file and frozen before_Mbc reference are hashed
+  in reference/initial_reference_provenance.json and verified at preflight.
+
+Shared trace_fei_stages.py and fei_stage_details.py were not modified by this update.
+Their previous full-cut/BCS validation remains recorded in VALIDATION.txt.
+Package preparation checks Python 3.8 grammar and archive payload hashes.
+
+Not performed here:
+- Opening the actual /home/belle2/... raw ntuples (not mounted on this Windows computer).
+- Actual server execution or timing of this new initial-selection diagnostic.
+- Independent determination of detector, generator, or FEI production causes.
+
+Default raw paths follow the user's supplied storage_ghi/Ntuple directory layout.
+Filename cohort and per-file saved-anchor checks are required before interpreting results.

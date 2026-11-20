@@ -1,0 +1,62 @@
+Validation date: 2026-11-20 (Asia/Seoul)
+
+Category 2/3 detailed-history update:
+- 14 tests passed in 34.40 seconds (the original 9 plus 5 detailed-history tests).
+- After adding explicit before/after hashes for every synthetic input ROOT/reference CSV,
+  the full detailed-lineage test passed again in 7.56 seconds; all input hashes were unchanged.
+- Synthetic full snapshots distinguish loss of a competitor from loss of the target,
+  including a physical event that survives in another category after a cut.
+- Optional ROE values are read when available, and missing values stay NaN with coverage records.
+- Tied best target modes and unknown MC truth are preserved as separate cases.
+- Serial and 2-worker detailed histories and component/cutflow tables are identical.
+- Replayed the actual user-supplied BCS candidate export through the new detail collector.
+  Category 2 and 3, both control_K_Kpi and mode0, reproduce all supplied stage counts,
+  weighted yields, sumw2 and candidate counts. Paired transitions close at both ends.
+- Actual competition counts reproduced for control_K_Kpi:
+  C2 Data without/with other category = 14/16; MC = 79/120.
+  C3 Data without/with other category = 7/11; MC = 117/46.
+- Actual earlier-cut ROOT files are on the server and were NOT executed locally.
+- The collector does not automatically assign a detector/decay-model cause or significance.
+- Package preparation also checks Python 3.8 grammar and all original source/reference hashes.
+- The old completed BCS result and earlier ZIP packages were not overwritten.
+
+Parallel-read update:
+- 9 tests passed in 17.72 seconds after adding bounded process-based reads.
+- Serial and 2-worker results were compared for stage counts, ratios, migration summaries,
+  event/candidate traces, source manifest, file checks, and branch availability; all equal.
+- Reused the already opened Btag TTree to avoid repeated metadata deserialization.
+- No measured speedup on the actual server is claimed.
+- BCS scope deliberately reads 2 stored snapshots; full scope still reads and checks all 7.
+- Earlier interrupted results cannot be resumed by this version.
+
+Passed: python -X faulthandler -m pytest test_trace_fei_stages.py -q
+8 tests passed in 7.75 seconds on the available Windows Python 3.13 environment.
+
+Coverage:
+- Strict cut endpoints, including retention of D-veto endpoints 1.84 and 1.89.
+- Competition with candidates outside the diagnostic signal-mode/category slice.
+- Actual saved winner among equal maxima; no re-randomization.
+- Exact floating-point ties, matching the supplied C++ equality comparison.
+- Contiguous Loader grouping and ncandidates-key anomalies.
+- Duplicate candidate IDs and nonmaximal selected candidates.
+- Full read/write of synthetic ROOT TTrees for all seven stored stages and eight samples.
+- Unique-event stage counts and migration outcomes.
+- Empty samples, BCS-only mode, and preflight-only operation.
+- Tree event/candidate alignment failure and missing source-file cohorts.
+- Payload differences between snapshots produce REVIEW_REQUIRED, not COMPLETE.
+
+Actual supplied reference CSV checks:
+- All 24,860 reference filenames parsed with the supplied naming convention.
+- No collisions in sample + source stem, and no duplicate file IDs.
+- Final normalization-only reference ratios reproduced:
+  neutral 0.9127086046; category 1 0.8298912952;
+  category 2 0.5497746577; category 3 0.2166798528.
+- CLI help checked.
+
+Not performed:
+- Reading the actual /home/belle2/... intermediate ROOT files (not mounted here).
+- Actual server execution of this new stage tracer.
+- Independent validation of luminosities, generated branching fractions, or physical causes.
+
+Reference weights come from the earlier user-run FEI export, not newly guessed constants.
+Exact source/export hashes are recorded in source_hashes.json.

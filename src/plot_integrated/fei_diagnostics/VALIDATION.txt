@@ -1,0 +1,13 @@
+Validation record
+
+- Python regression suite: 8 passed.
+- Python syntax compilation: passed.
+- Full synthetic CSV analysis: passed; summary tables and 21 plots generated.
+- Representative synthetic plots visually checked.
+- The generated macro retains the exact original event-weight expression and local cuts.
+- User source file is unchanged; its preserved snapshot has the same SHA-256.
+- ROOT is not installed on this host, and the real analysis ntuples are not local.
+  The ROOT macro and ROOT exporter smoke test have NOT been executed or compiled here.
+- Actual FEI factor reproduction and physical conclusions remain unverified until
+  execution in the user's original ROOT/calibration/data environment.
+- test_FEIDiagnosticExport.C is provided for the ROOT-side smoke test.

@@ -1,0 +1,4 @@
+__pycache__/
+.pytest_cache/
+fei_diagnostics_output*/
+fei_diagnostics_smoke*/
