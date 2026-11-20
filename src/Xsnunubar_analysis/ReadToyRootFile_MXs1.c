@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <string>
+#include <vector>
 #include "TPaveStats.h"
 
 void load_files(const char* dirname, std::vector<string>* names) {
@@ -65,6 +66,7 @@ void ReadToyRootFile_MXs1(){
     ToyMCmupull->SetLineColor(kBlack);
     ToyMCmupull->SetMarkerColor(kBlack);
 
+    std::vector<double> fittedMuValues;
     std::vector<string> names;
     const char* dirname = "./";
     load_files(dirname, &names, "TOY_result");
@@ -96,6 +98,7 @@ void ReadToyRootFile_MXs1(){
         for (unsigned int j = 0; j < temp_tree->GetEntries(); j++) { // Fill
             temp_tree->GetEntry(j);
             ToyMCmu->Fill(temp_mu_fitting);
+            fittedMuValues.push_back(temp_mu_fitting);
             ToyMCmuerror->Fill(temp_mu_error);
             ToyMCmuHIerror->Fill(temp_mu_HIerror);
             ToyMCmuLOerror->Fill(temp_mu_LOerror);
@@ -111,6 +114,18 @@ void ReadToyRootFile_MXs1(){
             }
         }
         input_file->Close();
+    }
+
+    // Use the individual fitted values, including histogram under/overflow entries.
+    double fittedMuMedian = 0.0;
+    if (!fittedMuValues.empty()) {
+        std::sort(fittedMuValues.begin(), fittedMuValues.end());
+        const std::size_t middle = fittedMuValues.size() / 2;
+        fittedMuMedian = fittedMuValues[middle];
+        if (fittedMuValues.size() % 2 == 0) {
+            fittedMuMedian = 0.5 * fittedMuValues[middle - 1]
+                           + 0.5 * fittedMuValues[middle];
+        }
     }
 
     RooRealVar gausmean("mean", "", 0.0, -1.0, 1.0);
@@ -132,7 +147,7 @@ void ReadToyRootFile_MXs1(){
             axis->SetNdivisions(505);
         }
         xaxis->SetTitleOffset(1.10);
-        yaxis->SetTitleOffset(1.65);
+        yaxis->SetTitleOffset(1.25);
     };
 
     auto makeToyCanvas = [](const char* name) {
@@ -153,6 +168,7 @@ void ReadToyRootFile_MXs1(){
     };
 
     auto drawToyHistogram = [&](TH1* histogram, const char* basename, bool hasFit) {
+        const bool showMedian = histogram == ToyMCmu && !fittedMuValues.empty();
         TCanvas* canvas = makeToyCanvas(basename);
         if (hasFit) histogram->Fit("gaus");
         styleToyAxes(histogram->GetXaxis(), histogram->GetYaxis());
@@ -165,20 +181,26 @@ void ReadToyRootFile_MXs1(){
             ymax = std::max(ymax, histogram->GetBinContent(bin) + histogram->GetBinError(bin));
         }
         // Keep the enlarged statistics/fit box above the data and error bars.
-        histogram->SetMaximum(ymax > 0.0 ? ymax * (hasFit ? 2.0 : 1.5) : 1.0);
+        histogram->SetMaximum(ymax > 0.0 ? ymax * (hasFit ? 2.0 : (showMedian ? 1.7 : 1.5)) : 1.0);
         histogram->Draw("PE1");
         canvas->Update();
         TPaveStats* stats = dynamic_cast<TPaveStats*>(histogram->FindObject("stats"));
         if (stats) {
-            stats->SetX1NDC(hasFit ? 0.40 : 0.51);
+            stats->SetX1NDC(0.51);
             stats->SetX2NDC(0.94);
-            stats->SetY1NDC(hasFit ? 0.60 : 0.72);
+            stats->SetY1NDC(hasFit ? 0.60 : (showMedian ? 0.665 : 0.72));
             stats->SetY2NDC(0.94);
             stats->SetTextFont(42);
             stats->SetTextSize(0.040);
             stats->SetBorderSize(1);
             stats->SetFillColor(kWhite);
             stats->SetFillStyle(1001);
+            if (showMedian) {
+                // Preserve the extra line when the canvas is updated or saved.
+                stats->SetName("mu_stats");
+                stats->AddText(TString::Format("Median = %.4g", fittedMuMedian).Data());
+                histogram->SetStats(kFALSE);
+            }
         }
         saveToyCanvas(canvas, basename);
         delete canvas;
@@ -195,7 +217,7 @@ void ReadToyRootFile_MXs1(){
     muframe->GetYaxis()->SetTitle("Toys");
     const double pullFrameMaximum = muframe->GetMaximum();
     muframe->SetMinimum(0.0);
-    muframe->SetMaximum(pullFrameMaximum > 0.0 ? pullFrameMaximum * 1.3 : 1.0);
+    muframe->SetMaximum(pullFrameMaximum > 0.0 ? pullFrameMaximum * 1.6 : 1.0);
 
     TCanvas* c = makeToyCanvas("mu_gauss_fit");
     muframe->Draw();
@@ -204,10 +226,8 @@ void ReadToyRootFile_MXs1(){
 
     const int previousOptStat = gStyle->GetOptStat();
     const int previousOptFit = gStyle->GetOptFit();
-    const std::string previousFitFormat = gStyle->GetFitFormat();
     gStyle->SetOptStat(1111);
     gStyle->SetOptFit(11);
-    gStyle->SetFitFormat(".3g");
 
     drawToyHistogram(ToyMCmu, "TOYMC_mu_MXs1", false);
     drawToyHistogram(ToyMCmuerror, "TOYMC_mu_MXs1_error", false);
@@ -217,7 +237,6 @@ void ReadToyRootFile_MXs1(){
     drawToyHistogram(ToyMCmupull, "TOYMC_mu_MXs1_pull", true);
     gStyle->SetOptStat(previousOptStat);
     gStyle->SetOptFit(previousOptFit);
-    gStyle->SetFitFormat(previousFitFormat.c_str());
 
     TF1* fit_pull_gauss = ToyMCmupull->GetFunction("gaus");
     const double constant_gauss = fit_pull_gauss->GetParameter(0);
